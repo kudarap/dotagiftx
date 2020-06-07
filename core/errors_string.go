@@ -14,16 +14,36 @@ func _() {
 	_ = x[AuthErrNoAccess-1003]
 	_ = x[AuthErrLogin-1004]
 	_ = x[AuthErrRefreshToken-1005]
+	_ = x[ItemErrNotFound-1200]
+	_ = x[ItemErrRequiredID-1201]
+	_ = x[ItemErrRequiredFields-1202]
+	_ = x[ItemErrProfileInvalidStatus-1203]
+	_ = x[ItemErrProfileNotesLimit-1204]
+	_ = x[UserErrNotFound-1200]
+	_ = x[UserErrRequiredID-1201]
+	_ = x[UserErrRequiredFields-1202]
+	_ = x[UserErrProfileImageDL-1203]
 }
 
-const _Errors_name = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
+const (
+	_Errors_name_0 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
+	_Errors_name_1 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrProfileInvalidStatusItemErrProfileNotesLimit"
+)
 
-var _Errors_index = [...]uint8{0, 15, 32, 53, 68, 80, 99}
+var (
+	_Errors_index_0 = [...]uint8{0, 15, 32, 53, 68, 80, 99}
+	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 80, 104}
+)
 
 func (i Errors) String() string {
-	i -= 1000
-	if i >= Errors(len(_Errors_index)-1) {
-		return "Errors(" + strconv.FormatInt(int64(i+1000), 10) + ")"
+	switch {
+	case 1000 <= i && i <= 1005:
+		i -= 1000
+		return _Errors_name_0[_Errors_index_0[i]:_Errors_index_0[i+1]]
+	case 1200 <= i && i <= 1204:
+		i -= 1200
+		return _Errors_name_1[_Errors_index_1[i]:_Errors_index_1[i+1]]
+	default:
+		return "Errors(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _Errors_name[_Errors_index[i]:_Errors_index[i+1]]
 }
