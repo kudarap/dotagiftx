@@ -1,4 +1,6 @@
 import Head from 'next/head'
+import Banner from "../components/Banner";
+import BuildInfo from "../components/BuildInfo";
 
 export default function User() {
   return (
@@ -10,7 +12,11 @@ export default function User() {
       </Head>
 
         <main>
-            <p>Your viewing user page</p>
+            <p>Your viewing user pagex</p>
+
+            <Banner />
+
+            <BuildInfo />
         </main>
     </div>
   )

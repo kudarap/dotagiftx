@@ -4,7 +4,7 @@ export default function Version({ data }) {
   return (
     <div className="container">
       <Head>
-        <title>User head</title>
+        <title>version page</title>
         <link rel="icon" href="/favicon.ico" />
         <meta name="author" content="John Doe" />
       </Head>
