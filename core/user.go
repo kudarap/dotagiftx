@@ -25,10 +25,10 @@ type (
 	// User represents user information.
 	User struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
-		SteamID   string     `json:"steam_id"   db:"steam_id,omitempty"`
-		Name      string     `json:"name"       db:"name,omitempty"`
-		URL       string     `json:"url"        db:"url,omitempty"`
-		Avatar    string     `json:"avatar"     db:"avatar,omitempty"`
+		SteamID   string     `json:"steam_id"   db:"steam_id,omitempty"    valid:"required"`
+		Name      string     `json:"name"       db:"name,omitempty"        valid:"required"`
+		URL       string     `json:"url"        db:"url,omitempty"         valid:"required"`
+		Avatar    string     `json:"avatar"     db:"avatar,omitempty"      valid:"required"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 	}
@@ -66,3 +66,17 @@ type (
 		Update(*User) error
 	}
 )
+
+// CheckCreate validates field on creating new user.
+func (u User) CheckCreate() error {
+	return validator.Struct(u)
+}
+
+// CheckUpdate validates field on update user.
+func (u User) CheckUpdate() error {
+	if u.ID == "" {
+		return UserErrRequiredID
+	}
+
+	return nil
+}

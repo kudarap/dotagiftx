@@ -8,7 +8,7 @@ import (
 
 // User error types.
 const (
-	ItemErrNotFound Errors = iota + 1200
+	ItemErrNotFound Errors = iota + 2000
 	ItemErrRequiredID
 	ItemErrRequiredFields
 	ItemErrProfileInvalidStatus

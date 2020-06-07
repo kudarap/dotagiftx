@@ -33,7 +33,7 @@ type (
 	Auth struct {
 		ID           string     `json:"id"            db:"id,omitempty"`
 		UserID       string     `json:"user_id"       db:"user_id,omitempty"  valid:"required"`
-		Username     string     `json:"username"      db:"username,omitempty" valid:"required"`
+		Username     string     `json:"username"      db:"username,omitempty" valid:"required"` // alias for Steam ID
 		Password     string     `json:"-"             db:"password,omitempty" valid:"required"`
 		RefreshToken string     `json:"refresh_token" db:"refresh_token,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"    db:"created_at,omitempty"`
@@ -90,8 +90,8 @@ func (a *Auth) GenerateRefreshToken() string {
 }
 
 // ComposePassword returns composed password.
-func (Auth) ComposePassword(twitterID, userID string) string {
-	return hash.Sha1(twitterID + userID)
+func (Auth) ComposePassword(steamID, userID string) string {
+	return hash.Sha1(steamID + userID)
 }
 
 type ctxKey int
