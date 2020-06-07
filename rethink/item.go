@@ -9,23 +9,23 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableUser = "user"
+const tableItem = "item"
 
-// NewUser creates new instance of user data store.
-func NewUser(c *Client) core.UserStorage {
-	if err := c.autoMigrate(tableUser); err != nil {
-		log.Fatalf("could not create %s table: %s", tableUser, err)
+// NewItem creates new instance of item data store.
+func NewItem(c *Client) core.ItemStorage {
+	if err := c.autoMigrate(tableItem); err != nil {
+		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
 
-	return &userStorage{c}
+	return &itemStorage{c}
 }
 
-type userStorage struct {
+type itemStorage struct {
 	db *Client
 }
 
-func (s *userStorage) Find(o core.FindOpts) ([]core.User, error) {
-	var res []core.User
+func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
+	var res []core.Item
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -34,11 +34,11 @@ func (s *userStorage) Find(o core.FindOpts) ([]core.User, error) {
 	return res, nil
 }
 
-func (s *userStorage) Get(id string) (*core.User, error) {
-	row := &core.User{}
+func (s *itemStorage) Get(id string) (*core.Item, error) {
+	row := &core.Item{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, core.UserErrNotFound
+			return nil, core.ItemErrNotFound
 		}
 
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -47,7 +47,7 @@ func (s *userStorage) Get(id string) (*core.User, error) {
 	return row, nil
 }
 
-func (s *userStorage) Create(in *core.User) error {
+func (s *itemStorage) Create(in *core.Item) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -60,7 +60,7 @@ func (s *userStorage) Create(in *core.User) error {
 	return nil
 }
 
-func (s *userStorage) Update(in *core.User) error {
+func (s *itemStorage) Update(in *core.Item) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
@@ -79,6 +79,6 @@ func (s *userStorage) Update(in *core.User) error {
 	return nil
 }
 
-func (s *userStorage) table() r.Term {
-	return r.Table(tableUser)
+func (s *itemStorage) table() r.Term {
+	return r.Table(tableItem)
 }

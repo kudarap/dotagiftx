@@ -62,8 +62,11 @@ type (
 		// Item returns item details by id.
 		Item(id string) (*Item, error)
 
-		// Create saves new item info.
+		// Create saves new item details.
 		Create(context.Context, *Item) error
+
+		// Update saves item details changes.
+		Update(context.Context, *Item) error
 	}
 
 	ItemStorage interface {
@@ -82,11 +85,11 @@ type (
 )
 
 var itemStatusTexts = map[ItemStatus]string{
-	ItemStatusPending:  "Pending",
-	ItemStatusLive:     "Live",
-	ItemStatusReserved: "Reserved",
-	ItemStatusSold:     "Sold",
-	ItemStatusRemoved:  "Removed",
+	ItemStatusPending:  "pending",
+	ItemStatusLive:     "live",
+	ItemStatusReserved: "reserved",
+	ItemStatusSold:     "sold",
+	ItemStatusRemoved:  "removed",
 }
 
 // CheckCreate validates field on creating new item.
