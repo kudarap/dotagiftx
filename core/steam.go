@@ -5,10 +5,10 @@ import "net/http"
 type (
 	// SteamPlayer represents steam player information.
 	SteamPlayer struct {
-		ID     string `json:"id"`
-		Name   string `json:"name"`
-		URL    string `json:"url"`
-		Avatar string `json:"avatar"`
+		ID     string `json:"id"     db:"id"`
+		Name   string `json:"name"   db:"name"`
+		URL    string `json:"url"    db:"url"`
+		Avatar string `json:"avatar" db:"avatar"`
 	}
 
 	// SteamClient provides access to Steam API.

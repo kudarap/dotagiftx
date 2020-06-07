@@ -5,15 +5,32 @@ import (
 	"time"
 )
 
+// User error types.
+const (
+	UserErrNotFound Errors = iota + 1200
+	UserErrRequiredID
+	UserErrRequiredFields
+	UserErrProfileImageDL
+)
+
+// sets error text definition.
+func init() {
+	appErrorText[UserErrNotFound] = "user not found"
+	appErrorText[UserErrRequiredID] = "user id is required"
+	appErrorText[UserErrRequiredFields] = "user fields are required"
+	appErrorText[UserErrProfileImageDL] = "user profile image could not download"
+}
+
 type (
 	// User represents user information.
 	User struct {
-		ID             string     `json:"id"         db:"id,omitempty"`
-		Name           string     `json:"name"       db:"name,omitempty"`
-		RedditUsername string     `json:"username"   db:"username,omitempty"`
-		SteamURL       string     `json:"email"      db:"email,omitempty"`
-		CreatedAt      *time.Time `json:"created_at" db:"created_at,omitempty"`
-		UpdatedAt      *time.Time `json:"updated_at" db:"updated_at,omitempty"`
+		ID        string     `json:"id"         db:"id,omitempty"`
+		SteamID   string     `json:"steam_id"   db:"steam_id,omitempty"`
+		Name      string     `json:"name"       db:"name,omitempty"`
+		URL       string     `json:"url"        db:"url,omitempty"`
+		Avatar    string     `json:"avatar"     db:"avatar,omitempty"`
+		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
+		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 	}
 
 	// UserService provides access to user service.
@@ -24,11 +41,11 @@ type (
 		// User returns user details by id.
 		User(id string) (*User, error)
 
-		// UserFromContext returns user details from context.
-		UserFromContext(context.Context) (*User, error)
-
 		// Create saves new user and download profile image to local file.
 		Create(*User) error
+
+		// UserFromContext returns user details from context.
+		UserFromContext(context.Context) (*User, error)
 
 		// Update saves user changes.
 		Update(context.Context, *User) error
