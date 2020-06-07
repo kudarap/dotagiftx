@@ -7,7 +7,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/", handleInfo(s.version))
 
 		r.Route("/auth", func(r chi.Router) {
-			r.Get("/twitter", handleAuthTwitter(s.authSvc))
+			r.Get("/steam", handleAuthTwitter(s.authSvc))
 			r.Post("/renew", handleAuthRenew(s.authSvc))
 			r.Post("/revoke", handleAuthRevoke(s.authSvc))
 		})

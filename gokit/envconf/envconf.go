@@ -1,6 +1,8 @@
 package envconf
 
 import (
+	"fmt"
+
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -12,12 +14,12 @@ var EnvPrefix = "APP"
 func Load(in interface{}) error {
 	// Load env file.
 	if err := godotenv.Load(); err != nil {
-		return err
+		return fmt.Errorf("could not load config: %s", err)
 	}
 
 	// Bind env values.
 	if err := envconfig.Process(EnvPrefix, in); err != nil {
-		return err
+		return fmt.Errorf("could not process config: %s", err)
 	}
 
 	return nil

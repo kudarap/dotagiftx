@@ -14,11 +14,16 @@ func _() {
 	_ = x[AuthErrNoAccess-1003]
 	_ = x[AuthErrLogin-1004]
 	_ = x[AuthErrRefreshToken-1005]
-	_ = x[ItemErrNotFound-1200]
-	_ = x[ItemErrRequiredID-1201]
-	_ = x[ItemErrRequiredFields-1202]
-	_ = x[ItemErrProfileInvalidStatus-1203]
-	_ = x[ItemErrProfileNotesLimit-1204]
+	_ = x[ImageErrNotFound-3000]
+	_ = x[ImageErrUpload-3001]
+	_ = x[ImageErrThumbnail-3002]
+	_ = x[ItemErrNotFound-2000]
+	_ = x[ItemErrRequiredID-2001]
+	_ = x[ItemErrRequiredFields-2002]
+	_ = x[ItemErrProfileInvalidStatus-2003]
+	_ = x[ItemErrProfileNotesLimit-2004]
+	_ = x[StorageUncaughtErr-10]
+	_ = x[StorageMergeErr-11]
 	_ = x[UserErrNotFound-1200]
 	_ = x[UserErrRequiredID-1201]
 	_ = x[UserErrRequiredFields-1202]
@@ -26,23 +31,38 @@ func _() {
 }
 
 const (
-	_Errors_name_0 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
-	_Errors_name_1 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrProfileInvalidStatusItemErrProfileNotesLimit"
+	_Errors_name_0 = "StorageUncaughtErrStorageMergeErr"
+	_Errors_name_1 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
+	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDL"
+	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrProfileInvalidStatusItemErrProfileNotesLimit"
+	_Errors_name_4 = "ImageErrNotFoundImageErrUploadImageErrThumbnail"
 )
 
 var (
-	_Errors_index_0 = [...]uint8{0, 15, 32, 53, 68, 80, 99}
-	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 80, 104}
+	_Errors_index_0 = [...]uint8{0, 18, 33}
+	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 68, 80, 99}
+	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74}
+	_Errors_index_3 = [...]uint8{0, 15, 32, 53, 80, 104}
+	_Errors_index_4 = [...]uint8{0, 16, 30, 47}
 )
 
 func (i Errors) String() string {
 	switch {
+	case 10 <= i && i <= 11:
+		i -= 10
+		return _Errors_name_0[_Errors_index_0[i]:_Errors_index_0[i+1]]
 	case 1000 <= i && i <= 1005:
 		i -= 1000
-		return _Errors_name_0[_Errors_index_0[i]:_Errors_index_0[i+1]]
-	case 1200 <= i && i <= 1204:
-		i -= 1200
 		return _Errors_name_1[_Errors_index_1[i]:_Errors_index_1[i+1]]
+	case 1200 <= i && i <= 1203:
+		i -= 1200
+		return _Errors_name_2[_Errors_index_2[i]:_Errors_index_2[i+1]]
+	case 2000 <= i && i <= 2004:
+		i -= 2000
+		return _Errors_name_3[_Errors_index_3[i]:_Errors_index_3[i+1]]
+	case 3000 <= i && i <= 3002:
+		i -= 3000
+		return _Errors_name_4[_Errors_index_4[i]:_Errors_index_4[i+1]]
 	default:
 		return "Errors(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
