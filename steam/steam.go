@@ -32,30 +32,31 @@ func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
 	return oid.AuthUrl(), nil
 }
 
-func (c *Client) Authenticate(r *http.Request) (steamID string, err error) {
-	panic("implement me")
-}
-
-func (c *Client) Verify(r *http.Request) (*core.SteamPlayer, error) {
+func (c *Client) Authenticate(r *http.Request) (*core.SteamPlayer, error) {
 	oid := NewOpenId(r)
-	mode := oid.Mode()
-	if mode == "cancel" {
+	m := oid.Mode()
+	if m == "cancel" {
 		return nil, fmt.Errorf("authorization cancelled")
 	}
 
-	player, err := oid.ValidateAndGetUser(c.ApiKey)
+	id, err := oid.ValidateAndGetId()
 	if err != nil {
-		return nil, fmt.Errorf("could not validate user: %s", err)
+		return nil, fmt.Errorf("could not validate player: %s", err)
+	}
+
+	return c.Player(id)
+}
+
+func (c *Client) Player(steamID string) (*core.SteamPlayer, error) {
+	su, err := GetPlayerSummaries(steamID, c.ApiKey)
+	if err != nil {
+		return nil, fmt.Errorf("could not get player: %s", err)
 	}
 
 	return &core.SteamPlayer{
-		ID:     player.SteamId,
-		Name:   player.PersonaName,
-		URL:    player.ProfileUrl,
-		Avatar: player.AvatarFull,
+		ID:     su.SteamId,
+		Name:   su.PersonaName,
+		URL:    su.ProfileUrl,
+		Avatar: su.AvatarFull,
 	}, nil
-}
-
-func (c *Client) Player(steamID string) (core.SteamPlayer, error) {
-	panic("implement me")
 }

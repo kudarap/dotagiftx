@@ -10,7 +10,7 @@ import (
 var client *steam.Client
 
 func main() {
-	c, err := steam.New(steam.Config{"B4F4D3D11EDFD1E208378B272971A5AB"})
+	c, err := steam.New(steam.Config{"STEAM_WEB_API_KEY"})
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -30,7 +30,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sp, err := client.Verify(r)
+	sp, err := client.Authenticate(r)
 	if err != nil {
 		log.Fatalln(err)
 	}
