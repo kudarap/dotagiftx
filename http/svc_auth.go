@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,12 +18,17 @@ type authResp struct {
 	ExpiresAt    time.Time `json:"expires_at,omitempty"`
 }
 
-func handleAuthTwitter(svc core.AuthService) http.HandlerFunc {
+func handleAuthSteam(svc core.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Handle steam auth.
 		au, err := svc.SteamLogin(w, r)
 		if err != nil {
 			respondError(w, err)
+			return
+		}
+		// Returning nil auth without error means it redirect for
+		// authorization
+		if au == nil {
 			return
 		}
 
@@ -87,16 +93,6 @@ func handleAuthRevoke(svc core.AuthService) http.HandlerFunc {
 	}
 }
 
-func isTwitterCallback(r *http.Request) (ok bool) {
-	q := r.URL.Query()
-	// Detect if its callback by checking oauth query params.
-	if q.Get("oauth_token") != "" && q.Get("oauth_verifier") != "" {
-		ok = true
-	}
-
-	return
-}
-
 func newAuth(au *core.Auth) (*authResp, error) {
 	a, err := refreshJWT(au)
 	if err != nil {
@@ -116,6 +112,7 @@ func refreshJWT(au *core.Auth) (*authResp, error) {
 
 	t, err := jwt.New(au.UserID, noLevel, a.ExpiresAt)
 	if err != nil {
+		fmt.Println("FUCKED", err)
 		return nil, err
 	}
 	a.Token = t

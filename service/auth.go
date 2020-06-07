@@ -42,7 +42,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 		return nil, err
 	}
 
-	// Account existed! so process login check.
+	// Account existed and checks login credentials.
 	if au != nil {
 		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {
 			return nil, core.AuthErrLogin
