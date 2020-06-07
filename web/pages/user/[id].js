@@ -1,12 +1,16 @@
 import Head from 'next/head'
-import Banner from "../components/Banner";
-import BuildInfo from "../components/BuildInfo";
+import { useRouter } from 'next/router'
+import Banner from "@/components/Banner";
+import BuildInfo from "@/components/BuildInfo";
 
-export default function User() {
+export default function Id() {
+    const router = useRouter()
+  const { id } = router.query
+
   return (
     <div className="container">
       <Head>
-        <title>User head</title>
+        <title>User {id}</title>
         <link rel="icon" href="/favicon.ico" />
         <meta name="author" content="John Doe" />
       </Head>
