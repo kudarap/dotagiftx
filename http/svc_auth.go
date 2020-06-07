@@ -1,0 +1,124 @@
+package http
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dota2giftables/gokit/http/jwt"
+)
+
+const defaultTokenExpiration = time.Minute * 5
+
+type authResp struct {
+	UserID       string    `json:"user_id,omitempty"`
+	RefreshToken string    `json:"refresh_token,omitempty"`
+	Token        string    `json:"token,omitempty"`
+	ExpiresAt    time.Time `json:"expires_at,omitempty"`
+}
+
+func handleAuthTwitter(svc core.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Handle steam auth.
+		au, err := svc.SteamLogin(w, r)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		// Compose new JWT.
+		a, err := newAuth(au)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, a)
+	}
+}
+
+func handleAuthRenew(svc core.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		form := new(struct {
+			RefreshToken string `json:"refresh_token"`
+		})
+		if err := parseForm(r, form); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		au, err := svc.RenewToken(form.RefreshToken)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		// Refresh JWT.
+		a, err := refreshJWT(au)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, a)
+	}
+}
+
+func handleAuthRevoke(svc core.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		form := new(struct {
+			RefreshToken string `json:"refresh_token"`
+		})
+		if err := parseForm(r, form); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		if err := svc.RevokeRefreshToken(form.RefreshToken); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, struct {
+			Msg string `json:"msg"`
+		}{
+			"refresh token successfully revoked",
+		})
+	}
+}
+
+func isTwitterCallback(r *http.Request) (ok bool) {
+	q := r.URL.Query()
+	// Detect if its callback by checking oauth query params.
+	if q.Get("oauth_token") != "" && q.Get("oauth_verifier") != "" {
+		ok = true
+	}
+
+	return
+}
+
+func newAuth(au *core.Auth) (*authResp, error) {
+	a, err := refreshJWT(au)
+	if err != nil {
+		return nil, err
+	}
+
+	a.UserID = au.UserID
+	a.RefreshToken = au.RefreshToken
+	return a, nil
+}
+
+const noLevel = ""
+
+func refreshJWT(au *core.Auth) (*authResp, error) {
+	a := &authResp{}
+	a.ExpiresAt = time.Now().Add(defaultTokenExpiration)
+
+	t, err := jwt.New(au.UserID, noLevel, a.ExpiresAt)
+	if err != nil {
+		return nil, err
+	}
+	a.Token = t
+
+	return a, nil
+}

@@ -1,0 +1,17 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# misc
+.DS_Store
+
+
+# editor
+.idea
+
+# executables
+api
+
+# local data
+.localdata
+
+# configs
+.env
