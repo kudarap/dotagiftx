@@ -1,4 +1,4 @@
-PROJECTNAME=dota2gitables
+PROJECTNAME=dota2giftables
 
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
@@ -16,9 +16,9 @@ build:
 		-X main.tag=`git describe --tag --abbrev=0` \
 		-X main.commit=`git rev-parse HEAD` \
 		-X main.built=`date -u +%s`" \
-		-o api ./cmd/api
+		-o api ./cmd/$(PROJECTNAME)
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o ./api_unix ./cmd/api
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o ./api_amd64 ./cmd/$(PROJECTNAME)
 
 docker-build:
 	docker build -t $(PROJECTNAME) .

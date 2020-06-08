@@ -9,6 +9,7 @@
 
 # executables
 api
+api_amd64
 
 # local data
 .localdata
