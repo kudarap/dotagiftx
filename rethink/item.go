@@ -10,31 +10,34 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableItem = "item"
+const (
+	tableItem     = "item"
+	itemFieldName = "name"
+	itemFieldSlug = "slug"
+)
+
+var itemSearchKeywordFields = []string{"name", "hero", "origin"}
 
 // NewItem creates new instance of item data store.
 func NewItem(c *Client) core.ItemStorage {
-	searchFields := []string{"name", "hero", "origin"}
-
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
 
-	if err := c.createIndex(tableItem, "slug"); err != nil {
+	if err := c.createIndex(tableItem, itemFieldSlug); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, searchFields}
+	return &itemStorage{c}
 }
 
 type itemStorage struct {
-	db            *Client
-	keywordFields []string
+	db *Client
 }
 
 func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 	var res []core.Item
-	o.KeywordFields = s.keywordFields
+	o.KeywordFields = itemSearchKeywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -44,8 +47,11 @@ func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 }
 
 func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
-	o = core.FindOpts{Filter: o.Filter, UserID: o.UserID}
-	o.KeywordFields = s.keywordFields
+	o = core.FindOpts{
+		KeywordFields: itemSearchKeywordFields,
+		Filter:        o.Filter,
+		UserID:        o.UserID,
+	}
 	q := newFindOptsQuery(s.table(), o)
 	err = s.db.one(q.Count(), &num)
 	return
@@ -73,7 +79,7 @@ func (s *itemStorage) Get(id string) (*core.Item, error) {
 
 func (s *itemStorage) getBySlug(slug string) (*core.Item, error) {
 	row := &core.Item{}
-	q := s.table().GetAllByIndex("slug", slug)
+	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.ItemErrNotFound
@@ -119,13 +125,13 @@ func (s *itemStorage) Update(in *core.Item) error {
 
 func (s *itemStorage) IsItemExist(name string) error {
 	/*
-		r.db('dotagiftables').table('item').filter(function(doc) {
-		  return doc.getField('name').match('(?i)^Gothic WhisPer$')
+		r.table('item').filter(function(doc) {
+		  return doc.getField('name').match('(?i)^Gothic')
 		})
 	*/
 	q := s.table().Filter(func(t r.Term) r.Term {
 		// Matches exact name and non case sensitive.
-		return t.Field("name").Match(fmt.Sprintf("(?i)^%s$", name))
+		return t.Field(itemFieldName).Match(fmt.Sprintf("(?i)^%s$", name))
 	})
 	var n int
 	if err := s.db.one(q.Count(), &n); err != nil {
