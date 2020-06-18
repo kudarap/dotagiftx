@@ -38,6 +38,13 @@ func (s *userStorage) Find(o core.FindOpts) ([]core.User, error) {
 	return res, nil
 }
 
+func (s *userStorage) Count(o core.FindOpts) (num int, err error) {
+	o = core.FindOpts{Filter: o.Filter, UserID: o.UserID}
+	q := newFindOptsQuery(s.table(), o)
+	err = s.db.one(q.Count(), &num)
+	return
+}
+
 func (s *userStorage) Get(id string) (*core.User, error) {
 	// Check steam ID first exist.
 	u, _ := s.getBySteamID(id)

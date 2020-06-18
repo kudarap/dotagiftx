@@ -25,6 +25,7 @@ func (i *itemService) Item(id string) (*core.Item, error) {
 }
 
 func (i *itemService) Create(ctx context.Context, item *core.Item) error {
+	// TODO item list moderator
 	panic("implement me")
 }
 

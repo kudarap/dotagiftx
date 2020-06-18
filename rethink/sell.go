@@ -9,23 +9,23 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableItem = "item"
+const tableSell = "sell"
 
-// NewItem creates new instance of item data store.
-func NewItem(c *Client) core.ItemStorage {
-	if err := c.autoMigrate(tableItem); err != nil {
-		log.Fatalf("could not create %s table: %s", tableItem, err)
+// NewSell creates new instance of sell data store.
+func NewSell(c *Client) core.SellStorage {
+	if err := c.autoMigrate(tableSell); err != nil {
+		log.Fatalf("could not create %s table: %s", tableSell, err)
 	}
 
-	return &itemStorage{c}
+	return &sellStorage{c}
 }
 
-type itemStorage struct {
+type sellStorage struct {
 	db *Client
 }
 
-func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
-	var res []core.Item
+func (s *sellStorage) Find(o core.FindOpts) ([]core.Sell, error) {
+	var res []core.Sell
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -34,18 +34,18 @@ func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 	return res, nil
 }
 
-func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
+func (s *sellStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{Filter: o.Filter, UserID: o.UserID}
 	q := newFindOptsQuery(s.table(), o)
 	err = s.db.one(q.Count(), &num)
 	return
 }
 
-func (s *itemStorage) Get(id string) (*core.Item, error) {
-	row := &core.Item{}
+func (s *sellStorage) Get(id string) (*core.Sell, error) {
+	row := &core.Sell{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, core.ItemErrNotFound
+			return nil, core.SellErrNotFound
 		}
 
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -54,7 +54,7 @@ func (s *itemStorage) Get(id string) (*core.Item, error) {
 	return row, nil
 }
 
-func (s *itemStorage) Create(in *core.Item) error {
+func (s *sellStorage) Create(in *core.Sell) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -67,7 +67,7 @@ func (s *itemStorage) Create(in *core.Item) error {
 	return nil
 }
 
-func (s *itemStorage) Update(in *core.Item) error {
+func (s *sellStorage) Update(in *core.Sell) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
@@ -86,6 +86,6 @@ func (s *itemStorage) Update(in *core.Item) error {
 	return nil
 }
 
-func (s *itemStorage) table() r.Term {
-	return r.Table(tableItem)
+func (s *sellStorage) table() r.Term {
+	return r.Table(tableSell)
 }
