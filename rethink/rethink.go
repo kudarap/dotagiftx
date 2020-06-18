@@ -118,6 +118,24 @@ func (c *Client) delete(t r.Term) error {
 	return c.update(t)
 }
 
+func (c *Client) createIndex(tableName, index string) error {
+	tbl := r.Table(tableName)
+
+	var indexes []string
+	if err := c.list(tbl.IndexList(), &indexes); err != nil {
+		return err
+	}
+
+	for _, ii := range indexes {
+		// Skip creating index.
+		if ii == index {
+			return nil
+		}
+	}
+
+	return c.exec(tbl.IndexCreate(index))
+}
+
 func getTables(s *r.Session) (table []string, err error) {
 	res, _ := r.TableList().Run(s)
 	err = res.All(&table)

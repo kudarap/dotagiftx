@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/imdario/mergo"
@@ -9,7 +10,11 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableItem = "item"
+const (
+	tableItem     = "item"
+	itemFieldName = "name"
+	itemFieldSlug = "slug"
+)
 
 // NewItem creates new instance of item data store.
 func NewItem(c *Client) core.ItemStorage {
@@ -17,15 +22,21 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c}
+	if err := c.createIndex(tableItem, itemFieldSlug); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableItem, err)
+	}
+
+	return &itemStorage{c, []string{"name", "hero", "origin"}}
 }
 
 type itemStorage struct {
-	db *Client
+	db            *Client
+	keywordFields []string
 }
 
 func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 	var res []core.Item
+	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -34,9 +45,41 @@ func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 	return res, nil
 }
 
+func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
+	o = core.FindOpts{
+		KeywordFields: s.keywordFields,
+		Filter:        o.Filter,
+		UserID:        o.UserID,
+	}
+	q := newFindOptsQuery(s.table(), o)
+	err = s.db.one(q.Count(), &num)
+	return
+}
+
 func (s *itemStorage) Get(id string) (*core.Item, error) {
-	row := &core.Item{}
+	// Check steam ID first exist.
+	row, _ := s.getBySlug(id)
+	if row != nil {
+		return row, nil
+	}
+
+	// Try find it by item ID.
+	row = &core.Item{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
+		if err == r.ErrEmptyResult {
+			return nil, core.ItemErrNotFound
+		}
+
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return row, nil
+}
+
+func (s *itemStorage) getBySlug(slug string) (*core.Item, error) {
+	row := &core.Item{}
+	q := s.table().GetAllByIndex(itemFieldSlug, slug)
+	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.ItemErrNotFound
 		}
@@ -51,6 +94,7 @@ func (s *itemStorage) Create(in *core.Item) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
+	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
@@ -74,6 +118,28 @@ func (s *itemStorage) Update(in *core.Item) error {
 
 	if err := mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
+	}
+
+	return nil
+}
+
+func (s *itemStorage) IsItemExist(name string) error {
+	/*
+		r.table('item').filter(function(doc) {
+		  return doc.getField('name').match('(?i)^Gothic')
+		})
+	*/
+	q := s.table().Filter(func(t r.Term) r.Term {
+		// Matches exact name and non case sensitive.
+		return t.Field(itemFieldName).Match(fmt.Sprintf("(?i)^%s$", name))
+	})
+	var n int
+	if err := s.db.one(q.Count(), &n); err != nil {
+		return errors.New(core.StorageUncaughtErr, err)
+	}
+
+	if n != 0 {
+		return core.ItemErrCreateItemExists
 	}
 
 	return nil

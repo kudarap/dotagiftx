@@ -9,12 +9,19 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableUser = "user"
+const (
+	tableUser        = "user"
+	itemFieldSteamID = "steam_id"
+)
 
 // NewUser creates new instance of user data store.
 func NewUser(c *Client) core.UserStorage {
 	if err := c.autoMigrate(tableUser); err != nil {
 		log.Fatalf("could not create %s table: %s", tableUser, err)
+	}
+
+	if err := c.createIndex(tableUser, itemFieldSteamID); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableUser, err)
 	}
 
 	return &userStorage{c}
@@ -34,9 +41,37 @@ func (s *userStorage) Find(o core.FindOpts) ([]core.User, error) {
 	return res, nil
 }
 
+func (s *userStorage) Count(o core.FindOpts) (num int, err error) {
+	o = core.FindOpts{Filter: o.Filter, UserID: o.UserID}
+	q := newFindOptsQuery(s.table(), o)
+	err = s.db.one(q.Count(), &num)
+	return
+}
+
 func (s *userStorage) Get(id string) (*core.User, error) {
-	row := &core.User{}
+	// Check steam ID first exist.
+	row, _ := s.getBySteamID(id)
+	if row != nil {
+		return row, nil
+	}
+
+	// Try find it by user ID.
+	row = &core.User{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
+		if err == r.ErrEmptyResult {
+			return nil, core.UserErrNotFound
+		}
+
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return row, nil
+}
+
+func (s *userStorage) getBySteamID(steamID string) (*core.User, error) {
+	row := &core.User{}
+	q := s.table().GetAllByIndex(itemFieldSteamID, steamID)
+	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.UserErrNotFound
 		}

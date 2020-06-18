@@ -2,17 +2,17 @@ package core
 
 import (
 	"context"
-	"strconv"
 	"time"
+
+	"github.com/kudarap/dota2giftables/gokit/slug"
 )
 
-// User error types.
+// Item error types.
 const (
 	ItemErrNotFound Errors = iota + 2000
 	ItemErrRequiredID
 	ItemErrRequiredFields
-	ItemErrProfileInvalidStatus
-	ItemErrProfileNotesLimit
+	ItemErrCreateItemExists
 )
 
 // sets error text definition.
@@ -20,20 +20,8 @@ func init() {
 	appErrorText[ItemErrNotFound] = "item not found"
 	appErrorText[ItemErrRequiredID] = "item id is required"
 	appErrorText[ItemErrRequiredFields] = "item fields are required"
-	appErrorText[ItemErrProfileInvalidStatus] = "item status not allowed"
-	appErrorText[ItemErrProfileNotesLimit] = "item notes text limit reached"
+	appErrorText[ItemErrCreateItemExists] = "item already exists"
 }
-
-const maxItemNotesLen = 100
-
-// Item statuses.
-const (
-	ItemStatusPending  ItemStatus = 100
-	ItemStatusLive     ItemStatus = 200
-	ItemStatusReserved ItemStatus = 300
-	ItemStatusSold     ItemStatus = 400
-	ItemStatusRemoved  ItemStatus = 500
-)
 
 type (
 	// ItemStatus represents item status.
@@ -41,23 +29,21 @@ type (
 
 	// Item represents item information.
 	Item struct {
-		ID        string     `json:"id"         db:"id,omitempty"`
-		Name      string     `json:"item"       db:"item,omitempty"        valid:"required"`
-		Hero      string     `json:"hero"       db:"hero,omitempty"        valid:"required"`
-		Price     float64    `json:"price"      db:"price,omitempty"       valid:"required"`
-		Currency  string     `json:"currency"   db:"currency,omitempty"`
-		Notes     string     `json:"notes"      db:"notes,omitempty"`
-		Status    ItemStatus `json:"status"     db:"status,omitempty"`
-		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
-		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
-		// Include related fields.
-		User *User `json:"user,omitempty" db:"-"`
+		ID           string     `json:"id"           db:"id,omitempty"`
+		Slug         string     `json:"slug"         db:"slug,omitempty"        valid:"required"`
+		Name         string     `json:"name"         db:"name,omitempty"        valid:"required"`
+		Hero         string     `json:"hero"         db:"hero,omitempty"        valid:"required"`
+		Image        string     `json:"image"        db:"image,omitempty"`
+		Origin       string     `json:"origin"       db:"origin,omitempty"`
+		Contributors []string   `json:"contributors" db:"contributors,omitempty"`
+		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
+		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
 	}
 
 	// ItemService provides access to item service.
 	ItemService interface {
 		// Items returns a list of items.
-		Items(opts FindOpts) ([]Item, error)
+		Items(opts FindOpts) ([]Item, *FindMetadata, error)
 
 		// Item returns item details by id.
 		Item(id string) (*Item, error)
@@ -73,6 +59,9 @@ type (
 		// Find returns a list of items from data store.
 		Find(opts FindOpts) ([]Item, error)
 
+		// Count returns number of items from data store.
+		Count(FindOpts) (int, error)
+
 		// Get returns item details by id from data store.
 		Get(id string) (*Item, error)
 
@@ -81,16 +70,11 @@ type (
 
 		// Update persists item changes to data store.
 		Update(*Item) error
+
+		// IsItemExist returns an error if item already exists by name.
+		IsItemExist(name string) error
 	}
 )
-
-var itemStatusTexts = map[ItemStatus]string{
-	ItemStatusPending:  "pending",
-	ItemStatusLive:     "live",
-	ItemStatusReserved: "reserved",
-	ItemStatusSold:     "sold",
-	ItemStatusRemoved:  "removed",
-}
 
 // CheckCreate validates field on creating new item.
 func (i Item) CheckCreate() error {
@@ -99,27 +83,9 @@ func (i Item) CheckCreate() error {
 		return err
 	}
 
-	// Check title and description length.
-	if len(i.Notes) > maxItemNotesLen {
-		return ItemErrProfileNotesLimit
-	}
-
 	return nil
 }
 
-// SetDefault sets default values for a new item.
-func (i Item) SetDefaults() Item {
-	i.Status = ItemStatusLive
-	i.Currency = "USD"
-	return i
-}
-
-// String returns text value of a post status.
-func (s ItemStatus) String() string {
-	t, ok := itemStatusTexts[s]
-	if !ok {
-		return strconv.Itoa(int(s))
-	}
-
-	return t
+func (i Item) MakeSlug() string {
+	return slug.Make(i.Name + " " + i.Hero)
 }

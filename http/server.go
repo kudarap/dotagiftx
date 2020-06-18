@@ -28,17 +28,19 @@ func NewServer(
 	au core.AuthService,
 	is core.ImageService,
 	its core.ItemService,
+	ms core.MarketService,
 	v *version.Version,
 	l *logrus.Logger,
 ) *Server {
 	jwt.SigKey = sigKey
 	return &Server{
-		userSvc:  us,
-		authSvc:  au,
-		imageSvc: is,
-		itemSvc:  its,
-		logger:   l,
-		version:  v,
+		userSvc:   us,
+		authSvc:   au,
+		imageSvc:  is,
+		itemSvc:   its,
+		marketSvc: ms,
+		logger:    l,
+		version:   v,
 	}
 }
 
@@ -48,10 +50,11 @@ type Server struct {
 	Addr    string
 	handler http.Handler
 	// Service resources.
-	userSvc  core.UserService
-	authSvc  core.AuthService
-	imageSvc core.ImageService
-	itemSvc  core.ItemService
+	userSvc   core.UserService
+	authSvc   core.AuthService
+	imageSvc  core.ImageService
+	itemSvc   core.ItemService
+	marketSvc core.MarketService
 
 	logger  *logrus.Logger
 	version *version.Version

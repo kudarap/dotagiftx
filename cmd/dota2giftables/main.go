@@ -80,6 +80,7 @@ func (a *application) setup() error {
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
 	itemStg := rethink.NewItem(rethinkClient)
+	marketStg := rethink.NewMarket(rethinkClient)
 
 	// Service inits.
 	log.Println("setting up services...")
@@ -87,7 +88,8 @@ func (a *application) setup() error {
 	userSvc := service.NewUser(userStg, fileMgr)
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
-	itemSvc := service.NewPost(itemStg, userStg, fileMgr)
+	itemSvc := service.NewItem(itemStg)
+	marketSvc := service.NewMarket(marketStg, userStg, itemStg)
 
 	// Server setup.
 	log.Println("setting up http server...")
@@ -97,6 +99,7 @@ func (a *application) setup() error {
 		authSvc,
 		imageSvc,
 		itemSvc,
+		marketSvc,
 		initVer(a.config),
 		log,
 	)

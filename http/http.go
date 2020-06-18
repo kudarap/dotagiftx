@@ -67,6 +67,16 @@ func respondError(w http.ResponseWriter, err error) {
 	respond(w, status, body)
 }
 
+type dataWithMeta struct {
+	Data        interface{} `json:"data"`
+	ResultCount int         `json:"result_count"`
+	TotalCount  int         `json:"total_count"`
+}
+
+func newDataWithMeta(data interface{}, md *core.FindMetadata) dataWithMeta {
+	return dataWithMeta{data, md.ResultCount, md.TotalCount}
+}
+
 func handle404() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		respond(w, http.StatusNotFound, newError(fmt.Errorf("resource not found")))

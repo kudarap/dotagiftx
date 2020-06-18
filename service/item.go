@@ -2,33 +2,69 @@ package service
 
 import (
 	"context"
+	"strings"
 
 	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dota2giftables/errors"
 )
 
-// NewPost returns new Item service.
-func NewPost(ps core.ItemStorage, us core.UserStorage, fm core.FileManager) core.ItemService {
-	return &itemService{ps, us, fm}
+// NewItem returns new Item service.
+func NewItem(is core.ItemStorage) core.ItemService {
+	return &itemService{is}
 }
 
 type itemService struct {
 	itemStg core.ItemStorage
-	userStg core.UserStorage
-	fileMgr core.FileManager
 }
 
-func (i *itemService) Items(opts core.FindOpts) ([]core.Item, error) {
-	panic("implement me")
+func (s *itemService) Items(opts core.FindOpts) ([]core.Item, *core.FindMetadata, error) {
+	res, err := s.itemStg.Find(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !opts.WithMeta {
+		return res, nil, err
+	}
+
+	// Get result and total count for metadata.
+	tc, err := s.itemStg.Count(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return res, &core.FindMetadata{
+		ResultCount: len(res),
+		TotalCount:  tc,
+	}, nil
 }
 
-func (i *itemService) Item(id string) (*core.Item, error) {
-	panic("implement me")
+func (s *itemService) Item(id string) (*core.Item, error) {
+	return s.itemStg.Get(id)
 }
 
-func (i *itemService) Create(ctx context.Context, item *core.Item) error {
-	panic("implement me")
+func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
+	// TODO check moderator/contributors
+	au := core.AuthFromContext(ctx)
+	if au == nil {
+		return core.AuthErrNoAccess
+	}
+	itm.Contributors = []string{au.UserID}
+
+	itm.Name = strings.TrimSpace(itm.Name)
+	itm.Hero = strings.TrimSpace(itm.Hero)
+	itm.Slug = itm.MakeSlug()
+	if err := itm.CheckCreate(); err != nil {
+		return errors.New(core.ItemErrRequiredFields, err)
+	}
+
+	if err := s.itemStg.IsItemExist(itm.Name); err != nil {
+		return err
+	}
+
+	return s.itemStg.Create(itm)
 }
 
-func (i *itemService) Update(ctx context.Context, item *core.Item) error {
+func (s *itemService) Update(ctx context.Context, it *core.Item) error {
 	panic("implement me")
 }

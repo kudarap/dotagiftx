@@ -3,18 +3,20 @@ package core
 type (
 	// FindOpts represents find options.
 	FindOpts struct {
-		Filter   interface{}
-		UserID   string
-		Sort     string
-		Desc     bool
-		Page     int
-		Limit    int
-		Fields   []string
-		WithMeta bool
+		Keyword       string
+		KeywordFields []string
+		Filter        interface{}
+		UserID        string
+		Sort          string
+		Desc          bool
+		Page          int
+		Limit         int
+		Fields        []string
+		WithMeta      bool
 	}
 
-	// Metadata represents find metadata.
-	Metadata struct {
+	// FindMetadata represents find metadata.
+	FindMetadata struct {
 		ResultCount int
 		TotalCount  int
 	}

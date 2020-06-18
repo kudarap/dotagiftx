@@ -1,6 +1,9 @@
 package rethink
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/fatih/structs"
 	"github.com/kudarap/dota2giftables/core"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
@@ -13,6 +16,10 @@ func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
 }
 
 func (o findOpts) parseOpts(q r.Term) r.Term {
+	if strings.TrimSpace(o.Keyword) != "" {
+		q = q.Filter(o.parseKeyword())
+	}
+
 	if o.Filter != nil {
 		q = q.Filter(o.parseFilter())
 	}
@@ -34,6 +41,23 @@ func (o findOpts) parseOpts(q r.Term) r.Term {
 	}
 
 	return q
+}
+
+func (o findOpts) parseKeyword() interface{} {
+	if len(o.KeywordFields) == 0 {
+		return nil
+	}
+
+	return func(t r.Term) r.Term {
+		// Concatenate values of search fields to creat a fake index.
+		f := t.Field(o.KeywordFields[0])
+		for _, kf := range o.KeywordFields[1:] {
+			f = f.Add(" ", t.Field(kf))
+		}
+
+		// Matches that contains the keyword non case sensitive.
+		return f.Match(fmt.Sprintf("(?i)%s", o.Keyword))
+	}
 }
 
 func (o findOpts) parseFilter() map[string]interface{} {
