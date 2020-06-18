@@ -30,7 +30,7 @@ func handleSellList(svc core.SellService) http.HandlerFunc {
 
 func handleSellDetail(svc core.SellService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s, err := svc.Sell(chi.URLParam(r, "id"))
+		s, err := svc.Sell(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return

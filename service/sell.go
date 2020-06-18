@@ -48,10 +48,15 @@ func (s *sellService) Sells(ctx context.Context, opts core.FindOpts) ([]core.Sel
 	}, nil
 }
 
-func (s *sellService) Sell(id string) (*core.Sell, error) {
+func (s *sellService) Sell(ctx context.Context, id string) (*core.Sell, error) {
 	sell, err := s.sellStg.Get(id)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check market ownership.
+	if au := core.AuthFromContext(ctx); au != nil && sell.UserID != au.UserID {
+		return nil, core.SellErrNotFound
 	}
 
 	s.getRelatedFields(sell)
@@ -85,17 +90,9 @@ func (s *sellService) Create(ctx context.Context, sell *core.Sell) error {
 }
 
 func (s *sellService) Update(ctx context.Context, sell *core.Sell) error {
-	// Check market ownership.
-	au := core.AuthFromContext(ctx)
-	if au == nil {
-		return core.AuthErrNoAccess
-	}
-	cur, err := s.Sell(sell.ID)
+	_, err := s.checkOwnership(ctx, sell.ID)
 	if err != nil {
 		return err
-	}
-	if au.UserID != cur.UserID {
-		return core.SellErrNotFound
 	}
 
 	if err := sell.CheckUpdate(); err != nil {
@@ -113,4 +110,34 @@ func (s *sellService) Update(ctx context.Context, sell *core.Sell) error {
 
 	s.getRelatedFields(sell)
 	return nil
+}
+
+func (s *sellService) checkOwnership(ctx context.Context, id string) (*core.Sell, error) {
+	au := core.AuthFromContext(ctx)
+	if au == nil {
+		return nil, core.AuthErrNoAccess
+	}
+
+	sell, err := s.userSell(au.UserID, id)
+	if err != nil {
+		return nil, errors.New(core.AuthErrNoAccess, err)
+	}
+
+	if sell == nil {
+		return nil, errors.New(core.AuthErrNoAccess, core.SellErrNotFound)
+	}
+
+	return sell, nil
+}
+
+func (s *sellService) userSell(userID, id string) (*core.Sell, error) {
+	cur, err := s.sellStg.Get(id)
+	if err != nil {
+		return nil, err
+	}
+	if cur.UserID != userID {
+		return nil, core.SellErrNotFound
+	}
+
+	return cur, nil
 }

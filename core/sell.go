@@ -61,7 +61,7 @@ type (
 		Sells(ctx context.Context, opts FindOpts) ([]Sell, *FindMetadata, error)
 
 		// Sell returns sell details by id.
-		Sell(id string) (*Sell, error)
+		Sell(ctx context.Context, id string) (*Sell, error)
 
 		// Create saves new sell details.
 		Create(context.Context, *Sell) error

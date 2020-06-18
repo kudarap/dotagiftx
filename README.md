@@ -29,10 +29,10 @@ Market place for giftable Dota 2 items
     - [x] `GET /auth/revoke` -- revokes access token
     - [x] `GET /items` -- item search
     - [x] `GET /items/{item-id}` -- item details
-    - [ ] `GET /sells` -- sell search
-    - [ ] `GET /sells/{sell-id}` -- item sell details
+    - [x] `GET /market` -- sell search
+    - [x] `GET /market/{market-id}` -- item sell details
     - [x] `GET /users/{steam-id}` -- user details
-    - [ ] `GET /users/{steam-id}/sells` -- user sell search
+    - [ ] `GET /users/{steam-id}/market` -- user sell search
 
 - private
     - [x] `GET /my/profile` -- user profile details
