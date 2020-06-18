@@ -7,30 +7,30 @@ import (
 	"github.com/kudarap/dota2giftables/core"
 )
 
-func handleSellList(svc core.SellService) http.HandlerFunc {
+func handleMarketList(svc core.MarketService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		opts, err := findOptsFromURL(r.URL, &core.Sell{})
+		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		list, md, err := svc.Sells(r.Context(), opts)
+		list, md, err := svc.Markets(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 		if list == nil {
-			list = []core.Sell{}
+			list = []core.Market{}
 		}
 
 		respondOK(w, newDataWithMeta(list, md))
 	}
 }
 
-func handleSellDetail(svc core.SellService) http.HandlerFunc {
+func handleMarketDetail(svc core.MarketService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s, err := svc.Sell(r.Context(), chi.URLParam(r, "id"))
+		s, err := svc.Market(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return
@@ -40,9 +40,9 @@ func handleSellDetail(svc core.SellService) http.HandlerFunc {
 	}
 }
 
-func handleSellCreate(svc core.SellService) http.HandlerFunc {
+func handleMarketCreate(svc core.MarketService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s := new(core.Sell)
+		s := new(core.Market)
 		if err := parseForm(r, s); err != nil {
 			respondError(w, err)
 			return
@@ -57,9 +57,9 @@ func handleSellCreate(svc core.SellService) http.HandlerFunc {
 	}
 }
 
-func handleSellUpdate(svc core.SellService) http.HandlerFunc {
+func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s := new(core.Sell)
+		s := new(core.Market)
 		if err := parseForm(r, s); err != nil {
 			respondError(w, err)
 			return

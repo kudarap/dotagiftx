@@ -19,8 +19,8 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/{id}", handleItemDetail(s.itemSvc))
 		})
 		r.Route("/markets", func(r chi.Router) {
-			r.Get("/", handleSellList(s.sellSvc))
-			r.Get("/{id}", handleSellDetail(s.sellSvc))
+			r.Get("/", handleMarketList(s.marketSvc))
+			r.Get("/{id}", handleMarketDetail(s.marketSvc))
 		})
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
 	})
@@ -31,11 +31,11 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Use(s.authorizer)
 		r.Route("/my", func(r chi.Router) {
 			r.Get("/profile", handleProfile(s.userSvc))
-			r.Route("/sells", func(r chi.Router) {
-				r.Get("/", handleSellList(s.sellSvc))
-				r.Post("/", handleSellCreate(s.sellSvc))
-				r.Get("/{id}", handleSellDetail(s.sellSvc))
-				r.Patch("/{id}", handleSellUpdate(s.sellSvc))
+			r.Route("/markets", func(r chi.Router) {
+				r.Get("/", handleMarketList(s.marketSvc))
+				r.Post("/", handleMarketCreate(s.marketSvc))
+				r.Get("/{id}", handleMarketDetail(s.marketSvc))
+				r.Patch("/{id}", handleMarketUpdate(s.marketSvc))
 			})
 			r.Post("/images", handleImageUpload(s.imageSvc))
 		})
