@@ -17,15 +17,17 @@ func NewSell(c *Client) core.SellStorage {
 		log.Fatalf("could not create %s table: %s", tableSell, err)
 	}
 
-	return &sellStorage{c}
+	return &sellStorage{c, []string{"name", "hero", "origin"}}
 }
 
 type sellStorage struct {
-	db *Client
+	db            *Client
+	keywordFields []string
 }
 
 func (s *sellStorage) Find(o core.FindOpts) ([]core.Sell, error) {
 	var res []core.Sell
+	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -35,7 +37,11 @@ func (s *sellStorage) Find(o core.FindOpts) ([]core.Sell, error) {
 }
 
 func (s *sellStorage) Count(o core.FindOpts) (num int, err error) {
-	o = core.FindOpts{Filter: o.Filter, UserID: o.UserID}
+	o = core.FindOpts{
+		KeywordFields: s.keywordFields,
+		Filter:        o.Filter,
+		UserID:        o.UserID,
+	}
 	q := newFindOptsQuery(s.table(), o)
 	err = s.db.one(q.Count(), &num)
 	return

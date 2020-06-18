@@ -9,7 +9,10 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableUser = "user"
+const (
+	tableUser        = "user"
+	itemFieldSteamID = "steam_id"
+)
 
 // NewUser creates new instance of user data store.
 func NewUser(c *Client) core.UserStorage {
@@ -17,7 +20,7 @@ func NewUser(c *Client) core.UserStorage {
 		log.Fatalf("could not create %s table: %s", tableUser, err)
 	}
 
-	if err := c.createIndex(tableUser, "steam_id"); err != nil {
+	if err := c.createIndex(tableUser, itemFieldSteamID); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableUser, err)
 	}
 
@@ -67,7 +70,7 @@ func (s *userStorage) Get(id string) (*core.User, error) {
 
 func (s *userStorage) getBySteamID(steamID string) (*core.User, error) {
 	row := &core.User{}
-	q := s.table().GetAllByIndex("steam_id", steamID)
+	q := s.table().GetAllByIndex(itemFieldSteamID, steamID)
 	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.UserErrNotFound

@@ -17,7 +17,7 @@ type sellService struct {
 	fileMgr core.FileManager
 }
 
-func (s *sellService) Sells(opts core.FindOpts) ([]core.Sell, core.FindMetadata, error) {
+func (s *sellService) Sells(opts core.FindOpts) ([]core.Sell, *core.FindMetadata, error) {
 	panic("implement me")
 }
 

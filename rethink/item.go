@@ -16,8 +16,6 @@ const (
 	itemFieldSlug = "slug"
 )
 
-var itemSearchKeywordFields = []string{"name", "hero", "origin"}
-
 // NewItem creates new instance of item data store.
 func NewItem(c *Client) core.ItemStorage {
 	if err := c.autoMigrate(tableItem); err != nil {
@@ -28,16 +26,17 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c}
+	return &itemStorage{c, []string{"name", "hero", "origin"}}
 }
 
 type itemStorage struct {
-	db *Client
+	db            *Client
+	keywordFields []string
 }
 
 func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 	var res []core.Item
-	o.KeywordFields = itemSearchKeywordFields
+	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -48,7 +47,7 @@ func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 
 func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
-		KeywordFields: itemSearchKeywordFields,
+		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
 		UserID:        o.UserID,
 	}
