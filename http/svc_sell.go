@@ -9,7 +9,7 @@ import (
 
 func handleSellList(svc core.SellService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		opts, err := findOptsFromURL(r.URL, &core.Item{})
+		opts, err := findOptsFromURL(r.URL, &core.Sell{})
 		if err != nil {
 			respondError(w, err)
 			return
