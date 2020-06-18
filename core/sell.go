@@ -24,7 +24,7 @@ func init() {
 	appErrorText[SellErrProfileNotesLimit] = "sell notes text limit reached"
 }
 
-const maxSellNotesLen = 100
+const maxSellNotesLen = 120
 
 // Sell statuses.
 const (
@@ -42,6 +42,7 @@ type (
 	// Sell represents sell information.
 	Sell struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
+		UserID    string     `json:"user_id"    db:"user_id,omitempty"     valid:"required"`
 		ItemID    string     `json:"item_id"    db:"item_id,omitempty"     valid:"required"`
 		Price     float64    `json:"price"      db:"price,omitempty"       valid:"required"`
 		Currency  string     `json:"currency"   db:"currency,omitempty"`
@@ -51,6 +52,7 @@ type (
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"-"`
+		Item *Item `json:"item,omitempty" db:"-"`
 	}
 
 	// SellService provides access to sell service.

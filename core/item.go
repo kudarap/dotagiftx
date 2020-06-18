@@ -36,7 +36,7 @@ type (
 	// ItemService provides access to item service.
 	ItemService interface {
 		// Items returns a list of items.
-		Items(opts FindOpts) ([]Item, error)
+		Items(opts FindOpts) ([]Item, FindMetadata, error)
 
 		// Item returns item details by id.
 		Item(id string) (*Item, error)
