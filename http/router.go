@@ -14,11 +14,15 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/{id}", handleImage(s.imageSvc))
 			r.Get("/{id}/{w}x{h}", handleImageThumbnail(s.imageSvc))
 		})
-		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
 		r.Route("/items", func(r chi.Router) {
 			r.Get("/", handleItemList(s.itemSvc))
 			r.Get("/{id}", handleItemDetail(s.itemSvc))
 		})
+		r.Route("/markets", func(r chi.Router) {
+			r.Get("/", handleSellList(s.sellSvc))
+			r.Get("/{id}", handleSellDetail(s.sellSvc))
+		})
+		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
 	})
 }
 

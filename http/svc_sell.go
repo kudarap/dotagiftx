@@ -15,7 +15,7 @@ func handleSellList(svc core.SellService) http.HandlerFunc {
 			return
 		}
 
-		list, md, err := svc.Sells(opts)
+		list, md, err := svc.Sells(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return

@@ -58,7 +58,7 @@ type (
 	// SellService provides access to sell service.
 	SellService interface {
 		// Sells returns a list of sells.
-		Sells(opts FindOpts) ([]Sell, *FindMetadata, error)
+		Sells(ctx context.Context, opts FindOpts) ([]Sell, *FindMetadata, error)
 
 		// Sell returns sell details by id.
 		Sell(id string) (*Sell, error)

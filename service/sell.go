@@ -18,7 +18,12 @@ type sellService struct {
 	itemStg core.ItemStorage
 }
 
-func (s *sellService) Sells(opts core.FindOpts) ([]core.Sell, *core.FindMetadata, error) {
+func (s *sellService) Sells(ctx context.Context, opts core.FindOpts) ([]core.Sell, *core.FindMetadata, error) {
+	// Set market owner result.
+	if au := core.AuthFromContext(ctx); au != nil {
+		opts.UserID = au.UserID
+	}
+
 	res, err := s.sellStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
