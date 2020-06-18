@@ -6,18 +6,17 @@ import (
 	"github.com/kudarap/dota2giftables/core"
 )
 
-// NewPost returns new Item service.
-func NewPost(ps core.ItemStorage, us core.UserStorage, fm core.FileManager) core.ItemService {
-	return &itemService{ps, us, fm}
+// NewItem returns new Item service.
+func NewItem(ps core.ItemStorage, us core.UserStorage) core.ItemService {
+	return &itemService{ps, us}
 }
 
 type itemService struct {
 	itemStg core.ItemStorage
 	userStg core.UserStorage
-	fileMgr core.FileManager
 }
 
-func (i *itemService) Items(opts core.FindOpts) ([]core.Item, error) {
+func (i *itemService) Items(opts core.FindOpts) ([]core.Item, core.FindMetadata, error) {
 	panic("implement me")
 }
 
