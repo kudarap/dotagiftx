@@ -74,6 +74,9 @@ type (
 		// Find returns a list of sells from data store.
 		Find(opts FindOpts) ([]Sell, error)
 
+		// Count returns number of sell from data store.
+		Count(FindOpts) (int, error)
+
 		// Get returns sell details by id from data store.
 		Get(id string) (*Sell, error)
 

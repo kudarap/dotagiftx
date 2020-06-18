@@ -30,6 +30,7 @@ func findOptsFromURL(u *url.URL, filter interface{}) (core.FindOpts, error) {
 		return core.FindOpts{}, err
 	}
 	opts.Filter = filter
+	opts.WithMeta = true
 
 	return opts, nil
 }

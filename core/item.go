@@ -10,6 +10,7 @@ const (
 	ItemErrNotFound Errors = iota + 2000
 	ItemErrRequiredID
 	ItemErrRequiredFields
+	ItemErrCreateItemExists
 )
 
 // sets error text definition.
@@ -17,6 +18,7 @@ func init() {
 	appErrorText[ItemErrNotFound] = "item not found"
 	appErrorText[ItemErrRequiredID] = "item id is required"
 	appErrorText[ItemErrRequiredFields] = "item fields are required"
+	appErrorText[ItemErrCreateItemExists] = "item already exists"
 }
 
 type (
@@ -25,18 +27,19 @@ type (
 
 	// Item represents item information.
 	Item struct {
-		ID        string     `json:"id"         db:"id,omitempty"`
-		Name      string     `json:"item"       db:"item,omitempty"        valid:"required"`
-		Hero      string     `json:"hero"       db:"hero,omitempty"        valid:"required"`
-		Tag       string     `json:"tag"        db:"tag,omitempty"`
-		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
-		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
+		ID           string     `json:"id"           db:"id,omitempty"`
+		Name         string     `json:"name"         db:"name,omitempty"        valid:"required"`
+		Hero         string     `json:"hero"         db:"hero,omitempty"        valid:"required"`
+		Tag          string     `json:"tag"          db:"tag,omitempty"`
+		Contributors []string   `json:"contributors" db:"contributors,omitempty"`
+		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
+		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
 	}
 
 	// ItemService provides access to item service.
 	ItemService interface {
 		// Items returns a list of items.
-		Items(opts FindOpts) ([]Item, FindMetadata, error)
+		Items(opts FindOpts) ([]Item, *FindMetadata, error)
 
 		// Item returns item details by id.
 		Item(id string) (*Item, error)
@@ -52,6 +55,9 @@ type (
 		// Find returns a list of items from data store.
 		Find(opts FindOpts) ([]Item, error)
 
+		// Count returns number of items from data store.
+		Count(FindOpts) (int, error)
+
 		// Get returns item details by id from data store.
 		Get(id string) (*Item, error)
 
@@ -60,6 +66,9 @@ type (
 
 		// Update persists item changes to data store.
 		Update(*Item) error
+
+		// IsItemExist returns an error if item already exists by name.
+		IsItemExist(name string) error
 	}
 )
 
@@ -71,9 +80,4 @@ func (i Item) CheckCreate() error {
 	}
 
 	return nil
-}
-
-// SetDefault sets default values for a new item.
-func (i Item) SetDefaults() Item {
-	return i
 }

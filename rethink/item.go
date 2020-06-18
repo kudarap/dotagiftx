@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/imdario/mergo"
@@ -81,6 +82,27 @@ func (s *itemStorage) Update(in *core.Item) error {
 
 	if err := mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
+	}
+
+	return nil
+}
+
+func (s *itemStorage) IsItemExist(name string) error {
+	/*
+		r.db('dotagiftables').table('item').filter(function(doc) {
+		  return doc.getField('name').match('(?i)^Gothic WhisPer$')
+		})
+	*/
+	q := s.table().Filter(func(t r.Term) r.Term {
+		return t.Field("name").Match(fmt.Sprintf("(?i)^%s$", name))
+	})
+	var n int
+	if err := s.db.one(q.Count(), &n); err != nil {
+		return errors.New(core.StorageUncaughtErr, err)
+	}
+
+	if n != 0 {
+		return core.ItemErrCreateItemExists
 	}
 
 	return nil
