@@ -45,9 +45,11 @@ func (s *itemService) Item(id string) (*core.Item, error) {
 
 func (s *itemService) Create(ctx context.Context, item *core.Item) error {
 	// TODO check moderator/contributors
-	if core.AuthFromContext(ctx) == nil {
+	au := core.AuthFromContext(ctx)
+	if au == nil {
 		return core.AuthErrNoAccess
 	}
+	item.Contributors = []string{au.UserID}
 
 	item.Name = strings.TrimSpace(item.Name)
 	item.Hero = strings.TrimSpace(item.Hero)
