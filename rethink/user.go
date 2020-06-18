@@ -47,13 +47,13 @@ func (s *userStorage) Count(o core.FindOpts) (num int, err error) {
 
 func (s *userStorage) Get(id string) (*core.User, error) {
 	// Check steam ID first exist.
-	u, _ := s.getBySteamID(id)
-	if u != nil {
-		return u, nil
+	row, _ := s.getBySteamID(id)
+	if row != nil {
+		return row, nil
 	}
 
 	// Try find it by user ID.
-	row := &core.User{}
+	row = &core.User{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.UserErrNotFound

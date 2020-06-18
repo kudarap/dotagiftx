@@ -18,6 +18,10 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
 
+	if err := c.createIndex(tableItem, "slug"); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableItem, err)
+	}
+
 	return &itemStorage{c}
 }
 
@@ -43,8 +47,29 @@ func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
 }
 
 func (s *itemStorage) Get(id string) (*core.Item, error) {
-	row := &core.Item{}
+	// Check steam ID first exist.
+	row, _ := s.getBySlug(id)
+	if row != nil {
+		return row, nil
+	}
+
+	// Try find it by item ID.
+	row = &core.Item{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
+		if err == r.ErrEmptyResult {
+			return nil, core.ItemErrNotFound
+		}
+
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return row, nil
+}
+
+func (s *itemStorage) getBySlug(slug string) (*core.Item, error) {
+	row := &core.Item{}
+	q := s.table().GetAllByIndex("slug", slug)
+	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.ItemErrNotFound
 		}

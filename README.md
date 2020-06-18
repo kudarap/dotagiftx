@@ -28,7 +28,7 @@ Market place for giftable Dota 2 items
     - [x] `GET /auth/renew` -- renews access token
     - [x] `GET /auth/revoke` -- revokes access token
     - [ ] `GET /items` -- item search
-    - [ ] `GET /items/{item-id}` -- item details
+    - [x] `GET /items/{item-id}` -- item details
     - [ ] `GET /sells` -- sell search
     - [ ] `GET /sells/{sell-id}` -- item sell details
     - [x] `GET /users/{steam-id}` -- user details
@@ -41,4 +41,4 @@ Market place for giftable Dota 2 items
     - [ ] `GET /my/sells/{sell-id}` -- user sell listing details
     - [ ] `POST /my/sells` -- create user sell
     - [ ] `PATCH /my/sells` -- update user sell
-    - [ ] `POST /items` -- create item
+    - [x] `POST /items` -- create item
