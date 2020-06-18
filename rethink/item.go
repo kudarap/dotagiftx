@@ -14,6 +14,8 @@ const tableItem = "item"
 
 // NewItem creates new instance of item data store.
 func NewItem(c *Client) core.ItemStorage {
+	searchFields := []string{"name", "hero", "origin"}
+
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
@@ -22,15 +24,17 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c}
+	return &itemStorage{c, searchFields}
 }
 
 type itemStorage struct {
-	db *Client
+	db            *Client
+	keywordFields []string
 }
 
 func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 	var res []core.Item
+	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -41,6 +45,7 @@ func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 
 func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{Filter: o.Filter, UserID: o.UserID}
+	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	err = s.db.one(q.Count(), &num)
 	return
@@ -119,6 +124,7 @@ func (s *itemStorage) IsItemExist(name string) error {
 		})
 	*/
 	q := s.table().Filter(func(t r.Term) r.Term {
+		// Matches exact name and non case sensitive.
 		return t.Field("name").Match(fmt.Sprintf("(?i)^%s$", name))
 	})
 	var n int

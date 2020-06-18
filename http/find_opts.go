@@ -15,6 +15,9 @@ func findOptsFromURL(u *url.URL, filter interface{}) (core.FindOpts, error) {
 	opts := core.FindOpts{}
 	get := u.Query().Get
 
+	// Set keyword
+	opts.Keyword = get("q")
+
 	// Set pagination.
 	opts.Page, _ = strconv.Atoi(get("page"))
 	opts.Limit, _ = strconv.Atoi(get("limit"))

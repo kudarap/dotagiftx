@@ -4,9 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/kudarap/dota2giftables/errors"
-
 	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dota2giftables/errors"
 )
 
 // NewItem returns new Item service.
