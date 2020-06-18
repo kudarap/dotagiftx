@@ -80,13 +80,6 @@ func (s *sellService) Create(ctx context.Context, sell *core.Sell) error {
 }
 
 func (s *sellService) Update(ctx context.Context, sell *core.Sell) error {
-	// Only allow updates on status and notes field.
-	sell = &core.Sell{
-		ID:     sell.ID,
-		Notes:  sell.Notes,
-		Status: sell.Status,
-	}
-
 	// Check market ownership.
 	au := core.AuthFromContext(ctx)
 	if au == nil {
@@ -104,5 +97,15 @@ func (s *sellService) Update(ctx context.Context, sell *core.Sell) error {
 		return err
 	}
 
-	return s.sellStg.Update(sell)
+	// Do not allowed update on these fields.
+	sell.UserID = ""
+	sell.ItemID = ""
+	sell.Price = 0
+	sell.Currency = ""
+	if err := s.sellStg.Update(sell); err != nil {
+		return err
+	}
+
+	s.getRelatedFields(sell)
+	return nil
 }

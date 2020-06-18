@@ -40,5 +40,5 @@ Market place for giftable Dota 2 items
     - [x] `GET /my/sells` -- user sell list
     - [x] `GET /my/sells/{sell-id}` -- user sell listing details
     - [x] `POST /my/sells` -- create user sell
-    - [ ] `PATCH /my/sells` -- update user sell
+    - [x] `PATCH /my/sells` -- update user sell
     - [x] `POST /items` -- create item
