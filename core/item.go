@@ -33,6 +33,7 @@ type (
 		Slug         string     `json:"slug"         db:"slug,omitempty"        valid:"required"`
 		Name         string     `json:"name"         db:"name,omitempty"        valid:"required"`
 		Hero         string     `json:"hero"         db:"hero,omitempty"        valid:"required"`
+		Image        string     `json:"image"        db:"image,omitempty"`
 		Origin       string     `json:"origin"       db:"origin,omitempty"`
 		Contributors []string   `json:"contributors" db:"contributors,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
