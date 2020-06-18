@@ -17,6 +17,10 @@ func NewUser(c *Client) core.UserStorage {
 		log.Fatalf("could not create %s table: %s", tableUser, err)
 	}
 
+	if err := c.createIndex(tableUser, "steam_id"); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableUser, err)
+	}
+
 	return &userStorage{c}
 }
 
@@ -35,8 +39,29 @@ func (s *userStorage) Find(o core.FindOpts) ([]core.User, error) {
 }
 
 func (s *userStorage) Get(id string) (*core.User, error) {
+	// Check steam ID first exist.
+	u, _ := s.getBySteamID(id)
+	if u != nil {
+		return u, nil
+	}
+
+	// Try find it by user ID.
 	row := &core.User{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
+		if err == r.ErrEmptyResult {
+			return nil, core.UserErrNotFound
+		}
+
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return row, nil
+}
+
+func (s *userStorage) getBySteamID(steamID string) (*core.User, error) {
+	row := &core.User{}
+	q := s.table().GetAllByIndex("steam_id", steamID)
+	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.UserErrNotFound
 		}

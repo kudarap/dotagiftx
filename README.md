@@ -31,8 +31,8 @@ Market place for giftable Dota 2 items
     - [ ] `GET /items/{item-id}` -- item details
     - [ ] `GET /sells` -- sell search
     - [ ] `GET /sells/{item-id}` -- item sell details
-    - [ ] `GET /users/{user-id}` -- user details
-    - [ ] `GET /users/{user-id}/sells` -- user sell search
+    - [ ] `GET /users/{steam-id}` -- user details
+    - [ ] `GET /users/{steam-id}/sells` -- user sell search
 
 - private
     - [x] `GET /my/profile` -- user profile details
