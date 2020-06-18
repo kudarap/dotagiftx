@@ -1,0 +1,553 @@
+{
+	"info": {
+		"_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
+		"name": "dotagiftables v0.1.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "private",
+			"item": [
+				{
+					"name": "my profile details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/my/profile",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"my",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "item create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Allure of the Faeshade Flower\",\n\t\"hero\": \"Dark Willow\",\n\t\"origin\": \"Collector's Cache 2018\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/items",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my market list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/my/markets",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"my",
+								"markets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my market details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/my/markets/2fbe75ee-6518-4d8f-a319-1f33796594ad",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"my",
+								"markets",
+								"2fbe75ee-6518-4d8f-a319-1f33796594ad"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my market create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"item_id\": \"fa4757c2-c5e0-4ced-a67a-7a96fe533952\",\n\t\"price\": 11.556\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/my/markets",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"my",
+								"markets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my market update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"status\": 300,\n\t\"notes\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/my/markets/2fbe75ee-6518-4d8f-a319-1f33796594ad",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"my",
+								"markets",
+								"2fbe75ee-6518-4d8f-a319-1f33796594ad"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "auth steam redirect",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/kudarap/Downloads/_W694lbI_400x400.jpg"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/auth/steam",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"auth",
+						"steam"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth steam callback",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/kudarap/Downloads/_W694lbI_400x400.jpg"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/auth/steam?oauth_token=geURoAAAAAAA6roiAAABcWXULJo&oauth_verifier=SDjr1rS5PVO1bmiTbyldYIacEY4Y2gLd",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"auth",
+						"steam"
+					],
+					"query": [
+						{
+							"key": "oauth_token",
+							"value": "geURoAAAAAAA6roiAAABcWXULJo"
+						},
+						{
+							"key": "oauth_verifier",
+							"value": "SDjr1rS5PVO1bmiTbyldYIacEY4Y2gLd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth renew",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"refresh_token\": \"4d30c259dd1165c33afe8676f7dd4d7e42ff3665\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/auth/renew",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"auth",
+						"renew"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth revoke refresh token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"refresh_token\": \"7e9103ba417ded40182940af395ab931d7a6b80a\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/auth/revoke",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"auth",
+						"revoke"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/users/76561198088587178",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"users",
+						"76561198088587178"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "items list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/items",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"items"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "phantom",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "item details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/items/gothic-whisper-phantom-assassin",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"items",
+						"gothic-whisper-phantom-assassin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "market list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/markets",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"markets"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "phantom",
+							"disabled": true
+						},
+						{
+							"key": "user_id",
+							"value": "f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "market details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/markets/e8d05ae1-a049-4e4b-adef-433e12db364b",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"markets",
+						"e8d05ae1-a049-4e4b-adef-433e12db364b"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "phantom",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
