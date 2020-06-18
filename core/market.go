@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"math"
 	"strconv"
 	"time"
 )
@@ -131,6 +132,7 @@ const defaultCurrency = "USD"
 func (i *Market) SetDefaults() {
 	i.Status = MarketStatusLive
 	i.Currency = defaultCurrency
+	i.Price = priceToTenths(i.Price)
 }
 
 // String returns text value of a post status.
@@ -141,4 +143,9 @@ func (s MarketStatus) String() string {
 	}
 
 	return t
+}
+
+func priceToTenths(n float64) float64 {
+	const dec = 100
+	return math.Round(n*dec) / dec
 }
