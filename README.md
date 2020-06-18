@@ -27,7 +27,7 @@ Market place for giftable Dota 2 items
     - [x] `GET /auth/steam` -- user login/register
     - [x] `GET /auth/renew` -- renews access token
     - [x] `GET /auth/revoke` -- revokes access token
-    - [ ] `GET /items` -- item search
+    - [x] `GET /items` -- item search
     - [x] `GET /items/{item-id}` -- item details
     - [ ] `GET /sells` -- sell search
     - [ ] `GET /sells/{sell-id}` -- item sell details
