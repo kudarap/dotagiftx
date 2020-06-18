@@ -13,8 +13,8 @@ type (
 		WithMeta bool
 	}
 
-	// Metadata represents find metadata.
-	Metadata struct {
+	// FindMetadata represents find metadata.
+	FindMetadata struct {
 		ResultCount int
 		TotalCount  int
 	}

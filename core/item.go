@@ -2,17 +2,14 @@ package core
 
 import (
 	"context"
-	"strconv"
 	"time"
 )
 
-// User error types.
+// Item error types.
 const (
 	ItemErrNotFound Errors = iota + 2000
 	ItemErrRequiredID
 	ItemErrRequiredFields
-	ItemErrProfileInvalidStatus
-	ItemErrProfileNotesLimit
 )
 
 // sets error text definition.
@@ -20,20 +17,7 @@ func init() {
 	appErrorText[ItemErrNotFound] = "item not found"
 	appErrorText[ItemErrRequiredID] = "item id is required"
 	appErrorText[ItemErrRequiredFields] = "item fields are required"
-	appErrorText[ItemErrProfileInvalidStatus] = "item status not allowed"
-	appErrorText[ItemErrProfileNotesLimit] = "item notes text limit reached"
 }
-
-const maxItemNotesLen = 100
-
-// Item statuses.
-const (
-	ItemStatusPending  ItemStatus = 100
-	ItemStatusLive     ItemStatus = 200
-	ItemStatusReserved ItemStatus = 300
-	ItemStatusSold     ItemStatus = 400
-	ItemStatusRemoved  ItemStatus = 500
-)
 
 type (
 	// ItemStatus represents item status.
@@ -44,14 +28,9 @@ type (
 		ID        string     `json:"id"         db:"id,omitempty"`
 		Name      string     `json:"item"       db:"item,omitempty"        valid:"required"`
 		Hero      string     `json:"hero"       db:"hero,omitempty"        valid:"required"`
-		Price     float64    `json:"price"      db:"price,omitempty"       valid:"required"`
-		Currency  string     `json:"currency"   db:"currency,omitempty"`
-		Notes     string     `json:"notes"      db:"notes,omitempty"`
-		Status    ItemStatus `json:"status"     db:"status,omitempty"`
+		Tag       string     `json:"tag"        db:"tag,omitempty"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
-		// Include related fields.
-		User *User `json:"user,omitempty" db:"-"`
 	}
 
 	// ItemService provides access to item service.
@@ -84,14 +63,6 @@ type (
 	}
 )
 
-var itemStatusTexts = map[ItemStatus]string{
-	ItemStatusPending:  "pending",
-	ItemStatusLive:     "live",
-	ItemStatusReserved: "reserved",
-	ItemStatusSold:     "sold",
-	ItemStatusRemoved:  "removed",
-}
-
 // CheckCreate validates field on creating new item.
 func (i Item) CheckCreate() error {
 	// Check required fields.
@@ -99,27 +70,10 @@ func (i Item) CheckCreate() error {
 		return err
 	}
 
-	// Check title and description length.
-	if len(i.Notes) > maxItemNotesLen {
-		return ItemErrProfileNotesLimit
-	}
-
 	return nil
 }
 
 // SetDefault sets default values for a new item.
 func (i Item) SetDefaults() Item {
-	i.Status = ItemStatusLive
-	i.Currency = "USD"
 	return i
-}
-
-// String returns text value of a post status.
-func (s ItemStatus) String() string {
-	t, ok := itemStatusTexts[s]
-	if !ok {
-		return strconv.Itoa(int(s))
-	}
-
-	return t
 }
