@@ -32,6 +32,7 @@ Market place for giftable Dota 2 items
     - [x] `GET /market` -- market search
     - [x] `GET /market/{market-id}` -- item market details
     - [x] `GET /users/{steam-id}` -- user details
+    - [x] `GET /` -- api info
 
 - private
     - [x] `GET /my/profile` -- user profile details
