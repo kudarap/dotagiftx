@@ -7,8 +7,8 @@ import (
 )
 
 // NewItem returns new Item service.
-func NewItem(ps core.ItemStorage, us core.UserStorage) core.ItemService {
-	return &itemService{ps, us}
+func NewItem(is core.ItemStorage, us core.UserStorage) core.ItemService {
+	return &itemService{is, us}
 }
 
 type itemService struct {

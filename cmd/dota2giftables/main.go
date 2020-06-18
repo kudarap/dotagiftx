@@ -88,6 +88,7 @@ func (a *application) setup() error {
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, userStg)
+	sellSvc := service.NewSell(itemStg, userStg, fileMgr)
 
 	// Server setup.
 	log.Println("setting up http server...")
@@ -97,6 +98,7 @@ func (a *application) setup() error {
 		authSvc,
 		imageSvc,
 		itemSvc,
+		sellSvc,
 		initVer(a.config),
 		log,
 	)

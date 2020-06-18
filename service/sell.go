@@ -7,8 +7,8 @@ import (
 )
 
 // NewSell returns new Sell service.
-func NewSell(ps core.ItemStorage, us core.UserStorage, fm core.FileManager) core.SellService {
-	return &sellService{ps, us, fm}
+func NewSell(is core.ItemStorage, us core.UserStorage, fm core.FileManager) core.SellService {
+	return &sellService{is, us, fm}
 }
 
 type sellService struct {

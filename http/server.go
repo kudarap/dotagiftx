@@ -28,6 +28,7 @@ func NewServer(
 	au core.AuthService,
 	is core.ImageService,
 	its core.ItemService,
+	ss core.SellService,
 	v *version.Version,
 	l *logrus.Logger,
 ) *Server {
@@ -37,6 +38,7 @@ func NewServer(
 		authSvc:  au,
 		imageSvc: is,
 		itemSvc:  its,
+		sellSvc:  ss,
 		logger:   l,
 		version:  v,
 	}
@@ -52,6 +54,7 @@ type Server struct {
 	authSvc  core.AuthService
 	imageSvc core.ImageService
 	itemSvc  core.ItemService
+	sellSvc  core.SellService
 
 	logger  *logrus.Logger
 	version *version.Version

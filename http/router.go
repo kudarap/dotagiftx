@@ -29,8 +29,8 @@ func (s *Server) publicRouter(r chi.Router) {
 func (s *Server) privateRouter(r chi.Router) {
 	r.Group(func(r chi.Router) {
 		r.Use(s.authorizer)
-		r.Route("/me", func(r chi.Router) {
-			r.Get("/", handleProfile(s.userSvc))
+		r.Route("/my", func(r chi.Router) {
+			r.Get("/profile", handleProfile(s.userSvc))
 			r.Post("/images", handleImageUpload(s.imageSvc))
 			r.Route("/items", func(r chi.Router) {
 				r.Get("/", handleItemList(s.itemSvc))
