@@ -59,6 +59,18 @@ func handleSellCreate(svc core.SellService) http.HandlerFunc {
 
 func handleSellUpdate(svc core.SellService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		respondOK(w, newMsg("not implemented"))
+		p := new(core.Sell)
+		if err := parseForm(r, p); err != nil {
+			respondError(w, err)
+			return
+		}
+		p.ID = chi.URLParam(r, "id")
+
+		if err := svc.Update(r.Context(), p); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, p)
 	}
 }

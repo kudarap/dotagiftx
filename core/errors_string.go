@@ -24,8 +24,8 @@ func _() {
 	_ = x[SellErrNotFound-2100]
 	_ = x[SellErrRequiredID-2101]
 	_ = x[SellErrRequiredFields-2102]
-	_ = x[SellErrProfileInvalidStatus-2103]
-	_ = x[SellErrProfileNotesLimit-2104]
+	_ = x[SellErrInvalidStatus-2103]
+	_ = x[SellErrNotesLimit-2104]
 	_ = x[StorageUncaughtErr-10]
 	_ = x[StorageMergeErr-11]
 	_ = x[UserErrNotFound-1200]
@@ -39,7 +39,7 @@ const (
 	_Errors_name_1 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
 	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDL"
 	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExists"
-	_Errors_name_4 = "SellErrNotFoundSellErrRequiredIDSellErrRequiredFieldsSellErrProfileInvalidStatusSellErrProfileNotesLimit"
+	_Errors_name_4 = "SellErrNotFoundSellErrRequiredIDSellErrRequiredFieldsSellErrInvalidStatusSellErrNotesLimit"
 	_Errors_name_5 = "ImageErrNotFoundImageErrUploadImageErrThumbnail"
 )
 
@@ -48,7 +48,7 @@ var (
 	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 68, 80, 99}
 	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74}
 	_Errors_index_3 = [...]uint8{0, 15, 32, 53, 76}
-	_Errors_index_4 = [...]uint8{0, 15, 32, 53, 80, 104}
+	_Errors_index_4 = [...]uint8{0, 15, 32, 53, 73, 90}
 	_Errors_index_5 = [...]uint8{0, 16, 30, 47}
 )
 

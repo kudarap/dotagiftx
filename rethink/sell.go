@@ -64,6 +64,7 @@ func (s *sellStorage) Create(in *core.Sell) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
+	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)

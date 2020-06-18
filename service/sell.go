@@ -59,7 +59,7 @@ func (s *sellService) getRelatedFields(sell *core.Sell) {
 }
 
 func (s *sellService) Create(ctx context.Context, sell *core.Sell) error {
-	// Set ownership
+	// Set market ownership.
 	au := core.AuthFromContext(ctx)
 	if au == nil {
 		return core.AuthErrNoAccess
@@ -71,9 +71,38 @@ func (s *sellService) Create(ctx context.Context, sell *core.Sell) error {
 		return errors.New(core.ItemErrRequiredFields, err)
 	}
 
+	// Check Item existence.
+	if i, _ := s.itemStg.Get(sell.ItemID); i == nil {
+		return core.ItemErrNotFound
+	}
+
 	return s.sellStg.Create(sell)
 }
 
 func (s *sellService) Update(ctx context.Context, sell *core.Sell) error {
-	panic("implement me")
+	// Only allow updates on status and notes field.
+	sell = &core.Sell{
+		ID:     sell.ID,
+		Notes:  sell.Notes,
+		Status: sell.Status,
+	}
+
+	// Check market ownership.
+	au := core.AuthFromContext(ctx)
+	if au == nil {
+		return core.AuthErrNoAccess
+	}
+	cur, err := s.Sell(sell.ID)
+	if err != nil {
+		return err
+	}
+	if au.UserID != cur.UserID {
+		return core.SellErrNotFound
+	}
+
+	if err := sell.CheckUpdate(); err != nil {
+		return err
+	}
+
+	return s.sellStg.Update(sell)
 }

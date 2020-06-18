@@ -11,8 +11,8 @@ const (
 	SellErrNotFound Errors = iota + 2100
 	SellErrRequiredID
 	SellErrRequiredFields
-	SellErrProfileInvalidStatus
-	SellErrProfileNotesLimit
+	SellErrInvalidStatus
+	SellErrNotesLimit
 )
 
 // sets error text definition.
@@ -20,8 +20,8 @@ func init() {
 	appErrorText[SellErrNotFound] = "sell not found"
 	appErrorText[SellErrRequiredID] = "sell id is required"
 	appErrorText[SellErrRequiredFields] = "sell fields are required"
-	appErrorText[SellErrProfileInvalidStatus] = "sell status not allowed"
-	appErrorText[SellErrProfileNotesLimit] = "sell notes text limit reached"
+	appErrorText[SellErrInvalidStatus] = "sell status not allowed"
+	appErrorText[SellErrNotesLimit] = "sell notes text limit reached"
 }
 
 const maxSellNotesLen = 120
@@ -103,9 +103,23 @@ func (i Sell) CheckCreate() error {
 		return err
 	}
 
-	// Check title and description length.
+	// Check sell notes length.
 	if len(i.Notes) > maxSellNotesLen {
-		return SellErrProfileNotesLimit
+		return SellErrNotesLimit
+	}
+
+	return nil
+}
+
+// CheckUpdate validates field on updating sell.
+func (i Sell) CheckUpdate() error {
+	if i.Notes != "" && len(i.Notes) > maxSellNotesLen {
+		return SellErrNotesLimit
+	}
+
+	_, ok := sellStatusTexts[i.Status]
+	if i.Status != 0 && !ok {
+		return SellErrInvalidStatus
 	}
 
 	return nil

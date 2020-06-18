@@ -37,8 +37,8 @@ Market place for giftable Dota 2 items
 - private
     - [x] `GET /my/profile` -- user profile details
     - [ ] ~~`PATCH /my/profile` -- user profile update~~
-    - [ ] `GET /my/sells` -- user sell list
-    - [ ] `GET /my/sells/{sell-id}` -- user sell listing details
-    - [ ] `POST /my/sells` -- create user sell
+    - [x] `GET /my/sells` -- user sell list
+    - [x] `GET /my/sells/{sell-id}` -- user sell listing details
+    - [x] `POST /my/sells` -- create user sell
     - [ ] `PATCH /my/sells` -- update user sell
     - [x] `POST /items` -- create item
