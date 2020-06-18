@@ -9,13 +9,12 @@ import (
 )
 
 // NewItem returns new Item service.
-func NewItem(is core.ItemStorage, us core.UserStorage) core.ItemService {
-	return &itemService{is, us}
+func NewItem(is core.ItemStorage) core.ItemService {
+	return &itemService{is}
 }
 
 type itemService struct {
 	itemStg core.ItemStorage
-	userStg core.UserStorage
 }
 
 func (s *itemService) Items(opts core.FindOpts) ([]core.Item, *core.FindMetadata, error) {

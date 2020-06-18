@@ -114,10 +114,9 @@ func (i Sell) CheckCreate() error {
 const defaultCurrency = "USD"
 
 // SetDefault sets default values for a new sell.
-func (i Sell) SetDefaults() Sell {
+func (i *Sell) SetDefaults() {
 	i.Status = SellStatusLive
 	i.Currency = defaultCurrency
-	return i
 }
 
 // String returns text value of a post status.

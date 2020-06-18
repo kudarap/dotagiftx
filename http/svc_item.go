@@ -30,29 +30,29 @@ func handleItemList(svc core.ItemService) http.HandlerFunc {
 
 func handleItemDetail(svc core.ItemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		item, err := svc.Item(chi.URLParam(r, "id"))
+		i, err := svc.Item(chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		respondOK(w, item)
+		respondOK(w, i)
 	}
 }
 
 func handleItemCreate(svc core.ItemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		item := new(core.Item)
-		if err := parseForm(r, item); err != nil {
+		i := new(core.Item)
+		if err := parseForm(r, i); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		if err := svc.Create(r.Context(), item); err != nil {
+		if err := svc.Create(r.Context(), i); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		respondOK(w, item)
+		respondOK(w, i)
 	}
 }
