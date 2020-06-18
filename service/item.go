@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/kudarap/dota2giftables/errors"
+
 	"github.com/kudarap/dota2giftables/core"
 )
 
@@ -53,8 +55,9 @@ func (s *itemService) Create(ctx context.Context, item *core.Item) error {
 
 	item.Name = strings.TrimSpace(item.Name)
 	item.Hero = strings.TrimSpace(item.Hero)
+	item.Slug = item.MakeSlug()
 	if err := item.CheckCreate(); err != nil {
-		return err
+		return errors.New(core.ItemErrRequiredFields, err)
 	}
 
 	if err := s.itemStg.IsItemExist(item.Name); err != nil {

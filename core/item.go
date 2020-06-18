@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 	"time"
+
+	"github.com/kudarap/dota2giftables/gokit/slug"
 )
 
 // Item error types.
@@ -28,6 +30,7 @@ type (
 	// Item represents item information.
 	Item struct {
 		ID           string     `json:"id"           db:"id,omitempty"`
+		Slug         string     `json:"slug"         db:"slug,omitempty"        valid:"required"`
 		Name         string     `json:"name"         db:"name,omitempty"        valid:"required"`
 		Hero         string     `json:"hero"         db:"hero,omitempty"        valid:"required"`
 		Tag          string     `json:"tag"          db:"tag,omitempty"`
@@ -80,4 +83,8 @@ func (i Item) CheckCreate() error {
 	}
 
 	return nil
+}
+
+func (i Item) MakeSlug() string {
+	return slug.Make(i.Name + " " + i.Hero)
 }
