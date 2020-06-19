@@ -9,7 +9,7 @@ install:
 	go get ./...
 
 run: build
-	./api
+	./$(PROJECTNAME)
 
 build:
 	go build -v -ldflags=" \
