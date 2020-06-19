@@ -10,7 +10,7 @@ export default function Home() {
 
       <main>
         <h1 className="title">
-          Welcome to Dota2 Gitables
+          Dota2 Giftables
         </h1>
 
       </main>

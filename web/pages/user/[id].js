@@ -4,7 +4,7 @@ import Banner from "@/components/Banner";
 import BuildInfo from "@/components/BuildInfo";
 
 export default function Id() {
-    const router = useRouter()
+  const router = useRouter()
   const { id } = router.query
 
   return (
