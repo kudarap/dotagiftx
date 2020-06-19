@@ -1,16 +1,46 @@
 import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
 import MuiLink from '@material-ui/core/Link'
 import Divider from '@material-ui/core/Divider'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    marginTop: theme.spacing(2),
+  },
+  list: {
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(0, 1, 0),
+    },
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      flexWrap: 'wrap',
+    },
+    display: 'block',
+    listStyle: 'none',
+    padding: 0,
+    margin: theme.spacing(1, 0, 0),
+    '& li': {
+      [theme.breakpoints.down('xs')]: {
+        float: 'none',
+        marginRight: 0,
+      },
+      float: 'left',
+      marginRight: theme.spacing(2),
+    },
+  },
+}))
+
 export default function () {
+  const classes = useStyles()
+
   return (
-    <footer style={{ marginTop: 20 }}>
+    <footer className={classes.root}>
       <Divider />
-      <br />
       <Container disableMinHeight>
-        <ul>
+        <ul className={classes.list}>
           <li>
             <Link href="/about">About</Link>
           </li>
@@ -25,11 +55,11 @@ export default function () {
               Powered by Vercel
             </MuiLink>
           </li>
-          <li>
-            <MuiLink href="http://chiligarlic.com" target="_blank">
-              A chiliGarlic project
-            </MuiLink>
-          </li>
+          {/* <li> */}
+          {/*  <MuiLink href="http://chiligarlic.com" target="_blank"> */}
+          {/*    A chiliGarlic project */}
+          {/*  </MuiLink> */}
+          {/* </li> */}
         </ul>
       </Container>
     </footer>
