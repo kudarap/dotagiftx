@@ -6,7 +6,7 @@ export default function () {
   return (
     <footer style={{ marginTop: 20 }}>
       <Divider />
-      <Container>This is footer</Container>
+      <Container disableMinHeightx>This is footer</Container>
     </footer>
   )
 }

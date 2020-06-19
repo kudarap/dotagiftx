@@ -11,8 +11,8 @@ export default class MyDocument extends Document {
           {/* PWA primary color */}
           <meta name="theme-color" content={muiTheme.palette.primary.main} />
           <link
+            href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap"
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700&display=swap"
           />
           <link rel="icon" href="/favicon.ico" />
         </Head>

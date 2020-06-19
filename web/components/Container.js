@@ -8,19 +8,26 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(1),
     },
-    minHeight: '40vh',
   },
 }))
 
-export default function Container({ children }) {
+export default function Container({ children, disableMinHeight }) {
   const classes = useStyles()
 
   return (
-    <Component className={classes.root} maxWidth="md" disableGutters>
+    <Component
+      className={classes.root}
+      maxWidth="md"
+      disableGutters
+      style={{ minHeight: disableMinHeight ? 0 : '40vh' }}>
       {children}
     </Component>
   )
 }
 Container.propTypes = {
   children: PropTypes.node.isRequired,
+  disableMinHeight: PropTypes.bool,
+}
+Container.defaultProps = {
+  disableMinHeight: false,
 }

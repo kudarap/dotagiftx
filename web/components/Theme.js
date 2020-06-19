@@ -2,15 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
-import blue from '@material-ui/core/colors/blue'
-import pink from '@material-ui/core/colors/pink'
 
 export const muiTheme = createMuiTheme({
-  fontFamily: 'Ubuntu',
+  typography: {
+    fontFamily: 'Ubuntu, sans-serif',
+  },
   palette: {
-    // type: 'dark',
-    primary: blue,
-    secondary: pink,
+    primary: {
+      main: '#263238',
+    },
+    secondary: {
+      main: '#C79123',
+    },
   },
 })
 
