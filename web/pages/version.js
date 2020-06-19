@@ -8,15 +8,15 @@ export default function Version({ data }) {
         <link rel="icon" href="/favicon.ico" />
         <meta name="author" content="John Doe" />
       </Head>
-        
-        <main>
-            <p>Your viewing version page</p>
-            <p>
-                tag: {data.version} <br />
-                hash: {data.hash} <br />
-                built: {data.built} <br />
-            </p>
-        </main>
+
+      <main>
+        <p>Your viewing version page</p>
+        <p>
+          tag: {data.version} <br />
+          hash: {data.hash} <br />
+          built: {data.built} <br />
+        </p>
+      </main>
     </div>
   )
 }
