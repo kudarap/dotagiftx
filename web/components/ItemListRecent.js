@@ -1,5 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import moment from 'moment'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -141,7 +142,7 @@ export default function SimpleTable() {
         <TableHead>
           <TableRow>
             <TableCell>Item Name</TableCell>
-            <TableCell align="right">Qty</TableCell>
+            <TableCell align="right">Date</TableCell>
             <TableCell align="right">Price</TableCell>
           </TableRow>
         </TableHead>
@@ -155,7 +156,7 @@ export default function SimpleTable() {
                   {item.hero}
                 </Typography>
               </TableCell>
-              <TableCell align="right">{item.name.length}</TableCell>
+              <TableCell align="right">{moment(item.created_at).fromNow()}</TableCell>
               <TableCell align="right">
                 <Typography variant="body2" color="secondary">
                   ${item.hero.length.toFixed(2)}

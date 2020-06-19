@@ -7,13 +7,13 @@ import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: theme.spacing(10),
-    marginBottom: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      paddingBottom: theme.spacing(0),
+    },
+    marginTop: theme.spacing(5),
+    paddingBottom: theme.spacing(5),
   },
   list: {
-    [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(0, 1, 0),
-    },
     [theme.breakpoints.down('xs')]: {
       display: 'flex',
       justifyContent: 'space-evenly',
@@ -22,7 +22,6 @@ const useStyles = makeStyles(theme => ({
     display: 'block',
     listStyle: 'none',
     padding: 0,
-    margin: theme.spacing(1, 0, 0),
     '& li': {
       [theme.breakpoints.down('xs')]: {
         float: 'none',

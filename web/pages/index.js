@@ -6,6 +6,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import ItemList from '@/components/ItemList'
+import ItemListRecent from '@/components/ItemListRecent'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -29,14 +30,17 @@ export default function Home() {
             className={classes.searchBar}
             fullWidth
             placeholder="Search Item, Hero, Treasure..."
-            helperText="search on 1,230 for sale items"
+            helperText="search on 332 for posted items"
             variant="outlined"
             color="secondary"
           />
           <br />
           <br />
-          <Typography>Trending</Typography>
+          <Typography>Popular Items</Typography>
           <ItemList />
+          <br />
+          <Typography>Recently Posted</Typography>
+          <ItemListRecent />
         </Container>
       </main>
 
