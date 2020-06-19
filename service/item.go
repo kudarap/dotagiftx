@@ -43,26 +43,26 @@ func (s *itemService) Item(id string) (*core.Item, error) {
 	return s.itemStg.Get(id)
 }
 
-func (s *itemService) Create(ctx context.Context, item *core.Item) error {
+func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 	// TODO check moderator/contributors
 	au := core.AuthFromContext(ctx)
 	if au == nil {
 		return core.AuthErrNoAccess
 	}
-	item.Contributors = []string{au.UserID}
+	itm.Contributors = []string{au.UserID}
 
-	item.Name = strings.TrimSpace(item.Name)
-	item.Hero = strings.TrimSpace(item.Hero)
-	item.Slug = item.MakeSlug()
-	if err := item.CheckCreate(); err != nil {
+	itm.Name = strings.TrimSpace(itm.Name)
+	itm.Hero = strings.TrimSpace(itm.Hero)
+	itm.Slug = itm.MakeSlug()
+	if err := itm.CheckCreate(); err != nil {
 		return errors.New(core.ItemErrRequiredFields, err)
 	}
 
-	if err := s.itemStg.IsItemExist(item.Name); err != nil {
+	if err := s.itemStg.IsItemExist(itm.Name); err != nil {
 		return err
 	}
 
-	return s.itemStg.Create(item)
+	return s.itemStg.Create(itm)
 }
 
 func (s *itemService) Update(ctx context.Context, it *core.Item) error {

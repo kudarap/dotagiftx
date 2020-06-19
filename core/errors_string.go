@@ -21,11 +21,11 @@ func _() {
 	_ = x[ItemErrRequiredID-2001]
 	_ = x[ItemErrRequiredFields-2002]
 	_ = x[ItemErrCreateItemExists-2003]
-	_ = x[SellErrNotFound-2100]
-	_ = x[SellErrRequiredID-2101]
-	_ = x[SellErrRequiredFields-2102]
-	_ = x[SellErrInvalidStatus-2103]
-	_ = x[SellErrNotesLimit-2104]
+	_ = x[MarketErrNotFound-2100]
+	_ = x[MarketErrRequiredID-2101]
+	_ = x[MarketErrRequiredFields-2102]
+	_ = x[MarketErrInvalidStatus-2103]
+	_ = x[MarketErrNotesLimit-2104]
 	_ = x[StorageUncaughtErr-10]
 	_ = x[StorageMergeErr-11]
 	_ = x[UserErrNotFound-1200]
@@ -39,7 +39,7 @@ const (
 	_Errors_name_1 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
 	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDL"
 	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExists"
-	_Errors_name_4 = "SellErrNotFoundSellErrRequiredIDSellErrRequiredFieldsSellErrInvalidStatusSellErrNotesLimit"
+	_Errors_name_4 = "MarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimit"
 	_Errors_name_5 = "ImageErrNotFoundImageErrUploadImageErrThumbnail"
 )
 
@@ -48,7 +48,7 @@ var (
 	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 68, 80, 99}
 	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74}
 	_Errors_index_3 = [...]uint8{0, 15, 32, 53, 76}
-	_Errors_index_4 = [...]uint8{0, 15, 32, 53, 73, 90}
+	_Errors_index_4 = [...]uint8{0, 17, 36, 59, 81, 100}
 	_Errors_index_5 = [...]uint8{0, 16, 30, 47}
 )
 

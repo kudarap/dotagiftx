@@ -9,24 +9,24 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableSell = "sell"
+const tableMarket = "market"
 
-// NewSell creates new instance of sell data store.
-func NewSell(c *Client) core.SellStorage {
-	if err := c.autoMigrate(tableSell); err != nil {
-		log.Fatalf("could not create %s table: %s", tableSell, err)
+// NewMarket creates new instance of market data store.
+func NewMarket(c *Client) core.MarketStorage {
+	if err := c.autoMigrate(tableMarket); err != nil {
+		log.Fatalf("could not create %s table: %s", tableMarket, err)
 	}
 
-	return &sellStorage{c, []string{"name", "hero", "origin"}}
+	return &marketStorage{c, []string{"name", "hero", "origin"}}
 }
 
-type sellStorage struct {
+type marketStorage struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *sellStorage) Find(o core.FindOpts) ([]core.Sell, error) {
-	var res []core.Sell
+func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
+	var res []core.Market
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
@@ -36,7 +36,7 @@ func (s *sellStorage) Find(o core.FindOpts) ([]core.Sell, error) {
 	return res, nil
 }
 
-func (s *sellStorage) Count(o core.FindOpts) (num int, err error) {
+func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
@@ -47,11 +47,11 @@ func (s *sellStorage) Count(o core.FindOpts) (num int, err error) {
 	return
 }
 
-func (s *sellStorage) Get(id string) (*core.Sell, error) {
-	row := &core.Sell{}
+func (s *marketStorage) Get(id string) (*core.Market, error) {
+	row := &core.Market{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, core.SellErrNotFound
+			return nil, core.MarketErrNotFound
 		}
 
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -60,7 +60,7 @@ func (s *sellStorage) Get(id string) (*core.Sell, error) {
 	return row, nil
 }
 
-func (s *sellStorage) Create(in *core.Sell) error {
+func (s *marketStorage) Create(in *core.Market) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -74,7 +74,7 @@ func (s *sellStorage) Create(in *core.Sell) error {
 	return nil
 }
 
-func (s *sellStorage) Update(in *core.Sell) error {
+func (s *marketStorage) Update(in *core.Market) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
@@ -93,6 +93,6 @@ func (s *sellStorage) Update(in *core.Sell) error {
 	return nil
 }
 
-func (s *sellStorage) table() r.Term {
-	return r.Table(tableSell)
+func (s *marketStorage) table() r.Term {
+	return r.Table(tableMarket)
 }

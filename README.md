@@ -19,7 +19,7 @@ Market place for giftable Dota 2 items
 - auth
 - user
 - item
-- sell
+- market
 
 ### API endpoints
 
@@ -29,14 +29,15 @@ Market place for giftable Dota 2 items
     - [x] `GET /auth/revoke` -- revokes access token
     - [x] `GET /items` -- item search
     - [x] `GET /items/{item-id}` -- item details
-    - [x] `GET /market` -- sell search
-    - [x] `GET /market/{market-id}` -- item sell details
+    - [x] `GET /market` -- market search
+    - [x] `GET /market/{market-id}` -- item market details
     - [x] `GET /users/{steam-id}` -- user details
+    - [x] `GET /` -- api info
 
 - private
     - [x] `GET /my/profile` -- user profile details
-    - [x] `GET /my/sells` -- user sell list
-    - [x] `GET /my/sells/{sell-id}` -- user sell listing details
-    - [x] `POST /my/sells` -- create user sell
-    - [x] `PATCH /my/sells` -- update user sell
+    - [x] `GET /my/market` -- user market list
+    - [x] `GET /my/market/{market-id}` -- user market listing details
+    - [x] `POST /my/market` -- create user market
+    - [x] `PATCH /my/market` -- update user market
     - [x] `POST /items` -- create item
