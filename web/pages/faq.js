@@ -1,17 +1,30 @@
 import React from 'react'
-import Head from 'next/head'
+import { makeStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import Container from '@/components/Container'
 
-export default function About() {
+const useStyles = makeStyles(theme => ({
+  main: {
+    marginTop: theme.spacing(10),
+  },
+}))
+
+export default function Faq() {
+  const classes = useStyles()
+
   return (
-    <div className="container">
-      <Head>
-        <title>version page</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <>
+      <Header />
 
-      <main>
-        <p>Your viewing FAQ page</p>
+      <main className={classes.main}>
+        <Container>
+          <Typography variant="h1">FAQ page!</Typography>
+        </Container>
       </main>
-    </div>
+
+      <Footer />
+    </>
   )
 }

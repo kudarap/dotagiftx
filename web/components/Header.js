@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Container from '@/components/Container'
+import Link from 'next/link'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,6 +21,7 @@ const useStyles = makeStyles(theme => ({
     '-webkit-text-fill-color': 'transparent',
     filter: 'drop-shadow(0px 0px 10px black)',
     letterSpacing: 2,
+    cursor: 'pointer',
   },
 }))
 
@@ -31,9 +33,11 @@ export default function () {
       <AppBar position="static" variant="outlined">
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
-            <Typography variant="h6" className={classes.title}>
-              Dota 2 Giftables
-            </Typography>
+            <Link href="/">
+              <Typography variant="h6" className={classes.title}>
+                Dota 2 Giftables
+              </Typography>
+            </Link>
           </Toolbar>
         </Container>
       </AppBar>

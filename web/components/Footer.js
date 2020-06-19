@@ -15,7 +15,7 @@ export default function () {
             <Link href="/about">About</Link>
           </li>
           <li>
-            <Link href="/about">FAQ</Link>
+            <Link href="/faq">FAQ</Link>
           </li>
           <li>
             <Link href="/privacy">Privacy</Link>
