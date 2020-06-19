@@ -37,8 +37,8 @@ func (s *Server) privateRouter(r chi.Router) {
 				r.Get("/{id}", handleMarketDetail(s.marketSvc))
 				r.Patch("/{id}", handleMarketUpdate(s.marketSvc))
 			})
-			r.Post("/images", handleImageUpload(s.imageSvc))
 		})
 		r.Post("/items", handleItemCreate(s.itemSvc))
+		r.Post("/images", handleImageUpload(s.imageSvc))
 	})
 }
