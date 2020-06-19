@@ -7,7 +7,8 @@ import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(10),
+    marginBottom: theme.spacing(2),
   },
   list: {
     [theme.breakpoints.down('sm')]: {
@@ -51,7 +52,11 @@ export default function () {
             <Link href="/privacy">Privacy</Link>
           </li>
           <li>
-            <MuiLink href="http://vercel.com" target="_blank">
+            <MuiLink
+              href="http://vercel.com"
+              target="_blank"
+              color="textSecondary"
+              rel="noreferrer noopener">
               Powered by Vercel
             </MuiLink>
           </li>

@@ -8,11 +8,16 @@ export const muiTheme = createMuiTheme({
     fontFamily: 'Ubuntu, sans-serif',
   },
   palette: {
+    type: 'dark',
     primary: {
       main: '#263238',
     },
     secondary: {
       main: '#C79123',
+    },
+    background: {
+      default: '#263238',
+      paper: '#2e3d44',
     },
   },
 })

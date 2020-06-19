@@ -20,5 +20,5 @@ NextComposed.propTypes = {
 }
 
 export default function Link(props) {
-  return <MuiLink component={NextComposed} {...props} />
+  return <MuiLink color="textSecondary" component={NextComposed} {...props} />
 }

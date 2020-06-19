@@ -5,15 +5,14 @@ import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import ItemList from '@/components/ItemList'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(10),
+    marginTop: theme.spacing(4),
   },
   searchBar: {
-    maxWidth: 640,
     margin: '0 auto',
-    display: 'block',
   },
 }))
 
@@ -30,9 +29,14 @@ export default function Home() {
             className={classes.searchBar}
             fullWidth
             placeholder="Search Item, Hero, Treasure..."
+            helperText="search on 1,230 for sale items"
             variant="outlined"
             color="secondary"
           />
+          <br />
+          <br />
+          <Typography>Trending</Typography>
+          <ItemList />
         </Container>
       </main>
 
