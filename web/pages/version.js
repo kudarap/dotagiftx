@@ -6,7 +6,6 @@ export default function Version({ data }) {
       <Head>
         <title>version page</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="author" content="John Doe" />
       </Head>
 
       <main>
