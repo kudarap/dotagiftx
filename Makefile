@@ -8,17 +8,17 @@ all: install build
 install:
 	go get ./...
 
-run:
-	make build && ./api
+run: build
+	./api
 
 build:
 	go build -v -ldflags=" \
 		-X main.tag=`git describe --tag --abbrev=0` \
 		-X main.commit=`git rev-parse HEAD` \
 		-X main.built=`date -u +%s`" \
-		-o api ./cmd/$(PROJECTNAME)
+		-o $(PROJECTNAME) ./cmd/$(PROJECTNAME)
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o ./api_amd64 ./cmd/$(PROJECTNAME)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o ./$(PROJECTNAME)_amd64 ./cmd/$(PROJECTNAME)
 
 docker-build:
 	docker build -t $(PROJECTNAME) .
