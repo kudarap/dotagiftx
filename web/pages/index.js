@@ -14,8 +14,33 @@ const useStyles = makeStyles(theme => ({
   },
   searchBar: {
     margin: '0 auto',
+    marginBottom: theme.spacing(4),
+  },
+  banner: {
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(0),
+    },
+    margin: theme.spacing(20, 0, 4, 0),
+  },
+  bannerText: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 35,
+    },
+    fontWeight: 'bold',
   },
 }))
+
+function Banner() {
+  const classes = useStyles()
+
+  return (
+    <div className={classes.banner}>
+      <Typography className={classes.bannerText} variant="h3" align="center">
+        Search giftable <span style={{ display: 'inline-block' }}>Dota 2 items</span>
+      </Typography>
+    </div>
+  )
+}
 
 export default function Home() {
   const classes = useStyles()
@@ -26,6 +51,8 @@ export default function Home() {
 
       <main className={classes.main}>
         <Container>
+          <Banner />
+
           <TextField
             className={classes.searchBar}
             fullWidth
@@ -34,7 +61,7 @@ export default function Home() {
             variant="outlined"
             color="secondary"
           />
-          <br />
+
           <br />
           <Typography>Popular Items</Typography>
           <ItemList />
