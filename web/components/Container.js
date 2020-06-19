@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import Component from '@material-ui/core/Container'
+import MuiContainer from '@material-ui/core/Container'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -15,13 +15,13 @@ export default function Container({ children, disableMinHeight }) {
   const classes = useStyles()
 
   return (
-    <Component
+    <MuiContainer
       className={classes.root}
       maxWidth="md"
       disableGutters
-      style={{ minHeight: disableMinHeight ? 0 : '40vh' }}>
+      style={{ minHeight: disableMinHeight ? 0 : '50vh' }}>
       {children}
-    </Component>
+    </MuiContainer>
   )
 }
 Container.propTypes = {
