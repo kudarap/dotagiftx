@@ -1,8 +1,7 @@
-
-export default function() {
+export default function () {
   return (
     <div className="container">
-        <h1>BANNER!</h1>
+      <h1>BANNER!</h1>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import Banner from "@/components/Banner";
-import BuildInfo from "@/components/BuildInfo";
+import Banner from '@/components/Banner'
+import BuildInfo from '@/components/BuildInfo'
 
 export default function Id() {
   const router = useRouter()
@@ -15,13 +15,13 @@ export default function Id() {
         <meta name="author" content="John Doe" />
       </Head>
 
-        <main>
-            <p>Your viewing user pagex</p>
+      <main>
+        <p>Your viewing {id}</p>
 
-            <Banner />
+        <Banner />
 
-            <BuildInfo />
-        </main>
+        <BuildInfo />
+      </main>
     </div>
   )
 }
