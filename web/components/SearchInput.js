@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
@@ -79,4 +80,10 @@ export default function SearchInput({ value }) {
       />
     </form>
   )
+}
+SearchInput.propTypes = {
+  value: PropTypes.string,
+}
+SearchInput.defaultProps = {
+  value: '',
 }
