@@ -38,7 +38,7 @@ export default function () {
       <AppBar position="static" variant="outlined" className={classes.appBar}>
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
-            <Link href="/" disableUnderline>
+            <Link href="/" disableStyle>
               <Typography variant="h6" className={classes.title}>
                 Dota2giftables
               </Typography>

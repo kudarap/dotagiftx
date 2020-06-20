@@ -73,7 +73,7 @@ export default function SearchInput({ value }) {
             </InputAdornment>
           ),
         }}
-        placeholder="Search Item, Hero, Treasure..."
+        placeholder="Search for Items by name, hero, or treasure"
         helperText="Search on 100+ for sale items"
         variant="outlined"
         color="secondary"
