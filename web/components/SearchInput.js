@@ -15,17 +15,21 @@ const useStyles = makeStyles(theme => ({
   searchBar: {
     margin: '0 auto',
     marginBottom: theme.spacing(4),
+    '& .MuiInputBase-root': {
+      color: theme.palette.grey[800],
+      backgroundColor: '#fffbf1',
+    },
   },
   verticalDivider: {
-    borderRight: `1px solid ${theme.palette.divider}`,
+    borderRight: `1px solid ${theme.palette.grey[300]}`,
     height: 40,
     margin: theme.spacing(0, 1.5),
   },
   actionIcons: {
-    color: theme.palette.text.hint,
+    color: theme.palette.grey[500],
   },
   iconButtons: {
-    color: theme.palette.text.hint,
+    color: theme.palette.grey[500],
     cursor: 'pointer',
   },
 }))
