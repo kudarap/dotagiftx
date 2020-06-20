@@ -1,9 +1,7 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
-import Divider from '@material-ui/core/Divider'
-import Grid from '@material-ui/core/Grid'
 import SearchIcon from '@material-ui/icons/Search'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import CloseIcon from '@material-ui/icons/Close'
@@ -63,7 +61,7 @@ export default function SearchInput() {
           ),
         }}
         placeholder="Search Item, Hero, Treasure..."
-        helperText="search on 332 for posted items"
+        helperText="Search on 100+ for sale items"
         variant="outlined"
         color="secondary"
         fullWidth
