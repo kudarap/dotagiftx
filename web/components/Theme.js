@@ -19,6 +19,10 @@ export const muiTheme = createMuiTheme({
       default: '#263238',
       paper: '#2e3d44',
     },
+    // App specific colors.
+    app: {
+      white: '#FFFBF1',
+    },
   },
 })
 

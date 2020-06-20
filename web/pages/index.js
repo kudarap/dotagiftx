@@ -27,6 +27,7 @@ const useStyles = makeStyles(theme => ({
       fontSize: 35,
     },
     fontWeight: 'bold',
+    color: theme.palette.app.white,
   },
 }))
 
