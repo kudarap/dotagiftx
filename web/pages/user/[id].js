@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import Banner from '@/components/Banner'
 import BuildInfo from '@/components/BuildInfo'
 
 export default function Id() {
@@ -17,8 +16,6 @@ export default function Id() {
 
       <main>
         <p>Your viewing {id}</p>
-
-        <Banner />
 
         <BuildInfo />
       </main>

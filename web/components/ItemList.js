@@ -137,7 +137,7 @@ export default function SimpleTable() {
 
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
+      <Table className={classes.table} aria-label="items table">
         <TableHead>
           <TableRow>
             <TableCell>Item Name</TableCell>
