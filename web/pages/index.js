@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import ItemList from '@/components/ItemList'
+import ItemListPopular from '@/components/ItemListPopular'
 import ItemListRecent from '@/components/ItemListRecent'
 import SearchInput from '@/components/SearchInput'
 
@@ -57,9 +57,10 @@ export default function Home() {
 
           <br />
           <Typography>Popular Items</Typography>
-          <ItemList />
+          <ItemListPopular />
           <br />
           <Typography>Recently Posted</Typography>
+
           <ItemListRecent />
         </Container>
       </main>

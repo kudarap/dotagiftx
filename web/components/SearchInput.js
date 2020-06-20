@@ -29,20 +29,20 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput() {
+export default function SearchInput({ value }) {
   const classes = useStyles()
 
-  const [value, setValue] = React.useState('')
+  const [keyword, setKeyword] = React.useState(value)
 
   const handleChange = e => {
-    setValue(e.target.value)
+    setKeyword(e.target.value)
   }
   const handleClearValue = () => {
-    setValue('')
+    setKeyword('')
   }
   const handleSubmit = e => {
     e.preventDefault()
-    Router.push(`/search?q=${value}`)
+    Router.push(`/search?q=${keyword}`)
   }
 
   return (
@@ -57,7 +57,7 @@ export default function SearchInput() {
           ),
           endAdornment: (
             <InputAdornment position="end">
-              {value !== '' && (
+              {keyword !== '' && (
                 <>
                   <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
                   <span className={classes.verticalDivider} />
@@ -74,7 +74,7 @@ export default function SearchInput() {
         color="secondary"
         fullWidth
         autoFocus
-        value={value}
+        value={keyword}
         onChange={handleChange}
       />
     </form>

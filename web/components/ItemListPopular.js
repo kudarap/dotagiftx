@@ -146,7 +146,7 @@ export default function SimpleTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {testData.data.map(item => (
+          {testData.data.slice(0, 5).map(item => (
             <TableRow key={item.id}>
               <TableCell component="th" scope="row">
                 <strong>{item.name}</strong>
