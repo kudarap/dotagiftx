@@ -8,13 +8,16 @@ import Container from '@/components/Container'
 import Link from 'next/link'
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
+  root: {},
+  appBar: {
+    borderTop: 'none',
+    borderRight: 'none',
+    borderLeft: 'none',
   },
   title: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 17,
+    },
     textShadow: '0px 0px 16px #C79123',
     textTransform: 'uppercase',
     // fontWeight: 'bold',
@@ -32,7 +35,7 @@ export default function () {
 
   return (
     <header>
-      <AppBar position="static" variant="outlined">
+      <AppBar position="static" variant="outlined" className={classes.appBar}>
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
             <Link href="/">
