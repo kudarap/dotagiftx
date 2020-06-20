@@ -36,7 +36,7 @@ function Banner() {
   return (
     <div className={classes.banner}>
       <Typography className={classes.bannerText} variant="h3" align="center">
-        Search giftable <span style={{ display: 'inline-block' }}>Dota 2 items</span>
+        Search Dota 2 <span style={{ display: 'inline-block' }}>giftable items</span>
       </Typography>
     </div>
   )
