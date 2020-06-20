@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles({
   table: {
@@ -150,11 +151,15 @@ export default function SimpleTable() {
           {testData.data.slice(0, 5).map(item => (
             <TableRow key={item.id}>
               <TableCell component="th" scope="row">
-                <strong>{item.name}</strong>
-                <br />
-                <Typography variant="caption" color="textSecondary">
-                  {item.hero}
-                </Typography>
+                <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
+                  <>
+                    <strong>{item.name}</strong>
+                    <br />
+                    <Typography variant="caption" color="textSecondary">
+                      {item.hero}
+                    </Typography>
+                  </>
+                </Link>
               </TableCell>
               <TableCell align="right">{moment(item.created_at).fromNow()}</TableCell>
               <TableCell align="right">

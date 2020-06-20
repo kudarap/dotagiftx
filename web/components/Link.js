@@ -19,6 +19,16 @@ NextComposed.propTypes = {
   prefetch: PropTypes.bool,
 }
 
-export default function Link(props) {
-  return <MuiLink color="textSecondary" component={NextComposed} {...props} />
+export default function Link({ disableUnderline = false, ...other }) {
+  return (
+    <MuiLink
+      color="textSecondary"
+      component={NextComposed}
+      style={disableUnderline ? { textDecoration: 'none' } : null}
+      {...other}
+    />
+  )
+}
+Link.propTypes = {
+  disableUnderline: PropTypes.bool,
 }

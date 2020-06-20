@@ -5,7 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
-import Link from 'next/link'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -38,7 +38,7 @@ export default function () {
       <AppBar position="static" variant="outlined" className={classes.appBar}>
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
-            <Link href="/">
+            <Link href="/" disableUnderline>
               <Typography variant="h6" className={classes.title}>
                 Dota2giftables
               </Typography>
