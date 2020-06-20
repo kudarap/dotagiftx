@@ -12,6 +12,10 @@ const useStyles = makeStyles(theme => ({
   main: {
     marginTop: theme.spacing(4),
   },
+  listControl: {},
+  paginator: {
+    float: 'right',
+  },
 }))
 
 export default function Faq() {
@@ -28,9 +32,14 @@ export default function Faq() {
         <Container>
           <SearchInput value={keyword} />
 
-          <Typography>
-            Results for &quot;<strong>{keyword}</strong>&quot;
-          </Typography>
+          <div className={classes.listControl}>
+            <Typography component="span">
+              Results for &quot;<strong>{keyword}</strong>&quot;
+            </Typography>
+            <Typography component="span" className={classes.paginator}>
+              Prev 1 2 3 4 5 Next
+            </Typography>
+          </div>
 
           <ItemList />
         </Container>
