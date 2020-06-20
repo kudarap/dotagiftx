@@ -1,5 +1,6 @@
 import React from 'react'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
+import Router from 'next/router'
+import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import SearchIcon from '@material-ui/icons/Search'
@@ -36,9 +37,16 @@ export default function SearchInput() {
   const handleChange = e => {
     setValue(e.target.value)
   }
+  const handleClearValue = () => {
+    setValue('')
+  }
+  const handleSubmit = e => {
+    e.preventDefault()
+    Router.push(`/search?q=${value}`)
+  }
 
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <TextField
         className={classes.searchBar}
         InputProps={{
@@ -51,12 +59,12 @@ export default function SearchInput() {
             <InputAdornment position="end">
               {value !== '' && (
                 <>
-                  <CloseIcon className={classes.iconButtons} />
+                  <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
                   <span className={classes.verticalDivider} />
                 </>
               )}
 
-              <ArrowForwardIcon className={classes.iconButtons} />
+              <ArrowForwardIcon className={classes.iconButtons} onClick={handleSubmit} />
             </InputAdornment>
           ),
         }}
@@ -69,6 +77,6 @@ export default function SearchInput() {
         value={value}
         onChange={handleChange}
       />
-    </>
+    </form>
   )
 }
