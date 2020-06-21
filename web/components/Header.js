@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
+import SteamIcon from '@/components/SteamIcon'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -38,13 +39,13 @@ export default function () {
       <AppBar position="static" variant="outlined" className={classes.appBar}>
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
-            <Link href="/" disableStyle>
+            <Link href="/" disableUnderline>
               <Typography variant="h6" className={classes.title}>
                 Dota2giftables
               </Typography>
             </Link>
             <span style={{ flexGrow: 1 }} />
-            <Button>Sign in</Button>
+            <Button startIcon={<SteamIcon />}>Sign in</Button>
             &nbsp;&nbsp;
             <Button variant="outlined" color="secondary">
               Post Item
