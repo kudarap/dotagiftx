@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput({ value }) {
+export default function SearchInput({ value, ...other }) {
   const classes = useStyles()
 
   const [keyword, setKeyword] = React.useState(value)
@@ -47,6 +47,11 @@ export default function SearchInput({ value }) {
   }
   const handleSubmit = e => {
     e.preventDefault()
+
+    if (keyword === '') {
+      return
+    }
+
     Router.push(`/search?q=${keyword}`)
   }
 
@@ -74,13 +79,13 @@ export default function SearchInput({ value }) {
           ),
         }}
         placeholder="Search for Items by name, hero, or treasure"
-        helperText="Search on 100+ for sale items"
         variant="outlined"
         color="secondary"
         fullWidth
         autoFocus
         value={keyword}
         onChange={handleChange}
+        {...other}
       />
     </form>
   )

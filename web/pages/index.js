@@ -54,7 +54,7 @@ export default function Home() {
         <Container>
           <Banner />
 
-          <SearchInput />
+          <SearchInput helperText="Search on 92 for sale items" />
 
           <br />
           <Typography>Popular Items</Typography>

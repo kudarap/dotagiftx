@@ -152,8 +152,8 @@ export default function SimpleTable() {
         </TableHead>
         <TableBody>
           {testData.data.map(item => (
-            <TableRow key={item.id}>
-              <TableCell component="th" scope="row" className={classes.th}>
+            <TableRow key={item.id} hover>
+              <TableCell className={classes.th} component="th" scope="row">
                 <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
                   <>
                     <strong>{item.name}</strong>
