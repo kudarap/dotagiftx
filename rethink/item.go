@@ -26,7 +26,7 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, []string{"name", "hero", "origin"}}
+	return &itemStorage{c, []string{"name", "hero", "origin", "rarity"}}
 }
 
 type itemStorage struct {

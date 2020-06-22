@@ -35,6 +35,7 @@ type (
 		Hero         string     `json:"hero"         db:"hero,omitempty"        valid:"required"`
 		Image        string     `json:"image"        db:"image,omitempty"`
 		Origin       string     `json:"origin"       db:"origin,omitempty"`
+		Rarity       string     `json:"rarity"       db:"rarity,omitempty"`
 		Contributors []string   `json:"-"            db:"contributors,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
