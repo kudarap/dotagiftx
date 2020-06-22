@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
+import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles({
   table: {
@@ -92,12 +93,13 @@ export default function SimpleTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {testData.data.slice(0, 5).map(item => (
-            <TableRow key={item.id}>
+          {testData.data.map(item => (
+            <TableRow key={item.id} hover>
               <TableCell component="th" scope="row">
                 <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
                   <>
                     <strong>{item.name}</strong>
+                    <RarityTag rarity={item.rarity} />
                     <br />
                     <Typography variant="caption" color="textSecondary">
                       {item.hero}
