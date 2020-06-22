@@ -90,3 +90,15 @@ func (i Item) CheckCreate() error {
 func (i Item) MakeSlug() string {
 	return slug.Make(i.Name + " " + i.Hero)
 }
+
+const defaultItemRarity = "regular"
+
+// SetDefault sets default values for a new item.
+func (i *Item) SetDefaults() *Item {
+	if i.Rarity == "" {
+		i.Rarity = defaultItemRarity
+	}
+
+	i.Slug = i.MakeSlug()
+	return i
+}
