@@ -61,7 +61,7 @@ export default function RarityTag({ rarity }) {
 
   return (
     <Typography variant="caption" style={getRarityStyle(rarity)}>
-      {` ${rarity}`}
+      {` ${rarity} item`}
     </Typography>
   )
 }

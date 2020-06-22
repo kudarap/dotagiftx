@@ -79,11 +79,11 @@ export default function SimpleTable({
                   <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
                     <>
                       <strong>{item.name}</strong>
-                      <RarityTag rarity={item.rarity} />
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {item.hero}
                       </Typography>
+                      <RarityTag rarity={item.rarity} />
                     </>
                   </Link>
                 </TableCell>

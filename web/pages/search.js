@@ -12,7 +12,7 @@ import SearchInput from '@/components/SearchInput'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2.5),
   },
 }))
 
@@ -34,9 +34,7 @@ export default function Search() {
         <Container>
           <SearchInput value={keyword} />
 
-          <Typography>
-            Results for &quot;<strong>{keyword}</strong>&quot;
-          </Typography>
+          <br />
 
           {error && <div>failed to load</div>}
           {!data && <div>loading...</div>}

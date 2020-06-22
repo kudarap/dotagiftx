@@ -10,11 +10,11 @@ import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(4),
+    // marginTop: theme.spacing(4),
   },
   searchBar: {
     margin: '0 auto',
-    marginBottom: theme.spacing(4),
+    // marginBottom: theme.spacing(4),
     '& .MuiInputBase-root': {
       color: theme.palette.grey[800],
       backgroundColor: theme.palette.app.white,
@@ -48,9 +48,9 @@ export default function SearchInput({ value, ...other }) {
   const handleSubmit = e => {
     e.preventDefault()
 
-    if (keyword.trim() === '') {
-      return
-    }
+    // if (keyword.trim() === '') {
+    //   return
+    // }
 
     Router.push(`/search?q=${keyword}`)
   }
