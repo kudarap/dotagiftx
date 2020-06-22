@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
 import TableActions from '@/components/TableActions'
+import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles({
   table: {
@@ -23,111 +24,32 @@ const useStyles = makeStyles({
   },
 })
 
-const testData = {
-  data: [
-    {
-      id: 'fa4757c2-c5e0-4ced-a67a-7a96fe533952',
-      slug: 'allure-of-the-faeshade-flower-dark-willow',
-      name: 'Allure of the Faeshade Flower',
-      hero: 'Dark Willow',
-      image: '',
-      origin: "Collector's Cache 2018",
-      created_at: '2020-06-19T00:59:58.051+08:00',
-      updated_at: '2020-06-19T00:59:58.051+08:00',
-    },
-    {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-    {
-      id: '09175f2f-78f8-4abe-8bdd-2ed46be359a4',
-      slug: 'gothink-whisper-phantom-assassin',
-      name: 'Gothink Whisper',
-      hero: 'Phantom Assassin',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:02.118+08:00',
-      updated_at: '2020-06-19T18:06:02.118+08:00',
-    },
-    {
-      id: 'fa4757c2-c5e0-4ced-a67a-7a96fe533952',
-      slug: 'allure-of-the-faeshade-flower-dark-willow',
-      name: 'Allure of the Faeshade Flower',
-      hero: 'Dark Willow',
-      image: '',
-      origin: "Collector's Cache 2018",
-      created_at: '2020-06-19T00:59:58.051+08:00',
-      updated_at: '2020-06-19T00:59:58.051+08:00',
-    },
-    {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-    {
-      id: '09175f2f-78f8-4abe-8bdd-2ed46be359a4',
-      slug: 'gothink-whisper-phantom-assassin',
-      name: 'Gothink Whisper',
-      hero: 'Phantom Assassin',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:02.118+08:00',
-      updated_at: '2020-06-19T18:06:02.118+08:00',
-    },
-    {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-    {
-      id: '09175f2f-78f8-4abe-8bdd-2ed46be359a4',
-      slug: 'gothink-whisper-phantom-assassin',
-      name: 'Gothink Whisper',
-      hero: 'Phantom Assassin',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:02.118+08:00',
-      updated_at: '2020-06-19T18:06:02.118+08:00',
-    },
-    {
-      id: 'fa4757c2-c5e0-4ced-a67a-7a96fe533952',
-      slug: 'allure-of-the-faeshade-flower-dark-willow',
-      name: 'Allure of the Faeshade Flower',
-      hero: 'Dark Willow',
-      image: '',
-      origin: "Collector's Cache 2018",
-      created_at: '2020-06-19T00:59:58.051+08:00',
-      updated_at: '2020-06-19T00:59:58.051+08:00',
-    },
-    {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-  ],
-  result_count: 10,
-  total_count: 13,
+// background: linear-gradient(#f9ffbf 10%, #fff 90%);
+// text-shadow: 0px 0px 10px yellowgreen;
+// -webkit-background-clip: text;
+// -webkit-text-fill-color: transparent;
+
+// background: linear-gradient(#fdd08e 10%, #fff 90%);
+// text-shadow: 0px 0px 10px darkorange;
+// -webkit-background-clip: text;
+// -webkit-text-fill-color: transparent;
+
+// background: linear-gradient(#F8E8B9 10%, #fff 90%);
+// text-shadow: 0px 0px 10px goldenrod;
+// -webkit-background-clip: text;
+// -webkit-text-fill-color: transparent;
+const rarityColorMap = {
+  regular: null,
+  rare: 'yellowgreen',
+  'very rare': 'darkorange',
+  'ultra rare': 'goldenrod',
+}
+const getRarityColor = value => {
+  if (value === '') {
+    return null
+  }
+
+  return rarityColorMap[value]
 }
 
 export default function SimpleTable({
@@ -157,6 +79,7 @@ export default function SimpleTable({
                   <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
                     <>
                       <strong>{item.name}</strong>
+                      <RarityTag rarity={item.rarity} />
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {item.hero}

@@ -24,10 +24,7 @@ export default function Search() {
   const router = useRouter()
   const { q: keyword } = router.query
 
-  const { data, error } = useSWR(`http://localhost:8000/items?q=${keyword}`, fetcher)
-
-  if (error) return <div>failed to load</div>
-  if (!data) return <div>loading...</div>
+  const { data, error } = useSWR(`http://localhost:8000/items?q=${keyword}&sort=name`, fetcher)
 
   return (
     <>
@@ -41,7 +38,9 @@ export default function Search() {
             Results for &quot;<strong>{keyword}</strong>&quot;
           </Typography>
 
-          <ItemList result={data} />
+          {error && <div>failed to load</div>}
+          {!data && <div>loading...</div>}
+          {data && <ItemList result={data} />}
         </Container>
       </main>
 
