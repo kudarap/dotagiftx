@@ -14,8 +14,18 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap"
             rel="stylesheet"
           />
-          {/*<link rel="icon" href="/favicon.ico" />*/}
           <link rel="icon" href="/icon.svg" />
+
+          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53683442-6" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments)}
+                gtag("js", new Date());
+                gtag("config", "UA-53683442-1");`,
+            }}
+          />
         </Head>
         <body>
           <Main />

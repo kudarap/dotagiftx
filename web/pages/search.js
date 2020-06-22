@@ -24,7 +24,7 @@ export default function Search() {
   const router = useRouter()
   const { q: keyword } = router.query
 
-  const { data, error } = useSWR(`http://localhost:8000/items?q=${keyword}&sort=name`, fetcher)
+  const { data, error } = useSWR(`http://192.168.1.79:8000/items?q=${keyword}&sort=name`, fetcher)
 
   return (
     <>
