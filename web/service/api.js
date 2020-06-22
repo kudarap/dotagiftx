@@ -1,0 +1,35 @@
+import trimEnd from 'lodash/trimEnd'
+import * as http from './http'
+
+export const API_URL = process.env.NEXT_PUBLIC_API_URL
+export const CDN_URL = `${trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')}/`
+
+http.setBaseURL(API_URL)
+
+function apiURL(path) {
+  return path
+}
+
+// API Endpoints
+const AUTH_STEAM = '/auth/steam'
+const AUTH_RENEW = '/auth/renew'
+const AUTH_REVOKE = '/auth/revoke'
+const MY_PROFILE = '/my/profile'
+const ITEMS = '/items'
+const VERSION = '/'
+
+export const authSteam = (ot, ov) =>
+  http.request(http.GET, `${apiURL(AUTH_STEAM)}?oauth_token=${ot}&oauth_verifier=${ov}`)
+export const authRenew = refreshToken =>
+  http.request(http.POST, apiURL(AUTH_RENEW), { refresh_token: refreshToken })
+export const authRevoke = refreshToken =>
+  http.request(http.POST, apiURL(AUTH_REVOKE), { refresh_token: refreshToken })
+
+export const version = () => http.request(http.GET, apiURL(VERSION))
+
+export const myProfile = {
+  GET: () => http.authnRequest(http.GET, apiURL(MY_PROFILE)),
+  PATCH: profile => http.authnRequest(http.PATCH, apiURL(MY_PROFILE), profile),
+}
+export const item = http.baseObjectRequest(ITEMS)
+export const itemSearch = http.baseSearchRequest(ITEMS)
