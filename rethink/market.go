@@ -38,6 +38,7 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 
 func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
+		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
 		UserID:        o.UserID,
