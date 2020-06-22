@@ -1,14 +1,13 @@
 import React from 'react'
-import fetch from 'unfetch'
 import useSWR from 'swr'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import ItemList from '@/components/ItemList'
 import SearchInput from '@/components/SearchInput'
+import { fetcher } from '../service/api'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -16,15 +15,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const fetcher = url => fetch(url).then(r => r.json())
-
 export default function Search() {
   const classes = useStyles()
 
   const router = useRouter()
   const { q: keyword } = router.query
 
-  const { data, error } = useSWR(`http://192.168.1.79:8000/items?q=${keyword}&sort=name`, fetcher)
+  const { data, error } = useSWR(`/items?q=${keyword}&sort=name`, fetcher)
 
   return (
     <>
