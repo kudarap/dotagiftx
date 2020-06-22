@@ -48,7 +48,7 @@ export default function SearchInput({ value, ...other }) {
   const handleSubmit = e => {
     e.preventDefault()
 
-    if (keyword === '') {
+    if (keyword.trim() === '') {
       return
     }
 
