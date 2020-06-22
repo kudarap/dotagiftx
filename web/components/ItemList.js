@@ -127,10 +127,16 @@ const testData = {
     },
   ],
   result_count: 10,
-  total_count: 332,
+  total_count: 13,
 }
 
-export default function SimpleTable() {
+export default function SimpleTable({
+  result = {
+    data: [],
+    result_count: 0,
+    total_count: 0,
+  },
+}) {
   const classes = useStyles()
 
   return (
@@ -145,7 +151,7 @@ export default function SimpleTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {testData.data.map(item => (
+            {result.data.map(item => (
               <TableRow key={item.id} hover>
                 <TableCell className={classes.th} component="th" scope="row">
                   <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
@@ -172,7 +178,7 @@ export default function SimpleTable() {
       <TableActions
         className={classes.pagination}
         colSpan={3}
-        count={testData.data.length}
+        count={result.total_count}
         page={1}
       />
     </>

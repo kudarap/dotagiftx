@@ -1,4 +1,6 @@
 import React from 'react'
+import fetch from 'unfetch'
+import useSWR from 'swr'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -14,11 +16,18 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Faq() {
+const fetcher = url => fetch(url).then(r => r.json())
+
+export default function Search() {
   const classes = useStyles()
 
   const router = useRouter()
   const { q: keyword } = router.query
+
+  const { data, error } = useSWR(`http://localhost:8000/items?q=${keyword}`, fetcher)
+
+  if (error) return <div>failed to load</div>
+  if (!data) return <div>loading...</div>
 
   return (
     <>
@@ -32,7 +41,7 @@ export default function Faq() {
             Results for &quot;<strong>{keyword}</strong>&quot;
           </Typography>
 
-          <ItemList />
+          <ItemList result={data} />
         </Container>
       </main>
 

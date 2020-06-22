@@ -40,7 +40,11 @@ function TableActions({ count, page, rowsPerPage, onChangePage, ...other }) {
 
   return (
     <div {...other}>
-      <Typography className={classes.caption} component="span" variant="body2">
+      <Typography
+        className={classes.caption}
+        component="span"
+        variant="body2"
+        color="textSecondary">
         {resultMinCount}-{resultMaxCount >= count ? count : resultMaxCount} of {count}
       </Typography>
       <IconButton
