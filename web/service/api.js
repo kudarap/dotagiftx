@@ -16,6 +16,7 @@ const AUTH_STEAM = '/auth/steam'
 const AUTH_RENEW = '/auth/renew'
 const AUTH_REVOKE = '/auth/revoke'
 export const MY_PROFILE = '/my/profile'
+export const USERS = '/users'
 export const ITEMS = '/items'
 const VERSION = '/'
 
@@ -28,6 +29,7 @@ export const authRevoke = refreshToken =>
 
 export const version = () => http.request(http.GET, VERSION)
 export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
+export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 
 export const myProfile = {
   GET: () => http.authnRequest(http.GET, MY_PROFILE),
