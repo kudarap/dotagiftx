@@ -1,5 +1,4 @@
 import React from 'react'
-import querystring from 'querystring'
 import useSWR from 'swr'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
@@ -8,7 +7,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import ItemList from '@/components/ItemList'
 import SearchInput from '@/components/SearchInput'
-import { fetcher } from '../service/api'
+import { ITEMS, fetcher } from '../service/api'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -20,12 +19,6 @@ const defaultFilter = {
   sort: 'name',
 }
 
-function parseParams(url, filter) {
-  console.log(`parseParams ${url}?${querystring.stringify(filter)}`)
-  // return url
-  return `${url}?${querystring.stringify(filter)}`
-}
-
 export default function Search() {
   const classes = useStyles()
 
@@ -34,8 +27,7 @@ export default function Search() {
 
   const [filter, setFilter] = React.useState({ ...defaultFilter, q })
 
-  // const { data, error } = useSWR(['/items', filter], fetcher)
-  const { data, error } = useSWR(parseParams('/items', { ...filter, q }), fetcher)
+  const { data, error } = useSWR([ITEMS, filter], fetcher)
 
   const handleChangePage = (e, page) => {
     console.log(page)
