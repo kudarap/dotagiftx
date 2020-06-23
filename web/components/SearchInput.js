@@ -34,24 +34,23 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput({ value, ...other }) {
+export default function SearchInput({ value, onChange = () => {}, ...other }) {
   const classes = useStyles()
 
   const [keyword, setKeyword] = React.useState(value)
 
-  const handleChange = e => {
-    setKeyword(e.target.value)
+  const handleChange = ({ target }) => {
+    const v = target.value
+    setKeyword(v)
+    onChange(v)
   }
   const handleClearValue = () => {
     setKeyword('')
+    onChange('')
+    Router.push(`/search`)
   }
   const handleSubmit = e => {
     e.preventDefault()
-
-    // if (keyword.trim() === '') {
-    //   return
-    // }
-
     Router.push(`/search?q=${keyword}`)
   }
 

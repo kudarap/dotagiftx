@@ -3,10 +3,9 @@ import * as http from './http'
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
 export const CDN_URL = `${trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')}/`
-http.setBaseURL(API_URL)
 
 export const fetcher = url => http.request(http.GET, url)
-export const authnFetcher = url => http.request(http.GET, url)
+export const fetcherWithToken = url => http.request(http.GET, url)
 
 // API Endpoints
 const AUTH_STEAM = '/auth/steam'

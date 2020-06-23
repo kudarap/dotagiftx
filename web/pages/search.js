@@ -1,4 +1,5 @@
 import React from 'react'
+import querystring from 'querystring'
 import useSWR from 'swr'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
@@ -15,13 +16,34 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const defaultFilter = {
+  sort: 'name',
+}
+
+function parseParams(url, filter) {
+  console.log(`parseParams ${url}?${querystring.stringify(filter)}`)
+  // return url
+  return `${url}?${querystring.stringify(filter)}`
+}
+
 export default function Search() {
   const classes = useStyles()
 
   const router = useRouter()
-  const { q: keyword } = router.query
+  const { q } = router.query
 
-  const { data, error } = useSWR(`/items?q=${keyword}&sort=name`, fetcher)
+  const [filter, setFilter] = React.useState({ ...defaultFilter, q })
+
+  // const { data, error } = useSWR(['/items', filter], fetcher)
+  const { data, error } = useSWR(parseParams('/items', { ...filter, q }), fetcher)
+
+  const handleChangePage = (e, page) => {
+    console.log(page)
+  }
+
+  const handleSearchChange = value => {
+    setFilter({ ...filter, q: value })
+  }
 
   return (
     <>
@@ -29,13 +51,13 @@ export default function Search() {
 
       <main className={classes.main}>
         <Container>
-          <SearchInput value={keyword} />
+          <SearchInput value={filter.q} onChange={handleSearchChange} />
 
           <br />
 
           {error && <div>failed to load</div>}
           {!data && <div>loading...</div>}
-          {data && <ItemList result={data} />}
+          {!error && data && <ItemList result={data} onChangePage={handleChangePage} />}
         </Container>
       </main>
 

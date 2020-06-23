@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -13,9 +14,6 @@ import TableActions from '@/components/TableActions'
 import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles({
-  table: {
-    // minWidth: 650,
-  },
   th: {
     cursor: 'pointer',
   },
@@ -24,40 +22,13 @@ const useStyles = makeStyles({
   },
 })
 
-// background: linear-gradient(#f9ffbf 10%, #fff 90%);
-// text-shadow: 0px 0px 10px yellowgreen;
-// -webkit-background-clip: text;
-// -webkit-text-fill-color: transparent;
-
-// background: linear-gradient(#fdd08e 10%, #fff 90%);
-// text-shadow: 0px 0px 10px darkorange;
-// -webkit-background-clip: text;
-// -webkit-text-fill-color: transparent;
-
-// background: linear-gradient(#F8E8B9 10%, #fff 90%);
-// text-shadow: 0px 0px 10px goldenrod;
-// -webkit-background-clip: text;
-// -webkit-text-fill-color: transparent;
-const rarityColorMap = {
-  regular: null,
-  rare: 'yellowgreen',
-  'very rare': 'darkorange',
-  'ultra rare': 'goldenrod',
-}
-const getRarityColor = value => {
-  if (value === '') {
-    return null
-  }
-
-  return rarityColorMap[value]
-}
-
-export default function SimpleTable({
+export default function ItemList({
   result = {
     data: [],
     result_count: 0,
     total_count: 0,
   },
+  onChangePage,
 }) {
   const classes = useStyles()
 
@@ -103,7 +74,15 @@ export default function SimpleTable({
         colSpan={3}
         count={result.total_count}
         page={1}
+        onChangePage={onChangePage}
       />
     </>
   )
+}
+ItemList.propTypes = {
+  result: PropTypes.object.isRequired,
+  onChangePage: PropTypes.func,
+}
+ItemList.defaultProps = {
+  onChangePage: () => {},
 }

@@ -2,14 +2,12 @@
 // import fetch from 'unfetch'
 import querystring from 'querystring'
 import * as Auth from './auth'
-import { authRenew } from './api'
+import { authRenew, API_URL } from './api'
 
 export const GET = 'GET'
 export const POST = 'POST'
 export const PATCH = 'PATCH'
 export const DELETE = 'DELETE'
-
-let baseURL
 
 const defaultRequestOpts = {
   mode: 'cors',
@@ -53,7 +51,7 @@ const baseRequest = (method, endpoint, body, token = null) => {
     }
   }
 
-  return defaultFetchRetry(baseURL + endpoint, opts)
+  return defaultFetchRetry(API_URL + endpoint, opts)
     .then(response => {
       // Catch internal error.
       if (response.status === 401) {
@@ -121,10 +119,6 @@ export function baseObjectRequest(endpoint) {
 // Basic domain search request.
 export function baseSearchRequest(endpoint) {
   return (filter = {}) => authnRequest(GET, `${endpoint}?${querystring.stringify(filter)}`)
-}
-
-export function setBaseURL(url) {
-  baseURL = url
 }
 
 // HTTP Interceptor
