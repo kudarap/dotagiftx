@@ -54,13 +54,13 @@ const getRarityStyle = value => {
   return rarityStylerMap[value]
 }
 
-export default function RarityTag({ rarity }) {
+export default function RarityTag({ rarity, ...other }) {
   if (rarity === '' || rarity === 'regular') {
     return null
   }
 
   return (
-    <Typography variant="caption" style={getRarityStyle(rarity)}>
+    <Typography variant="caption" {...other} style={getRarityStyle(rarity)}>
       {` ${rarity} item`}
     </Typography>
   )

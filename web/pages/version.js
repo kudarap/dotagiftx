@@ -1,8 +1,8 @@
 import Head from 'next/head'
-import { version } from '../service/api'
 import Container from '@/components/Container'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { version } from '@/service/api'
 
 export default function Version({ data }) {
   return (

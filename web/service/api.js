@@ -27,10 +27,10 @@ export const authRevoke = refreshToken =>
   http.request(http.POST, AUTH_REVOKE, { refresh_token: refreshToken })
 
 export const version = () => http.request(http.GET, VERSION)
+export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
 
 export const myProfile = {
   GET: () => http.authnRequest(http.GET, MY_PROFILE),
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
-export const item = http.baseObjectRequest(ITEMS)
 export const itemSearch = http.baseSearchRequest(ITEMS)
