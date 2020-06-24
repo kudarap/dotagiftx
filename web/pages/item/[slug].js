@@ -72,11 +72,12 @@ export default function ItemDetails({ data }) {
 }
 
 // This gets called on every request
-export async function getServerSideProps() {
+export async function getServerSideProps({ params }) {
+  const { slug } = params
   // Fetch data from external API
   // const res = await fetch(API_URL)
   // const data = await res.json()
-  const data = await item('pipe-of-dezun-dazzle')
+  const data = await item(slug)
 
   // Pass data to the page via props
   return { props: { data } }
