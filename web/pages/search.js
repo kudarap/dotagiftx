@@ -28,23 +28,33 @@ export default function Search() {
   const router = useRouter()
   const { query } = router
   query.page = Number(query.page || 1)
+  const [filter, setFilter] = React.useState({
+    ...defaultFilter,
+    ...query,
+  })
 
-  const [filter, setFilter] = React.useState({ ...defaultFilter, page: query.page })
   const { data: items, error } = useSWR([ITEMS, filter], fetcher)
-
   React.useEffect(() => {
-    const { page = 1 } = query
-    setFilter({ ...filter, page })
+    setFilter({ ...filter, ...query })
   }, [query])
 
-  const handleSearchChange = q => {
-    setFilter({ ...filter, q })
+  const routerPush = f => {
+    router.push(`/search?${querystring.stringify(f)}`)
   }
 
-  const handleChangePage = (e, page) => {
+  const handleSearchSubmit = q => {
+    const f = { ...filter, q, page: 1 }
+    setFilter(f)
+    routerPush({ q })
+  }
+  const handleSearchClear = () => {
+    setFilter({ ...filter, q: '' })
+    routerPush()
+  }
+  const handlePageChange = (e, page) => {
     const f = { ...filter, page }
     setFilter(f)
-    router.push(`/search?${querystring.stringify(f)}`)
+    routerPush(f)
   }
 
   return (
@@ -53,21 +63,20 @@ export default function Search() {
 
       <main className={classes.main}>
         <Container>
-          <SearchInput value={filter.q} onChange={handleSearchChange} />
-
+          <SearchInput value={filter.q} onSubmit={handleSearchSubmit} onClear={handleSearchClear} />
           <br />
 
           {error && <div>failed to load</div>}
           {!items && <div>loading...</div>}
           {!error && items && (
             <div>
-              <ItemList items={items.data} onChangePage={handleChangePage} />
+              <ItemList items={items.data} />
               <TablePagination
                 colSpan={3}
                 style={{ textAlign: 'right' }}
                 page={filter.page}
                 count={items.total_count}
-                onChangePage={handleChangePage}
+                onChangePage={handlePageChange}
               />
             </div>
           )}

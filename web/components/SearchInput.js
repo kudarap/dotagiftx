@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
@@ -34,7 +33,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput({ value, onChange = () => {}, ...other }) {
+export default function SearchInput(props) {
+  const { value, onChange, onSubmit, onClear, ...other } = props
+
   const classes = useStyles()
 
   const [keyword, setKeyword] = React.useState(value)
@@ -47,11 +48,11 @@ export default function SearchInput({ value, onChange = () => {}, ...other }) {
   const handleClearValue = () => {
     setKeyword('')
     onChange('')
-    Router.push(`/search`)
+    onClear()
   }
   const handleSubmit = e => {
     e.preventDefault()
-    Router.push(`/search?q=${keyword}`)
+    onSubmit(keyword)
   }
 
   return (
@@ -91,7 +92,13 @@ export default function SearchInput({ value, onChange = () => {}, ...other }) {
 }
 SearchInput.propTypes = {
   value: PropTypes.string,
+  onChange: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onClear: PropTypes.func,
 }
 SearchInput.defaultProps = {
   value: '',
+  onChange: () => {},
+  onSubmit: () => {},
+  onClear: () => {},
 }
