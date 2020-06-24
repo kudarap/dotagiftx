@@ -10,7 +10,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
-import TableActions from '@/components/TableActions'
+import TablePagination from '@/components/TableActions'
 import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles({
@@ -78,7 +78,7 @@ export default function ItemList({
           </TableBody>
         </Table>
       </TableContainer>
-      <TableActions
+      <TablePagination
         className={classes.pagination}
         colSpan={3}
         count={result.total_count}
