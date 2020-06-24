@@ -9,7 +9,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
-import Button from '@/components/Button'
+import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles(theme => ({
@@ -308,7 +308,7 @@ export default function SimpleTable() {
                 <Typography variant="body2">${market.price.toFixed(2)}</Typography>
               </TableCell>
               <TableCell align="right">
-                <Button variant="outlined">Reserve</Button>
+                <BuyButton variant="contained">Reserve</BuyButton>
               </TableCell>
             </TableRow>
           ))}

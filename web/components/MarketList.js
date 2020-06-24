@@ -9,10 +9,9 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import lightGreen from '@material-ui/core/colors/green'
 import Link from '@/components/Link'
 import { CDN_URL } from '@/service/api'
-import Button from '@/components/Button'
+import BuyButton from '@/components/BuyButton'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -25,16 +24,6 @@ const useStyles = makeStyles(theme => ({
     // color: lightGreen[500],
   },
 }))
-
-const BuyButton = withStyles(theme => ({
-  root: {
-    color: theme.palette.getContrastText(lightGreen[600]),
-    backgroundColor: lightGreen[600],
-    '&:hover': {
-      backgroundColor: lightGreen[700],
-    },
-  },
-}))(Button)
 
 const testData = {
   data: [
