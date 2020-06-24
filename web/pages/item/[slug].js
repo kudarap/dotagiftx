@@ -63,7 +63,11 @@ export default function ItemDetails({ data }) {
                 <Typography color="textSecondary" component="span">
                   {`rarity: `}
                 </Typography>
-                <RarityTag rarity={data.rarity} variant="body1" component="span" />
+                {data.rarity === 'regular' ? (
+                  data.rarity
+                ) : (
+                  <RarityTag rarity={data.rarity} variant="body1" component="span" />
+                )}
                 <br />
 
                 <Typography color="textSecondary" component="span">

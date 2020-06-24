@@ -285,10 +285,8 @@ export default function SimpleTable() {
         <TableHead>
           <TableRow>
             <TableCell>Item Name</TableCell>
-            <TableCell align="right" width={150}>
-              Price
-            </TableCell>
-            <TableCell align="right" width={150}>{` `}</TableCell>
+            <TableCell align="right">Price</TableCell>
+            <TableCell align="right" />
           </TableRow>
         </TableHead>
         <TableBody>

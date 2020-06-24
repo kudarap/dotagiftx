@@ -55,7 +55,7 @@ const getRarityStyle = value => {
 }
 
 export default function RarityTag({ rarity, ...other }) {
-  if (rarity === '') {
+  if (rarity === '' || rarity === 'regular') {
     return null
   }
 
