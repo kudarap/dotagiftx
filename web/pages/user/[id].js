@@ -19,12 +19,16 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(4),
   },
   details: {
-    [theme.breakpoints.down('sm')]: {
-      // textAlign: 'center',
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+      display: 'block',
     },
     display: 'inline-flex',
   },
   avatar: {
+    [theme.breakpoints.down('xs')]: {
+      margin: '0 auto',
+    },
     width: 100,
     height: 100,
     marginRight: theme.spacing(1.5),
@@ -40,7 +44,7 @@ export default function UserDetails({ data }) {
   return (
     <>
       <Head>
-        <title>User {id}</title>
+        <title>{data.name} store | Dota 2 Giftables</title>
       </Head>
 
       <Header />
@@ -48,7 +52,7 @@ export default function UserDetails({ data }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <Avatar className={classes.avatar} src={CDN_URL + data.avatar} sizes={100} />
+            <Avatar className={classes.avatar} src={CDN_URL + data.avatar} />
             <div>
               <Typography variant="h4">{data.name}</Typography>
               <Typography gutterBottom>
