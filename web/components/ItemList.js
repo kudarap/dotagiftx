@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, withStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -22,6 +22,13 @@ const useStyles = makeStyles({
   },
 })
 
+const StyledTableCell = withStyles(theme => ({
+  head: {
+    fontWeight: 'normal',
+    // color: theme.palette.text.secondary,
+  },
+}))(TableCell)
+
 export default function ItemList({
   result = {
     data: [],
@@ -38,9 +45,9 @@ export default function ItemList({
         <Table className={classes.table} aria-label="items table">
           <TableHead>
             <TableRow>
-              <TableCell>Item Name</TableCell>
-              <TableCell align="right">Qty</TableCell>
-              <TableCell align="right">Price</TableCell>
+              <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell align="right">Qty</StyledTableCell>
+              <StyledTableCell align="right">Price</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -58,11 +65,13 @@ export default function ItemList({
                     </>
                   </Link>
                 </TableCell>
-                <TableCell align="right">{item.name.length}</TableCell>
                 <TableCell align="right">
-                  <Typography variant="body2" color="secondary">
-                    ${item.hero.length.toFixed(2)}
+                  <Typography variant="body2" color="textSecondary">
+                    {item.name.length}
                   </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="body2">${item.hero.length.toFixed(2)}</Typography>
                 </TableCell>
               </TableRow>
             ))}

@@ -44,15 +44,15 @@ export default function ItemDetails({ data }) {
             <Typography variant="h4">{data.name}</Typography>
             <Typography gutterBottom>
               <Typography color="textSecondary" component="span">
-                {`rarity: `}
-              </Typography>
-              <RarityTag rarity={data.rarity} variant="body1" component="span" />
-              <br />
-
-              <Typography color="textSecondary" component="span">
                 {`hero: `}
               </Typography>
               {data.hero}
+              <br />
+
+              <Typography color="textSecondary" component="span">
+                {`rarity: `}
+              </Typography>
+              <RarityTag rarity={data.rarity} variant="body1" component="span" />
               <br />
 
               <Typography color="textSecondary" component="span">

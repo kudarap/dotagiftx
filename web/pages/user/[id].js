@@ -9,7 +9,7 @@ import { CDN_URL, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
-import ItemListRecent from '@/components/ItemListRecent'
+import UserMarketList from '@/components/UserMarketList'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -74,7 +74,7 @@ export default function UserDetails({ data }) {
             </div>
           </div>
 
-          <ItemListRecent />
+          <UserMarketList />
         </Container>
       </main>
 

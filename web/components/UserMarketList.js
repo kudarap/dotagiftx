@@ -1,6 +1,5 @@
 import React from 'react'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
+import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -9,32 +8,18 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import lightGreen from '@material-ui/core/colors/green'
 import Link from '@/components/Link'
-import { CDN_URL } from '@/service/api'
 import Button from '@/components/Button'
+import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles(theme => ({
   seller: {
     display: 'inline-flex',
   },
-  avatar: {
-    margin: theme.spacing(0, 1.5, 0, 1),
-  },
-  button: {
-    // color: lightGreen[500],
+  itemName: {
+    marginLeft: theme.spacing(2),
   },
 }))
-
-const BuyButton = withStyles(theme => ({
-  root: {
-    color: theme.palette.getContrastText(lightGreen[700]),
-    backgroundColor: lightGreen[700],
-    '&:hover': {
-      backgroundColor: lightGreen[600],
-    },
-  },
-}))(Button)
 
 const testData = {
   data: [
@@ -299,7 +284,7 @@ export default function SimpleTable() {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Seller</TableCell>
+            <TableCell>Item Name</TableCell>
             <TableCell align="right" width={150}>
               Price
             </TableCell>
@@ -310,16 +295,14 @@ export default function SimpleTable() {
           {testData.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
-                <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
-                  <div className={classes.seller}>
-                    <Avatar className={classes.avatar} src={CDN_URL + market.user.avatar} />
-                    <div>
-                      <strong>{market.user.name}</strong>
-                      <br />
-                      <Typography variant="caption" color="textSecondary">
-                        {market.user.steam_id}
-                      </Typography>
-                    </div>
+                <Link href="/item/[slug]" as={`/item/${market.item.slug}`} disableUnderline>
+                  <div className={classes.itemName}>
+                    <strong>{market.item.name}</strong>
+                    <br />
+                    <Typography variant="caption" color="textSecondary">
+                      {market.item.hero}
+                    </Typography>
+                    <RarityTag rarity={market.item.rarity} />
                   </div>
                 </Link>
               </TableCell>
@@ -327,7 +310,7 @@ export default function SimpleTable() {
                 <Typography variant="body2">${market.price.toFixed(2)}</Typography>
               </TableCell>
               <TableCell align="right">
-                <BuyButton variant="contained">Reserve</BuyButton>
+                <Button variant="outlined">Reserve</Button>
               </TableCell>
             </TableRow>
           ))}
