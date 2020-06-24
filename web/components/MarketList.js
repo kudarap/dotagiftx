@@ -28,10 +28,10 @@ const useStyles = makeStyles(theme => ({
 
 const BuyButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(lightGreen[700]),
-    backgroundColor: lightGreen[700],
+    color: theme.palette.getContrastText(lightGreen[600]),
+    backgroundColor: lightGreen[600],
     '&:hover': {
-      backgroundColor: lightGreen[600],
+      backgroundColor: lightGreen[700],
     },
   },
 }))(Button)
