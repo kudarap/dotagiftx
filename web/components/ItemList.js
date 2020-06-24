@@ -24,8 +24,8 @@ const useStyles = makeStyles({
 
 const StyledTableCell = withStyles(theme => ({
   head: {
-    fontWeight: 'normal',
-    // color: theme.palette.text.secondary,
+    textTransform: 'uppercase',
+    color: theme.palette.text.secondary,
   },
 }))(TableCell)
 
