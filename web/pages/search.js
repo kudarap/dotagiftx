@@ -7,7 +7,8 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import ItemList from '@/components/ItemList'
 import SearchInput from '@/components/SearchInput'
-import { ITEMS, fetcher } from '../service/api'
+import TablePagination from '@/components/TablePagination'
+import { ITEMS, fetcher } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -27,7 +28,7 @@ export default function Search() {
 
   const [filter, setFilter] = React.useState({ ...defaultFilter, q })
 
-  const { data, error } = useSWR([ITEMS, filter], fetcher)
+  const { data: items, error } = useSWR([ITEMS, filter], fetcher)
 
   const handleChangePage = (e, page) => {
     console.log(page)
@@ -48,8 +49,19 @@ export default function Search() {
           <br />
 
           {error && <div>failed to load</div>}
-          {!data && <div>loading...</div>}
-          {!error && data && <ItemList result={data} onChangePage={handleChangePage} />}
+          {!items && <div>loading...</div>}
+          {!error && items && (
+            <div>
+              <ItemList items={items.data} onChangePage={handleChangePage} />
+              <TablePagination
+                page={1}
+                colSpan={3}
+                style={{ textAlign: 'right' }}
+                count={items.total_count}
+                onChangePage={handleChangePage}
+              />
+            </div>
+          )}
         </Container>
       </main>
 

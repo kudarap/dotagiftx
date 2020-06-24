@@ -10,7 +10,6 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
-import TablePagination from '@/components/TableActions'
 import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles({
@@ -29,14 +28,7 @@ const StyledTableCell = withStyles(theme => ({
   },
 }))(TableCell)
 
-export default function ItemList({
-  result = {
-    data: [],
-    result_count: 0,
-    total_count: 0,
-  },
-  onChangePage,
-}) {
+export default function ItemList({ items = [] }) {
   const classes = useStyles()
 
   return (
@@ -51,7 +43,7 @@ export default function ItemList({
             </TableRow>
           </TableHead>
           <TableBody>
-            {result.data.map(item => (
+            {items.map(item => (
               <TableRow key={item.id} hover>
                 <TableCell className={classes.th} component="th" scope="row">
                   <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
@@ -78,20 +70,9 @@ export default function ItemList({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        className={classes.pagination}
-        colSpan={3}
-        count={result.total_count}
-        page={1}
-        onChangePage={onChangePage}
-      />
     </>
   )
 }
 ItemList.propTypes = {
-  result: PropTypes.object.isRequired,
-  onChangePage: PropTypes.func,
-}
-ItemList.defaultProps = {
-  onChangePage: () => {},
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
