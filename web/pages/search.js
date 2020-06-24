@@ -1,5 +1,6 @@
 import React from 'react'
 import useSWR from 'swr'
+import querystring from 'querystring'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Footer from '@/components/Footer'
@@ -18,24 +19,32 @@ const useStyles = makeStyles(theme => ({
 
 const defaultFilter = {
   sort: 'name',
+  page: 1,
 }
 
 export default function Search() {
   const classes = useStyles()
 
   const router = useRouter()
-  const { q } = router.query
+  const { query } = router
+  query.page = Number(query.page || 1)
 
-  const [filter, setFilter] = React.useState({ ...defaultFilter, q })
-
+  const [filter, setFilter] = React.useState({ ...defaultFilter, page: query.page })
   const { data: items, error } = useSWR([ITEMS, filter], fetcher)
 
-  const handleChangePage = (e, page) => {
-    console.log(page)
+  React.useEffect(() => {
+    const { page = 1 } = query
+    setFilter({ ...filter, page })
+  }, [query])
+
+  const handleSearchChange = q => {
+    setFilter({ ...filter, q })
   }
 
-  const handleSearchChange = value => {
-    setFilter({ ...filter, q: value })
+  const handleChangePage = (e, page) => {
+    const f = { ...filter, page }
+    setFilter(f)
+    router.push(`/search?${querystring.stringify(f)}`)
   }
 
   return (
@@ -54,9 +63,9 @@ export default function Search() {
             <div>
               <ItemList items={items.data} onChangePage={handleChangePage} />
               <TablePagination
-                page={1}
                 colSpan={3}
                 style={{ textAlign: 'right' }}
+                page={filter.page}
                 count={items.total_count}
                 onChangePage={handleChangePage}
               />

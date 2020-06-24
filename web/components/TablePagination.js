@@ -19,7 +19,7 @@ function TablePagination({ count, page, rowsPerPage, onChangePage, ...other }) {
   const theme = useTheme()
 
   const handleFirstPageButtonClick = evt => {
-    onChangePage(evt, 0)
+    onChangePage(evt, 1)
   }
 
   const handleBackButtonClick = evt => {
@@ -31,7 +31,7 @@ function TablePagination({ count, page, rowsPerPage, onChangePage, ...other }) {
   }
 
   const handleLastPageButtonClick = evt => {
-    onChangePage(evt, Math.max(0, Math.ceil(count / rowsPerPage) - 1))
+    onChangePage(evt, Math.max(0, Math.ceil(count / rowsPerPage)))
   }
 
   const cPage = page === 0 ? 1 : page
@@ -49,22 +49,22 @@ function TablePagination({ count, page, rowsPerPage, onChangePage, ...other }) {
       </Typography>
       <IconButton
         onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
+        disabled={page === 1}
         aria-label="First Page">
         {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="Previous Page">
+      <IconButton onClick={handleBackButtonClick} disabled={page === 1} aria-label="Previous Page">
         {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        disabled={page >= Math.ceil(count / rowsPerPage)}
         aria-label="Next Page">
         {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        disabled={page >= Math.ceil(count / rowsPerPage)}
         aria-label="Last Page">
         {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
