@@ -18,6 +18,8 @@ const AUTH_REVOKE = '/auth/revoke'
 export const MY_PROFILE = '/my/profile'
 export const USERS = '/users'
 export const ITEMS = '/items'
+export const MARKETS = '/markets'
+export const MARKET_INDEX = '/market_index'
 const VERSION = '/'
 
 export const authSteam = (ot, ov) =>

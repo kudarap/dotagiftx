@@ -59,11 +59,11 @@ export default function ItemList({ items = [] }) {
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="body2" color="textSecondary">
-                    {item.name.length}
+                    {item.quantity}
                   </Typography>
                 </TableCell>
                 <TableCell align="right">
-                  <Typography variant="body2">${item.hero.length.toFixed(2)}</Typography>
+                  <Typography variant="body2">${item.lowest_ask}</Typography>
                 </TableCell>
               </TableRow>
             ))}
