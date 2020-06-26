@@ -64,7 +64,7 @@ type (
 		HighestBid float64    `json:"highest_bid" db:"highest_bid,omitempty"`
 		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty"`
 		// Include related fields.
-		Item `json:"item,omitempty"`
+		Item
 	}
 
 	// MarketService provides access to market service.
