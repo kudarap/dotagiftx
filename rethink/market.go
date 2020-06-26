@@ -108,6 +108,7 @@ func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
 		Zip()
 
 	var res []core.MarketIndex
+	o.KeywordFields = s.keywordFields
 	q = newFindOptsQuery(q, o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)

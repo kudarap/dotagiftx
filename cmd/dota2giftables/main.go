@@ -85,7 +85,7 @@ func (a *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 
 	fmt.Println("FindIndex")
-	fmt.Println(marketStg.FindIndex(core.FindOpts{}))
+	fmt.Println(marketStg.FindIndex(core.FindOpts{Keyword: "2019"}))
 
 	// Service inits.
 	log.Println("setting up services...")
