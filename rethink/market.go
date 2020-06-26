@@ -102,10 +102,7 @@ func (s *marketStorage) Update(in *core.Market) error {
 }
 
 func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
-	q := s.table().GroupByIndex(marketFieldItemID).Ungroup().
-		Map(groupIndexMap).
-		EqJoin(marketFieldItemID, r.Table(tableItem)).
-		Zip()
+	q := s.indexBaseQuery()
 
 	var res []core.MarketIndex
 	o.KeywordFields = s.keywordFields
@@ -115,6 +112,25 @@ func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
 	}
 
 	return res, nil
+}
+
+func (s *marketStorage) CountIndex(o core.FindOpts) (num int, err error) {
+	q := s.indexBaseQuery()
+	o = core.FindOpts{
+		Keyword:       o.Keyword,
+		KeywordFields: s.keywordFields,
+		Filter:        o.Filter,
+	}
+	q = newFindOptsQuery(q, o)
+	err = s.db.one(q.Count(), &num)
+	return
+}
+
+func (s *marketStorage) indexBaseQuery() r.Term {
+	return s.table().GroupByIndex(marketFieldItemID).Ungroup().
+		Map(groupIndexMap).
+		EqJoin(marketFieldItemID, r.Table(tableItem)).
+		Zip()
 }
 
 func (s *marketStorage) table() r.Term {

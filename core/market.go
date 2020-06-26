@@ -103,6 +103,9 @@ type (
 
 		// Find returns a list o aggregated market index from data store.
 		FindIndex(opts FindOpts) ([]MarketIndex, error)
+
+		// Count returns number of aggregated market index from data store.
+		CountIndex(FindOpts) (int, error)
 	}
 )
 

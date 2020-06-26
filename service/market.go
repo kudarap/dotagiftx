@@ -153,7 +153,7 @@ func (s *marketService) Index(opts core.FindOpts) ([]core.MarketIndex, *core.Fin
 	}
 
 	// Get result and total count for metadata.
-	tc, err := s.marketStg.Count(opts)
+	tc, err := s.marketStg.CountIndex(opts)
 	if err != nil {
 		return nil, nil, err
 	}
