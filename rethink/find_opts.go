@@ -49,7 +49,7 @@ func (o findOpts) parseKeyword() interface{} {
 	}
 
 	return func(t r.Term) r.Term {
-		// Concatenate values of search fields to creat a fake index.
+		// Concatenate values of search fields to create a fake index.
 		f := t.Field(o.KeywordFields[0])
 		for _, kf := range o.KeywordFields[1:] {
 			f = f.Add(" ", t.Field(kf))

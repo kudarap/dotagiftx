@@ -9,12 +9,19 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableMarket = "market"
+const (
+	tableMarket       = "market"
+	marketFieldItemID = "item_id"
+)
 
 // NewMarket creates new instance of market data store.
 func NewMarket(c *Client) core.MarketStorage {
 	if err := c.autoMigrate(tableMarket); err != nil {
 		log.Fatalf("could not create %s table: %s", tableMarket, err)
+	}
+
+	if err := c.createIndex(tableMarket, marketFieldItemID); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
 	return &marketStorage{c, []string{"name", "hero", "origin"}}
@@ -94,6 +101,55 @@ func (s *marketStorage) Update(in *core.Market) error {
 	return nil
 }
 
+func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
+	q := s.table().GroupByIndex(marketFieldItemID).Ungroup().
+		Map(groupIndexMap).
+		EqJoin(marketFieldItemID, r.Table(tableItem)).
+		Zip()
+
+	var res []core.MarketIndex
+	q = newFindOptsQuery(q, o)
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return res, nil
+}
+
 func (s *marketStorage) table() r.Term {
 	return r.Table(tableMarket)
+}
+
+func groupIndexMap(market r.Term) interface{} {
+	//r.db('dotagiftables').table('market').group({index: 'item_id'}).ungroup().map(
+	//    function (doc) {
+	//      let liveMarket = doc('reduction').filter({status: 200});
+	//      return {
+	//        item_id: doc('group'),
+	//        quantity: liveMarket.count(),
+	//        lowest_ask: liveMarket.min('price')('price').default(0),
+	//        highest_bid: liveMarket.max('price')('price').default(0),
+	//        recent_ask: liveMarket.max('created_at')('created_at').default(null),
+	//        item: r.db('dotagiftables').table('item').get(doc('group')),
+	//      };
+	//    }
+	//)
+
+	id := market.Field("group")
+	live := market.Field("reduction").Filter(core.Market{Status: core.MarketStatusLive})
+	return struct {
+		ItemID     r.Term `db:"item_id"`
+		Quantity   r.Term `db:"quantity"`
+		LowestAsk  r.Term `db:"lowest_ask"`
+		HighestBid r.Term `db:"highest_bid"`
+		RecentAsk  r.Term `db:"recent_ask"`
+		//Item       r.Term `db:"item"`
+	}{
+		id,
+		live.Count().Default(0),
+		live.Min("price").Field("price").Default(0),
+		live.Max("price").Field("price").Default(0),
+		live.Max("created_at").Field("created_at").Default(nil),
+		//r.Table(tableItem).Get(id),
+	}
 }
