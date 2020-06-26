@@ -28,7 +28,7 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 	if err != nil {
 		return nil, nil, err
 	}
-	for i, _ := range res {
+	for i := range res {
 		s.getRelatedFields(&res[i])
 	}
 
@@ -140,4 +140,26 @@ func (s *marketService) userMarket(userID, id string) (*core.Market, error) {
 	}
 
 	return cur, nil
+}
+
+func (s *marketService) Index(opts core.FindOpts) ([]core.MarketIndex, *core.FindMetadata, error) {
+	res, err := s.marketStg.FindIndex(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !opts.WithMeta {
+		return res, nil, err
+	}
+
+	// Get result and total count for metadata.
+	tc, err := s.marketStg.Count(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return res, &core.FindMetadata{
+		ResultCount: len(res),
+		TotalCount:  tc,
+	}, nil
 }

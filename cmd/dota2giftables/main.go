@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dota2giftables/core"
-
 	"github.com/kudarap/dota2giftables/gokit/envconf"
 	"github.com/kudarap/dota2giftables/gokit/file"
 	"github.com/kudarap/dota2giftables/gokit/logger"
@@ -83,9 +81,6 @@ func (a *application) setup() error {
 	authStg := rethink.NewAuth(rethinkClient)
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
-
-	fmt.Println("FindIndex")
-	fmt.Println(marketStg.FindIndex(core.FindOpts{Keyword: "2019"}))
 
 	// Service inits.
 	log.Println("setting up services...")

@@ -80,6 +80,9 @@ type (
 
 		// Update saves market details changes.
 		Update(context.Context, *Market) error
+
+		// Index returns a list of indexed markets.
+		Index(opts FindOpts) ([]MarketIndex, *FindMetadata, error)
 	}
 
 	MarketStorage interface {
