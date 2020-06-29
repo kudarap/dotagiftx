@@ -22,6 +22,7 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/", handleMarketList(s.marketSvc))
 			r.Get("/{id}", handleMarketDetail(s.marketSvc))
 		})
+		r.Get("/market_index", handleMarketIndexList(s.marketSvc))
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
 	})
 }

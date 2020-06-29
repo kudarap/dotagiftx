@@ -42,13 +42,19 @@ export default function () {
       <Container disableMinHeight>
         <ul className={classes.list}>
           <li>
-            <Link href="/about">About</Link>
+            <Link href="/about" color="textSecondary">
+              About
+            </Link>
           </li>
           <li>
-            <Link href="/faq">FAQ</Link>
+            <Link href="/faq" color="textSecondary">
+              FAQ
+            </Link>
           </li>
           <li>
-            <Link href="/privacy">Privacy</Link>
+            <Link href="/privacy" color="textSecondary">
+              Privacy
+            </Link>
           </li>
           <li>
             <MuiLink

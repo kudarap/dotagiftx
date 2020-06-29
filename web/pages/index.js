@@ -1,4 +1,5 @@
 import React from 'react'
+import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
@@ -37,7 +38,7 @@ function Banner() {
   return (
     <div className={classes.banner}>
       <Typography className={classes.bannerText} variant="h3" align="center">
-        Search Dota 2 <span style={{ display: 'inline-block' }}>giftable items</span>
+        Search for Dota 2 <span style={{ display: 'inline-block' }}>giftable items</span>
       </Typography>
     </div>
   )
@@ -45,6 +46,10 @@ function Banner() {
 
 export default function Home() {
   const classes = useStyles()
+
+  const handleSubmit = keyword => {
+    Router.push(`/search?q=${keyword}`)
+  }
 
   return (
     <>
@@ -54,7 +59,7 @@ export default function Home() {
         <Container>
           <Banner />
 
-          <SearchInput />
+          <SearchInput helperText="Search on 92 for sale items" onSubmit={handleSubmit} />
 
           <br />
           <Typography>Popular Items</Typography>

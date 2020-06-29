@@ -53,7 +53,8 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 
 	itm.Name = strings.TrimSpace(itm.Name)
 	itm.Hero = strings.TrimSpace(itm.Hero)
-	itm.Slug = itm.MakeSlug()
+	itm.Rarity = strings.ToLower(itm.Rarity)
+	itm = itm.SetDefaults()
 	if err := itm.CheckCreate(); err != nil {
 		return errors.New(core.ItemErrRequiredFields, err)
 	}

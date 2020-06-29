@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
+import SteamIcon from '@/components/SteamIcon'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -16,8 +17,9 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     [theme.breakpoints.down('sm')]: {
-      fontSize: 17,
+      fontSize: 15,
     },
+    fontSize: 17,
     textShadow: '0px 0px 16px #C79123',
     textTransform: 'uppercase',
     // fontWeight: 'bold',
@@ -40,11 +42,11 @@ export default function () {
           <Toolbar variant="dense" disableGutters>
             <Link href="/" disableUnderline>
               <Typography variant="h6" className={classes.title}>
-                Dota2giftables
+                Dota2Giftables
               </Typography>
             </Link>
             <span style={{ flexGrow: 1 }} />
-            <Button>Sign in</Button>
+            <Button startIcon={<SteamIcon />}>Sign in</Button>
             &nbsp;&nbsp;
             <Button variant="outlined" color="secondary">
               Post Item

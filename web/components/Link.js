@@ -22,7 +22,7 @@ NextComposed.propTypes = {
 export default function Link({ disableUnderline = false, ...other }) {
   return (
     <MuiLink
-      color="textSecondary"
+      color="textPrimary"
       component={NextComposed}
       style={disableUnderline ? { textDecoration: 'none' } : null}
       {...other}

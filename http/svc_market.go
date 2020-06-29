@@ -74,3 +74,24 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 		respondOK(w, s)
 	}
 }
+
+func handleMarketIndexList(svc core.MarketService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		opts, err := findOptsFromURL(r.URL, &core.Market{})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		list, md, err := svc.Index(opts)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		if list == nil {
+			list = []core.MarketIndex{}
+		}
+
+		respondOK(w, newDataWithMeta(list, md))
+	}
+}

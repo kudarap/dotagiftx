@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
@@ -10,11 +9,11 @@ import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(4),
+    // marginTop: theme.spacing(4),
   },
   searchBar: {
     margin: '0 auto',
-    marginBottom: theme.spacing(4),
+    // marginBottom: theme.spacing(4),
     '& .MuiInputBase-root': {
       color: theme.palette.grey[800],
       backgroundColor: theme.palette.app.white,
@@ -34,20 +33,26 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput({ value }) {
+export default function SearchInput(props) {
+  const { value, onChange, onSubmit, onClear, ...other } = props
+
   const classes = useStyles()
 
   const [keyword, setKeyword] = React.useState(value)
 
-  const handleChange = e => {
-    setKeyword(e.target.value)
+  const handleChange = ({ target }) => {
+    const v = target.value
+    setKeyword(v)
+    onChange(v)
   }
   const handleClearValue = () => {
     setKeyword('')
+    onChange('')
+    onClear()
   }
   const handleSubmit = e => {
     e.preventDefault()
-    Router.push(`/search?q=${keyword}`)
+    onSubmit(keyword)
   }
 
   return (
@@ -73,21 +78,27 @@ export default function SearchInput({ value }) {
             </InputAdornment>
           ),
         }}
-        placeholder="Search Item, Hero, Treasure..."
-        helperText="Search on 100+ for sale items"
+        placeholder="Search for Items by name, hero, or treasure"
         variant="outlined"
         color="secondary"
         fullWidth
         autoFocus
         value={keyword}
         onChange={handleChange}
+        {...other}
       />
     </form>
   )
 }
 SearchInput.propTypes = {
   value: PropTypes.string,
+  onChange: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onClear: PropTypes.func,
 }
 SearchInput.defaultProps = {
   value: '',
+  onChange: () => {},
+  onSubmit: () => {},
+  onClear: () => {},
 }

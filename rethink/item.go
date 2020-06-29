@@ -26,7 +26,7 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, []string{"name", "hero", "origin"}}
+	return &itemStorage{c, []string{"name", "hero", "origin", "rarity"}}
 }
 
 type itemStorage struct {
@@ -47,6 +47,7 @@ func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
 
 func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
+		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
 		UserID:        o.UserID,

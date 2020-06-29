@@ -1,16 +1,19 @@
 import React from 'react'
+import useSWR from 'swr'
+import querystring from 'querystring'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import ItemList from '@/components/ItemList'
 import SearchInput from '@/components/SearchInput'
+import TablePagination from '@/components/TablePagination'
+import { MARKET_INDEX, fetcher } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2.5),
   },
   listControl: {},
   paginator: {
@@ -18,11 +21,45 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Faq() {
+const defaultFilter = {
+  sort: 'name',
+  page: 1,
+}
+
+export default function Search() {
   const classes = useStyles()
 
   const router = useRouter()
-  const { q: keyword } = router.query
+  const { query } = router
+  query.page = Number(query.page || 1)
+  const [filter, setFilter] = React.useState({
+    ...defaultFilter,
+    ...query,
+  })
+
+  const { data: items, error } = useSWR([MARKET_INDEX, filter], fetcher)
+  React.useEffect(() => {
+    setFilter({ ...filter, ...query })
+  }, [query])
+
+  const routerPush = f => {
+    router.push(`/search?${querystring.stringify(f)}`)
+  }
+
+  const handleSearchSubmit = q => {
+    const f = { ...filter, q, page: 1 }
+    setFilter(f)
+    routerPush({ q })
+  }
+  const handleSearchClear = () => {
+    setFilter({ ...filter, q: '' })
+    routerPush()
+  }
+  const handlePageChange = (e, page) => {
+    const f = { ...filter, page }
+    setFilter(f)
+    routerPush(f)
+  }
 
   return (
     <>
@@ -30,18 +67,23 @@ export default function Faq() {
 
       <main className={classes.main}>
         <Container>
-          <SearchInput value={keyword} />
+          <SearchInput value={filter.q} onSubmit={handleSearchSubmit} onClear={handleSearchClear} />
+          <br />
 
-          <div className={classes.listControl}>
-            <Typography component="span">
-              Results for &quot;<strong>{keyword}</strong>&quot;
-            </Typography>
-            <Typography component="span" className={classes.paginator}>
-              Prev 1 2 3 4 5 Next
-            </Typography>
-          </div>
-
-          <ItemList />
+          {error && <div>failed to load</div>}
+          {!items && <div>loading...</div>}
+          {!error && items && (
+            <div>
+              <ItemList items={items.data} />
+              <TablePagination
+                colSpan={3}
+                style={{ textAlign: 'right' }}
+                page={filter.page}
+                count={items.total_count}
+                onChangePage={handlePageChange}
+              />
+            </div>
+          )}
         </Container>
       </main>
 

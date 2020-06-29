@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
+import RarityTag from '@/components/RarityTag'
 
 const useStyles = makeStyles({
   table: {
@@ -19,118 +20,63 @@ const useStyles = makeStyles({
 const testData = {
   data: [
     {
-      id: 'fa4757c2-c5e0-4ced-a67a-7a96fe533952',
-      slug: 'allure-of-the-faeshade-flower-dark-willow',
-      name: 'Allure of the Faeshade Flower',
-      hero: 'Dark Willow',
+      id: 'f5d0211d-3377-457e-a742-afa5ea16a9bf',
+      slug: 'pipe-of-dezun-dazzle',
+      name: 'Pipe of Dezun',
+      hero: 'Dazzle',
+      image: '',
+      origin: 'Treasure of the Cryptic Beacon',
+      rarity: 'very rare',
+      created_at: '2020-06-22T17:19:57.58+08:00',
+      updated_at: '2020-06-22T17:19:57.58+08:00',
+    },
+    {
+      id: '5bde1aca-2300-4e16-b62a-772fa55c6d1a',
+      slug: 'diabolic-aspect-chaos-knight',
+      name: 'Diabolic Aspect',
+      hero: 'Chaos Knight',
+      image: '',
+      origin: 'Treasure of the Cryptic Beacon',
+      rarity: 'regular',
+      created_at: '2020-06-22T17:19:33.978+08:00',
+      updated_at: '2020-06-22T17:19:33.978+08:00',
+    },
+    {
+      id: '4faf069d-884b-4c97-bc4b-3e26eee3d89e',
+      slug: 'shattered-greatsword-sven',
+      name: 'Shattered Greatsword',
+      hero: 'Sven',
+      image: '',
+      origin: 'Treasure of the Cryptic Beacon',
+      rarity: 'regular',
+      created_at: '2020-06-22T17:19:07.769+08:00',
+      updated_at: '2020-06-22T17:19:07.769+08:00',
+    },
+    {
+      id: '01ed7e48-ff44-4428-b1f8-cbb3319bbb67',
+      slug: 'vespidun-hunter-killer-gyrocopter',
+      name: 'Vespidun Hunter-Killer',
+      hero: 'Gyrocopter',
       image: '',
       origin: "Collector's Cache 2018",
-      created_at: '2020-06-19T00:59:58.051+08:00',
-      updated_at: '2020-06-19T00:59:58.051+08:00',
+      rarity: 'ultra rare',
+      created_at: '2020-06-22T17:10:04.586+08:00',
+      updated_at: '2020-06-22T17:10:04.586+08:00',
     },
     {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-    {
-      id: '09175f2f-78f8-4abe-8bdd-2ed46be359a4',
-      slug: 'gothink-whisper-phantom-assassin',
-      name: 'Gothink Whisper',
-      hero: 'Phantom Assassin',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:02.118+08:00',
-      updated_at: '2020-06-19T18:06:02.118+08:00',
-    },
-    {
-      id: 'fa4757c2-c5e0-4ced-a67a-7a96fe533952',
-      slug: 'allure-of-the-faeshade-flower-dark-willow',
-      name: 'Allure of the Faeshade Flower',
-      hero: 'Dark Willow',
+      id: '9c0c10ad-a642-466a-be22-8eb8bde5e71b',
+      slug: 'endowments-of-the-lucent-canopy-shadow-shaman',
+      name: 'Endowments of the Lucent Canopy',
+      hero: 'Shadow Shaman',
       image: '',
       origin: "Collector's Cache 2018",
-      created_at: '2020-06-19T00:59:58.051+08:00',
-      updated_at: '2020-06-19T00:59:58.051+08:00',
-    },
-    {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-    {
-      id: '09175f2f-78f8-4abe-8bdd-2ed46be359a4',
-      slug: 'gothink-whisper-phantom-assassin',
-      name: 'Gothink Whisper',
-      hero: 'Phantom Assassin',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:02.118+08:00',
-      updated_at: '2020-06-19T18:06:02.118+08:00',
-    },
-    {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-    {
-      id: '09175f2f-78f8-4abe-8bdd-2ed46be359a4',
-      slug: 'gothink-whisper-phantom-assassin',
-      name: 'Gothink Whisper',
-      hero: 'Phantom Assassin',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:02.118+08:00',
-      updated_at: '2020-06-19T18:06:02.118+08:00',
-    },
-    {
-      id: 'fa4757c2-c5e0-4ced-a67a-7a96fe533952',
-      slug: 'allure-of-the-faeshade-flower-dark-willow',
-      name: 'Allure of the Faeshade Flower',
-      hero: 'Dark Willow',
-      image: '',
-      origin: "Collector's Cache 2018",
-      created_at: '2020-06-19T00:59:58.051+08:00',
-      updated_at: '2020-06-19T00:59:58.051+08:00',
-    },
-    {
-      id: 'f8b117bb-3a1f-469b-b2c8-8014df13ea09',
-      slug: 'defender-of-the-ruins-disruptor',
-      name: 'Defender of the Ruins',
-      hero: 'Disruptor',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:29.685+08:00',
-      updated_at: '2020-06-19T18:06:29.685+08:00',
-    },
-    {
-      id: '09175f2f-78f8-4abe-8bdd-2ed46be359a4',
-      slug: 'gothink-whisper-phantom-assassin',
-      name: 'Gothink Whisper',
-      hero: 'Phantom Assassin',
-      image: '',
-      origin: "Collector's Cache 2019",
-      created_at: '2020-06-19T18:06:02.118+08:00',
-      updated_at: '2020-06-19T18:06:02.118+08:00',
+      rarity: 'very rare',
+      created_at: '2020-06-22T17:09:43.25+08:00',
+      updated_at: '2020-06-22T17:09:43.25+08:00',
     },
   ],
-  result_count: 10,
-  total_count: 332,
+  result_count: 5,
+  total_count: 39,
 }
 
 export default function SimpleTable() {
@@ -147,12 +93,13 @@ export default function SimpleTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {testData.data.slice(0, 5).map(item => (
-            <TableRow key={item.id}>
+          {testData.data.map(item => (
+            <TableRow key={item.id} hover>
               <TableCell component="th" scope="row">
                 <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
                   <>
                     <strong>{item.name}</strong>
+                    <RarityTag rarity={item.rarity} />
                     <br />
                     <Typography variant="caption" color="textSecondary">
                       {item.hero}
