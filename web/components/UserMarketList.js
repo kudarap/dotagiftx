@@ -308,7 +308,7 @@ export default function SimpleTable() {
                 <Typography variant="body2">${market.price.toFixed(2)}</Typography>
               </TableCell>
               <TableCell align="right">
-                <BuyButton variant="contained">Reserve</BuyButton>
+                <BuyButton variant="contained">Contact Seller</BuyButton>
               </TableCell>
             </TableRow>
           ))}
