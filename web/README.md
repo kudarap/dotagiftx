@@ -10,11 +10,11 @@ Dota 2 Giftables web user interface
 
 ### Features
 
-- [ ] market search
-- [ ] item market listing
+- [x] market search
+- [x] item market listing
 - [ ] popular items
 - [ ] newly listed items
-- [ ] user market listing
+- [x] user market listing
 - [ ] login with steam
 - [ ] user post item
 - [ ] user remove listing
