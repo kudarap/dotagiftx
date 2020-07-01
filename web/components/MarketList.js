@@ -289,7 +289,7 @@ export default function SimpleTable() {
           <TableRow>
             <TableHeadCell>Seller</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
-            <TableHeadCell align="right" />
+            <TableHeadCell align="right" width={156} />
           </TableRow>
         </TableHead>
         <TableBody>
