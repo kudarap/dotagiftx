@@ -9,7 +9,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
-import ItemList from '@/components/ItemList'
+import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
@@ -91,7 +91,7 @@ export default function Index() {
           </Typography>
           {popularError && <div>failed to load</div>}
           {!popularItems && <LinearProgress color="secondary" />}
-          {!popularError && popularItems && <ItemList items={popularItems.data} />}
+          {!popularError && popularItems && <CatalogList items={popularItems.data} />}
           <br />
 
           <Typography>
@@ -105,7 +105,7 @@ export default function Index() {
           </Typography>
           {recentError && <div>failed to load</div>}
           {!recentItems && <LinearProgress color="secondary" />}
-          {!recentError && recentItems && <ItemList items={recentItems.data} variant="recent" />}
+          {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
         </Container>
       </main>

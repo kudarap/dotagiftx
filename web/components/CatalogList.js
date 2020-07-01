@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemList({ items = [], variant }) {
+export default function CatalogList({ items = [], variant }) {
   const classes = useStyles()
 
   const isRecentMode = variant === 'recent'
@@ -81,10 +81,10 @@ export default function ItemList({ items = [], variant }) {
     </TableContainer>
   )
 }
-ItemList.propTypes = {
+CatalogList.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   variant: PropTypes.string,
 }
-ItemList.defaultProps = {
+CatalogList.defaultProps = {
   variant: '',
 }

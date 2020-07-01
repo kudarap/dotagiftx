@@ -7,7 +7,7 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import ItemList from '@/components/ItemList'
+import CatalogList from '@/components/CatalogList'
 import SearchInput from '@/components/SearchInput'
 import TablePagination from '@/components/TablePagination'
 import { CATALOGS, fetcher } from '@/service/api'
@@ -75,7 +75,7 @@ export default function Search() {
           {!items && <LinearProgress color="secondary" />}
           {!error && items && (
             <div>
-              <ItemList items={items.data} />
+              <CatalogList items={items.data} />
               <TablePagination
                 colSpan={3}
                 style={{ textAlign: 'right' }}
