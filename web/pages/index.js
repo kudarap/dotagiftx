@@ -48,11 +48,7 @@ function Banner() {
 }
 
 function TableSkeleton() {
-  return (
-    <div style={{ margin: '0 0 250px' }}>
-      <LinearProgress color="secondary" />
-    </div>
-  )
+  return <LinearProgress color="secondary" />
 }
 
 const popularItemsFilter = {
