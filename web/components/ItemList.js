@@ -62,7 +62,7 @@ export default function ItemList({ items = [] }) {
                 </Typography>
               </TableCell>
               <TableCell align="right">
-                <Typography variant="body2">${item.lowest_ask}</Typography>
+                <Typography variant="body2">${item.lowest_ask.toFixed(2)}</Typography>
               </TableCell>
             </TableRow>
           ))}
