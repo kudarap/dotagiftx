@@ -24,7 +24,7 @@ func NewMarket(c *Client) core.MarketStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &marketStorage{c, []string{"name", "hero", "origin"}}
+	return &marketStorage{c, []string{"name", "hero", "origin", "rarity"}}
 }
 
 type marketStorage struct {
