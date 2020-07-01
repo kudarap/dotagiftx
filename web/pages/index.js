@@ -54,7 +54,7 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Home() {
+export default function Index() {
   const classes = useStyles()
 
   const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
