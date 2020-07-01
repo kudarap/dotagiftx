@@ -10,6 +10,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import ItemList from '@/components/ItemList'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -47,7 +48,7 @@ function Banner() {
 }
 
 const popularItemsFilter = {
-  sort: 'lowest_ask:desc',
+  sort: 'view_count:desc',
   limit: 5,
 }
 const recentItemsFilter = {
@@ -79,13 +80,29 @@ export default function Index() {
           />
           <br />
 
-          <Typography>Popular Items</Typography>
+          <Typography>
+            Popular Items
+            <Link
+              href={`/search?sort=${popularItemsFilter.sort}`}
+              color="secondary"
+              style={{ float: 'right' }}>
+              See All
+            </Link>
+          </Typography>
           {popularError && <div>failed to load</div>}
           {!popularItems && <LinearProgress color="secondary" />}
           {!popularError && popularItems && <ItemList items={popularItems.data} />}
           <br />
 
-          <Typography>Recently Posted</Typography>
+          <Typography>
+            Recently Posted
+            <Link
+              href={`/search?sort=${recentItemsFilter.sort}`}
+              color="secondary"
+              style={{ float: 'right' }}>
+              See All
+            </Link>
+          </Typography>
           {recentError && <div>failed to load</div>}
           {!recentItems && <LinearProgress color="secondary" />}
           {!recentError && recentItems && <ItemList items={recentItems.data} variant="recent" />}
