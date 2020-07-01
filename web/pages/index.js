@@ -2,6 +2,7 @@ import React from 'react'
 import useSWR from 'swr'
 import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
+import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import { CATALOGS, fetcher } from '@/service/api'
 import Footer from '@/components/Footer'
@@ -9,8 +10,6 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import ItemList from '@/components/ItemList'
-
-import LinearProgress from '@material-ui/core/LinearProgress'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -45,10 +44,6 @@ function Banner() {
       </Typography>
     </div>
   )
-}
-
-function TableSkeleton() {
-  return <LinearProgress color="secondary" />
 }
 
 const popularItemsFilter = {
@@ -86,13 +81,13 @@ export default function Index() {
 
           <Typography>Popular Items</Typography>
           {popularError && <div>failed to load</div>}
-          {!popularItems && <TableSkeleton />}
+          {!popularItems && <LinearProgress color="secondary" />}
           {!popularError && popularItems && <ItemList items={popularItems.data} />}
           <br />
 
           <Typography>Recently Posted</Typography>
           {recentError && <div>failed to load</div>}
-          {!recentItems && <TableSkeleton />}
+          {!recentItems && <LinearProgress color="secondary" />}
           {!recentError && recentItems && <ItemList items={recentItems.data} variant="recent" />}
           <br />
         </Container>
