@@ -72,7 +72,10 @@ export default function Home() {
         <Container>
           <Banner />
 
-          <SearchInput helperText="Search on 92 for sale items" onSubmit={handleSubmit} />
+          <SearchInput
+            helperText={`Search on ${recentItems && recentItems.total_count} for sale items`}
+            onSubmit={handleSubmit}
+          />
           <br />
 
           <Typography>Popular Items</Typography>
