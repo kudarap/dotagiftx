@@ -3,12 +3,15 @@ import useSWR from 'swr'
 import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { CATALOGS, fetcher, MARKETS } from '@/service/api'
+import Skeleton from '@material-ui/lab/Skeleton'
+import { CATALOGS, fetcher } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import ItemList from '@/components/ItemList'
+
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -41,6 +44,14 @@ function Banner() {
       <Typography className={classes.bannerText} variant="h3" align="center">
         Search for Dota 2 <span style={{ display: 'inline-block' }}>giftable items</span>
       </Typography>
+    </div>
+  )
+}
+
+function TableSkeleton() {
+  return (
+    <div style={{ margin: '0 0 250px' }}>
+      <LinearProgress color="secondary" />
     </div>
   )
 }
@@ -80,13 +91,13 @@ export default function Index() {
 
           <Typography>Popular Items</Typography>
           {popularError && <div>failed to load</div>}
-          {!popularItems && <div>loading...</div>}
+          {!popularItems && <TableSkeleton />}
           {!popularError && popularItems && <ItemList items={popularItems.data} />}
           <br />
 
           <Typography>Recently Posted</Typography>
           {recentError && <div>failed to load</div>}
-          {!recentItems && <div>loading...</div>}
+          {!recentItems && <TableSkeleton />}
           {!recentError && recentItems && <ItemList items={recentItems.data} variant="recent" />}
           <br />
         </Container>

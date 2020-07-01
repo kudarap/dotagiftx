@@ -39,6 +39,14 @@ export default function ItemList({ items = [], variant }) {
           </TableRow>
         </TableHead>
         <TableBody>
+          {items.length === 0 && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                No Result
+              </TableCell>
+            </TableRow>
+          )}
+
           {items.map(item => (
             <TableRow key={item.id} hover>
               <TableCell className={classes.th} component="th" scope="row">

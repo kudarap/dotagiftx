@@ -38,6 +38,10 @@ function TablePagination({ count, page, rowsPerPage, onChangePage, ...other }) {
   const resultMinCount = cPage * rowsPerPage - rowsPerPage + 1
   const resultMaxCount = cPage * rowsPerPage
 
+  if (count === 0) {
+    return null
+  }
+
   return (
     <div {...other}>
       <Typography

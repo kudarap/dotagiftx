@@ -3,6 +3,7 @@ import useSWR from 'swr'
 import querystring from 'querystring'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
+import LinearProgress from '@material-ui/core/LinearProgress'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -71,7 +72,7 @@ export default function Search() {
           <br />
 
           {error && <div>failed to load</div>}
-          {!items && <div>loading...</div>}
+          {!items && <LinearProgress color="secondary" />}
           {!error && items && (
             <div>
               <ItemList items={items.data} />
