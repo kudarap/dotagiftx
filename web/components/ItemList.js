@@ -1,6 +1,7 @@
 import React from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -11,6 +12,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
+import TableHeadCell from '@/components/TableHeadCell'
 
 const useStyles = makeStyles({
   th: {
@@ -21,14 +23,7 @@ const useStyles = makeStyles({
   },
 })
 
-const StyledTableCell = withStyles(theme => ({
-  head: {
-    textTransform: 'uppercase',
-    color: theme.palette.text.secondary,
-  },
-}))(TableCell)
-
-export default function ItemList({ items = [] }) {
+export default function ItemList({ items = [], variant }) {
   const classes = useStyles()
 
   return (
@@ -36,9 +31,13 @@ export default function ItemList({ items = [] }) {
       <Table className={classes.table} aria-label="items table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Name</StyledTableCell>
-            <StyledTableCell align="right">Qty</StyledTableCell>
-            <StyledTableCell align="right">Price</StyledTableCell>
+            <TableHeadCell>Name</TableHeadCell>
+            {variant === 'recent' ? (
+              <TableHeadCell>Date</TableHeadCell>
+            ) : (
+              <TableHeadCell align="right">Qty</TableHeadCell>
+            )}
+            <TableHeadCell align="right">Price</TableHeadCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -56,11 +55,20 @@ export default function ItemList({ items = [] }) {
                   </>
                 </Link>
               </TableCell>
-              <TableCell align="right">
-                <Typography variant="body2" color="textSecondary">
-                  {item.quantity}
-                </Typography>
-              </TableCell>
+              {variant === 'recent' ? (
+                <TableCell>
+                  <Typography variant="body2" color="textSecondary">
+                    {moment(item.created_at).fromNow()}
+                  </Typography>
+                </TableCell>
+              ) : (
+                <TableCell align="right">
+                  <Typography variant="body2" color="textSecondary">
+                    {item.quantity}
+                  </Typography>
+                </TableCell>
+              )}
+
               <TableCell align="right">
                 <Typography variant="body2">${item.lowest_ask.toFixed(2)}</Typography>
               </TableCell>
@@ -73,4 +81,8 @@ export default function ItemList({ items = [] }) {
 }
 ItemList.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  variant: PropTypes.string,
+}
+ItemList.defaultProps = {
+  variant: '',
 }
