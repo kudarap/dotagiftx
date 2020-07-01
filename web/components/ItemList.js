@@ -26,17 +26,15 @@ const useStyles = makeStyles({
 export default function ItemList({ items = [], variant }) {
   const classes = useStyles()
 
+  const isRecentMode = variant === 'recent'
+
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="items table">
         <TableHead>
           <TableRow>
             <TableHeadCell>Name</TableHeadCell>
-            {variant === 'recent' ? (
-              <TableHeadCell>Date</TableHeadCell>
-            ) : (
-              <TableHeadCell align="right">Qty</TableHeadCell>
-            )}
+            <TableHeadCell align="right">{isRecentMode ? 'Listed' : 'Qty'}</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
           </TableRow>
         </TableHead>
@@ -44,33 +42,31 @@ export default function ItemList({ items = [], variant }) {
           {items.map(item => (
             <TableRow key={item.id} hover>
               <TableCell className={classes.th} component="th" scope="row">
-                <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
+                <Link
+                  href="/item/[slug]"
+                  as={`/item/${isRecentMode ? item.item.slug : item.slug}`}
+                  disableUnderline>
                   <>
-                    <strong>{item.name}</strong>
+                    <strong>{isRecentMode ? item.item.name : item.name}</strong>
                     <br />
                     <Typography variant="caption" color="textSecondary">
-                      {item.hero}
+                      {isRecentMode ? item.item.hero : item.hero}
                     </Typography>
-                    <RarityTag rarity={item.rarity} />
+                    <RarityTag rarity={isRecentMode ? item.item.rarity : item.rarity} />
                   </>
                 </Link>
               </TableCell>
-              {variant === 'recent' ? (
-                <TableCell>
-                  <Typography variant="body2" color="textSecondary">
-                    {moment(item.created_at).fromNow()}
-                  </Typography>
-                </TableCell>
-              ) : (
-                <TableCell align="right">
-                  <Typography variant="body2" color="textSecondary">
-                    {item.quantity}
-                  </Typography>
-                </TableCell>
-              )}
 
               <TableCell align="right">
-                <Typography variant="body2">${item.lowest_ask.toFixed(2)}</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {isRecentMode ? moment(item.created_at).fromNow() : item.quantity}
+                </Typography>
+              </TableCell>
+
+              <TableCell align="right">
+                <Typography variant="body2">
+                  ${(isRecentMode ? item.price : item.lowest_ask).toFixed(2)}
+                </Typography>
               </TableCell>
             </TableRow>
           ))}

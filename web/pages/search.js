@@ -9,7 +9,7 @@ import Container from '@/components/Container'
 import ItemList from '@/components/ItemList'
 import SearchInput from '@/components/SearchInput'
 import TablePagination from '@/components/TablePagination'
-import { MARKET_INDEX, fetcher } from '@/service/api'
+import { CATALOGS, fetcher } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -37,7 +37,7 @@ export default function Search() {
     ...query,
   })
 
-  const { data: items, error } = useSWR([MARKET_INDEX, filter], fetcher)
+  const { data: items, error } = useSWR([CATALOGS, filter], fetcher)
   React.useEffect(() => {
     setFilter({ ...filter, ...query })
   }, [query])

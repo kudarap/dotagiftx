@@ -1,13 +1,14 @@
 import React from 'react'
+import useSWR from 'swr'
 import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { CATALOGS, fetcher, MARKETS } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import ItemListPopular from '@/components/ItemListPopular'
-import ItemListRecent from '@/components/ItemListRecent'
 import SearchInput from '@/components/SearchInput'
+import ItemList from '@/components/ItemList'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -44,8 +45,20 @@ function Banner() {
   )
 }
 
+const popularItemsFilter = {
+  sort: 'lowest_ask:desc',
+  limit: 5,
+}
+const recentItemsFilter = {
+  sort: 'created_at:desc',
+  limit: 5,
+}
+
 export default function Home() {
   const classes = useStyles()
+
+  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  const { data: recentItems, recentError } = useSWR([MARKETS, recentItemsFilter], fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
@@ -60,14 +73,19 @@ export default function Home() {
           <Banner />
 
           <SearchInput helperText="Search on 92 for sale items" onSubmit={handleSubmit} />
-
           <br />
+
           <Typography>Popular Items</Typography>
-          <ItemListPopular />
+          {popularError && <div>failed to load</div>}
+          {!popularItems && <div>loading...</div>}
+          {!popularError && popularItems && <ItemList items={popularItems.data} />}
           <br />
-          <Typography>Recently Posted</Typography>
 
-          <ItemListRecent />
+          <Typography>Recently Posted</Typography>
+          {recentError && <div>failed to load</div>}
+          {!recentItems && <div>loading...</div>}
+          {!recentError && recentItems && <ItemList items={recentItems.data} variant="recent" />}
+          <br />
         </Container>
       </main>
 
