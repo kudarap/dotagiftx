@@ -50,7 +50,7 @@ const popularItemsFilter = {
   limit: 5,
 }
 const recentItemsFilter = {
-  sort: 'created_at:desc',
+  sort: 'recent_ask:desc',
   limit: 5,
 }
 
@@ -58,7 +58,7 @@ export default function Index() {
   const classes = useStyles()
 
   const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
-  const { data: recentItems, recentError } = useSWR([MARKETS, recentItemsFilter], fetcher)
+  const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
