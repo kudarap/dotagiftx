@@ -1,5 +1,5 @@
 import React from 'react'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -12,16 +12,15 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
 import { CDN_URL } from '@/service/api'
 import BuyButton from '@/components/BuyButton'
+import TableHeadCell from '@/components/TableHeadCell'
 
 const useStyles = makeStyles(theme => ({
   seller: {
-    display: 'inline-flex',
+    display: 'flex',
+    padding: theme.spacing(2),
   },
   avatar: {
-    margin: theme.spacing(0, 1.5, 0, 1),
-  },
-  button: {
-    // color: lightGreen[500],
+    marginRight: theme.spacing(1.5),
   },
 }))
 
@@ -288,9 +287,9 @@ export default function SimpleTable() {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Seller</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right" />
+            <TableHeadCell>Seller</TableHeadCell>
+            <TableHeadCell align="right">Price</TableHeadCell>
+            <TableHeadCell align="right" />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -314,7 +313,7 @@ export default function SimpleTable() {
                 <Typography variant="body2">${market.price.toFixed(2)}</Typography>
               </TableCell>
               <TableCell align="right">
-                <BuyButton variant="contained">Reserve</BuyButton>
+                <BuyButton variant="contained">Contact Seller</BuyButton>
               </TableCell>
             </TableRow>
           ))}

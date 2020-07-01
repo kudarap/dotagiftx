@@ -14,14 +14,17 @@ import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   th: {
     cursor: 'pointer',
   },
   pagination: {
     textAlign: 'right',
   },
-})
+  link: {
+    padding: theme.spacing(2),
+  },
+}))
 
 export default function ItemList({ items = [], variant }) {
   const classes = useStyles()
@@ -49,16 +52,16 @@ export default function ItemList({ items = [], variant }) {
 
           {items.map(item => (
             <TableRow key={item.id} hover>
-              <TableCell className={classes.th} component="th" scope="row">
+              <TableCell className={classes.th} component="th" scope="row" padding="none">
                 <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
-                  <>
+                  <div className={classes.link}>
                     <strong>{item.name}</strong>
                     <br />
                     <Typography variant="caption" color="textSecondary">
                       {item.hero}
                     </Typography>
                     <RarityTag rarity={item.rarity} />
-                  </>
+                  </div>
                 </Link>
               </TableCell>
 

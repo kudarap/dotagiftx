@@ -11,13 +11,14 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
+import TableHeadCell from '@/components/TableHeadCell'
 
 const useStyles = makeStyles(theme => ({
   seller: {
     display: 'inline-flex',
   },
-  itemName: {
-    marginLeft: theme.spacing(2),
+  link: {
+    padding: theme.spacing(2),
   },
 }))
 
@@ -284,9 +285,9 @@ export default function SimpleTable() {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Item Name</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right" />
+            <TableHeadCell>Seller Listings</TableHeadCell>
+            <TableHeadCell align="right">Price</TableHeadCell>
+            <TableHeadCell align="right" />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -294,7 +295,7 @@ export default function SimpleTable() {
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
                 <Link href="/item/[slug]" as={`/item/${market.item.slug}`} disableUnderline>
-                  <div className={classes.itemName}>
+                  <div className={classes.link}>
                     <strong>{market.item.name}</strong>
                     <br />
                     <Typography variant="caption" color="textSecondary">
