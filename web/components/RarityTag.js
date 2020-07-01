@@ -18,10 +18,10 @@ import Typography from '@material-ui/core/Typography'
 // -webkit-text-fill-color: transparent;
 const rarityStylerMap = {
   regular: null,
-  rare: { color: 'yellowgreen' },
-  'very rare': { color: 'darkorange' },
+  rare: { color: '#8ec021' },
+  'very rare': { color: '#a77338' },
   'ultra rare': {
-    color: 'goldenrod',
+    color: '#E2AC3F',
   },
 }
 const rarityStylerMap2 = {
@@ -61,7 +61,7 @@ export default function RarityTag({ rarity, ...other }) {
 
   return (
     <Typography variant="caption" {...other} style={getRarityStyle(rarity)}>
-      {` ${rarity} item`}
+      {` ${rarity}`}
     </Typography>
   )
 }
