@@ -1,4 +1,8 @@
 import Head from 'next/head'
+import Container from '@/components/Container'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import { version } from '@/service/api'
 
 export default function Version({ data }) {
   return (
@@ -6,17 +10,22 @@ export default function Version({ data }) {
       <Head>
         <title>version page</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="author" content="John Doe" />
       </Head>
-        
-        <main>
-            <p>Your viewing version page</p>
-            <p>
-                tag: {data.version} <br />
-                hash: {data.hash} <br />
-                built: {data.built} <br />
-            </p>
-        </main>
+
+      <Header />
+
+      <main>
+        <Container>
+          <p>Your viewing version page</p>
+          <p>
+            tag: {data.version} <br />
+            hash: {data.hash} <br />
+            built: {data.built} <br />
+          </p>
+        </Container>
+      </main>
+
+      <Footer />
     </div>
   )
 }
@@ -24,8 +33,9 @@ export default function Version({ data }) {
 // This gets called on every request
 export async function getServerSideProps() {
   // Fetch data from external API
-  const res = await fetch(`https://fotolink.app/api/`)
-  const data = await res.json()
+  // const res = await fetch(API_URL)
+  // const data = await res.json()
+  const data = await version()
 
   // Pass data to the page via props
   return { props: { data } }

@@ -1,15 +1,14 @@
+import React from 'react'
 import Head from 'next/head'
-import moment from 'moment'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
-import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, user } from '@/service/api'
-import Header from '@/components/Header'
+import { item } from '@/service/api'
 import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 import Container from '@/components/Container'
-import UserMarketList from '@/components/UserMarketList'
+import RarityTag from '@/components/RarityTag'
+import MarketList from '@/components/MarketList'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -25,26 +24,21 @@ const useStyles = makeStyles(theme => ({
     },
     display: 'inline-flex',
   },
-  avatar: {
-    [theme.breakpoints.down('xs')]: {
-      margin: '0 auto',
-    },
-    width: 100,
+  media: {
     height: 100,
     marginRight: theme.spacing(1.5),
   },
 }))
 
-export default function UserDetails({ data }) {
+export default function ItemDetails({ data }) {
   const classes = useStyles()
 
   const router = useRouter()
-  const { id } = router.query
 
   return (
     <>
       <Head>
-        <title>{data.name} store | Dota 2 Giftables</title>
+        <title>{data.name} | Dota 2 Giftables</title>
       </Head>
 
       <Header />
@@ -52,33 +46,39 @@ export default function UserDetails({ data }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <Avatar className={classes.avatar} src={CDN_URL + data.avatar} />
+            <img
+              className={classes.media}
+              height={100}
+              src="https://gamepedia.cursecdn.com/dota2_gamepedia/7/7f/Cosmetic_icon_Pipe_of_Dezun.png?version=19a51adbc336e8d2bf22b65268e4afa5"
+            />
             <div>
               <Typography variant="h4">{data.name}</Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
-                  {`steam ID: `}
+                  {`hero: `}
                 </Typography>
-                {data.steam_id}
+                {data.hero}
                 <br />
 
                 <Typography color="textSecondary" component="span">
-                  {`steam URL: `}
+                  {`rarity: `}
                 </Typography>
-                <Link href={data.url} color="secondary">
-                  {data.url}
-                </Link>
+                {data.rarity === 'regular' ? (
+                  data.rarity
+                ) : (
+                  <RarityTag rarity={data.rarity} variant="body1" component="span" />
+                )}
                 <br />
 
                 <Typography color="textSecondary" component="span">
-                  {`registered: `}
+                  {`origin: `}
                 </Typography>
-                {moment(data.created_at).fromNow()}
+                {data.origin}
               </Typography>
             </div>
           </div>
 
-          <UserMarketList />
+          <MarketList />
         </Container>
       </main>
 
@@ -89,8 +89,8 @@ export default function UserDetails({ data }) {
 
 // This gets called on every request
 export async function getServerSideProps({ params }) {
-  const { id } = params
-  const data = await user(String(id))
+  const { slug } = params
+  const data = await item(slug)
   // Pass data to the page via props
   return { props: { data } }
 }

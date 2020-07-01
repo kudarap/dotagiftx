@@ -22,6 +22,7 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/", handleMarketList(s.marketSvc))
 			r.Get("/{id}", handleMarketDetail(s.marketSvc))
 		})
+		r.Get("/market_index", handleMarketIndexList(s.marketSvc))
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
 	})
 }
@@ -37,8 +38,8 @@ func (s *Server) privateRouter(r chi.Router) {
 				r.Get("/{id}", handleMarketDetail(s.marketSvc))
 				r.Patch("/{id}", handleMarketUpdate(s.marketSvc))
 			})
-			r.Post("/images", handleImageUpload(s.imageSvc))
 		})
 		r.Post("/items", handleItemCreate(s.itemSvc))
+		r.Post("/images", handleImageUpload(s.imageSvc))
 	})
 }
