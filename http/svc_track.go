@@ -5,14 +5,15 @@ import (
 	"path/filepath"
 
 	"github.com/kudarap/dota2giftables/core"
+	"github.com/sirupsen/logrus"
 )
 
 var pixel = filepath.Join("assets/image/pixel.gif")
 
-func handleTracker(svc core.TrackService) http.HandlerFunc {
+func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := svc.Create(r); err != nil {
-			respondError(w, err)
+			logger.Errorf("tracker error: %s", err)
 			return
 		}
 
