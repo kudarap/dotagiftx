@@ -3,17 +3,25 @@ package http
 import (
 	"net/http"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/go-chi/chi"
 	"github.com/kudarap/dota2giftables/core"
 )
 
-func handleMarketList(svc core.MarketService) http.HandlerFunc {
+func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
+
+		go func() {
+			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+				logger.Errorf("search keyword tracking error: %s", err)
+			}
+		}()
 
 		list, md, err := svc.Markets(r.Context(), opts)
 		if err != nil {
@@ -75,13 +83,19 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 	}
 }
 
-func handleMarketIndexList(svc core.MarketService) http.HandlerFunc {
+func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
+
+		go func() {
+			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+				logger.Errorf("search keyword tracking error: %s", err)
+			}
+		}()
 
 		list, md, err := svc.Index(opts)
 		if err != nil {

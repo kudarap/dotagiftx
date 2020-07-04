@@ -2,6 +2,7 @@ package service
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/kudarap/dota2giftables/core"
 )
@@ -57,6 +58,15 @@ func (s *trackService) CreateFromRequest(r *http.Request) error {
 }
 
 func (s *trackService) CreateSearchKeyword(r *http.Request, keyword string) error {
+	if r.Method != http.MethodGet {
+		return nil
+	}
+
+	keyword = strings.TrimSpace(keyword)
+	if keyword == "" {
+		return nil
+	}
+
 	t := new(core.Track)
 	t.SetDefaults(r)
 	t.Type = core.TrackTypeSearch
