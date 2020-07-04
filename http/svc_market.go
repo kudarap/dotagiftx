@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -83,7 +84,9 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 	}
 }
 
-func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
+const cacheExpr = time.Minute * 2
+
+func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
@@ -97,6 +100,13 @@ func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, l
 			}
 		}()
 
+		// Check for cache hit and render them.
+		cacheKey := core.CacheKeyFromRequest(r)
+		if hit, _ := cache.Get(cacheKey); hit != "" {
+			respondOK(w, hit)
+			return
+		}
+
 		list, md, err := svc.Index(opts)
 		if err != nil {
 			respondError(w, err)
@@ -106,6 +116,14 @@ func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, l
 			list = []core.MarketIndex{}
 		}
 
-		respondOK(w, newDataWithMeta(list, md))
+		// Save result to cache.
+		data := newDataWithMeta(list, md)
+		go func() {
+			if err := cache.Set(cacheKey, data, cacheExpr); err != nil {
+				logger.Errorf("could save cache on market index list: %s", err)
+			}
+		}()
+
+		respondOK(w, data)
 	}
 }

@@ -108,6 +108,7 @@ func (a *application) setup() error {
 		itemSvc,
 		marketSvc,
 		trackSvc,
+		redisClient,
 		initVer(a.config),
 		log,
 	)

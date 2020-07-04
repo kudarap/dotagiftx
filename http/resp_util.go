@@ -32,6 +32,12 @@ func respond(w http.ResponseWriter, code int, body interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
+	// Check for string response body.
+	if s, ok := body.(string); ok {
+		_, _ = w.Write([]byte(s))
+		return
+	}
+
 	// Generate the response
 	enc := json.NewEncoder(w)
 	if err := enc.Encode(body); err != nil {
