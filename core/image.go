@@ -47,8 +47,8 @@ type (
 		// Upload save file and returns a file name.
 		Save(r io.Reader) (filename string, err error)
 
-		// Upload save file with pre-defined name.
-		SaveWithName(r io.Reader, filename string) error
+		// Upload save file with pre-defined base name.
+		SaveWithName(r io.Reader, baseName string) (filename string, err error)
 
 		// Get get file path base on file name.
 		Get(filename string) (path string, err error)

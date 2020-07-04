@@ -30,22 +30,17 @@ func New(saveDir string, sizeLimit int, allowedTypes []string) *Local {
 }
 
 // Save saves bytes into file with pre-defined name.
-func (l *Local) SaveWithName(r io.Reader, name string) error {
-	return l.baseSave(r, name)
+func (l *Local) SaveWithName(r io.Reader, baseName string) (name string, err error) {
+	return l.baseSave(r, baseName)
 }
 
 // Save saves bytes into file and returns an unique filename.
 func (l *Local) Save(r io.Reader) (name string, err error) {
-	name = generateSha1Name()
-	if err := l.baseSave(r, name); err != nil {
-		return "", err
-	}
-
-	return
+	return l.baseSave(r, generateSha1Name())
 }
 
 // Save saves bytes into file and returns an unique filename.
-func (l *Local) baseSave(r io.Reader, name string) (err error) {
+func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) {
 	// Check empty save saveDir.
 	if strings.TrimSpace(l.saveDir) == "" {
 		err = errors.New("file save saveDir required")
@@ -79,7 +74,7 @@ func (l *Local) baseSave(r io.Reader, name string) (err error) {
 	if err != nil {
 		return
 	}
-	name += normalizeExt(ext[0])
+	name = baseName + normalizeExt(ext[0])
 
 	// Create file inside save saveDir.
 	dst := filepath.Join(l.Dir(), name)

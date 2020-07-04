@@ -71,7 +71,11 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 
 	// Download image when available
 	if itm.Image != "" {
-
+		img, err := s.downloadItemImage(itm.MakeSlug(), itm.Image)
+		if err != nil {
+			return err
+		}
+		itm.Image = img
 	}
 
 	return s.itemStg.Create(itm)
@@ -108,16 +112,17 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) error {
 }
 
 // downloadItemImage saves image file from a url.
-func (s *itemService) downloadItemImage(name, url string) error {
+func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 
-	if err := s.fileMgr.SaveWithName(resp.Body, name); err != nil {
-		return err
+	n, err := s.fileMgr.SaveWithName(resp.Body, baseName)
+	if err != nil {
+		return "", err
 	}
 
-	return nil
+	return n, nil
 }
