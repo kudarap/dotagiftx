@@ -3,11 +3,11 @@ module github.com/kudarap/dota2giftables
 go 1.14
 
 require (
-	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-playground/validator/v10 v10.3.0
+	github.com/go-redis/redis/v8 v8.0.0-beta.6
 	github.com/gorilla/schema v1.1.0
 	github.com/imdario/mergo v0.3.9
 	github.com/joho/godotenv v1.3.0
