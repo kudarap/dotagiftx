@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"strings"
 
 	"github.com/kudarap/dota2giftables/core"
@@ -13,12 +14,13 @@ import (
 )
 
 // NewItem returns new Item service.
-func NewItem(is core.ItemStorage) core.ItemService {
-	return &itemService{is}
+func NewItem(is core.ItemStorage, fm core.FileManager) core.ItemService {
+	return &itemService{is, fm}
 }
 
 type itemService struct {
 	itemStg core.ItemStorage
+	fileMgr core.FileManager
 }
 
 func (s *itemService) Items(opts core.FindOpts) ([]core.Item, *core.FindMetadata, error) {
@@ -67,6 +69,11 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 		return err
 	}
 
+	// Download image when available
+	if itm.Image != "" {
+
+	}
+
 	return s.itemStg.Create(itm)
 }
 
@@ -96,6 +103,21 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) error {
 	}
 
 	fmt.Println(yf)
+
+	return nil
+}
+
+// downloadItemImage saves image file from a url.
+func (s *itemService) downloadItemImage(name, url string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if err := s.fileMgr.SaveWithName(resp.Body, name); err != nil {
+		return err
+	}
 
 	return nil
 }

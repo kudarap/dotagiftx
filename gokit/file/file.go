@@ -29,8 +29,23 @@ func New(saveDir string, sizeLimit int, allowedTypes []string) *Local {
 	return &Local{saveDir, int64(sizeLimit), allowedTypes}
 }
 
+// Save saves bytes into file with pre-defined name.
+func (l *Local) SaveWithName(r io.Reader, name string) error {
+	return l.baseSave(r, name)
+}
+
 // Save saves bytes into file and returns an unique filename.
 func (l *Local) Save(r io.Reader) (name string, err error) {
+	name = generateSha1Name()
+	if err := l.baseSave(r, name); err != nil {
+		return "", err
+	}
+
+	return
+}
+
+// Save saves bytes into file and returns an unique filename.
+func (l *Local) baseSave(r io.Reader, name string) (err error) {
 	// Check empty save saveDir.
 	if strings.TrimSpace(l.saveDir) == "" {
 		err = errors.New("file save saveDir required")
@@ -59,11 +74,6 @@ func (l *Local) Save(r io.Reader) (name string, err error) {
 		return
 	}
 
-	// Generate name from file check sum.
-	_, name, err = checksum(buf)
-	if err != nil {
-		return
-	}
 	// Compose file name with extension.
 	ext, err := mime.ExtensionsByType(cType)
 	if err != nil {
@@ -127,6 +137,23 @@ func (l *Local) getType(data []byte) (string, error) {
 	return "", fmt.Errorf("file type '%s' not allowed in %s", t, l.allowedTypes)
 }
 
+func generateSha1Name() string {
+	h := sha1.New()
+	s := fmt.Sprintf("%d", time.Now().Nanosecond())
+	h.Write([]byte(s))
+	sum := h.Sum(nil)
+	return hex.EncodeToString(sum)
+}
+
+func normalizeExt(ext string) string {
+	switch ext {
+	case ".jpeg":
+		return ".jpg"
+	}
+
+	return ext
+}
+
 func checksum(r io.Reader) (io.Reader, string, error) {
 	var b bytes.Buffer
 
@@ -139,13 +166,4 @@ func checksum(r io.Reader) (io.Reader, string, error) {
 	h.Write([]byte(s))
 	sum := h.Sum(nil)
 	return &b, hex.EncodeToString(sum), nil
-}
-
-func normalizeExt(ext string) string {
-	switch ext {
-	case ".jpeg":
-		return ".jpg"
-	}
-
-	return ext
 }
