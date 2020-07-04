@@ -21,6 +21,7 @@ export const ITEMS = '/items'
 export const MARKETS = '/markets'
 export const CATALOGS = '/market_index'
 const VERSION = '/'
+const TRACK = '/t'
 
 export const authSteam = (ot, ov) =>
   http.request(http.GET, `${AUTH_STEAM}?oauth_token=${ot}&oauth_verifier=${ov}`)
@@ -38,3 +39,5 @@ export const myProfile = {
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
 export const itemSearch = http.baseSearchRequest(ITEMS)
+
+export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
