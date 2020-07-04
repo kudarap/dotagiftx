@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftables v0.2.0",
+    "name": "dotagiftables v0.3.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -94,7 +94,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"name\": \"Gothink Whisper\",\n\t\"hero\": \"Phantom Assassin\",\n\t\"origin\": \"Collector's Cache 2019\"\n}",
+              "raw": "{\n\t\"name\": \"Gothic Whisper\",\n\t\"hero\": \"Phantom Assassin\",\n\t\"origin\": \"Collector's Cache 2019\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -102,9 +102,15 @@
               }
             },
             "url": {
-              "raw": "{{host}}/items",
+              "raw": "{{host}}/items?key=item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8",
               "host": ["{{host}}"],
-              "path": ["items"]
+              "path": ["items"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8"
+                }
+              ]
             }
           },
           "response": []
@@ -235,6 +241,50 @@
               "raw": "{{host}}/my/markets/2fbe75ee-6518-4d8f-a319-1f33796594ad",
               "host": ["{{host}}"],
               "path": ["my", "markets", "2fbe75ee-6518-4d8f-a319-1f33796594ad"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "item import",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/home/kudarap/Downloads/dota items/cache 2020.yml"
+                }
+              ],
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/items_import?key=item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8",
+              "host": ["{{host}}"],
+              "path": ["items_import"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8"
+                }
+              ]
             }
           },
           "response": []
@@ -597,6 +647,47 @@
           "raw": "{{host}}",
           "host": ["{{host}}"],
           "query": [
+            {
+              "key": "q",
+              "value": "phantom",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "track item views",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/t?t=v&i=20bab823-2796-4948-879e-518783bb8cff",
+          "host": ["{{host}}"],
+          "path": ["t"],
+          "query": [
+            {
+              "key": "t",
+              "value": "v"
+            },
+            {
+              "key": "i",
+              "value": "20bab823-2796-4948-879e-518783bb8cff"
+            },
             {
               "key": "q",
               "value": "phantom",
