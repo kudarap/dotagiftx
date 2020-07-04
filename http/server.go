@@ -29,6 +29,7 @@ func NewServer(
 	is core.ImageService,
 	its core.ItemService,
 	ms core.MarketService,
+	ts core.TrackService,
 	v *version.Version,
 	l *logrus.Logger,
 ) *Server {
@@ -39,6 +40,7 @@ func NewServer(
 		imageSvc:  is,
 		itemSvc:   its,
 		marketSvc: ms,
+		trackSvc:  ts,
 		logger:    l,
 		version:   v,
 	}
@@ -55,6 +57,7 @@ type Server struct {
 	imageSvc  core.ImageService
 	itemSvc   core.ItemService
 	marketSvc core.MarketService
+	trackSvc  core.TrackService
 
 	logger  *logrus.Logger
 	version *version.Version

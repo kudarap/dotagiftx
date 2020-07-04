@@ -24,6 +24,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		})
 		r.Get("/market_index", handleMarketIndexList(s.marketSvc))
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
+		r.Get("/t", handleTracker(s.trackSvc))
 	})
 }
 
