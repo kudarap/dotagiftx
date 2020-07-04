@@ -17,4 +17,5 @@ require (
 	github.com/speps/go-hashids v2.0.0+incompatible
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/rethinkdb/rethinkdb-go.v6 v6.2.1
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )

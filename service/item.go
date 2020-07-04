@@ -7,10 +7,9 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
+	"gopkg.in/yaml.v3"
 )
 
 // NewItem returns new Item service.

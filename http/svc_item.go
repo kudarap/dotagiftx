@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -61,5 +62,31 @@ func handleItemCreate(svc core.ItemService) http.HandlerFunc {
 		}
 
 		respondOK(w, i)
+	}
+}
+
+func handleItemImport(svc core.ItemService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get uploaded file.
+		f, fh, err := r.FormFile("file")
+		if err != nil {
+			respondError(w, fmt.Errorf("could not find 'file' on form-data: %s", err))
+			return
+		}
+		defer f.Close()
+
+		// Read yaml file.
+		ct := fh.Header.Get("content-type")
+		if ct != "text/yaml" {
+			respondError(w, fmt.Errorf("could not parse content-type: %s", ct))
+			return
+		}
+
+		if err := svc.Import(r.Context(), f); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, newMsg("done"))
 	}
 }

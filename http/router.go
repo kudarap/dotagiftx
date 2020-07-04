@@ -41,6 +41,7 @@ func (s *Server) privateRouter(r chi.Router) {
 			})
 		})
 		r.Post("/items", handleItemCreate(s.itemSvc))
+		r.Post("/items_import", handleItemImport(s.itemSvc))
 		r.Post("/images", handleImageUpload(s.imageSvc))
 	})
 }
