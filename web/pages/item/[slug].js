@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { item, trackViewURL } from '@/service/api'
+import { CDN_URL, item, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -48,7 +48,7 @@ export default function ItemDetails({ data }) {
               className={classes.media}
               height={100}
               alt={data.name}
-              src="https://gamepedia.cursecdn.com/dota2_gamepedia/7/7f/Cosmetic_icon_Pipe_of_Dezun.png?version=19a51adbc336e8d2bf22b65268e4afa5"
+              src={CDN_URL + data.image}
             />
             <div>
               <Typography variant="h4">{data.name}</Typography>
