@@ -4,7 +4,7 @@ import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
-import { CATALOGS, fetcher } from '@/service/api'
+import { CATALOGS, MARKETS, fetcher } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -35,6 +35,10 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
 function Banner() {
   const classes = useStyles()
 
@@ -55,12 +59,16 @@ const recentItemsFilter = {
   sort: 'recent_ask:desc',
   limit: 5,
 }
+const marketItemsFilter = {
+  limit: 1,
+}
 
 export default function Index() {
   const classes = useStyles()
 
   const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
+  const { data: marketItems } = useSWR([MARKETS, marketItemsFilter], fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
@@ -75,7 +83,9 @@ export default function Index() {
           <Banner />
 
           <SearchInput
-            helperText={`Search on ${recentItems && recentItems.total_count} for sale items`}
+            helperText={`Search on ${
+              marketItems && numberWithCommas(marketItems.total_count)
+            } for sale items`}
             onSubmit={handleSubmit}
           />
           <br />
