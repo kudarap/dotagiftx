@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const defaultFilter = {
-  sort: 'name',
+  sort: 'created_at:desc',
   page: 1,
 }
 
