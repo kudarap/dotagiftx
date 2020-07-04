@@ -9,6 +9,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// itemKey use for accessing this item related endpoint like import and item creation.
+const itemKey = "item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8"
+
 func handleItemList(svc core.ItemService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &core.Item{})
@@ -50,6 +53,11 @@ func handleItemDetail(svc core.ItemService) http.HandlerFunc {
 
 func handleItemCreate(svc core.ItemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if err := isItemKeyValid(r); err != nil {
+			respondError(w, err)
+			return
+		}
+
 		i := new(core.Item)
 		if err := parseForm(r, i); err != nil {
 			respondError(w, err)
@@ -67,6 +75,11 @@ func handleItemCreate(svc core.ItemService) http.HandlerFunc {
 
 func handleItemImport(svc core.ItemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if err := isItemKeyValid(r); err != nil {
+			respondError(w, err)
+			return
+		}
+
 		// Get uploaded file.
 		f, fh, err := r.FormFile("file")
 		if err != nil {
@@ -90,4 +103,11 @@ func handleItemImport(svc core.ItemService) http.HandlerFunc {
 
 		respondOK(w, res)
 	}
+}
+
+func isItemKeyValid(r *http.Request) error {
+	if r.URL.Query().Get("key") == itemKey {
+		return nil
+	}
+	return fmt.Errorf("item key does not exist or invalid")
 }
