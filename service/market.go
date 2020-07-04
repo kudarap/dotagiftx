@@ -8,14 +8,15 @@ import (
 )
 
 // NewMarket returns new Market service.
-func NewMarket(ss core.MarketStorage, us core.UserStorage, is core.ItemStorage) core.MarketService {
-	return &marketService{ss, us, is}
+func NewMarket(ss core.MarketStorage, us core.UserStorage, is core.ItemStorage, ts core.TrackStorage) core.MarketService {
+	return &marketService{ss, us, is, ts}
 }
 
 type marketService struct {
 	marketStg core.MarketStorage
 	userStg   core.UserStorage
 	itemStg   core.ItemStorage
+	trackStg  core.TrackStorage
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {

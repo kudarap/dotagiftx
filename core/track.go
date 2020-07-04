@@ -44,8 +44,12 @@ type (
 		// Track returns track details by id.
 		Track(id string) (*Track, error)
 
-		// Create saves new track.
-		Create(r *http.Request) error
+		// Create saves new track from http request.
+		// Primarily used on client side.
+		CreateFromRequest(r *http.Request) error
+
+		// CreateSearchKeyword saves new keyword tracking data.
+		CreateSearchKeyword(r *http.Request, keyword string) error
 	}
 
 	// TrackStorage defines operation for track records.

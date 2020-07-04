@@ -90,7 +90,7 @@ func (a *application) setup() error {
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg)
-	marketSvc := service.NewMarket(marketStg, userStg, itemStg)
+	marketSvc := service.NewMarket(marketStg, userStg, itemStg, trackStg)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 
 	// Server setup.

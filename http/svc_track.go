@@ -12,7 +12,7 @@ var pixel = filepath.Join("assets/image/pixel.gif")
 
 func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := svc.Create(r); err != nil {
+		if err := svc.CreateFromRequest(r); err != nil {
 			logger.Errorf("tracker error: %s", err)
 			return
 		}

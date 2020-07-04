@@ -42,7 +42,7 @@ func (s *trackService) Track(id string) (*core.Track, error) {
 	return s.trackStg.Get(id)
 }
 
-func (s *trackService) Create(r *http.Request) error {
+func (s *trackService) CreateFromRequest(r *http.Request) error {
 	t := new(core.Track)
 	t.SetDefaults(r)
 
@@ -53,5 +53,13 @@ func (s *trackService) Create(r *http.Request) error {
 		}
 	}
 
+	return s.trackStg.Create(t)
+}
+
+func (s *trackService) CreateSearchKeyword(r *http.Request, keyword string) error {
+	t := new(core.Track)
+	t.SetDefaults(r)
+	t.Type = core.TrackTypeSearch
+	t.Keyword = keyword
 	return s.trackStg.Create(t)
 }
