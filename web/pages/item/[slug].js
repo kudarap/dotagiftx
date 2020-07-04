@@ -48,7 +48,7 @@ export default function ItemDetails({ data }) {
               className={classes.media}
               height={100}
               alt={data.name}
-              src={CDN_URL + data.image}
+              src={`${CDN_URL + data.image}/200x150`}
             />
             <div>
               <Typography variant="h4">{data.name}</Typography>
