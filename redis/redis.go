@@ -8,6 +8,13 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+// Config represents redis database config.
+type Config struct {
+	Addr string
+	Db   int
+	Pass string
+}
+
 var ctx = context.Background()
 
 // Client represents Redis database client.
@@ -16,18 +23,18 @@ type Client struct {
 }
 
 // New returns a new Redis client.
-func New(addr, pass string, db int) (*Client, error) {
-	c := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: pass,
-		DB:       db,
+func New(c Config) (*Client, error) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     c.Addr,
+		Password: c.Pass,
+		DB:       c.Db,
 	})
 
-	if err := c.Ping(ctx).Err(); err != nil {
+	if err := rdb.Ping(ctx).Err(); err != nil {
 		return nil, err
 	}
 
-	return &Client{c}, nil
+	return &Client{rdb}, nil
 }
 
 // Close closes database client connection.

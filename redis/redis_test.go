@@ -5,7 +5,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	c, err := New("localhost:6379", "root", 0)
+	c, err := New(Config{"localhost:6379", 0, "root"})
 	if c == nil {
 		t.Errorf("New() got = %v, want not nil", c)
 	}
