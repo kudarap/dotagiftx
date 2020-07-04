@@ -81,6 +81,7 @@ func (a *application) setup() error {
 	authStg := rethink.NewAuth(rethinkClient)
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
+	trackStg := rethink.NewTrack(rethinkClient)
 
 	// Service inits.
 	log.Println("setting up services...")
@@ -90,6 +91,7 @@ func (a *application) setup() error {
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg)
 	marketSvc := service.NewMarket(marketStg, userStg, itemStg)
+	trackSvc := service.NewTrack(trackStg, itemStg)
 
 	// Server setup.
 	log.Println("setting up http server...")
@@ -100,6 +102,7 @@ func (a *application) setup() error {
 		imageSvc,
 		itemSvc,
 		marketSvc,
+		trackSvc,
 		initVer(a.config),
 		log,
 	)
