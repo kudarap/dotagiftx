@@ -82,11 +82,12 @@ func handleItemImport(svc core.ItemService) http.HandlerFunc {
 			return
 		}
 
-		if err := svc.Import(r.Context(), f); err != nil {
+		res, err := svc.Import(r.Context(), f)
+		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		respondOK(w, newMsg("done"))
+		respondOK(w, res)
 	}
 }

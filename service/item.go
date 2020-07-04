@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -95,20 +94,35 @@ type yamlFile struct {
 	} `yaml:"items"`
 }
 
-func (s *itemService) Import(ctx context.Context, f io.Reader) error {
+func (s *itemService) Import(ctx context.Context, f io.Reader) (core.ItemImportResult, error) {
+	res := core.ItemImportResult{}
+
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
-		return errors.New(core.ItemErrImport, err)
+		return res, errors.New(core.ItemErrImport, err)
 	}
 
 	yf := &yamlFile{}
 	if err := yaml.Unmarshal(b, yf); err != nil {
-		return errors.New(core.ItemErrImport, err)
+		return res, errors.New(core.ItemErrImport, err)
 	}
 
-	fmt.Println(yf)
+	for _, ii := range yf.Items {
+		res.Total++
+		if err := s.Create(ctx, &core.Item{
+			Origin: yf.Origin,
+			Name:   ii.Name,
+			Hero:   ii.Hero,
+			Image:  ii.Image,
+			Rarity: ii.Rarity,
+		}); err != nil {
+			res.Bad++
+			continue
+		}
+		res.Ok++
+	}
 
-	return nil
+	return res, nil
 }
 
 // downloadItemImage saves image file from a url.

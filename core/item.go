@@ -45,6 +45,13 @@ type (
 		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
 	}
 
+	// ItemImportResult represents import process result.
+	ItemImportResult struct {
+		Ok    int `json:"ok"`
+		Bad   int `json:"bad"`
+		Total int `json:"total"`
+	}
+
 	// ItemService provides access to item service.
 	ItemService interface {
 		// Items returns a list of items.
@@ -60,7 +67,7 @@ type (
 		Update(context.Context, *Item) error
 
 		// Import creates new item from yaml format.
-		Import(ctx context.Context, f io.Reader) error
+		Import(ctx context.Context, f io.Reader) (ItemImportResult, error)
 	}
 
 	ItemStorage interface {
