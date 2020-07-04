@@ -37,6 +37,7 @@ type (
 		Origin       string     `json:"origin"       db:"origin,omitempty"`
 		Rarity       string     `json:"rarity"       db:"rarity,omitempty"`
 		Contributors []string   `json:"-"            db:"contributors,omitempty"`
+		ViewCount    int        `json:"view_count"   db:"view_count,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
 	}
@@ -74,6 +75,9 @@ type (
 
 		// IsItemExist returns an error if item already exists by name.
 		IsItemExist(name string) error
+
+		// AddViewCount increments item view count to data store.
+		AddViewCount(id string) error
 	}
 )
 

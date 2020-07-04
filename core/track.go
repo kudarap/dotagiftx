@@ -17,6 +17,12 @@ func init() {
 	appErrorText[TrackErrNotFound] = "track details not found"
 }
 
+// Track types.
+const (
+	TrackTypeView   = "v"
+	TrackTypeSearch = "s"
+)
+
 type (
 	Track struct {
 		ID        string     `json:"id"         db:"id,omitempty"`

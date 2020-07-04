@@ -146,6 +146,16 @@ func (s *itemStorage) IsItemExist(name string) error {
 	return nil
 }
 
+func (s *itemStorage) AddViewCount(id string) error {
+	cur, err := s.Get(id)
+	if err != nil {
+		return err
+	}
+
+	cur.ViewCount++
+	return s.Update(cur)
+}
+
 func (s *itemStorage) table() r.Term {
 	return r.Table(tableItem)
 }
