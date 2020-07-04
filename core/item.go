@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"io"
 	"time"
 
 	"github.com/kudarap/dota2giftables/gokit/slug"
@@ -13,6 +14,7 @@ const (
 	ItemErrRequiredID
 	ItemErrRequiredFields
 	ItemErrCreateItemExists
+	ItemErrImport
 )
 
 // sets error text definition.
@@ -21,6 +23,7 @@ func init() {
 	appErrorText[ItemErrRequiredID] = "item id is required"
 	appErrorText[ItemErrRequiredFields] = "item fields are required"
 	appErrorText[ItemErrCreateItemExists] = "item already exists"
+	appErrorText[ItemErrImport] = "item import error"
 }
 
 type (
@@ -55,6 +58,9 @@ type (
 
 		// Update saves item details changes.
 		Update(context.Context, *Item) error
+
+		// Import creates new item from yaml format.
+		Import(ctx context.Context, f io.Reader) error
 	}
 
 	ItemStorage interface {

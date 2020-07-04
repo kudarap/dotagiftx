@@ -2,7 +2,12 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"strings"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
@@ -68,4 +73,30 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 
 func (s *itemService) Update(ctx context.Context, it *core.Item) error {
 	panic("implement me")
+}
+
+type yamlFile struct {
+	Origin string `yaml:"origin"`
+	Items  []struct {
+		Name   string `yaml:"name"`
+		Hero   string `yaml:"hero"`
+		Image  string `yaml:"image"`
+		Rarity string `yaml:"rarity"`
+	} `yaml:"items"`
+}
+
+func (s *itemService) Import(ctx context.Context, f io.Reader) error {
+	b, err := ioutil.ReadAll(f)
+	if err != nil {
+		return errors.New(core.ItemErrImport, err)
+	}
+
+	yf := &yamlFile{}
+	if err := yaml.Unmarshal(b, yf); err != nil {
+		return errors.New(core.ItemErrImport, err)
+	}
+
+	fmt.Println(yf)
+
+	return nil
 }
