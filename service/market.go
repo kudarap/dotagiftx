@@ -36,7 +36,7 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 		return res, nil, err
 	}
 
-	// Get result and total count for metadata.
+	// Get total count for metadata.
 	tc, err := s.marketStg.Count(opts)
 	if err != nil {
 		return nil, nil, err
