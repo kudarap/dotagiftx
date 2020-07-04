@@ -28,6 +28,7 @@ func _() {
 	_ = x[MarketErrNotesLimit-2104]
 	_ = x[StorageUncaughtErr-10]
 	_ = x[StorageMergeErr-11]
+	_ = x[TrackErrNotFound-4000]
 	_ = x[UserErrNotFound-1200]
 	_ = x[UserErrRequiredID-1201]
 	_ = x[UserErrRequiredFields-1202]
@@ -41,6 +42,7 @@ const (
 	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExists"
 	_Errors_name_4 = "MarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimit"
 	_Errors_name_5 = "ImageErrNotFoundImageErrUploadImageErrThumbnail"
+	_Errors_name_6 = "TrackErrNotFound"
 )
 
 var (
@@ -72,6 +74,8 @@ func (i Errors) String() string {
 	case 3000 <= i && i <= 3002:
 		i -= 3000
 		return _Errors_name_5[_Errors_index_5[i]:_Errors_index_5[i+1]]
+	case i == 4000:
+		return _Errors_name_6
 	default:
 		return "Errors(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
