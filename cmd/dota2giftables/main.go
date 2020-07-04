@@ -9,6 +9,7 @@ import (
 	"github.com/kudarap/dota2giftables/gokit/logger"
 	"github.com/kudarap/dota2giftables/gokit/version"
 	"github.com/kudarap/dota2giftables/http"
+	"github.com/kudarap/dota2giftables/redis"
 	"github.com/kudarap/dota2giftables/rethink"
 	"github.com/kudarap/dota2giftables/service"
 	"github.com/kudarap/dota2giftables/steam"
@@ -70,6 +71,10 @@ func (a *application) setup() error {
 
 	// Database setup.
 	log.Println("setting up database...")
+	redisClient, err := setupRedis(a.config.Redis)
+	if err != nil {
+		return err
+	}
 	rethinkClient, err := setupRethink(a.config.Rethink)
 	if err != nil {
 		return err
@@ -81,6 +86,7 @@ func (a *application) setup() error {
 	authStg := rethink.NewAuth(rethinkClient)
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
+	trackStg := rethink.NewTrack(rethinkClient)
 
 	// Service inits.
 	log.Println("setting up services...")
@@ -88,8 +94,9 @@ func (a *application) setup() error {
 	userSvc := service.NewUser(userStg, fileMgr)
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
-	itemSvc := service.NewItem(itemStg)
-	marketSvc := service.NewMarket(marketStg, userStg, itemStg)
+	itemSvc := service.NewItem(itemStg, fileMgr)
+	marketSvc := service.NewMarket(marketStg, userStg, itemStg, trackStg)
+	trackSvc := service.NewTrack(trackStg, itemStg)
 
 	// Server setup.
 	log.Println("setting up http server...")
@@ -100,6 +107,8 @@ func (a *application) setup() error {
 		imageSvc,
 		itemSvc,
 		marketSvc,
+		trackSvc,
+		redisClient,
 		initVer(a.config),
 		log,
 	)
@@ -108,6 +117,9 @@ func (a *application) setup() error {
 
 	a.closerFn = func() {
 		log.Println("closing connection and shutting server...")
+		if err := redisClient.Close(); err != nil {
+			log.Fatal("could not close redis client", err)
+		}
 		if err := rethinkClient.Close(); err != nil {
 			log.Fatal("could not close rethink client", err)
 		}
@@ -153,6 +165,21 @@ func setupRethink(cfg rethink.Config) (c *rethink.Client, err error) {
 	}
 
 	err = connRetry("rethink", fn)
+	return
+}
+
+func setupRedis(cfg redis.Config) (c *redis.Client, err error) {
+	c = &redis.Client{}
+	fn := func() error {
+		c, err = redis.New(cfg)
+		if err != nil {
+			return fmt.Errorf("could not setup redis client: %s", err)
+		}
+
+		return nil
+	}
+
+	err = connRetry("redis", fn)
 	return
 }
 

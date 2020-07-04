@@ -8,14 +8,15 @@ import (
 )
 
 // NewMarket returns new Market service.
-func NewMarket(ss core.MarketStorage, us core.UserStorage, is core.ItemStorage) core.MarketService {
-	return &marketService{ss, us, is}
+func NewMarket(ss core.MarketStorage, us core.UserStorage, is core.ItemStorage, ts core.TrackStorage) core.MarketService {
+	return &marketService{ss, us, is, ts}
 }
 
 type marketService struct {
 	marketStg core.MarketStorage
 	userStg   core.UserStorage
 	itemStg   core.ItemStorage
+	trackStg  core.TrackStorage
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {
@@ -36,7 +37,7 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 		return res, nil, err
 	}
 
-	// Get result and total count for metadata.
+	// Get total count for metadata.
 	tc, err := s.marketStg.Count(opts)
 	if err != nil {
 		return nil, nil, err
@@ -82,9 +83,11 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 
 	// Check Item existence.
-	if i, _ := s.itemStg.Get(mkt.ItemID); i == nil {
+	i, _ := s.itemStg.Get(mkt.ItemID)
+	if i == nil {
 		return core.ItemErrNotFound
 	}
+	mkt.ItemID = i.ID
 
 	return s.marketStg.Create(mkt)
 }

@@ -3,11 +3,11 @@ module github.com/kudarap/dota2giftables
 go 1.14
 
 require (
-	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-playground/validator/v10 v10.3.0
+	github.com/go-redis/redis/v8 v8.0.0-beta.6
 	github.com/gorilla/schema v1.1.0
 	github.com/imdario/mergo v0.3.9
 	github.com/joho/godotenv v1.3.0
@@ -17,4 +17,5 @@ require (
 	github.com/speps/go-hashids v2.0.0+incompatible
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/rethinkdb/rethinkdb-go.v6 v6.2.1
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )

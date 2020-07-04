@@ -1,9 +1,9 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { item } from '@/service/api'
+import { CDN_URL, item, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -33,8 +33,6 @@ const useStyles = makeStyles(theme => ({
 export default function ItemDetails({ data }) {
   const classes = useStyles()
 
-  const router = useRouter()
-
   return (
     <>
       <Head>
@@ -49,7 +47,8 @@ export default function ItemDetails({ data }) {
             <img
               className={classes.media}
               height={100}
-              src="https://gamepedia.cursecdn.com/dota2_gamepedia/7/7f/Cosmetic_icon_Pipe_of_Dezun.png?version=19a51adbc336e8d2bf22b65268e4afa5"
+              alt={data.name}
+              src={CDN_URL + data.image}
             />
             <div>
               <Typography variant="h4">{data.name}</Typography>
@@ -80,11 +79,19 @@ export default function ItemDetails({ data }) {
 
           <MarketList />
         </Container>
+
+        <img src={trackViewURL(data.id)} alt="" />
       </main>
 
       <Footer />
     </>
   )
+}
+ItemDetails.propTypes = {
+  data: PropTypes.object,
+}
+ItemDetails.defaultProps = {
+  data: {},
 }
 
 // This gets called on every request

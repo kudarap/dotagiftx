@@ -2,18 +2,27 @@ package http
 
 import (
 	"net/http"
+	"time"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/go-chi/chi"
 	"github.com/kudarap/dota2giftables/core"
 )
 
-func handleMarketList(svc core.MarketService) http.HandlerFunc {
+func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
+
+		go func() {
+			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+				logger.Errorf("search keyword tracking error: %s", err)
+			}
+		}()
 
 		list, md, err := svc.Markets(r.Context(), opts)
 		if err != nil {
@@ -75,11 +84,26 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 	}
 }
 
-func handleMarketIndexList(svc core.MarketService) http.HandlerFunc {
+const cacheExpr = time.Minute * 2
+
+func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
+			return
+		}
+
+		go func() {
+			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+				logger.Errorf("search keyword tracking error: %s", err)
+			}
+		}()
+
+		// Check for cache hit and render them.
+		cacheKey := core.CacheKeyFromRequest(r)
+		if hit, _ := cache.Get(cacheKey); hit != "" {
+			respondOK(w, hit)
 			return
 		}
 
@@ -92,6 +116,14 @@ func handleMarketIndexList(svc core.MarketService) http.HandlerFunc {
 			list = []core.MarketIndex{}
 		}
 
-		respondOK(w, newDataWithMeta(list, md))
+		// Save result to cache.
+		data := newDataWithMeta(list, md)
+		go func() {
+			if err := cache.Set(cacheKey, data, cacheExpr); err != nil {
+				logger.Errorf("could save cache on market index list: %s", err)
+			}
+		}()
+
+		respondOK(w, data)
 	}
 }

@@ -15,15 +15,16 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/{id}/{w}x{h}", handleImageThumbnail(s.imageSvc))
 		})
 		r.Route("/items", func(r chi.Router) {
-			r.Get("/", handleItemList(s.itemSvc))
+			r.Get("/", handleItemList(s.itemSvc, s.trackSvc, s.logger))
 			r.Get("/{id}", handleItemDetail(s.itemSvc))
 		})
 		r.Route("/markets", func(r chi.Router) {
-			r.Get("/", handleMarketList(s.marketSvc))
+			r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.logger))
 			r.Get("/{id}", handleMarketDetail(s.marketSvc))
 		})
-		r.Get("/market_index", handleMarketIndexList(s.marketSvc))
+		r.Get("/market_index", handleMarketIndexList(s.marketSvc, s.trackSvc, s.cache, s.logger))
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
+		r.Get("/t", handleTracker(s.trackSvc, s.logger))
 	})
 }
 
@@ -33,13 +34,14 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Route("/my", func(r chi.Router) {
 			r.Get("/profile", handleProfile(s.userSvc))
 			r.Route("/markets", func(r chi.Router) {
-				r.Get("/", handleMarketList(s.marketSvc))
+				r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.logger))
 				r.Post("/", handleMarketCreate(s.marketSvc))
 				r.Get("/{id}", handleMarketDetail(s.marketSvc))
 				r.Patch("/{id}", handleMarketUpdate(s.marketSvc))
 			})
 		})
 		r.Post("/items", handleItemCreate(s.itemSvc))
+		r.Post("/items_import", handleItemImport(s.itemSvc))
 		r.Post("/images", handleImageUpload(s.imageSvc))
 	})
 }

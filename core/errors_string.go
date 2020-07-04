@@ -21,6 +21,7 @@ func _() {
 	_ = x[ItemErrRequiredID-2001]
 	_ = x[ItemErrRequiredFields-2002]
 	_ = x[ItemErrCreateItemExists-2003]
+	_ = x[ItemErrImport-2004]
 	_ = x[MarketErrNotFound-2100]
 	_ = x[MarketErrRequiredID-2101]
 	_ = x[MarketErrRequiredFields-2102]
@@ -28,6 +29,7 @@ func _() {
 	_ = x[MarketErrNotesLimit-2104]
 	_ = x[StorageUncaughtErr-10]
 	_ = x[StorageMergeErr-11]
+	_ = x[TrackErrNotFound-4000]
 	_ = x[UserErrNotFound-1200]
 	_ = x[UserErrRequiredID-1201]
 	_ = x[UserErrRequiredFields-1202]
@@ -38,16 +40,17 @@ const (
 	_Errors_name_0 = "StorageUncaughtErrStorageMergeErr"
 	_Errors_name_1 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
 	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDL"
-	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExists"
+	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExistsItemErrImport"
 	_Errors_name_4 = "MarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimit"
 	_Errors_name_5 = "ImageErrNotFoundImageErrUploadImageErrThumbnail"
+	_Errors_name_6 = "TrackErrNotFound"
 )
 
 var (
 	_Errors_index_0 = [...]uint8{0, 18, 33}
 	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 68, 80, 99}
 	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74}
-	_Errors_index_3 = [...]uint8{0, 15, 32, 53, 76}
+	_Errors_index_3 = [...]uint8{0, 15, 32, 53, 76, 89}
 	_Errors_index_4 = [...]uint8{0, 17, 36, 59, 81, 100}
 	_Errors_index_5 = [...]uint8{0, 16, 30, 47}
 )
@@ -63,7 +66,7 @@ func (i Errors) String() string {
 	case 1200 <= i && i <= 1203:
 		i -= 1200
 		return _Errors_name_2[_Errors_index_2[i]:_Errors_index_2[i+1]]
-	case 2000 <= i && i <= 2003:
+	case 2000 <= i && i <= 2004:
 		i -= 2000
 		return _Errors_name_3[_Errors_index_3[i]:_Errors_index_3[i+1]]
 	case 2100 <= i && i <= 2104:
@@ -72,6 +75,8 @@ func (i Errors) String() string {
 	case 3000 <= i && i <= 3002:
 		i -= 3000
 		return _Errors_name_5[_Errors_index_5[i]:_Errors_index_5[i+1]]
+	case i == 4000:
+		return _Errors_name_6
 	default:
 		return "Errors(" + strconv.FormatInt(int64(i), 10) + ")"
 	}

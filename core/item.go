@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"io"
 	"time"
 
 	"github.com/kudarap/dota2giftables/gokit/slug"
@@ -13,6 +14,7 @@ const (
 	ItemErrRequiredID
 	ItemErrRequiredFields
 	ItemErrCreateItemExists
+	ItemErrImport
 )
 
 // sets error text definition.
@@ -21,6 +23,7 @@ func init() {
 	appErrorText[ItemErrRequiredID] = "item id is required"
 	appErrorText[ItemErrRequiredFields] = "item fields are required"
 	appErrorText[ItemErrCreateItemExists] = "item already exists"
+	appErrorText[ItemErrImport] = "item import error"
 }
 
 type (
@@ -37,8 +40,16 @@ type (
 		Origin       string     `json:"origin"       db:"origin,omitempty"`
 		Rarity       string     `json:"rarity"       db:"rarity,omitempty"`
 		Contributors []string   `json:"-"            db:"contributors,omitempty"`
+		ViewCount    int        `json:"view_count"   db:"view_count,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
+	}
+
+	// ItemImportResult represents import process result.
+	ItemImportResult struct {
+		Ok    int `json:"ok"`
+		Bad   int `json:"bad"`
+		Total int `json:"total"`
 	}
 
 	// ItemService provides access to item service.
@@ -54,6 +65,9 @@ type (
 
 		// Update saves item details changes.
 		Update(context.Context, *Item) error
+
+		// Import creates new item from yaml format.
+		Import(ctx context.Context, f io.Reader) (ItemImportResult, error)
 	}
 
 	ItemStorage interface {
@@ -74,6 +88,9 @@ type (
 
 		// IsItemExist returns an error if item already exists by name.
 		IsItemExist(name string) error
+
+		// AddViewCount increments item view count to data store.
+		AddViewCount(id string) error
 	}
 )
 
