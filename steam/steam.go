@@ -9,8 +9,9 @@ import (
 
 // Config represents steam config.
 type Config struct {
-	Key       string
-	ReturnURL string `split_words:"true"`
+	Key    string
+	Realm  string
+	Return string
 }
 
 // Client represents steam client.
@@ -24,7 +25,7 @@ func New(c Config) (*Client, error) {
 }
 
 func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
-	oid := NewOpenId(r, c.config.ReturnURL)
+	oid := NewOpenId(r, c.config)
 	if oid.Mode() != "" {
 		err = fmt.Errorf("could not get redirect URL: %s", oid.Mode())
 		return
@@ -34,7 +35,7 @@ func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
 }
 
 func (c *Client) Authenticate(r *http.Request) (*core.SteamPlayer, error) {
-	oid := NewOpenId(r, c.config.ReturnURL)
+	oid := NewOpenId(r, c.config)
 	m := oid.Mode()
 	if m == "cancel" {
 		return nil, fmt.Errorf("authorization cancelled")
