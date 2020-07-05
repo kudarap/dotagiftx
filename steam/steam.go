@@ -9,21 +9,22 @@ import (
 
 // Config represents steam config.
 type Config struct {
-	Key string
+	Key       string
+	ReturnURL string `split_words:"true"`
 }
 
 // Client represents steam client.
 type Client struct {
-	ApiKey string
+	config Config
 }
 
 // New create new steam client instance.
 func New(c Config) (*Client, error) {
-	return &Client{c.Key}, nil
+	return &Client{c}, nil
 }
 
 func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
-	oid := NewOpenId(r)
+	oid := NewOpenId(r, c.config.ReturnURL)
 	if oid.Mode() != "" {
 		err = fmt.Errorf("could not get redirect URL: %s", oid.Mode())
 		return
@@ -33,7 +34,7 @@ func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
 }
 
 func (c *Client) Authenticate(r *http.Request) (*core.SteamPlayer, error) {
-	oid := NewOpenId(r)
+	oid := NewOpenId(r, c.config.ReturnURL)
 	m := oid.Mode()
 	if m == "cancel" {
 		return nil, fmt.Errorf("authorization cancelled")
@@ -48,7 +49,7 @@ func (c *Client) Authenticate(r *http.Request) (*core.SteamPlayer, error) {
 }
 
 func (c *Client) Player(steamID string) (*core.SteamPlayer, error) {
-	su, err := GetPlayerSummaries(steamID, c.ApiKey)
+	su, err := GetPlayerSummaries(steamID, c.config.Key)
 	if err != nil {
 		return nil, fmt.Errorf("could not get player: %s", err)
 	}

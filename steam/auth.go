@@ -26,7 +26,7 @@ type OpenId struct {
 	data      url.Values
 }
 
-func NewOpenId(r *http.Request) *OpenId {
+func NewOpenId(r *http.Request, returnURL string) *OpenId {
 	id := new(OpenId)
 
 	proto := "http://"
@@ -40,6 +40,9 @@ func NewOpenId(r *http.Request) *OpenId {
 		uri = uri[0 : i-1]
 	}
 	id.returnUrl = id.root + uri
+	if returnURL != "" {
+		id.returnUrl = returnURL
+	}
 
 	switch r.Method {
 	case "POST":
