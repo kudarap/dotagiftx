@@ -84,7 +84,7 @@ export default function Index() {
 
           <SearchInput
             helperText={`Search on ${
-              marketItems && numberWithCommas(marketItems.total_count)
+              marketItems && numberWithCommas(marketItems.total_count || 0)
             } for sale items`}
             onSubmit={handleSubmit}
           />
