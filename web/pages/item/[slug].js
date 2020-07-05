@@ -77,7 +77,7 @@ export default function ItemDetails({ data }) {
             </div>
           </div>
 
-          <MarketList />
+          <MarketList itemID={data.id} />
         </Container>
 
         <img src={trackViewURL(data.id)} alt="" />

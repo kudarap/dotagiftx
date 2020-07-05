@@ -1,4 +1,5 @@
 import React from 'react'
+import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
@@ -10,7 +11,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
-import { CDN_URL } from '@/service/api'
+import { CDN_URL, MARKETS, fetcher } from '@/service/api'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 
@@ -279,8 +280,21 @@ const testData = {
   total_count: 8,
 }
 
-export default function SimpleTable() {
+const marketFilter = { sort: 'price' }
+
+export default function MarketList({ itemID = '' }) {
   const classes = useStyles()
+
+  marketFilter.item_id = itemID
+  const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
+
+  if (error) {
+    return <p>Error</p>
+  }
+
+  if (!listings) {
+    return <p>Loading...</p>
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -293,7 +307,7 @@ export default function SimpleTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {testData.data.map(market => (
+          {listings.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
                 <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
