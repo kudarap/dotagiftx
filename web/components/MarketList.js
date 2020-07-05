@@ -11,10 +11,11 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import Link from '@/components/Link'
 import { CDN_URL, MARKETS, fetcher } from '@/service/api'
+import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
+import { marketStatusLive } from '../constants/market'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketFilter = { sort: 'price' }
+const marketFilter = { sort: 'price', status: marketStatusLive }
 
 export default function MarketList({ itemID = '' }) {
   const classes = useStyles()
