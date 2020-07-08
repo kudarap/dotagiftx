@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
+	"github.com/sirupsen/logrus"
 )
 
 // NewMarket returns new Market service.

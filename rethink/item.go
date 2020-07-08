@@ -7,7 +7,6 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
-	"github.com/sirupsen/logrus"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -18,7 +17,7 @@ const (
 )
 
 // NewItem creates new instance of item data store.
-func NewItem(c *Client, logger *logrus.Logger) core.ItemStorage {
+func NewItem(c *Client) core.ItemStorage {
 	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
@@ -28,15 +27,12 @@ func NewItem(c *Client, logger *logrus.Logger) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	catalogStg := NewCatalog(c, logger)
-	return &itemStorage{c, catalogStg, kf, logger}
+	return &itemStorage{c, kf}
 }
 
 type itemStorage struct {
 	db            *Client
-	catalogStg    core.CatalogStorage
 	keywordFields []string
-	logger        *logrus.Logger
 }
 
 func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
@@ -162,13 +158,16 @@ func (s *itemStorage) AddViewCount(id string) error {
 		return err
 	}
 
-	go func() {
-		if _, err := s.catalogStg.Index(cur.ID); err != nil {
-			s.logger.Errorf("could not index item %s: %s", cur.ID, err)
-		}
-	}()
+	if err := s.updateCatalogViewCount(id, cur.ViewCount); err != nil {
+		return err
+	}
 
 	return nil
+}
+
+func (s *itemStorage) updateCatalogViewCount(itemID string, viewCount int) error {
+	q := r.Table(tableCatalog).Get(itemID).Update(&core.Catalog{ViewCount: viewCount})
+	return s.db.update(q)
 }
 
 func (s *itemStorage) table() r.Term {
