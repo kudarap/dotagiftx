@@ -26,7 +26,8 @@ func NewMarket(c *Client, logger *logrus.Logger) core.MarketStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &marketStorage{c, NewCatalog(c), kf, logger}
+	catalogStg := NewCatalog(c, logger)
+	return &marketStorage{c, catalogStg, kf, logger}
 }
 
 type marketStorage struct {

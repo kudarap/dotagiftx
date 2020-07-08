@@ -29,7 +29,8 @@ func NewItem(c *Client, logger *logrus.Logger) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, NewCatalog(c), kf, logger}
+	catalogStg := NewCatalog(c, logger)
+	return &itemStorage{c, catalogStg, kf, logger}
 }
 
 type itemStorage struct {

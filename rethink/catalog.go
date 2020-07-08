@@ -7,13 +7,15 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
+	"github.com/sirupsen/logrus"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
-func NewCatalog(c *Client) core.CatalogStorage {
+func NewCatalog(c *Client, logger *logrus.Logger) core.CatalogStorage {
+	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableCatalog); err != nil {
 		log.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
@@ -22,12 +24,13 @@ func NewCatalog(c *Client) core.CatalogStorage {
 		log.Fatalf("could not create index on %s table: %s", tableCatalog, err)
 	}
 
-	return &catalogStorage{c, []string{"name", "hero", "origin", "rarity"}}
+	return &catalogStorage{c, kf, logger}
 }
 
 type catalogStorage struct {
 	db            *Client
 	keywordFields []string
+	logger        *logrus.Logger
 }
 
 func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
@@ -70,10 +73,10 @@ func (s *catalogStorage) Get(itemID string) (*core.Catalog, error) {
 func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	// Benchmark indexing.
 	// avg proc time 2.555710726s
-	//tStart := time.Now()
-	//defer func() {
-	//	fmt.Printf("catalog indexed %s @ %s\n", itemID, time.Now().Sub(tStart))
-	//}()
+	tStart := time.Now()
+	defer func() {
+		s.logger.Infof("catalog indexed %s @ %s\n", itemID, time.Now().Sub(tStart))
+	}()
 
 	cat := &core.Catalog{}
 	opts := core.FindOpts{Filter: core.Market{ItemID: itemID}}
