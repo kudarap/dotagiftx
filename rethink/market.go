@@ -16,7 +16,6 @@ const (
 
 // NewMarket creates new instance of market data store.
 func NewMarket(c *Client) core.MarketStorage {
-	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableMarket); err != nil {
 		log.Fatalf("could not create %s table: %s", tableMarket, err)
 	}
@@ -24,7 +23,7 @@ func NewMarket(c *Client) core.MarketStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &marketStorage{c, kf}
+	return &marketStorage{c, itemSearchFields}
 }
 
 type marketStorage struct {
@@ -34,7 +33,6 @@ type marketStorage struct {
 
 func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	var res []core.Market
-	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
@@ -46,11 +44,10 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 
 func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
-		Keyword:       o.Keyword,
-		KeywordFields: s.keywordFields,
-		Filter:        o.Filter,
-		UserID:        o.UserID,
-		IndexSorting:  true,
+		Keyword:      o.Keyword,
+		Filter:       o.Filter,
+		UserID:       o.UserID,
+		IndexSorting: true,
 	}
 	q := newFindOptsQuery(s.table(), o)
 	err = s.db.one(q.Count(), &num)

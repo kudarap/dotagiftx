@@ -16,9 +16,10 @@ const (
 	itemFieldSlug = "slug"
 )
 
+var itemSearchFields = []string{"name", "hero", "origin", "rarity"}
+
 // NewItem creates new instance of item data store.
 func NewItem(c *Client) core.ItemStorage {
-	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
@@ -27,7 +28,7 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, kf}
+	return &itemStorage{c, itemSearchFields}
 }
 
 type itemStorage struct {

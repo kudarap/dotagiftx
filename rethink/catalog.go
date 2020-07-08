@@ -15,7 +15,6 @@ const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
 func NewCatalog(c *Client, logger *logrus.Logger) core.CatalogStorage {
-	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableCatalog); err != nil {
 		log.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
@@ -24,7 +23,7 @@ func NewCatalog(c *Client, logger *logrus.Logger) core.CatalogStorage {
 		log.Fatalf("could not create index on %s table: %s", tableCatalog, err)
 	}
 
-	return &catalogStorage{c, kf, logger}
+	return &catalogStorage{c, itemSearchFields, logger}
 }
 
 type catalogStorage struct {
