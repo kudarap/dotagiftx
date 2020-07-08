@@ -38,6 +38,9 @@ const useStyles = makeStyles(theme => ({
 export default function UserDetails({ data = {} }) {
   const classes = useStyles()
 
+  const profileURL = `https://steamcommunity.com/profiles/${data.steam_id}`
+  const steamrepURL = `https://steamrep.com/profiles/${data.steam_id}`
+
   return (
     <>
       <Head>
@@ -54,16 +57,22 @@ export default function UserDetails({ data = {} }) {
               <Typography variant="h4">{data.name}</Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
-                  {`steam ID: `}
+                  {`steam: `}
                 </Typography>
-                {data.steam_id}
+                <Link href={profileURL} color="secondary" target="_blank" rel="noreferrer noopener">
+                  {profileURL}
+                </Link>
                 <br />
 
                 <Typography color="textSecondary" component="span">
-                  {`steam URL: `}
+                  {`steamrep: `}
                 </Typography>
-                <Link href={data.url} color="secondary">
-                  {data.url}
+                <Link
+                  href={steamrepURL}
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  {steamrepURL}
                 </Link>
                 <br />
 
