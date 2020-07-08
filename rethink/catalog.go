@@ -17,10 +17,8 @@ func NewCatalog(c *Client) core.CatalogStorage {
 		log.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
 
-	for _, ff := range getModelIndexedFields(core.Catalog{}) {
-		if err := c.createIndex(tableCatalog, ff); err != nil {
-			log.Fatalf("could not create %s index on %s table: %s", ff, tableCatalog, err)
-		}
+	if err := c.autoIndex(tableCatalog, core.Catalog{}); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableCatalog, err)
 	}
 
 	return &catalogStorage{c, []string{"name", "hero", "origin", "rarity"}}
