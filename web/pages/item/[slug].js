@@ -44,14 +44,18 @@ export default function ItemDetails({ data }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <img
-              className={classes.media}
-              height={100}
-              alt={data.name}
-              src={`${CDN_URL + data.image}/300x170`}
-            />
+            {data.image && (
+              <img
+                className={classes.media}
+                height={100}
+                alt={data.name}
+                src={`${CDN_URL + data.image}/300x170`}
+              />
+            )}
             <div>
-              <Typography variant="h4">{data.name}</Typography>
+              <Typography variant="h4" component="h1">
+                {data.name}
+              </Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
                   {`hero: `}

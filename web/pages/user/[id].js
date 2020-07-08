@@ -54,8 +54,16 @@ export default function UserDetails({ data = {} }) {
           <div className={classes.details}>
             <Avatar className={classes.avatar} src={CDN_URL + data.avatar} />
             <div>
-              <Typography variant="h4">{data.name}</Typography>
+              <Typography variant="h4" component="h1">
+                {data.name}
+              </Typography>
               <Typography gutterBottom>
+                <Typography color="textSecondary" component="span">
+                  {`registered: `}
+                </Typography>
+                {moment(data.created_at).fromNow()}
+                <br />
+
                 <Typography color="textSecondary" component="span">
                   {`steam: `}
                 </Typography>
@@ -74,12 +82,6 @@ export default function UserDetails({ data = {} }) {
                   rel="noreferrer noopener">
                   {steamrepURL}
                 </Link>
-                <br />
-
-                <Typography color="textSecondary" component="span">
-                  {`registered: `}
-                </Typography>
-                {moment(data.created_at).fromNow()}
               </Typography>
             </div>
           </div>

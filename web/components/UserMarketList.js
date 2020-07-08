@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
 
 const marketFilter = {
   status: marketStatusLive,
-  // sort: 'created_at:desc',
+  sort: 'created_at:desc',
 }
 
 export default function UserMarketList({ userID = '' }) {
