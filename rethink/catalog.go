@@ -9,31 +9,30 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const (
-	tableMarket       = "market"
-	marketFieldItemID = "item_id"
-)
+const tableCatalog = "catalog"
 
-// NewMarket creates new instance of market data store.
-func NewMarket(c *Client) core.MarketStorage {
-	if err := c.autoMigrate(tableMarket); err != nil {
-		log.Fatalf("could not create %s table: %s", tableMarket, err)
+// NewCatalog creates new instance of catalog data store.
+func NewCatalog(c *Client) core.CatalogStorage {
+	if err := c.autoMigrate(tableCatalog); err != nil {
+		log.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
 
-	if err := c.createIndex(tableMarket, marketFieldItemID); err != nil {
-		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
+	for _, ff := range getModelIndexedFields(core.Catalog{}) {
+		if err := c.createIndex(tableCatalog, ff); err != nil {
+			log.Fatalf("could not create %s index on %s table: %s", ff, tableCatalog, err)
+		}
 	}
 
-	return &marketStorage{c, []string{"name", "hero", "origin", "rarity"}}
+	return &catalogStorage{c, []string{"name", "hero", "origin", "rarity"}}
 }
 
-type marketStorage struct {
+type catalogStorage struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
-	var res []core.Market
+func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
+	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
@@ -43,7 +42,7 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	return res, nil
 }
 
-func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
+func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -55,11 +54,11 @@ func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 	return
 }
 
-func (s *marketStorage) Get(id string) (*core.Market, error) {
-	row := &core.Market{}
-	if err := s.db.one(s.table().Get(id), row); err != nil {
+func (s *catalogStorage) Get(itemID string) (*core.Catalog, error) {
+	row := &core.Catalog{}
+	if err := s.db.one(s.table().Get(itemID), row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, core.MarketErrNotFound
+			return nil, core.CatalogErrNotFound
 		}
 
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -68,9 +67,18 @@ func (s *marketStorage) Get(id string) (*core.Market, error) {
 	return row, nil
 }
 
-func (s *marketStorage) Create(in *core.Market) error {
+func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
+	row := &core.Catalog{}
+
+	// Get market index base item ID.
+
+	// Check for exiting entry
+
+	return row, nil
+}
+
+func (s *catalogStorage) create(in *core.Catalog) error {
 	t := now()
-	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
@@ -82,7 +90,7 @@ func (s *marketStorage) Create(in *core.Market) error {
 	return nil
 }
 
-func (s *marketStorage) Update(in *core.Market) error {
+func (s *catalogStorage) update(in *core.Catalog) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
@@ -101,10 +109,10 @@ func (s *marketStorage) Update(in *core.Market) error {
 	return nil
 }
 
-func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
+func (s *catalogStorage) findIndex(o core.FindOpts) ([]core.Catalog, error) {
 	q := s.indexBaseQuery()
 
-	var res []core.MarketIndex
+	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
 	q = newFindOptsQuery(q, o)
 	if err := s.db.list(q, &res); err != nil {
@@ -114,30 +122,18 @@ func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
 	return res, nil
 }
 
-func (s *marketStorage) CountIndex(o core.FindOpts) (num int, err error) {
-	q := s.indexBaseQuery()
-	o = core.FindOpts{
-		Keyword:       o.Keyword,
-		KeywordFields: s.keywordFields,
-		Filter:        o.Filter,
-	}
-	q = newFindOptsQuery(q, o)
-	err = s.db.one(q.Count(), &num)
-	return
-}
-
-func (s *marketStorage) indexBaseQuery() r.Term {
+func (s *catalogStorage) indexBaseQuery() r.Term {
 	return s.table().GroupByIndex(marketFieldItemID).Ungroup().
 		Map(s.groupIndexMap).
 		EqJoin(marketFieldItemID, r.Table(tableItem)).
 		Zip()
 }
 
-func (s *marketStorage) table() r.Term {
-	return r.Table(tableMarket)
+func (s *catalogStorage) table() r.Term {
+	return r.Table(tableCatalog)
 }
 
-func (s *marketStorage) groupIndexMap(market r.Term) interface{} {
+func (s *catalogStorage) groupIndexMap(catalog r.Term) interface{} {
 	//r.db('dotagiftables').table('market').group({index: 'item_id'}).ungroup().map(
 	//    function (doc) {
 	//      let liveMarket = doc('reduction').filter({status: 200});
@@ -152,8 +148,8 @@ func (s *marketStorage) groupIndexMap(market r.Term) interface{} {
 	//    }
 	//)
 
-	id := market.Field("group")
-	live := market.Field("reduction").Filter(core.Market{Status: core.MarketStatusLive})
+	id := catalog.Field("group")
+	live := catalog.Field("reduction").Filter(core.Market{Status: core.MarketStatusLive})
 	return struct {
 		ItemID     r.Term `db:"item_id"`
 		Quantity   r.Term `db:"quantity"`

@@ -2,6 +2,8 @@ package rethink
 
 import (
 	"log"
+	"reflect"
+	"strings"
 	"time"
 
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
@@ -145,4 +147,31 @@ func getTables(s *r.Session) (table []string, err error) {
 func now() *time.Time {
 	t := time.Now()
 	return &t
+}
+
+const indexedTagName = "index"
+
+func getModelIndexedFields(model interface{}) (fields []string) {
+	// TypeOf returns the reflection Type that represents the dynamic type of variable.
+	// If variable is a nil interface value, TypeOf returns nil.
+	t := reflect.TypeOf(model)
+	// Iterate over all available fields and read the tag value.
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		tag := field.Tag.Get(tagName)
+		if !strings.Contains(tag, indexedTagName) {
+			continue
+		}
+
+		tagField := strings.Split(tag, ",")[0]
+		// Ignore ID field since its index by default.
+		if tagField == "id" {
+			continue
+		}
+
+		// Only get the base field name.
+		fields = append(fields, tagField)
+	}
+
+	return
 }

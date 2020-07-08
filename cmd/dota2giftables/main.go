@@ -86,6 +86,7 @@ func (a *application) setup() error {
 	authStg := rethink.NewAuth(rethinkClient)
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
+	_ = rethink.NewCatalog(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 
 	// Service inits.

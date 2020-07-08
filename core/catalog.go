@@ -19,15 +19,23 @@ func init() {
 }
 
 type (
-	// Catalog represents indexed market.
+	// Catalog represents item market information.
 	Catalog struct {
-		ID         string     `json:"id"          db:"id,omitempty"`
-		Quantity   int        `json:"quantity"    db:"quantity,omitempty"`
-		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty"`
-		HighestBid float64    `json:"highest_bid" db:"highest_bid,omitempty"`
-		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty"`
-		// Include related fields.
-		Item
+		ID           string   `json:"id"           db:"id,omitempty"`
+		Slug         string   `json:"slug"         db:"slug,omitempty,indexed"`
+		Name         string   `json:"name"         db:"name,omitempty,indexed"`
+		Hero         string   `json:"hero"         db:"hero,omitempty,indexed"`
+		Image        string   `json:"image"        db:"image,omitempty"`
+		Origin       string   `json:"origin"       db:"origin,omitempty,indexed"`
+		Rarity       string   `json:"rarity"       db:"rarity,omitempty,indexed"`
+		Contributors []string `json:"-"            db:"contributors,omitempty"`
+		ViewCount    int      `json:"view_count"   db:"view_count,omitempty,indexed"`
+		// Market summary details.
+		Quantity   int        `json:"quantity"    db:"quantity,omitempty,indexed"`
+		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty,indexed"`
+		HighestBid float64    `json:"highest_bid" db:"highest_bid,omitempty,indexed"`
+		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty,indexed"`
+		UpdatedAt  *time.Time `json:"updated_at"  db:"updated_at,omitempty,indexed"`
 	}
 
 	// CatalogService provides access to catalog service.
