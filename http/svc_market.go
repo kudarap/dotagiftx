@@ -88,7 +88,7 @@ const cacheExpr = time.Minute * 2
 
 func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		opts, err := findOptsFromURL(r.URL, &core.Market{})
+		opts, err := findOptsFromURL(r.URL, &core.Catalog{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -115,7 +115,7 @@ func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, c
 			return
 		}
 		if list == nil {
-			list = []core.MarketIndex{}
+			list = []core.Catalog{}
 		}
 
 		// Save result to cache.

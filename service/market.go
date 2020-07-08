@@ -145,7 +145,7 @@ func (s *marketService) userMarket(userID, id string) (*core.Market, error) {
 	return cur, nil
 }
 
-func (s *marketService) Index(opts core.FindOpts) ([]core.MarketIndex, *core.FindMetadata, error) {
+func (s *marketService) Index(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
 	res, err := s.marketStg.FindIndex(opts)
 	if err != nil {
 		return nil, nil, err

@@ -120,10 +120,18 @@ func (s *marketStorage) Update(in *core.Market) error {
 	return nil
 }
 
-func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
+func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.Catalog, error) {
+	return s.catalogStg.Find(o)
+}
+
+func (s *marketStorage) CountIndex(o core.FindOpts) (num int, err error) {
+	return s.catalogStg.Count(o)
+}
+
+func (s *marketStorage) findIndexLegacy(o core.FindOpts) ([]core.Catalog, error) {
 	q := s.indexBaseQuery()
 
-	var res []core.MarketIndex
+	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
 	q = newFindOptsQuery(q, o)
 	if err := s.db.list(q, &res); err != nil {
@@ -133,7 +141,7 @@ func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.MarketIndex, error) {
 	return res, nil
 }
 
-func (s *marketStorage) CountIndex(o core.FindOpts) (num int, err error) {
+func (s *marketStorage) countIndexLegacy(o core.FindOpts) (num int, err error) {
 	q := s.indexBaseQuery()
 	o = core.FindOpts{
 		Keyword:       o.Keyword,

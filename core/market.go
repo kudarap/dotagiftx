@@ -56,17 +56,6 @@ type (
 		Item *Item `json:"item,omitempty" db:"-"`
 	}
 
-	// MarketIndex represents aggregation of market entries.
-	MarketIndex struct {
-		ItemID     string     `json:"item_id"     db:"item_id,omitempty"`
-		Quantity   int        `json:"quantity"    db:"quantity,omitempty"`
-		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty"`
-		HighestBid float64    `json:"highest_bid" db:"highest_bid,omitempty"`
-		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty"`
-		// Include related fields.
-		Item
-	}
-
 	// MarketService provides access to market service.
 	MarketService interface {
 		// Markets returns a list of markets.
@@ -82,7 +71,7 @@ type (
 		Update(context.Context, *Market) error
 
 		// Index returns a list of indexed markets.
-		Index(opts FindOpts) ([]MarketIndex, *FindMetadata, error)
+		Index(opts FindOpts) ([]Catalog, *FindMetadata, error)
 	}
 
 	MarketStorage interface {
@@ -102,7 +91,7 @@ type (
 		Update(*Market) error
 
 		// Find returns a list o aggregated market index from data store.
-		FindIndex(opts FindOpts) ([]MarketIndex, error)
+		FindIndex(opts FindOpts) ([]Catalog, error)
 
 		// Count returns number of aggregated market index from data store.
 		CountIndex(FindOpts) (int, error)

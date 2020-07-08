@@ -36,7 +36,7 @@ type catalogStorage struct {
 func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
-	//o.IndexSorting = true
+	o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -50,7 +50,7 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
-		//IndexSorting:        true,
+		IndexSorting:  true,
 	}
 	q := newFindOptsQuery(s.table(), o)
 	err = s.db.one(q.Count(), &num)
