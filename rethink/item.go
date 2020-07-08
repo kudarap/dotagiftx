@@ -18,6 +18,7 @@ const (
 
 // NewItem creates new instance of item data store.
 func NewItem(c *Client) core.ItemStorage {
+	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
@@ -26,11 +27,12 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, []string{"name", "hero", "origin", "rarity"}}
+	return &itemStorage{c, NewCatalog(c), kf}
 }
 
 type itemStorage struct {
 	db            *Client
+	catalogStg    core.CatalogStorage
 	keywordFields []string
 }
 
@@ -153,7 +155,18 @@ func (s *itemStorage) AddViewCount(id string) error {
 	}
 
 	cur.ViewCount++
-	return s.Update(cur)
+	if err := s.Update(cur); err != nil {
+		return err
+	}
+
+	go func() {
+		_, err := s.catalogStg.Index(cur.ID)
+		if err != nil {
+			log.Println(fmt.Sprintf("could not index item %s: %s", cur.ID, err))
+		}
+	}()
+
+	return nil
 }
 
 func (s *itemStorage) table() r.Term {

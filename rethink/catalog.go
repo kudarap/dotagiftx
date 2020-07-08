@@ -14,7 +14,7 @@ import (
 const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
-func NewCatalog(c *Client, is core.ItemStorage) core.CatalogStorage {
+func NewCatalog(c *Client) core.CatalogStorage {
 	if err := c.autoMigrate(tableCatalog); err != nil {
 		log.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
@@ -23,12 +23,11 @@ func NewCatalog(c *Client, is core.ItemStorage) core.CatalogStorage {
 		log.Fatalf("could not create index on %s table: %s", tableCatalog, err)
 	}
 
-	return &catalogStorage{c, is, []string{"name", "hero", "origin", "rarity"}}
+	return &catalogStorage{c, []string{"name", "hero", "origin", "rarity"}}
 }
 
 type catalogStorage struct {
 	db            *Client
-	itemStg       core.ItemStorage
 	keywordFields []string
 }
 
@@ -84,31 +83,31 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	// Get item details by item ID.
 	q = r.Table(tableItem).Get(itemID)
 	if err = s.db.one(q, cat); err != nil {
-		return nil, err
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	// Get total market count by item ID.
 	if err = s.db.one(baseQ.Count(), &cat.Quantity); err != nil {
-		return nil, err
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	// Get lowest price on the market by item ID.
 	q = baseQ.Min("price").Field("price").Default(0)
 	if err = s.db.one(q, &cat.LowestAsk); err != nil {
-		return nil, err
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	// Get highest price on the market by item ID.
 	q = baseQ.Max("price").Field("price").Default(0)
 	if err = s.db.one(q, &cat.HighestBid); err != nil {
-		return nil, err
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	// Get recent_ask on the market by item ID.
 	q = baseQ.Max("created_at").Field("created_at")
 	recentAsk := &time.Time{}
 	if err = s.db.one(q, recentAsk); err != nil {
-		return nil, err
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 	cat.RecentAsk = recentAsk
 
@@ -120,7 +119,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	return cat, nil

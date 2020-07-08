@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/imdario/mergo"
@@ -16,19 +17,20 @@ const (
 
 // NewMarket creates new instance of market data store.
 func NewMarket(c *Client) core.MarketStorage {
+	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableMarket); err != nil {
 		log.Fatalf("could not create %s table: %s", tableMarket, err)
 	}
-
 	if err := c.autoIndex(tableMarket, core.Market{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &marketStorage{c, []string{"name", "hero", "origin", "rarity"}}
+	return &marketStorage{c, NewCatalog(c), kf}
 }
 
 type marketStorage struct {
 	db            *Client
+	catalogStg    core.CatalogStorage
 	keywordFields []string
 }
 
@@ -81,6 +83,13 @@ func (s *marketStorage) Create(in *core.Market) error {
 	}
 	in.ID = id
 
+	go func() {
+		_, err := s.catalogStg.Index(in.ItemID)
+		if err != nil {
+			log.Println(fmt.Sprintf("could not index item %s: %s", in.ItemID, err))
+		}
+	}()
+
 	return nil
 }
 
@@ -99,6 +108,13 @@ func (s *marketStorage) Update(in *core.Market) error {
 	if err := mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
 	}
+
+	go func() {
+		_, err := s.catalogStg.Index(in.ItemID)
+		if err != nil {
+			log.Println(fmt.Sprintf("could not index item %s: %s", in.ItemID, err))
+		}
+	}()
 
 	return nil
 }
