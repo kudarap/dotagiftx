@@ -20,7 +20,7 @@ func NewMarket(c *Client) core.MarketStorage {
 		log.Fatalf("could not create %s table: %s", tableMarket, err)
 	}
 
-	if err := c.createIndex(tableMarket, marketFieldItemID); err != nil {
+	if err := c.autoIndex(tableMarket, core.Market{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 

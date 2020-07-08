@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 	"strings"
@@ -60,6 +61,17 @@ func (c *Client) autoMigrate(table string) error {
 	}
 
 	return c.exec(r.TableCreate(table))
+}
+
+// autoIndex creates table index base model that has tag "index".
+func (c *Client) autoIndex(table string, model interface{}) error {
+	for _, ff := range getModelIndexedFields(model) {
+		if err := c.createIndex(table, ff); err != nil {
+			return fmt.Errorf("could not create %s index on %s table: %s", ff, tableCatalog, err)
+		}
+	}
+
+	return nil
 }
 
 // run returns a cursor which can be used to view all rows returned.

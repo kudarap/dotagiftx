@@ -43,14 +43,14 @@ type (
 	// Market represents market information.
 	Market struct {
 		ID        string       `json:"id"         db:"id,omitempty"`
-		UserID    string       `json:"user_id"    db:"user_id,omitempty"     valid:"required"`
-		ItemID    string       `json:"item_id"    db:"item_id,omitempty"     valid:"required"`
-		Price     float64      `json:"price"      db:"price,omitempty"       valid:"required"`
+		UserID    string       `json:"user_id"    db:"user_id,omitempty,indexed"     valid:"required"`
+		ItemID    string       `json:"item_id"    db:"item_id,omitempty,indexed"     valid:"required"`
+		Price     float64      `json:"price"      db:"price,omitempty,indexed"       valid:"required"`
 		Currency  string       `json:"currency"   db:"currency,omitempty"`
 		Notes     string       `json:"notes"      db:"notes,omitempty"`
-		Status    MarketStatus `json:"status"     db:"status,omitempty"`
-		CreatedAt *time.Time   `json:"created_at" db:"created_at,omitempty"`
-		UpdatedAt *time.Time   `json:"updated_at" db:"updated_at,omitempty"`
+		Status    MarketStatus `json:"status"     db:"status,omitempty,indexed"`
+		CreatedAt *time.Time   `json:"created_at" db:"created_at,omitempty,indexed"`
+		UpdatedAt *time.Time   `json:"updated_at" db:"updated_at,omitempty,indexed"`
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"-"`
 		Item *Item `json:"item,omitempty" db:"-"`
