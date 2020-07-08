@@ -2,7 +2,7 @@ package core
 
 const (
 	// StorageUncaughtErr storage error type for un-handled errors.
-	StorageUncaughtErr Errors = iota + 10
+	StorageUncaughtErr Errors = iota + 100
 	// StorageMergeErr storage object merge error.
 	StorageMergeErr
 )
