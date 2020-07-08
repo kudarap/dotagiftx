@@ -43,6 +43,11 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) Set(key string, val interface{}, expr time.Duration) error {
+	// Skip caching when key and value is empty.
+	if key == "" || val == nil {
+		return nil
+	}
+
 	b, err := json.Marshal(val)
 	if err != nil {
 		return err
