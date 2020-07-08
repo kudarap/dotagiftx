@@ -3,8 +3,6 @@ package rethink
 import (
 	"log"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
@@ -17,7 +15,7 @@ const (
 )
 
 // NewMarket creates new instance of market data store.
-func NewMarket(c *Client, logger *logrus.Logger) core.MarketStorage {
+func NewMarket(c *Client) core.MarketStorage {
 	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableMarket); err != nil {
 		log.Fatalf("could not create %s table: %s", tableMarket, err)
@@ -26,15 +24,12 @@ func NewMarket(c *Client, logger *logrus.Logger) core.MarketStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	catalogStg := NewCatalog(c, logger)
-	return &marketStorage{c, catalogStg, kf, logger}
+	return &marketStorage{c, kf}
 }
 
 type marketStorage struct {
 	db            *Client
-	catalogStg    core.CatalogStorage
 	keywordFields []string
-	logger        *logrus.Logger
 }
 
 func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
@@ -86,12 +81,6 @@ func (s *marketStorage) Create(in *core.Market) error {
 	}
 	in.ID = id
 
-	//go func() {
-	if _, err := s.catalogStg.Index(in.ItemID); err != nil {
-		s.logger.Errorf("could not index item %s: %s", in.ItemID, err)
-	}
-	//}()
-
 	return nil
 }
 
@@ -111,21 +100,7 @@ func (s *marketStorage) Update(in *core.Market) error {
 		return errors.New(core.StorageMergeErr, err)
 	}
 
-	go func() {
-		if _, err := s.catalogStg.Index(in.ItemID); err != nil {
-			s.logger.Errorf("could not index item %s: %s", in.ItemID, err)
-		}
-	}()
-
 	return nil
-}
-
-func (s *marketStorage) FindIndex(o core.FindOpts) ([]core.Catalog, error) {
-	return s.catalogStg.Find(o)
-}
-
-func (s *marketStorage) CountIndex(o core.FindOpts) (num int, err error) {
-	return s.catalogStg.Count(o)
 }
 
 func (s *marketStorage) findIndexLegacy(o core.FindOpts) ([]core.Catalog, error) {

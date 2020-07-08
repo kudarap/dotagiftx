@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
+	"github.com/sirupsen/logrus"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 

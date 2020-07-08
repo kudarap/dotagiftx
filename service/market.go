@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
 )
@@ -14,8 +16,9 @@ func NewMarket(
 	is core.ItemStorage,
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
+	lg *logrus.Logger,
 ) core.MarketService {
-	return &marketService{ss, us, is, ts, cs}
+	return &marketService{ss, us, is, ts, cs, lg}
 }
 
 type marketService struct {
@@ -24,6 +27,7 @@ type marketService struct {
 	itemStg    core.ItemStorage
 	trackStg   core.TrackStorage
 	catalogStg core.CatalogStorage
+	logger     *logrus.Logger
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {
@@ -96,7 +100,17 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 	mkt.ItemID = i.ID
 
-	return s.marketStg.Create(mkt)
+	if err := s.marketStg.Create(mkt); err != nil {
+		return err
+	}
+
+	//go func() {
+	if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
+		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+	}
+	//}()
+
+	return nil
 }
 
 func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
@@ -117,6 +131,12 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	if err := s.marketStg.Update(mkt); err != nil {
 		return err
 	}
+
+	go func() {
+		if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+		}
+	}()
 
 	s.getRelatedFields(mkt)
 	return nil
