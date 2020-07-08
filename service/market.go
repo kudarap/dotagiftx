@@ -102,7 +102,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	// Do not allowed update on these fields.
+	// Do not allow update on these fields.
 	mkt.UserID = ""
 	mkt.ItemID = ""
 	mkt.Price = 0
