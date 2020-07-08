@@ -101,10 +101,12 @@ func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, c
 		}()
 
 		// Check for cache hit and render them.
-		cacheKey := core.CacheKeyFromRequest(r)
-		if hit, _ := cache.Get(cacheKey); hit != "" {
-			respondOK(w, hit)
-			return
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
 		}
 
 		list, md, err := svc.Index(opts)

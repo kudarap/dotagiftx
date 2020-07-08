@@ -2,7 +2,7 @@ package core
 
 import (
 	"net/http"
-	"strings"
+	"strconv"
 	"time"
 
 	"github.com/kudarap/dota2giftables/gokit/hash"
@@ -14,15 +14,12 @@ type Cache interface {
 	Get(key string) (val string, err error)
 }
 
-const noCacheReqFlag = "nocache"
+const cacheSkipKey = "nocache"
 
 // CacheKeyFromRequest returns cache key from http request.
 // nocache from request query will return empty string and can be use to skipping cache.
-func CacheKeyFromRequest(r *http.Request) string {
+func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Skip caching when nocache flag exists.
-	if strings.Contains(r.URL.RawQuery, noCacheReqFlag) {
-		return ""
-	}
-
-	return r.URL.Path + ":" + hash.MD5(r.URL.RawQuery)
+	noCache, _ = strconv.ParseBool(r.URL.Query().Get(cacheSkipKey))
+	return r.URL.Path + ":" + hash.MD5(r.URL.RawQuery), noCache
 }
