@@ -16,12 +16,12 @@ func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
 }
 
 func (o findOpts) parseOpts(q r.Term) r.Term {
-	if strings.TrimSpace(o.Keyword) != "" {
-		q = q.Filter(o.parseKeyword())
-	}
-
 	if o.IndexSorting && o.Sort != "" {
 		q = q.OrderBy(r.OrderByOpts{Index: o.parseOrder()})
+	}
+
+	if strings.TrimSpace(o.Keyword) != "" {
+		q = q.Filter(o.parseKeyword())
 	}
 
 	if o.Filter != nil {
