@@ -1,7 +1,6 @@
 package rethink
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -70,8 +69,11 @@ func (s *catalogStorage) Get(itemID string) (*core.Catalog, error) {
 
 func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	// Benchmark indexing.
-	tStart := time.Now()
-	defer fmt.Printf("catalog indexed %s @ %s\n", itemID, time.Now().Sub(tStart))
+	// avg proc time 2.555710726s
+	//tStart := time.Now()
+	//defer func() {
+	//	fmt.Printf("catalog indexed %s @ %s\n", itemID, time.Now().Sub(tStart))
+	//}()
 
 	cat := &core.Catalog{}
 	opts := core.FindOpts{Filter: core.Market{ItemID: itemID}}

@@ -1,8 +1,9 @@
 package rethink
 
 import (
-	"fmt"
 	"log"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dota2giftables/core"
@@ -16,7 +17,7 @@ const (
 )
 
 // NewMarket creates new instance of market data store.
-func NewMarket(c *Client) core.MarketStorage {
+func NewMarket(c *Client, logger *logrus.Logger) core.MarketStorage {
 	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableMarket); err != nil {
 		log.Fatalf("could not create %s table: %s", tableMarket, err)
@@ -25,13 +26,14 @@ func NewMarket(c *Client) core.MarketStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &marketStorage{c, NewCatalog(c), kf}
+	return &marketStorage{c, NewCatalog(c), kf, logger}
 }
 
 type marketStorage struct {
 	db            *Client
 	catalogStg    core.CatalogStorage
 	keywordFields []string
+	logger        *logrus.Logger
 }
 
 func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
@@ -83,12 +85,11 @@ func (s *marketStorage) Create(in *core.Market) error {
 	}
 	in.ID = id
 
-	go func() {
-		_, err := s.catalogStg.Index(in.ItemID)
-		if err != nil {
-			log.Println(fmt.Sprintf("could not index item %s: %s", in.ItemID, err))
-		}
-	}()
+	//go func() {
+	if _, err := s.catalogStg.Index(in.ItemID); err != nil {
+		s.logger.Errorf("could not index item %s: %s", in.ItemID, err)
+	}
+	//}()
 
 	return nil
 }
@@ -110,9 +111,8 @@ func (s *marketStorage) Update(in *core.Market) error {
 	}
 
 	go func() {
-		_, err := s.catalogStg.Index(in.ItemID)
-		if err != nil {
-			log.Println(fmt.Sprintf("could not index item %s: %s", in.ItemID, err))
+		if _, err := s.catalogStg.Index(in.ItemID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", in.ItemID, err)
 		}
 	}()
 

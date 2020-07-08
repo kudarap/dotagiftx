@@ -84,8 +84,8 @@ func (a *application) setup() error {
 	log.Println("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
-	itemStg := rethink.NewItem(rethinkClient)
-	marketStg := rethink.NewMarket(rethinkClient)
+	itemStg := rethink.NewItem(rethinkClient, log)
+	marketStg := rethink.NewMarket(rethinkClient, log)
 	//catalogStg := rethink.NewCatalog(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 

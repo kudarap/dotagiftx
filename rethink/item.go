@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
@@ -17,7 +19,7 @@ const (
 )
 
 // NewItem creates new instance of item data store.
-func NewItem(c *Client) core.ItemStorage {
+func NewItem(c *Client, logger *logrus.Logger) core.ItemStorage {
 	kf := []string{"name", "hero", "origin", "rarity"}
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
@@ -27,13 +29,14 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, NewCatalog(c), kf}
+	return &itemStorage{c, NewCatalog(c), kf, logger}
 }
 
 type itemStorage struct {
 	db            *Client
 	catalogStg    core.CatalogStorage
 	keywordFields []string
+	logger        *logrus.Logger
 }
 
 func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
@@ -160,9 +163,8 @@ func (s *itemStorage) AddViewCount(id string) error {
 	}
 
 	go func() {
-		_, err := s.catalogStg.Index(cur.ID)
-		if err != nil {
-			log.Println(fmt.Sprintf("could not index item %s: %s", cur.ID, err))
+		if _, err := s.catalogStg.Index(cur.ID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", cur.ID, err)
 		}
 	}()
 
