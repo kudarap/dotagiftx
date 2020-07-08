@@ -26,7 +26,7 @@ type OpenId struct {
 	data      url.Values
 }
 
-func NewOpenId(r *http.Request) *OpenId {
+func NewOpenId(r *http.Request, cfg Config) *OpenId {
 	id := new(OpenId)
 
 	proto := "http://"
@@ -34,12 +34,18 @@ func NewOpenId(r *http.Request) *OpenId {
 		proto = "https://"
 	}
 	id.root = proto + r.Host
+	if cfg.Realm != "" {
+		id.root = cfg.Realm
+	}
 
 	uri := r.RequestURI
 	if i := strings.Index(uri, "openid"); i != -1 {
 		uri = uri[0 : i-1]
 	}
 	id.returnUrl = id.root + uri
+	if cfg.Return != "" {
+		id.returnUrl = cfg.Return
+	}
 
 	switch r.Method {
 	case "POST":

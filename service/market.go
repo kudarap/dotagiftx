@@ -5,18 +5,28 @@ import (
 
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
+	"github.com/sirupsen/logrus"
 )
 
 // NewMarket returns new Market service.
-func NewMarket(ss core.MarketStorage, us core.UserStorage, is core.ItemStorage, ts core.TrackStorage) core.MarketService {
-	return &marketService{ss, us, is, ts}
+func NewMarket(
+	ss core.MarketStorage,
+	us core.UserStorage,
+	is core.ItemStorage,
+	ts core.TrackStorage,
+	cs core.CatalogStorage,
+	lg *logrus.Logger,
+) core.MarketService {
+	return &marketService{ss, us, is, ts, cs, lg}
 }
 
 type marketService struct {
-	marketStg core.MarketStorage
-	userStg   core.UserStorage
-	itemStg   core.ItemStorage
-	trackStg  core.TrackStorage
+	marketStg  core.MarketStorage
+	userStg    core.UserStorage
+	itemStg    core.ItemStorage
+	trackStg   core.TrackStorage
+	catalogStg core.CatalogStorage
+	logger     *logrus.Logger
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {
@@ -89,7 +99,17 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 	mkt.ItemID = i.ID
 
-	return s.marketStg.Create(mkt)
+	if err := s.marketStg.Create(mkt); err != nil {
+		return err
+	}
+
+	//go func() {
+	if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
+		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+	}
+	//}()
+
+	return nil
 }
 
 func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
@@ -102,7 +122,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	// Do not allowed update on these fields.
+	// Do not allow update on these fields.
 	mkt.UserID = ""
 	mkt.ItemID = ""
 	mkt.Price = 0
@@ -110,6 +130,12 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	if err := s.marketStg.Update(mkt); err != nil {
 		return err
 	}
+
+	go func() {
+		if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+		}
+	}()
 
 	s.getRelatedFields(mkt)
 	return nil
@@ -145,8 +171,8 @@ func (s *marketService) userMarket(userID, id string) (*core.Market, error) {
 	return cur, nil
 }
 
-func (s *marketService) Index(opts core.FindOpts) ([]core.MarketIndex, *core.FindMetadata, error) {
-	res, err := s.marketStg.FindIndex(opts)
+func (s *marketService) Catalog(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
+	res, err := s.catalogStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -156,7 +182,7 @@ func (s *marketService) Index(opts core.FindOpts) ([]core.MarketIndex, *core.Fin
 	}
 
 	// Get result and total count for metadata.
-	tc, err := s.marketStg.CountIndex(opts)
+	tc, err := s.catalogStg.Count(opts)
 	if err != nil {
 		return nil, nil, err
 	}

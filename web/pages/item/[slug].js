@@ -48,7 +48,7 @@ export default function ItemDetails({ data }) {
               className={classes.media}
               height={100}
               alt={data.name}
-              src={CDN_URL + data.image}
+              src={`${CDN_URL + data.image}/300x170`}
             />
             <div>
               <Typography variant="h4">{data.name}</Typography>
@@ -77,7 +77,7 @@ export default function ItemDetails({ data }) {
             </div>
           </div>
 
-          <MarketList />
+          <MarketList itemID={data.id} />
         </Container>
 
         <img src={trackViewURL(data.id)} alt="" />

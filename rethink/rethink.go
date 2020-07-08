@@ -1,7 +1,10 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
+	"reflect"
+	"strings"
 	"time"
 
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
@@ -60,6 +63,17 @@ func (c *Client) autoMigrate(table string) error {
 	return c.exec(r.TableCreate(table))
 }
 
+// autoIndex creates table index base model that has tag "index".
+func (c *Client) autoIndex(table string, model interface{}) error {
+	for _, ff := range getModelIndexedFields(model) {
+		if err := c.createIndex(table, ff); err != nil {
+			return fmt.Errorf("could not create %s index on %s table: %s", ff, tableCatalog, err)
+		}
+	}
+
+	return nil
+}
+
 // run returns a cursor which can be used to view all rows returned.
 func (c *Client) run(t r.Term) (*r.Cursor, error) {
 	return t.Run(c.db)
@@ -106,6 +120,10 @@ func (c *Client) insert(t r.Term) (id string, err error) {
 		return
 	}
 
+	if len(res.GeneratedKeys) == 0 {
+		return "", nil
+	}
+
 	return res.GeneratedKeys[0], nil
 }
 
@@ -145,4 +163,31 @@ func getTables(s *r.Session) (table []string, err error) {
 func now() *time.Time {
 	t := time.Now()
 	return &t
+}
+
+const indexedTagName = "index"
+
+func getModelIndexedFields(model interface{}) (fields []string) {
+	// TypeOf returns the reflection Type that represents the dynamic type of variable.
+	// If variable is a nil interface value, TypeOf returns nil.
+	t := reflect.TypeOf(model)
+	// Iterate over all available fields and read the tag value.
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		tag := field.Tag.Get(tagName)
+		if !strings.Contains(tag, indexedTagName) {
+			continue
+		}
+
+		tagField := strings.Split(tag, ",")[0]
+		// Ignore ID field since its index by default.
+		if tagField == "id" {
+			continue
+		}
+
+		// Only get the base field name.
+		fields = append(fields, tagField)
+	}
+
+	return
 }

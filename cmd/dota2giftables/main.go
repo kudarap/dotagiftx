@@ -84,9 +84,16 @@ func (a *application) setup() error {
 	log.Println("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
+	catalogStg := rethink.NewCatalog(rethinkClient, log)
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
+
+	// temp index all
+	//ii, _ := itemStg.Find(core.FindOpts{})
+	//for _, item := range ii {
+	//	catalogStg.Index(item.ID)
+	//}
 
 	// Service inits.
 	log.Println("setting up services...")
@@ -95,7 +102,7 @@ func (a *application) setup() error {
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, fileMgr)
-	marketSvc := service.NewMarket(marketStg, userStg, itemStg, trackStg)
+	marketSvc := service.NewMarket(marketStg, userStg, itemStg, trackStg, catalogStg, log)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 
 	// Server setup.

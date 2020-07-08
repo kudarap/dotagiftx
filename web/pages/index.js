@@ -1,10 +1,11 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import useSWR from 'swr'
 import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
-import { CATALOGS, fetcher } from '@/service/api'
+import { CATALOGS, fetcher, marketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -56,7 +57,7 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index() {
+export default function Index({ totalEntries }) {
   const classes = useStyles()
 
   const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
@@ -75,7 +76,7 @@ export default function Index() {
           <Banner />
 
           <SearchInput
-            helperText={`Search on ${recentItems && recentItems.total_count} for sale items`}
+            helperText={`Search on ${totalEntries || ''} for sale items`}
             onSubmit={handleSubmit}
           />
           <br />
@@ -113,4 +114,18 @@ export default function Index() {
       <Footer />
     </>
   )
+}
+Index.propTypes = {
+  totalEntries: PropTypes.number.isRequired,
+}
+
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+// This gets called on every request
+export async function getServerSideProps() {
+  const res = await marketSearch({ limit: 1 })
+  const totalEntries = numberWithCommas(res.total_count || 0)
+  return { props: { totalEntries } }
 }

@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftables v0.3.0",
+    "name": "dota2giftables v0.4.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -270,9 +270,7 @@
                 }
               ],
               "options": {
-                "raw": {
-                  "language": "json"
-                }
+                "formdata": {}
               }
             },
             "url": {
@@ -449,14 +447,13 @@
           }
         },
         "url": {
-          "raw": "{{host}}/items",
+          "raw": "{{host}}/items?q=phantom",
           "host": ["{{host}}"],
           "path": ["items"],
           "query": [
             {
               "key": "q",
-              "value": "phantom",
-              "disabled": true
+              "value": "phantom"
             }
           ]
         }
@@ -541,18 +538,22 @@
           }
         },
         "url": {
-          "raw": "{{host}}/markets",
+          "raw": "{{host}}/markets?q=phantom",
           "host": ["{{host}}"],
           "path": ["markets"],
           "query": [
             {
               "key": "q",
-              "value": "phantom",
-              "disabled": true
+              "value": "phantom"
             },
             {
               "key": "user_id",
               "value": "f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "created_at:desc",
               "disabled": true
             }
           ]
@@ -594,7 +595,7 @@
       "response": []
     },
     {
-      "name": "market index",
+      "name": "catalogs list",
       "protocolProfileBehavior": {
         "disableBodyPruning": true
       },
@@ -612,13 +613,23 @@
           }
         },
         "url": {
-          "raw": "{{host}}/market_index?q=rare",
+          "raw": "{{host}}/catalogs?q=phantom",
           "host": ["{{host}}"],
-          "path": ["market_index"],
+          "path": ["catalogs"],
           "query": [
             {
               "key": "q",
-              "value": "rare"
+              "value": "phantom"
+            },
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "created_at:desc",
+              "disabled": true
             }
           ]
         }

@@ -16,6 +16,10 @@ func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
 }
 
 func (o findOpts) parseOpts(q r.Term) r.Term {
+	if o.IndexSorting && o.Sort != "" {
+		q = q.OrderBy(r.OrderByOpts{Index: o.parseOrder()})
+	}
+
 	if strings.TrimSpace(o.Keyword) != "" {
 		q = q.Filter(o.parseKeyword())
 	}
@@ -28,7 +32,7 @@ func (o findOpts) parseOpts(q r.Term) r.Term {
 		q = q.Filter(o.setUserScope())
 	}
 
-	if o.Sort != "" {
+	if !o.IndexSorting && o.Sort != "" {
 		q = q.OrderBy(o.parseOrder())
 	}
 

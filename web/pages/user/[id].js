@@ -35,11 +35,8 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function UserDetails({ data }) {
+export default function UserDetails({ data = {} }) {
   const classes = useStyles()
-
-  const router = useRouter()
-  const { id } = router.query
 
   return (
     <>
@@ -78,7 +75,7 @@ export default function UserDetails({ data }) {
             </div>
           </div>
 
-          <UserMarketList />
+          <UserMarketList userID={data.id} />
         </Container>
       </main>
 

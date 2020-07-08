@@ -86,9 +86,9 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 
 const cacheExpr = time.Minute * 2
 
-func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		opts, err := findOptsFromURL(r.URL, &core.Market{})
+		opts, err := findOptsFromURL(r.URL, &core.Catalog{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -101,19 +101,21 @@ func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, c
 		}()
 
 		// Check for cache hit and render them.
-		cacheKey := core.CacheKeyFromRequest(r)
-		if hit, _ := cache.Get(cacheKey); hit != "" {
-			respondOK(w, hit)
-			return
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
 		}
 
-		list, md, err := svc.Index(opts)
+		list, md, err := svc.Catalog(opts)
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 		if list == nil {
-			list = []core.MarketIndex{}
+			list = []core.Catalog{}
 		}
 
 		// Save result to cache.

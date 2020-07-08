@@ -16,6 +16,8 @@ const (
 	itemFieldSlug = "slug"
 )
 
+var itemSearchFields = []string{"name", "hero", "origin", "rarity"}
+
 // NewItem creates new instance of item data store.
 func NewItem(c *Client) core.ItemStorage {
 	if err := c.autoMigrate(tableItem); err != nil {
@@ -26,7 +28,7 @@ func NewItem(c *Client) core.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, []string{"name", "hero", "origin", "rarity"}}
+	return &itemStorage{c, itemSearchFields}
 }
 
 type itemStorage struct {
@@ -153,7 +155,20 @@ func (s *itemStorage) AddViewCount(id string) error {
 	}
 
 	cur.ViewCount++
-	return s.Update(cur)
+	if err := s.Update(cur); err != nil {
+		return err
+	}
+
+	if err := s.updateCatalogViewCount(id, cur.ViewCount); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *itemStorage) updateCatalogViewCount(itemID string, viewCount int) error {
+	q := r.Table(tableCatalog).Get(itemID).Update(&core.Catalog{ViewCount: viewCount})
+	return s.db.update(q)
 }
 
 func (s *itemStorage) table() r.Term {
