@@ -120,6 +120,10 @@ func (c *Client) insert(t r.Term) (id string, err error) {
 		return
 	}
 
+	if len(res.GeneratedKeys) == 0 {
+		return "", nil
+	}
+
 	return res.GeneratedKeys[0], nil
 }
 

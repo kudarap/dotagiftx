@@ -86,8 +86,10 @@ func (a *application) setup() error {
 	authStg := rethink.NewAuth(rethinkClient)
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
-	_ = rethink.NewCatalog(rethinkClient)
+	catalogStg := rethink.NewCatalog(rethinkClient, itemStg)
 	trackStg := rethink.NewTrack(rethinkClient)
+
+	fmt.Println(catalogStg.Index("27046bc2-f375-44d8-b769-9c7642305f8a"))
 
 	// Service inits.
 	log.Println("setting up services...")

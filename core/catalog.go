@@ -35,6 +35,7 @@ type (
 		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty,indexed"`
 		HighestBid float64    `json:"highest_bid" db:"highest_bid,omitempty,indexed"`
 		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty,indexed"`
+		CreatedAt  *time.Time `json:"created_at"  db:"created_at,omitempty,indexed"`
 		UpdatedAt  *time.Time `json:"updated_at"  db:"updated_at,omitempty,indexed"`
 	}
 

@@ -1,7 +1,9 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dota2giftables/core"
@@ -12,7 +14,7 @@ import (
 const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
-func NewCatalog(c *Client) core.CatalogStorage {
+func NewCatalog(c *Client, is core.ItemStorage) core.CatalogStorage {
 	if err := c.autoMigrate(tableCatalog); err != nil {
 		log.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
@@ -21,17 +23,19 @@ func NewCatalog(c *Client) core.CatalogStorage {
 		log.Fatalf("could not create index on %s table: %s", tableCatalog, err)
 	}
 
-	return &catalogStorage{c, []string{"name", "hero", "origin", "rarity"}}
+	return &catalogStorage{c, is, []string{"name", "hero", "origin", "rarity"}}
 }
 
 type catalogStorage struct {
 	db            *Client
+	itemStg       core.ItemStorage
 	keywordFields []string
 }
 
 func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
+	//o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -45,7 +49,7 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
-		UserID:        o.UserID,
+		//IndexSorting:        true,
 	}
 	q := newFindOptsQuery(s.table(), o)
 	err = s.db.one(q.Count(), &num)
@@ -66,24 +70,69 @@ func (s *catalogStorage) Get(itemID string) (*core.Catalog, error) {
 }
 
 func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
-	row := &core.Catalog{}
+	// Benchmark indexing.
+	tStart := time.Now()
+	defer fmt.Printf("catalog indexed %s @ %s\n", itemID, time.Now().Sub(tStart))
 
-	// Get market index base item ID.
+	cat := &core.Catalog{}
+	opts := core.FindOpts{Filter: core.Market{ItemID: itemID}}
+	baseQ := newFindOptsQuery(r.Table(tableMarket), opts)
 
-	// Check for exiting entry
+	var q r.Term
+	var err error
 
-	return row, nil
+	// Get item details by item ID.
+	q = r.Table(tableItem).Get(itemID)
+	if err = s.db.one(q, cat); err != nil {
+		return nil, err
+	}
+
+	// Get total market count by item ID.
+	if err = s.db.one(baseQ.Count(), &cat.Quantity); err != nil {
+		return nil, err
+	}
+
+	// Get lowest price on the market by item ID.
+	q = baseQ.Min("price").Field("price").Default(0)
+	if err = s.db.one(q, &cat.LowestAsk); err != nil {
+		return nil, err
+	}
+
+	// Get highest price on the market by item ID.
+	q = baseQ.Max("price").Field("price").Default(0)
+	if err = s.db.one(q, &cat.HighestBid); err != nil {
+		return nil, err
+	}
+
+	// Get recent_ask on the market by item ID.
+	q = baseQ.Max("created_at").Field("created_at")
+	recentAsk := &time.Time{}
+	if err = s.db.one(q, recentAsk); err != nil {
+		return nil, err
+	}
+	cat.RecentAsk = recentAsk
+
+	// Check for exiting entry for update or create.
+	if cur, _ := s.Get(itemID); cur == nil {
+		err = s.create(cat)
+	} else {
+		err = s.update(cat)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return cat, nil
 }
 
 func (s *catalogStorage) create(in *core.Catalog) error {
 	t := now()
+	in.CreatedAt = t
 	in.UpdatedAt = t
-	in.ID = ""
-	id, err := s.db.insert(s.table().Insert(in))
-	if err != nil {
+	if _, err := s.db.insert(s.table().Insert(in)); err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
-	in.ID = id
 
 	return nil
 }
