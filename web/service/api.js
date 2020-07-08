@@ -19,7 +19,7 @@ export const MY_PROFILE = '/my/profile'
 export const USERS = '/users'
 export const ITEMS = '/items'
 export const MARKETS = '/markets'
-export const CATALOGS = '/market_index'
+export const CATALOGS = '/catalogs'
 const VERSION = '/'
 const TRACK = '/t'
 

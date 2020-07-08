@@ -86,7 +86,7 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 
 const cacheExpr = time.Minute * 2
 
-func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &core.Catalog{})
 		if err != nil {
@@ -109,7 +109,7 @@ func handleMarketIndexList(svc core.MarketService, trackSvc core.TrackService, c
 			}
 		}
 
-		list, md, err := svc.Index(opts)
+		list, md, err := svc.Catalog(opts)
 		if err != nil {
 			respondError(w, err)
 			return

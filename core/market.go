@@ -70,8 +70,11 @@ type (
 		// Update saves market details changes.
 		Update(context.Context, *Market) error
 
-		// Index returns a list of indexed markets.
-		Index(opts FindOpts) ([]Catalog, *FindMetadata, error)
+		// Catalog returns a list of catalogs.
+		Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
+
+		// CatalogDetails returns catalog details by item id.
+		//CatalogDetails(itemID string) (*Catalog, error)
 	}
 
 	MarketStorage interface {
@@ -89,12 +92,6 @@ type (
 
 		// Update persists market changes to data store.
 		Update(*Market) error
-
-		// Find returns a list o aggregated market index from data store.
-		FindIndex(opts FindOpts) ([]Catalog, error)
-
-		// Count returns number of aggregated market index from data store.
-		CountIndex(FindOpts) (int, error)
 	}
 )
 

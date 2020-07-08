@@ -8,15 +8,22 @@ import (
 )
 
 // NewMarket returns new Market service.
-func NewMarket(ss core.MarketStorage, us core.UserStorage, is core.ItemStorage, ts core.TrackStorage) core.MarketService {
-	return &marketService{ss, us, is, ts}
+func NewMarket(
+	ss core.MarketStorage,
+	us core.UserStorage,
+	is core.ItemStorage,
+	ts core.TrackStorage,
+	cs core.CatalogStorage,
+) core.MarketService {
+	return &marketService{ss, us, is, ts, cs}
 }
 
 type marketService struct {
-	marketStg core.MarketStorage
-	userStg   core.UserStorage
-	itemStg   core.ItemStorage
-	trackStg  core.TrackStorage
+	marketStg  core.MarketStorage
+	userStg    core.UserStorage
+	itemStg    core.ItemStorage
+	trackStg   core.TrackStorage
+	catalogStg core.CatalogStorage
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {
@@ -145,8 +152,8 @@ func (s *marketService) userMarket(userID, id string) (*core.Market, error) {
 	return cur, nil
 }
 
-func (s *marketService) Index(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
-	res, err := s.marketStg.FindIndex(opts)
+func (s *marketService) Catalog(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
+	res, err := s.catalogStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -156,7 +163,7 @@ func (s *marketService) Index(opts core.FindOpts) ([]core.Catalog, *core.FindMet
 	}
 
 	// Get result and total count for metadata.
-	tc, err := s.marketStg.CountIndex(opts)
+	tc, err := s.catalogStg.Count(opts)
 	if err != nil {
 		return nil, nil, err
 	}
