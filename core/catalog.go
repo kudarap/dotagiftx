@@ -1,7 +1,6 @@
 package core
 
 import (
-	"context"
 	"time"
 )
 
@@ -22,7 +21,7 @@ func init() {
 type (
 	// Catalog represents indexed market.
 	Catalog struct {
-		ItemID     string     `json:"item_id"     db:"item_id,omitempty"`
+		ID         string     `json:"id"          db:"id,omitempty"`
 		Quantity   int        `json:"quantity"    db:"quantity,omitempty"`
 		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty"`
 		HighestBid float64    `json:"highest_bid" db:"highest_bid,omitempty"`
@@ -34,13 +33,13 @@ type (
 	// CatalogService provides access to catalog service.
 	CatalogService interface {
 		// Catalogs returns a list of catalogs.
-		Catalogs(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error)
+		Catalogs(opts FindOpts) ([]Catalog, *FindMetadata, error)
 
 		// Catalog returns catalog details by item ID.
 		Catalog(itemID string) (*Catalog, error)
 
 		// Index creates or update index entry using item ID.
-		Index(itemID string) ([]Catalog, *FindMetadata, error)
+		Index(itemID string) (*Catalog, error)
 	}
 
 	CatalogStorage interface {
@@ -54,6 +53,6 @@ type (
 		Get(id string) (*Catalog, error)
 
 		// Index persists a new catalog to data store.
-		Index(*Catalog) error
+		Index(itemID string) (*Catalog, error)
 	}
 )
