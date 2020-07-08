@@ -1,5 +1,6 @@
 // import { fetch } from 'whatwg-fetch'
 // import fetch from 'unfetch'
+import FormData from 'form-data'
 import querystring from 'querystring'
 import * as Auth from './auth'
 import { authRenew, API_URL } from './api'

@@ -39,5 +39,6 @@ export const myProfile = {
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
 export const itemSearch = http.baseSearchRequest(ITEMS)
+export const marketSearch = http.baseSearchRequest(MARKETS)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
