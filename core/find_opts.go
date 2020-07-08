@@ -13,6 +13,8 @@ type (
 		Limit         int
 		Fields        []string
 		WithMeta      bool
+		// Advance options
+		IndexSorting bool
 	}
 
 	// FindMetadata represents find metadata.

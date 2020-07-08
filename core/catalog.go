@@ -21,15 +21,15 @@ func init() {
 type (
 	// Catalog represents item market information.
 	Catalog struct {
-		ID           string   `json:"id"           db:"id,omitempty"`
-		Slug         string   `json:"slug"         db:"slug,omitempty,indexed"`
-		Name         string   `json:"name"         db:"name,omitempty,indexed"`
-		Hero         string   `json:"hero"         db:"hero,omitempty,indexed"`
-		Image        string   `json:"image"        db:"image,omitempty"`
-		Origin       string   `json:"origin"       db:"origin,omitempty,indexed"`
-		Rarity       string   `json:"rarity"       db:"rarity,omitempty,indexed"`
-		Contributors []string `json:"-"            db:"contributors,omitempty"`
-		ViewCount    int      `json:"view_count"   db:"view_count,omitempty,indexed"`
+		ID           string   `json:"id"         db:"id,omitempty"`
+		Slug         string   `json:"slug"       db:"slug,omitempty,indexed"`
+		Name         string   `json:"name"       db:"name,omitempty,indexed"`
+		Hero         string   `json:"hero"       db:"hero,omitempty,indexed"`
+		Image        string   `json:"image"      db:"image,omitempty"`
+		Origin       string   `json:"origin"     db:"origin,omitempty,indexed"`
+		Rarity       string   `json:"rarity"     db:"rarity,omitempty,indexed"`
+		Contributors []string `json:"-"          db:"contributors,omitempty"`
+		ViewCount    int      `json:"view_count" db:"view_count,omitempty,indexed"`
 		// Market summary details.
 		Quantity   int        `json:"quantity"    db:"quantity,omitempty,indexed"`
 		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty,indexed"`
