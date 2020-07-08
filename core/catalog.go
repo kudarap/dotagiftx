@@ -9,22 +9,18 @@ import (
 const (
 	CatalogErrNotFound Errors = iota + 2200
 	CatalogErrRequiredID
-	CatalogErrRequiredFields
-	CatalogErrInvalidStatus
-	CatalogErrNotesLimit
+	CatalogErrIndexing
 )
 
 // sets error text definition.
 func init() {
 	appErrorText[CatalogErrNotFound] = "catalog not found"
 	appErrorText[CatalogErrRequiredID] = "catalog id is required"
-	appErrorText[CatalogErrRequiredFields] = "catalog fields are required"
-	appErrorText[CatalogErrInvalidStatus] = "catalog status not allowed"
-	appErrorText[CatalogErrNotesLimit] = "catalog notes text limit reached"
+	appErrorText[CatalogErrIndexing] = "catalog indexing error"
 }
 
 type (
-	// Catalog represents catalog information.
+	// Catalog represents indexed market.
 	Catalog struct {
 		ItemID     string     `json:"item_id"     db:"item_id,omitempty"`
 		Quantity   int        `json:"quantity"    db:"quantity,omitempty"`
@@ -40,10 +36,10 @@ type (
 		// Catalogs returns a list of catalogs.
 		Catalogs(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error)
 
-		// Catalog returns catalog details by id.
+		// Catalog returns catalog details by item ID.
 		Catalog(itemID string) (*Catalog, error)
 
-		// Index creates or update index entry.
+		// Index creates or update index entry using item ID.
 		Index(itemID string) ([]Catalog, *FindMetadata, error)
 	}
 
@@ -57,10 +53,7 @@ type (
 		// Get returns catalog details by id from data store.
 		Get(id string) (*Catalog, error)
 
-		// Create persists a new catalog to data store.
-		Create(*Catalog) error
-
-		// Update persists catalog changes to data store.
-		Update(*Catalog) error
+		// Index persists a new catalog to data store.
+		Index(*Catalog) error
 	}
 )

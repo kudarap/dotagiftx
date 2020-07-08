@@ -16,9 +16,7 @@ func _() {
 	_ = x[AuthErrRefreshToken-1005]
 	_ = x[CatalogErrNotFound-2200]
 	_ = x[CatalogErrRequiredID-2201]
-	_ = x[CatalogErrRequiredFields-2202]
-	_ = x[CatalogErrInvalidStatus-2203]
-	_ = x[CatalogErrNotesLimit-2204]
+	_ = x[CatalogErrIndexing-2202]
 	_ = x[ImageErrNotFound-3000]
 	_ = x[ImageErrUpload-3001]
 	_ = x[ImageErrThumbnail-3002]
@@ -47,7 +45,7 @@ const (
 	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDL"
 	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExistsItemErrImport"
 	_Errors_name_4 = "MarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimit"
-	_Errors_name_5 = "CatalogErrNotFoundCatalogErrRequiredIDCatalogErrRequiredFieldsCatalogErrInvalidStatusCatalogErrNotesLimit"
+	_Errors_name_5 = "CatalogErrNotFoundCatalogErrRequiredIDCatalogErrIndexing"
 	_Errors_name_6 = "ImageErrNotFoundImageErrUploadImageErrThumbnail"
 	_Errors_name_7 = "TrackErrNotFound"
 )
@@ -58,7 +56,7 @@ var (
 	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74}
 	_Errors_index_3 = [...]uint8{0, 15, 32, 53, 76, 89}
 	_Errors_index_4 = [...]uint8{0, 17, 36, 59, 81, 100}
-	_Errors_index_5 = [...]uint8{0, 18, 38, 62, 85, 105}
+	_Errors_index_5 = [...]uint8{0, 18, 38, 56}
 	_Errors_index_6 = [...]uint8{0, 16, 30, 47}
 )
 
@@ -79,7 +77,7 @@ func (i Errors) String() string {
 	case 2100 <= i && i <= 2104:
 		i -= 2100
 		return _Errors_name_4[_Errors_index_4[i]:_Errors_index_4[i+1]]
-	case 2200 <= i && i <= 2204:
+	case 2200 <= i && i <= 2202:
 		i -= 2200
 		return _Errors_name_5[_Errors_index_5[i]:_Errors_index_5[i+1]]
 	case 3000 <= i && i <= 3002:
