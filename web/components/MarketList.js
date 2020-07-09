@@ -15,7 +15,7 @@ import { CDN_URL, MARKETS, fetcher } from '@/service/api'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
-import { marketStatusLive } from '../constants/market'
+import { MARKET_STATUS_LIVE } from '../constants/market'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketFilter = { sort: 'price', status: marketStatusLive }
+const marketFilter = { sort: 'price', status: MARKET_STATUS_LIVE }
 
 export default function MarketList({ itemID = '' }) {
   const classes = useStyles()

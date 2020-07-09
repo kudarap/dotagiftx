@@ -1,5 +1,5 @@
-export const marketStatusPending = 100
-export const marketStatusLive = 200
-export const marketStatusReserved = 300
-export const marketStatusSold = 400
-export const marketStatusRemoved = 500
+export const MARKET_STATUS_PENDING = 100
+export const MARKET_STATUS_LIVE = 200
+export const MARKET_STATUS_RESERVED = 300
+export const MARKET_STATUS_SOLD = 400
+export const MARKET_STATUS_REMOVED = 500

@@ -15,7 +15,7 @@ import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
-import { marketStatusLive } from '../constants/market'
+import { MARKET_STATUS_LIVE } from '../constants/market'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const marketFilter = {
-  status: marketStatusLive,
+  status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
 }
 
