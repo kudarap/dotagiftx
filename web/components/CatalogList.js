@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
-import { CDN_URL } from '@/service/api'
+import ItemImage from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   th: {
@@ -29,32 +29,8 @@ const useStyles = makeStyles(theme => ({
   image: {
     margin: theme.spacing(-1, 1, -1, 0),
     width: 77,
-    display: 'flex',
-    lineHeight: 1,
-    flexShrink: 0,
-    overflow: 'hidden',
-    userSelect: 'none',
   },
 }))
-
-function ItemImage({ image, title }) {
-  const classes = useStyles()
-
-  const imgStyle = {
-    color: 'transparent',
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    textAlign: 'center',
-    textIndent: '10000px',
-  }
-
-  return (
-    <div className={classes.image}>
-      <img src={`${CDN_URL + image}/200x100`} alt={title} style={imgStyle} />
-    </div>
-  )
-}
 
 export default function CatalogList({ items = [], variant }) {
   const classes = useStyles()
@@ -85,7 +61,12 @@ export default function CatalogList({ items = [], variant }) {
               <TableCell className={classes.th} component="th" scope="row" padding="none">
                 <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
                   <div className={classes.link}>
-                    <ItemImage image={item.image} title={item.name} />
+                    <ItemImage
+                      className={classes.image}
+                      image={item.image}
+                      title={item.name}
+                      rarity={item.rarity}
+                    />
                     <div>
                       <strong>{item.name}</strong>
                       <br />
