@@ -39,48 +39,48 @@ func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger
 
 func handleMarketDetail(svc core.MarketService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s, err := svc.Market(r.Context(), chi.URLParam(r, "id"))
+		m, err := svc.Market(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		respondOK(w, s)
+		respondOK(w, m)
 	}
 }
 
 func handleMarketCreate(svc core.MarketService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s := new(core.Market)
-		if err := parseForm(r, s); err != nil {
+		m := new(core.Market)
+		if err := parseForm(r, m); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		if err := svc.Create(r.Context(), s); err != nil {
+		if err := svc.Create(r.Context(), m); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		respondOK(w, s)
+		respondOK(w, m)
 	}
 }
 
 func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s := new(core.Market)
-		if err := parseForm(r, s); err != nil {
+		m := new(core.Market)
+		if err := parseForm(r, m); err != nil {
 			respondError(w, err)
 			return
 		}
-		s.ID = chi.URLParam(r, "id")
+		m.ID = chi.URLParam(r, "id")
 
-		if err := svc.Update(r.Context(), s); err != nil {
+		if err := svc.Update(r.Context(), m); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		respondOK(w, s)
+		respondOK(w, m)
 	}
 }
 
@@ -127,5 +127,17 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 		}()
 
 		respondOK(w, data)
+	}
+}
+
+func handleMarketCatalogDetail(svc core.MarketService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"))
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, c)
 	}
 }

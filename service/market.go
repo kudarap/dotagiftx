@@ -192,3 +192,11 @@ func (s *marketService) Catalog(opts core.FindOpts) ([]core.Catalog, *core.FindM
 		TotalCount:  tc,
 	}, nil
 }
+
+func (s *marketService) CatalogDetails(id string) (*core.Catalog, error) {
+	if id == "" {
+		return nil, core.CatalogErrNotFound
+	}
+
+	return s.catalogStg.Get(id)
+}

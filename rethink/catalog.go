@@ -56,9 +56,28 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 	return
 }
 
-func (s *catalogStorage) Get(itemID string) (*core.Catalog, error) {
+func (s *catalogStorage) Get(id string) (*core.Catalog, error) {
+	row, _ := s.getBySlug(id)
+	if row != nil {
+		return row, nil
+	}
+
+	row = &core.Catalog{}
+	if err := s.db.one(s.table().Get(id), row); err != nil {
+		if err == r.ErrEmptyResult {
+			return nil, core.CatalogErrNotFound
+		}
+
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return row, nil
+}
+
+func (s *catalogStorage) getBySlug(slug string) (*core.Catalog, error) {
 	row := &core.Catalog{}
-	if err := s.db.one(s.table().Get(itemID), row); err != nil {
+	q := s.table().GetAllByIndex(itemFieldSlug, slug)
+	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.CatalogErrNotFound
 		}

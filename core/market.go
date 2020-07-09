@@ -74,7 +74,7 @@ type (
 		Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
 
 		// CatalogDetails returns catalog details by item id.
-		//CatalogDetails(itemID string) (*Catalog, error)
+		CatalogDetails(id string) (*Catalog, error)
 	}
 
 	// MarketStorage defines operation for market records.
