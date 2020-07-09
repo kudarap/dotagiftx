@@ -24,6 +24,7 @@ const (
 )
 
 type (
+	// Track represents tracking data.
 	Track struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
 		Type      string     `json:"type"       db:"type,omitempty"`

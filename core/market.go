@@ -77,6 +77,7 @@ type (
 		//CatalogDetails(itemID string) (*Catalog, error)
 	}
 
+	// MarketStorage defines operation for market records.
 	MarketStorage interface {
 		// Find returns a list of markets from data store.
 		Find(opts FindOpts) ([]Market, error)

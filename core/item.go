@@ -70,6 +70,7 @@ type (
 		Import(ctx context.Context, f io.Reader) (ItemImportResult, error)
 	}
 
+	// ItemStorage defines operation for item records.
 	ItemStorage interface {
 		// Find returns a list of items from data store.
 		Find(opts FindOpts) ([]Item, error)
