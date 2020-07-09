@@ -44,7 +44,7 @@ export default function UserDetails({ data = {} }) {
     <>
       <Head>
         <title>Dota 2 Giftables :: {data.name} listings</title>
-        <meta name="description" content={`${data.name} store`} />
+        <meta name="description" content={`${data.name} giftable listings`} />
       </Head>
 
       <Header />

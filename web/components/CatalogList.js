@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   image: {
-    margin: theme.spacing(-1, 1, -1, 0),
+    margin: theme.spacing(-1, 1, -1, 0.8),
     width: 77,
   },
 }))
@@ -63,7 +63,7 @@ export default function CatalogList({ items = [], variant }) {
                   <div className={classes.link}>
                     <ItemImage
                       className={classes.image}
-                      image={item.image}
+                      image={`${item.image}/200x100`}
                       title={item.name}
                       rarity={item.rarity}
                     />

@@ -27,7 +27,7 @@ export default function ItemImage({ image, title, rarity, ...other }) {
 
   return (
     <div style={contStyle} {...other}>
-      <img src={`${CDN_URL + image}/200x100`} alt={title || image} style={imgStyle} />
+      <img src={CDN_URL + image} alt={title || image} style={imgStyle} />
     </div>
   )
 }

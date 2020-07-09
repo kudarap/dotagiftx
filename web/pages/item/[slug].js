@@ -9,6 +9,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
+import ItemImage from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -25,8 +26,10 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
   media: {
+    width: 150,
     height: 100,
     marginRight: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
   },
 }))
 
@@ -41,7 +44,11 @@ export default function ItemDetails({ data }) {
         </title>
         <meta
           name="description"
-          content={`Buy ${data.name} ${data.rarity}. Price at ${data.lowest_ask}`}
+          content={`Buy ${data.name} from ${
+            data.origin
+          } ${data.rarity.toString().toUpperCase()} for ${data.hero}. Price start at ${
+            data.lowest_ask
+          }`}
         />
       </Head>
 
@@ -51,11 +58,11 @@ export default function ItemDetails({ data }) {
         <Container>
           <div className={classes.details}>
             {data.image && (
-              <img
+              <ItemImage
                 className={classes.media}
-                height={100}
-                alt={data.name}
-                src={`${CDN_URL + data.image}/300x170`}
+                image={`${data.image}/300x170`}
+                title={data.name}
+                rarity={data.rarity}
               />
             )}
             <Typography component="h1">

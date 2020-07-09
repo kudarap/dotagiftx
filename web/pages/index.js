@@ -46,7 +46,7 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index({ totalEntries }) {
+export default function Index({ totalEntries = '' }) {
   const classes = useStyles()
 
   const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
@@ -56,12 +56,13 @@ export default function Index({ totalEntries }) {
     Router.push(`/search?q=${keyword}`)
   }
 
-  const description = `Search on ${totalEntries || ''} for Dota 2 Giftables items`
+  const description = `Search on ${totalEntries || ''} giftable listings`
 
   return (
     <>
       <Head>
-        <title>Dota 2 Giftables :: {description}</title>
+        <title>Dota 2 Giftables</title>
+        <meta name="description" content={description} />
       </Head>
 
       <Header />
@@ -70,7 +71,9 @@ export default function Index({ totalEntries }) {
         <Container>
           <div className={classes.banner}>
             <Typography className={classes.bannerText} variant="h3" component="h1" align="center">
-              Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span>
+              {/*Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span>*/}
+              {/*Buy & Sell*/}
+              Search for <span style={{ display: 'inline-block' }}>Dota 2 giftabe items</span>
             </Typography>
           </div>
 
