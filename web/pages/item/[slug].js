@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, item, trackViewURL } from '@/service/api'
+import { CDN_URL, catalog, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -36,7 +36,13 @@ export default function ItemDetails({ data }) {
   return (
     <>
       <Head>
-        <title>{data.name} | Dota 2 Giftables</title>
+        <title>
+          Dota 2 Giftables :: Listings for {data.name} starts at ${data.lowest_ask}
+        </title>
+        <meta
+          name="description"
+          content={`Buy ${data.name} ${data.rarity}. Price at ${data.lowest_ask}`}
+        />
       </Head>
 
       <Header />
@@ -56,7 +62,7 @@ export default function ItemDetails({ data }) {
               <Typography variant="h4" component="h1">
                 {data.name}
               </Typography>
-              <Typography gutterBottom>
+              <Typography gutterBottom component="h2">
                 <Typography color="textSecondary" component="span">
                   {`hero: `}
                 </Typography>
@@ -101,7 +107,7 @@ ItemDetails.defaultProps = {
 // This gets called on every request
 export async function getServerSideProps({ params }) {
   const { slug } = params
-  const data = await item(slug)
+  const data = await catalog(slug)
   // Pass data to the page via props
   return { props: { data } }
 }

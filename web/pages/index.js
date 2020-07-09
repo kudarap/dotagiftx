@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
+import Head from 'next/head'
 import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -36,18 +37,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function Banner() {
-  const classes = useStyles()
-
-  return (
-    <div className={classes.banner}>
-      <Typography className={classes.bannerText} variant="h3" component="h1" align="center">
-        Search for Dota 2 <span style={{ display: 'inline-block' }}>giftable items</span>
-      </Typography>
-    </div>
-  )
-}
-
 const popularItemsFilter = {
   sort: 'view_count:desc',
   limit: 5,
@@ -67,18 +56,25 @@ export default function Index({ totalEntries }) {
     Router.push(`/search?q=${keyword}`)
   }
 
+  const description = `Search on ${totalEntries || ''} for Dota 2 Giftables items`
+
   return (
     <>
+      <Head>
+        <title>Dota 2 Giftables :: {description}</title>
+      </Head>
+
       <Header />
 
       <main className={classes.main}>
         <Container>
-          <Banner />
+          <div className={classes.banner}>
+            <Typography className={classes.bannerText} variant="h3" component="h1" align="center">
+              Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span>
+            </Typography>
+          </div>
 
-          <SearchInput
-            helperText={`Search on ${totalEntries || ''} for sale items`}
-            onSubmit={handleSubmit}
-          />
+          <SearchInput helperText={description} onSubmit={handleSubmit} />
           <br />
 
           <Typography>

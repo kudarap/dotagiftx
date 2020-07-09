@@ -41,7 +41,7 @@ export default function () {
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
             <Link href="/" disableUnderline>
-              <Typography variant="h6" className={classes.title}>
+              <Typography variant="h6" component="h1" className={classes.title}>
                 Dota2Giftables
               </Typography>
             </Link>

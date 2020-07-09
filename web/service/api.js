@@ -32,6 +32,7 @@ export const authRevoke = refreshToken =>
 
 export const version = () => http.request(http.GET, VERSION)
 export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
+export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 
 export const myProfile = {

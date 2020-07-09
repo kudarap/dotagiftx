@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import moment from 'moment'
-import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Link from '@material-ui/core/Link'
@@ -44,7 +43,8 @@ export default function UserDetails({ data = {} }) {
   return (
     <>
       <Head>
-        <title>{data.name} store | Dota 2 Giftables</title>
+        <title>Dota 2 Giftables :: {data.name} listings</title>
+        <meta name="description" content={`${data.name} store`} />
       </Head>
 
       <Header />
@@ -57,7 +57,7 @@ export default function UserDetails({ data = {} }) {
               <Typography variant="h4" component="h1">
                 {data.name}
               </Typography>
-              <Typography gutterBottom>
+              <Typography gutterBottom component="h2">
                 <Typography color="textSecondary" component="span">
                   {`registered: `}
                 </Typography>
@@ -67,7 +67,12 @@ export default function UserDetails({ data = {} }) {
                 <Typography color="textSecondary" component="span">
                   {`steam: `}
                 </Typography>
-                <Link href={profileURL} color="secondary" target="_blank" rel="noreferrer noopener">
+                <Link
+                  href={profileURL}
+                  variant="caption"
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener">
                   {profileURL}
                 </Link>
                 <br />
@@ -77,6 +82,7 @@ export default function UserDetails({ data = {} }) {
                 </Typography>
                 <Link
                   href={steamrepURL}
+                  variant="caption"
                   color="secondary"
                   target="_blank"
                   rel="noreferrer noopener">
