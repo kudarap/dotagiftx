@@ -58,33 +58,23 @@ export default function ItemDetails({ data }) {
                 src={`${CDN_URL + data.image}/300x170`}
               />
             )}
-            <div>
-              <Typography variant="h4" component="h1">
-                {data.name}
-              </Typography>
-              <Typography gutterBottom component="h2">
-                <Typography color="textSecondary" component="span">
-                  {`hero: `}
-                </Typography>
-                {data.hero}
-                <br />
-
-                <Typography color="textSecondary" component="span">
-                  {`rarity: `}
-                </Typography>
-                {data.rarity === 'regular' ? (
-                  data.rarity
-                ) : (
-                  <RarityTag rarity={data.rarity} variant="body1" component="span" />
+            <Typography component="h1">
+              <Typography variant="h4">{data.name}</Typography>
+              <Typography gutterBottom>
+                {data.origin}{' '}
+                {data.rarity !== 'regular' && (
+                  <>
+                    &mdash;
+                    <RarityTag rarity={data.rarity} variant="body1" component="span" />
+                  </>
                 )}
                 <br />
-
                 <Typography color="textSecondary" component="span">
-                  {`origin: `}
+                  {`Used by: `}
                 </Typography>
-                {data.origin}
+                {data.hero}
               </Typography>
-            </div>
+            </Typography>
           </div>
 
           <MarketList itemID={data.id} />
