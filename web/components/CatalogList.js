@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   image: {
-    margin: theme.spacing(-1, 1, -1, 0.8),
+    margin: theme.spacing(-1, 1, -1, 1),
     width: 77,
   },
 }))
@@ -59,22 +59,24 @@ export default function CatalogList({ items = [], variant }) {
           {items.map(item => (
             <TableRow key={item.id} hover>
               <TableCell className={classes.th} component="th" scope="row" padding="none">
-                <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
-                  <div className={classes.link}>
-                    <ItemImage
-                      className={classes.image}
-                      image={`${item.image}/200x100`}
-                      title={item.name}
-                      rarity={item.rarity}
-                    />
-                    <div>
-                      <strong>{item.name}</strong>
-                      <br />
-                      <Typography variant="caption" color="textSecondary">
-                        {item.hero}
-                      </Typography>
-                      <RarityTag rarity={item.rarity} />
-                    </div>
+                <Link
+                  className={classes.link}
+                  href="/item/[slug]"
+                  as={`/item/${item.slug}`}
+                  disableUnderline>
+                  <ItemImage
+                    className={classes.image}
+                    image={`${item.image}/200x100`}
+                    title={item.name}
+                    rarity={item.rarity}
+                  />
+                  <div>
+                    <strong>{item.name}</strong>
+                    <br />
+                    <Typography variant="caption" color="textSecondary">
+                      {item.hero}
+                    </Typography>
+                    <RarityTag rarity={item.rarity} />
                   </div>
                 </Link>
               </TableCell>

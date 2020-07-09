@@ -11,18 +11,24 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import { MARKETS, fetcher } from '@/service/api'
+import { MARKET_STATUS_LIVE } from '../constants/market'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
-import { MARKET_STATUS_LIVE } from '../constants/market'
+import ItemImage from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   seller: {
     display: 'inline-flex',
   },
   link: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2, 2, 2, 0),
+    display: 'flex',
+  },
+  image: {
+    margin: theme.spacing(-1, 1, -1, 1),
+    width: 77,
   },
 }))
 
@@ -59,8 +65,18 @@ export default function UserMarketList({ userID = '' }) {
           {listings.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
-                <Link href="/item/[slug]" as={`/item/${market.item.slug}`} disableUnderline>
-                  <div className={classes.link}>
+                <Link
+                  className={classes.link}
+                  href="/item/[slug]"
+                  as={`/item/${market.item.slug}`}
+                  disableUnderline>
+                  <ItemImage
+                    className={classes.image}
+                    image={`${market.item.image}/200x100`}
+                    title={market.item.name}
+                    rarity={market.item.rarity}
+                  />
+                  <div>
                     <strong>{market.item.name}</strong>
                     <br />
                     <Typography variant="caption" color="textSecondary">
