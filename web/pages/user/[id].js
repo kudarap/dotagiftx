@@ -53,11 +53,9 @@ export default function UserDetails({ data = {} }) {
         <Container>
           <div className={classes.details}>
             <Avatar className={classes.avatar} src={CDN_URL + data.avatar} />
-            <div>
-              <Typography variant="h4" component="h1">
-                {data.name}
-              </Typography>
-              <Typography gutterBottom component="h2">
+            <Typography component="h1">
+              <Typography variant="h4">{data.name}</Typography>
+              <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
                   {`registered: `}
                 </Typography>
@@ -89,7 +87,7 @@ export default function UserDetails({ data = {} }) {
                   {steamrepURL}
                 </Link>
               </Typography>
-            </div>
+            </Typography>
           </div>
 
           <UserMarketList userID={data.id} />
