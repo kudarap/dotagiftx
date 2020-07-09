@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, catalog, trackViewURL } from '@/service/api'
+import { catalog, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -26,6 +26,9 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
   media: {
+    [theme.breakpoints.down('xs')]: {
+      margin: '0 auto !important',
+    },
     width: 150,
     height: 100,
     marginRight: theme.spacing(1.5),
