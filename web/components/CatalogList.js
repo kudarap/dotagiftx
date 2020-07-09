@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
+import { CDN_URL } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   th: {
@@ -22,9 +23,38 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'right',
   },
   link: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2, 2, 2, 0),
+    display: 'flex',
+  },
+  image: {
+    margin: theme.spacing(-1, 1, -1, 0),
+    width: 77,
+    display: 'flex',
+    lineHeight: 1,
+    flexShrink: 0,
+    overflow: 'hidden',
+    userSelect: 'none',
   },
 }))
+
+function ItemImage({ image, title }) {
+  const classes = useStyles()
+
+  const imgStyle = {
+    color: 'transparent',
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    textAlign: 'center',
+    textIndent: '10000px',
+  }
+
+  return (
+    <div className={classes.image}>
+      <img src={`${CDN_URL + image}/200x100`} alt={title} style={imgStyle} />
+    </div>
+  )
+}
 
 export default function CatalogList({ items = [], variant }) {
   const classes = useStyles()
@@ -36,7 +66,7 @@ export default function CatalogList({ items = [], variant }) {
       <Table className={classes.table} aria-label="items table">
         <TableHead>
           <TableRow>
-            <TableHeadCell>Name</TableHeadCell>
+            <TableHeadCell>Item</TableHeadCell>
             <TableHeadCell align="right">{isRecentMode ? 'Listed' : 'Qty'}</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
           </TableRow>
@@ -55,12 +85,15 @@ export default function CatalogList({ items = [], variant }) {
               <TableCell className={classes.th} component="th" scope="row" padding="none">
                 <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
                   <div className={classes.link}>
-                    <strong>{item.name}</strong>
-                    <br />
-                    <Typography variant="caption" color="textSecondary">
-                      {item.hero}
-                    </Typography>
-                    <RarityTag rarity={item.rarity} />
+                    <ItemImage image={item.image} title={item.name} />
+                    <div>
+                      <strong>{item.name}</strong>
+                      <br />
+                      <Typography variant="caption" color="textSecondary">
+                        {item.hero}
+                      </Typography>
+                      <RarityTag rarity={item.rarity} />
+                    </div>
                   </div>
                 </Link>
               </TableCell>
