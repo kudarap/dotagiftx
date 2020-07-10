@@ -84,7 +84,7 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 	}
 }
 
-const cacheExpr = time.Minute * 2
+const cacheExpr = time.Minute
 
 func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
