@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -37,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemDetails({ data }) {
+export default function ItemDetails({ data, updatedAt }) {
   const classes = useStyles()
 
   const router = useRouter()
@@ -65,6 +66,7 @@ export default function ItemDetails({ data }) {
 
       <main className={classes.main}>
         <Container>
+          <p>updated {moment(updatedAt).fromNow()}</p>
           <div className={classes.details}>
             {data.image && (
               <ItemImage
@@ -111,7 +113,7 @@ ItemDetails.defaultProps = {
 }
 
 export async function getStaticPaths() {
-  const catalogs = await catalogSearch({ limit: 500 })
+  const catalogs = await catalogSearch({ limit: 1000, sort: 'popular-items' })
   const paths = catalogs.data.map(({ slug }) => ({
     params: { slug },
   }))
@@ -120,11 +122,11 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const { slug } = params
   return {
     props: {
-      data: await catalog(slug),
-      unstable_revalidate: 60,
+      data: await catalog(params.slug),
+      updatedAt: Date.now(),
+      unstable_revalidate: 10,
     },
   }
 }
