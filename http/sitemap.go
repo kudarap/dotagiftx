@@ -7,7 +7,7 @@ import (
 	"github.com/kudarap/dota2giftables/core"
 )
 
-func handleSitemap(marketSvc core.MarketService, userSvc core.UserService) http.HandlerFunc {
+func buildSitemap(catalogs []core.Catalog, users []core.User) *stm.Sitemap {
 	sm := stm.NewSitemap(1)
 	//sm.SetVerbose(false)
 	sm.SetDefaultHost("https://dota2giftables.com")
@@ -23,19 +23,23 @@ func handleSitemap(marketSvc core.MarketService, userSvc core.UserService) http.
 	sm.Add(stm.URL{{"loc", "/privacy"}})
 
 	// Catalog listings locations.
-	catalogs, _, _ := marketSvc.Catalog(core.FindOpts{})
 	for _, cc := range catalogs {
 		sm.Add(stm.URL{{"loc", "/item/" + cc.Slug}, {"changefreq", "daily"}, {"priority", 0.7}})
 	}
 
 	// User profile locations.
-	users, _ := userSvc.Users(core.FindOpts{})
 	for _, uu := range users {
 		sm.Add(stm.URL{{"loc", "/user/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.7}})
 	}
 
+	return sm
+}
+
+func handleSitemap(marketSvc core.MarketService, userSvc core.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write(sm.XMLContent())
+		catalogs, _, _ := marketSvc.Catalog(core.FindOpts{})
+		users, _ := userSvc.Users(core.FindOpts{})
+		w.Write(buildSitemap(catalogs, users).XMLContent())
 		return
 	}
 }
