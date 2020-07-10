@@ -16,8 +16,8 @@ func buildSitemap(catalogs []core.Catalog, users []core.User) *stm.Sitemap {
 	// Static pages locations.
 	sm.Add(stm.URL{{"loc", "/"}, {"changefreq", "daily"}, {"priority", 0.8}})
 	sm.Add(stm.URL{{"loc", "/search"}, {"changefreq", "daily"}, {"priority", 0.6}})
-	sm.Add(stm.URL{{"loc", "/search?sort=view_count:desc"}, {"changefreq", "daily"}, {"priority", 0.6}})
-	sm.Add(stm.URL{{"loc", "/search?sort=recent_ask:desc"}, {"changefreq", "daily"}, {"priority", 0.6}})
+	sm.Add(stm.URL{{"loc", "/search?sort=popular-items"}, {"changefreq", "daily"}, {"priority", 0.6}})
+	sm.Add(stm.URL{{"loc", "/search?sort=recent-items"}, {"changefreq", "daily"}, {"priority", 0.6}})
 	sm.Add(stm.URL{{"loc", "/about"}})
 	sm.Add(stm.URL{{"loc", "/faq"}})
 	sm.Add(stm.URL{{"loc", "/privacy"}})

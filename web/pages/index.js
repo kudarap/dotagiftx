@@ -38,11 +38,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const popularItemsFilter = {
-  sort: 'view_count:desc',
+  sort: 'popular-items',
   limit: 5,
 }
 const recentItemsFilter = {
-  sort: 'recent_ask:desc',
+  sort: 'recent-items',
   limit: 5,
 }
 
@@ -82,10 +82,7 @@ export default function Index({ totalEntries, popularItems }) {
 
           <Typography>
             Popular Items
-            <Link
-              href={`/search?sort=${popularItemsFilter.sort}`}
-              color="secondary"
-              style={{ float: 'right' }}>
+            <Link href="/search?sort=popular-items" color="secondary" style={{ float: 'right' }}>
               See All
             </Link>
           </Typography>
@@ -95,10 +92,7 @@ export default function Index({ totalEntries, popularItems }) {
 
           <Typography>
             Recently Posted
-            <Link
-              href={`/search?sort=${recentItemsFilter.sort}`}
-              color="secondary"
-              style={{ float: 'right' }}>
+            <Link href="/search?sort=recent-items" color="secondary" style={{ float: 'right' }}>
               See All
             </Link>
           </Typography>

@@ -96,16 +96,19 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 		query := r.URL.Query()
 
 		// Special query flags with findOpts override for popular and recent items.
-		if hasQueryField(r.URL, queryFlagRecentItems) {
-			query.Del(queryFlagRecentItems)
-			query.Set("sort", "recent_ask:desc")
+		if hasQueryField(r.URL, "sort") {
+			switch query.Get("sort") {
+			case queryFlagRecentItems:
+				query.Set("sort", "recent_ask:desc")
+				noCache = true
+				break
+			case queryFlagPopularItems:
+				query.Set("sort", "view_count:desc")
+				break
+			}
 
-			noCache = true
-		} else if hasQueryField(r.URL, queryFlagPopularItems) {
-			query.Del(queryFlagPopularItems)
-			query.Set("sort", "view_count:desc")
+			r.URL.RawQuery = query.Encode()
 		}
-		r.URL.RawQuery = query.Encode()
 
 		opts, err := findOptsFromURL(r.URL, &core.Catalog{})
 		if err != nil {
