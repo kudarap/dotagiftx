@@ -46,6 +46,8 @@ func (s *userService) Create(u *core.User) error {
 		return err
 	}
 
+	go pingGoogleSitemap()
+
 	return s.userStg.Create(u)
 }
 
