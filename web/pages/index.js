@@ -6,7 +6,7 @@ import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
-import { CATALOGS, fetcher, marketSearch } from '@/service/api'
+import { CATALOGS, fetcher, marketSearch, catalogSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -46,10 +46,10 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index({ totalEntries = '' }) {
+export default function Index({ totalEntries, popularItems }) {
   const classes = useStyles()
 
-  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  // const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
 
   const handleSubmit = keyword => {
@@ -71,8 +71,8 @@ export default function Index({ totalEntries = '' }) {
         <Container>
           <div className={classes.banner}>
             <Typography className={classes.bannerText} variant="h3" component="h1" align="center">
-              {/*Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span>*/}
-              {/*Buy & Sell*/}
+              {/* Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span> */}
+              {/* Buy & Sell */}
               Search for <span style={{ display: 'inline-block' }}>Dota 2 giftabe items</span>
             </Typography>
           </div>
@@ -89,9 +89,8 @@ export default function Index({ totalEntries = '' }) {
               See All
             </Link>
           </Typography>
-          {popularError && <div>failed to load</div>}
           {!popularItems && <LinearProgress color="secondary" />}
-          {!popularError && popularItems && <CatalogList items={popularItems.data} />}
+          {popularItems && <CatalogList items={popularItems.data} />}
           <br />
 
           <Typography>
@@ -116,6 +115,7 @@ export default function Index({ totalEntries = '' }) {
 }
 Index.propTypes = {
   totalEntries: PropTypes.string.isRequired,
+  popularItems: PropTypes.object.isRequired,
 }
 
 function numberWithCommas(x) {
@@ -123,8 +123,20 @@ function numberWithCommas(x) {
 }
 
 // This gets called on every request
-export async function getServerSideProps() {
+// export async function getServerSideProps() {
+export async function getStaticProps() {
   const res = await marketSearch({ limit: 1 })
   const totalEntries = numberWithCommas(res.total_count || 0)
-  return { props: { totalEntries } }
+
+  const popularItems = await catalogSearch(popularItemsFilter)
+  // const recentItems = await catalogSearch(recentItemsFilter)
+
+  return {
+    props: {
+      totalEntries,
+      popularItems,
+      // recentItems,
+      unstable_revalidate: 60,
+    },
+  }
 }
