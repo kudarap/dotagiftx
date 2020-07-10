@@ -1,9 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { catalog, trackViewURL } from '@/service/api'
+import { catalog, catalogSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -38,6 +39,11 @@ const useStyles = makeStyles(theme => ({
 
 export default function ItemDetails({ data }) {
   const classes = useStyles()
+
+  const router = useRouter()
+  if (router.isFallback) {
+    return <div>Loading...</div>
+  }
 
   return (
     <>
@@ -104,10 +110,21 @@ ItemDetails.defaultProps = {
   data: {},
 }
 
-// This gets called on every request
-export async function getServerSideProps({ params }) {
+export async function getStaticPaths() {
+  const catalogs = await catalogSearch({ limit: 500 })
+  const paths = catalogs.data.map(({ slug }) => ({
+    params: { slug },
+  }))
+
+  return { paths, fallback: true }
+}
+
+export async function getStaticProps({ params }) {
   const { slug } = params
-  const data = await catalog(slug)
-  // Pass data to the page via props
-  return { props: { data } }
+  return {
+    props: {
+      data: await catalog(slug),
+      unstable_revalidate: 60,
+    },
+  }
 }

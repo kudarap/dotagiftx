@@ -41,5 +41,6 @@ export const myProfile = {
 }
 export const itemSearch = http.baseSearchRequest(ITEMS)
 export const marketSearch = http.baseSearchRequest(MARKETS)
+export const catalogSearch = http.baseSearchRequest(CATALOGS)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`

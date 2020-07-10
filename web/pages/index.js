@@ -115,7 +115,7 @@ export default function Index({ totalEntries = '' }) {
   )
 }
 Index.propTypes = {
-  totalEntries: PropTypes.number.isRequired,
+  totalEntries: PropTypes.string.isRequired,
 }
 
 function numberWithCommas(x) {
