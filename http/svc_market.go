@@ -84,10 +84,29 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 	}
 }
 
-const cacheExpr = time.Minute
+const (
+	catalogCacheExpr      = time.Minute
+	queryFlagRecentItems  = "recent-items"
+	queryFlagPopularItems = "popular-items"
+)
 
 func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var noCache bool
+		query := r.URL.Query()
+
+		// Special query flags with findOpts override for popular and recent items.
+		if hasQueryField(r.URL, queryFlagRecentItems) {
+			query.Del(queryFlagRecentItems)
+			query.Set("sort", "recent_ask:desc")
+
+			noCache = true
+		} else if hasQueryField(r.URL, queryFlagPopularItems) {
+			query.Del(queryFlagPopularItems)
+			query.Set("sort", "view_count:desc")
+		}
+		r.URL.RawQuery = query.Encode()
+
 		opts, err := findOptsFromURL(r.URL, &core.Catalog{})
 		if err != nil {
 			respondError(w, err)
@@ -102,6 +121,7 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 
 		// Check for cache hit and render them.
 		cacheKey, noCache := core.CacheKeyFromRequest(r)
+
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -121,7 +141,7 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 		// Save result to cache.
 		data := newDataWithMeta(list, md)
 		go func() {
-			if err := cache.Set(cacheKey, data, cacheExpr); err != nil {
+			if err := cache.Set(cacheKey, data, catalogCacheExpr); err != nil {
 				logger.Errorf("could save cache on market index list: %s", err)
 			}
 		}()

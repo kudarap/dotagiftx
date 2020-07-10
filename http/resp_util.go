@@ -9,25 +9,6 @@ import (
 	"github.com/kudarap/dota2giftables/errors"
 )
 
-type httpMsg struct {
-	Error bool   `json:"error,omitempty"`
-	Typ   string `json:"type,omitempty"`
-	Msg   string `json:"msg"`
-}
-
-func newMsg(msg string) httpMsg {
-	m := httpMsg{}
-	m.Msg = msg
-	return m
-}
-
-func newError(err error) interface{} {
-	m := httpMsg{}
-	m.Error = true
-	m.Msg = err.Error()
-	return m
-}
-
 func respond(w http.ResponseWriter, code int, body interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
@@ -71,16 +52,6 @@ func respondError(w http.ResponseWriter, err error) {
 	}
 
 	respond(w, status, body)
-}
-
-type dataWithMeta struct {
-	Data        interface{} `json:"data"`
-	ResultCount int         `json:"result_count"`
-	TotalCount  int         `json:"total_count"`
-}
-
-func newDataWithMeta(data interface{}, md *core.FindMetadata) dataWithMeta {
-	return dataWithMeta{data, md.ResultCount, md.TotalCount}
 }
 
 func handle404() http.HandlerFunc {
