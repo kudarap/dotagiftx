@@ -82,7 +82,6 @@ export default function SearchInput(props) {
         variant="outlined"
         color="secondary"
         fullWidth
-        autoFocus
         value={keyword}
         onChange={handleChange}
         {...other}
