@@ -86,8 +86,8 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 
 const (
 	catalogCacheExpr      = time.Minute
-	queryFlagRecentItems  = "recent-items"
-	queryFlagPopularItems = "popular-items"
+	queryFlagRecentItems  = "recent"
+	queryFlagPopularItems = "popular"
 )
 
 func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
