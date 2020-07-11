@@ -1,7 +1,8 @@
 import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -23,17 +24,23 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'right',
   },
   link: {
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(2),
+    },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
   },
   image: {
     margin: theme.spacing(-1, 1, -1, 1),
     width: 77,
+    height: 55,
   },
 }))
 
 export default function CatalogList({ items = [], variant }) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const isRecentMode = variant === 'recent'
 
@@ -64,12 +71,15 @@ export default function CatalogList({ items = [], variant }) {
                   href="/item/[slug]"
                   as={`/item/${item.slug}`}
                   disableUnderline>
-                  <ItemImage
-                    className={classes.image}
-                    image={`${item.image}/200x100`}
-                    title={item.name}
-                    rarity={item.rarity}
-                  />
+                  {!isMobile && (
+                    <ItemImage
+                      className={classes.image}
+                      image={`${item.image}/200x100`}
+                      title={item.name}
+                      rarity={item.rarity}
+                    />
+                  )}
+
                   <div>
                     <strong>{item.name}</strong>
                     <br />

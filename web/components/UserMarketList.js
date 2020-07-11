@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -23,6 +24,9 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
   link: {
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(2),
+    },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
   },
@@ -39,6 +43,8 @@ const marketFilter = {
 
 export default function UserMarketList({ userID = '' }) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   marketFilter.user_id = userID
   const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
@@ -70,12 +76,14 @@ export default function UserMarketList({ userID = '' }) {
                   href="/item/[slug]"
                   as={`/item/${market.item.slug}`}
                   disableUnderline>
-                  <ItemImage
-                    className={classes.image}
-                    image={`${market.item.image}/200x100`}
-                    title={market.item.name}
-                    rarity={market.item.rarity}
-                  />
+                  {!isMobile && (
+                    <ItemImage
+                      className={classes.image}
+                      image={`${market.item.image}/200x100`}
+                      title={market.item.name}
+                      rarity={market.item.rarity}
+                    />
+                  )}
                   <div>
                     <strong>{market.item.name}</strong>
                     <br />

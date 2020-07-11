@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -31,6 +32,8 @@ const marketFilter = { sort: 'price', status: MARKET_STATUS_LIVE }
 
 export default function MarketList({ itemID = '' }) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   marketFilter.item_id = itemID
   const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
@@ -59,7 +62,9 @@ export default function MarketList({ itemID = '' }) {
               <TableCell component="th" scope="row" padding="none">
                 <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
                   <div className={classes.seller}>
-                    <Avatar className={classes.avatar} src={CDN_URL + market.user.avatar} />
+                    {!isMobile && (
+                      <Avatar className={classes.avatar} src={CDN_URL + market.user.avatar} />
+                    )}
                     <div>
                       <strong>{market.user.name}</strong>
                       <br />
