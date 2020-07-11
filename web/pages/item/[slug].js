@@ -1,11 +1,10 @@
 import React from 'react'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { catalog, catalogSearch, trackViewURL } from '@/service/api'
+import { catalog, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -38,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemDetails({ data, updatedAt }) {
+export default function ItemDetails({ data }) {
   const classes = useStyles()
 
   const router = useRouter()
@@ -66,7 +65,6 @@ export default function ItemDetails({ data, updatedAt }) {
 
       <main className={classes.main}>
         <Container>
-          <p>updated {moment(updatedAt).fromNow()}</p>
           <div className={classes.details}>
             {data.image && (
               <ItemImage
@@ -112,20 +110,20 @@ ItemDetails.defaultProps = {
   data: {},
 }
 
-export async function getStaticPaths() {
-  const catalogs = await catalogSearch({ limit: 1000, sort: 'popular-items' })
-  const paths = catalogs.data.map(({ slug }) => ({
-    params: { slug },
-  }))
+// export async function getStaticPaths() {
+//   const catalogs = await catalogSearch({ limit: 1000, sort: 'popular-items' })
+//   const paths = catalogs.data.map(({ slug }) => ({
+//     params: { slug },
+//   }))
+//
+//   return { paths, fallback: true }
+// }
 
-  return { paths, fallback: true }
-}
-
-export async function getStaticProps({ params }) {
+// This gets called on every request
+export async function getServerSideProps({ params }) {
   return {
     props: {
       data: await catalog(params.slug),
-      updatedAt: Date.now(),
       unstable_revalidate: 10,
     },
   }

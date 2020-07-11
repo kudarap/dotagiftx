@@ -46,10 +46,17 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index({ totalEntries, popularItems }) {
+export default function Index({ totalEntries, popularItems: defaultPopularItems }) {
   const classes = useStyles()
 
-  // const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  // const popularSWR = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  // const { popularError } = popularSWR
+  //
+  // if (!popularItems) {
+  //   popularItems = defaultPopularItems
+  // }
+
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
 
   const handleSubmit = keyword => {
@@ -86,8 +93,11 @@ export default function Index({ totalEntries, popularItems }) {
               See All
             </Link>
           </Typography>
+          {popularError && <div>failed to load popular items</div>}
           {!popularItems && <LinearProgress color="secondary" />}
-          {popularItems && <CatalogList items={popularItems.data} />}
+          {!popularError && (
+            <CatalogList items={popularItems ? popularItems.data : defaultPopularItems.data} />
+          )}
           <br />
 
           <Typography>
@@ -96,7 +106,7 @@ export default function Index({ totalEntries, popularItems }) {
               See All
             </Link>
           </Typography>
-          {recentError && <div>failed to load</div>}
+          {recentError && <div>failed to load recent items</div>}
           {!recentItems && <LinearProgress color="secondary" />}
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
@@ -117,8 +127,7 @@ function numberWithCommas(x) {
 }
 
 // This gets called on every request
-// export async function getServerSideProps() {
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await marketSearch({ limit: 1 })
   const totalEntries = numberWithCommas(res.total_count || 0)
 

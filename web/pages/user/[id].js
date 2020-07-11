@@ -101,8 +101,9 @@ export default function UserDetails({ data = {} }) {
 
 // This gets called on every request
 export async function getServerSideProps({ params }) {
-  const { id } = params
-  const data = await user(String(id))
-  // Pass data to the page via props
-  return { props: { data } }
+  return {
+    props: {
+      data: await user(String(params.id)),
+    },
+  }
 }
