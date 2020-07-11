@@ -33,7 +33,7 @@ const marketFilter = { sort: 'price', status: MARKET_STATUS_LIVE }
 export default function MarketList({ itemID = '' }) {
   const classes = useStyles()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   marketFilter.item_id = itemID
   const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
