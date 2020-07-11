@@ -54,7 +54,9 @@ export default function UserDetails({ data = {} }) {
           <div className={classes.details}>
             <Avatar className={classes.avatar} src={CDN_URL + data.avatar} />
             <Typography component="h1">
-              <Typography variant="h4">{data.name}</Typography>
+              <Typography component="p" variant="h4">
+                {data.name}
+              </Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
                   {`registered: `}

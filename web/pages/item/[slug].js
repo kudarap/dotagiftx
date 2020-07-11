@@ -11,6 +11,7 @@ import Container from '@/components/Container'
 import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -49,7 +50,7 @@ export default function ItemDetails({ data }) {
     <>
       <Head>
         <title>
-          Dota 2 Giftables :: Listings for {data.name} starts at ${data.lowest_ask}
+          Dota 2 Giftables :: Listings for {data.name} :: Price starts at ${data.lowest_ask}
         </title>
         <meta
           name="description"
@@ -75,9 +76,11 @@ export default function ItemDetails({ data }) {
               />
             )}
             <Typography component="h1">
-              <Typography variant="h4">{data.name}</Typography>
+              <Typography component="p" variant="h4">
+                {data.name}
+              </Typography>
               <Typography gutterBottom>
-                {data.origin}{' '}
+                <Link href={`/search?q=${data.origin}`}>{data.origin}</Link>{' '}
                 {data.rarity !== 'regular' && (
                   <>
                     &mdash;
@@ -88,7 +91,7 @@ export default function ItemDetails({ data }) {
                 <Typography color="textSecondary" component="span">
                   {`Used by: `}
                 </Typography>
-                {data.hero}
+                <Link href={`/search?q=${data.hero}`}>{data.hero}</Link>
               </Typography>
             </Typography>
           </div>
