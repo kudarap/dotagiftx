@@ -46,16 +46,8 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index({ totalEntries, popularItems: defaultPopularItems }) {
+export default function Index({ totalEntries, popularItems }) {
   const classes = useStyles()
-
-  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
-  // const popularSWR = useSWR([CATALOGS, popularItemsFilter], fetcher)
-  // const { popularError } = popularSWR
-  //
-  // if (!popularItems) {
-  //   popularItems = defaultPopularItems
-  // }
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
 
@@ -93,11 +85,8 @@ export default function Index({ totalEntries, popularItems: defaultPopularItems 
               See All
             </Link>
           </Typography>
-          {popularError && <div>failed to load popular items</div>}
-          {!popularItems && <LinearProgress color="secondary" />}
-          {!popularError && (
-            <CatalogList items={popularItems ? popularItems.data : defaultPopularItems.data} />
-          )}
+          {popularItems.error && <div>failed to load popular items: {popularItems.error}</div>}
+          {!popularItems.error && <CatalogList items={popularItems.data} />}
           <br />
 
           <Typography>
@@ -131,14 +120,17 @@ export async function getServerSideProps() {
   const res = await marketSearch({ limit: 1 })
   const totalEntries = numberWithCommas(res.total_count || 0)
 
-  const popularItems = await catalogSearch(popularItemsFilter)
-  // const recentItems = await catalogSearch(recentItemsFilter)
+  let popularItems = { error: null }
+  try {
+    popularItems = await catalogSearch(popularItemsFilter)
+  } catch (e) {
+    popularItems.error = e
+  }
 
   return {
     props: {
       totalEntries,
       popularItems,
-      // recentItems,
       unstable_revalidate: 60,
     },
   }
