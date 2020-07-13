@@ -4,10 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/go-chi/chi"
 	"github.com/kudarap/dota2giftables/core"
+	"github.com/sirupsen/logrus"
 )
 
 func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
