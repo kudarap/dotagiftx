@@ -1,4 +1,5 @@
 import React from 'react'
+import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -7,6 +8,8 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
+import { fetcherWithToken, MY_PROFILE } from '@/service/api'
+import { isOk as isLoggedIn } from '@/service/auth'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -35,6 +38,10 @@ const useStyles = makeStyles(theme => ({
 export default function () {
   const classes = useStyles()
 
+  const { data: profile, error } = useSWR(MY_PROFILE, fetcherWithToken)
+
+  console.log(profile)
+
   return (
     <header>
       <AppBar position="static" variant="outlined" className={classes.appBar}>
@@ -46,9 +53,13 @@ export default function () {
               </Typography>
             </Link>
             <span style={{ flexGrow: 1 }} />
-            <Button startIcon={<SteamIcon />} component={Link} href="/login">
-              Sign in
-            </Button>
+            {isLoggedIn() ? (
+              <span>{!error && profile && profile.name}</span>
+            ) : (
+              <Button startIcon={<SteamIcon />} component={Link} href="/login">
+                Sign in
+              </Button>
+            )}
             &nbsp;&nbsp;
             <Button variant="outlined" color="secondary">
               Post Item

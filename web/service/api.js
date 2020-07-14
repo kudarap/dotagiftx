@@ -5,11 +5,9 @@ import * as http from './http'
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
 export const CDN_URL = `${trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')}/`
 
-export const fetcher2 = url => http.request(http.GET, url)
-
 const parseParams = (url, filter) => `${url}?${querystring.stringify(filter)}`
 export const fetcher = (endpoint, filter) => http.request(http.GET, parseParams(endpoint, filter))
-export const fetcherWithToken = url => http.request(http.GET, url)
+export const fetcherWithToken = url => http.authnRequest(http.GET, url)
 
 // API Endpoints
 const AUTH_STEAM = '/auth/steam'

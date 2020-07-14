@@ -1,10 +1,11 @@
 import fetch from 'unfetch'
 import useSWR from 'swr'
+import { API_URL } from '@/service/api'
 
 const fetcher = url => fetch(url).then(r => r.json())
 
 export default function BuildInfo() {
-  const { data, error } = useSWR('https://fotolink.app/api', fetcher)
+  const { data, error } = useSWR(API_URL, fetcher)
 
   if (error) return <div>failed to load</div>
   if (!data) return <div>loading...</div>
