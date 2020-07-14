@@ -96,10 +96,10 @@ export default function () {
                 Sign in
               </Button>
             )}
-            &nbsp;&nbsp;
-            <Button variant="outlined" color="secondary">
-              Post Item
-            </Button>
+            {/* &nbsp;&nbsp; */}
+            {/* <Button variant="outlined" color="secondary"> */}
+            {/*  Post Item */}
+            {/* </Button> */}
           </Toolbar>
         </Container>
       </AppBar>
