@@ -35,8 +35,8 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
   },
   avatar: {
-    width: theme.spacing(4),
-    height: theme.spacing(4),
+    width: theme.spacing(3),
+    height: theme.spacing(3),
   },
 }))
 
@@ -84,6 +84,10 @@ export default function () {
               </Typography>
             </Link>
             <span style={{ flexGrow: 1 }} />
+            <Button variant="outlined" color="secondary">
+              Post Item
+            </Button>
+            &nbsp;&nbsp;
             {isLoggedIn() ? (
               <Button
                 startIcon={
@@ -96,10 +100,6 @@ export default function () {
                 Sign in
               </Button>
             )}
-            {/* &nbsp;&nbsp; */}
-            {/* <Button variant="outlined" color="secondary"> */}
-            {/*  Post Item */}
-            {/* </Button> */}
           </Toolbar>
         </Container>
       </AppBar>

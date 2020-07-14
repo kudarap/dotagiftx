@@ -58,7 +58,7 @@ export default function () {
           </li>
           <li>
             <MuiLink
-              href="http://chiligarlic.com"
+              href="http://github.com/kudarap"
               target="_blank"
               color="textSecondary"
               rel="noreferrer noopener">
