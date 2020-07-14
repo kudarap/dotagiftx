@@ -41,11 +41,11 @@ export default function () {
       <Divider />
       <Container disableMinHeight>
         <ul className={classes.list}>
-          <li>
-            <Link href="/about" color="textSecondary">
-              About
-            </Link>
-          </li>
+          {/*<li>*/}
+          {/*  <Link href="/about" color="textSecondary">*/}
+          {/*    About*/}
+          {/*  </Link>*/}
+          {/*</li>*/}
           <li>
             <Link href="/faq" color="textSecondary">
               FAQ
