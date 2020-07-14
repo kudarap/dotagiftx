@@ -58,11 +58,11 @@ export default function () {
           </li>
           <li>
             <MuiLink
-              href="http://vercel.com"
+              href="http://chiligarlic.com"
               target="_blank"
               color="textSecondary"
               rel="noreferrer noopener">
-              Powered by Vercel
+              DotagiftX by kudarap
             </MuiLink>
           </li>
           {/* <li> */}
