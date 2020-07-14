@@ -23,8 +23,7 @@ export const CATALOGS = '/catalogs'
 const VERSION = '/'
 const TRACK = '/t'
 
-export const authSteam = (ot, ov) =>
-  http.request(http.GET, `${AUTH_STEAM}?oauth_token=${ot}&oauth_verifier=${ov}`)
+export const authSteam = openidQuery => http.request(http.GET, `${AUTH_STEAM}${openidQuery}`)
 export const authRenew = refreshToken =>
   http.request(http.POST, AUTH_RENEW, { refresh_token: refreshToken })
 export const authRevoke = refreshToken =>
@@ -44,3 +43,4 @@ export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
+export const getLoginURL = `${API_URL}${AUTH_STEAM}`

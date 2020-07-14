@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 import moment from 'moment'
 import { authRenew } from './api'
 
-const AUTH_KEY = 'd2gAuth'
+const AUTH_KEY = 'dgxAu'
 const userIDKey = 'user_id'
 
 export const get = () => {
