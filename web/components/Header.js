@@ -1,15 +1,16 @@
 import React from 'react'
-import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
+import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
-import { fetcherWithToken, MY_PROFILE } from '@/service/api'
+import { CDN_URL, myProfile } from '@/service/api'
 import { isOk as isLoggedIn } from '@/service/auth'
+import * as Storage from '@/service/storage'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -33,14 +34,44 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: 2,
     cursor: 'pointer',
   },
+  avatar: {
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+  },
 }))
+
+const PROFILE_CACHE_KEY = 'profile'
+
+const defaultProfile = {
+  id: '',
+  steam_id: '',
+  name: '',
+  avatar: '',
+  created_at: null,
+}
 
 export default function () {
   const classes = useStyles()
 
-  const { data: profile, error } = useSWR(MY_PROFILE, fetcherWithToken)
+  const [profile, setProfile] = React.useState(defaultProfile)
 
-  console.log(profile)
+  React.useEffect(() => {
+    const get = async () => {
+      const res = await myProfile.GET()
+      setProfile(res)
+      Storage.save(PROFILE_CACHE_KEY, res)
+    }
+
+    if (isLoggedIn()) {
+      const hit = Storage.get(PROFILE_CACHE_KEY)
+      if (hit) {
+        setProfile(hit)
+        return
+      }
+      // fetch data from api
+      get()
+    }
+  }, [])
 
   return (
     <header>
@@ -54,7 +85,12 @@ export default function () {
             </Link>
             <span style={{ flexGrow: 1 }} />
             {isLoggedIn() ? (
-              <span>{!error && profile && profile.name}</span>
+              <Button
+                startIcon={
+                  <Avatar className={classes.avatar} src={profile && CDN_URL + profile.avatar} />
+                }>
+                {profile && profile.name}
+              </Button>
             ) : (
               <Button startIcon={<SteamIcon />} component={Link} href="/login">
                 Sign in
