@@ -52,12 +52,12 @@ export default function Login() {
           <Typography variant="h5" component="h1" gutterBottom>
             Signing in to <strong>DotagiftX</strong> allows you to access additional features.
           </Typography>
-          {/*<Typography>*/}
-          {/*  <ul>*/}
-          {/*    <li>Item Listing</li>*/}
-          {/*    <li>Reservation</li>*/}
-          {/*  </ul>*/}
-          {/*</Typography>*/}
+          {/* <Typography> */}
+          {/*  <ul> */}
+          {/*    <li>Item Listing</li> */}
+          {/*    <li>Reservation</li> */}
+          {/*  </ul> */}
+          {/* </Typography> */}
           <br />
 
           <Typography>This website is not affiliated with Valve Corporation or Steam.</Typography>
