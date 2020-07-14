@@ -25,28 +25,36 @@ export default function Faq() {
           </Typography>
           <br />
 
-          <Typography variant="h6">What is DotagiftX?</Typography>
+          <Typography variant="h6" component="h2">
+            What is DotagiftX?
+          </Typography>
           <Typography color="textSecondary">
             Market for Dota 2 giftables, items that can be gift or giftable-once are probably belong
             here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread.
           </Typography>
           <br />
 
-          <Typography variant="h6">What items can I find or post here?</Typography>
+          <Typography variant="h6" component="h2">
+            What items can I find or post here?
+          </Typography>
           <Typography color="textSecondary">
             Anything Dota 2 items that can be gift to a friend like items from Collector&apos;s
             Caches, In-game drops, or Immortal treasures.
           </Typography>
           <br />
 
-          <Typography variant="h6">Why do you I need to sign with Steam?</Typography>
+          <Typography variant="h6" component="h2">
+            Why do you I need to sign with Steam?
+          </Typography>
           <Typography color="textSecondary">
             It verifies Steam account ownership and provides some helpful links to check your
             profile and reputation.
           </Typography>
           <br />
 
-          <Typography variant="h6">Why do this?</Typography>
+          <Typography variant="h6" component="h2">
+            Why do this?
+          </Typography>
           <Typography color="textSecondary">
             Wanted to make tool that can be easily search and post these kind of items.
           </Typography>
