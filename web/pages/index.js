@@ -60,7 +60,7 @@ export default function Index({ totalEntries, popularItems }) {
   return (
     <>
       <Head>
-        <title>Dota 2 Giftables</title>
+        <title>DotagiftX - Dota 2 giftables market</title>
         <meta name="description" content={description} />
       </Head>
 
