@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     },
     fontSize: 17,
     textShadow: '0px 0px 16px #C79123',
-    textTransform: 'uppercase',
+    // textTransform: 'uppercase',
     // fontWeight: 'bold',
     background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
     '-webkit-background-clip': 'text',
@@ -41,12 +41,14 @@ export default function () {
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
             <Link href="/" disableUnderline>
-              <Typography variant="h6" component="h1" className={classes.title}>
-                Dota2Giftables
+              <Typography component="h1" className={classes.title}>
+                <strong>DotagiftX</strong>
               </Typography>
             </Link>
             <span style={{ flexGrow: 1 }} />
-            <Button startIcon={<SteamIcon />}>Sign in</Button>
+            <Button startIcon={<SteamIcon />} component={Link} href="/login">
+              Sign in
+            </Button>
             &nbsp;&nbsp;
             <Button variant="outlined" color="secondary">
               Post Item
