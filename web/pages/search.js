@@ -3,12 +3,12 @@ import useSWR from 'swr'
 import querystring from 'querystring'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
-import SearchInput from '@/components/SearchInput'
 import TablePagination from '@/components/TablePagination'
 import { CATALOGS, fetcher } from '@/service/api'
 
@@ -68,8 +68,15 @@ export default function Search() {
 
       <main className={classes.main}>
         <Container>
-          <SearchInput value={filter.q} onSubmit={handleSearchSubmit} onClear={handleSearchClear} />
-          <br />
+          {/*<SearchInput value={filter.q} onSubmit={handleSearchSubmit} onClear={handleSearchClear} />*/}
+          {filter.q && (
+            <>
+              <Typography component="h1" variant="h6">
+                Results for &quot;{filter.q}&quot;
+              </Typography>
+              <br />
+            </>
+          )}
 
           {error && <div>failed to load</div>}
           {!items && <LinearProgress color="secondary" />}

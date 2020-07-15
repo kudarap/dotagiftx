@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import InputBase from '@material-ui/core/InputBase'
@@ -35,26 +36,34 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput(props) {
-  const { value, onChange, onSubmit, onClear, ...other } = props
-
+export default function SearchInput({ value, onChange, onSubmit, onClear, ...other }) {
   const classes = useStyles()
 
-  const [keyword, setKeyword] = React.useState(value)
+  const router = useRouter()
+  const { query } = router
+  const [keyword, setKeyword] = React.useState('')
+  React.useEffect(() => {
+    setKeyword(query.q || '')
+  }, [query.q])
 
+  const routerPush = q => {
+    router.push(`/search?q=${q}`)
+  }
   const handleChange = ({ target }) => {
     const v = target.value
     setKeyword(v)
     onChange(v)
+    // routerPush(v)
   }
   const handleClearValue = () => {
     setKeyword('')
     onChange('')
-    onClear()
+    routerPush('')
   }
   const handleSubmit = e => {
     e.preventDefault()
     onSubmit(keyword)
+    routerPush(keyword)
   }
 
   return (
