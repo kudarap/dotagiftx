@@ -11,6 +11,7 @@ import SteamIcon from '@/components/SteamIcon'
 import { CDN_URL, myProfile } from '@/service/api'
 import { isOk as isLoggedIn } from '@/service/auth'
 import * as Storage from '@/service/storage'
+import SearchInputMini from '@/components/SearchInputMini'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -50,7 +51,7 @@ const defaultProfile = {
   created_at: null,
 }
 
-export default function () {
+export default function ({ disableSearch = false }) {
   const classes = useStyles()
 
   const [profile, setProfile] = React.useState(defaultProfile)
@@ -83,7 +84,13 @@ export default function () {
                 <strong>DotagiftX</strong>
               </Typography>
             </Link>
-            <span style={{ flexGrow: 1 }} />
+            {!disableSearch && (
+              <>
+                &nbsp;&nbsp;
+                <SearchInputMini />
+                <span style={{ flexGrow: 1 }} />
+              </>
+            )}
             <Button variant="outlined" color="secondary">
               Post Item
             </Button>

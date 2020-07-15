@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import SearchIcon from '@material-ui/icons/Search'
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles(theme => ({
@@ -15,8 +14,16 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     // marginBottom: theme.spacing(4),
     '& .MuiInputBase-root': {
-      color: theme.palette.grey[800],
-      backgroundColor: theme.palette.app.white,
+      // color: theme.palette.grey[800],
+      // backgroundColor: theme.palette.app.white,
+      color: theme.palette.grey[300],
+      backgroundColor: theme.palette.background.paper,
+    },
+    '& .Mui-focused input': {
+      border: 'none',
+    },
+    '&$focused': {
+      border: 'none',
     },
   },
   verticalDivider: {
@@ -56,25 +63,18 @@ export default function SearchInput(props) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ flexGrow: 1 }}>
       <TextField
+        size="small"
         className={classes.searchBar}
         InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon className={classes.actionIcons} />
-            </InputAdornment>
-          ),
           endAdornment: (
             <InputAdornment position="end">
-              {keyword !== '' && (
-                <>
-                  <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
-                  <span className={classes.verticalDivider} />
-                </>
+              {keyword !== '' ? (
+                <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
+              ) : (
+                <SearchIcon className={classes.iconButtons} onClick={handleSubmit} />
               )}
-
-              <ArrowForwardIcon className={classes.iconButtons} onClick={handleSubmit} />
             </InputAdornment>
           ),
         }}
@@ -83,7 +83,7 @@ export default function SearchInput(props) {
         color="secondary"
         fullWidth
         value={keyword}
-        onChange={handleChange}
+        onInput={handleChange}
         {...other}
       />
     </form>
