@@ -39,6 +39,9 @@ const useStyles = makeStyles(theme => ({
     width: theme.spacing(3),
     height: theme.spacing(3),
   },
+  spacer: {
+    width: theme.spacing(1),
+  },
 }))
 
 const PROFILE_CACHE_KEY = 'profile'
@@ -84,17 +87,13 @@ export default function ({ disableSearch = false }) {
                 <strong>DotagiftX</strong>
               </Typography>
             </Link>
-            {!disableSearch && (
-              <>
-                &nbsp;&nbsp;
-                <SearchInputMini />
-                <span style={{ flexGrow: 1 }} />
-              </>
-            )}
+            <span className={classes.spacer} />
+            {!disableSearch && <SearchInputMini />}
+            <span style={{ flexGrow: 1 }} />
             <Button variant="outlined" color="secondary">
               Post Item
             </Button>
-            &nbsp;&nbsp;
+            <span className={classes.spacer} />
             {isLoggedIn() ? (
               <Button
                 startIcon={

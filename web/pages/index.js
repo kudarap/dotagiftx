@@ -64,7 +64,7 @@ export default function Index({ totalEntries, popularItems }) {
         <meta name="description" content={description} />
       </Head>
 
-      <Header />
+      <Header disableSearch />
 
       <main className={classes.main}>
         <Container>
