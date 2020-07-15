@@ -1,21 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
-import InputAdornment from '@material-ui/core/InputAdornment'
+import Paper from '@material-ui/core/Paper'
+import InputBase from '@material-ui/core/InputBase'
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles(theme => ({
-  main: {
-    // marginTop: theme.spacing(4),
+  root: {
+    flexGrow: 1,
+    padding: '3px 12px',
+    display: 'flex',
+    alignItems: 'center',
+    // border: `1px solid ${theme.palette.background.paper}`,
+    // '&:hover': {
+    //   borderColor: theme.palette.grey[700],
+    // },
   },
-  searchBar: {
+  input: {
     margin: '0 auto',
-    '& .MuiInputBase-root': {
-      color: theme.palette.grey[300],
-      backgroundColor: theme.palette.background.paper,
-    },
+    backgroundColor: theme.palette.background.paper,
   },
   verticalDivider: {
     borderRight: `1px solid ${theme.palette.grey[300]}`,
@@ -54,30 +58,25 @@ export default function SearchInput(props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ flexGrow: 1 }}>
-      <TextField
+    <Paper onSubmit={handleSubmit} className={classes.root} component="form" elevation={0}>
+      <InputBase
+        onInput={handleChange}
+        value={keyword}
+        className={classes.input}
         size="small"
-        className={classes.searchBar}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              {keyword !== '' ? (
-                <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
-              ) : (
-                <SearchIcon className={classes.iconButtons} onClick={handleSubmit} />
-              )}
-            </InputAdornment>
-          ),
-        }}
         placeholder="Search for item name, hero, origin"
         variant="outlined"
         color="secondary"
         fullWidth
-        value={keyword}
-        onInput={handleChange}
         {...other}
       />
-    </form>
+
+      {keyword !== '' ? (
+        <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
+      ) : (
+        <SearchIcon className={classes.iconButtons} onClick={handleSubmit} />
+      )}
+    </Paper>
   )
 }
 SearchInput.propTypes = {
