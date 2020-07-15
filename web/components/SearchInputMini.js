@@ -12,18 +12,9 @@ const useStyles = makeStyles(theme => ({
   },
   searchBar: {
     margin: '0 auto',
-    // marginBottom: theme.spacing(4),
     '& .MuiInputBase-root': {
-      // color: theme.palette.grey[800],
-      // backgroundColor: theme.palette.app.white,
       color: theme.palette.grey[300],
       backgroundColor: theme.palette.background.paper,
-    },
-    '& .Mui-focused input': {
-      border: 'none',
-    },
-    '&$focused': {
-      border: 'none',
     },
   },
   verticalDivider: {
