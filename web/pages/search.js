@@ -47,15 +47,6 @@ export default function Search() {
     router.push(`/search?${querystring.stringify(f)}`)
   }
 
-  const handleSearchSubmit = q => {
-    const f = { ...filter, q, page: 1 }
-    setFilter(f)
-    routerPush({ q })
-  }
-  const handleSearchClear = () => {
-    setFilter({ ...filter, q: '' })
-    routerPush()
-  }
   const handlePageChange = (e, page) => {
     const f = { ...filter, page }
     setFilter(f)
@@ -68,7 +59,6 @@ export default function Search() {
 
       <main className={classes.main}>
         <Container>
-          {/*<SearchInput value={filter.q} onSubmit={handleSearchSubmit} onClear={handleSearchClear} />*/}
           {filter.q && (
             <>
               <Typography component="h1" variant="h6">
