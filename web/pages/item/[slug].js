@@ -118,12 +118,13 @@ export default function ItemDetails({ item, markets }) {
   )
 }
 ItemDetails.propTypes = {
-  item: PropTypes.object,
+  item: PropTypes.object.isRequired,
   markets: PropTypes.object,
 }
 ItemDetails.defaultProps = {
-  item: {},
-  markets: {},
+  markets: {
+    data: [],
+  },
 }
 
 // This gets called on every request
@@ -131,7 +132,6 @@ export async function getServerSideProps({ params }) {
   const item = await catalog(params.slug)
 
   marketSearchFilter.item_id = item.id
-
   return {
     props: {
       item,

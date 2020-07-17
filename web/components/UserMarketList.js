@@ -36,24 +36,16 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketFilter = {
-  status: MARKET_STATUS_LIVE,
-  sort: 'created_at:desc',
-}
-
-export default function UserMarketList({ userID = '' }) {
+export default function UserMarketList({ data, error }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
-
-  marketFilter.user_id = userID
-  const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
 
   if (error) {
     return <p>Error</p>
   }
 
-  if (!listings) {
+  if (!data) {
     return <p>Loading...</p>
   }
 
@@ -62,13 +54,13 @@ export default function UserMarketList({ userID = '' }) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableHeadCell>Sell Listings ({listings.total_count})</TableHeadCell>
+            <TableHeadCell>Sell Listings ({data.total_count})</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
             <TableHeadCell align="right" width={156} />
           </TableRow>
         </TableHead>
         <TableBody>
-          {listings.data.map(market => (
+          {data.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
                 <Link
@@ -108,5 +100,9 @@ export default function UserMarketList({ userID = '' }) {
   )
 }
 UserMarketList.propTypes = {
-  userID: PropTypes.string.isRequired,
+  data: PropTypes.object.isRequired,
+  error: PropTypes.string,
+}
+UserMarketList.defaultProps = {
+  error: null,
 }

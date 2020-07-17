@@ -1,10 +1,13 @@
 import Head from 'next/head'
+import PropTypes from 'prop-types'
 import moment from 'moment'
+import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, user } from '@/service/api'
+import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { CDN_URL, MARKETS, marketSearch, user, fetcher } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -34,17 +37,29 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function UserDetails({ data = {} }) {
+const marketSearchFilter = {
+  status: MARKET_STATUS_LIVE,
+  sort: 'created_at:desc',
+}
+
+export default function UserDetails({ profile, markets: initialData }) {
   const classes = useStyles()
 
-  const profileURL = `https://steamcommunity.com/profiles/${data.steam_id}`
-  const steamrepURL = `https://steamrep.com/profiles/${data.steam_id}`
+  marketSearchFilter.user_id = profile.id
+  const { data: marketListing, error: marketError } = useSWR(
+    [MARKETS, marketSearchFilter],
+    (u, f) => fetcher(u, f),
+    { initialData }
+  )
+
+  const profileURL = `https://steamcommunity.com/profiles/${profile.steam_id}`
+  const steamrepURL = `https://steamrep.com/profiles/${profile.steam_id}`
 
   return (
     <>
       <Head>
-        <title>Dota 2 Giftables :: {data.name} listings</title>
-        <meta name="description" content={`${data.name} giftable listings`} />
+        <title>Dota 2 Giftables :: {profile.name} listings</title>
+        <meta name="description" content={`${profile.name} giftable listings`} />
       </Head>
 
       <Header />
@@ -52,16 +67,16 @@ export default function UserDetails({ data = {} }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <Avatar className={classes.avatar} src={CDN_URL + data.avatar} />
+            <Avatar className={classes.avatar} src={CDN_URL + profile.avatar} />
             <Typography component="h1">
               <Typography component="p" variant="h4">
-                {data.name}
+                {profile.name}
               </Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
                   {`registered: `}
                 </Typography>
-                {moment(data.created_at).fromNow()}
+                {moment(profile.created_at).fromNow()}
                 <br />
 
                 <Typography color="textSecondary" component="span">
@@ -92,7 +107,7 @@ export default function UserDetails({ data = {} }) {
             </Typography>
           </div>
 
-          <UserMarketList userID={data.id} />
+          <UserMarketList data={marketListing} error={marketError} />
         </Container>
       </main>
 
@@ -100,12 +115,24 @@ export default function UserDetails({ data = {} }) {
     </>
   )
 }
+UserDetails.propTypes = {
+  profile: PropTypes.object.isRequired,
+  markets: PropTypes.object,
+}
+UserDetails.defaultProps = {
+  profile: {},
+  markets: {},
+}
 
 // This gets called on every request
 export async function getServerSideProps({ params }) {
+  const profile = await user(String(params.id))
+
+  marketSearchFilter.user_id = profile.id
   return {
     props: {
-      data: await user(String(params.id)),
+      profile,
+      markets: await marketSearch(marketSearchFilter),
     },
   }
 }
