@@ -2,17 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import moment from 'moment'
-import useSWR from 'swr'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { CDN_URL, MARKETS, marketSearch, user, fetcher } from '@/service/api'
+import { CDN_URL, marketSearch, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
 import UserMarketList from '@/components/UserMarketList'
+import TablePagination from '@/components/TablePaginationRouter'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -38,23 +39,20 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketSearchFilter = {
-  status: MARKET_STATUS_LIVE,
-  sort: 'created_at:desc',
-}
-
-export default function UserDetails({ profile, markets: initialData }) {
+export default function UserDetails({ profile, markets }) {
   const classes = useStyles()
 
-  marketSearchFilter.user_id = profile.id
-  const { data: marketListing, error: marketError } = useSWR(
-    [MARKETS, marketSearchFilter],
-    (u, f) => fetcher(u, f),
-    { initialData }
-  )
+  const router = useRouter()
+  const [page, setPage] = React.useState(Number(router.query.page || 1))
+
+  const handlePageChange = (e, p) => {
+    setPage(p)
+  }
+
+  const linkProps = { href: '/user/[id]', as: `/user/${profile.steam_id}` }
 
   const profileURL = `https://steamcommunity.com/profiles/${profile.steam_id}`
-  const steamrepURL = `https://steamrep.com/profiles/${profile.steam_id}`
+  const steamRepURL = `https://steamrep.com/profiles/${profile.steam_id}`
 
   return (
     <>
@@ -97,18 +95,25 @@ export default function UserDetails({ profile, markets: initialData }) {
                   {`steamrep: `}
                 </Typography>
                 <Link
-                  href={steamrepURL}
+                  href={steamRepURL}
                   variant="caption"
                   color="secondary"
                   target="_blank"
                   rel="noreferrer noopener">
-                  {steamrepURL}
+                  {steamRepURL}
                 </Link>
               </Typography>
             </Typography>
           </div>
 
-          <UserMarketList data={marketListing} error={marketError} />
+          <UserMarketList data={markets} />
+          <TablePagination
+            linkProps={linkProps}
+            style={{ textAlign: 'right' }}
+            count={markets.total_count}
+            page={page}
+            onChangePage={handlePageChange}
+          />
         </Container>
       </main>
 
@@ -124,15 +129,21 @@ UserDetails.defaultProps = {
   markets: {},
 }
 
+const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'created_at:desc' }
+
 // This gets called on every request
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, query }) {
   const profile = await user(String(params.id))
 
-  marketSearchFilter.user_id = profile.id
+  const filter = { ...marketSearchFilter, user_id: profile.id }
+  if (query.page) {
+    filter.page = Number(query.page)
+  }
+
   return {
     props: {
       profile,
-      markets: await marketSearch(marketSearchFilter),
+      markets: await marketSearch(filter),
     },
   }
 }

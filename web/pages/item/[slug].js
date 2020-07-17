@@ -102,7 +102,7 @@ export default function ItemDetails({ item, markets }) {
             </Typography>
           </div>
 
-          <MarketList data={markets} error={null} />
+          <MarketList data={markets} />
           <TablePagination
             linkProps={linkProps}
             style={{ textAlign: 'right' }}
