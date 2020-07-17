@@ -14,6 +14,8 @@ import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
+import TablePagination from '@/components/TablePagination'
+import { fetcher as fetcher2, parseQuery } from '@/service/fetcher'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -40,21 +42,32 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketSearchFilter = { sort: 'price', status: MARKET_STATUS_LIVE }
+const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'price', page: 1 }
 
 export default function ItemDetails({ item, markets }) {
   const classes = useStyles()
 
-  marketSearchFilter.item_id = item.id
-  const { data: marketListing, error: marketError } = useSWR(
-    [MARKETS, marketSearchFilter],
-    (u, f) => fetcher(u, f),
-    { initialData: markets }
-  )
-
   const router = useRouter()
-  if (router.isFallback) {
-    return <div>Loading...</div>
+
+  marketSearchFilter.item_id = item.id
+  if (router.query.page) {
+    marketSearchFilter.page = router.query.page
+  }
+  const [filter, setFilter] = React.useState(marketSearchFilter)
+
+  const url = parseQuery(MARKETS, filter)
+  console.log('filter', url)
+
+  const { data: marketListing, error: marketError } = useSWR(url, fetcher2, {
+    initialData: markets,
+  })
+  React.useEffect(() => {
+    setFilter({ ...filter, ...router.query })
+  }, [router.query])
+
+  const handlePageChange = (e, page) => {
+    router.push(`/item/[slug]`, `/item/${item.slug}?page=${page}`)
+    setFilter({ ...filter, page })
   }
 
   return (
@@ -108,6 +121,12 @@ export default function ItemDetails({ item, markets }) {
           </div>
 
           <MarketList data={marketListing} error={marketError} />
+          <TablePagination
+            style={{ textAlign: 'right' }}
+            count={marketListing.total_count}
+            page={Number(filter.page)}
+            onChangePage={handlePageChange}
+          />
         </Container>
 
         <img src={trackViewURL(item.id)} alt="" />
@@ -128,10 +147,14 @@ ItemDetails.defaultProps = {
 }
 
 // This gets called on every request
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, query }) {
   const item = await catalog(params.slug)
 
   marketSearchFilter.item_id = item.id
+  if (query.page) {
+    marketSearchFilter.page = Number(query.page)
+  }
+
   return {
     props: {
       item,

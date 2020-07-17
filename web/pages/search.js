@@ -23,10 +23,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const defaultFilter = {
-  sort: 'created_at:desc',
-  page: 1,
-}
+const defaultFilter = { sort: 'created_at:desc', page: 1 }
 
 export default function Search({ catalogs: initialData }) {
   const classes = useStyles()
