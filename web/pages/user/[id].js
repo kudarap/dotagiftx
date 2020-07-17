@@ -66,7 +66,7 @@ export default function UserDetails({ profile, markets }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <Avatar className={classes.avatar} src={CDN_URL + profile.avatar} />
+            <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
               <Typography component="p" variant="h4">
                 {profile.name}

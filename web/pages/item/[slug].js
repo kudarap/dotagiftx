@@ -76,7 +76,7 @@ export default function ItemDetails({ item, markets }) {
             {item.image && (
               <ItemImage
                 className={classes.media}
-                image={`${item.image}/300x170`}
+                image={`/300x170/${item.image}`}
                 title={item.name}
                 rarity={item.rarity}
               />

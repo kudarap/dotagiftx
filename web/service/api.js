@@ -3,7 +3,7 @@ import trimEnd from 'lodash/trimEnd'
 import * as http from './http'
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
-export const CDN_URL = `${trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')}/`
+export const CDN_URL = trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')
 
 const parseParams = (url, filter) => `${url}?${querystring.stringify(filter)}`
 export const fetcher = (endpoint, filter) => http.request(http.GET, parseParams(endpoint, filter))

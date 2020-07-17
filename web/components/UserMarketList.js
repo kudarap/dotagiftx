@@ -71,7 +71,7 @@ export default function UserMarketList({ data, error }) {
                   {!isMobile && (
                     <ItemImage
                       className={classes.image}
-                      image={`${market.item.image}/200x100`}
+                      image={`/200x100/${market.item.image}`}
                       title={market.item.name}
                       rarity={market.item.rarity}
                     />

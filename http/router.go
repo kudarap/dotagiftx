@@ -11,8 +11,8 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Post("/revoke", handleAuthRevoke(s.authSvc))
 		})
 		r.Route("/images", func(r chi.Router) {
+			r.Get("/{w}x{h}/{id}", handleImageThumbnail(s.imageSvc))
 			r.Get("/{id}", handleImage(s.imageSvc))
-			r.Get("/{id}/{w}x{h}", handleImageThumbnail(s.imageSvc))
 		})
 		r.Route("/items", func(r chi.Router) {
 			r.Get("/", handleItemList(s.itemSvc, s.trackSvc, s.logger))

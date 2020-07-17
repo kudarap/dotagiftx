@@ -74,7 +74,7 @@ export default function CatalogList({ items = [], variant }) {
                   {!isMobile && (
                     <ItemImage
                       className={classes.image}
-                      image={`${item.image}/200x100`}
+                      image={`/200x100/${item.image}`}
                       title={item.name}
                       rarity={item.rarity}
                     />

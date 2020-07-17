@@ -56,7 +56,7 @@ export default function MarketList({ data, error }) {
                 <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
                   <div className={classes.seller}>
                     {!isMobile && (
-                      <Avatar className={classes.avatar} src={CDN_URL + market.user.avatar} />
+                      <Avatar className={classes.avatar} src={`${CDN_URL}/${market.user.avatar}`} />
                     )}
                     <div>
                       <strong>{market.user.name}</strong>
