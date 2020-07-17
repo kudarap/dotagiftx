@@ -120,7 +120,6 @@ UserDetails.propTypes = {
   markets: PropTypes.object,
 }
 UserDetails.defaultProps = {
-  profile: {},
   markets: {},
 }
 
