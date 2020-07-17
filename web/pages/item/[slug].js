@@ -53,9 +53,8 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
   const linkProps = { href: '/item/[slug]', as: `/item/${item.slug}` }
 
   const metaTitle = `DotagiftX :: Listings for ${item.name}`
-  const metaDesc = `Buy ${item.name} from ${
-    item.origin
-  } — ${item.rarity.toString().toUpperCase()} for ${
+  const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
+  const metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} for ${
     item.hero
   }. Price start at $${item.lowest_ask.toFixed(2)}`
 
