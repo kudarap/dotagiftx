@@ -20,6 +20,7 @@ Market place for giftable Dota 2 items
 - user
 - item
 - market
+- catalog(market index)
 
 ### API endpoints
 
@@ -30,7 +31,8 @@ Market place for giftable Dota 2 items
   - [x] `GET /auth/revoke` -- revokes access token
   - [x] `GET /items` -- item search
   - [x] `GET /items/{item-id}` -- item details
-  - [x] `GET /market_index` -- indexed market search
+  - [x] `GET /catalog` -- indexed market search
+  - [x] `GET /catalog/{item-id}` -- indexed market search
   - [x] `GET /markets` -- market search
   - [x] `GET /markets/{market-id}` -- item market details
   - [x] `GET /users/{steam-id}` -- user details
