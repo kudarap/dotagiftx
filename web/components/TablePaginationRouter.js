@@ -42,6 +42,10 @@ function TablePagination({ count, page, rowsPerPage, onChangePage, linkProps, ..
 
   const getLinkAs = p => {
     const q = { ...linkProps.query, page: p }
+    if (!linkProps.as) {
+      return `${linkProps.href}?${querystring.stringify(q)}`
+    }
+
     return `${linkProps.as}?${querystring.stringify(q)}`
   }
 

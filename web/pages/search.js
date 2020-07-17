@@ -10,7 +10,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
-import TablePagination from '@/components/TablePagination'
+import TablePagination from '@/components/TablePaginationRouter'
 import { CATALOGS, catalogSearch, fetcher } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 
 const defaultFilter = { sort: 'created_at:desc', page: 1 }
 
-export default function Search({ catalogs: initialData }) {
+export default function Search({ catalogs: items }) {
   const classes = useStyles()
 
   const router = useRouter()
@@ -33,20 +33,18 @@ export default function Search({ catalogs: initialData }) {
   query.page = Number(query.page || 1)
   const [filter, setFilter] = React.useState({ ...defaultFilter, ...query })
 
-  const { data: items, error } = useSWR([CATALOGS, filter], fetcher, { initialData })
-  React.useEffect(() => {
-    setFilter({ ...filter, ...query })
-  }, [query])
-
-  const routerPush = f => {
-    router.push(`/search?${querystring.stringify(f)}`)
-  }
+  // const { data: items, error } = useSWR([CATALOGS, filter], fetcher, { initialData })
+  // React.useEffect(() => {
+  //   setFilter({ ...filter, ...query })
+  // }, [query])
+  const error = null
 
   const handlePageChange = (e, page) => {
     const f = { ...filter, page }
     setFilter(f)
-    routerPush(f)
   }
+
+  const linkProps = { href: '/search', query: filter }
 
   return (
     <>
@@ -69,6 +67,7 @@ export default function Search({ catalogs: initialData }) {
             <div>
               <CatalogList items={items.data} />
               <TablePagination
+                linkProps={linkProps}
                 colSpan={3}
                 style={{ textAlign: 'right' }}
                 page={filter.page}
