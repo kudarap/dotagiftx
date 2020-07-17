@@ -85,7 +85,7 @@ export function request(method, endpoint, data) {
 export const authnRequest = async (method, endpoint, data) => {
   // check and set access token.
   let auth = Auth.get()
-  if (Auth.isAccessTokenExpired() || auth.token === null) {
+  if (auth.refresh_token && (Auth.isAccessTokenExpired() || auth.token === null)) {
     const newAuth = await authRenew(auth.refresh_token)
     auth = { ...auth, ...newAuth }
     Auth.set(auth)
