@@ -156,8 +156,8 @@ export async function getServerSideProps(props) {
   return {
     props: {
       item,
-      markets: await marketSearch(filter),
       canonicalURL,
+      markets: await marketSearch(filter),
     },
   }
 }
