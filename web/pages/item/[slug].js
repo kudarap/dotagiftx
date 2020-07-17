@@ -1,12 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import useSWR from 'swr'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { catalog, marketSearch, trackViewURL, MARKETS, fetcher } from '@/service/api'
+import { catalog, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -14,7 +13,7 @@ import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import TablePagination from '@/components/TablePagination'
+import TablePagination from '@/components/TablePaginationRouter'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -49,13 +48,9 @@ export default function ItemDetails({ item, markets }) {
 
   const handlePageChange = (e, p) => {
     setPage(p)
-    let suffix = ''
-    if (p !== 1) {
-      suffix = `?page=${p}`
-    }
-
-    router.push(`/item/[slug]`, `/item/${item.slug}${suffix}`)
   }
+
+  const linkProps = { href: '/item/[slug]', as: `/item/${item.slug}` }
 
   return (
     <>
@@ -109,6 +104,7 @@ export default function ItemDetails({ item, markets }) {
 
           <MarketList data={markets} error={null} />
           <TablePagination
+            linkProps={linkProps}
             style={{ textAlign: 'right' }}
             count={markets.total_count}
             page={page}
