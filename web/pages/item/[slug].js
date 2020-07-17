@@ -1,14 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, item, trackViewURL } from '@/service/api'
+import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { catalog, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
+import ItemImage from '@/components/ItemImage'
+import Link from '@/components/Link'
+import TablePagination from '@/components/TablePaginationRouter'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -25,18 +30,42 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
   media: {
+    [theme.breakpoints.down('xs')]: {
+      margin: '0 auto !important',
+    },
+    width: 150,
     height: 100,
     marginRight: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
   },
 }))
 
-export default function ItemDetails({ data }) {
+export default function ItemDetails({ item, markets }) {
   const classes = useStyles()
+
+  const router = useRouter()
+  const [page, setPage] = React.useState(Number(router.query.page || 1))
+
+  const handlePageChange = (e, p) => {
+    setPage(p)
+  }
+
+  const linkProps = { href: '/item/[slug]', as: `/item/${item.slug}` }
 
   return (
     <>
       <Head>
-        <title>{data.name} | Dota 2 Giftables</title>
+        <title>
+          Dota 2 Giftables :: Listings for {item.name} :: Price starts at ${item.lowest_ask}
+        </title>
+        <meta
+          name="description"
+          content={`Buy ${item.name} from ${
+            item.origin
+          } ${item.rarity.toString().toUpperCase()} for ${item.hero}. Price start at ${
+            item.lowest_ask
+          }`}
+        />
       </Head>
 
       <Header />
@@ -44,43 +73,46 @@ export default function ItemDetails({ data }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <img
-              className={classes.media}
-              height={100}
-              alt={data.name}
-              src={`${CDN_URL + data.image}/300x170`}
-            />
-            <div>
-              <Typography variant="h4">{data.name}</Typography>
+            {item.image && (
+              <ItemImage
+                className={classes.media}
+                image={`${item.image}/300x170`}
+                title={item.name}
+                rarity={item.rarity}
+              />
+            )}
+            <Typography component="h1">
+              <Typography component="p" variant="h4">
+                {item.name}
+              </Typography>
               <Typography gutterBottom>
-                <Typography color="textSecondary" component="span">
-                  {`hero: `}
-                </Typography>
-                {data.hero}
-                <br />
-
-                <Typography color="textSecondary" component="span">
-                  {`rarity: `}
-                </Typography>
-                {data.rarity === 'regular' ? (
-                  data.rarity
-                ) : (
-                  <RarityTag rarity={data.rarity} variant="body1" component="span" />
+                <Link href={`/search?q=${item.origin}`}>{item.origin}</Link>{' '}
+                {item.rarity !== 'regular' && (
+                  <>
+                    &mdash;
+                    <RarityTag rarity={item.rarity} variant="body1" component="span" />
+                  </>
                 )}
                 <br />
-
                 <Typography color="textSecondary" component="span">
-                  {`origin: `}
+                  {`Used by: `}
                 </Typography>
-                {data.origin}
+                <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
               </Typography>
-            </div>
+            </Typography>
           </div>
 
-          <MarketList itemID={data.id} />
+          <MarketList data={markets} />
+          <TablePagination
+            linkProps={linkProps}
+            style={{ textAlign: 'right' }}
+            count={markets.total_count}
+            page={page}
+            onChangePage={handlePageChange}
+          />
         </Container>
 
-        <img src={trackViewURL(data.id)} alt="" />
+        <img src={trackViewURL(item.id)} alt="" />
       </main>
 
       <Footer />
@@ -88,16 +120,30 @@ export default function ItemDetails({ data }) {
   )
 }
 ItemDetails.propTypes = {
-  data: PropTypes.object,
+  item: PropTypes.object.isRequired,
+  markets: PropTypes.object,
 }
 ItemDetails.defaultProps = {
-  data: {},
+  markets: {
+    data: [],
+  },
 }
 
+const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'price', page: 1 }
+
 // This gets called on every request
-export async function getServerSideProps({ params }) {
-  const { slug } = params
-  const data = await item(slug)
-  // Pass data to the page via props
-  return { props: { data } }
+export async function getServerSideProps({ params, query }) {
+  const item = await catalog(params.slug)
+
+  const filter = { ...marketSearchFilter, item_id: item.id }
+  if (query.page) {
+    filter.page = Number(query.page)
+  }
+
+  return {
+    props: {
+      item,
+      markets: await marketSearch(filter),
+    },
+  }
 }

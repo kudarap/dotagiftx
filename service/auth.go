@@ -2,6 +2,7 @@ package service
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/kudarap/dota2giftables/core"
 	"github.com/kudarap/dota2giftables/errors"
@@ -61,6 +62,10 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 }
 
 func (s *authService) RenewToken(refreshToken string) (*core.Auth, error) {
+	if strings.TrimSpace(refreshToken) == "" {
+		return nil, core.AuthErrRefreshToken
+	}
+
 	au, err := s.authStg.GetByRefreshToken(refreshToken)
 	if err != nil {
 		return nil, errors.New(core.AuthErrRefreshToken, err)
@@ -70,6 +75,10 @@ func (s *authService) RenewToken(refreshToken string) (*core.Auth, error) {
 }
 
 func (s *authService) RevokeRefreshToken(refreshToken string) error {
+	if strings.TrimSpace(refreshToken) == "" {
+		return core.AuthErrRefreshToken
+	}
+
 	au, err := s.RenewToken(refreshToken)
 	if err != nil {
 		return err

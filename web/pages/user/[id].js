@@ -1,3 +1,5 @@
+import React from 'react'
+import PropTypes from 'prop-types'
 import Head from 'next/head'
 import moment from 'moment'
 import { useRouter } from 'next/router'
@@ -5,11 +7,13 @@ import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, user } from '@/service/api'
+import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { CDN_URL, marketSearch, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
 import UserMarketList from '@/components/UserMarketList'
+import TablePagination from '@/components/TablePaginationRouter'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -35,13 +39,26 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function UserDetails({ data = {} }) {
+export default function UserDetails({ profile, markets }) {
   const classes = useStyles()
+
+  const router = useRouter()
+  const [page, setPage] = React.useState(Number(router.query.page || 1))
+
+  const handlePageChange = (e, p) => {
+    setPage(p)
+  }
+
+  const linkProps = { href: '/user/[id]', as: `/user/${profile.steam_id}` }
+
+  const profileURL = `https://steamcommunity.com/profiles/${profile.steam_id}`
+  const steamRepURL = `https://steamrep.com/profiles/${profile.steam_id}`
 
   return (
     <>
       <Head>
-        <title>{data.name} store | Dota 2 Giftables</title>
+        <title>Dota 2 Giftables :: {profile.name} listings</title>
+        <meta name="description" content={`${profile.name} giftable listings`} />
       </Head>
 
       <Header />
@@ -49,33 +66,54 @@ export default function UserDetails({ data = {} }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <Avatar className={classes.avatar} src={CDN_URL + data.avatar} />
-            <div>
-              <Typography variant="h4">{data.name}</Typography>
+            <Avatar className={classes.avatar} src={CDN_URL + profile.avatar} />
+            <Typography component="h1">
+              <Typography component="p" variant="h4">
+                {profile.name}
+              </Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
-                  {`steam ID: `}
+                  {`registered: `}
                 </Typography>
-                {data.steam_id}
+                {moment(profile.created_at).fromNow()}
                 <br />
 
                 <Typography color="textSecondary" component="span">
-                  {`steam URL: `}
+                  {`steam: `}
                 </Typography>
-                <Link href={data.url} color="secondary">
-                  {data.url}
+                <Link
+                  href={profileURL}
+                  variant="caption"
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  {profileURL}
                 </Link>
                 <br />
 
                 <Typography color="textSecondary" component="span">
-                  {`registered: `}
+                  {`steamrep: `}
                 </Typography>
-                {moment(data.created_at).fromNow()}
+                <Link
+                  href={steamRepURL}
+                  variant="caption"
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  {steamRepURL}
+                </Link>
               </Typography>
-            </div>
+            </Typography>
           </div>
 
-          <UserMarketList userID={data.id} />
+          <UserMarketList data={markets} />
+          <TablePagination
+            linkProps={linkProps}
+            style={{ textAlign: 'right' }}
+            count={markets.total_count}
+            page={page}
+            onChangePage={handlePageChange}
+          />
         </Container>
       </main>
 
@@ -83,11 +121,29 @@ export default function UserDetails({ data = {} }) {
     </>
   )
 }
+UserDetails.propTypes = {
+  profile: PropTypes.object.isRequired,
+  markets: PropTypes.object,
+}
+UserDetails.defaultProps = {
+  markets: {},
+}
+
+const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'created_at:desc' }
 
 // This gets called on every request
-export async function getServerSideProps({ params }) {
-  const { id } = params
-  const data = await user(String(id))
-  // Pass data to the page via props
-  return { props: { data } }
+export async function getServerSideProps({ params, query }) {
+  const profile = await user(String(params.id))
+
+  const filter = { ...marketSearchFilter, user_id: profile.id }
+  if (query.page) {
+    filter.page = Number(query.page)
+  }
+
+  return {
+    props: {
+      profile,
+      markets: await marketSearch(filter),
+    },
+  }
 }

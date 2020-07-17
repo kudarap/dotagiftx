@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
+import Head from 'next/head'
 import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
-import { CATALOGS, fetcher, marketSearch } from '@/service/api'
+import { CATALOGS, fetcher, marketSearch, catalogSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -36,49 +37,46 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function Banner() {
-  const classes = useStyles()
-
-  return (
-    <div className={classes.banner}>
-      <Typography className={classes.bannerText} variant="h3" align="center">
-        Search for Dota 2 <span style={{ display: 'inline-block' }}>giftable items</span>
-      </Typography>
-    </div>
-  )
-}
-
 const popularItemsFilter = {
-  sort: 'view_count:desc',
+  sort: 'popular',
   limit: 5,
 }
 const recentItemsFilter = {
-  sort: 'recent_ask:desc',
+  sort: 'recent',
   limit: 5,
 }
 
-export default function Index({ totalEntries }) {
+export default function Index({ totalEntries, popularItems }) {
   const classes = useStyles()
 
-  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
   }
 
+  const description = `Search on ${totalEntries || ''} giftable listings`
+
   return (
     <>
-      <Header />
+      <Head>
+        <title>DotagiftX - Dota 2 giftables market</title>
+        <meta name="description" content={description} />
+      </Head>
+
+      <Header disableSearch />
 
       <main className={classes.main}>
         <Container>
-          <Banner />
+          <div className={classes.banner}>
+            <Typography className={classes.bannerText} variant="h3" component="h1" align="center">
+              {/* Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span> */}
+              {/* Buy & Sell */}
+              Search for <span style={{ display: 'inline-block' }}>Dota 2 giftabe items</span>
+            </Typography>
+          </div>
 
-          <SearchInput
-            helperText={`Search on ${totalEntries || ''} for sale items`}
-            onSubmit={handleSubmit}
-          />
+          <SearchInput helperText={description} onSubmit={handleSubmit} />
           <br />
 
           <Typography>
@@ -90,9 +88,8 @@ export default function Index({ totalEntries }) {
               See All
             </Link>
           </Typography>
-          {popularError && <div>failed to load</div>}
-          {!popularItems && <LinearProgress color="secondary" />}
-          {!popularError && popularItems && <CatalogList items={popularItems.data} />}
+          {popularItems.error && <div>failed to load popular items: {popularItems.error}</div>}
+          {!popularItems.error && <CatalogList items={popularItems.data} />}
           <br />
 
           <Typography>
@@ -104,7 +101,7 @@ export default function Index({ totalEntries }) {
               See All
             </Link>
           </Typography>
-          {recentError && <div>failed to load</div>}
+          {recentError && <div>failed to load recent items</div>}
           {!recentItems && <LinearProgress color="secondary" />}
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
@@ -116,7 +113,8 @@ export default function Index({ totalEntries }) {
   )
 }
 Index.propTypes = {
-  totalEntries: PropTypes.number.isRequired,
+  totalEntries: PropTypes.string.isRequired,
+  popularItems: PropTypes.object.isRequired,
 }
 
 function numberWithCommas(x) {
@@ -127,5 +125,19 @@ function numberWithCommas(x) {
 export async function getServerSideProps() {
   const res = await marketSearch({ limit: 1 })
   const totalEntries = numberWithCommas(res.total_count || 0)
-  return { props: { totalEntries } }
+
+  let popularItems = { error: null }
+  try {
+    popularItems = await catalogSearch(popularItemsFilter)
+  } catch (e) {
+    popularItems.error = e
+  }
+
+  return {
+    props: {
+      totalEntries,
+      popularItems,
+      unstable_revalidate: 60,
+    },
+  }
 }

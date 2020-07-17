@@ -77,6 +77,8 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 		itm.Image = img
 	}
 
+	go pingGoogleSitemap()
+
 	return s.itemStg.Create(itm)
 }
 

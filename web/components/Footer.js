@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import MuiLink from '@material-ui/core/Link'
 import Divider from '@material-ui/core/Divider'
+import Typography from '@material-ui/core/Typography'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 
@@ -41,11 +42,11 @@ export default function () {
       <Divider />
       <Container disableMinHeight>
         <ul className={classes.list}>
-          <li>
-            <Link href="/about" color="textSecondary">
-              About
-            </Link>
-          </li>
+          {/*<li>*/}
+          {/*  <Link href="/about" color="textSecondary">*/}
+          {/*    About*/}
+          {/*  </Link>*/}
+          {/*</li>*/}
           <li>
             <Link href="/faq" color="textSecondary">
               FAQ
@@ -58,11 +59,14 @@ export default function () {
           </li>
           <li>
             <MuiLink
-              href="http://vercel.com"
+              href="http://github.com/kudarap"
               target="_blank"
               color="textSecondary"
               rel="noreferrer noopener">
-              Powered by Vercel
+              <Typography component="span" color="secondary">
+                DotagiftX
+              </Typography>{' '}
+              by kudarap
             </MuiLink>
           </li>
           {/* <li> */}

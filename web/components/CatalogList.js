@@ -1,7 +1,8 @@
 import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -13,6 +14,7 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
+import ItemImage from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   th: {
@@ -22,12 +24,23 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'right',
   },
   link: {
-    padding: theme.spacing(2),
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(2),
+    },
+    padding: theme.spacing(2, 2, 2, 0),
+    display: 'flex',
+  },
+  image: {
+    margin: theme.spacing(-1, 1, -1, 1),
+    width: 77,
+    height: 55,
   },
 }))
 
 export default function CatalogList({ items = [], variant }) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const isRecentMode = variant === 'recent'
 
@@ -36,7 +49,7 @@ export default function CatalogList({ items = [], variant }) {
       <Table className={classes.table} aria-label="items table">
         <TableHead>
           <TableRow>
-            <TableHeadCell>Name</TableHeadCell>
+            <TableHeadCell>Item</TableHeadCell>
             <TableHeadCell align="right">{isRecentMode ? 'Listed' : 'Qty'}</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
           </TableRow>
@@ -53,8 +66,21 @@ export default function CatalogList({ items = [], variant }) {
           {items.map(item => (
             <TableRow key={item.id} hover>
               <TableCell className={classes.th} component="th" scope="row" padding="none">
-                <Link href="/item/[slug]" as={`/item/${item.slug}`} disableUnderline>
-                  <div className={classes.link}>
+                <Link
+                  className={classes.link}
+                  href="/item/[slug]"
+                  as={`/item/${item.slug}`}
+                  disableUnderline>
+                  {!isMobile && (
+                    <ItemImage
+                      className={classes.image}
+                      image={`${item.image}/200x100`}
+                      title={item.name}
+                      rarity={item.rarity}
+                    />
+                  )}
+
+                  <div>
                     <strong>{item.name}</strong>
                     <br />
                     <Typography variant="caption" color="textSecondary">

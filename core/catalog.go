@@ -39,18 +39,7 @@ type (
 		UpdatedAt  *time.Time `json:"updated_at"  db:"updated_at,omitempty,indexed"`
 	}
 
-	// CatalogService provides access to catalog service.
-	CatalogService interface {
-		// Catalogs returns a list of catalogs.
-		Catalogs(opts FindOpts) ([]Catalog, *FindMetadata, error)
-
-		// Catalog returns catalog details by item ID.
-		Catalog(itemID string) (*Catalog, error)
-
-		// Index creates or update index entry using item ID.
-		Index(itemID string) (*Catalog, error)
-	}
-
+	// CatalogStorage defines operation for market indexed items.
 	CatalogStorage interface {
 		// Find returns a list of catalogs from data store.
 		Find(opts FindOpts) ([]Catalog, error)

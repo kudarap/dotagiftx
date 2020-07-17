@@ -5,11 +5,9 @@ import * as http from './http'
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
 export const CDN_URL = `${trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')}/`
 
-export const fetcher2 = url => http.request(http.GET, url)
-
 const parseParams = (url, filter) => `${url}?${querystring.stringify(filter)}`
 export const fetcher = (endpoint, filter) => http.request(http.GET, parseParams(endpoint, filter))
-export const fetcherWithToken = url => http.request(http.GET, url)
+export const fetcherWithToken = url => http.authnRequest(http.GET, url)
 
 // API Endpoints
 const AUTH_STEAM = '/auth/steam'
@@ -23,8 +21,7 @@ export const CATALOGS = '/catalogs'
 const VERSION = '/'
 const TRACK = '/t'
 
-export const authSteam = (ot, ov) =>
-  http.request(http.GET, `${AUTH_STEAM}?oauth_token=${ot}&oauth_verifier=${ov}`)
+export const authSteam = openidQuery => http.request(http.GET, `${AUTH_STEAM}${openidQuery}`)
 export const authRenew = refreshToken =>
   http.request(http.POST, AUTH_RENEW, { refresh_token: refreshToken })
 export const authRevoke = refreshToken =>
@@ -32,6 +29,7 @@ export const authRevoke = refreshToken =>
 
 export const version = () => http.request(http.GET, VERSION)
 export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
+export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 
 export const myProfile = {
@@ -40,5 +38,7 @@ export const myProfile = {
 }
 export const itemSearch = http.baseSearchRequest(ITEMS)
 export const marketSearch = http.baseSearchRequest(MARKETS)
+export const catalogSearch = http.baseSearchRequest(CATALOGS)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
+export const getLoginURL = `${API_URL}${AUTH_STEAM}`

@@ -25,7 +25,7 @@ var (
 	envs = map[string]Env{
 		"local": {
 			"http://localhost:8000/my/markets",
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJmMGVlN2Y0ZS1hYWUyLTQ1YTItYTU5OS0zZGQ1ZjU4YmJjMTciLCJMZXZlbCI6IiIsImV4cCI6MTU5NzQ3MzA0OX0.qK0wub4Dld2sSTgsayzOjUkSzuPZRvr9xE6UkRCKoR4",
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIxNmE2OWUyOC1mMjBiLTQ0NzUtYjIxNC1hZGVhNmZjZTA3MTkiLCJMZXZlbCI6IiIsImV4cCI6MTU5ODU0MjcyMX0.yn-Xrh3UblPbslcq1bRKiuUPjPuSYF2EZYe852hbIwM",
 		},
 		"dev": {
 			"https://api.dota2giftables.com/my/markets",

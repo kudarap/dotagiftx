@@ -18,7 +18,7 @@ export default function MyApp(props) {
   return (
     <>
       <Head>
-        <title>Dota 2 Giftables</title>
+        <title>DotagiftX - Dota 2 giftables market</title>
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"

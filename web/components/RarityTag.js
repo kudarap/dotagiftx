@@ -1,6 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Typography from '@material-ui/core/Typography'
+import {
+  ITEM_RARITY_RARE,
+  ITEM_RARITY_ULTRA_RARE,
+  ITEM_RARITY_VERY_RARE,
+} from '@/constants/palette'
 
 // background: linear-gradient(#f9ffbf 10%, #fff 90%);
 // text-shadow: 0px 0px 10px yellowgreen;
@@ -18,11 +23,9 @@ import Typography from '@material-ui/core/Typography'
 // -webkit-text-fill-color: transparent;
 const rarityStylerMap = {
   regular: null,
-  rare: { color: '#8ec021' },
-  'very rare': { color: '#a77338' },
-  'ultra rare': {
-    color: '#E2AC3F',
-  },
+  rare: { color: ITEM_RARITY_RARE },
+  'very rare': { color: ITEM_RARITY_VERY_RARE },
+  'ultra rare': { color: ITEM_RARITY_ULTRA_RARE },
 }
 const rarityStylerMap2 = {
   regular: null,

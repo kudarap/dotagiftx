@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import useSWR from 'swr'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -11,11 +11,10 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, MARKETS, fetcher } from '@/service/api'
+import { CDN_URL } from '@/service/api'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
-import { marketStatusLive } from '../constants/market'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -27,19 +26,16 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketFilter = { sort: 'price', status: marketStatusLive }
-
-export default function MarketList({ itemID = '' }) {
+export default function MarketList({ data, error }) {
   const classes = useStyles()
-
-  marketFilter.item_id = itemID
-  const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   if (error) {
     return <p>Error</p>
   }
 
-  if (!listings) {
+  if (!data) {
     return <p>Loading...</p>
   }
 
@@ -54,12 +50,14 @@ export default function MarketList({ itemID = '' }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {listings.data.map(market => (
+          {data.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
                 <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
                   <div className={classes.seller}>
-                    <Avatar className={classes.avatar} src={CDN_URL + market.user.avatar} />
+                    {!isMobile && (
+                      <Avatar className={classes.avatar} src={CDN_URL + market.user.avatar} />
+                    )}
                     <div>
                       <strong>{market.user.name}</strong>
                       <br />
@@ -84,5 +82,9 @@ export default function MarketList({ itemID = '' }) {
   )
 }
 MarketList.propTypes = {
-  itemID: PropTypes.string.isRequired,
+  data: PropTypes.object.isRequired,
+  error: PropTypes.string,
+}
+MarketList.defaultProps = {
+  error: null,
 }

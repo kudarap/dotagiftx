@@ -78,11 +78,10 @@ export default function SearchInput(props) {
             </InputAdornment>
           ),
         }}
-        placeholder="Search for Items by name, hero, or treasure"
+        placeholder="Search for item name, hero, origin"
         variant="outlined"
         color="secondary"
         fullWidth
-        autoFocus
         value={keyword}
         onChange={handleChange}
         {...other}

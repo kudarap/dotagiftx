@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -11,37 +12,40 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import { MARKETS, fetcher } from '@/service/api'
+import { MARKET_STATUS_LIVE } from '@/constants/market'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
-import { marketStatusLive } from '../constants/market'
+import ItemImage from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   seller: {
     display: 'inline-flex',
   },
   link: {
-    padding: theme.spacing(2),
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(2),
+    },
+    padding: theme.spacing(2, 2, 2, 0),
+    display: 'flex',
+  },
+  image: {
+    margin: theme.spacing(-1, 1, -1, 1),
+    width: 77,
   },
 }))
 
-const marketFilter = {
-  status: marketStatusLive,
-  // sort: 'created_at:desc',
-}
-
-export default function UserMarketList({ userID = '' }) {
+export default function UserMarketList({ data, error }) {
   const classes = useStyles()
-
-  marketFilter.user_id = userID
-  const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   if (error) {
     return <p>Error</p>
   }
 
-  if (!listings) {
+  if (!data) {
     return <p>Loading...</p>
   }
 
@@ -50,17 +54,29 @@ export default function UserMarketList({ userID = '' }) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableHeadCell>Seller Listings</TableHeadCell>
+            <TableHeadCell>Sell Listings ({data.total_count})</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
             <TableHeadCell align="right" width={156} />
           </TableRow>
         </TableHead>
         <TableBody>
-          {listings.data.map(market => (
+          {data.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
-                <Link href="/item/[slug]" as={`/item/${market.item.slug}`} disableUnderline>
-                  <div className={classes.link}>
+                <Link
+                  className={classes.link}
+                  href="/item/[slug]"
+                  as={`/item/${market.item.slug}`}
+                  disableUnderline>
+                  {!isMobile && (
+                    <ItemImage
+                      className={classes.image}
+                      image={`${market.item.image}/200x100`}
+                      title={market.item.name}
+                      rarity={market.item.rarity}
+                    />
+                  )}
+                  <div>
                     <strong>{market.item.name}</strong>
                     <br />
                     <Typography variant="caption" color="textSecondary">
@@ -84,5 +100,9 @@ export default function UserMarketList({ userID = '' }) {
   )
 }
 UserMarketList.propTypes = {
-  userID: PropTypes.string.isRequired,
+  data: PropTypes.object.isRequired,
+  error: PropTypes.string,
+}
+UserMarketList.defaultProps = {
+  error: null,
 }

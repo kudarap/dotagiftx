@@ -60,13 +60,11 @@ func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
 }
 
 func (s *itemStorage) Get(id string) (*core.Item, error) {
-	// Check steam ID first exist.
 	row, _ := s.getBySlug(id)
 	if row != nil {
 		return row, nil
 	}
 
-	// Try find it by item ID.
 	row = &core.Item{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
