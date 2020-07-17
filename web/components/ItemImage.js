@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { CDN_URL } from '@/service/api'
-import { itemRarityColorMap } from '../constants/palette'
+import { itemRarityColorMap } from '@/constants/palette'
 
 export default function ItemImage({ image, title, rarity, ...other }) {
   const contStyle = {

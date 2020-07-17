@@ -5,7 +5,7 @@ import {
   ITEM_RARITY_RARE,
   ITEM_RARITY_ULTRA_RARE,
   ITEM_RARITY_VERY_RARE,
-} from '../constants/palette'
+} from '@/constants/palette'
 
 // background: linear-gradient(#f9ffbf 10%, #fff 90%);
 // text-shadow: 0px 0px 10px yellowgreen;
