@@ -158,7 +158,7 @@ export async function getServerSideProps(props) {
     filter.page = Number(query.page)
   }
 
-  const canonicalURL = req.headers.host + req.url
+  const canonicalURL = req.headers.referer + req.url
 
   return {
     props: {
