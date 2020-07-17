@@ -54,7 +54,7 @@ export default function UserDetails({ profile, markets, canonicalURL }) {
   const profileURL = `https://steamcommunity.com/profiles/${profile.steam_id}`
   const steamRepURL = `https://steamrep.com/profiles/${profile.steam_id}`
 
-  const metaTitle = `DotagiftX :: ${profile.name} profile`
+  const metaTitle = `DotagiftX :: ${profile.name.toString().toUpperCase()}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
 
   return (
