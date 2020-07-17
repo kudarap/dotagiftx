@@ -15,7 +15,6 @@ import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import TablePagination from '@/components/TablePagination'
-import { fetcher as fetcher2, parseQuery } from '@/service/fetcher'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -42,32 +41,20 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'price', page: 1 }
-
 export default function ItemDetails({ item, markets }) {
   const classes = useStyles()
 
   const router = useRouter()
+  const [page, setPage] = React.useState(Number(router.query.page || 1))
 
-  marketSearchFilter.item_id = item.id
-  if (router.query.page) {
-    marketSearchFilter.page = router.query.page
-  }
-  const [filter, setFilter] = React.useState(marketSearchFilter)
+  const handlePageChange = (e, p) => {
+    setPage(p)
+    let suffix = ''
+    if (p !== 1) {
+      suffix = `?page=${p}`
+    }
 
-  const url = parseQuery(MARKETS, filter)
-  console.log('filter', url)
-
-  const { data: marketListing, error: marketError } = useSWR(url, fetcher2, {
-    initialData: markets,
-  })
-  React.useEffect(() => {
-    setFilter({ ...filter, ...router.query })
-  }, [router.query])
-
-  const handlePageChange = (e, page) => {
-    router.push(`/item/[slug]`, `/item/${item.slug}?page=${page}`)
-    setFilter({ ...filter, page })
+    router.push(`/item/[slug]`, `/item/${item.slug}${suffix}`)
   }
 
   return (
@@ -120,11 +107,11 @@ export default function ItemDetails({ item, markets }) {
             </Typography>
           </div>
 
-          <MarketList data={marketListing} error={marketError} />
+          <MarketList data={markets} error={null} />
           <TablePagination
             style={{ textAlign: 'right' }}
-            count={marketListing.total_count}
-            page={Number(filter.page)}
+            count={markets.total_count}
+            page={page}
             onChangePage={handlePageChange}
           />
         </Container>
@@ -146,28 +133,21 @@ ItemDetails.defaultProps = {
   },
 }
 
+const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'price', page: 1 }
+
 // This gets called on every request
 export async function getServerSideProps({ params, query }) {
   const item = await catalog(params.slug)
 
-  marketSearchFilter.item_id = item.id
+  const filter = { ...marketSearchFilter, item_id: item.id }
   if (query.page) {
-    marketSearchFilter.page = Number(query.page)
+    filter.page = Number(query.page)
   }
 
   return {
     props: {
       item,
-      markets: await marketSearch(marketSearchFilter),
+      markets: await marketSearch(filter),
     },
   }
 }
-
-// export async function getStaticPaths() {
-//   const catalogs = await catalogSearch({ limit: 1000, sort: 'popular-items' })
-//   const paths = catalogs.data.map(({ slug }) => ({
-//     params: { slug },
-//   }))
-//
-//   return { paths, fallback: true }
-// }
