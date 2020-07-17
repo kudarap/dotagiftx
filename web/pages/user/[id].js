@@ -1,5 +1,6 @@
-import Head from 'next/head'
+import React from 'react'
 import PropTypes from 'prop-types'
+import Head from 'next/head'
 import moment from 'moment'
 import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
