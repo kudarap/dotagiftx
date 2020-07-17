@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import useSWR from 'swr'
 import querystring from 'querystring'
 import { useRouter } from 'next/router'
@@ -10,7 +11,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
 import TablePagination from '@/components/TablePagination'
-import { CATALOGS, fetcher } from '@/service/api'
+import { CATALOGS, catalogSearch, fetcher } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -27,7 +28,7 @@ const defaultFilter = {
   page: 1,
 }
 
-export default function Search() {
+export default function Search({ catalogs: initialData }) {
   const classes = useStyles()
 
   const router = useRouter()
@@ -38,7 +39,7 @@ export default function Search() {
     ...query,
   })
 
-  const { data: items, error } = useSWR([CATALOGS, filter], fetcher)
+  const { data: items, error } = useSWR([CATALOGS, filter], fetcher, { initialData })
   React.useEffect(() => {
     setFilter({ ...filter, ...query })
   }, [query])
@@ -88,4 +89,17 @@ export default function Search() {
       <Footer />
     </>
   )
+}
+Search.propTypes = {
+  catalogs: PropTypes.object.isRequired,
+}
+
+// This gets called on every request
+export async function getServerSideProps({ query }) {
+  const f = { ...defaultFilter, ...query }
+  return {
+    props: {
+      catalogs: await catalogSearch(f),
+    },
+  }
 }
