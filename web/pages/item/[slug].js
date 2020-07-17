@@ -64,6 +64,7 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
       <Head>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={canonicalURL} />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary" />
@@ -153,7 +154,7 @@ export async function getServerSideProps(props) {
     filter.page = Number(query.page)
   }
 
-  const canonicalURL = req.headers.referer + req.url
+  const canonicalURL = `https://${req.headers.host}${req.url}`
 
   return {
     props: {

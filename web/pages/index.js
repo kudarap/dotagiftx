@@ -62,6 +62,7 @@ export default function Index({ totalEntries, popularItems }) {
       <Head>
         <title>DotagiftX - Dota 2 giftables market</title>
         <meta name="description" content={description} />
+        <link rel="canonical" href="https://dotagiftx.com" />
       </Head>
 
       <Header disableSearch />
@@ -122,7 +123,7 @@ function numberWithCommas(x) {
 }
 
 // This gets called on every request
-export async function getServerSideProps() {
+export async function getServerSideProps({ req }) {
   const res = await marketSearch({ limit: 1 })
   const totalEntries = numberWithCommas(res.total_count || 0)
 
