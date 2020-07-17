@@ -34,10 +34,7 @@ export default function Search({ catalogs: initialData }) {
   const router = useRouter()
   const { query } = router
   query.page = Number(query.page || 1)
-  const [filter, setFilter] = React.useState({
-    ...defaultFilter,
-    ...query,
-  })
+  const [filter, setFilter] = React.useState({ ...defaultFilter, ...query })
 
   const { data: items, error } = useSWR([CATALOGS, filter], fetcher, { initialData })
   React.useEffect(() => {
