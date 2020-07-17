@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import useSWR from 'swr'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { catalog, trackViewURL } from '@/service/api'
+import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { catalog, marketSearch, trackViewURL, MARKETS, fetcher } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -38,8 +40,17 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemDetails({ data }) {
+const marketSearchFilter = { sort: 'price', status: MARKET_STATUS_LIVE }
+
+export default function ItemDetails({ item, markets }) {
   const classes = useStyles()
+
+  marketSearchFilter.item_id = item.id
+  const { data: marketListing, error: marketError } = useSWR(
+    [MARKETS, marketSearchFilter],
+    (u, f) => fetcher(u, f),
+    { initialData: markets }
+  )
 
   const router = useRouter()
   if (router.isFallback) {
@@ -50,14 +61,14 @@ export default function ItemDetails({ data }) {
     <>
       <Head>
         <title>
-          Dota 2 Giftables :: Listings for {data.name} :: Price starts at ${data.lowest_ask}
+          Dota 2 Giftables :: Listings for {item.name} :: Price starts at ${item.lowest_ask}
         </title>
         <meta
           name="description"
-          content={`Buy ${data.name} from ${
-            data.origin
-          } ${data.rarity.toString().toUpperCase()} for ${data.hero}. Price start at ${
-            data.lowest_ask
+          content={`Buy ${item.name} from ${
+            item.origin
+          } ${item.rarity.toString().toUpperCase()} for ${item.hero}. Price start at ${
+            item.lowest_ask
           }`}
         />
       </Head>
@@ -67,39 +78,39 @@ export default function ItemDetails({ data }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            {data.image && (
+            {item.image && (
               <ItemImage
                 className={classes.media}
-                image={`${data.image}/300x170`}
-                title={data.name}
-                rarity={data.rarity}
+                image={`${item.image}/300x170`}
+                title={item.name}
+                rarity={item.rarity}
               />
             )}
             <Typography component="h1">
               <Typography component="p" variant="h4">
-                {data.name}
+                {item.name}
               </Typography>
               <Typography gutterBottom>
-                <Link href={`/search?q=${data.origin}`}>{data.origin}</Link>{' '}
-                {data.rarity !== 'regular' && (
+                <Link href={`/search?q=${item.origin}`}>{item.origin}</Link>{' '}
+                {item.rarity !== 'regular' && (
                   <>
                     &mdash;
-                    <RarityTag rarity={data.rarity} variant="body1" component="span" />
+                    <RarityTag rarity={item.rarity} variant="body1" component="span" />
                   </>
                 )}
                 <br />
                 <Typography color="textSecondary" component="span">
                   {`Used by: `}
                 </Typography>
-                <Link href={`/search?q=${data.hero}`}>{data.hero}</Link>
+                <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
               </Typography>
             </Typography>
           </div>
 
-          <MarketList itemID={data.id} />
+          <MarketList data={marketListing} error={marketError} />
         </Container>
 
-        <img src={trackViewURL(data.id)} alt="" />
+        <img src={trackViewURL(item.id)} alt="" />
       </main>
 
       <Footer />
@@ -107,10 +118,26 @@ export default function ItemDetails({ data }) {
   )
 }
 ItemDetails.propTypes = {
-  data: PropTypes.object,
+  item: PropTypes.object,
+  markets: PropTypes.object,
 }
 ItemDetails.defaultProps = {
-  data: {},
+  item: {},
+  markets: {},
+}
+
+// This gets called on every request
+export async function getServerSideProps({ params }) {
+  const item = await catalog(params.slug)
+
+  marketSearchFilter.item_id = item.id
+
+  return {
+    props: {
+      item,
+      markets: await marketSearch(marketSearchFilter),
+    },
+  }
 }
 
 // export async function getStaticPaths() {
@@ -121,13 +148,3 @@ ItemDetails.defaultProps = {
 //
 //   return { paths, fallback: true }
 // }
-
-// This gets called on every request
-export async function getServerSideProps({ params }) {
-  return {
-    props: {
-      data: await catalog(params.slug),
-      unstable_revalidate: 10,
-    },
-  }
-}

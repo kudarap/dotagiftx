@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import useSWR from 'swr'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Avatar from '@material-ui/core/Avatar'
@@ -12,11 +11,10 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, MARKETS, fetcher } from '@/service/api'
+import { CDN_URL } from '@/service/api'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
-import { MARKET_STATUS_LIVE } from '../constants/market'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -28,21 +26,16 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketFilter = { sort: 'price', status: MARKET_STATUS_LIVE }
-
-export default function MarketList({ itemID = '' }) {
+export default function MarketList({ data, error }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
-
-  marketFilter.item_id = itemID
-  const { data: listings, error } = useSWR([MARKETS, marketFilter], (u, f) => fetcher(u, f))
 
   if (error) {
     return <p>Error</p>
   }
 
-  if (!listings) {
+  if (!data) {
     return <p>Loading...</p>
   }
 
@@ -57,7 +50,7 @@ export default function MarketList({ itemID = '' }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {listings.data.map(market => (
+          {data.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
                 <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
@@ -89,5 +82,9 @@ export default function MarketList({ itemID = '' }) {
   )
 }
 MarketList.propTypes = {
-  itemID: PropTypes.string.isRequired,
+  data: PropTypes.object.isRequired,
+  error: PropTypes.string,
+}
+MarketList.defaultProps = {
+  error: null,
 }
