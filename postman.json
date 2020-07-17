@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dota2giftables v0.4.0",
+    "name": "dota2giftables v0.5.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -613,13 +613,166 @@
           }
         },
         "url": {
-          "raw": "{{host}}/catalogs?q=phantom",
+          "raw": "{{host}}/catalogs",
           "host": ["{{host}}"],
           "path": ["catalogs"],
           "query": [
             {
               "key": "q",
-              "value": "phantom"
+              "value": "phantom",
+              "disabled": true
+            },
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "created_at:desc",
+              "disabled": true
+            },
+            {
+              "key": "limit",
+              "value": "0",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "catalogs list popular",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/catalogs?sort=popular",
+          "host": ["{{host}}"],
+          "path": ["catalogs"],
+          "query": [
+            {
+              "key": "q",
+              "value": "phantom",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "created_at:desc",
+              "disabled": true
+            },
+            {
+              "key": "limit",
+              "value": "0",
+              "disabled": true
+            },
+            {
+              "key": "nocache",
+              "value": "",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "popular"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "catalogs list recent",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/catalogs?sort=recent-items",
+          "host": ["{{host}}"],
+          "path": ["catalogs"],
+          "query": [
+            {
+              "key": "q",
+              "value": "phantom",
+              "disabled": true
+            },
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "created_at:desc",
+              "disabled": true
+            },
+            {
+              "key": "limit",
+              "value": "0",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "recent-items"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "catalogs details",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/catalogs/vespidun-hunter-killer-gyrocopter",
+          "host": ["{{host}}"],
+          "path": ["catalogs", "vespidun-hunter-killer-gyrocopter"],
+          "query": [
+            {
+              "key": "q",
+              "value": "phantom",
+              "disabled": true
             },
             {
               "key": "nocache",
