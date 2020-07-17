@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { catalog, marketSearch, trackViewURL } from '@/service/api'
+import { catalog, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemDetails({ item, markets }) {
+export default function ItemDetails({ item, markets, canonicalURL }) {
   const classes = useStyles()
 
   const router = useRouter()
@@ -52,20 +52,29 @@ export default function ItemDetails({ item, markets }) {
 
   const linkProps = { href: '/item/[slug]', as: `/item/${item.slug}` }
 
+  const metaTitle = `DotagiftX :: Listings for ${item.name} :: Price starts at $${item.lowest_ask}`
+  const metaDesc = `Buy ${item.name} from ${
+    item.origin
+  } ${item.rarity.toString().toUpperCase()} for ${item.hero}. Price start at ${item.lowest_ask}`
+
   return (
     <>
       <Head>
-        <title>
-          Dota 2 Giftables :: Listings for {item.name} :: Price starts at ${item.lowest_ask}
-        </title>
-        <meta
-          name="description"
-          content={`Buy ${item.name} from ${
-            item.origin
-          } ${item.rarity.toString().toUpperCase()} for ${item.hero}. Price start at ${
-            item.lowest_ask
-          }`}
-        />
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDesc} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDesc} />
+        <meta name="twitter:image" content={`${CDN_URL}/${item.image}`} />
+        <meta name="twitter:site" content="@DotagiftX" />
+        {/* OpenGraph */}
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
       </Head>
 
       <Header />
@@ -121,6 +130,7 @@ export default function ItemDetails({ item, markets }) {
 }
 ItemDetails.propTypes = {
   item: PropTypes.object.isRequired,
+  canonicalURL: PropTypes.string.isRequired,
   markets: PropTypes.object,
 }
 ItemDetails.defaultProps = {
@@ -132,7 +142,8 @@ ItemDetails.defaultProps = {
 const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'price', page: 1 }
 
 // This gets called on every request
-export async function getServerSideProps({ params, query }) {
+export async function getServerSideProps(props) {
+  const { params, query, req } = props
   const item = await catalog(params.slug)
 
   const filter = { ...marketSearchFilter, item_id: item.id }
@@ -140,10 +151,13 @@ export async function getServerSideProps({ params, query }) {
     filter.page = Number(query.page)
   }
 
+  const canonicalURL = req.headers.host + req.url
+
   return {
     props: {
       item,
       markets: await marketSearch(filter),
+      canonicalURL,
     },
   }
 }
