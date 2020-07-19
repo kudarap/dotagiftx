@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Avatar from '@material-ui/core/Avatar'
@@ -54,7 +55,7 @@ const defaultProfile = {
   created_at: null,
 }
 
-export default function ({ disableSearch = false }) {
+export default function Header({ disableSearch }) {
   const classes = useStyles()
 
   const [profile, setProfile] = React.useState(defaultProfile)
@@ -97,7 +98,10 @@ export default function ({ disableSearch = false }) {
             {isLoggedIn() ? (
               <Button
                 startIcon={
-                  <Avatar className={classes.avatar} src={profile && CDN_URL + profile.avatar} />
+                  <Avatar
+                    className={classes.avatar}
+                    src={profile && `${CDN_URL}/${profile.avatar}`}
+                  />
                 }>
                 {profile && profile.name}
               </Button>
@@ -111,4 +115,10 @@ export default function ({ disableSearch = false }) {
       </AppBar>
     </header>
   )
+}
+Header.propTypes = {
+  disableSearch: PropTypes.bool,
+}
+Header.defaultProps = {
+  disableSearch: false,
 }
