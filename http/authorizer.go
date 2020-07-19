@@ -19,7 +19,8 @@ func (s *Server) authorizer(next http.Handler) http.Handler {
 
 		// Checks auth level required.
 
-		// Inject auth details to context that will later be use as context user and authorizer level.
+		// Inject auth details to context that will later be use as
+		// context user and authorizer level.
 		ctx := core.AuthToContext(r.Context(), &core.Auth{
 			UserID: c.UserID,
 		})
