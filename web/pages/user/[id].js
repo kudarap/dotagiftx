@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Link from '@material-ui/core/Link'
+import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { CDN_URL, marketSearch, user } from '@/service/api'
@@ -38,6 +39,22 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1.5),
   },
 }))
+
+function ChipLink(props) {
+  return (
+    <Chip
+      size="small"
+      variant="outlined"
+      color="secondary"
+      clickable
+      component={Link}
+      target="_blank"
+      rel="noreferrer noopener"
+      style={{ textDecoration: 'none' }}
+      {...props}
+    />
+  )
+}
 
 export default function UserDetails({ profile, markets, canonicalURL }) {
   const classes = useStyles()
@@ -94,31 +111,14 @@ export default function UserDetails({ profile, markets, canonicalURL }) {
                 </Typography>
                 {moment(profile.created_at).fromNow()}
                 <br />
-
                 <Typography color="textSecondary" component="span">
-                  {`steam: `}
+                  {`quick links: `}
                 </Typography>
-                <Link
-                  href={profileURL}
-                  variant="caption"
-                  color="secondary"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  {profileURL}
-                </Link>
-                <br />
-
-                <Typography color="textSecondary" component="span">
-                  {`steamrep: `}
-                </Typography>
-                <Link
-                  href={steamRepURL}
-                  variant="caption"
-                  color="secondary"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  {steamRepURL}
-                </Link>
+                <ChipLink label="Steam Profile" href={profileURL} />
+                &nbsp;
+                {/* <ChipLink label="Steam Inventory" href={`${profileURL}/inventory`} /> */}
+                {/* &nbsp; */}
+                <ChipLink label="SteamRep" href={steamRepURL} />
               </Typography>
             </Typography>
           </div>
