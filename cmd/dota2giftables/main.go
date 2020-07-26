@@ -89,12 +89,6 @@ func (a *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 
-	// temp index all
-	//ii, _ := itemStg.Find(core.FindOpts{})
-	//for _, item := range ii {
-	//	catalogStg.Index(item.ID)
-	//}
-
 	// Service inits.
 	log.Println("setting up services...")
 	fileMgr := setupFileManager(a.config)
@@ -111,6 +105,10 @@ func (a *application) setup() error {
 		log,
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
+
+	// NOTE! this is for run-once scripts
+	//fixesGenerateFakeMarket(itemStg, userStg, marketSvc)
+	//fixesReIndexAll(itemStg, catalogStg)
 
 	// Server setup.
 	log.Println("setting up http server...")
