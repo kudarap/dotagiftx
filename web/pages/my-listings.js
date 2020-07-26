@@ -21,7 +21,7 @@ export default function About() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            About page!
+            My Listings
           </Typography>
         </Container>
       </main>

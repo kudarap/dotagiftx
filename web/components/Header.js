@@ -106,7 +106,7 @@ export default function Header({ disableSearch }) {
             <span className={classes.spacer} />
             {!disableSearch && <SearchInputMini />}
             <span style={{ flexGrow: 1 }} />
-            <Button variant="outlined" color="secondary">
+            <Button variant="outlined" color="secondary" component={Link} href="/post-item">
               Post Item
             </Button>
             <span className={classes.spacer} />
@@ -138,7 +138,9 @@ export default function Header({ disableSearch }) {
                     as={`/user/${profile.steam_id}?preview`}>
                     Profile
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>Listings</MenuItem>
+                  <MenuItem onClick={handleClose} component={Link} href="/my-listings">
+                    Listings
+                  </MenuItem>
                   {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
                   <MenuItem onClick={handleClose}>Sign out</MenuItem>
                 </Menu>
