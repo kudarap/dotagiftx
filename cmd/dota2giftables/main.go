@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dota2giftables/fixes"
 	"github.com/kudarap/dota2giftables/gokit/envconf"
 	"github.com/kudarap/dota2giftables/gokit/file"
 	"github.com/kudarap/dota2giftables/gokit/logger"
@@ -109,7 +108,7 @@ func (a *application) setup() error {
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
-	fixes.ReIndexAll(itemStg, catalogStg)
+	//fixes.ReIndexAll(itemStg, catalogStg)
 
 	// Server setup.
 	log.Println("setting up http server...")
