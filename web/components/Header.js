@@ -2,19 +2,17 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
-import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
-import { CDN_URL, myProfile } from '@/service/api'
+import { myProfile } from '@/service/api'
 import { isOk as isLoggedIn } from '@/service/auth'
 import * as Storage from '@/service/storage'
 import SearchInputMini from '@/components/SearchInputMini'
+import AvatarMenu from '@/components/AvatarMenu'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -37,13 +35,6 @@ const useStyles = makeStyles(theme => ({
     filter: 'drop-shadow(0px 0px 10px black)',
     letterSpacing: 2,
     cursor: 'pointer',
-  },
-  avatar: {
-    width: theme.spacing(3),
-    height: theme.spacing(3),
-  },
-  avatarMenu: {
-    marginTop: theme.spacing(4),
   },
   spacer: {
     width: theme.spacing(1),
@@ -83,16 +74,6 @@ export default function Header({ disableSearch }) {
     }
   }, [])
 
-  const [anchorEl, setAnchorEl] = React.useState(null)
-
-  const handleClick = event => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
   return (
     <header>
       <AppBar position="static" variant="outlined" className={classes.appBar}>
@@ -111,38 +92,7 @@ export default function Header({ disableSearch }) {
             </Button>
             <span className={classes.spacer} />
             {isLoggedIn() ? (
-              <>
-                <Button
-                  aria-controls="avatar-menu"
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                  startIcon={
-                    <Avatar
-                      className={classes.avatar}
-                      src={profile && `${CDN_URL}/${profile.avatar}`}
-                    />
-                  }>
-                  {profile && profile.name}
-                </Button>
-                <Menu
-                  className={classes.avatarMenu}
-                  id="avatar-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}>
-                  <MenuItem
-                    onClick={handleClose}
-                    component={Link}
-                    href="/user/[id]"
-                    as={`/user/${profile.steam_id}`}>
-                    Profile
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>Listings</MenuItem>
-                  <MenuItem onClick={handleClose}>Reservations</MenuItem>
-                  <MenuItem onClick={handleClose}>Sign Out</MenuItem>
-                </Menu>
-              </>
+              <AvatarMenu profile={profile} />
             ) : (
               <Button startIcon={<SteamIcon />} component={Link} href="/login">
                 Sign in
