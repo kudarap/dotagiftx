@@ -41,6 +41,7 @@ export default function ItemAutoComplete({ onSelect }) {
   const handleInputChange = (e, text) => {
     const res = filter(options, { name: text })
     if (res.length === 0) {
+      onSelect({})
       return
     }
 
