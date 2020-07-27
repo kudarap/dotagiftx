@@ -1,10 +1,13 @@
 import React from 'react'
+import filter from 'lodash/filter'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { catalogSearch } from '@/service/api'
 
-export default function Asynchronous() {
+const catalogSearchFilter = { limit: 1000, sort: 'popular' }
+
+export default function ItemAutoComplete({ onSelect }) {
   const [open, setOpen] = React.useState(false)
   const [options, setOptions] = React.useState([])
   const loading = open && options.length === 0
@@ -17,7 +20,7 @@ export default function Asynchronous() {
     }
 
     ;(async () => {
-      const catalogs = await catalogSearch({ limit: 1000 })
+      const catalogs = await catalogSearch(catalogSearchFilter)
 
       if (active) {
         setOptions(catalogs.data)
@@ -35,6 +38,15 @@ export default function Asynchronous() {
     }
   }, [open])
 
+  const handleInputChange = (e, text) => {
+    const res = filter(options, { name: text })
+    if (res.length === 0) {
+      return
+    }
+
+    onSelect(res[0])
+  }
+
   return (
     <Autocomplete
       id="asynchronous-item-search"
@@ -46,6 +58,7 @@ export default function Asynchronous() {
       onClose={() => {
         setOpen(false)
       }}
+      onInputChange={handleInputChange}
       getOptionSelected={(option, value) => option.name === value.name}
       getOptionLabel={option => option.name}
       options={options}

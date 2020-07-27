@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
+import ItemImage from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,10 +13,22 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     padding: theme.spacing(2),
   },
+  itemImage: {
+    width: 150,
+    height: 100,
+    float: 'left',
+    marginRight: theme.spacing(1),
+  },
 }))
 
 export default function MarketForm() {
   const classes = useStyles()
+
+  const [item, setItem] = React.useState({ id: '' })
+
+  const handleItemSelect = val => {
+    setItem(val)
+  }
 
   return (
     <Paper component="form" className={classes.root}>
@@ -24,7 +37,7 @@ export default function MarketForm() {
       </Typography>
       <br />
 
-      <ItemAutoComplete />
+      <ItemAutoComplete onSelect={handleItemSelect} />
       {/* <TextField */}
       {/*  variant="outlined" */}
       {/*  fullWidth */}
@@ -34,8 +47,32 @@ export default function MarketForm() {
       {/*  helperText="Search item you want to post from your inventory." */}
       {/*  autoFocus */}
       {/* /> */}
-
       <br />
+
+      {/* Selected item preview */}
+      {item.id && (
+        <div>
+          <ItemImage
+            className={classes.itemImage}
+            image={`/300x170/${item.image}`}
+            rarity={item.rarity}
+            title={item.name}
+          />
+          <Typography variant="body2">Origin: {item.origin}</Typography>
+          <Typography variant="body2">
+            Rarity: <strong>{item.rarity}</strong>
+          </Typography>
+          <Typography variant="body2">
+            Hero: <strong>{item.hero}</strong>
+          </Typography>
+          <Typography variant="body2">
+            Starting at: ${Number(item.lowest_ask).toFixed(2)}
+          </Typography>
+          <br />
+          <br />
+        </div>
+      )}
+
       <div>
         <TextField
           variant="outlined"
