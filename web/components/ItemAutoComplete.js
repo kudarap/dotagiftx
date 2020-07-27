@@ -1,11 +1,12 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import filter from 'lodash/filter'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { catalogSearch } from '@/service/api'
+import { itemSearch } from '@/service/api'
 
-const catalogSearchFilter = { limit: 1000, sort: 'popular' }
+const itemSearchFilter = { limit: 1000, sort: 'popular' }
 
 export default function ItemAutoComplete({ onSelect }) {
   const [open, setOpen] = React.useState(false)
@@ -20,7 +21,7 @@ export default function ItemAutoComplete({ onSelect }) {
     }
 
     ;(async () => {
-      const catalogs = await catalogSearch(catalogSearchFilter)
+      const catalogs = await itemSearch(itemSearchFilter)
 
       if (active) {
         setOptions(catalogs.data)
@@ -85,4 +86,10 @@ export default function ItemAutoComplete({ onSelect }) {
       )}
     />
   )
+}
+ItemAutoComplete.propTypes = {
+  onSelect: PropTypes.func,
+}
+ItemAutoComplete.defaultProps = {
+  onSelect: () => {},
 }

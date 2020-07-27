@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
+import { catalog } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,6 +29,10 @@ export default function MarketForm() {
 
   const handleItemSelect = val => {
     setItem(val)
+    // Get item starting price
+    if (val.slug) {
+      catalog(val.slug).then(res => setItem(res))
+    }
   }
 
   return (
@@ -59,14 +64,17 @@ export default function MarketForm() {
             title={item.name}
           />
           <Typography variant="body2">Origin: {item.origin}</Typography>
-          <Typography variant="body2">
-            Rarity: <strong>{item.rarity}</strong>
+          <Typography variant="body2" color="textSecondary">
+            Rarity:{' '}
+            <Typography variant="body2" color="textPrimary" component="span">
+              {item.rarity}
+            </Typography>
           </Typography>
           <Typography variant="body2">
             Hero: <strong>{item.hero}</strong>
           </Typography>
           <Typography variant="body2">
-            Starting at: ${Number(item.lowest_ask).toFixed(2)}
+            Starting at: <strong>${Number(item.lowest_ask || 0).toFixed(2)}</strong>
           </Typography>
           <br />
           <br />
