@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
+import ItemAutoComplete from '@/components/ItemAutoComplete'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,16 +24,17 @@ export default function MarketForm() {
       </Typography>
       <br />
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        required
-        color="secondary"
-        label="Item name"
-        helperText="Search item you want to post from your inventory."
-        autoFocus
-      />
-      <br />
+      <ItemAutoComplete />
+      {/* <TextField */}
+      {/*  variant="outlined" */}
+      {/*  fullWidth */}
+      {/*  required */}
+      {/*  color="secondary" */}
+      {/*  label="Item name" */}
+      {/*  helperText="Search item you want to post from your inventory." */}
+      {/*  autoFocus */}
+      {/* /> */}
+
       <br />
       <div>
         <TextField
