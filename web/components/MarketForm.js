@@ -23,7 +23,15 @@ export default function MarketForm() {
       </Typography>
       <br />
 
-      <TextField variant="outlined" fullWidth required color="secondary" label="Item name" />
+      <TextField
+        variant="outlined"
+        fullWidth
+        required
+        color="secondary"
+        label="Item name"
+        helperText="Search item you want to post from your inventory."
+        autoFocus
+      />
       <br />
       <br />
       <div>
@@ -57,7 +65,7 @@ export default function MarketForm() {
       <br />
       <br />
 
-      <Button variant="contained" fullWidth type="submit">
+      <Button variant="contained" fullWidth type="submit" size="large">
         Post Item
       </Button>
     </Paper>
