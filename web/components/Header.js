@@ -12,7 +12,7 @@ import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { CDN_URL, myProfile } from '@/service/api'
-import { isOk as isLoggedIn } from '@/service/auth'
+import { isOk as isLoggedIn, clear as destroyLoginSess } from '@/service/auth'
 import * as Storage from '@/service/storage'
 import SearchInputMini from '@/components/SearchInputMini'
 
@@ -93,6 +93,13 @@ export default function Header({ disableSearch }) {
     setAnchorEl(null)
   }
 
+  const handleLogout = () => {
+    destroyLoginSess()
+    handleClose()
+    // eslint-disable-next-line no-undef
+    window.location = '/'
+  }
+
   return (
     <header>
       <AppBar position="static" variant="outlined" className={classes.appBar}>
@@ -142,7 +149,7 @@ export default function Header({ disableSearch }) {
                     Listings
                   </MenuItem>
                   {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
-                  <MenuItem onClick={handleClose}>Sign out</MenuItem>
+                  <MenuItem onClick={handleLogout}>Sign out</MenuItem>
                 </Menu>
               </>
             ) : (
