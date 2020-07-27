@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
+import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
@@ -12,7 +13,7 @@ import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { CDN_URL, myProfile } from '@/service/api'
-import { isOk as isLoggedIn, clear as destroyLoginSess } from '@/service/auth'
+import { isOk as checkLoggedIn, clear as destroyLoginSess } from '@/service/auth'
 import * as Storage from '@/service/storage'
 import SearchInputMini from '@/components/SearchInputMini'
 
@@ -72,7 +73,7 @@ export default function Header({ disableSearch }) {
       Storage.save(PROFILE_CACHE_KEY, res)
     }
 
-    if (isLoggedIn()) {
+    if (checkLoggedIn()) {
       const hit = Storage.get(PROFILE_CACHE_KEY)
       if (hit) {
         setProfile(hit)
@@ -100,11 +101,14 @@ export default function Header({ disableSearch }) {
     window.location = '/'
   }
 
+  const isLoggedIn = checkLoggedIn()
+
   return (
     <header>
       <AppBar position="static" variant="outlined" className={classes.appBar}>
         <Container disableMinHeight>
           <Toolbar variant="dense" disableGutters>
+            {/* Branding button */}
             <Link href="/" disableUnderline>
               <Typography component="h1" className={classes.title}>
                 <strong>DotagiftX</strong>
@@ -113,11 +117,23 @@ export default function Header({ disableSearch }) {
             <span className={classes.spacer} />
             {!disableSearch && <SearchInputMini />}
             <span style={{ flexGrow: 1 }} />
-            <Button variant="outlined" color="secondary" component={Link} href="/post-item">
-              Post Item
-            </Button>
+
+            {/* Post item button */}
+            {isLoggedIn ? (
+              <Button variant="outlined" color="secondary" component={Link} href="/post-item">
+                Post Item
+              </Button>
+            ) : (
+              <Tooltip title="You must be logged in to post an item" arrow>
+                <Button variant="outlined" color="secondary">
+                  Post Item
+                </Button>
+              </Tooltip>
+            )}
             <span className={classes.spacer} />
-            {isLoggedIn() ? (
+
+            {/* Avatar menu button */}
+            {isLoggedIn ? (
               <>
                 <Button
                   aria-controls="avatar-menu"
