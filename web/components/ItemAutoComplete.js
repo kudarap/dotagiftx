@@ -13,31 +13,42 @@ export default function ItemAutoComplete({ onSelect }) {
   const [options, setOptions] = React.useState([])
   const loading = open && options.length === 0
 
+  // React.useEffect(() => {
+  //   let active = true
+  //
+  //   if (!loading) {
+  //     return undefined
+  //   }
+  //
+  //   ;(async () => {
+  //     const catalogs = await itemSearch(itemSearchFilter)
+  //
+  //     if (active) {
+  //       setOptions(catalogs.data)
+  //     }
+  //   })()
+  //
+  //   return () => {
+  //     active = false
+  //   }
+  // }, [loading])
+  //
+  // React.useEffect(() => {
+  //   if (!open) {
+  //     setOptions([])
+  //   }
+  // }, [open])
+
   React.useEffect(() => {
-    let active = true
-
-    if (!loading) {
-      return undefined
-    }
-
     ;(async () => {
-      const catalogs = await itemSearch(itemSearchFilter)
-
-      if (active) {
+      try {
+        const catalogs = await itemSearch(itemSearchFilter)
         setOptions(catalogs.data)
+      } catch (e) {
+        console.log('error getting item list', e.message)
       }
     })()
-
-    return () => {
-      active = false
-    }
-  }, [loading])
-
-  React.useEffect(() => {
-    if (!open) {
-      setOptions([])
-    }
-  }, [open])
+  }, [])
 
   const handleInputChange = (e, text) => {
     const res = filter(options, { name: text })
