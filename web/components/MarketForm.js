@@ -64,18 +64,29 @@ export default function MarketForm() {
             rarity={item.rarity}
             title={item.name}
           />
-          <Typography variant="body2">Origin: {item.origin}</Typography>
+          <Typography variant="body2" color="textSecondary">
+            Origin:{' '}
+            <Typography variant="body2" color="textPrimary" component="span">
+              {item.origin}
+            </Typography>
+          </Typography>
           <Typography variant="body2" color="textSecondary">
             Rarity:{' '}
             <Typography variant="body2" color="textPrimary" component="span">
               {item.rarity}
             </Typography>
           </Typography>
-          <Typography variant="body2">
-            Hero: <strong>{item.hero}</strong>
+          <Typography variant="body2" color="textSecondary">
+            Hero:{' '}
+            <Typography variant="body2" color="textPrimary" component="span">
+              {item.hero}
+            </Typography>
           </Typography>
-          <Typography variant="body2">
-            Starting at: <strong>{format.amount(item.lowest_ask)}</strong>
+          <Typography variant="body2" color="textSecondary">
+            Starting at:{' '}
+            <Typography variant="body2" color="textPrimary" component="span">
+              {format.amount(item.lowest_ask, 'USD')}
+            </Typography>
           </Typography>
           <br />
           <br />
