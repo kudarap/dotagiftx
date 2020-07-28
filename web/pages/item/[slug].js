@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { isOk as checkLoggedIn } from '@/service/auth'
 import { catalog, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -14,6 +15,7 @@ import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import TablePagination from '@/components/TablePaginationRouter'
+import Button from '@/components/Button'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -38,6 +40,14 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
+  postItemButton: {
+    [theme.breakpoints.down('xs')]: {
+      margin: '8px auto !important',
+    },
+    width: 150,
+    marginRight: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
+  },
 }))
 
 export default function ItemDetails({ item, markets, canonicalURL }) {
@@ -57,6 +67,8 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
   const metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} for ${
     item.hero
   }. Price start at $${item.lowest_ask.toFixed(2)}`
+
+  const isLoggedIn = checkLoggedIn()
 
   return (
     <>
@@ -85,13 +97,28 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
         <Container>
           <div className={classes.details}>
             {item.image && (
-              <ItemImage
-                className={classes.media}
-                image={`/300x170/${item.image}`}
-                title={item.name}
-                rarity={item.rarity}
-              />
+              <div>
+                <ItemImage
+                  className={classes.media}
+                  image={`/300x170/${item.image}`}
+                  title={item.name}
+                  rarity={item.rarity}
+                />
+                {isLoggedIn && (
+                  <Button
+                    className={classes.postItemButton}
+                    variant="outlined"
+                    color="secondary"
+                    size="small"
+                    component={Link}
+                    href={`/post-item?s=${item.slug}`}
+                    fullWidth>
+                    Post this Item
+                  </Button>
+                )}
+              </div>
             )}
+
             <Typography component="h1">
               <Typography component="p" variant="h4">
                 {item.name}
