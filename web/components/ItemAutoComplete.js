@@ -1,16 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import filter from 'lodash/filter'
+import { useRouter } from 'next/router'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { itemSearch } from '@/service/api'
+import { item, itemSearch } from '@/service/api'
 
 const itemSearchFilter = { limit: 1000, sort: 'popular' }
 
 export default function ItemAutoComplete({ onSelect }) {
   const [open, setOpen] = React.useState(false)
   const [options, setOptions] = React.useState([])
+  const [value, setValue] = React.useState('')
   const loading = open && options.length === 0
 
   // React.useEffect(() => {
@@ -39,11 +41,29 @@ export default function ItemAutoComplete({ onSelect }) {
   //   }
   // }, [open])
 
+  const router = useRouter()
+  const itemSlug = router.query.s
+  React.useEffect(() => {
+    if (!itemSlug) {
+      return
+    }
+
+    ;(async () => {
+      try {
+        const res = await item(itemSlug)
+        setValue(res.name)
+        onSelect(res)
+      } catch (e) {
+        console.log('error getting item details', e.message)
+      }
+    })()
+  }, [itemSlug])
+
   React.useEffect(() => {
     ;(async () => {
       try {
-        const catalogs = await itemSearch(itemSearchFilter)
-        setOptions(catalogs.data)
+        const res = await itemSearch(itemSearchFilter)
+        setOptions(res.data)
       } catch (e) {
         console.log('error getting item list', e.message)
       }
@@ -51,6 +71,7 @@ export default function ItemAutoComplete({ onSelect }) {
   }, [])
 
   const handleInputChange = (e, text) => {
+    setValue(text)
     const res = filter(options, { name: text })
     if (res.length === 0) {
       onSelect({})
@@ -72,7 +93,8 @@ export default function ItemAutoComplete({ onSelect }) {
         setOpen(false)
       }}
       onInputChange={handleInputChange}
-      getOptionSelected={(option, value) => option.name === value.name}
+      inputValue={value}
+      getOptionSelected={(opt, val) => opt.name === val.name}
       getOptionLabel={option => option.name}
       options={options}
       loading={loading}
