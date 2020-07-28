@@ -85,6 +85,7 @@ export default function ItemAutoComplete({ onSelect }) {
     <Autocomplete
       id="asynchronous-item-search"
       fullWidth
+      clearOnBlur={false}
       open={open}
       onOpen={() => {
         setOpen(true)

@@ -3,10 +3,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+import { catalog } from '@/service/api'
+import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
-import { catalog } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -74,7 +75,7 @@ export default function MarketForm() {
             Hero: <strong>{item.hero}</strong>
           </Typography>
           <Typography variant="body2">
-            Starting at: <strong>${Number(item.lowest_ask || 0).toFixed(2)}</strong>
+            Starting at: <strong>{format.amount(item.lowest_ask)}</strong>
           </Typography>
           <br />
           <br />
