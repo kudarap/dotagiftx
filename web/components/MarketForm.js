@@ -23,21 +23,38 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const defaultPayload = {
+  item_id: '',
+  price: '',
+  qty: 1,
+  notes: '',
+}
+
 export default function MarketForm() {
   const classes = useStyles()
 
+  const [payload, setPayload] = React.useState(defaultPayload)
   const [item, setItem] = React.useState({ id: '' })
 
   const handleItemSelect = val => {
     setItem(val)
     // Get item starting price
     if (val.slug) {
-      catalog(val.slug).then(res => setItem(res))
+      catalog(val.slug).then(res => {
+        setPayload({ ...payload, item_id: val.slug })
+        setItem(res)
+      })
     }
   }
 
+  const handleSubmit = e => {
+    e.preventDefault()
+
+    console.log('submitting payload', payload)
+  }
+
   return (
-    <Paper component="form" className={classes.root}>
+    <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
       <Typography variant="h5" component="h1">
         Selling your item
       </Typography>
@@ -103,6 +120,12 @@ export default function MarketForm() {
           type="number"
           helperText="Price value will be on USD."
           style={{ width: '69%' }}
+          value={payload.price}
+          onInput={e => setPayload({ ...payload, price: e.target.value })}
+          onBlur={e => {
+            const price = format.amount(e.target.value)
+            setPayload({ ...payload, price })
+          }}
         />
         <TextField
           variant="outlined"
@@ -111,6 +134,7 @@ export default function MarketForm() {
           type="number"
           defaultValue="1"
           style={{ width: '30%', marginLeft: '1%' }}
+          onInput={e => setPayload({ ...payload, qty: e.target.value })}
         />
       </div>
       <br />
@@ -119,12 +143,13 @@ export default function MarketForm() {
         fullWidth
         color="secondary"
         label="Notes"
-        helperText="Keep it short, maximum of 100 characters."
+        helperText="Keep it short, This will be display when they check your offer."
+        onInput={e => setPayload({ ...payload, notes: e.target.value })}
       />
       <br />
       <br />
 
-      <Button variant="contained" fullWidth type="submit" size="large">
+      <Button variant="contained" fullWidth type="submit" size="large" color="secondary">
         Post Item
       </Button>
     </Paper>

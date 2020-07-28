@@ -102,7 +102,6 @@ export default function ItemAutoComplete({ onSelect }) {
       renderInput={params => (
         <TextField
           {...params}
-          autoFocus
           color="secondary"
           label="Item name"
           helperText="Search item you want to post from your inventory."
