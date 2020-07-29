@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export function amount(n, currency = '') {
   let sign = ''
   if (currency) {
@@ -14,4 +16,21 @@ export function amount(n, currency = '') {
 
 export function numberWithCommas(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+export function dateFromNow(date) {
+  const d = moment(date)
+  const dc = d.clone()
+
+  if (moment() < dc.add(1, 'day')) {
+    return d.fromNow()
+  }
+  if (moment() < dc.add(1, 'year')) {
+    return d.format('MMM DD')
+  }
+  return d.format('MMM DD, YYYY')
+}
+
+export function dateCalendar(date) {
+  return moment(date).format('MMMM DD, YYYY')
 }

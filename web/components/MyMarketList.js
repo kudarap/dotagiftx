@@ -10,8 +10,9 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import * as format from '@/lib/format'
 import Link from '@/components/Link'
-import BuyButton from '@/components/BuyButton'
+import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
@@ -33,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function UserMarketList({ data, error }) {
+export default function MyMarketList({ datatable, error }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -42,7 +43,7 @@ export default function UserMarketList({ data, error }) {
     return <p>Error</p>
   }
 
-  if (!data) {
+  if (!datatable) {
     return <p>Loading...</p>
   }
 
@@ -51,13 +52,14 @@ export default function UserMarketList({ data, error }) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableHeadCell>Sell Listings ({data.total_count})</TableHeadCell>
+            <TableHeadCell>Sell Listings ({datatable.total_count})</TableHeadCell>
+            <TableHeadCell align="right">Listed</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
             <TableHeadCell align="right" width={156} />
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.data.map(market => (
+          {datatable.data.map(market => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
                 <Link
@@ -84,10 +86,13 @@ export default function UserMarketList({ data, error }) {
                 </Link>
               </TableCell>
               <TableCell align="right">
+                <Typography variant="body2">{format.dateFromNow(market.created_at)}</Typography>
+              </TableCell>
+              <TableCell align="right">
                 <Typography variant="body2">${market.price.toFixed(2)}</Typography>
               </TableCell>
               <TableCell align="right">
-                <BuyButton variant="contained">Contact Seller</BuyButton>
+                <Button variant="contained">Edit</Button>
               </TableCell>
             </TableRow>
           ))}
@@ -96,10 +101,10 @@ export default function UserMarketList({ data, error }) {
     </TableContainer>
   )
 }
-UserMarketList.propTypes = {
-  data: PropTypes.object.isRequired,
+MyMarketList.propTypes = {
+  datatable: PropTypes.object.isRequired,
   error: PropTypes.string,
 }
-UserMarketList.defaultProps = {
+MyMarketList.defaultProps = {
   error: null,
 }
