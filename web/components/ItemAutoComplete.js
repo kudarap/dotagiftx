@@ -9,7 +9,7 @@ import { item, itemSearch } from '@/service/api'
 
 const itemSearchFilter = { limit: 1000, sort: 'popular' }
 
-export default function ItemAutoComplete({ onSelect }) {
+export default function ItemAutoComplete({ onSelect, ...other }) {
   const [open, setOpen] = React.useState(false)
   const [options, setOptions] = React.useState([])
   const [value, setValue] = React.useState('')
@@ -117,6 +117,7 @@ export default function ItemAutoComplete({ onSelect }) {
           }}
         />
       )}
+      {...other}
     />
   )
 }

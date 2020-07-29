@@ -108,7 +108,7 @@ export default function MarketForm() {
       </Typography>
       <br />
 
-      <ItemAutoComplete onSelect={handleItemSelect} />
+      <ItemAutoComplete onSelect={handleItemSelect} disabled={loading} />
       {/* <TextField */}
       {/*  variant="outlined" */}
       {/*  fullWidth */}
@@ -174,6 +174,7 @@ export default function MarketForm() {
             const price = format.amount(e.target.value)
             setPayload({ ...payload, price })
           }}
+          disabled={loading}
         />
         <TextField
           variant="outlined"
@@ -183,6 +184,7 @@ export default function MarketForm() {
           defaultValue="1"
           style={{ width: '30%', marginLeft: '1%' }}
           onInput={e => setPayload({ ...payload, qty: e.target.value })}
+          disabled={loading}
         />
       </div>
       <br />
@@ -193,6 +195,7 @@ export default function MarketForm() {
         label="Notes"
         helperText="Keep it short, This will be display when they check your offer."
         onInput={e => setPayload({ ...payload, notes: e.target.value })}
+        disabled={loading}
       />
       <br />
       <br />
