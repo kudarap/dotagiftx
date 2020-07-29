@@ -147,12 +147,14 @@ export default function MarketForm() {
               {item.hero}
             </Typography>
           </Typography>
-          <Typography variant="body2" color="textSecondary">
-            Starting at:{' '}
-            <Typography variant="body2" color="textPrimary" component="span">
-              {format.amount(item.lowest_ask, 'USD')}
+          {item.lowest_ask && (
+            <Typography variant="body2" color="textSecondary">
+              Starting at:{' '}
+              <Typography variant="body2" color="textPrimary" component="span">
+                {format.amount(item.lowest_ask, 'USD')}
+              </Typography>
             </Typography>
-          </Typography>
+          )}
           <br />
           <br />
         </div>
