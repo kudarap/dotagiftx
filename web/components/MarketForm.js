@@ -74,6 +74,7 @@ export default function MarketForm() {
     evt.preventDefault()
 
     // format and validate payload
+    const quantity = Number(payload.qty)
     const newMarket = {
       item_id: payload.item_id,
       price: Number(payload.price),
@@ -90,8 +91,13 @@ export default function MarketForm() {
     setError(null)
     ;(async () => {
       try {
-        const res = await myMarket.POST(newMarket)
-        console.log('market successfully created!', res)
+        let res
+        for (let i = 0; i < quantity; i++) {
+          // eslint-disable-next-line no-await-in-loop
+          res = await myMarket.POST(newMarket)
+          console.log('market successfully created!', res)
+        }
+
         // redirect to user listings
         setError('Item posted successfully! You will be redirected to your item listings.')
         setTimeout(() => {
@@ -105,6 +111,17 @@ export default function MarketForm() {
     })()
   }
 
+  const handlePriceChange = e => setPayload({ ...payload, price: e.target.value })
+
+  const handleQtyChange = e => {
+    const qty = e.target.value
+    if (qty <= 0) {
+      return
+    }
+
+    setPayload({ ...payload, qty })
+  }
+
   return (
     <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
       <Typography variant="h5" component="h1">
@@ -113,15 +130,6 @@ export default function MarketForm() {
       <br />
 
       <ItemAutoComplete onSelect={handleItemSelect} disabled={loading} />
-      {/* <TextField */}
-      {/*  variant="outlined" */}
-      {/*  fullWidth */}
-      {/*  required */}
-      {/*  color="secondary" */}
-      {/*  label="Item name" */}
-      {/*  helperText="Search item you want to post from your inventory." */}
-      {/*  autoFocus */}
-      {/* /> */}
       <br />
 
       {/* Selected item preview */}
@@ -173,7 +181,8 @@ export default function MarketForm() {
           helperText="Price value will be on USD."
           style={{ width: '69%' }}
           value={payload.price}
-          onInput={e => setPayload({ ...payload, price: e.target.value })}
+          onInput={handlePriceChange}
+          onChange={handlePriceChange}
           onBlur={e => {
             const price = format.amount(e.target.value)
             setPayload({ ...payload, price })
@@ -185,9 +194,10 @@ export default function MarketForm() {
           color="secondary"
           label="Qty"
           type="number"
-          defaultValue="1"
+          value={payload.qty}
           style={{ width: '30%', marginLeft: '1%' }}
-          onInput={e => setPayload({ ...payload, qty: e.target.value })}
+          onInput={handleQtyChange}
+          onChange={handleQtyChange}
           disabled={loading}
         />
       </div>
@@ -214,7 +224,7 @@ export default function MarketForm() {
         Post Item
       </Button>
       {error && (
-        <Typography align="center" variant="body2">
+        <Typography align="center" variant="body2" style={{ marginTop: 2 }}>
           {error}
         </Typography>
       )}
