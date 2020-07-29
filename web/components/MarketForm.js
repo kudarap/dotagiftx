@@ -3,7 +3,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import SubmitIcon from '@material-ui/icons/Check'
 import { catalog, myMarket } from '@/service/api'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
@@ -31,6 +32,18 @@ const defaultPayload = {
   notes: '',
 }
 
+const checkMarketPayload = payload => {
+  if (!payload.item_id) {
+    return 'item reference is required'
+  }
+
+  if (Number(payload.price) <= 0) {
+    return 'Price must be atleast 0.01'
+  }
+
+  return null
+}
+
 export default function MarketForm() {
   const classes = useStyles()
 
@@ -53,14 +66,19 @@ export default function MarketForm() {
   const handleSubmit = evt => {
     evt.preventDefault()
 
-    // format payload
+    // format and validate payload
     const newMarket = {
       item_id: payload.item_id,
       price: Number(payload.price),
       notes: payload.notes,
     }
 
-    console.log('submitting payload', payload)
+    const err = checkMarketPayload(newMarket)
+    if (err) {
+      setError(err)
+      return
+    }
+
     setLoading(true)
     setError(null)
     ;(async () => {
@@ -79,8 +97,6 @@ export default function MarketForm() {
 
   return (
     <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
-      {loading && <LinearProgress color="secondary" />}
-
       <Typography variant="h5" component="h1">
         Listing your item on DotagiftX
       </Typography>
@@ -180,11 +196,15 @@ export default function MarketForm() {
         fullWidth
         type="submit"
         size="large"
-        color="secondary"
-        disabled={loading}>
+        disabled={loading}
+        startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}>
         Post Item
       </Button>
-      {error && <Typography color="error">{error}</Typography>}
+      {error && (
+        <Typography color="error" align="center" variant="body2">
+          {error}
+        </Typography>
+      )}
     </Paper>
   )
 }
