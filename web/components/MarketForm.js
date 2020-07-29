@@ -55,12 +55,16 @@ export default function MarketForm() {
 
   const handleItemSelect = val => {
     setItem(val)
-    // Get item starting price
+    // get item starting price
     if (val.slug) {
-      catalog(val.slug).then(res => {
-        setPayload({ ...payload, item_id: val.slug })
-        setItem(res)
-      })
+      setPayload({ ...payload, item_id: val.slug })
+      catalog(val.slug)
+        .then(res => {
+          setItem(res)
+        })
+        .catch(e => {
+          console.log('error getting catalog info', e.message)
+        })
     }
   }
 
@@ -147,14 +151,12 @@ export default function MarketForm() {
               {item.hero}
             </Typography>
           </Typography>
-          {item.lowest_ask && (
-            <Typography variant="body2" color="textSecondary">
-              Starting at:{' '}
-              <Typography variant="body2" color="textPrimary" component="span">
-                {format.amount(item.lowest_ask, 'USD')}
-              </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Starting at:{' '}
+            <Typography variant="body2" color="textPrimary" component="span">
+              {item.lowest_ask ? format.amount(item.lowest_ask, 'USD') : 'no offers yet'}
             </Typography>
-          )}
+          </Typography>
           <br />
           <br />
         </div>
