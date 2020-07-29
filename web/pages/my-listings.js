@@ -9,6 +9,7 @@ import Container from '@/components/Container'
 import { fetcherWithToken, MY_MARKETS } from '@/service/api'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
+import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -19,6 +20,13 @@ const useStyles = makeStyles(theme => ({
 const activeMarketFilter = {
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
+  page: 1,
+}
+
+const initialDatatable = {
+  data: [],
+  result_count: 0,
+  total_count: 0,
 }
 
 export default function About() {
@@ -26,8 +34,16 @@ export default function About() {
 
   const { data: activeListings, activeListingsError } = useSWR(
     [MY_MARKETS, activeMarketFilter],
-    fetcherWithToken
+    fetcherWithToken,
+    { initialData: { initialDatatable } }
   )
+
+  const [filter, setFilter] = React.useState(activeMarketFilter)
+
+  const handlePageChange = (e, page) => {
+    console.log('nextPage', page)
+    setFilter({ ...filter, page })
+  }
 
   return (
     <>
@@ -41,7 +57,13 @@ export default function About() {
 
           {activeListingsError && <div>failed to load active listings</div>}
           {!activeListings && <LinearProgress color="secondary" />}
-          {!activeListingsError && activeListings && <MyMarketList datatable={activeListings} />}
+          <MyMarketList datatable={activeListings} />
+          <TablePagination
+            style={{ textAlign: 'right' }}
+            count={activeListings.total_count || 0}
+            page={filter.page}
+            onChangePage={handlePageChange}
+          />
         </Container>
       </main>
 
