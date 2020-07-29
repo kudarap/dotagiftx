@@ -1,4 +1,5 @@
 import React from 'react'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
@@ -63,6 +64,8 @@ export default function MarketForm() {
     }
   }
 
+  const router = useRouter()
+
   const handleSubmit = evt => {
     evt.preventDefault()
 
@@ -75,7 +78,7 @@ export default function MarketForm() {
 
     const err = checkMarketPayload(newMarket)
     if (err) {
-      setError(err)
+      setError(`Error: ${err}`)
       return
     }
 
@@ -84,11 +87,14 @@ export default function MarketForm() {
     ;(async () => {
       try {
         const res = await myMarket.POST(newMarket)
-        console.log('res res', res)
-        // redirect to public profile
+        console.log('market successfully created!', res)
+        // redirect to user listings
+        setError('Item posted successfully! You will be redirected to your item listings.')
+        setTimeout(() => {
+          router.push('/my-listings')
+        }, 3000)
       } catch (e) {
-        setError(e.message)
-        console.log('res msg', e.message)
+        setError(`Error: ${e.message}`)
       }
 
       setLoading(false)
@@ -201,7 +207,7 @@ export default function MarketForm() {
         Post Item
       </Button>
       {error && (
-        <Typography color="error" align="center" variant="body2">
+        <Typography align="center" variant="body2">
           {error}
         </Typography>
       )}
