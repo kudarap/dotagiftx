@@ -34,6 +34,7 @@ export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
 export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 
+export const myMarketSearch = http.baseSearchRequest(MY_MARKETS)
 export const myMarket = {
   POST: payload => http.authnRequest(http.POST, MY_MARKETS, payload),
 }

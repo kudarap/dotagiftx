@@ -1,12 +1,11 @@
 import React from 'react'
-import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { fetcherWithToken, MY_MARKETS } from '@/service/api'
+import { myMarketSearch } from '@/service/api'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
@@ -27,21 +26,28 @@ const initialDatatable = {
   data: [],
   result_count: 0,
   total_count: 0,
+  loading: true,
+  error: null,
 }
 
 export default function About() {
   const classes = useStyles()
 
-  const { data: activeListings, activeListingsError } = useSWR(
-    [MY_MARKETS, activeMarketFilter],
-    fetcherWithToken,
-    { initialData: { initialDatatable } }
-  )
-
+  const [activeLists, setActiveLists] = React.useState(initialDatatable)
   const [filter, setFilter] = React.useState(activeMarketFilter)
 
+  React.useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await myMarketSearch(filter)
+        setActiveLists({ ...activeLists, loading: false, ...res })
+      } catch (e) {
+        setActiveLists({ ...activeLists, loading: false, error: e.message })
+      }
+    })()
+  }, [filter])
+
   const handlePageChange = (e, page) => {
-    console.log('nextPage', page)
     setFilter({ ...filter, page })
   }
 
@@ -55,12 +61,12 @@ export default function About() {
             My Active Listings
           </Typography>
 
-          {activeListingsError && <div>failed to load active listings</div>}
-          {!activeListings && <LinearProgress color="secondary" />}
-          <MyMarketList datatable={activeListings} />
+          {activeLists.error && <div>failed to load active listings</div>}
+          {activeLists.loading && <LinearProgress color="secondary" />}
+          <MyMarketList datatable={activeLists} />
           <TablePagination
             style={{ textAlign: 'right' }}
-            count={activeListings.total_count || 0}
+            count={activeLists.total_count || 0}
             page={filter.page}
             onChangePage={handlePageChange}
           />
