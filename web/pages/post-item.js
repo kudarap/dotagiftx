@@ -1,6 +1,5 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -21,10 +20,6 @@ export default function About() {
 
       <main className={classes.main}>
         <Container>
-          {/*<Typography variant="h5" component="h1" gutterBottom>*/}
-          {/*  Sell your item*/}
-          {/*</Typography>*/}
-
           <MarketForm />
         </Container>
       </main>

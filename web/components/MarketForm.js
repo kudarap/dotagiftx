@@ -3,7 +3,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import { catalog } from '@/service/api'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import { catalog, myMarket } from '@/service/api'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
@@ -33,8 +34,10 @@ const defaultPayload = {
 export default function MarketForm() {
   const classes = useStyles()
 
-  const [payload, setPayload] = React.useState(defaultPayload)
   const [item, setItem] = React.useState({ id: '' })
+  const [payload, setPayload] = React.useState(defaultPayload)
+  const [error, setError] = React.useState(null)
+  const [loading, setLoading] = React.useState(false)
 
   const handleItemSelect = val => {
     setItem(val)
@@ -47,16 +50,39 @@ export default function MarketForm() {
     }
   }
 
-  const handleSubmit = e => {
-    e.preventDefault()
+  const handleSubmit = evt => {
+    evt.preventDefault()
+
+    // format payload
+    const newMarket = {
+      item_id: payload.item_id,
+      price: Number(payload.price),
+      notes: payload.notes,
+    }
 
     console.log('submitting payload', payload)
+    setLoading(true)
+    setError(null)
+    ;(async () => {
+      try {
+        const res = await myMarket.POST(newMarket)
+        console.log('res res', res)
+        // redirect to public profile
+      } catch (e) {
+        setError(e.message)
+        console.log('res msg', e.message)
+      }
+
+      setLoading(false)
+    })()
   }
 
   return (
     <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
+      {loading && <LinearProgress color="secondary" />}
+
       <Typography variant="h5" component="h1">
-        Selling your item
+        Listing your item on DotagiftX
       </Typography>
       <br />
 
@@ -149,9 +175,16 @@ export default function MarketForm() {
       <br />
       <br />
 
-      <Button variant="contained" fullWidth type="submit" size="large" color="secondary">
+      <Button
+        variant="contained"
+        fullWidth
+        type="submit"
+        size="large"
+        color="secondary"
+        disabled={loading}>
         Post Item
       </Button>
+      {error && <Typography color="error">{error}</Typography>}
     </Paper>
   )
 }

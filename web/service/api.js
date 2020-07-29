@@ -14,6 +14,7 @@ const AUTH_STEAM = '/auth/steam'
 const AUTH_RENEW = '/auth/renew'
 const AUTH_REVOKE = '/auth/revoke'
 export const MY_PROFILE = '/my/profile'
+export const MY_MARKETS = '/my/markets'
 export const USERS = '/users'
 export const ITEMS = '/items'
 export const MARKETS = '/markets'
@@ -32,10 +33,14 @@ export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
 export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 
+export const myMarket = {
+  POST: payload => http.authnRequest(http.POST, MY_MARKETS, payload),
+}
 export const myProfile = {
   GET: () => http.authnRequest(http.GET, MY_PROFILE),
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
+
 export const itemSearch = http.baseSearchRequest(ITEMS)
 export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)
