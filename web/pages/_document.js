@@ -16,7 +16,7 @@ export default class MyDocument extends Document {
           />
           <link rel="icon" href="/icon.svg" />
 
-          {process.env.NEXT_PUBLIC_GA !== '' && (
+          {process.env.NEXT_PUBLIC_GA && (
             <>
               <script
                 async
