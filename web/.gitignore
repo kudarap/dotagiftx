@@ -18,6 +18,9 @@
 # misc
 .DS_Store
 
+# editor
+.idea
+
 # debug
 npm-debug.log*
 yarn-debug.log*
