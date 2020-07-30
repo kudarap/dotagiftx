@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { isOk as checkLoggedIn } from '@/service/auth'
+import { isOk as checkLoggedIn, get as getLoggedInUser } from '@/service/auth'
 import { catalog, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -69,6 +69,10 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
   }. Price start at $${item.lowest_ask.toFixed(2)}`
 
   const isLoggedIn = checkLoggedIn()
+  let currentUserID = null
+  if (isLoggedIn) {
+    currentUserID = getLoggedInUser().user_id
+  }
 
   return (
     <>
@@ -140,7 +144,7 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
             </Typography>
           </div>
 
-          <MarketList data={markets} />
+          <MarketList data={markets} currentUserID={currentUserID} />
           <TablePagination
             linkProps={linkProps}
             style={{ textAlign: 'right' }}

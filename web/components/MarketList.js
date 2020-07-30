@@ -13,6 +13,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import { CDN_URL } from '@/service/api'
 import Link from '@/components/Link'
+import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MarketList({ data, error }) {
+export default function MarketList({ data, error, currentUserID }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -46,7 +47,7 @@ export default function MarketList({ data, error }) {
           <TableRow>
             <TableHeadCell>Seller</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
-            <TableHeadCell align="right" width={156} />
+            <TableHeadCell align="center" width={156} />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -71,8 +72,12 @@ export default function MarketList({ data, error }) {
               <TableCell align="right">
                 <Typography variant="body2">${market.price.toFixed(2)}</Typography>
               </TableCell>
-              <TableCell align="right">
-                <BuyButton variant="contained">Contact Seller</BuyButton>
+              <TableCell align="center">
+                {currentUserID === market.user.id ? (
+                  <Button variant="outlined">Remove</Button>
+                ) : (
+                  <BuyButton variant="contained">Contact Seller</BuyButton>
+                )}
               </TableCell>
             </TableRow>
           ))}
@@ -84,7 +89,9 @@ export default function MarketList({ data, error }) {
 MarketList.propTypes = {
   data: PropTypes.object.isRequired,
   error: PropTypes.string,
+  currentUserID: PropTypes.string,
 }
 MarketList.defaultProps = {
   error: null,
+  currentUserID: null,
 }

@@ -55,7 +55,7 @@ export default function MyMarketList({ datatable, error }) {
             <TableHeadCell>Sell Listings ({datatable.total_count})</TableHeadCell>
             <TableHeadCell align="right">Listed</TableHeadCell>
             <TableHeadCell align="right">Price</TableHeadCell>
-            <TableHeadCell align="right" width={156} />
+            <TableHeadCell align="center" width={70} />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -92,8 +92,8 @@ export default function MyMarketList({ datatable, error }) {
                 <TableCell align="right">
                   <Typography variant="body2">${market.price.toFixed(2)}</Typography>
                 </TableCell>
-                <TableCell align="right">
-                  <Button variant="contained">Edit</Button>
+                <TableCell align="center">
+                  <Button variant="outlined">Edit</Button>
                 </TableCell>
               </TableRow>
             ))}
