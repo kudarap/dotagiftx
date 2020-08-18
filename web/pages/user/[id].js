@@ -144,7 +144,9 @@ UserDetails.propTypes = {
 }
 UserDetails.defaultProps = {
   filter: {},
-  markets: {},
+  markets: {
+    data: [],
+  },
 }
 
 const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'created_at:desc' }

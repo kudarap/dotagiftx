@@ -33,7 +33,7 @@ export default function MarketList({ data, error, currentUserID }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   if (error) {
-    return <p>Error</p>
+    return <p>Error: {error}</p>
   }
 
   if (!data) {

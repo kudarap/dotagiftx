@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
@@ -50,11 +49,24 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemDetails({ item, markets, canonicalURL }) {
+export default function ItemDetails({ item, filter, markets: initialMarkets, canonicalURL }) {
   const classes = useStyles()
 
-  const router = useRouter()
-  const [page, setPage] = React.useState(Number(router.query.page || 1))
+  const [page, setPage] = React.useState(filter.page)
+  const [markets, setMarkets] = React.useState(initialMarkets)
+  const [error, setError] = React.useState(null)
+
+  // Handle market request on page change.
+  React.useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await marketSearch({ ...filter, page })
+        setMarkets(res)
+      } catch (e) {
+        setError(e.message)
+      }
+    })()
+  }, [page])
 
   const handlePageChange = (e, p) => {
     setPage(p)
@@ -144,7 +156,7 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
             </Typography>
           </div>
 
-          <MarketList data={markets} currentUserID={currentUserID} />
+          <MarketList data={markets} currentUserID={currentUserID} error={error} />
           <TablePaginationRouter
             linkProps={linkProps}
             style={{ textAlign: 'right' }}
@@ -164,9 +176,11 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
 ItemDetails.propTypes = {
   item: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
+  filter: PropTypes.object,
   markets: PropTypes.object,
 }
 ItemDetails.defaultProps = {
+  filter: {},
   markets: {
     data: [],
   },
@@ -190,6 +204,7 @@ export async function getServerSideProps(props) {
     props: {
       item,
       canonicalURL,
+      filter,
       markets: await marketSearch(filter),
     },
   }
