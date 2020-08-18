@@ -4,14 +4,13 @@ import Head from 'next/head'
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
-import Link from '@material-ui/core/Link'
-import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { CDN_URL, marketSearch, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
+import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 
@@ -41,22 +40,6 @@ const useStyles = makeStyles(theme => ({
 
 const steamProfileBaseURL = 'https://steamcommunity.com/profiles'
 const steamRepBaseURL = 'https://steamrep.com/profiles'
-
-function ChipLink(props) {
-  return (
-    <Chip
-      size="small"
-      variant="outlined"
-      color="secondary"
-      clickable
-      component={Link}
-      target="_blank"
-      rel="noreferrer noopener"
-      style={{ textDecoration: 'none' }}
-      {...props}
-    />
-  )
-}
 
 export default function UserDetails({ profile, filter, markets: initialMarkets, canonicalURL }) {
   const classes = useStyles()
