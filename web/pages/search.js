@@ -8,7 +8,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
-import TablePagination from '@/components/TablePaginationRouter'
+import TablePaginationRouter from '@/components/TablePaginationRouter'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -57,7 +57,7 @@ export default function Search({ catalogs: items, filter: propFilter }) {
           {items && (
             <div>
               <CatalogList items={items.data} />
-              <TablePagination
+              <TablePaginationRouter
                 linkProps={linkProps}
                 colSpan={3}
                 style={{ textAlign: 'right' }}

@@ -14,8 +14,8 @@ import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import TablePagination from '@/components/TablePaginationRouter'
 import Button from '@/components/Button'
+import TablePaginationRouter from '@/components/TablePaginationRouter'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -145,7 +145,7 @@ export default function ItemDetails({ item, markets, canonicalURL }) {
           </div>
 
           <MarketList data={markets} currentUserID={currentUserID} />
-          <TablePagination
+          <TablePaginationRouter
             linkProps={linkProps}
             style={{ textAlign: 'right' }}
             count={markets.total_count}

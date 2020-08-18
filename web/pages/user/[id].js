@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import moment from 'moment'
-import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Link from '@material-ui/core/Link'
@@ -14,7 +13,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
 import UserMarketList from '@/components/UserMarketList'
-import TablePagination from '@/components/TablePaginationRouter'
+import TablePaginationRouter from '@/components/TablePaginationRouter'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -40,6 +39,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const steamProfileBaseURL = 'https://steamcommunity.com/profiles'
+const steamRepBaseURL = 'https://steamrep.com/profiles'
+
 function ChipLink(props) {
   return (
     <Chip
@@ -56,11 +58,24 @@ function ChipLink(props) {
   )
 }
 
-export default function UserDetails({ profile, markets, canonicalURL }) {
+export default function UserDetails({ profile, filter, markets: initialMarkets, canonicalURL }) {
   const classes = useStyles()
 
-  const router = useRouter()
-  const [page, setPage] = React.useState(Number(router.query.page || 1))
+  const [page, setPage] = React.useState(filter.page)
+  const [markets, setMarkets] = React.useState(initialMarkets)
+  const [error, setError] = React.useState(null)
+
+  // Handle market request on page change.
+  React.useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await marketSearch({ ...filter, page })
+        setMarkets(res)
+      } catch (e) {
+        setError(e.message)
+      }
+    })()
+  }, [page])
 
   const handlePageChange = (e, p) => {
     setPage(p)
@@ -68,8 +83,8 @@ export default function UserDetails({ profile, markets, canonicalURL }) {
 
   const linkProps = { href: '/user/[id]', as: `/user/${profile.steam_id}` }
 
-  const profileURL = `https://steamcommunity.com/profiles/${profile.steam_id}`
-  const steamRepURL = `https://steamrep.com/profiles/${profile.steam_id}`
+  const profileURL = `${steamProfileBaseURL}/${profile.steam_id}`
+  const steamRepURL = `${steamRepBaseURL}/profiles/${profile.steam_id}`
 
   const metaTitle = `DotagiftX :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
@@ -123,8 +138,8 @@ export default function UserDetails({ profile, markets, canonicalURL }) {
             </Typography>
           </div>
 
-          <UserMarketList data={markets} />
-          <TablePagination
+          <UserMarketList data={markets} error={error} />
+          <TablePaginationRouter
             linkProps={linkProps}
             style={{ textAlign: 'right' }}
             count={markets.total_count}
@@ -141,9 +156,11 @@ export default function UserDetails({ profile, markets, canonicalURL }) {
 UserDetails.propTypes = {
   profile: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
+  filter: PropTypes.object,
   markets: PropTypes.object,
 }
 UserDetails.defaultProps = {
+  filter: {},
   markets: {},
 }
 
@@ -165,6 +182,7 @@ export async function getServerSideProps(props) {
     props: {
       profile,
       canonicalURL,
+      filter,
       markets: await marketSearch(filter),
     },
   }
