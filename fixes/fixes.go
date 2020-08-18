@@ -1,6 +1,7 @@
 package fixes
 
 import (
+	"context"
 	"math/rand"
 
 	"github.com/kudarap/dota2giftables/core"
@@ -22,6 +23,7 @@ func GenerateFakeMarket(
 	marketSvc core.MarketService,
 ) {
 
+	ctx := context.Background()
 	ii, _ := itemStg.Find(core.FindOpts{})
 	uu, _ := userStg.Find(core.FindOpts{})
 	for _, item := range ii {
@@ -30,8 +32,8 @@ func GenerateFakeMarket(
 				ItemID: item.ID,
 				Price:  float64(rand.Intn(1000)) / 10,
 			}
-			ctx := core.AuthToContext(nil, &core.Auth{UserID: user.ID})
-			marketSvc.Create(ctx, m)
+			auc := core.AuthToContext(ctx, &core.Auth{UserID: user.ID})
+			marketSvc.Create(auc, m)
 		}
 	}
 }
