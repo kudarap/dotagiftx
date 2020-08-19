@@ -41,14 +41,18 @@ const useStyles = makeStyles(theme => ({
 const steamProfileBaseURL = 'https://steamcommunity.com/profiles'
 const steamRepBaseURL = 'https://steamrep.com/profiles'
 
-export default function UserDetails({ profile, filter, markets: initialMarkets, canonicalURL }) {
+export default function UserDetails({
+  profile,
+  filter,
+  markets: initialMarkets,
+  error: initialError,
+  canonicalURL,
+}) {
   const classes = useStyles()
-
-  console.log('initial markets markets', filter.page)
 
   const [page, setPage] = React.useState(filter.page)
   const [markets, setMarkets] = React.useState(initialMarkets)
-  const [error, setError] = React.useState(null)
+  const [error, setError] = React.useState(initialError)
 
   // Handle market request on page change.
   React.useEffect(() => {
@@ -124,13 +128,15 @@ export default function UserDetails({ profile, filter, markets: initialMarkets, 
           </div>
 
           <UserMarketList data={markets} error={error} />
-          <TablePaginationRouter
-            linkProps={linkProps}
-            style={{ textAlign: 'right' }}
-            count={markets.total_count}
-            page={page}
-            onChangePage={handlePageChange}
-          />
+          {!error && (
+            <TablePaginationRouter
+              linkProps={linkProps}
+              style={{ textAlign: 'right' }}
+              count={markets.total_count}
+              page={page}
+              onChangePage={handlePageChange}
+            />
+          )}
         </Container>
       </main>
 
@@ -143,12 +149,14 @@ UserDetails.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
   markets: PropTypes.object,
+  error: PropTypes.string,
 }
 UserDetails.defaultProps = {
   filter: {},
   markets: {
     data: [],
   },
+  error: null,
 }
 
 const marketSearchFilter = {
@@ -160,21 +168,30 @@ const marketSearchFilter = {
 // This gets called on every request
 export async function getServerSideProps(props) {
   const { params, query, req } = props
-  const profile = await user(String(params.id))
 
+  const canonicalURL = `https://${req.headers.host}${req.url}`
+
+  const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
   if (query.page) {
     filter.page = Number(query.page)
   }
 
-  const canonicalURL = `https://${req.headers.host}${req.url}`
+  let markets = {}
+  let error = null
+  try {
+    markets = await marketSearch(filter)
+  } catch (e) {
+    error = e.message
+  }
 
   return {
     props: {
       profile,
       canonicalURL,
       filter,
-      markets: await marketSearch(filter),
+      markets,
+      error,
     },
   }
 }

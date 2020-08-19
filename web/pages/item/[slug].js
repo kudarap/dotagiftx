@@ -156,7 +156,7 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
             </Typography>
           </div>
 
-          <MarketList data={markets.data} currentUserID={currentUserID} error={error} />
+          <MarketList data={markets} currentUserID={currentUserID} error={error} />
           {!error && (
             <TablePaginationRouter
               linkProps={linkProps}
@@ -213,7 +213,6 @@ export async function getServerSideProps(props) {
     markets = await marketSearch(filter)
   } catch (e) {
     error = e.message
-    console.log('eeror', error)
   }
 
   return {

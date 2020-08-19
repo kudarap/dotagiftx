@@ -63,8 +63,8 @@ export default function MarketList({ data, error, currentUserID }) {
             </TableRow>
           )}
 
-          {data &&
-            data.map(market => (
+          {data.data &&
+            data.data.map(market => (
               <TableRow key={market.id} hover>
                 <TableCell component="th" scope="row" padding="none">
                   <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
@@ -103,7 +103,7 @@ export default function MarketList({ data, error, currentUserID }) {
   )
 }
 MarketList.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  data: PropTypes.object.isRequired,
   error: PropTypes.string,
   currentUserID: PropTypes.string,
 }
