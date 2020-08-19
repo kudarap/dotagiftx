@@ -186,7 +186,11 @@ ItemDetails.defaultProps = {
   },
 }
 
-const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'price', page: 1 }
+const marketSearchFilter = {
+  page: 1,
+  status: MARKET_STATUS_LIVE,
+  sort: 'price',
+}
 
 // This gets called on every request
 export async function getServerSideProps(props) {

@@ -44,6 +44,8 @@ const steamRepBaseURL = 'https://steamrep.com/profiles'
 export default function UserDetails({ profile, filter, markets: initialMarkets, canonicalURL }) {
   const classes = useStyles()
 
+  console.log('initial markets markets', filter.page)
+
   const [page, setPage] = React.useState(filter.page)
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [error, setError] = React.useState(null)
@@ -149,7 +151,11 @@ UserDetails.defaultProps = {
   },
 }
 
-const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'created_at:desc' }
+const marketSearchFilter = {
+  page: 1,
+  status: MARKET_STATUS_LIVE,
+  sort: 'created_at:desc',
+}
 
 // This gets called on every request
 export async function getServerSideProps(props) {
