@@ -32,14 +32,6 @@ export default function MarketList({ data, error, currentUserID }) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
-  if (error) {
-    return <p>Error: {error}</p>
-  }
-
-  if (!data) {
-    return <p>Loading...</p>
-  }
-
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
@@ -51,43 +43,67 @@ export default function MarketList({ data, error, currentUserID }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.data.map(market => (
-            <TableRow key={market.id} hover>
-              <TableCell component="th" scope="row" padding="none">
-                <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
-                  <div className={classes.seller}>
-                    {!isMobile && (
-                      <Avatar className={classes.avatar} src={`${CDN_URL}/${market.user.avatar}`} />
-                    )}
-                    <div>
-                      <strong>{market.user.name}</strong>
-                      <br />
-                      <Typography variant="caption" color="textSecondary">
-                        {market.user.steam_id}
-                      </Typography>
-                    </div>
-                  </div>
-                </Link>
-              </TableCell>
-              <TableCell align="right">
-                <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-              </TableCell>
-              <TableCell align="center">
-                {currentUserID === market.user.id ? (
-                  <Button variant="outlined">Remove</Button>
-                ) : (
-                  <BuyButton variant="contained">Contact Seller</BuyButton>
-                )}
+          {error && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Error retrieving data
+                <br />
+                <Typography variant="caption" color="textSecondary">
+                  {error}
+                </Typography>
               </TableCell>
             </TableRow>
-          ))}
+          )}
+
+          {!error && !data && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Loading...
+              </TableCell>
+            </TableRow>
+          )}
+
+          {data &&
+            data.map(market => (
+              <TableRow key={market.id} hover>
+                <TableCell component="th" scope="row" padding="none">
+                  <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
+                    <div className={classes.seller}>
+                      {!isMobile && (
+                        <Avatar
+                          className={classes.avatar}
+                          src={`${CDN_URL}/${market.user.avatar}`}
+                        />
+                      )}
+                      <div>
+                        <strong>{market.user.name}</strong>
+                        <br />
+                        <Typography variant="caption" color="textSecondary">
+                          {market.user.steam_id}
+                        </Typography>
+                      </div>
+                    </div>
+                  </Link>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                </TableCell>
+                <TableCell align="center">
+                  {currentUserID === market.user.id ? (
+                    <Button variant="outlined">Remove</Button>
+                  ) : (
+                    <BuyButton variant="contained">Contact Seller</BuyButton>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>
   )
 }
 MarketList.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
   error: PropTypes.string,
   currentUserID: PropTypes.string,
 }

@@ -156,14 +156,16 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
             </Typography>
           </div>
 
-          <MarketList data={markets} currentUserID={currentUserID} error={error} />
-          <TablePaginationRouter
-            linkProps={linkProps}
-            style={{ textAlign: 'right' }}
-            count={markets.total_count}
-            page={page}
-            onChangePage={handlePageChange}
-          />
+          <MarketList data={markets.data} currentUserID={currentUserID} error={error} />
+          {!error && (
+            <TablePaginationRouter
+              linkProps={linkProps}
+              style={{ textAlign: 'right' }}
+              count={markets.total_count}
+              page={page}
+              onChangePage={handlePageChange}
+            />
+          )}
         </Container>
 
         <img src={trackViewURL(item.id)} alt="" />
@@ -195,6 +197,9 @@ const marketSearchFilter = {
 // This gets called on every request
 export async function getServerSideProps(props) {
   const { params, query, req } = props
+
+  const canonicalURL = `https://${req.headers.host}${req.url}`
+
   const item = await catalog(params.slug)
 
   const filter = { ...marketSearchFilter, item_id: item.id }
@@ -202,14 +207,22 @@ export async function getServerSideProps(props) {
     filter.page = Number(query.page)
   }
 
-  const canonicalURL = `https://${req.headers.host}${req.url}`
+  let markets = {}
+  let error = null
+  try {
+    markets = await marketSearch(filter)
+  } catch (e) {
+    error = e.message
+    console.log('eeror', error)
+  }
 
   return {
     props: {
       item,
       canonicalURL,
       filter,
-      markets: await marketSearch(filter),
+      markets,
+      error,
     },
   }
 }
