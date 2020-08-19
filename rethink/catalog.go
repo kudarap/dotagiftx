@@ -149,6 +149,8 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 }
 
 func (s *catalogStorage) create(in *core.Catalog) error {
+	// Fixes missing item in catalog that does not have views yet.
+	in.ViewCount = 1
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -178,6 +180,7 @@ func (s *catalogStorage) update(in *core.Catalog) error {
 	return nil
 }
 
+// NOTE! deprecated method and not being used.
 func (s *catalogStorage) findIndex(o core.FindOpts) ([]core.Catalog, error) {
 	q := s.indexBaseQuery()
 
