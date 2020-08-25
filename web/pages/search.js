@@ -1,5 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import has from 'lodash/has'
+import isEqual from 'lodash/isEqual'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -30,9 +32,12 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
 
   // Handle search keyword change and resets page if available.
   React.useEffect(() => {
-    const q = initialFilter.q || null
-    if (q) {
-      setFilter({ ...filter, q, page: 1 })
+    if (isEqual(filter, initialFilter)) {
+      return
+    }
+
+    if (has(initialFilter, 'q')) {
+      setFilter({ ...filter, q: initialFilter.q, page: 1 })
       setPage(1)
     }
   }, [initialFilter])
