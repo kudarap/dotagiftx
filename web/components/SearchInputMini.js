@@ -82,7 +82,7 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
         {...other}
       />
 
-      {keyword !== '' ? (
+      {keyword ? (
         <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
       ) : (
         <SearchIcon className={classes.iconButtons} onClick={handleSubmit} />
