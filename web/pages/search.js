@@ -20,20 +20,38 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const defaultFilter = { sort: 'created_at:desc', page: 1 }
-
-export default function Search({ catalogs: items, filter: propFilter }) {
+export default function Search({ catalogs: initialCatalogs, filter: initialFilter }) {
   const classes = useStyles()
 
-  const [filter, setFilter] = React.useState(propFilter)
+  const [filter, setFilter] = React.useState(initialFilter)
+  const [page, setPage] = React.useState(filter.page)
+  const [catalogs, setCatalogs] = React.useState(initialCatalogs)
+  const [error, setError] = React.useState(null)
 
+  // Handle search keyword change and resets page if available.
   React.useEffect(() => {
-    setFilter({ ...filter, ...propFilter })
-  }, [propFilter])
+    const q = initialFilter.q || null
+    if (q) {
+      setFilter({ ...filter, q, page: 1 })
+      setPage(1)
+    }
+  }, [initialFilter])
 
-  const handlePageChange = (e, page) => {
-    const f = { ...filter, page }
-    setFilter(f)
+  // Handle catalog request on page change.
+  React.useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await catalogSearch(filter)
+        setCatalogs(res)
+      } catch (e) {
+        setError(e.message)
+      }
+    })()
+  }, [filter])
+
+  const handlePageChange = (e, p) => {
+    setFilter({ ...filter, page: p })
+    setPage(p)
   }
 
   const linkProps = { href: '/search', query: filter }
@@ -47,22 +65,22 @@ export default function Search({ catalogs: items, filter: propFilter }) {
           {filter.q && (
             <>
               <Typography component="h1" variant="h6">
-                {items && items.total_count} results for &quot;{filter.q}&quot;
+                {catalogs && catalogs.total_count} results for &quot;{filter.q}&quot;
               </Typography>
               <br />
             </>
           )}
 
-          {!items && <LinearProgress color="secondary" />}
-          {items && (
+          {!catalogs && <LinearProgress color="secondary" />}
+          {catalogs && (
             <div>
-              <CatalogList items={items.data} />
+              <CatalogList items={catalogs.data} error={error} />
               <TablePaginationRouter
                 linkProps={linkProps}
                 colSpan={3}
                 style={{ textAlign: 'right' }}
-                page={filter.page}
-                count={items.total_count}
+                count={catalogs.total_count}
+                page={page}
                 onChangePage={handlePageChange}
               />
             </div>
@@ -79,15 +97,26 @@ Search.propTypes = {
   filter: PropTypes.object.isRequired,
 }
 
+const catalogSearchFilter = { sort: 'created_at:desc', page: 1 }
+
 // This gets called on every request
 export async function getServerSideProps({ query }) {
-  const filter = { ...defaultFilter, ...query }
+  const filter = { ...catalogSearchFilter, ...query }
   filter.page = Number(query.page || 1)
+
+  let catalogs = {}
+  let error = null
+  try {
+    catalogs = await catalogSearch(filter)
+  } catch (e) {
+    error = e.message
+  }
 
   return {
     props: {
-      catalogs: await catalogSearch(filter),
       filter,
+      catalogs,
+      error,
     },
   }
 }
