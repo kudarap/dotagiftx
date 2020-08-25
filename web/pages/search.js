@@ -26,7 +26,6 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
   const classes = useStyles()
 
   const [filter, setFilter] = React.useState(initialFilter)
-  const [page, setPage] = React.useState(filter.page)
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
   const [error, setError] = React.useState(null)
 
@@ -38,7 +37,6 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
 
     if (has(initialFilter, 'q')) {
       setFilter({ ...filter, q: initialFilter.q, page: 1 })
-      setPage(1)
     }
   }, [initialFilter])
 
@@ -56,7 +54,6 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
 
   const handlePageChange = (e, p) => {
     setFilter({ ...filter, page: p })
-    setPage(p)
   }
 
   const linkProps = { href: '/search', query: filter }
@@ -85,7 +82,7 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
                 colSpan={3}
                 style={{ textAlign: 'right' }}
                 count={catalogs.total_count}
-                page={page}
+                page={filter.page}
                 onChangePage={handlePageChange}
               />
             </div>
