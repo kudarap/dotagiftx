@@ -77,14 +77,16 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
           {catalogs && (
             <div>
               <CatalogList items={catalogs.data} error={error} />
-              <TablePaginationRouter
-                linkProps={linkProps}
-                colSpan={3}
-                style={{ textAlign: 'right' }}
-                count={catalogs.total_count}
-                page={filter.page}
-                onChangePage={handlePageChange}
-              />
+              {!error && (
+                <TablePaginationRouter
+                  linkProps={linkProps}
+                  colSpan={3}
+                  style={{ textAlign: 'right' }}
+                  count={catalogs.total_count}
+                  page={filter.page}
+                  onChangePage={handlePageChange}
+                />
+              )}
             </div>
           )}
         </Container>
