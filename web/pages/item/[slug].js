@@ -15,6 +15,7 @@ import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
+import ContactDialog from '@/components/ContactDialog'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -172,6 +173,8 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
       </main>
 
       <Footer />
+
+      <ContactDialog />
     </>
   )
 }
