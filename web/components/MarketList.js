@@ -16,6 +16,7 @@ import Link from '@/components/Link'
 import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
+import ContactDialog from '@/components/ContactDialog'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -32,74 +33,87 @@ export default function MarketList({ data, error, currentUserID }) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
+  const [user, setUser] = React.useState(null)
+
+  const handleContactClick = u => {
+    setUser(u)
+  }
+
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableHeadCell>Seller</TableHeadCell>
-            <TableHeadCell align="right">Price</TableHeadCell>
-            <TableHeadCell align="center" width={156} />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {error && (
+    <>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
             <TableRow>
-              <TableCell align="center" colSpan={3}>
-                Error retrieving data
-                <br />
-                <Typography variant="caption" color="textSecondary">
-                  {error}
-                </Typography>
-              </TableCell>
+              <TableHeadCell>Seller</TableHeadCell>
+              <TableHeadCell align="right">Price</TableHeadCell>
+              <TableHeadCell align="center" width={156} />
             </TableRow>
-          )}
-
-          {!error && !data && (
-            <TableRow>
-              <TableCell align="center" colSpan={3}>
-                Loading...
-              </TableCell>
-            </TableRow>
-          )}
-
-          {data.data &&
-            data.data.map(market => (
-              <TableRow key={market.id} hover>
-                <TableCell component="th" scope="row" padding="none">
-                  <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
-                    <div className={classes.seller}>
-                      {!isMobile && (
-                        <Avatar
-                          className={classes.avatar}
-                          src={`${CDN_URL}/${market.user.avatar}`}
-                        />
-                      )}
-                      <div>
-                        <strong>{market.user.name}</strong>
-                        <br />
-                        <Typography variant="caption" color="textSecondary">
-                          {market.user.steam_id}
-                        </Typography>
-                      </div>
-                    </div>
-                  </Link>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-                </TableCell>
-                <TableCell align="center">
-                  {currentUserID === market.user.id ? (
-                    <Button variant="outlined">Remove</Button>
-                  ) : (
-                    <BuyButton variant="contained">Contact Seller</BuyButton>
-                  )}
+          </TableHead>
+          <TableBody>
+            {error && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  Error retrieving data
+                  <br />
+                  <Typography variant="caption" color="textSecondary">
+                    {error}
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            )}
+
+            {!error && !data && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  Loading...
+                </TableCell>
+              </TableRow>
+            )}
+
+            {data.data &&
+              data.data.map(market => (
+                <TableRow key={market.id} hover>
+                  <TableCell component="th" scope="row" padding="none">
+                    <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
+                      <div className={classes.seller}>
+                        {!isMobile && (
+                          <Avatar
+                            className={classes.avatar}
+                            src={`${CDN_URL}/${market.user.avatar}`}
+                          />
+                        )}
+                        <div>
+                          <strong>{market.user.name}</strong>
+                          <br />
+                          <Typography variant="caption" color="textSecondary">
+                            {market.user.steam_id}
+                          </Typography>
+                        </div>
+                      </div>
+                    </Link>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    {currentUserID === market.user.id ? (
+                      <Button variant="outlined">Remove</Button>
+                    ) : (
+                      <BuyButton
+                        variant="contained"
+                        onClick={() => handleContactClick(market.user)}>
+                        Contact Seller
+                      </BuyButton>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <ContactDialog user={user} open={!!user} onClose={() => handleContactClick(null)} />
+    </>
   )
 }
 MarketList.propTypes = {

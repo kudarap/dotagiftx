@@ -173,8 +173,6 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
       </main>
 
       <Footer />
-
-      <ContactDialog />
     </>
   )
 }
