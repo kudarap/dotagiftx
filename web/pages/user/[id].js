@@ -13,6 +13,7 @@ import Container from '@/components/Container'
 import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
+import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -37,9 +38,6 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1.5),
   },
 }))
-
-const steamProfileBaseURL = 'https://steamcommunity.com/profiles'
-const steamRepBaseURL = 'https://steamrep.com/profiles'
 
 export default function UserDetails({
   profile,
@@ -72,8 +70,8 @@ export default function UserDetails({
 
   const linkProps = { href: '/user/[id]', as: `/user/${profile.steam_id}` }
 
-  const profileURL = `${steamProfileBaseURL}/${profile.steam_id}`
-  const steamRepURL = `${steamRepBaseURL}/profiles/${profile.steam_id}`
+  const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
+  const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/profiles/${profile.steam_id}`
 
   const metaTitle = `DotagiftX :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`

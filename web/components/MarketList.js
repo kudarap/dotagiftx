@@ -33,10 +33,10 @@ export default function MarketList({ data, error, currentUserID }) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
-  const [user, setUser] = React.useState(null)
+  const [currentMarket, setCurrentMarket] = React.useState(null)
 
-  const handleContactClick = u => {
-    setUser(u)
+  const handleContactClick = marketIdx => {
+    setCurrentMarket(data.data[marketIdx])
   }
 
   return (
@@ -72,7 +72,7 @@ export default function MarketList({ data, error, currentUserID }) {
             )}
 
             {data.data &&
-              data.data.map(market => (
+              data.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
                   <TableCell component="th" scope="row" padding="none">
                     <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
@@ -100,9 +100,7 @@ export default function MarketList({ data, error, currentUserID }) {
                     {currentUserID === market.user.id ? (
                       <Button variant="outlined">Remove</Button>
                     ) : (
-                      <BuyButton
-                        variant="contained"
-                        onClick={() => handleContactClick(market.user)}>
+                      <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
                         Contact Seller
                       </BuyButton>
                     )}
@@ -112,7 +110,11 @@ export default function MarketList({ data, error, currentUserID }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <ContactDialog user={user} open={!!user} onClose={() => handleContactClick(null)} />
+      <ContactDialog
+        market={currentMarket}
+        open={!!currentMarket}
+        onClose={() => handleContactClick(null)}
+      />
     </>
   )
 }

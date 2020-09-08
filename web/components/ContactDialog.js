@@ -1,16 +1,27 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
 import { CDN_URL } from '@/service/api'
+import ChipLink from '@/components/ChipLink'
+import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import Link from '@/components/Link'
+import Button from '@/components/Button'
 
 const useStyles = makeStyles(theme => ({
+  details: {
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+      display: 'block',
+    },
+    display: 'inline-flex',
+  },
   avatar: {
     [theme.breakpoints.down('xs')]: {
       margin: '0 auto',
@@ -24,31 +35,92 @@ const useStyles = makeStyles(theme => ({
 export default function ContactDialog(props) {
   const classes = useStyles()
 
-  const { user, open, onClose } = props
+  const { market, open, onClose } = props
 
-  if (!user) {
+  if (!market) {
     return null
   }
+
+  const storeProfile = `/user/${market.user.steam_id}`
+  const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
 
   return (
     <div>
       <Dialog
+        fullWidth
         open={open}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">Contact Seller</DialogTitle>
         <DialogContent>
-          <Avatar className={classes.avatar} src={`${CDN_URL}/${user.avatar}`} />
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous location data to
-            Google, even when no apps are running.
+          <div className={classes.details}>
+            <a href={storeProfile} target="_blank" rel="noreferrer noopener">
+              <Avatar className={classes.avatar} src={`${CDN_URL}/${market.user.avatar}`} />
+            </a>
+            <Typography component="h1">
+              <Typography component="p" variant="h4">
+                {market.user.name}
+              </Typography>
+              <Typography gutterBottom>
+                <Typography color="textSecondary" component="span">
+                  {`quick links: `}
+                </Typography>
+                {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
+                {/* &nbsp; */}
+                <ChipLink
+                  label="SteamRep"
+                  href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
+                />
+                &nbsp;
+                <ChipLink label="Steam Inventory" href={`${steamProfileURL}/inventory#570`} />
+                {market.notes && (
+                  <>
+                    <br />
+                    <Typography color="textSecondary" component="span">
+                      {`notes: `}
+                    </Typography>
+                    <u>{market.notes}</u>
+                  </>
+                )}
+              </Typography>
+            </Typography>
+          </div>
+
+          <DialogContentText>
+            <br />
+            Guides for Giftables
+            <ul>
+              <li>
+                Dota 2 giftables transaction only viable if the two steam user parties have been
+                friends for 30 days.
+              </li>
+              <li>
+                As giftables involves a party having to go first, please always check user&apos;s
+                reputation through&nbsp;
+                <Link
+                  href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  SteamRep
+                </Link>
+                .
+              </li>
+            </ul>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Disagree</Button>
-          <Button onClick={onClose} autoFocus>
-            Agree
+          <Button component="a" href={storeProfile}>
+            Seller Items
+          </Button>
+          <Button
+            color="secondary"
+            variant="outlined"
+            component={Link}
+            target="_blank"
+            rel="noreferrer noopener"
+            href={steamProfileURL}>
+            Steam Profile
           </Button>
         </DialogActions>
       </Dialog>
@@ -56,12 +128,12 @@ export default function ContactDialog(props) {
   )
 }
 ContactDialog.propTypes = {
-  user: PropTypes.object,
+  market: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,
 }
 ContactDialog.defaultProps = {
-  user: null,
+  market: null,
   open: false,
   onClose: () => {},
 }
