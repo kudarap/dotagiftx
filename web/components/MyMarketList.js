@@ -16,6 +16,8 @@ import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
+import MarketUpdateDialog from '@/components/MarketUpdateDialog'
+import { amount } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -39,6 +41,12 @@ export default function MyMarketList({ datatable, error }) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
+  const [currentMarket, setCurrentMarket] = React.useState(null)
+
+  const handleUpdateClick = marketIdx => {
+    setCurrentMarket(datatable.data[marketIdx])
+  }
+
   if (error) {
     return <p>Error</p>
   }
@@ -48,58 +56,67 @@ export default function MyMarketList({ datatable, error }) {
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableHeadCell>Sell Listings ({datatable.total_count})</TableHeadCell>
-            <TableHeadCell align="right">Listed</TableHeadCell>
-            <TableHeadCell align="right">Price</TableHeadCell>
-            <TableHeadCell align="center" width={70} />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {datatable.data &&
-            datatable.data.map(market => (
-              <TableRow key={market.id} hover>
-                <TableCell component="th" scope="row" padding="none">
-                  <Link
-                    className={classes.link}
-                    href="/item/[slug]"
-                    as={`/item/${market.item.slug}`}
-                    disableUnderline>
-                    {!isMobile && (
-                      <ItemImage
-                        className={classes.image}
-                        image={`/200x100/${market.item.image}`}
-                        title={market.item.name}
-                        rarity={market.item.rarity}
-                      />
-                    )}
-                    <div>
-                      <strong>{market.item.name}</strong>
-                      <br />
-                      <Typography variant="caption" color="textSecondary">
-                        {market.item.hero}
-                      </Typography>
-                      <RarityTag rarity={market.item.rarity} />
-                    </div>
-                  </Link>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="body2">{format.dateFromNow(market.created_at)}</Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-                </TableCell>
-                <TableCell align="center">
-                  <Button variant="outlined">Edit</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableHeadCell>Sell Listings ({datatable.total_count})</TableHeadCell>
+              <TableHeadCell align="right">Listed</TableHeadCell>
+              <TableHeadCell align="right">Price</TableHeadCell>
+              <TableHeadCell align="center" width={70} />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {datatable.data &&
+              datatable.data.map((market, idx) => (
+                <TableRow key={market.id} hover>
+                  <TableCell component="th" scope="row" padding="none">
+                    <Link
+                      className={classes.link}
+                      href="/item/[slug]"
+                      as={`/item/${market.item.slug}`}
+                      disableUnderline>
+                      {!isMobile && (
+                        <ItemImage
+                          className={classes.image}
+                          image={`/200x100/${market.item.image}`}
+                          title={market.item.name}
+                          rarity={market.item.rarity}
+                        />
+                      )}
+                      <div>
+                        <strong>{market.item.name}</strong>
+                        <br />
+                        <Typography variant="caption" color="textSecondary">
+                          {market.item.hero}
+                        </Typography>
+                        <RarityTag rarity={market.item.rarity} />
+                      </div>
+                    </Link>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">{format.dateFromNow(market.created_at)}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
+                      Edit
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <MarketUpdateDialog
+        open={!!currentMarket}
+        market={currentMarket}
+        onClose={() => handleUpdateClick(null)}
+      />
+    </>
   )
 }
 MyMarketList.propTypes = {

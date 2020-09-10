@@ -17,6 +17,7 @@ import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
+import { amount } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -94,7 +95,7 @@ export default function MarketList({ data, error, currentUserID }) {
                     </Link>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
                   </TableCell>
                   <TableCell align="center">
                     {currentUserID === market.user.id ? (
