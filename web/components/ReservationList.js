@@ -12,7 +12,6 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import * as format from '@/lib/format'
-import Link from '@/components/Link'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
@@ -24,12 +23,13 @@ const useStyles = makeStyles(theme => ({
   seller: {
     display: 'inline-flex',
   },
-  link: {
+  item: {
     [theme.breakpoints.down('xs')]: {
       paddingLeft: theme.spacing(2),
     },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
+    cursor: 'pointer',
   },
   image: {
     margin: theme.spacing(-1, 1, -1, 1),
@@ -74,29 +74,28 @@ export default function MyMarketList({ datatable, error }) {
             {datatable.data &&
               datatable.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
-                  <TableCell component="th" scope="row" padding="none">
-                    <Link
-                      className={classes.link}
-                      href="/item/[slug]"
-                      as={`/item/${market.item.slug}`}
-                      disableUnderline>
-                      {!isMobile && (
-                        <ItemImage
-                          className={classes.image}
-                          image={`/200x100/${market.item.image}`}
-                          title={market.item.name}
-                          rarity={market.item.rarity}
-                        />
-                      )}
-                      <div>
-                        <strong>{market.item.name}</strong>
-                        <br />
-                        <Typography variant="caption" color="textSecondary">
-                          {market.item.hero}
-                        </Typography>
-                        <RarityTag rarity={market.item.rarity} />
-                      </div>
-                    </Link>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    padding="none"
+                    className={classes.item}
+                    onClick={() => handleUpdateClick(idx)}>
+                    {!isMobile && (
+                      <ItemImage
+                        className={classes.image}
+                        image={`/200x100/${market.item.image}`}
+                        title={market.item.name}
+                        rarity={market.item.rarity}
+                      />
+                    )}
+                    <div>
+                      <strong>{market.item.name}</strong>
+                      <br />
+                      <Typography variant="caption" color="textSecondary">
+                        {market.item.hero}
+                      </Typography>
+                      <RarityTag rarity={market.item.rarity} />
+                    </div>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="body2">{moment(market.updated_at).fromNow()}</Typography>
