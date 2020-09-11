@@ -60,7 +60,6 @@ export default function MarketUpdateDialog(props) {
   }
 
   const router = useRouter()
-
   const handleRemoveClick = () => {
     setLoading(true)
     setError(null)

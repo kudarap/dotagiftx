@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Avatar from '@material-ui/core/Avatar'
@@ -11,13 +12,14 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL } from '@/service/api'
+import { CDN_URL, myMarket } from '@/service/api'
+import { amount } from '@/lib/format'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
-import { amount } from '@/lib/format'
+import { MARKET_STATUS_REMOVED } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -37,7 +39,20 @@ export default function MarketList({ data, error, currentUserID }) {
   const [currentMarket, setCurrentMarket] = React.useState(null)
 
   const handleContactClick = marketIdx => {
-    setCurrentMarket(data.data[marketIdx])
+    setCurrentMarket(data.data[marketIdx].id)
+  }
+
+  const router = useRouter()
+  const handleRemoveClick = marketIdx => {
+    const mktID = data.data[marketIdx].id
+    ;(async () => {
+      try {
+        await myMarket.PATCH(mktID, { status: MARKET_STATUS_REMOVED })
+        router.reload()
+      } catch (e) {
+        console.error(`Error: ${e.message}`)
+      }
+    })()
   }
 
   return (
@@ -99,7 +114,9 @@ export default function MarketList({ data, error, currentUserID }) {
                   </TableCell>
                   <TableCell align="center">
                     {currentUserID === market.user.id ? (
-                      <Button variant="outlined">Remove</Button>
+                      <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
+                        Remove
+                      </Button>
                     ) : (
                       <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
                         Contact Seller
