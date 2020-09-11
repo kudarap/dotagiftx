@@ -158,13 +158,22 @@ export default function Header({ disableSearch }) {
                     onClick={handleClose}
                     component={Link}
                     href="/user/[id]"
-                    as={`/user/${profile.steam_id}?preview`}>
+                    as={`/user/${profile.steam_id}?preview`}
+                    disableUnderline>
                     Profile
                   </MenuItem>
-                  <MenuItem onClick={handleClose} component={Link} href="/my-listings">
+                  <MenuItem
+                    onClick={handleClose}
+                    component={Link}
+                    href="/my-listings"
+                    disableUnderline>
                     My Listings
                   </MenuItem>
-                  <MenuItem onClick={handleClose} component={Link} href="/reservations">
+                  <MenuItem
+                    onClick={handleClose}
+                    component={Link}
+                    href="/reservations"
+                    disableUnderline>
                     Reservations
                   </MenuItem>
                   {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
