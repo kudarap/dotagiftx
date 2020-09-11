@@ -13,6 +13,7 @@ import ChipLink from '@/components/ChipLink'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
+import DialogCloseButton from '@/components/DialogCloseButton'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -52,7 +53,10 @@ export default function ContactDialog(props) {
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Contact Seller</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          Contact Seller
+          <DialogCloseButton onClick={onClose} />
+        </DialogTitle>
         <DialogContent>
           <div className={classes.details}>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
