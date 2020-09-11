@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
+import DialogCloseButton from '@/components/DialogCloseButton'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -46,7 +47,10 @@ export default function MarketUpdateDialog(props) {
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Update Listing</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          Update Listing
+          <DialogCloseButton onClick={onClose} />
+        </DialogTitle>
         <DialogContent>
           <div className={classes.details}>
             <ItemImage
@@ -64,7 +68,12 @@ export default function MarketUpdateDialog(props) {
                 <Typography color="textSecondary" component="span">
                   {`Status: `}
                 </Typography>
-                <strong>{`Live`}</strong>
+                <strong>Live</strong>
+                <br />
+                <Typography color="textSecondary" component="span">
+                  {`Price: `}
+                </Typography>
+                {amount(market.price, market.currency)}
                 <br />
                 <Typography color="textSecondary" component="span">
                   {`Listed: `}
@@ -72,12 +81,7 @@ export default function MarketUpdateDialog(props) {
                 {dateCalendar(market.updated_at)}
                 <br />
                 <Typography color="textSecondary" component="span">
-                  {`Sell Price: `}
-                </Typography>
-                {amount(market.price, market.currency)}
-                <br />
-                <Typography color="textSecondary" component="span">
-                  {`Sell Notes: `}
+                  {`Notes: `}
                 </Typography>
                 {market.notes}
               </Typography>
