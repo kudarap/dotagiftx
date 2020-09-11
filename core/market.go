@@ -31,11 +31,12 @@ const maxMarketNotesLen = 120
 
 // Market statuses.
 const (
-	MarketStatusPending  MarketStatus = 100
-	MarketStatusLive     MarketStatus = 200
-	MarketStatusReserved MarketStatus = 300
-	MarketStatusSold     MarketStatus = 400
-	MarketStatusRemoved  MarketStatus = 500
+	MarketStatusPending   MarketStatus = 100
+	MarketStatusLive      MarketStatus = 200
+	MarketStatusReserved  MarketStatus = 300
+	MarketStatusSold      MarketStatus = 400
+	MarketStatusRemoved   MarketStatus = 500
+	MarketStatusCancelled MarketStatus = 600
 )
 
 type (
@@ -99,11 +100,12 @@ type (
 )
 
 var MarketStatusTexts = map[MarketStatus]string{
-	MarketStatusPending:  "pending",
-	MarketStatusLive:     "live",
-	MarketStatusReserved: "reserved",
-	MarketStatusSold:     "sold",
-	MarketStatusRemoved:  "removed",
+	MarketStatusPending:   "pending",
+	MarketStatusLive:      "live",
+	MarketStatusReserved:  "reserved",
+	MarketStatusSold:      "sold",
+	MarketStatusRemoved:   "removed",
+	MarketStatusCancelled: "cancelled",
 }
 
 // CheckCreate validates field on creating new market.
