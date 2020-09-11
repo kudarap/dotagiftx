@@ -17,5 +17,5 @@ Dota 2 Giftables web user interface
 - [x] user market listing
 - [x] login with steam
 - [x] user post item
-- [ ] user remove listing
-- [ ] user post set status and notes
+- [x] user remove listing
+- [x] user post set status and notes
