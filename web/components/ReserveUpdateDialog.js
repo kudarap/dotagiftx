@@ -56,7 +56,6 @@ export default function ReserveUpdateDialog(props) {
   }
 
   const router = useRouter()
-
   const marketUpdate = payload => {
     if (loading) {
       return

@@ -12,13 +12,15 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import ReserveIcon from '@material-ui/icons/EventAvailable'
 import RemoveIcon from '@material-ui/icons/Delete'
 import { myMarket } from '@/service/api'
+import { amount, dateCalendar } from '@/lib/format'
 import Button from '@/components/Button'
 import ItemImage from '@/components/ItemImage'
-import { amount, dateCalendar } from '@/lib/format'
+import Link from '@/components/Link'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
+  MARKET_STATUS_REMOVED,
   MARKET_STATUS_RESERVED,
 } from '@/constants/market'
 
@@ -58,6 +60,22 @@ export default function MarketUpdateDialog(props) {
   }
 
   const router = useRouter()
+
+  const handleRemoveClick = () => {
+    setLoading(true)
+    setError(null)
+    ;(async () => {
+      try {
+        await myMarket.PATCH(market.id, { status: MARKET_STATUS_REMOVED })
+        handleClose()
+        router.reload()
+      } catch (e) {
+        setError(`Error: ${e.message}`)
+      }
+
+      setLoading(false)
+    })()
+  }
 
   const onFormSubmit = evt => {
     evt.preventDefault()
@@ -112,7 +130,12 @@ export default function MarketUpdateDialog(props) {
             />
 
             <Typography component="h1">
-              <Typography component="p" variant="h6">
+              <Typography
+                component="p"
+                variant="h6"
+                component={Link}
+                href="/item/[slug]"
+                as={`/item/${market.item.slug}`}>
                 {market.item.name}
               </Typography>
               <Typography gutterBottom>
@@ -163,7 +186,7 @@ export default function MarketUpdateDialog(props) {
           </Typography>
         )}
         <DialogActions>
-          <Button disabled={loading} startIcon={<RemoveIcon />}>
+          <Button disabled={loading} startIcon={<RemoveIcon />} onClick={handleRemoveClick}>
             Remove listing
           </Button>
           <Button
