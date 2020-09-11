@@ -15,6 +15,7 @@ import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
+import ContactDialog from '@/components/ContactDialog'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -38,75 +39,89 @@ export default function UserMarketList({ data, error }) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
+  const [currentMarket, setCurrentMarket] = React.useState(null)
+  const handleContactClick = marketIdx => {
+    setCurrentMarket(data.data[marketIdx])
+  }
+
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableHeadCell>Sell Listings ({data.total_count})</TableHeadCell>
-            <TableHeadCell align="right">Price</TableHeadCell>
-            <TableHeadCell align="right" width={156} />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {error && (
+    <>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
             <TableRow>
-              <TableCell align="center" colSpan={3}>
-                Error retrieving data
-                <br />
-                <Typography variant="caption" color="textSecondary">
-                  {error}
-                </Typography>
-              </TableCell>
+              <TableHeadCell>Sell Listings ({data.total_count})</TableHeadCell>
+              <TableHeadCell align="right">Price</TableHeadCell>
+              <TableHeadCell align="right" width={156} />
             </TableRow>
-          )}
-
-          {!error && !data && (
-            <TableRow>
-              <TableCell align="center" colSpan={3}>
-                Loading...
-              </TableCell>
-            </TableRow>
-          )}
-
-          {data.data &&
-            data.data.map(market => (
-              <TableRow key={market.id} hover>
-                <TableCell component="th" scope="row" padding="none">
-                  <Link
-                    className={classes.link}
-                    href="/item/[slug]"
-                    as={`/item/${market.item.slug}`}
-                    disableUnderline>
-                    {!isMobile && (
-                      <ItemImage
-                        className={classes.image}
-                        image={`/200x100/${market.item.image}`}
-                        title={market.item.name}
-                        rarity={market.item.rarity}
-                      />
-                    )}
-                    <div>
-                      <strong>{market.item.name}</strong>
-                      <br />
-                      <Typography variant="caption" color="textSecondary">
-                        {market.item.hero}
-                      </Typography>
-                      <RarityTag rarity={market.item.rarity} />
-                    </div>
-                  </Link>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <BuyButton variant="contained">Contact Seller</BuyButton>
+          </TableHead>
+          <TableBody>
+            {error && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  Error retrieving data
+                  <br />
+                  <Typography variant="caption" color="textSecondary">
+                    {error}
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            )}
+
+            {!error && !data && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  Loading...
+                </TableCell>
+              </TableRow>
+            )}
+
+            {data.data &&
+              data.data.map((market, idx) => (
+                <TableRow key={market.id} hover>
+                  <TableCell component="th" scope="row" padding="none">
+                    <Link
+                      className={classes.link}
+                      href="/item/[slug]"
+                      as={`/item/${market.item.slug}`}
+                      disableUnderline>
+                      {!isMobile && (
+                        <ItemImage
+                          className={classes.image}
+                          image={`/200x100/${market.item.image}`}
+                          title={market.item.name}
+                          rarity={market.item.rarity}
+                        />
+                      )}
+                      <div>
+                        <strong>{market.item.name}</strong>
+                        <br />
+                        <Typography variant="caption" color="textSecondary">
+                          {market.item.hero}
+                        </Typography>
+                        <RarityTag rarity={market.item.rarity} />
+                      </div>
+                    </Link>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                      Contact Seller
+                    </BuyButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <ContactDialog
+        market={currentMarket}
+        open={!!currentMarket}
+        onClose={() => handleContactClick(null)}
+      />
+    </>
   )
 }
 UserMarketList.propTypes = {

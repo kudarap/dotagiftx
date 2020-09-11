@@ -37,9 +37,8 @@ export default function MarketList({ data, error, currentUserID }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
-
   const handleContactClick = marketIdx => {
-    setCurrentMarket(data.data[marketIdx].id)
+    setCurrentMarket(data.data[marketIdx])
   }
 
   const router = useRouter()

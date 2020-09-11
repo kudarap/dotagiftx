@@ -92,7 +92,7 @@ export default function ContactDialog(props) {
             </Typography>
           </div>
 
-          <DialogContentText>
+          <div>
             <br />
             Guides for Giftables
             <ul>
@@ -119,7 +119,7 @@ export default function ContactDialog(props) {
                 .
               </li>
             </ul>
-          </DialogContentText>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>
@@ -131,6 +131,7 @@ export default function ContactDialog(props) {
             component={Link}
             target="_blank"
             rel="noreferrer noopener"
+            disableUnderline
             href={steamProfileURL}>
             Check Steam Profile
           </Button>
