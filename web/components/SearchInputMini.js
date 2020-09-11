@@ -42,7 +42,7 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
 
   const router = useRouter()
   const { query } = router
-  const [keyword, setKeyword] = React.useState(query.q)
+  const [keyword, setKeyword] = React.useState(query.q || '')
   React.useEffect(() => {
     if (!has(query, 'q')) {
       return
