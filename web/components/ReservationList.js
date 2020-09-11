@@ -16,7 +16,7 @@ import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
-import MarketUpdateDialog from '@/components/MarketUpdateDialog'
+import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
 import { amount } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
@@ -105,7 +105,7 @@ export default function MyMarketList({ datatable, error }) {
                   </TableCell>
                   <TableCell align="center">
                     <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
-                      Edit
+                      Update
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -113,7 +113,7 @@ export default function MyMarketList({ datatable, error }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <MarketUpdateDialog
+      <ReserveUpdateDialog
         open={!!currentMarket}
         market={currentMarket}
         onClose={() => handleUpdateClick(null)}

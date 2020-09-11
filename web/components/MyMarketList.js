@@ -62,7 +62,7 @@ export default function MyMarketList({ datatable, error }) {
           <TableHead>
             <TableRow>
               <TableHeadCell>
-                Sell Listings ({format.numberWithCommas(datatable.total_count)})
+                Items ({format.numberWithCommas(datatable.total_count)})
               </TableHeadCell>
               <TableHeadCell align="right">Listed</TableHeadCell>
               <TableHeadCell align="right">Price</TableHeadCell>
@@ -104,7 +104,7 @@ export default function MyMarketList({ datatable, error }) {
                   </TableCell>
                   <TableCell align="center">
                     <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
-                      Edit
+                      Update
                     </Button>
                   </TableCell>
                 </TableRow>
