@@ -6,11 +6,20 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import ReserveIcon from '@material-ui/icons/EventAvailable'
+import RemoveIcon from '@material-ui/icons/Delete'
+import { myMarket } from '@/service/api'
 import Button from '@/components/Button'
 import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
-import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
+import {
+  MARKET_STATUS_MAP_COLOR,
+  MARKET_STATUS_MAP_TEXT,
+  MARKET_STATUS_RESERVED,
+} from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -36,21 +45,58 @@ export default function MarketUpdateDialog(props) {
 
   const { market, open, onClose } = props
 
+  const [notes, setNotes] = React.useState('')
+  const [error, setError] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
+
+  const handleClose = () => {
+    setNotes('')
+    setError('')
+    setLoading(false)
+    onClose()
+  }
+
+  const onFormSubmit = evt => {
+    evt.preventDefault()
+
+    if (loading || notes.trim() === '') {
+      return
+    }
+
+    const payload = {
+      status: MARKET_STATUS_RESERVED,
+      notes,
+    }
+
+    setLoading(true)
+    setError(null)
+    ;(async () => {
+      try {
+        await myMarket.PATCH(market.id, payload)
+        handleClose()
+      } catch (e) {
+        setError(`Error: ${e.message}`)
+      }
+
+      setLoading(false)
+    })()
+  }
+
   if (!market) {
     return null
   }
 
   return (
-    <div>
-      <Dialog
-        fullWidth
-        open={open}
-        onClose={onClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
+    <Dialog
+      fullWidth
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
+      <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
           Update Listing
-          <DialogCloseButton onClick={onClose} />
+          <DialogCloseButton onClick={handleClose} />
         </DialogTitle>
         <DialogContent>
           <div className={classes.details}>
@@ -94,15 +140,38 @@ export default function MarketUpdateDialog(props) {
               </Typography>
             </Typography>
           </div>
+          <div>
+            <TextField
+              disabled={loading}
+              fullWidth
+              required
+              color="secondary"
+              variant="outlined"
+              label="Reserved Notes"
+              helperText="Helpful info like Buyer's avatar name, Steam profile url, or Delivery date"
+              onInput={e => setNotes(e.target.value)}
+            />
+          </div>
         </DialogContent>
+        {error && (
+          <Typography color="error" align="center" variant="body2">
+            {error}
+          </Typography>
+        )}
         <DialogActions>
-          <Button>Remove</Button>
-          <Button variant="outlined" color="secondary">
+          <Button disabled={loading} startIcon={<RemoveIcon />}>
+            Remove listing
+          </Button>
+          <Button
+            startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
+            variant="outlined"
+            color="secondary"
+            type="submit">
             Reserve to Buyer
           </Button>
         </DialogActions>
-      </Dialog>
-    </div>
+      </form>
+    </Dialog>
   )
 }
 MarketUpdateDialog.propTypes = {

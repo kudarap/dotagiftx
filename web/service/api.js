@@ -37,6 +37,7 @@ export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 export const myMarketSearch = http.baseSearchRequest(MY_MARKETS)
 export const myMarket = {
   POST: payload => http.authnRequest(http.POST, MY_MARKETS, payload),
+  PATCH: (id, payload) => http.authnRequest(http.PATCH, `${MY_MARKETS}/${id}`, payload),
 }
 export const myProfile = {
   GET: () => http.authnRequest(http.GET, MY_PROFILE),
