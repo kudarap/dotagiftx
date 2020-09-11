@@ -1,7 +1,6 @@
 package rethink
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -38,6 +37,7 @@ func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
+	q = s.filterOutZeroQty(q)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -53,8 +53,13 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 		IndexSorting:  true,
 	}
 	q := newFindOptsQuery(s.table(), o)
+	q = s.filterOutZeroQty(q)
 	err = s.db.one(q.Count(), &num)
 	return
+}
+
+func (s *catalogStorage) filterOutZeroQty(q r.Term) r.Term {
+	return q.Filter(r.Row.Field("quantity").Gt(0))
 }
 
 func (s *catalogStorage) Get(id string) (*core.Catalog, error) {
