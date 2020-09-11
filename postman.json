@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dota2giftables v0.5.0",
+    "name": "dotagiftx v0.6.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -613,13 +613,13 @@
           }
         },
         "url": {
-          "raw": "{{host}}/catalogs",
+          "raw": "{{host}}/catalogs?limit=500&sort=popular",
           "host": ["{{host}}"],
           "path": ["catalogs"],
           "query": [
             {
               "key": "q",
-              "value": "phantom",
+              "value": "Prominence",
               "disabled": true
             },
             {
@@ -634,8 +634,11 @@
             },
             {
               "key": "limit",
-              "value": "0",
-              "disabled": true
+              "value": "500"
+            },
+            {
+              "key": "sort",
+              "value": "popular"
             }
           ]
         }

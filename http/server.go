@@ -9,10 +9,10 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/kudarap/dota2giftables/core"
-	"github.com/kudarap/dota2giftables/gokit/http/jwt"
-	gokitMw "github.com/kudarap/dota2giftables/gokit/http/middleware"
-	"github.com/kudarap/dota2giftables/gokit/version"
+	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/gokit/http/jwt"
+	gokitMw "github.com/kudarap/dotagiftx/gokit/http/middleware"
+	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/sirupsen/logrus"
 )
 

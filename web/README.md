@@ -1,6 +1,6 @@
-# Dota2 Giftables UI
+# DotagiftX UI
 
-Dota 2 Giftables web user interface
+DotagiftX web user interface
 
 ### Tech Stack
 
@@ -12,10 +12,10 @@ Dota 2 Giftables web user interface
 
 - [x] market search
 - [x] item market listing
-- [ ] popular items
-- [ ] newly listed items
+- [x] popular items
+- [x] newly listed items
 - [x] user market listing
-- [ ] login with steam
-- [ ] user post item
-- [ ] user remove listing
-- [ ] user post set status and notes
+- [x] login with steam
+- [x] user post item
+- [x] user remove listing
+- [x] user post set status and notes

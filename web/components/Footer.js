@@ -1,6 +1,5 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import MuiLink from '@material-ui/core/Link'
 import Divider from '@material-ui/core/Divider'
 import Typography from '@material-ui/core/Typography'
 import Container from '@/components/Container'
@@ -34,7 +33,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function () {
+export default function Footer() {
   const classes = useStyles()
 
   return (
@@ -42,11 +41,11 @@ export default function () {
       <Divider />
       <Container disableMinHeight>
         <ul className={classes.list}>
-          {/*<li>*/}
-          {/*  <Link href="/about" color="textSecondary">*/}
-          {/*    About*/}
-          {/*  </Link>*/}
-          {/*</li>*/}
+          {/* <li> */}
+          {/*  <Link href="/about" color="textSecondary"> */}
+          {/*    About */}
+          {/*  </Link> */}
+          {/* </li> */}
           <li>
             <Link href="/faq" color="textSecondary">
               FAQ
@@ -58,16 +57,22 @@ export default function () {
             </Link>
           </li>
           <li>
-            <MuiLink
-              href="http://github.com/kudarap"
-              target="_blank"
-              color="textSecondary"
-              rel="noreferrer noopener">
+            {/* <MuiLink */}
+            {/*  href="http://github.com/kudarap" */}
+            {/*  target="_blank" */}
+            {/*  color="textSecondary" */}
+            {/*  rel="noreferrer noopener"> */}
+            {/*  <Typography component="span" color="secondary"> */}
+            {/*    DotagiftX */}
+            {/*  </Typography>{' '} */}
+            {/*  by kudarap */}
+            {/* </MuiLink> */}
+            <Link href="/about" color="textSecondary">
               <Typography component="span" color="secondary">
                 DotagiftX
               </Typography>{' '}
               by kudarap
-            </MuiLink>
+            </Link>
           </li>
           {/* <li> */}
           {/*  <MuiLink href="http://chiligarlic.com" target="_blank"> */}

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/kudarap/dota2giftables/core"
-	"github.com/kudarap/dota2giftables/errors"
+	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewUser returns a new User service.

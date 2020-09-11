@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import { CATALOGS, fetcher, marketSearch, catalogSearch } from '@/service/api'
+import * as format from '@/lib/format'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -62,6 +63,7 @@ export default function Index({ totalEntries, popularItems }) {
       <Head>
         <title>DotagiftX - Dota 2 giftables market</title>
         <meta name="description" content={description} />
+        <link rel="canonical" href="https://dotagiftx.com" />
       </Head>
 
       <Header disableSearch />
@@ -117,14 +119,10 @@ Index.propTypes = {
   popularItems: PropTypes.object.isRequired,
 }
 
-function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
 // This gets called on every request
 export async function getServerSideProps() {
   const res = await marketSearch({ limit: 1 })
-  const totalEntries = numberWithCommas(res.total_count || 0)
+  const totalEntries = format.numberWithCommas(res.total_count || 0)
 
   let popularItems = { error: null }
   try {

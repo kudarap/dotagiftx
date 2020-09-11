@@ -2,18 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import moment from 'moment'
-import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
-import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { CDN_URL, marketSearch, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
+import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
-import TablePagination from '@/components/TablePaginationRouter'
+import TablePaginationRouter from '@/components/TablePaginationRouter'
+import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -39,11 +39,30 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function UserDetails({ profile, markets }) {
+export default function UserDetails({
+  profile,
+  filter,
+  markets: initialMarkets,
+  error: initialError,
+  canonicalURL,
+}) {
   const classes = useStyles()
 
-  const router = useRouter()
-  const [page, setPage] = React.useState(Number(router.query.page || 1))
+  const [page, setPage] = React.useState(filter.page)
+  const [markets, setMarkets] = React.useState(initialMarkets)
+  const [error, setError] = React.useState(initialError)
+
+  // Handle market request on page change.
+  React.useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await marketSearch({ ...filter, page })
+        setMarkets(res)
+      } catch (e) {
+        setError(e.message)
+      }
+    })()
+  }, [page])
 
   const handlePageChange = (e, p) => {
     setPage(p)
@@ -51,14 +70,31 @@ export default function UserDetails({ profile, markets }) {
 
   const linkProps = { href: '/user/[id]', as: `/user/${profile.steam_id}` }
 
-  const profileURL = `https://steamcommunity.com/profiles/${profile.steam_id}`
-  const steamRepURL = `https://steamrep.com/profiles/${profile.steam_id}`
+  const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
+  const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/profiles/${profile.steam_id}`
+
+  const metaTitle = `DotagiftX :: ${profile.name}`
+  const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
 
   return (
     <>
       <Head>
-        <title>Dota 2 Giftables :: {profile.name} listings</title>
-        <meta name="description" content={`${profile.name} giftable listings`} />
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={canonicalURL} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDesc} />
+        <meta name="twitter:image" content={`${CDN_URL}/${profile.avatar}`} />
+        <meta name="twitter:site" content="@DotagiftX" />
+        {/* OpenGraph */}
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:image" content={`${CDN_URL}/${profile.avatar}`} />
       </Head>
 
       <Header />
@@ -66,7 +102,7 @@ export default function UserDetails({ profile, markets }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.details}>
-            <Avatar className={classes.avatar} src={CDN_URL + profile.avatar} />
+            <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
               <Typography component="p" variant="h4">
                 {profile.name}
@@ -77,43 +113,28 @@ export default function UserDetails({ profile, markets }) {
                 </Typography>
                 {moment(profile.created_at).fromNow()}
                 <br />
-
                 <Typography color="textSecondary" component="span">
-                  {`steam: `}
+                  {`quick links: `}
                 </Typography>
-                <Link
-                  href={profileURL}
-                  variant="caption"
-                  color="secondary"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  {profileURL}
-                </Link>
-                <br />
-
-                <Typography color="textSecondary" component="span">
-                  {`steamrep: `}
-                </Typography>
-                <Link
-                  href={steamRepURL}
-                  variant="caption"
-                  color="secondary"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  {steamRepURL}
-                </Link>
+                <ChipLink label="Steam Profile" href={profileURL} />
+                &nbsp;
+                {/* <ChipLink label="Steam Inventory" href={`${profileURL}/inventory`} /> */}
+                {/* &nbsp; */}
+                <ChipLink label="SteamRep" href={steamRepURL} />
               </Typography>
             </Typography>
           </div>
 
-          <UserMarketList data={markets} />
-          <TablePagination
-            linkProps={linkProps}
-            style={{ textAlign: 'right' }}
-            count={markets.total_count}
-            page={page}
-            onChangePage={handlePageChange}
-          />
+          <UserMarketList data={markets} error={error} />
+          {!error && (
+            <TablePaginationRouter
+              linkProps={linkProps}
+              style={{ textAlign: 'right' }}
+              count={markets.total_count}
+              page={page}
+              onChangePage={handlePageChange}
+            />
+          )}
         </Container>
       </main>
 
@@ -123,27 +144,52 @@ export default function UserDetails({ profile, markets }) {
 }
 UserDetails.propTypes = {
   profile: PropTypes.object.isRequired,
+  canonicalURL: PropTypes.string.isRequired,
+  filter: PropTypes.object,
   markets: PropTypes.object,
+  error: PropTypes.string,
 }
 UserDetails.defaultProps = {
-  markets: {},
+  filter: {},
+  markets: {
+    data: [],
+  },
+  error: null,
 }
 
-const marketSearchFilter = { status: MARKET_STATUS_LIVE, sort: 'created_at:desc' }
+const marketSearchFilter = {
+  page: 1,
+  status: MARKET_STATUS_LIVE,
+  sort: 'created_at:desc',
+}
 
 // This gets called on every request
-export async function getServerSideProps({ params, query }) {
-  const profile = await user(String(params.id))
+export async function getServerSideProps(props) {
+  const { params, query, req } = props
 
+  const canonicalURL = `https://${req.headers.host}${req.url}`
+
+  const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
   if (query.page) {
     filter.page = Number(query.page)
   }
 
+  let markets = {}
+  let error = null
+  try {
+    markets = await marketSearch(filter)
+  } catch (e) {
+    error = e.message
+  }
+
   return {
     props: {
       profile,
-      markets: await marketSearch(filter),
+      canonicalURL,
+      filter,
+      markets,
+      error,
     },
   }
 }

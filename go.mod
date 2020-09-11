@@ -1,6 +1,6 @@
-module github.com/kudarap/dota2giftables
+module github.com/kudarap/dotagiftx
 
-go 1.14
+go 1.15
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

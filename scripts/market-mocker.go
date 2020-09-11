@@ -28,7 +28,7 @@ var (
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIxNmE2OWUyOC1mMjBiLTQ0NzUtYjIxNC1hZGVhNmZjZTA3MTkiLCJMZXZlbCI6IiIsImV4cCI6MTU5ODU0MjcyMX0.yn-Xrh3UblPbslcq1bRKiuUPjPuSYF2EZYe852hbIwM",
 		},
 		"dev": {
-			"https://api.dota2giftables.com/my/markets",
+			"https://api.dotagiftx.com/my/markets",
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJjNzUwMDkyMi1lNTE2LTQ0MzgtYjQyZS04ZDk3ZTNhMDZmOTQiLCJMZXZlbCI6IiIsImV4cCI6MTU5NzQ4MDE2OX0.hVsus9JYmeRhy_8rJ11hRQ1VrrF6zSQ02WhVCCEBomw",
 		},
 	}

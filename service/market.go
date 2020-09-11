@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/kudarap/dota2giftables/core"
-	"github.com/kudarap/dota2giftables/errors"
+	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -89,7 +89,7 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 
 	mkt.SetDefaults()
 	if err := mkt.CheckCreate(); err != nil {
-		return errors.New(core.ItemErrRequiredFields, err)
+		return err
 	}
 
 	// Check Item existence.

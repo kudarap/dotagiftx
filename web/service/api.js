@@ -3,17 +3,19 @@ import trimEnd from 'lodash/trimEnd'
 import * as http from './http'
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
-export const CDN_URL = `${trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')}/`
+export const CDN_URL = trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')
 
 const parseParams = (url, filter) => `${url}?${querystring.stringify(filter)}`
 export const fetcher = (endpoint, filter) => http.request(http.GET, parseParams(endpoint, filter))
-export const fetcherWithToken = url => http.authnRequest(http.GET, url)
+export const fetcherWithToken = (endpoint, filter) =>
+  http.authnRequest(http.GET, parseParams(endpoint, filter))
 
 // API Endpoints
 const AUTH_STEAM = '/auth/steam'
 const AUTH_RENEW = '/auth/renew'
 const AUTH_REVOKE = '/auth/revoke'
 export const MY_PROFILE = '/my/profile'
+export const MY_MARKETS = '/my/markets'
 export const USERS = '/users'
 export const ITEMS = '/items'
 export const MARKETS = '/markets'
@@ -32,10 +34,16 @@ export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
 export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 
+export const myMarketSearch = http.baseSearchRequest(MY_MARKETS)
+export const myMarket = {
+  POST: payload => http.authnRequest(http.POST, MY_MARKETS, payload),
+  PATCH: (id, payload) => http.authnRequest(http.PATCH, `${MY_MARKETS}/${id}`, payload),
+}
 export const myProfile = {
   GET: () => http.authnRequest(http.GET, MY_PROFILE),
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
+
 export const itemSearch = http.baseSearchRequest(ITEMS)
 export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)

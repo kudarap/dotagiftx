@@ -1,4 +1,4 @@
-# Dota2 Giftables
+# DotagiftX
 
 Market place for giftable Dota 2 items
 
@@ -6,7 +6,7 @@ Market place for giftable Dota 2 items
 
 - Docker 19
 - RethinkDB 2.4
-- Go 1.14
+- Go 1.15
 
 ### Architecture
 

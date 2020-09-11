@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 )
 
 func handleImageUpload(svc core.ImageService) http.HandlerFunc {

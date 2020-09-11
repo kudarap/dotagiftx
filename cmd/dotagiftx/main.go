@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dota2giftables/gokit/envconf"
-	"github.com/kudarap/dota2giftables/gokit/file"
-	"github.com/kudarap/dota2giftables/gokit/logger"
-	"github.com/kudarap/dota2giftables/gokit/version"
-	"github.com/kudarap/dota2giftables/http"
-	"github.com/kudarap/dota2giftables/redis"
-	"github.com/kudarap/dota2giftables/rethink"
-	"github.com/kudarap/dota2giftables/service"
-	"github.com/kudarap/dota2giftables/steam"
+	"github.com/kudarap/dotagiftx/gokit/envconf"
+	"github.com/kudarap/dotagiftx/gokit/file"
+	"github.com/kudarap/dotagiftx/gokit/logger"
+	"github.com/kudarap/dotagiftx/gokit/version"
+	"github.com/kudarap/dotagiftx/http"
+	"github.com/kudarap/dotagiftx/redis"
+	"github.com/kudarap/dotagiftx/rethink"
+	"github.com/kudarap/dotagiftx/service"
+	"github.com/kudarap/dotagiftx/steam"
 )
 
 const configPrefix = "DG"
@@ -89,12 +89,6 @@ func (a *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 
-	// temp index all
-	//ii, _ := itemStg.Find(core.FindOpts{})
-	//for _, item := range ii {
-	//	catalogStg.Index(item.ID)
-	//}
-
 	// Service inits.
 	log.Println("setting up services...")
 	fileMgr := setupFileManager(a.config)
@@ -102,8 +96,19 @@ func (a *application) setup() error {
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, fileMgr)
-	marketSvc := service.NewMarket(marketStg, userStg, itemStg, trackStg, catalogStg, log)
+	marketSvc := service.NewMarket(
+		marketStg,
+		userStg,
+		itemStg,
+		trackStg,
+		catalogStg,
+		log,
+	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
+
+	// NOTE! this is for run-once scripts
+	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
+	//fixes.ReIndexAll(itemStg, catalogStg)
 
 	// Server setup.
 	log.Println("setting up http server...")

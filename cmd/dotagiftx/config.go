@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/kudarap/dota2giftables/gokit/logger"
-	"github.com/kudarap/dota2giftables/redis"
-	"github.com/kudarap/dota2giftables/rethink"
-	"github.com/kudarap/dota2giftables/steam"
+	"github.com/kudarap/dotagiftx/gokit/logger"
+	"github.com/kudarap/dotagiftx/redis"
+	"github.com/kudarap/dotagiftx/rethink"
+	"github.com/kudarap/dotagiftx/steam"
 )
 
 type (

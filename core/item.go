@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/kudarap/dota2giftables/gokit/slug"
+	"github.com/kudarap/dotagiftx/gokit/slug"
 )
 
 // Item error types.

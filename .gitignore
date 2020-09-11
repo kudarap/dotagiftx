@@ -8,8 +8,8 @@
 .idea
 
 # executables
-dota2giftables
-dota2giftables_amd64
+/dotagiftx
+/dotagiftx_amd64
 
 # local data
 .localdata

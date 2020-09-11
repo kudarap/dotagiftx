@@ -3,8 +3,8 @@ package rethink
 import (
 	"log"
 
-	"github.com/kudarap/dota2giftables/core"
-	"github.com/kudarap/dota2giftables/errors"
+	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 
 	"github.com/imdario/mergo"

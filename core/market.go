@@ -14,6 +14,7 @@ const (
 	MarketErrRequiredFields
 	MarketErrInvalidStatus
 	MarketErrNotesLimit
+	MarketErrInvalidPrice
 )
 
 // sets error text definition.
@@ -23,17 +24,19 @@ func init() {
 	appErrorText[MarketErrRequiredFields] = "market fields are required"
 	appErrorText[MarketErrInvalidStatus] = "market status not allowed"
 	appErrorText[MarketErrNotesLimit] = "market notes text limit reached"
+	appErrorText[MarketErrInvalidPrice] = "market price is invalid"
 }
 
 const maxMarketNotesLen = 120
 
 // Market statuses.
 const (
-	MarketStatusPending  MarketStatus = 100
-	MarketStatusLive     MarketStatus = 200
-	MarketStatusReserved MarketStatus = 300
-	MarketStatusSold     MarketStatus = 400
-	MarketStatusRemoved  MarketStatus = 500
+	MarketStatusPending   MarketStatus = 100
+	MarketStatusLive      MarketStatus = 200
+	MarketStatusReserved  MarketStatus = 300
+	MarketStatusSold      MarketStatus = 400
+	MarketStatusRemoved   MarketStatus = 500
+	MarketStatusCancelled MarketStatus = 600
 )
 
 type (
@@ -97,22 +100,28 @@ type (
 )
 
 var MarketStatusTexts = map[MarketStatus]string{
-	MarketStatusPending:  "pending",
-	MarketStatusLive:     "live",
-	MarketStatusReserved: "reserved",
-	MarketStatusSold:     "sold",
-	MarketStatusRemoved:  "removed",
+	MarketStatusPending:   "pending",
+	MarketStatusLive:      "live",
+	MarketStatusReserved:  "reserved",
+	MarketStatusSold:      "sold",
+	MarketStatusRemoved:   "removed",
+	MarketStatusCancelled: "cancelled",
 }
 
 // CheckCreate validates field on creating new market.
-func (i Market) CheckCreate() error {
+func (m Market) CheckCreate() error {
 	// Check required fields.
-	if err := validator.Struct(i); err != nil {
+	if err := validator.Struct(m); err != nil {
 		return err
 	}
 
+	// Check valid market price.
+	if m.Price <= 0 {
+		return MarketErrInvalidPrice
+	}
+
 	// Check market notes length.
-	if len(i.Notes) > maxMarketNotesLen {
+	if len(m.Notes) > maxMarketNotesLen {
 		return MarketErrNotesLimit
 	}
 
@@ -120,13 +129,13 @@ func (i Market) CheckCreate() error {
 }
 
 // CheckUpdate validates field on updating market.
-func (i Market) CheckUpdate() error {
-	if i.Notes != "" && len(i.Notes) > maxMarketNotesLen {
+func (m Market) CheckUpdate() error {
+	if m.Notes != "" && len(m.Notes) > maxMarketNotesLen {
 		return MarketErrNotesLimit
 	}
 
-	_, ok := MarketStatusTexts[i.Status]
-	if i.Status != 0 && !ok {
+	_, ok := MarketStatusTexts[m.Status]
+	if m.Status != 0 && !ok {
 		return MarketErrInvalidStatus
 	}
 
@@ -136,10 +145,10 @@ func (i Market) CheckUpdate() error {
 const defaultCurrency = "USD"
 
 // SetDefault sets default values for a new market.
-func (i *Market) SetDefaults() {
-	i.Status = MarketStatusLive
-	i.Currency = defaultCurrency
-	i.Price = priceToTenths(i.Price)
+func (m *Market) SetDefaults() {
+	m.Status = MarketStatusLive
+	m.Currency = defaultCurrency
+	m.Price = priceToTenths(m.Price)
 }
 
 // String returns text value of a post status.

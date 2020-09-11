@@ -2,7 +2,7 @@ package service
 
 import "net/http"
 
-const sitemapURL = "https://api.dota2giftables.com/sitemap.xml"
+const sitemapURL = "https://api.dotagiftx.com/sitemap.xml"
 
 // pingGoogleSitemap tells google that sitemap has been updated.
 func pingGoogleSitemap() error {

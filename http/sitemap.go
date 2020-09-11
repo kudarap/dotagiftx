@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 )
 
 func buildSitemap(catalogs []core.Catalog, users []core.User) *stm.Sitemap {
 	sm := stm.NewSitemap(1)
 	//sm.SetVerbose(false)
-	sm.SetDefaultHost("https://dota2giftables.com")
+	sm.SetDefaultHost("https://dotagiftx.com")
 	sm.Create()
 
 	// Static pages locations.

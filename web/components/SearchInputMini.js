@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import has from 'lodash/has'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -41,14 +42,15 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
 
   const router = useRouter()
   const { query } = router
-  const [keyword, setKeyword] = React.useState('')
+  const [keyword, setKeyword] = React.useState(query.q)
   React.useEffect(() => {
-    setKeyword(query.q || '')
+    if (!has(query, 'q')) {
+      return
+    }
+
+    setKeyword(query.q)
   }, [query.q])
 
-  const routerPush = q => {
-    router.push(`/search?q=${q}`)
-  }
   const handleChange = ({ target }) => {
     const v = target.value
     setKeyword(v)
@@ -58,12 +60,12 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
   const handleClearValue = () => {
     setKeyword('')
     onChange('')
-    routerPush('')
+    router.push(`/search?q=`)
   }
   const handleSubmit = e => {
     e.preventDefault()
     onSubmit(keyword)
-    routerPush(keyword)
+    router.push(`/search?q=${keyword}`)
   }
 
   return (
@@ -80,7 +82,7 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
         {...other}
       />
 
-      {keyword !== '' ? (
+      {keyword ? (
         <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
       ) : (
         <SearchIcon className={classes.iconButtons} onClick={handleSubmit} />

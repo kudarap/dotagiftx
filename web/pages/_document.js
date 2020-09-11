@@ -16,16 +16,23 @@ export default class MyDocument extends Document {
           />
           <link rel="icon" href="/icon.svg" />
 
-          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53683442-7" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
+          {process.env.NEXT_PUBLIC_GA && (
+            <>
+              <script
+                async
+                src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA}`}
+              />
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments)}
                 gtag("js", new Date());
-                gtag("config", "UA-53683442-7");`,
-            }}
-          />
+                gtag("config", "${process.env.NEXT_PUBLIC_GA}");`,
+                }}
+              />
+            </>
+          )}
         </Head>
         <body>
           <Main />

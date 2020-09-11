@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function CatalogList({ items = [], variant }) {
+export default function CatalogList({ items = [], error, variant }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -55,7 +55,19 @@ export default function CatalogList({ items = [], variant }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {items.length === 0 && (
+          {error && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Error retrieving data
+                <br />
+                <Typography variant="caption" color="textSecondary">
+                  {error}
+                </Typography>
+              </TableCell>
+            </TableRow>
+          )}
+
+          {!error && items.length === 0 && (
             <TableRow>
               <TableCell align="center" colSpan={3}>
                 No Result
@@ -74,7 +86,7 @@ export default function CatalogList({ items = [], variant }) {
                   {!isMobile && (
                     <ItemImage
                       className={classes.image}
-                      image={`${item.image}/200x100`}
+                      image={`/200x100/${item.image}`}
                       title={item.name}
                       rarity={item.rarity}
                     />
@@ -110,7 +122,9 @@ export default function CatalogList({ items = [], variant }) {
 CatalogList.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   variant: PropTypes.string,
+  error: PropTypes.string,
 }
 CatalogList.defaultProps = {
   variant: '',
+  error: null,
 }

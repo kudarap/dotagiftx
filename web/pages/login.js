@@ -65,6 +65,7 @@ export default function Login() {
 
           <Button
             disabled={loading}
+            onClick={() => setLoading(true)}
             startIcon={loading ? <CircularProgress color="secondary" size={22} /> : <SteamIcon />}
             variant="outlined"
             size="large"

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kudarap/dota2giftables/core"
-	"github.com/kudarap/dota2giftables/errors"
+	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewAuth returns a new Auth service.
