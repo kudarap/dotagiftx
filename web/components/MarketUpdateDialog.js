@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -56,6 +57,8 @@ export default function MarketUpdateDialog(props) {
     onClose()
   }
 
+  const router = useRouter()
+
   const onFormSubmit = evt => {
     evt.preventDefault()
 
@@ -74,6 +77,7 @@ export default function MarketUpdateDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
+        router.push('/reservations')
       } catch (e) {
         setError(`Error: ${e.message}`)
       }

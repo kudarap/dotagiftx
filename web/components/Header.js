@@ -162,7 +162,10 @@ export default function Header({ disableSearch }) {
                     Profile
                   </MenuItem>
                   <MenuItem onClick={handleClose} component={Link} href="/my-listings">
-                    Listings
+                    My Listings
+                  </MenuItem>
+                  <MenuItem onClick={handleClose} component={Link} href="/reservations">
+                    Reservations
                   </MenuItem>
                   {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
                   <MenuItem onClick={handleLogout}>Sign out</MenuItem>

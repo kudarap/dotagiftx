@@ -6,8 +6,8 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { myMarketSearch } from '@/service/api'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
-import MyMarketList from '@/components/MyMarketList'
+import { MARKET_STATUS_RESERVED } from '@/constants/market'
+import ReservationList from '@/components/ReservationList'
 import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
@@ -17,8 +17,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const activeMarketFilter = {
-  status: MARKET_STATUS_LIVE,
-  sort: 'created_at:desc',
+  status: MARKET_STATUS_RESERVED,
+  sort: 'updated_at:desc',
   page: 1,
 }
 
@@ -30,19 +30,19 @@ const initialDatatable = {
   error: null,
 }
 
-export default function MyListings() {
+export default function Reservations() {
   const classes = useStyles()
 
-  const [activeLists, setActiveLists] = React.useState(initialDatatable)
+  const [reservations, setReservations] = React.useState(initialDatatable)
   const [filter, setFilter] = React.useState(activeMarketFilter)
 
   React.useEffect(() => {
     ;(async () => {
       try {
         const res = await myMarketSearch(filter)
-        setActiveLists({ ...activeLists, loading: false, ...res })
+        setReservations({ ...reservations, loading: false, ...res })
       } catch (e) {
-        setActiveLists({ ...activeLists, loading: false, error: e.message })
+        setReservations({ ...reservations, loading: false, error: e.message })
       }
     })()
   }, [filter])
@@ -58,15 +58,15 @@ export default function MyListings() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            My Active Listings
+            Buyer Reservations
           </Typography>
 
-          {activeLists.error && <div>failed to load active listings</div>}
-          {activeLists.loading && <LinearProgress color="secondary" />}
-          <MyMarketList datatable={activeLists} />
+          {reservations.error && <div>failed to load reservations</div>}
+          {reservations.loading && <LinearProgress color="secondary" />}
+          <ReservationList datatable={reservations} />
           <TablePagination
             style={{ textAlign: 'right' }}
-            count={activeLists.total_count || 0}
+            count={reservations.total_count || 0}
             page={filter.page}
             onChangePage={handlePageChange}
           />

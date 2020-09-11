@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import moment from 'moment'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
@@ -62,9 +63,9 @@ export default function MyMarketList({ datatable, error }) {
           <TableHead>
             <TableRow>
               <TableHeadCell>
-                Sell Listings ({format.numberWithCommas(datatable.total_count)})
+                Items ({format.numberWithCommas(datatable.total_count)})
               </TableHeadCell>
-              <TableHeadCell align="right">Listed</TableHeadCell>
+              <TableHeadCell align="right">Reserved</TableHeadCell>
               <TableHeadCell align="right">Price</TableHeadCell>
               <TableHeadCell align="center" width={70} />
             </TableRow>
@@ -98,7 +99,7 @@ export default function MyMarketList({ datatable, error }) {
                     </Link>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography variant="body2">{format.dateFromNow(market.created_at)}</Typography>
+                    <Typography variant="body2">{moment(market.updated_at).fromNow()}</Typography>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
