@@ -16,6 +16,7 @@ import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
+  MARKET_STATUS_CANCELLED,
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_SOLD,
@@ -56,15 +57,9 @@ export default function ReserveUpdateDialog(props) {
 
   const router = useRouter()
 
-  const onFormSubmit = evt => {
-    evt.preventDefault()
-
+  const marketUpdate = payload => {
     if (loading) {
       return
-    }
-
-    const payload = {
-      status: MARKET_STATUS_SOLD,
     }
 
     setLoading(true)
@@ -73,13 +68,27 @@ export default function ReserveUpdateDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
-        router.push('/history')
+        router.push(`/history#${MARKET_STATUS_MAP_TEXT[payload.status].toLowerCase()}`)
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
 
       setLoading(false)
     })()
+  }
+
+  const handleCancelClick = () => {
+    marketUpdate({
+      status: MARKET_STATUS_CANCELLED,
+    })
+  }
+
+  const onFormSubmit = evt => {
+    evt.preventDefault()
+
+    marketUpdate({
+      status: MARKET_STATUS_SOLD,
+    })
   }
 
   if (!market) {
@@ -147,7 +156,7 @@ export default function ReserveUpdateDialog(props) {
           </Typography>
         )}
         <DialogActions>
-          <Button disabled={loading} startIcon={<CancelIcon />}>
+          <Button disabled={loading} startIcon={<CancelIcon />} onClick={handleCancelClick}>
             Cancel Reservation
           </Button>
           <Button
