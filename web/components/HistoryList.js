@@ -16,7 +16,7 @@ import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
-import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
+import HistoryViewDialog from '@/components/HistoryViewDialog'
 import { amount } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ReservationList({ datatable, error }) {
+export default function HistoryList({ datatable, error }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -65,7 +65,7 @@ export default function ReservationList({ datatable, error }) {
               <TableHeadCell>
                 Items ({format.numberWithCommas(datatable.total_count)})
               </TableHeadCell>
-              <TableHeadCell align="right">Reserved</TableHeadCell>
+              <TableHeadCell align="right">Updated</TableHeadCell>
               <TableHeadCell align="right">Price</TableHeadCell>
               <TableHeadCell align="center" width={70} />
             </TableRow>
@@ -105,7 +105,7 @@ export default function ReservationList({ datatable, error }) {
                   </TableCell>
                   <TableCell align="center">
                     <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
-                      Update
+                      View
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -113,7 +113,7 @@ export default function ReservationList({ datatable, error }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <ReserveUpdateDialog
+      <HistoryViewDialog
         open={!!currentMarket}
         market={currentMarket}
         onClose={() => handleUpdateClick(null)}
@@ -121,10 +121,10 @@ export default function ReservationList({ datatable, error }) {
     </>
   )
 }
-ReservationList.propTypes = {
+HistoryList.propTypes = {
   datatable: PropTypes.object.isRequired,
   error: PropTypes.string,
 }
-ReservationList.defaultProps = {
+HistoryList.defaultProps = {
   error: null,
 }

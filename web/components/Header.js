@@ -176,6 +176,9 @@ export default function Header({ disableSearch }) {
                     disableUnderline>
                     Reservations
                   </MenuItem>
+                  <MenuItem onClick={handleClose} component={Link} href="/history" disableUnderline>
+                    History
+                  </MenuItem>
                   {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
                   <MenuItem onClick={handleLogout}>Sign out</MenuItem>
                 </Menu>
