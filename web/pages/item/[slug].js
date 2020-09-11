@@ -201,7 +201,21 @@ export async function getServerSideProps(props) {
 
   const canonicalURL = `https://${req.headers.host}${req.url}`
 
-  const item = await catalog(params.slug)
+  let item = {}
+  try {
+    item = await catalog(params.slug)
+  } catch (e) {
+    console.log(`error: ${e.message}`)
+
+    return {
+      props: {
+        item,
+        canonicalURL,
+        filter: {},
+        markets: {},
+      },
+    }
+  }
 
   const filter = { ...marketSearchFilter, item_id: item.id }
   if (query.page) {
