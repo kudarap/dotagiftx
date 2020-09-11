@@ -10,6 +10,7 @@ import Button from '@/components/Button'
 import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
+import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -68,7 +69,9 @@ export default function MarketUpdateDialog(props) {
                 <Typography color="textSecondary" component="span">
                   {`Status: `}
                 </Typography>
-                <strong>Live</strong>
+                <strong style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
+                  {MARKET_STATUS_MAP_TEXT[market.status]}
+                </strong>
                 <br />
                 <Typography color="textSecondary" component="span">
                   {`Price: `}
@@ -79,11 +82,15 @@ export default function MarketUpdateDialog(props) {
                   {`Listed: `}
                 </Typography>
                 {dateCalendar(market.updated_at)}
-                <br />
-                <Typography color="textSecondary" component="span">
-                  {`Notes: `}
-                </Typography>
-                {market.notes}
+                {market.notes && (
+                  <>
+                    <br />
+                    <Typography color="textSecondary" component="span">
+                      {`Notes: `}
+                    </Typography>
+                    {market.notes}
+                  </>
+                )}
               </Typography>
             </Typography>
           </div>

@@ -44,6 +44,7 @@ export default function ContactDialog(props) {
 
   const storeProfile = `/user/${market.user.steam_id}`
   const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
+  const dota2Inventory = `${steamProfileURL}/inventory#570`
 
   return (
     <div>
@@ -77,7 +78,7 @@ export default function ContactDialog(props) {
                   href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
                 />
                 &nbsp;
-                <ChipLink label="Steam Inventory" href={`${steamProfileURL}/inventory#570`} />
+                <ChipLink label="Steam Inventory" href={dota2Inventory} />
                 {market.notes && (
                   <>
                     <br />
@@ -100,7 +101,7 @@ export default function ContactDialog(props) {
                 friends for 30 days.
               </li>
               <li>
-                As giftables involves a party having to go first, please always check user&apos;s
+                As giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
                 <Link
                   href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
@@ -110,12 +111,19 @@ export default function ContactDialog(props) {
                 </Link>
                 .
               </li>
+              <li>
+                Always check the item/set availability on seller&apos;s Dota 2 {` `}
+                <Link href={dota2Inventory} target="_blank" rel="noreferrer noopener">
+                  inventory
+                </Link>
+                .
+              </li>
             </ul>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>
-            Seller Items
+            View Seller Items
           </Button>
           <Button
             color="secondary"
@@ -124,7 +132,7 @@ export default function ContactDialog(props) {
             target="_blank"
             rel="noreferrer noopener"
             href={steamProfileURL}>
-            Steam Profile
+            Check Steam Profile
           </Button>
         </DialogActions>
       </Dialog>

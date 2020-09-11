@@ -3,3 +3,19 @@ export const MARKET_STATUS_LIVE = 200
 export const MARKET_STATUS_RESERVED = 300
 export const MARKET_STATUS_SOLD = 400
 export const MARKET_STATUS_REMOVED = 500
+
+export const MARKET_STATUS_MAP_TEXT = {
+  [MARKET_STATUS_PENDING]: 'Pending',
+  [MARKET_STATUS_LIVE]: 'Live',
+  [MARKET_STATUS_RESERVED]: 'Reserved',
+  [MARKET_STATUS_SOLD]: 'Delivered',
+  [MARKET_STATUS_REMOVED]: 'Removed',
+}
+
+export const MARKET_STATUS_MAP_COLOR = {
+  [MARKET_STATUS_PENDING]: 'grey',
+  [MARKET_STATUS_LIVE]: 'lightgreen',
+  [MARKET_STATUS_RESERVED]: 'violet',
+  [MARKET_STATUS_SOLD]: 'aqua',
+  [MARKET_STATUS_REMOVED]: 'crimson',
+}
