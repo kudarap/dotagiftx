@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kudarap/dota2giftables/steam"
+	"github.com/kudarap/dotagiftx/steam"
 )
 
 var client *steam.Client

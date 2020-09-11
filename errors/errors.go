@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 )
 
 // Errors represents application's errors.

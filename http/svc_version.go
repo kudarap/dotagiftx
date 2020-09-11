@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"github.com/kudarap/dota2giftables/gokit/version"
+	"github.com/kudarap/dotagiftx/gokit/version"
 )
 
 func handleInfo(v *version.Version) http.HandlerFunc {

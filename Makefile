@@ -1,4 +1,4 @@
-PROJECTNAME=dota2giftables
+PROJECTNAME=dotagiftx
 
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent

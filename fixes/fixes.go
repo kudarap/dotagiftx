@@ -4,7 +4,7 @@ import (
 	"context"
 	"math/rand"
 
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 )
 
 func ReIndexAll(

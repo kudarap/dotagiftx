@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 	"github.com/sirupsen/logrus"
 )
 

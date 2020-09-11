@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://api.dota2giftables.com/sitemap.xml
+Sitemap: https://api.dotagiftx.com/sitemap.xml

@@ -3,7 +3,7 @@ package http
 import (
 	"net/url"
 
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 )
 
 type httpMsg struct {

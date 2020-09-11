@@ -4,9 +4,9 @@ import (
 	"context"
 	"io"
 
-	"github.com/kudarap/dota2giftables/core"
-	"github.com/kudarap/dota2giftables/errors"
-	"github.com/kudarap/dota2giftables/gokit/file/image"
+	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/gokit/file/image"
 )
 
 // NewAuth returns a new Image service.

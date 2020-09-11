@@ -1,4 +1,4 @@
-module github.com/kudarap/dota2giftables
+module github.com/kudarap/dotagiftx
 
 go 1.15
 

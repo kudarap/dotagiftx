@@ -3,9 +3,9 @@ package http
 import (
 	"net/http"
 
-	"github.com/kudarap/dota2giftables/core"
-	"github.com/kudarap/dota2giftables/errors"
-	"github.com/kudarap/dota2giftables/gokit/http/jwt"
+	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 )
 
 func (s *Server) authorizer(next http.Handler) http.Handler {

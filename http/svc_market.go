@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 	"github.com/sirupsen/logrus"
 )
 

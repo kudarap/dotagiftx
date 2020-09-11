@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/kudarap/dota2giftables/core"
+	"github.com/kudarap/dotagiftx/core"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
