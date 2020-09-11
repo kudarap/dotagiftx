@@ -1,6 +1,6 @@
-# Dota2 Giftables UI
+# DotagiftX UI
 
-Dota 2 Giftables web user interface
+DotagiftX web user interface
 
 ### Tech Stack
 
