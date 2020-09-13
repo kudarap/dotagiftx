@@ -80,7 +80,9 @@ const defaultProfile = {
 export default function Header({ disableSearch }) {
   const classes = useStyles()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  // NOTE! this makes the mobile version of the nav to be ignored when on homepage
+  // which is the disableSearch prop uses.
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs')) && !disableSearch
 
   const [profile, setProfile] = React.useState(defaultProfile)
 
