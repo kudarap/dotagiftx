@@ -129,7 +129,7 @@ export default function MarketForm() {
 
   return (
     <>
-      {isLoggedIn && (
+      {!isLoggedIn && (
         <>
           <Alert severity="warning">
             You must signed in to post an item — <Link href="/login">Sign in now</Link>
