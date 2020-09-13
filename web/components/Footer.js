@@ -74,6 +74,11 @@ export default function Footer() {
               by kudarap
             </Link>
           </li>
+          <li style={{ float: 'right' }}>
+            <Typography variant="caption" color="textSecondary" style={{ verticalAlign: 'middle' }}>
+              DotagiftX is not affiliated with Valve or Steam.
+            </Typography>
+          </li>
           {/* <li> */}
           {/*  <MuiLink href="http://chiligarlic.com" target="_blank"> */}
           {/*    A chiliGarlic project */}
