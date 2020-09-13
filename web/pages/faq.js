@@ -56,7 +56,7 @@ export default function Faq() {
             Why do this?
           </Typography>
           <Typography color="textSecondary">
-            Wanted to make tool that can be easily search and post these kind of items.
+            Wanted to make tool that can be easily search and post these giftable items.
           </Typography>
           <br />
         </Container>
