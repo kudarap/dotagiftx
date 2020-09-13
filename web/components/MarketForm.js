@@ -8,6 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import SubmitIcon from '@material-ui/icons/Check'
 import { catalog, myMarket } from '@/service/api'
 import * as format from '@/lib/format'
+import { isOk as checkLoggedIn } from '@/service/auth'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
@@ -122,6 +123,8 @@ export default function MarketForm() {
     setPayload({ ...payload, qty })
   }
 
+  const isLoggedIn = checkLoggedIn()
+
   return (
     <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
       <Typography variant="h5" component="h1">
@@ -129,7 +132,7 @@ export default function MarketForm() {
       </Typography>
       <br />
 
-      <ItemAutoComplete onSelect={handleItemSelect} disabled={loading} />
+      <ItemAutoComplete onSelect={handleItemSelect} disabled={loading || !isLoggedIn} />
       <br />
 
       {/* Selected item preview */}
@@ -187,7 +190,7 @@ export default function MarketForm() {
             const price = format.amount(e.target.value)
             setPayload({ ...payload, price })
           }}
-          disabled={loading}
+          disabled={loading || !isLoggedIn}
         />
         <TextField
           variant="outlined"
@@ -198,7 +201,7 @@ export default function MarketForm() {
           style={{ width: '30%', marginLeft: '1%' }}
           onInput={handleQtyChange}
           onChange={handleQtyChange}
-          disabled={loading}
+          disabled={loading || !isLoggedIn}
         />
       </div>
       <br />
@@ -209,7 +212,7 @@ export default function MarketForm() {
         label="Notes"
         helperText="Keep it short, This will be display when they check your offer."
         onInput={e => setPayload({ ...payload, notes: e.target.value })}
-        disabled={loading}
+        disabled={loading || !isLoggedIn}
       />
       <br />
       <br />
@@ -219,7 +222,7 @@ export default function MarketForm() {
         fullWidth
         type="submit"
         size="large"
-        disabled={loading}
+        disabled={loading || !isLoggedIn}
         startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}>
         Post Item
       </Button>
