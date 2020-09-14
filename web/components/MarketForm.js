@@ -129,10 +129,14 @@ export default function MarketForm() {
 
   return (
     <>
-      <Alert severity="warning">
-        You must signed in to post an item — <Link href="/login">Sign in now</Link>
-      </Alert>
-      <br />
+      {!isLoggedIn && (
+        <>
+          <Alert severity="warning">
+            You must signed in to post an item — <Link href="/login">Sign in now</Link>
+          </Alert>
+          <br />
+        </>
+      )}
 
       <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1">
