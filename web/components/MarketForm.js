@@ -108,11 +108,13 @@ export default function MarketForm() {
         }
 
         // redirect to user listings
-        setNewMarketID(res.id)
-        setError('Item posted successfully! You will be redirected to your item listings.')
-        setTimeout(() => {
-          router.push('/my-listings')
-        }, 3000)
+        if (res) {
+          setNewMarketID(res.id)
+          setError('Item posted successfully! You will be redirected to your item listings.')
+          setTimeout(() => {
+            router.push('/my-listings')
+          }, 3000)
+        }
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
