@@ -12,16 +12,24 @@ import (
 type findOpts core.FindOpts
 
 func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
-	return findOpts(o).parseOpts(q)
+	return findOpts(o).parseOpts(q, nil)
 }
 
-func (o findOpts) parseOpts(q r.Term) r.Term {
+func newCatalogFindOptsQuery(q r.Term, o core.FindOpts, filterFn func(r.Term)r.Term) r.Term {
+	return findOpts(o).parseOpts(q, filterFn)
+}
+
+func (o findOpts) parseOpts(q r.Term, filterFn func(r.Term)r.Term) r.Term {
 	if o.IndexSorting && o.Sort != "" {
 		q = q.OrderBy(r.OrderByOpts{Index: o.parseOrder()})
 	}
 
 	if strings.TrimSpace(o.Keyword) != "" {
 		q = q.Filter(o.parseKeyword())
+	}
+
+	if filterFn != nil {
+		q = filterFn(q)
 	}
 
 	if o.Filter != nil {

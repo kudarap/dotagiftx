@@ -36,8 +36,7 @@ func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
-	q := newFindOptsQuery(s.table(), o)
-	q = s.filterOutZeroQty(q)
+	q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -52,8 +51,7 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 		Filter:        o.Filter,
 		IndexSorting:  true,
 	}
-	q := newFindOptsQuery(s.table(), o)
-	q = s.filterOutZeroQty(q)
+	q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
 	err = s.db.one(q.Count(), &num)
 	return
 }
