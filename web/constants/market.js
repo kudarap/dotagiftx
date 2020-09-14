@@ -22,3 +22,5 @@ export const MARKET_STATUS_MAP_COLOR = {
   [MARKET_STATUS_REMOVED]: 'crimson',
   [MARKET_STATUS_CANCELLED]: 'orangered',
 }
+
+export const MARKET_QTY_LIMIT = 5

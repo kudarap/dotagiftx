@@ -14,6 +14,7 @@ import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
+import { MARKET_QTY_LIMIT } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,11 +39,15 @@ const defaultPayload = {
 
 const checkMarketPayload = payload => {
   if (!payload.item_id) {
-    return 'item reference is required'
+    return 'Item reference should be valid'
   }
 
   if (Number(payload.price) <= 0) {
-    return 'Price must be atleast 0.01'
+    return 'Price must be atleast USD 0.01'
+  }
+
+  if (Number(payload.quantity) > MARKET_QTY_LIMIT) {
+    return `Quantity limit ${MARKET_QTY_LIMIT} per post`
   }
 
   return null
@@ -85,7 +90,7 @@ export default function MarketForm() {
       notes: payload.notes,
     }
 
-    const err = checkMarketPayload(newMarket)
+    const err = checkMarketPayload({ ...newMarket, quantity })
     if (err) {
       setError(`Error: ${err}`)
       return
