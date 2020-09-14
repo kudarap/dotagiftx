@@ -53,7 +53,7 @@ export default function AvatarMenu({ profile }) {
           onClick={handleClose}
           component={Link}
           href="/user/[id]"
-          as={`/user/${profile.steam_id}?preview`}>
+          as={`/user/${profile.steam_id}`}>
           Profile
         </MenuItem>
         <MenuItem onClick={handleClose}>Listings</MenuItem>

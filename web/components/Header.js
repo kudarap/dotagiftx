@@ -195,7 +195,7 @@ export default function Header({ disableSearch }) {
                         onClick={handleClose}
                         component={Link}
                         href="/user/[id]"
-                        as={`/user/${profile.steam_id}?preview`}
+                        as={`/user/${profile.steam_id}`}
                         disableUnderline>
                         Profile
                       </MenuItem>
