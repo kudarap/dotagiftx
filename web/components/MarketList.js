@@ -11,12 +11,13 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
+import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import { CDN_URL, myMarket } from '@/service/api'
 import { amount } from '@/lib/format'
 import Link from '@/components/Link'
-import Button from '@/components/Button'
-import BuyButton from '@/components/BuyButton'
+// import Button from '@/components/Button'
+// import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
@@ -112,15 +113,12 @@ export default function MarketList({ data, error, currentUserID }) {
                     <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {currentUserID === market.user.id ? (
-                      <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
-                        Remove
-                      </Button>
-                    ) : (
-                      <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
-                        Contact Seller
-                      </BuyButton>
-                    )}
+                    {currentUserID === market.user.id && <Button variant="outlined">XXX</Button>}
+                    {currentUserID !== market.user.id && <Button variant="contained">QQQ</Button>}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button variant="outlined">BBB</Button>
+                    <Button variant="contained">AAA</Button>
                   </TableCell>
                 </TableRow>
               ))}
