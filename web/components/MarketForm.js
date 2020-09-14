@@ -53,6 +53,7 @@ export default function MarketForm() {
 
   const [item, setItem] = React.useState({ id: '' })
   const [payload, setPayload] = React.useState(defaultPayload)
+  const [newMarketID, setNewMarketID] = React.useState(null)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
@@ -92,16 +93,17 @@ export default function MarketForm() {
 
     setLoading(true)
     setError(null)
+    setNewMarketID(null)
     ;(async () => {
       try {
         let res
         for (let i = 0; i < quantity; i++) {
           // eslint-disable-next-line no-await-in-loop
           res = await myMarket.POST(newMarket)
-          console.log('market successfully created!', res)
         }
 
         // redirect to user listings
+        setNewMarketID(res.id)
         setError('Item posted successfully! You will be redirected to your item listings.')
         setTimeout(() => {
           router.push('/my-listings')
@@ -234,7 +236,7 @@ export default function MarketForm() {
           fullWidth
           type="submit"
           size="large"
-          disabled={loading || !isLoggedIn}
+          disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}>
           Post Item
         </Button>
