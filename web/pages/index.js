@@ -77,12 +77,11 @@ export default function Index({ totalEntries, popularItems }) {
                 DotagiftX
               </Typography>{' '}
               was made to provide better search and pricing for Dota 2 giftable items like
-              Collector&apos;s Caches which are not available{' '}
+              Collector&apos;s Caches which are not available on{' '}
               <Link href="https://steamcommunity.com" rel="noreferrer noopener" target="_blank">
                 Steam Community Market
-              </Link>{' '}
-              and Trading. The project was heavily inspired by{' '}
-              <strong>All Giftable Megathread</strong> from{' '}
+              </Link>
+              . The project was heavily inspired by <strong>All Giftable Megathread</strong> from{' '}
               <Link
                 href="https://www.reddit.com/r/Dota2Trade"
                 rel="noreferrer noopener"
