@@ -14,6 +14,7 @@ import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
+import { MARKET_STATUS_LIVE } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -121,7 +122,7 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const res = await marketSearch({ limit: 1 })
+  const res = await marketSearch({ limit: 1, status: MARKET_STATUS_LIVE })
   const totalEntries = format.numberWithCommas(res.total_count || 0)
 
   let popularItems = { error: null }
