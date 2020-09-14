@@ -17,10 +17,11 @@ func buildSitemap(catalogs []core.Catalog, users []core.User) *stm.Sitemap {
 	sm.Add(stm.URL{{"loc", "/"}, {"changefreq", "daily"}, {"priority", 0.8}})
 	sm.Add(stm.URL{{"loc", "/search"}, {"changefreq", "daily"}, {"priority", 0.6}})
 	sm.Add(stm.URL{{"loc", "/search?sort=" + queryFlagRecentItems}, {"changefreq", "daily"}, {"priority", 0.6}})
-	sm.Add(stm.URL{{"loc", "/search?sort=recent-" + queryFlagPopularItems}, {"changefreq", "daily"}, {"priority", 0.6}})
+	sm.Add(stm.URL{{"loc", "/search?sort=" + queryFlagPopularItems}, {"changefreq", "daily"}, {"priority", 0.6}})
 	sm.Add(stm.URL{{"loc", "/about"}})
 	sm.Add(stm.URL{{"loc", "/faq"}})
 	sm.Add(stm.URL{{"loc", "/privacy"}})
+	sm.Add(stm.URL{{"loc", "/login"}})
 
 	// Catalog listings locations.
 	for _, cc := range catalogs {
