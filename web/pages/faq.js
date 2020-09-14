@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -44,11 +45,28 @@ export default function Faq() {
           <br />
 
           <Typography variant="h6" component="h2">
-            Why do you I need to sign with Steam?
+            Why do you I need to sign in with Steam?
           </Typography>
           <Typography color="textSecondary">
             It verifies Steam account ownership and provides some helpful links to check your
             profile and reputation.
+          </Typography>
+          <br />
+
+          <Typography variant="h6" component="h2">
+            Can I trust the users on this website?
+          </Typography>
+          <Typography color="textSecondary">
+            No, but there are quick links like SteamRep and Steam Profile to help you verify them.
+          </Typography>
+          <br />
+
+          <Typography variant="h6" component="h2">
+            How can I report scammers?
+          </Typography>
+          <Typography color="textSecondary">
+            You can use <Link href="https://steamrep.com/">SteamRep</Link> or inquire on{' '}
+            <Link href="https://www.reddit.com/r/Dota2Trade/">r/Dota2Trade</Link>.
           </Typography>
           <br />
 
