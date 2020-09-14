@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import { CATALOGS, fetcher, marketSearch, catalogSearch } from '@/service/api'
+import { MARKET_STATUS_LIVE } from '@/constants/market'
 import * as format from '@/lib/format'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -14,7 +15,6 @@ import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -57,7 +57,11 @@ export default function Index({ totalEntries, popularItems }) {
     Router.push(`/search?q=${keyword}`)
   }
 
-  const description = `Search on ${totalEntries || ''} giftable listings`
+  const description = `Search on ${
+    totalEntries || ''
+  } giftable items. DotagiftX was made to provide better search and pricing for Dota 2 giftable
+   items like Collector's Caches which are not available on Steam Community Market. 
+   The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`
 
   return (
     <>
@@ -90,11 +94,11 @@ export default function Index({ totalEntries, popularItems }) {
               </Link>
               .
             </Typography>
-            {/*<Typography className={classes.bannerText} variant="h3" component="h1" align="center">*/}
-            {/*  /!* Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span> *!/*/}
-            {/*  /!* Buy & Sell *!/*/}
-            {/*  Search for <span style={{ display: 'inline-block' }}>Dota 2 giftabe items</span>*/}
-            {/*</Typography>*/}
+            {/* <Typography className={classes.bannerText} variant="h3" component="h1" align="center"> */}
+            {/*  /!* Search for Dota 2 <span style={{ display: 'inline-block' }}>Giftable items</span> *!/ */}
+            {/*  /!* Buy & Sell *!/ */}
+            {/*  Search for <span style={{ display: 'inline-block' }}>Dota 2 giftabe items</span> */}
+            {/* </Typography> */}
           </div>
 
           <SearchInput helperText={description} onSubmit={handleSubmit} />
