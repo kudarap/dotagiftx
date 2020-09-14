@@ -57,17 +57,18 @@ export default function Index({ totalEntries, popularItems }) {
     Router.push(`/search?q=${keyword}`)
   }
 
-  const description = `Search on ${
-    totalEntries || ''
-  } giftable items. DotagiftX was made to provide better search and pricing for Dota 2 giftable
-   items like Collector's Caches which are not available on Steam Community Market. 
-   The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`
+  const description = `Search on ${totalEntries || ''} giftable items`
 
   return (
     <>
       <Head>
         <title>DotagiftX - Dota 2 giftables market</title>
-        <meta name="description" content={description} />
+        <meta
+          name="description"
+          content={`${description}. DotagiftX was made to provide better search and pricing for 
+          Dota 2 giftable items like Collector's Caches which are not available on Steam Community Market. 
+          The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`}
+        />
         <link rel="canonical" href="https://dotagiftx.com" />
       </Head>
 
