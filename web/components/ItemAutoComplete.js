@@ -8,6 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { item, itemSearch } from '@/service/api'
 
 const itemSearchFilter = { limit: 1000, sort: 'popular' }
+const optionTextSeparator = ' - '
 
 export default function ItemAutoComplete({ onSelect, ...other }) {
   const [open, setOpen] = React.useState(false)
@@ -63,7 +64,7 @@ export default function ItemAutoComplete({ onSelect, ...other }) {
     ;(async () => {
       try {
         const res = await itemSearch(itemSearchFilter)
-        setOptions(res.data)
+        setOptions(res.data.map(i => ({ ...i, text: `${i.hero}${optionTextSeparator}${i.name}` })))
       } catch (e) {
         console.log('error getting item list', e.message)
       }
@@ -72,7 +73,8 @@ export default function ItemAutoComplete({ onSelect, ...other }) {
 
   const handleInputChange = (e, text) => {
     setValue(text)
-    const res = filter(options, { name: text })
+    const name = String(text).split(optionTextSeparator)[1]
+    const res = filter(options, { name })
     if (res.length === 0) {
       onSelect({})
       return
@@ -96,7 +98,7 @@ export default function ItemAutoComplete({ onSelect, ...other }) {
       onInputChange={handleInputChange}
       inputValue={value}
       getOptionSelected={(opt, val) => opt.name === val.name}
-      getOptionLabel={option => option.name}
+      getOptionLabel={option => option.text}
       options={options}
       loading={loading}
       renderInput={params => (
