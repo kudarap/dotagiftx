@@ -130,7 +130,6 @@ export default function MarketUpdateDialog(props) {
 
             <Typography component="h1">
               <Typography
-                component="p"
                 variant="h6"
                 component={Link}
                 href="/item/[slug]"
@@ -175,6 +174,8 @@ export default function MarketUpdateDialog(props) {
               variant="outlined"
               label="Reservation notes"
               helperText="Buyer's Steam profile URL & delivery date."
+              placeholder="https://steamcommunity.com/profiles/..."
+              value={notes}
               onInput={e => setNotes(e.target.value)}
             />
           </div>
