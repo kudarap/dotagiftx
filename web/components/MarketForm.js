@@ -1,5 +1,4 @@
 import React from 'react'
-import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
@@ -63,10 +62,16 @@ export default function MarketForm() {
   const [loading, setLoading] = React.useState(false)
 
   const handleItemSelect = val => {
+    // Reset values when item is selected
+    const newPayload = { ...defaultPayload }
+    setPayload(newPayload)
+    setNewMarketID(null)
+    setError(null)
+
     setItem(val)
     // get item starting price
     if (val.slug) {
-      setPayload({ ...payload, item_id: val.slug })
+      setPayload({ ...newPayload, item_id: val.slug })
       catalog(val.slug)
         .then(res => {
           setItem(res)
@@ -76,8 +81,6 @@ export default function MarketForm() {
         })
     }
   }
-
-  const router = useRouter()
 
   const handleSubmit = evt => {
     evt.preventDefault()
@@ -110,10 +113,10 @@ export default function MarketForm() {
         // redirect to user listings
         if (res) {
           setNewMarketID(res.id)
-          setError('Item posted successfully! You will be redirected to your item listings.')
-          setTimeout(() => {
-            router.push('/my-listings')
-          }, 3000)
+          // setError('Item posted successfully! You will be redirected to your item listings.')
+          // setTimeout(() => {
+          //   router.push('/my-listings')
+          // }, 3000)
         }
       } catch (e) {
         setError(`Error: ${e.message}`)
@@ -211,7 +214,7 @@ export default function MarketForm() {
               const price = format.amount(e.target.value)
               setPayload({ ...payload, price })
             }}
-            disabled={loading || !isLoggedIn}
+            disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
           <TextField
             variant="outlined"
@@ -222,7 +225,7 @@ export default function MarketForm() {
             style={{ width: '30%', marginLeft: '1%' }}
             onInput={handleQtyChange}
             onChange={handleQtyChange}
-            disabled={loading || !isLoggedIn}
+            disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         </div>
         <br />
@@ -231,9 +234,10 @@ export default function MarketForm() {
           fullWidth
           color="secondary"
           label="Notes"
+          value={payload.notes}
           helperText="Keep it short, This will be display when they check your offer."
           onInput={e => setPayload({ ...payload, notes: e.target.value })}
-          disabled={loading || !isLoggedIn}
+          disabled={loading || !isLoggedIn || Boolean(newMarketID)}
         />
         <br />
         <br />
@@ -247,11 +251,22 @@ export default function MarketForm() {
           startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}>
           Post Item
         </Button>
-        {error && (
-          <Typography align="center" variant="body2" style={{ marginTop: 2 }}>
-            {error}
-          </Typography>
-        )}
+        <div style={{ marginTop: 2 }}>
+          {newMarketID && (
+            <Typography align="center" variant="body2">
+              Item posted successfully! Check your{' '}
+              <Link style={{ textDecoration: 'underline' }} href="/my-listings">
+                item listings
+              </Link>
+              .
+            </Typography>
+          )}
+          {error && (
+            <Typography align="center" variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
+        </div>
       </Paper>
     </>
   )
