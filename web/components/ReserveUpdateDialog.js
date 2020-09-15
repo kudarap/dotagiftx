@@ -140,7 +140,7 @@ export default function ReserveUpdateDialog(props) {
                   <>
                     <br />
                     <Typography color="textSecondary" component="span">
-                      {`Reserve Notes: `}
+                      {`Reservation Notes: `}
                     </Typography>
                     {market.notes}
                   </>

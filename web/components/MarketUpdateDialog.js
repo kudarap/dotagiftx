@@ -173,8 +173,8 @@ export default function MarketUpdateDialog(props) {
               required
               color="secondary"
               variant="outlined"
-              label="Reserved Notes"
-              helperText="Helpful info like Buyer's avatar name, Steam profile url, or Delivery date"
+              label="Reservation notes"
+              helperText="Buyer's Steam profile URL & delivery date."
               onInput={e => setNotes(e.target.value)}
             />
           </div>
