@@ -68,15 +68,15 @@ func (id OpenId) AuthUrl() string {
 	}
 
 	i := 0
-	url := steamLogin + "?"
+	u := steamLogin + "?"
 	for key, value := range data {
-		url += key + "=" + value
+		u += key + "=" + value
 		if i != len(data)-1 {
-			url += "&"
+			u += "&"
 		}
 		i++
 	}
-	return url
+	return u
 }
 
 func (id *OpenId) ValidateAndGetId() (string, error) {

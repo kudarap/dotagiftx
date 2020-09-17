@@ -21,14 +21,14 @@ type PlayerSummaries struct {
 
 	CommentPermission int    `json:"commentpermission"`
 	RealName          string `json:"realname"`
-	PrimaryClanId     string `json:"primaryclanid"`
-	TimeCreated       int    `json:"timecreated"`
-	LocCountryCode    string `json:"loccountrycode"`
-	LocStateCode      string `json:"locstatecode"`
-	LocCityId         int    `json:"loccityid"`
-	GameId            int    `json:"gameid"`
-	GameExtraInfo     string `json:"gameextrainfo"`
-	GameServerIp      string `json:"gameserverip"`
+	//PrimaryClanId     string `json:"primaryclanid"`
+	//TimeCreated       int    `json:"timecreated"`
+	//LocCountryCode    string `json:"loccountrycode"`
+	//LocStateCode      string `json:"locstatecode"`
+	//LocCityId         int    `json:"loccityid"`
+	//GameId            string `json:"gameid"`
+	//GameExtraInfo     string `json:"gameextrainfo"`
+	//GameServerIp      string `json:"gameserverip"`
 }
 
 func GetPlayerSummaries(steamId, apiKey string) (*PlayerSummaries, error) {

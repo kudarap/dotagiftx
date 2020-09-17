@@ -54,7 +54,7 @@ const getRarityStyle = value => {
     return null
   }
 
-  return rarityStylerMap[value]
+  return { ...rarityStylerMap[value], textTransform: 'capitalize' }
 }
 
 export default function RarityTag({ rarity, ...other }) {

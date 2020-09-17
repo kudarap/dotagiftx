@@ -8,6 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import TextField from '@material-ui/core/TextField'
 import DeliveredIcon from '@material-ui/icons/AssignmentTurnedIn'
 import CancelIcon from '@material-ui/icons/Cancel'
 import { myMarket } from '@/service/api'
@@ -46,10 +47,12 @@ export default function ReserveUpdateDialog(props) {
 
   const { market, open, onClose } = props
 
+  const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
   const handleClose = () => {
+    setNotes('')
     setError('')
     setLoading(false)
     onClose()
@@ -87,6 +90,7 @@ export default function ReserveUpdateDialog(props) {
 
     marketUpdate({
       status: MARKET_STATUS_SOLD,
+      notes,
     })
   }
 
@@ -140,13 +144,27 @@ export default function ReserveUpdateDialog(props) {
                   <>
                     <br />
                     <Typography color="textSecondary" component="span">
-                      {`Reserve Notes: `}
+                      {`Reservation Notes: `}
                     </Typography>
                     {market.notes}
                   </>
                 )}
               </Typography>
             </Typography>
+          </div>
+          <div>
+            <TextField
+              disabled={loading}
+              fullWidth
+              required
+              color="secondary"
+              variant="outlined"
+              label="Delivery notes"
+              helperText="Screenshot URL for verification."
+              placeholder="https://imgur.com/a/..."
+              value={notes}
+              onInput={e => setNotes(e.target.value)}
+            />
           </div>
         </DialogContent>
         {error && (

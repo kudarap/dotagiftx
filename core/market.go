@@ -15,6 +15,7 @@ const (
 	MarketErrInvalidStatus
 	MarketErrNotesLimit
 	MarketErrInvalidPrice
+	MarketErrQtyLimitPerUser
 )
 
 // sets error text definition.
@@ -25,9 +26,14 @@ func init() {
 	appErrorText[MarketErrInvalidStatus] = "market status not allowed"
 	appErrorText[MarketErrNotesLimit] = "market notes text limit reached"
 	appErrorText[MarketErrInvalidPrice] = "market price is invalid"
+	appErrorText[MarketErrQtyLimitPerUser] = "market quantity limit(5) per item reached"
 }
 
-const maxMarketNotesLen = 120
+const (
+	 maxMarketNotesLen = 200
+	 MaxMarketQtyLimitPerUser = 5
+)
+
 
 // Market statuses.
 const (

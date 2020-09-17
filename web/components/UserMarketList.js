@@ -50,7 +50,7 @@ export default function UserMarketList({ data, error }) {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableHeadCell>Sell Listings ({data.total_count})</TableHeadCell>
+              <TableHeadCell>Sell Items ({data.total_count})</TableHeadCell>
               <TableHeadCell align="right">Price</TableHeadCell>
               <TableHeadCell align="right" width={156} />
             </TableRow>

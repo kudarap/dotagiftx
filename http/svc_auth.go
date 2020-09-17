@@ -9,8 +9,7 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 )
 
-// TODO make this into 5 min only
-const defaultTokenExpiration = time.Hour * 999
+const defaultTokenExpiration = time.Minute * 5
 
 type authResp struct {
 	UserID       string    `json:"user_id,omitempty"`

@@ -23,15 +23,16 @@ export default function About() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            About Kudarap?
+            Who is behind this?
           </Typography>
+          <br />
 
           <Avatar
             src="https://api.dotagiftx.com/images/adfb7fc8133861692abc5631d67b5f51dfd5753f.jpg"
             style={{ width: 100, height: 100 }}
           />
-          <Typography>
-            Message me on{' '}
+          <Typography color="textSecondary">
+            Name is Kudarap, maintainer and user of this site. Feel free to message me on{' '}
             <Link
               color="secondary"
               target="_blank"

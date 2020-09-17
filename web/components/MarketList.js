@@ -113,9 +113,12 @@ export default function MarketList({ data, error, currentUserID }) {
                   </TableCell>
                   <TableCell align="center">
                     {currentUserID === market.user.id ? (
-                      <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
-                        Remove
-                      </Button>
+                      // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+                      <div>
+                        <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
+                          Remove
+                        </Button>
+                      </div>
                     ) : (
                       <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
                         Contact Seller

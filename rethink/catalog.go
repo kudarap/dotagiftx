@@ -36,7 +36,7 @@ func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
-	q := newFindOptsQuery(s.table(), o)
+	q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -51,9 +51,13 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 		Filter:        o.Filter,
 		IndexSorting:  true,
 	}
-	q := newFindOptsQuery(s.table(), o)
+	q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
 	err = s.db.one(q.Count(), &num)
 	return
+}
+
+func (s *catalogStorage) filterOutZeroQty(q r.Term) r.Term {
+	return q.Filter(r.Row.Field("quantity").Gt(0))
 }
 
 func (s *catalogStorage) Get(id string) (*core.Catalog, error) {
@@ -97,7 +101,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}()
 
 	cat := &core.Catalog{}
-	opts := core.FindOpts{Filter: core.Market{ItemID: itemID}}
+	opts := core.FindOpts{Filter: core.Market{ItemID: itemID, Status: core.MarketStatusLive}}
 	baseQ := newFindOptsQuery(r.Table(tableMarket), opts)
 
 	var q r.Term
@@ -109,9 +113,15 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
-	// Get total market count by item ID.
+	// Get total market count by item ID
+	// and remove them if there's no entry
 	if err = s.db.one(baseQ.Count(), &cat.Quantity); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
+	}
+	if cat.Quantity == 0 {
+		if err := s.zeroQtyCatalog(cat.ID); err != nil {
+			return nil, errors.New(core.CatalogErrIndexing, err)
+		}
 	}
 
 	// Get lowest price on the market by item ID.
@@ -178,6 +188,16 @@ func (s *catalogStorage) update(in *core.Catalog) error {
 	}
 
 	return nil
+}
+
+// zeroQtyCatalog reset the catalog entry price when it reaches zero entry/qty.
+func (s *catalogStorage) zeroQtyCatalog(catalogID string) error {
+	q := s.table().Get(catalogID).Update(map[string]int{
+		"quantity": 0,
+		"lowest_ask": 0,
+		"highest_bid": 0,
+	})
+	return s.db.update(q)
 }
 
 // NOTE! deprecated method and not being used.
