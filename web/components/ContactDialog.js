@@ -103,17 +103,22 @@ export default function ContactDialog(props) {
                 As giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
                 <Link
+                  disableUnderline={false}
                   href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                   target="_blank"
                   rel="noreferrer noopener">
-                  <ul>SteamRep</ul>
+                  SteamRep
                 </Link>
                 .
               </li>
               <li>
                 Always check the item/set availability on seller&apos;s Dota 2 {` `}
-                <Link href={dota2Inventory} target="_blank" rel="noreferrer noopener">
-                  <ul>inventory</ul>
+                <Link
+                  disableUnderline={false}
+                  href={dota2Inventory}
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  inventory
                 </Link>
                 .
               </li>
