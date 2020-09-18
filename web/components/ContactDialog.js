@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
@@ -75,7 +74,7 @@ export default function ContactDialog(props) {
                 {/* &nbsp; */}
                 <ChipLink
                   label="SteamRep"
-                  href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
+                  href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                 />
                 &nbsp;
                 <ChipLink label="Steam Inventory" href={dota2Inventory} />
