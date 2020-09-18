@@ -84,7 +84,7 @@ export default function ContactDialog(props) {
                     <Typography color="textSecondary" component="span">
                       {`notes: `}
                     </Typography>
-                    <u>{market.notes}</u>
+                    {market.notes}
                   </>
                 )}
               </Typography>
@@ -103,17 +103,17 @@ export default function ContactDialog(props) {
                 As giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
                 <Link
-                  href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
+                  href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                   target="_blank"
                   rel="noreferrer noopener">
-                  SteamRep
+                  <ul>SteamRep</ul>
                 </Link>
                 .
               </li>
               <li>
                 Always check the item/set availability on seller&apos;s Dota 2 {` `}
                 <Link href={dota2Inventory} target="_blank" rel="noreferrer noopener">
-                  inventory
+                  <ul>inventory</ul>
                 </Link>
                 .
               </li>

@@ -71,7 +71,7 @@ export default function UserDetails({
   const linkProps = { href: '/user/[id]', as: `/user/${profile.steam_id}` }
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
-  const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/profiles/${profile.steam_id}`
+  const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `DotagiftX :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
