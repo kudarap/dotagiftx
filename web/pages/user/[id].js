@@ -165,7 +165,7 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps(props) {
-  const { params, query, req } = props
+  const { params, query } = props
 
   const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
