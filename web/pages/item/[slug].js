@@ -16,6 +16,7 @@ import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import { APP_URL } from '@/constants/strings'
+import ChipLink from '@/components/ChipLink'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -153,6 +154,11 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
                   {`Used by: `}
                 </Typography>
                 <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
+                <br />
+                <ChipLink
+                  label="Check Dota 2 Wiki"
+                  href={`https://dota2.gamepedia.com/${item.name}`}
+                />
               </Typography>
             </Typography>
           </div>
