@@ -15,6 +15,7 @@ import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
+import { APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -69,7 +70,7 @@ export default function Index({ totalEntries, popularItems }) {
           Dota 2 giftable items like Collector's Caches which are not available on Steam Community Market. 
           The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`}
         />
-        <link rel="canonical" href="https://dotagiftx.com" />
+        <link rel="canonical" href={APP_URL} />
       </Head>
 
       <Header disableSearch />

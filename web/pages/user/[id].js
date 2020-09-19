@@ -13,7 +13,7 @@ import Container from '@/components/Container'
 import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import { APP_URL, STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -181,7 +181,7 @@ export async function getServerSideProps(props) {
     error = e.message
   }
 
-  const canonicalURL = `${req.headers.host}/user/${params.id}`
+  const canonicalURL = `${APP_URL}/user/${params.id}`
 
   return {
     props: {

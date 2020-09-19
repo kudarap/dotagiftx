@@ -15,6 +15,7 @@ import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
+import { APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -196,7 +197,7 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps(props) {
-  const { params, query, req } = props
+  const { params, query } = props
 
   let item = {}
   try {
@@ -226,7 +227,7 @@ export async function getServerSideProps(props) {
     error = e.message
   }
 
-  const canonicalURL = `${req.headers.host}/item/${params.slug}`
+  const canonicalURL = `${APP_URL}/item/${params.slug}`
 
   return {
     props: {
