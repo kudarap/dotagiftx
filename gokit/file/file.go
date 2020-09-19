@@ -142,6 +142,8 @@ func generateSha1Name() string {
 
 func normalizeExt(ext string) string {
 	switch ext {
+	case ".jpe":
+		fallthrough
 	case ".jpeg":
 		return ".jpg"
 	}
