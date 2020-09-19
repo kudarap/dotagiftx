@@ -15,7 +15,6 @@ import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import ContactDialog from '@/components/ContactDialog'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -102,7 +101,7 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
         <meta name="twitter:site" content="@DotagiftX" />
         {/* OpenGraph */}
         <meta property="og:url" content={canonicalURL} />
-        <meta property="og:type" content="article" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
@@ -199,18 +198,15 @@ const marketSearchFilter = {
 export async function getServerSideProps(props) {
   const { params, query, req } = props
 
-  const canonicalURL = `https://${req.headers.host}${req.url}`
-
   let item = {}
   try {
     item = await catalog(params.slug)
   } catch (e) {
-    console.log(`error: ${e.message}`)
+    console.log(`SSR error: ${e.message}`)
 
     return {
       props: {
         item,
-        canonicalURL,
         filter: {},
         markets: {},
       },
@@ -229,6 +225,8 @@ export async function getServerSideProps(props) {
   } catch (e) {
     error = e.message
   }
+
+  const canonicalURL = `${req.headers.host}/item/${params.slug}`
 
   return {
     props: {

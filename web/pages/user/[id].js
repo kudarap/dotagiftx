@@ -91,7 +91,7 @@ export default function UserDetails({
         <meta name="twitter:site" content="@DotagiftX" />
         {/* OpenGraph */}
         <meta property="og:url" content={canonicalURL} />
-        <meta property="og:type" content="article" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${profile.avatar}`} />
@@ -167,8 +167,6 @@ const marketSearchFilter = {
 export async function getServerSideProps(props) {
   const { params, query, req } = props
 
-  const canonicalURL = `https://${req.headers.host}${req.url}`
-
   const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
   if (query.page) {
@@ -182,6 +180,8 @@ export async function getServerSideProps(props) {
   } catch (e) {
     error = e.message
   }
+
+  const canonicalURL = `${req.headers.host}/user/${params.id}`
 
   return {
     props: {
