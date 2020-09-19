@@ -51,8 +51,35 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemDetails({ item, filter, markets: initialMarkets, canonicalURL }) {
+export default function ItemDetails({
+  item,
+  error: initialError,
+  filter,
+  markets: initialMarkets,
+  canonicalURL,
+}) {
   const classes = useStyles()
+
+  if (initialError) {
+    return (
+      <>
+        <Header />
+
+        <main className={classes.main}>
+          <Container>
+            <Typography variant="h5" component="h1" gutterBottom align="center">
+              Item Error
+            </Typography>
+            <Typography color="textSecondary" align="center">
+              {initialError}
+            </Typography>
+          </Container>
+        </main>
+
+        <Footer />
+      </>
+    )
+  }
 
   const [page, setPage] = React.useState(filter.page)
   const [markets, setMarkets] = React.useState(initialMarkets)
@@ -187,12 +214,14 @@ ItemDetails.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
   markets: PropTypes.object,
+  error: PropTypes.string,
 }
 ItemDetails.defaultProps = {
   filter: {},
   markets: {
     data: [],
   },
+  error: null,
 }
 
 const marketSearchFilter = {
@@ -214,6 +243,7 @@ export async function getServerSideProps(props) {
     return {
       props: {
         item,
+        error: e.message,
         filter: {},
         markets: {},
       },
