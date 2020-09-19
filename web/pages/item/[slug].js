@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { isOk as checkLoggedIn, get as getLoggedInUser } from '@/service/auth'
-import { catalog, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
+import { catalog, item as itemGet, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -105,9 +105,10 @@ export default function ItemDetails({
 
   const metaTitle = `DotagiftX :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
-  const metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${
-    item.hero
-  }. Price start at $${item.lowest_ask.toFixed(2)}`
+  let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
+  if (item.lowest_ask) {
+    metaDesc += ` Price starting at $${item.lowest_ask.toFixed(2)}`
+  }
 
   const isLoggedIn = checkLoggedIn()
   let currentUserID = null
@@ -234,18 +235,32 @@ const marketSearchFilter = {
 export async function getServerSideProps(props) {
   const { params, query } = props
 
+  // Handles invalid item slug
   let item = {}
   try {
-    item = await catalog(params.slug)
+    item = await itemGet(params.slug)
   } catch (e) {
-    console.log(`SSR error: ${e.message}`)
-
     return {
       props: {
         item,
         error: e.message,
         filter: {},
         markets: {},
+      },
+    }
+  }
+
+  // Handles no market entry on item
+  try {
+    item = await catalog(params.slug)
+  } catch (e) {
+    console.log(`catalog get error: ${e.message}`)
+  }
+  if (!item.id) {
+    return {
+      props: {
+        item,
+        filter: {},
       },
     }
   }
@@ -260,6 +275,7 @@ export async function getServerSideProps(props) {
   try {
     markets = await marketSearch(filter)
   } catch (e) {
+    console.log(`market search error: ${e.message}`)
     error = e.message
   }
 
