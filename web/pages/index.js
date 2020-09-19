@@ -76,7 +76,7 @@ export default function Index({ totalEntries, popularItems }) {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDesc} />
-        <meta name="twitter:image" content={`${APP_URL}/gift.png`} />
+        <meta name="twitter:image" content={`${APP_URL}/assets/gift.png`} />
         <meta name="twitter:site" content="@DotagiftX" />
         {/* OpenGraph */}
         <meta property="og:url" content={APP_URL} />
