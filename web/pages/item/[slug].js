@@ -77,7 +77,7 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
 
   const metaTitle = `DotagiftX :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
-  const metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} for ${
+  const metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${
     item.hero
   }. Price start at $${item.lowest_ask.toFixed(2)}`
 
