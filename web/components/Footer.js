@@ -38,6 +38,12 @@ export default function Footer() {
 
   return (
     <footer className={classes.root}>
+      {/* <Container disableMinHeight> */}
+      {/*  <Typography variant="caption" color="textSecondary"> */}
+      {/*    Game content and materials are trademarks and copyrights of their respective publisher and */}
+      {/*    its licensors. All rights reserved. */}
+      {/*  </Typography> */}
+      {/* </Container> */}
       <Divider />
       <Container disableMinHeight>
         <ul className={classes.list}>
