@@ -57,7 +57,7 @@ export default function MyListings() {
 
       <main className={classes.main}>
         <Container>
-          <Typography variant="h5" component="h1" gutterBottom>
+          <Typography component="h1" gutterBottom>
             My Active Listings
           </Typography>
 

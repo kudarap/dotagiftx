@@ -57,7 +57,7 @@ export default function Reservations() {
 
       <main className={classes.main}>
         <Container>
-          <Typography variant="h5" component="h1" gutterBottom>
+          <Typography component="h1" gutterBottom>
             Buyer Reservations
           </Typography>
 

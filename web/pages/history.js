@@ -75,7 +75,7 @@ export default function History() {
 
       <main className={classes.main}>
         <Container>
-          <Typography id="delivered" variant="h5" component="h1" gutterBottom>
+          <Typography id="delivered" component="h1" gutterBottom>
             Delivered Items
           </Typography>
           {soldItems.error && <div>failed to load sold items</div>}
@@ -87,8 +87,9 @@ export default function History() {
             page={soldFilter.page}
             onChangePage={handleSoldPageChange}
           />
+          <br />
 
-          <Typography id="cancelled" variant="h5" component="h1" gutterBottom>
+          <Typography id="cancelled" component="h1" gutterBottom>
             Cancelled Items
           </Typography>
           {cancelledItems.error && <div>failed to load cancelled</div>}
