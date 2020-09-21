@@ -86,6 +86,14 @@ export default function MarketList({ data, error, currentUserID }) {
               </TableRow>
             )}
 
+            {!error && data.total_count === 0 && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  No offers available
+                </TableCell>
+              </TableRow>
+            )}
+
             {data.data &&
               data.data.map((market, idx) => (
                 <TableRow key={market.id} hover>

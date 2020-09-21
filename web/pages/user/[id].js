@@ -13,7 +13,7 @@ import Container from '@/components/Container'
 import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import { APP_URL, STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -91,7 +91,7 @@ export default function UserDetails({
         <meta name="twitter:site" content="@DotagiftX" />
         {/* OpenGraph */}
         <meta property="og:url" content={canonicalURL} />
-        <meta property="og:type" content="article" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${profile.avatar}`} />
@@ -165,9 +165,7 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps(props) {
-  const { params, query, req } = props
-
-  const canonicalURL = `https://${req.headers.host}${req.url}`
+  const { params, query } = props
 
   const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
@@ -182,6 +180,8 @@ export async function getServerSideProps(props) {
   } catch (e) {
     error = e.message
   }
+
+  const canonicalURL = `${APP_URL}/user/${params.id}`
 
   return {
     props: {

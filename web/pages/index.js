@@ -15,6 +15,7 @@ import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
+import { APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -59,17 +60,30 @@ export default function Index({ totalEntries, popularItems }) {
 
   const description = `Search on ${totalEntries || ''} giftable items`
 
+  const metaTitle = 'DotagiftX - Dota 2 giftable items marketplace'
+  const metaDesc = `${description}. DotagiftX was made to provide better search and pricing for 
+          Dota 2 giftable items like Collector's Caches which are not available on Steam Community Market. 
+          The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`
+
   return (
     <>
       <Head>
-        <title>DotagiftX - Dota 2 giftables market</title>
-        <meta
-          name="description"
-          content={`${description}. DotagiftX was made to provide better search and pricing for 
-          Dota 2 giftable items like Collector's Caches which are not available on Steam Community Market. 
-          The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`}
-        />
-        <link rel="canonical" href="https://dotagiftx.com" />
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={APP_URL} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDesc} />
+        <meta name="twitter:image" content={`${APP_URL}/assets/gift.png`} />
+        <meta name="twitter:site" content="@DotagiftX" />
+        {/* OpenGraph */}
+        <meta property="og:url" content={APP_URL} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:image" content={`${APP_URL}/gift.png`} />
       </Head>
 
       <Header disableSearch />

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { isOk as checkLoggedIn, get as getLoggedInUser } from '@/service/auth'
-import { catalog, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
+import { catalog, item as itemGet, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -15,7 +15,8 @@ import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import ContactDialog from '@/components/ContactDialog'
+import { APP_URL } from '@/constants/strings'
+import ChipLink from '@/components/ChipLink'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -50,8 +51,35 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ItemDetails({ item, filter, markets: initialMarkets, canonicalURL }) {
+export default function ItemDetails({
+  item,
+  error: initialError,
+  filter,
+  markets: initialMarkets,
+  canonicalURL,
+}) {
   const classes = useStyles()
+
+  if (initialError) {
+    return (
+      <>
+        <Header />
+
+        <main className={classes.main}>
+          <Container>
+            <Typography variant="h5" component="h1" gutterBottom align="center">
+              Item Error
+            </Typography>
+            <Typography color="textSecondary" align="center">
+              {initialError}
+            </Typography>
+          </Container>
+        </main>
+
+        <Footer />
+      </>
+    )
+  }
 
   const [page, setPage] = React.useState(filter.page)
   const [markets, setMarkets] = React.useState(initialMarkets)
@@ -77,9 +105,10 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
 
   const metaTitle = `DotagiftX :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
-  const metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} for ${
-    item.hero
-  }. Price start at $${item.lowest_ask.toFixed(2)}`
+  let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
+  if (item.lowest_ask) {
+    metaDesc += ` Price starting at $${item.lowest_ask.toFixed(2)}`
+  }
 
   const isLoggedIn = checkLoggedIn()
   let currentUserID = null
@@ -102,7 +131,7 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
         <meta name="twitter:site" content="@DotagiftX" />
         {/* OpenGraph */}
         <meta property="og:url" content={canonicalURL} />
-        <meta property="og:type" content="article" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
@@ -153,6 +182,11 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
                   {`Used by: `}
                 </Typography>
                 <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
+                <br />
+                <ChipLink
+                  label="Check Dota 2 Wiki"
+                  href={`https://dota2.gamepedia.com/${item.name}`}
+                />
               </Typography>
             </Typography>
           </div>
@@ -181,12 +215,14 @@ ItemDetails.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
   markets: PropTypes.object,
+  error: PropTypes.string,
 }
 ItemDetails.defaultProps = {
   filter: {},
   markets: {
     data: [],
   },
+  error: null,
 }
 
 const marketSearchFilter = {
@@ -197,22 +233,34 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps(props) {
-  const { params, query, req } = props
+  const { params, query } = props
 
-  const canonicalURL = `https://${req.headers.host}${req.url}`
-
+  // Handles invalid item slug
   let item = {}
   try {
-    item = await catalog(params.slug)
+    item = await itemGet(params.slug)
   } catch (e) {
-    console.log(`error: ${e.message}`)
-
     return {
       props: {
         item,
-        canonicalURL,
+        error: e.message,
         filter: {},
         markets: {},
+      },
+    }
+  }
+
+  // Handles no market entry on item
+  try {
+    item = await catalog(params.slug)
+  } catch (e) {
+    console.log(`catalog get error: ${e.message}`)
+  }
+  if (!item.id) {
+    return {
+      props: {
+        item,
+        filter: {},
       },
     }
   }
@@ -227,8 +275,11 @@ export async function getServerSideProps(props) {
   try {
     markets = await marketSearch(filter)
   } catch (e) {
+    console.log(`market search error: ${e.message}`)
     error = e.message
   }
+
+  const canonicalURL = `${APP_URL}/item/${params.slug}`
 
   return {
     props: {
