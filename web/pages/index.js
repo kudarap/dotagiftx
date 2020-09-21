@@ -83,7 +83,7 @@ export default function Index({ totalEntries, popularItems }) {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
-        <meta property="og:image" content={`${APP_URL}/gift.png`} />
+        <meta property="og:image" content={`${APP_URL}/assets/gift.png`} />
       </Head>
 
       <Header disableSearch />
