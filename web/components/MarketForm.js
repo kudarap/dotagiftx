@@ -273,6 +273,10 @@ export default function MarketForm() {
           <ul>
             <li>Please make sure your item exist in your inventory.</li>
             <li>
+              Dota 2 giftables transaction only viable if the two steam user parties have been
+              friends for 30 days.
+            </li>
+            <li>
               Please be clear in your terms and price. If the price is variable and subject to
               change, make a new post and remove the old one.
             </li>
