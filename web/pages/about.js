@@ -29,10 +29,12 @@ export default function About() {
 
           <Avatar
             src="https://api.dotagiftx.com/images/adfb7fc8133861692abc5631d67b5f51dfd5753f.jpg"
-            style={{ width: 100, height: 100 }}
+            style={{ width: 100, height: 100, borderRadius: 0 }}
           />
           <Typography color="textSecondary">
-            Name is Kudarap, maintainer and user of this site. Feel free to message me on{' '}
+            <strong>kudarap</strong> &mdash; programmer
+            <br />
+            Feel free to message me on{' '}
             <Link
               color="secondary"
               target="_blank"
