@@ -267,7 +267,7 @@ export default function MarketForm() {
             </Typography>
           )}
         </div>
-        <div>
+        <Typography variant="caption" color="textSecondary">
           <br />
           Guides for selling Giftables
           <ul>
@@ -285,7 +285,7 @@ export default function MarketForm() {
               accept or integrate any payment service.
             </li>
           </ul>
-        </div>
+        </Typography>
       </Paper>
     </>
   )

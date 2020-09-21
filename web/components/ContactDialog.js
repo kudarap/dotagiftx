@@ -91,7 +91,7 @@ export default function ContactDialog(props) {
             </Typography>
           </div>
 
-          <div>
+          <Typography variant="body2" color="textSecondary">
             <br />
             Guides for buying Giftables
             <ul>
@@ -135,7 +135,7 @@ export default function ContactDialog(props) {
                 mod may assist as well in this.
               </li>
             </ul>
-          </div>
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>
