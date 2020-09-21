@@ -93,8 +93,19 @@ export default function ContactDialog(props) {
 
           <div>
             <br />
-            Guides for Giftables
+            Guides for buying Giftables
             <ul>
+              <li>
+                Always check the item/set availability on seller&apos;s Dota 2 {` `}
+                <Link
+                  style={{ textDecoration: 'underline' }}
+                  href={dota2Inventory}
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  inventory
+                </Link>
+                .
+              </li>
               <li>
                 Dota 2 giftables transaction only viable if the two steam user parties have been
                 friends for 30 days.
@@ -111,16 +122,17 @@ export default function ContactDialog(props) {
                 </Link>
                 .
               </li>
+
               <li>
-                Always check the item/set availability on seller&apos;s Dota 2 {` `}
+                Official steamrep middleman may assist in middle manning for the trade, or{' '}
                 <Link
                   style={{ textDecoration: 'underline' }}
-                  href={dota2Inventory}
+                  href="https://www.reddit.com/r/dota2trade/"
                   target="_blank"
                   rel="noreferrer noopener">
-                  inventory
-                </Link>
-                .
+                  r/Dota2Trade
+                </Link>{' '}
+                mod may assist as well in this.
               </li>
             </ul>
           </div>

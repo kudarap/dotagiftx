@@ -267,6 +267,21 @@ export default function MarketForm() {
             </Typography>
           )}
         </div>
+        <div>
+          <br />
+          Guides for selling Giftables
+          <ul>
+            <li>Please make sure your item exist in your inventory.</li>
+            <li>
+              Please be clear in your terms and price. If the price is variable and subject to
+              change, make a new post and remove the old one.
+            </li>
+            <li>
+              Payment agreements will be done between you and the buyer. This website does not
+              accept or integrate any payment service.
+            </li>
+          </ul>
+        </div>
       </Paper>
     </>
   )
