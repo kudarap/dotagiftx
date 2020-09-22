@@ -109,6 +109,7 @@ export default function ItemDetails({
   const schemaOrgProd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
+    productID: item.id,
     name: item.name,
     image: `${CDN_URL}/${item.image}`,
     description: metaDesc,
@@ -121,6 +122,7 @@ export default function ItemDetails({
       availability: 'https://schema.org/InStock',
       price,
       priceCurrency: 'USD',
+      url: canonicalURL,
     }
   }
 
