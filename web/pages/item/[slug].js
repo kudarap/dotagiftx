@@ -115,12 +115,12 @@ export default function ItemDetails({
     description: metaDesc,
   }
   if (item.lowest_ask) {
-    const price = item.lowest_ask.toFixed(2)
-    metaDesc += ` Price starting at $${price}`
+    const startingPrice = item.lowest_ask.toFixed(2)
+    metaDesc += ` Price starting at $${startingPrice}`
     schemaOrgProd.offers = {
       '@type': 'Offer',
       availability: 'https://schema.org/InStock',
-      price,
+      price: startingPrice,
       priceCurrency: 'USD',
       url: canonicalURL,
     }
