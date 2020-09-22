@@ -109,7 +109,7 @@ export default function ItemDetails({
   const schemaOrgProd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    productID: `isbn:${item.id}`,
+    productID: item.id,
     name: item.name,
     image: `${CDN_URL}/${item.image}`,
     description: metaDesc,
