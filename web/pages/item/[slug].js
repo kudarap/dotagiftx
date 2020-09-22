@@ -122,7 +122,7 @@ export default function ItemDetails({
       availability: 'https://schema.org/InStock',
       price,
       priceCurrency: 'USD',
-      url: canonicalURL,
+      url: `isbn:${canonicalURL}`,
     }
   }
 
@@ -151,7 +151,7 @@ export default function ItemDetails({
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
-        {/* Schema.Org */}
+        {/* Rich Results */}
         <script type="application/ld+json">{JSON.stringify(schemaOrgProd)}</script>
       </Head>
 
