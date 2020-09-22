@@ -106,8 +106,22 @@ export default function ItemDetails({
   const metaTitle = `DotagiftX :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
   let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
+  const schemaOrgProd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: item.name,
+    image: `${CDN_URL}/${item.image}`,
+    description: metaDesc,
+  }
   if (item.lowest_ask) {
-    metaDesc += ` Price starting at $${item.lowest_ask.toFixed(2)}`
+    const price = item.lowest_ask.toFixed(2)
+    metaDesc += ` Price starting at $${price}`
+    schemaOrgProd.offers = {
+      '@type': 'Offer',
+      availability: 'https://schema.org/InStock',
+      price,
+      priceCurrency: 'USD',
+    }
   }
 
   const isLoggedIn = checkLoggedIn()
@@ -135,6 +149,8 @@ export default function ItemDetails({
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
+        {/* Schema.Org */}
+        <script type="application/ld+json">{JSON.stringify(schemaOrgProd)}</script>
       </Head>
 
       <Header />
