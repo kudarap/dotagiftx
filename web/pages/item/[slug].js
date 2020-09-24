@@ -113,7 +113,7 @@ export default function ItemDetails({
     name: item.name,
     image: `${CDN_URL}/${item.image}`,
     description: metaDesc,
-    offer: {
+    offers: {
       '@type': 'Offer',
       priceCurrency: 'USD',
       url: canonicalURL,
