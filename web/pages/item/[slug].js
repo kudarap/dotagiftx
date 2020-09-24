@@ -113,16 +113,23 @@ export default function ItemDetails({
     name: item.name,
     image: `${CDN_URL}/${item.image}`,
     description: metaDesc,
+    offer: {
+      '@type': 'Offer',
+      priceCurrency: 'USD',
+      url: canonicalURL,
+    },
   }
   if (item.lowest_ask) {
     const startingPrice = item.lowest_ask.toFixed(2)
     metaDesc += ` Price starting at $${startingPrice}`
     schemaOrgProd.offers = {
-      '@type': 'Offer',
       availability: 'https://schema.org/InStock',
       price: startingPrice,
-      priceCurrency: 'USD',
-      url: canonicalURL,
+    }
+  } else {
+    schemaOrgProd.offers = {
+      availability: 'https://schema.org/OutOfStock',
+      price: '0',
     }
   }
 
