@@ -113,6 +113,7 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
 Search.propTypes = {
   catalogs: PropTypes.object.isRequired,
   filter: PropTypes.object.isRequired,
+  canonicalURL: PropTypes.string.isRequired,
 }
 
 const catalogSearchFilter = { sort: 'created_at:desc', page: 1 }
