@@ -82,7 +82,7 @@ export default function ContactDialog(props) {
                   <>
                     <br />
                     <Typography color="textSecondary" component="span">
-                      {`notes: `}
+                      {`Notes: `}
                     </Typography>
                     {market.notes}
                   </>
