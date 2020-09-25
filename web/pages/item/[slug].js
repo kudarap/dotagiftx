@@ -122,15 +122,11 @@ export default function ItemDetails({
   if (item.lowest_ask) {
     const startingPrice = item.lowest_ask.toFixed(2)
     metaDesc += ` Price starting at $${startingPrice}`
-    schemaOrgProd.offers = {
-      availability: 'https://schema.org/InStock',
-      price: startingPrice,
-    }
+    schemaOrgProd.offers.availability = 'https://schema.org/InStock'
+    schemaOrgProd.offers.price = startingPrice
   } else {
-    schemaOrgProd.offers = {
-      availability: 'https://schema.org/OutOfStock',
-      price: '0',
-    }
+    schemaOrgProd.offers.availability = 'https://schema.org/OutOfStock'
+    schemaOrgProd.offers.price = '0'
   }
 
   const isLoggedIn = checkLoggedIn()
