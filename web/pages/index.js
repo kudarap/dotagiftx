@@ -165,15 +165,6 @@ export default function Index({ totalEntries, popularItems }) {
 
           <Grid container spacing={2}>
             <Grid item sm={6} xs={12}>
-              <Typography className={classes.footLinks}>Top Heroes</Typography>
-              {topHeroes &&
-                topHeroes.map(hero => (
-                  <Link href={`/search?q=${hero}`} color="secondary" className={classes.footLinks}>
-                    <Typography variant="subtitle1">{hero}</Typography>
-                  </Link>
-                ))}
-            </Grid>
-            <Grid item sm={6} xs={12}>
               <Typography className={classes.footLinks}>Top Treasures</Typography>
               {topOrigins &&
                 topOrigins.map(origin => (
@@ -182,6 +173,15 @@ export default function Index({ totalEntries, popularItems }) {
                     color="secondary"
                     className={classes.footLinks}>
                     <Typography variant="subtitle1">{origin}</Typography>
+                  </Link>
+                ))}
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <Typography className={classes.footLinks}>Top Heroes</Typography>
+              {topHeroes &&
+                topHeroes.map(hero => (
+                  <Link href={`/search?q=${hero}`} color="secondary" className={classes.footLinks}>
+                    <Typography variant="subtitle1">{hero}</Typography>
                   </Link>
                 ))}
             </Grid>

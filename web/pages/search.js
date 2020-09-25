@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import has from 'lodash/has'
 import isEqual from 'lodash/isEqual'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -27,9 +28,14 @@ const useStyles = makeStyles(theme => ({
 export default function Search({ catalogs: initialCatalogs, filter: initialFilter, canonicalURL }) {
   const classes = useStyles()
 
+  console.log('initialFilter', initialFilter)
   const [filter, setFilter] = React.useState(initialFilter)
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
   const [error, setError] = React.useState(null)
+
+  const router = useRouter()
+  const rQuery = router.query
+  console.log('init router', rQuery)
 
   // Handle search keyword change and resets page if available.
   React.useEffect(() => {
@@ -120,6 +126,7 @@ const catalogSearchFilter = { sort: 'created_at:desc', page: 1 }
 
 // This gets called on every request
 export async function getServerSideProps({ query }) {
+  console.log('SSR cat search', query)
   const filter = { ...catalogSearchFilter, ...query }
   filter.page = Number(query.page || 1)
 
