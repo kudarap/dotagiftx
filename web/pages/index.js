@@ -49,7 +49,6 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.app.white,
   },
   footLinks: {
-    display: 'block',
     [theme.breakpoints.down('xs')]: {
       textAlign: 'center',
     },
@@ -166,26 +165,23 @@ export default function Index({ totalEntries, popularItems }) {
 
           <Grid container spacing={3}>
             <Grid item sm={6} xs={12}>
+              <Typography className={classes.footLinks}>Top Heroes</Typography>
+              {topHeroes &&
+                topHeroes.map(hero => (
+                  <Link href={`/search?q=${hero}`} color="secondary" className={classes.footLinks}>
+                    <Typography variant="subtitle1">{hero}</Typography>
+                  </Link>
+                ))}
+            </Grid>
+            <Grid item sm={6} xs={12}>
               <Typography className={classes.footLinks}>Top Treasures</Typography>
               {topOrigins &&
                 topOrigins.map(origin => (
                   <Link
                     href={`/search?q=${origin}`}
-                    color="textSecondary"
+                    color="secondary"
                     className={classes.footLinks}>
                     <Typography variant="subtitle1">{origin}</Typography>
-                  </Link>
-                ))}
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <Typography className={classes.footLinks}>Top Heroes</Typography>
-              {topHeroes &&
-                topHeroes.map(hero => (
-                  <Link
-                    href={`/search?q=${hero}`}
-                    color="textSecondary"
-                    className={classes.footLinks}>
-                    <Typography variant="subtitle1">{hero}</Typography>
                   </Link>
                 ))}
             </Grid>
