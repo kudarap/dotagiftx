@@ -6,6 +6,7 @@ import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
+import Grid from '@material-ui/core/Grid'
 import { CATALOGS, fetcher, marketSearch, catalogSearch } from '@/service/api'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import * as format from '@/lib/format'
@@ -145,6 +146,82 @@ export default function Index({ totalEntries, popularItems }) {
           {!recentItems && <LinearProgress color="secondary" />}
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
+
+          <Grid container spacing={3}>
+            <Grid item md={6} sm={12}>
+              <Typography>Popular Treasures</Typography>
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+              <Link href={`/search?sort=sdsd`} color="textSecondary">
+                Treasure 1
+              </Link>
+              <br />
+            </Grid>
+            <Grid item md={6} sm={12}>
+              <Typography>Popular Heroes</Typography>
+              <ul>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+                <li>Spectre</li>
+              </ul>
+            </Grid>
+          </Grid>
         </Container>
       </main>
 

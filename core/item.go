@@ -68,6 +68,12 @@ type (
 
 		// Import creates new item from yaml format.
 		Import(ctx context.Context, f io.Reader) (ItemImportResult, error)
+
+		// TopOrigins returns a list of top origin/treasure base on view count.
+		TopOrigins() ([]string, error)
+
+		// TopHeroes returns a list of top heroes base on view count.
+		TopHeroes() ([]string, error)
 	}
 
 	// ItemStorage defines operation for item records.
