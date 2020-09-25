@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import has from 'lodash/has'
 import isEqual from 'lodash/isEqual'
+import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -11,6 +12,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
+import { APP_NAME, APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -22,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Search({ catalogs: initialCatalogs, filter: initialFilter }) {
+export default function Search({ catalogs: initialCatalogs, filter: initialFilter, canonicalURL }) {
   const classes = useStyles()
 
   const [filter, setFilter] = React.useState(initialFilter)
@@ -58,8 +60,20 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
 
   const linkProps = { href: '/search', query: filter }
 
+  let metaTitle = `${APP_NAME} Search`
+  let metaDesc = `Search for item name, hero, treasure`
+  if (filter.q) {
+    metaTitle += ` :: ${filter.q}`
+    metaDesc = `${catalogs && catalogs.total_count} results for "${filter.q}"`
+  }
+
   return (
     <>
+      <Head>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={canonicalURL} />
+      </Head>
       <Header />
 
       <main className={classes.main}>
@@ -116,8 +130,11 @@ export async function getServerSideProps({ query }) {
     error = e.message
   }
 
+  const canonicalURL = `${APP_URL}/search?q=${filter.q}`
+
   return {
     props: {
+      canonicalURL,
       filter,
       catalogs,
       error,
