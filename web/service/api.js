@@ -20,6 +20,9 @@ export const USERS = '/users'
 export const ITEMS = '/items'
 export const MARKETS = '/markets'
 export const CATALOGS = '/catalogs'
+export const STATS = '/stats'
+export const STATS_TOP_ORIGINS = `${STATS}/top-origins`
+export const STATS_TOP_HEROES = `${STATS}/top-heroes`
 const VERSION = '/'
 const TRACK = '/t'
 

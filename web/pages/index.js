@@ -7,7 +7,14 @@ import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
-import { CATALOGS, fetcher, marketSearch, catalogSearch } from '@/service/api'
+import {
+  CATALOGS,
+  fetcher,
+  marketSearch,
+  catalogSearch,
+  STATS_TOP_ORIGINS,
+  STATS_TOP_HEROES,
+} from '@/service/api'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import * as format from '@/lib/format'
 import Footer from '@/components/Footer'
@@ -17,6 +24,8 @@ import SearchInput from '@/components/SearchInput'
 import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
 import { APP_URL } from '@/constants/strings'
+import Button from '@/components/Button'
+import ChipLink from '@/components/ChipLink'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -39,6 +48,12 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'bold',
     color: theme.palette.app.white,
   },
+  footLinks: {
+    display: 'block',
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+    },
+  },
 }))
 
 const popularItemsFilter = {
@@ -54,6 +69,8 @@ export default function Index({ totalEntries, popularItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
+  const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
+  const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
@@ -148,78 +165,29 @@ export default function Index({ totalEntries, popularItems }) {
           <br />
 
           <Grid container spacing={3}>
-            <Grid item md={6} sm={12}>
-              <Typography>Popular Treasures</Typography>
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
-              <Link href={`/search?sort=sdsd`} color="textSecondary">
-                Treasure 1
-              </Link>
-              <br />
+            <Grid item sm={6} xs={12}>
+              <Typography className={classes.footLinks}>Top Treasures</Typography>
+              {topOrigins &&
+                topOrigins.map(origin => (
+                  <Link
+                    href={`/search?q=${origin}`}
+                    color="textSecondary"
+                    className={classes.footLinks}>
+                    <Typography variant="subtitle1">{origin}</Typography>
+                  </Link>
+                ))}
             </Grid>
-            <Grid item md={6} sm={12}>
-              <Typography>Popular Heroes</Typography>
-              <ul>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-                <li>Spectre</li>
-              </ul>
+            <Grid item sm={6} xs={12}>
+              <Typography className={classes.footLinks}>Top Heroes</Typography>
+              {topHeroes &&
+                topHeroes.map(hero => (
+                  <Link
+                    href={`/search?q=${hero}`}
+                    color="textSecondary"
+                    className={classes.footLinks}>
+                    <Typography variant="subtitle1">{hero}</Typography>
+                  </Link>
+                ))}
             </Grid>
           </Grid>
         </Container>
