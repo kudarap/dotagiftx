@@ -75,7 +75,7 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
         value={keyword}
         className={classes.input}
         size="small"
-        placeholder="Search for item name, hero, origin"
+        placeholder="Search for item name, hero, treasure"
         variant="outlined"
         color="secondary"
         fullWidth

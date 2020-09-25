@@ -163,7 +163,7 @@ export default function Index({ totalEntries, popularItems }) {
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
 
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item sm={6} xs={12}>
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&
