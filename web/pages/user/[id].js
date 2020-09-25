@@ -109,12 +109,12 @@ export default function UserDetails({
               </Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
-                  {`registered: `}
+                  {`Registered: `}
                 </Typography>
                 {moment(profile.created_at).fromNow()}
                 <br />
                 <Typography color="textSecondary" component="span">
-                  {`quick links: `}
+                  {`Links: `}
                 </Typography>
                 <ChipLink label="Steam Profile" href={profileURL} />
                 &nbsp;

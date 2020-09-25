@@ -68,7 +68,7 @@ export default function ContactDialog(props) {
               </Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
-                  {`quick links: `}
+                  {`Links: `}
                 </Typography>
                 {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
                 {/* &nbsp; */}

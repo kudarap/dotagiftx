@@ -208,10 +208,10 @@ export default function ItemDetails({
                 </Typography>
                 <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
                 <br />
-                <ChipLink
-                  label="Check Dota 2 Wiki"
-                  href={`https://dota2.gamepedia.com/${item.name}`}
-                />
+                <Typography color="textSecondary" component="span">
+                  {`Links: `}
+                </Typography>
+                <ChipLink label="Dota 2 Wiki" href={`https://dota2.gamepedia.com/${item.name}`} />
               </Typography>
             </Typography>
           </div>
