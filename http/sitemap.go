@@ -8,32 +8,43 @@ import (
 )
 
 func buildSitemap(items []core.Item, users []core.User) *stm.Sitemap {
-	sm := stm.NewSitemap(1)
-	//sm.SetVerbose(false)
-	sm.SetDefaultHost("https://dotagiftx.com")
-	sm.Create()
+	sitemap := stm.NewSitemap(1)
+	//sitemap.SetVerbose(false)
+	sitemap.SetDefaultHost("https://dotagiftx.com")
+	sitemap.Create()
 
-	// Static pages locations.
-	sm.Add(stm.URL{{"loc", "/"}, {"changefreq", "daily"}, {"priority", 0.8}})
-	sm.Add(stm.URL{{"loc", "/search"}, {"changefreq", "daily"}, {"priority", 0.6}})
-	sm.Add(stm.URL{{"loc", "/search?sort=" + queryFlagRecentItems}, {"changefreq", "daily"}, {"priority", 0.6}})
-	sm.Add(stm.URL{{"loc", "/search?sort=" + queryFlagPopularItems}, {"changefreq", "daily"}, {"priority", 0.6}})
-	sm.Add(stm.URL{{"loc", "/about"}})
-	sm.Add(stm.URL{{"loc", "/faq"}})
-	sm.Add(stm.URL{{"loc", "/privacy"}})
-	sm.Add(stm.URL{{"loc", "/login"}})
+	// Add static pages locations.
+	sitemap.Add(stm.URL{{"loc", "/"}, {"changefreq", "daily"}, {"priority", 0.8}})
+	sitemap.Add(stm.URL{{"loc", "/search"}, {"changefreq", "daily"}, {"priority", 0.6}})
+	sitemap.Add(stm.URL{{"loc", "/search?sort=" + queryFlagRecentItems}, {"changefreq", "daily"}, {"priority", 0.6}})
+	sitemap.Add(stm.URL{{"loc", "/search?sort=" + queryFlagPopularItems}, {"changefreq", "daily"}, {"priority", 0.6}})
+	sitemap.Add(stm.URL{{"loc", "/about"}})
+	sitemap.Add(stm.URL{{"loc", "/faq"}})
+	sitemap.Add(stm.URL{{"loc", "/privacy"}})
+	sitemap.Add(stm.URL{{"loc", "/login"}})
 
-	// Catalog listings locations.
+	// Add item slug locations.
+	origins := map[string]struct{}{}
+	heroes := map[string]struct{}{}
 	for _, ii := range items {
-		sm.Add(stm.URL{{"loc", "/item/" + ii.Slug}, {"changefreq", "daily"}, {"priority", 0.7}})
+		sitemap.Add(stm.URL{{"loc", "/item/" + ii.Slug}, {"changefreq", "daily"}, {"priority", 0.7}})
+		origins[ii.Origin] = struct{}{}
+		heroes[ii.Hero] = struct{}{}
+	}
+	// Add item origin and heroes.
+	for i, _ := range origins {
+		sitemap.Add(stm.URL{{"loc", "/search?q=" + i}})
+	}
+	for i, _ := range heroes {
+		sitemap.Add(stm.URL{{"loc", "/search?q=" + i}})
 	}
 
-	// User profile locations.
+	// Add user profile locations.
 	for _, uu := range users {
-		sm.Add(stm.URL{{"loc", "/user/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.7}})
+		sitemap.Add(stm.URL{{"loc", "/user/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.6}})
 	}
 
-	return sm
+	return sitemap
 }
 
 func handleSitemap(itemSvc core.ItemService, userSvc core.UserService) http.HandlerFunc {
