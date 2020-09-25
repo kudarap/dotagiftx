@@ -26,7 +26,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/catalogs/{slug}", handleMarketCatalogDetail(s.marketSvc))
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
 		r.Get("/t", handleTracker(s.trackSvc, s.logger))
-		r.Get("/sitemap.xml", handleSitemap(s.marketSvc, s.userSvc))
+		r.Get("/sitemap.xml", handleSitemap(s.itemSvc, s.userSvc))
 	})
 }
 
