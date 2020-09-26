@@ -14,6 +14,7 @@ import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import { APP_NAME, APP_URL } from '@/constants/strings'
+import * as url from '@/lib/url'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -28,14 +29,14 @@ const useStyles = makeStyles(theme => ({
 export default function Search({ catalogs: initialCatalogs, filter: initialFilter, canonicalURL }) {
   const classes = useStyles()
 
-  console.log('initialFilter', initialFilter)
-  const [filter, setFilter] = React.useState(initialFilter)
+  const router = useRouter()
+  const query = url.getQuery(router.asPath)
+  query.page = Number(query.page || 1)
+  console.log(query)
+
+  const [filter, setFilter] = React.useState({ ...initialFilter, ...query })
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
   const [error, setError] = React.useState(null)
-
-  const router = useRouter()
-  const rQuery = router.query
-  console.log('init router', rQuery)
 
   // Handle search keyword change and resets page if available.
   React.useEffect(() => {
@@ -52,7 +53,7 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
   React.useEffect(() => {
     ;(async () => {
       try {
-        const res = await catalogSearch(filter)
+        const res = await catalogSearch({ ...filter, ...query })
         setCatalogs(res)
       } catch (e) {
         setError(e.message)
@@ -61,7 +62,7 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
   }, [filter])
 
   const handlePageChange = (e, p) => {
-    setFilter({ ...filter, page: p })
+    // setFilter({ ...filter, page: p })
   }
 
   const linkProps = { href: '/search', query: filter }
@@ -126,7 +127,6 @@ const catalogSearchFilter = { sort: 'created_at:desc', page: 1 }
 
 // This gets called on every request
 export async function getServerSideProps({ query }) {
-  console.log('SSR cat search', query)
   const filter = { ...catalogSearchFilter, ...query }
   filter.page = Number(query.page || 1)
 
