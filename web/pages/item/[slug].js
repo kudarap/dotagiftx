@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       margin: '8px auto !important',
     },
-    width: 150,
+    width: 164,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
@@ -135,6 +135,8 @@ export default function ItemDetails({
     currentUserID = getLoggedInUser().user_id
   }
 
+  const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(' ', '_')}`
+
   return (
     <>
       <Head>
@@ -165,12 +167,14 @@ export default function ItemDetails({
           <div className={classes.details}>
             {item.image && (
               <div>
-                <ItemImage
-                  className={classes.media}
-                  image={`/300x170/${item.image}`}
-                  title={item.name}
-                  rarity={item.rarity}
-                />
+                <a href={wikiLink} target="_blank" rel="noreferrer noopener">
+                  <ItemImage
+                    className={classes.media}
+                    image={`/300x170/${item.image}`}
+                    title={item.name}
+                    rarity={item.rarity}
+                  />
+                </a>
                 {isLoggedIn && (
                   <Button
                     className={classes.postItemButton}
@@ -195,7 +199,12 @@ export default function ItemDetails({
                 {item.rarity !== 'regular' && (
                   <>
                     &mdash;
-                    <RarityTag rarity={item.rarity} variant="body1" component="span" />
+                    <RarityTag
+                      rarity={item.rarity}
+                      variant="body1"
+                      component={Link}
+                      href={`/search?q=${item.rarity}`}
+                    />
                   </>
                 )}
                 <br />
@@ -207,7 +216,7 @@ export default function ItemDetails({
                 <Typography color="textSecondary" component="span">
                   {`Links: `}
                 </Typography>
-                <ChipLink label="Dota 2 Wiki" href={`https://dota2.gamepedia.com/${item.name}`} />
+                <ChipLink label="Dota 2 Wiki" href={wikiLink} />
               </Typography>
             </Typography>
           </div>
