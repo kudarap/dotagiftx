@@ -12,10 +12,10 @@ import Container from '@/components/Container'
 import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
+import { APP_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import { APP_URL } from '@/constants/strings'
 import ChipLink from '@/components/ChipLink'
 
 const useStyles = makeStyles(theme => ({

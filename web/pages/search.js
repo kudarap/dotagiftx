@@ -30,9 +30,9 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
   const classes = useStyles()
 
   const router = useRouter()
-  const query = url.getQuery(router.asPath)
-  query.page = Number(query.page || 1)
-  console.log(query)
+  const query = { ...url.getQuery(router.asPath) }
+  console.log('query init', query)
+  // query.page = Number(query.page || 1)
 
   const [filter, setFilter] = React.useState({ ...initialFilter, ...query })
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
@@ -49,19 +49,40 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
     }
   }, [initialFilter])
 
-  // Handle catalog request on page change.
+  // Handle query changes and update listing.
   React.useEffect(() => {
     ;(async () => {
+      console.log('query changed', query)
+
+      // setFilter({ ...filter, ...query })
+
       try {
-        const res = await catalogSearch({ ...filter, ...query })
-        setCatalogs(res)
+        const res = await catalogSearch({ ...query })
+        console.log('res', res)
+        // setCatalogs({})
       } catch (e) {
         setError(e.message)
       }
     })()
-  }, [filter])
+  }, [query])
+
+  // Handle catalog request on page change.
+  // React.useEffect(() => {
+  //   ;(async () => {
+  //     console.log('filter changed', query)
+  //
+  //     // try {
+  //     //   const res = await catalogSearch({ ...query })
+  //     //   setCatalogs(res)
+  //     // } catch (e) {
+  //     //   setError(e.message)
+  //     // }
+  //   })()
+  // }, [filter])
 
   const handlePageChange = (e, p) => {
+    console.log('query changed page', query)
+
     // setFilter({ ...filter, page: p })
   }
 
