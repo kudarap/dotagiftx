@@ -1,9 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import has from 'lodash/has'
-import isEqual from 'lodash/isEqual'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -14,7 +11,6 @@ import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import { APP_NAME, APP_URL } from '@/constants/strings'
-import * as url from '@/lib/url'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -26,67 +22,23 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Search({ catalogs: initialCatalogs, filter: initialFilter, canonicalURL }) {
+export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
   const classes = useStyles()
 
-  const router = useRouter()
-  const query = { ...url.getQuery(router.asPath) }
-  console.log('query init', query)
-  // query.page = Number(query.page || 1)
-
-  const [filter, setFilter] = React.useState({ ...initialFilter, ...query })
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
   const [error, setError] = React.useState(null)
 
-  // Handle search keyword change and resets page if available.
-  React.useEffect(() => {
-    if (isEqual(filter, initialFilter)) {
-      return
-    }
-
-    if (has(initialFilter, 'q')) {
-      setFilter({ ...filter, q: initialFilter.q, page: 1 })
-    }
-  }, [initialFilter])
-
-  // Handle query changes and update listing.
+  // Handle catalog request on page change.
   React.useEffect(() => {
     ;(async () => {
-      console.log('query changed', query)
-
-      // setFilter({ ...filter, ...query })
-
       try {
-        const res = await catalogSearch({ ...query })
-        console.log('res', res)
-        // setCatalogs({})
+        const res = await catalogSearch(filter)
+        setCatalogs(res)
       } catch (e) {
         setError(e.message)
       }
     })()
-  }, [query])
-
-  // Handle catalog request on page change.
-  // React.useEffect(() => {
-  //   ;(async () => {
-  //     console.log('filter changed', query)
-  //
-  //     // try {
-  //     //   const res = await catalogSearch({ ...query })
-  //     //   setCatalogs(res)
-  //     // } catch (e) {
-  //     //   setError(e.message)
-  //     // }
-  //   })()
-  // }, [filter])
-
-  const handlePageChange = (e, p) => {
-    console.log('query changed page', query)
-
-    // setFilter({ ...filter, page: p })
-  }
-
-  const linkProps = { href: '/search', query: filter }
+  }, [filter])
 
   let metaTitle = `${APP_NAME} Search`
   let metaDesc = `Search for item name, hero, treasure`
@@ -94,6 +46,8 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
     metaTitle += ` :: ${filter.q}`
     metaDesc = `${catalogs && catalogs.total_count} results for "${filter.q}"`
   }
+
+  const linkProps = { href: '/search', query: filter }
 
   return (
     <>
@@ -126,7 +80,6 @@ export default function Search({ catalogs: initialCatalogs, filter: initialFilte
                   style={{ textAlign: 'right' }}
                   count={catalogs.total_count}
                   page={filter.page}
-                  onChangePage={handlePageChange}
                 />
               )}
             </div>
@@ -150,6 +103,7 @@ const catalogSearchFilter = { sort: 'created_at:desc', page: 1 }
 export async function getServerSideProps({ query }) {
   const filter = { ...catalogSearchFilter, ...query }
   filter.page = Number(query.page || 1)
+  console.log('SSR filter', filter)
 
   let catalogs = {}
   let error = null
