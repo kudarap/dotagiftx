@@ -10,7 +10,7 @@ import { item, itemSearch } from '@/service/api'
 const itemSearchFilter = { limit: 1000, sort: 'popular' }
 const optionTextSeparator = ' - '
 
-export default function ItemAutoComplete({ onSelect, ...other }) {
+function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
   const [open, setOpen] = React.useState(false)
   const [options, setOptions] = React.useState([])
   const [value, setValue] = React.useState('')
@@ -104,6 +104,7 @@ export default function ItemAutoComplete({ onSelect, ...other }) {
       renderInput={params => (
         <TextField
           {...params}
+          ref={forwardedRef}
           color="secondary"
           label="Item name"
           helperText="Search item you want to post from your inventory."
@@ -125,7 +126,13 @@ export default function ItemAutoComplete({ onSelect, ...other }) {
 }
 ItemAutoComplete.propTypes = {
   onSelect: PropTypes.func,
+  forwardedRef: PropTypes.object,
 }
 ItemAutoComplete.defaultProps = {
   onSelect: () => {},
+  forwardedRef: null,
 }
+
+export default React.forwardRef((props, ref) => {
+  return <ItemAutoComplete forwardedRef={ref} {...props} />
+})

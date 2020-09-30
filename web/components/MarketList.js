@@ -110,7 +110,7 @@ export default function MarketList({ data, error, currentUserID }) {
                           <strong>{market.user.name}</strong>
                           <br />
                           <Typography variant="caption" color="textSecondary">
-                            {/*{market.user.steam_id}*/}
+                            {/* {market.user.steam_id} */}
                             Posted {dateFromNow(market.created_at)}
                           </Typography>
                         </div>

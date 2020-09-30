@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import MuiLink from '@material-ui/core/Link'
 import SubmitIcon from '@material-ui/icons/Check'
 import Alert from '@material-ui/lab/Alert'
 import { catalog, myMarket } from '@/service/api'
@@ -29,6 +30,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const defaultItem = {
+  id: '',
+}
 const defaultPayload = {
   item_id: '',
   price: '',
@@ -55,7 +59,7 @@ const checkMarketPayload = payload => {
 export default function MarketForm() {
   const classes = useStyles()
 
-  const [item, setItem] = React.useState({ id: '' })
+  const [item, setItem] = React.useState(defaultItem)
   const [payload, setPayload] = React.useState(defaultPayload)
   const [newMarketID, setNewMarketID] = React.useState(null)
   const [error, setError] = React.useState(null)
@@ -126,6 +130,18 @@ export default function MarketForm() {
     })()
   }
 
+  const itemSelectEl = React.useRef(null)
+  const handleFormReset = () => {
+    setItem(defaultItem)
+    setPayload(defaultPayload)
+    setNewMarketID(null)
+    setError(null)
+
+    const inputEl = itemSelectEl.current.getElementsByTagName('input')[0]
+    // inputEl.focus()
+    inputEl.select()
+  }
+
   const handlePriceChange = e => setPayload({ ...payload, price: e.target.value })
 
   const handleQtyChange = e => {
@@ -152,11 +168,15 @@ export default function MarketForm() {
 
       <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1">
-          Listing your item on DotagiftX
+          Post your item on DotagiftX
         </Typography>
         <br />
 
-        <ItemAutoComplete onSelect={handleItemSelect} disabled={loading || !isLoggedIn} />
+        <ItemAutoComplete
+          ref={itemSelectEl}
+          onSelect={handleItemSelect}
+          disabled={loading || !isLoggedIn}
+        />
         <br />
 
         {/* Selected item preview */}
@@ -242,24 +262,30 @@ export default function MarketForm() {
         <br />
         <br />
 
-        <Button
-          variant="contained"
-          fullWidth
-          type="submit"
-          size="large"
-          disabled={loading || !isLoggedIn || Boolean(newMarketID)}
-          startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}>
-          Post Item
-        </Button>
+        {!newMarketID && (
+          <Button
+            variant="contained"
+            fullWidth
+            type="submit"
+            size="large"
+            disabled={loading || !isLoggedIn || Boolean(newMarketID)}
+            startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}>
+            Post Item
+          </Button>
+        )}
         <div style={{ marginTop: 2 }}>
           {newMarketID && (
-            <Typography align="center" variant="body2">
+            <Alert severity="success" variant="outlined">
               Item posted successfully! Check your{' '}
               <Link style={{ textDecoration: 'underline' }} href="/my-listings">
-                item listings
+                Item listings
               </Link>
+              &nbsp;or{' '}
+              <MuiLink color="textPrimary" style={{ cursor: 'pointer' }} onClick={handleFormReset}>
+                Post another
+              </MuiLink>
               .
-            </Typography>
+            </Alert>
           )}
           {error && (
             <Typography align="center" variant="body2" color="error">
