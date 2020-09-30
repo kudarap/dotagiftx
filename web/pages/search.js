@@ -97,7 +97,7 @@ Search.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
 }
 
-const catalogSearchFilter = { sort: 'created_at:desc', page: 1 }
+const catalogSearchFilter = { sort: 'popular', page: 1 }
 
 // This gets called on every request
 export async function getServerSideProps({ query }) {
