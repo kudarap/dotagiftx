@@ -48,7 +48,6 @@ export default function UserDetails({
 }) {
   const classes = useStyles()
 
-  const [page, setPage] = React.useState(filter.page)
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [error, setError] = React.useState(initialError)
 
@@ -56,25 +55,21 @@ export default function UserDetails({
   React.useEffect(() => {
     ;(async () => {
       try {
-        const res = await marketSearch({ ...filter, page })
+        const res = await marketSearch(filter)
         setMarkets(res)
       } catch (e) {
         setError(e.message)
       }
     })()
-  }, [page])
-
-  const handlePageChange = (e, p) => {
-    setPage(p)
-  }
-
-  const linkProps = { href: '/user/[id]', as: `/user/${profile.steam_id}` }
+  }, [filter])
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
   const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `DotagiftX :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
+
+  const linkProps = { href: `/user/${profile.steam_id}` }
 
   return (
     <>
@@ -131,8 +126,7 @@ export default function UserDetails({
               linkProps={linkProps}
               style={{ textAlign: 'right' }}
               count={markets.total_count}
-              page={page}
-              onChangePage={handlePageChange}
+              page={filter.page}
             />
           )}
         </Container>
@@ -164,14 +158,13 @@ const marketSearchFilter = {
 }
 
 // This gets called on every request
-export async function getServerSideProps(props) {
-  const { params, query } = props
-
+export async function getServerSideProps({ params, query }) {
   const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
-  if (query.page) {
-    filter.page = Number(query.page)
-  }
+  filter.page = Number(query.page || 1)
+
+  console.log('SSR query', query)
+  console.log('SSR filter', filter)
 
   let markets = {}
   let error = null

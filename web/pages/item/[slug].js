@@ -81,7 +81,6 @@ export default function ItemDetails({
     )
   }
 
-  const [page, setPage] = React.useState(filter.page)
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [error, setError] = React.useState(null)
 
@@ -89,19 +88,13 @@ export default function ItemDetails({
   React.useEffect(() => {
     ;(async () => {
       try {
-        const res = await marketSearch({ ...filter, page })
+        const res = await marketSearch(filter)
         setMarkets(res)
       } catch (e) {
         setError(e.message)
       }
     })()
-  }, [page])
-
-  const handlePageChange = (e, p) => {
-    setPage(p)
-  }
-
-  const linkProps = { href: '/item/[slug]', as: `/item/${item.slug}` }
+  }, [filter])
 
   const metaTitle = `DotagiftX :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
@@ -136,6 +129,8 @@ export default function ItemDetails({
   }
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(' ', '_')}`
+
+  const linkProps = { href: `/item/${item.slug}` }
 
   return (
     <>
@@ -227,8 +222,7 @@ export default function ItemDetails({
               linkProps={linkProps}
               style={{ textAlign: 'right' }}
               count={markets.total_count}
-              page={page}
-              onChangePage={handlePageChange}
+              page={filter.page}
             />
           )}
         </Container>
