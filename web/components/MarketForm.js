@@ -275,16 +275,18 @@ export default function MarketForm() {
         )}
         <div style={{ marginTop: 2 }}>
           {newMarketID && (
-            <Alert severity="success" variant="outlined">
+            <Alert
+              severity="success"
+              variant="filled"
+              action={
+                <Button color="inherit" size="small" onClick={handleFormReset}>
+                  Post More
+                </Button>
+              }>
               Item posted successfully! Check your{' '}
               <Link style={{ textDecoration: 'underline' }} href="/my-listings">
-                Item listings
+                Item Listings
               </Link>
-              &nbsp;or{' '}
-              <MuiLink color="textPrimary" style={{ cursor: 'pointer' }} onClick={handleFormReset}>
-                Post another
-              </MuiLink>
-              .
             </Alert>
           )}
           {error && (
