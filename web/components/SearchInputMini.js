@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import querystring from 'querystring'
 import has from 'lodash/has'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
@@ -60,12 +61,17 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
   const handleClearValue = () => {
     setKeyword('')
     onChange('')
-    router.push(`/search?q=`)
+    router.push(`/search`)
   }
   const handleSubmit = e => {
     e.preventDefault()
     onSubmit(keyword)
-    router.push(`/search?q=${keyword}`)
+    const f = { q: keyword }
+    if (query.sort) {
+      f.sort = query.sort
+    }
+
+    router.push(`/search?${querystring.encode(f)}`)
   }
 
   return (
