@@ -155,7 +155,12 @@ export default function Header({ disableSearch }) {
                 <span style={{ flexGrow: 1 }} />
 
                 {/* Post item button */}
-                <Button variant="outlined" color="secondary" component={Link} href="/post-item">
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  component={Link}
+                  href="/post-item"
+                  disableUnderline>
                   Post Item
                 </Button>
                 <span className={classes.spacer} />

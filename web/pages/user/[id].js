@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
+import Chip from '@material-ui/core/Chip'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { CDN_URL, marketSearch, user } from '@/service/api'
 import Header from '@/components/Header'
@@ -14,6 +14,8 @@ import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import { APP_URL, STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import Link from '@/components/Link'
+import { dateFromNow } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -104,9 +106,25 @@ export default function UserDetails({
               </Typography>
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
-                  {`Registered: `}
+                  {`History: `}
                 </Typography>
-                {moment(profile.created_at).fromNow()}
+                <ChipLink
+                  color="default"
+                  avatar={<Avatar>5</Avatar>}
+                  label="Reservations"
+                  href="#reserve"
+                  target={null}
+                  rel={null}
+                />
+                &nbsp;
+                <ChipLink
+                  color="default"
+                  avatar={<Avatar>120</Avatar>}
+                  label="Delivered"
+                  href="#deliv"
+                  target={null}
+                  rel={null}
+                />
                 <br />
                 <Typography color="textSecondary" component="span">
                   {`Links: `}
