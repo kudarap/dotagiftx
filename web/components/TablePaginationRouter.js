@@ -97,7 +97,7 @@ function TablePaginationRouter({
       </IconButton>
       <IconButton
         component={Link}
-        {...getLinkProps(0, Math.ceil(count / rowsPerPage))}
+        {...getLinkProps(Math.ceil(count / rowsPerPage))}
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage)}
         aria-label="Last Page">
