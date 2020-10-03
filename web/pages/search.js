@@ -103,7 +103,6 @@ const catalogSearchFilter = { sort: 'popular', page: 1 }
 export async function getServerSideProps({ query }) {
   const filter = { ...catalogSearchFilter, ...query }
   filter.page = Number(query.page || 1)
-  console.log('SSR filter', filter)
 
   let catalogs = {}
   let error = null

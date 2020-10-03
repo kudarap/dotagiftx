@@ -181,9 +181,6 @@ export async function getServerSideProps({ params, query }) {
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
 
-  console.log('SSR query', query)
-  console.log('SSR filter', filter)
-
   let markets = {}
   let error = null
   try {
