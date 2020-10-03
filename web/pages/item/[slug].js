@@ -128,7 +128,7 @@ export default function ItemDetails({
     currentUserID = getLoggedInUser().user_id
   }
 
-  const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(' ', '_')}`
+  const wikiLink = `https://dota2.gamepedia.com/${item.name.replaceAll(' ', '_')}`
 
   const linkProps = { href: `/item/${item.slug}` }
 
