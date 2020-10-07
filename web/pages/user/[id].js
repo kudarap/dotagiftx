@@ -55,7 +55,10 @@ export default function UserDetails({
   const [error, setError] = React.useState(initialError)
 
   marketSummaryFilter.user_id = profile.id
-  const { data: marketSummary } = useSWR([STATS_MARKET_SUMMARY, marketSummaryFilter], fetcher)
+  const { data: marketSummary, isValidating: marketSummaryLoading } = useSWR(
+    [STATS_MARKET_SUMMARY, marketSummaryFilter],
+    fetcher
+  )
 
   // Handle market request on page change.
   React.useEffect(() => {
@@ -114,11 +117,12 @@ export default function UserDetails({
                 </Typography>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}/history#reserved`}>
-                    {marketSummary ? marketSummary.reserved : '--'} Reserved
+                    {!marketSummaryLoading && marketSummary ? marketSummary.reserved : '--'}{' '}
+                    Reserved
                   </Link>{' '}
                   &middot;{' '}
                   <Link href={`${linkProps.href}/history#delivered`}>
-                    {marketSummary ? marketSummary.sold : '--'} Delivered
+                    {!marketSummaryLoading && marketSummary ? marketSummary.sold : '--'} Delivered
                   </Link>
                 </Typography>
                 {/* <ChipLink */}
