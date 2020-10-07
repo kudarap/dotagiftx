@@ -37,6 +37,8 @@ export const version = () => http.request(http.GET, VERSION)
 export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
 export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
+export const statsMarketSummary = (filter = {}) =>
+  http.request(http.GET, parseParams(STATS_MARKET_SUMMARY, filter))
 
 export const myMarketSearch = http.baseSearchRequest(MY_MARKETS)
 export const myMarket = {

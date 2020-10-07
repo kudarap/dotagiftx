@@ -10,12 +10,11 @@ import Grid from '@material-ui/core/Grid'
 import {
   CATALOGS,
   fetcher,
-  marketSearch,
   catalogSearch,
   STATS_TOP_ORIGINS,
   STATS_TOP_HEROES,
+  statsMarketSummary,
 } from '@/service/api'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
 import * as format from '@/lib/format'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -198,8 +197,8 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const res = await marketSearch({ limit: 1, status: MARKET_STATUS_LIVE })
-  const totalEntries = format.numberWithCommas(res.total_count || 0)
+  const res = await statsMarketSummary()
+  const totalEntries = format.numberWithCommas(res.live || 0)
 
   let popularItems = { error: null }
   try {
