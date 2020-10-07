@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
+import Divider from '@material-ui/core/Divider'
 import {
   CATALOGS,
   fetcher,
@@ -50,6 +51,10 @@ const useStyles = makeStyles(theme => ({
       textAlign: 'center',
     },
   },
+  divider: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+  },
 }))
 
 const popularItemsFilter = {
@@ -61,7 +66,7 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index({ totalEntries, popularItems }) {
+export default function Index({ marketSummary, popularItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
@@ -72,7 +77,7 @@ export default function Index({ totalEntries, popularItems }) {
     Router.push(`/search?q=${keyword}`)
   }
 
-  const description = `Search on ${totalEntries || ''} giftable items`
+  const description = `Search on ${marketSummary.live} giftable items`
 
   const metaTitle = 'DotagiftX - Dota 2 giftable items marketplace'
   const metaDesc = `${description}. DotagiftX was made to provide better search and pricing for 
@@ -160,6 +165,36 @@ export default function Index({ totalEntries, popularItems }) {
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
 
+          <Divider className={classes.divider} light variant="middle" />
+          <Grid container spacing={2} style={{ textAlign: 'center' }}>
+            <Grid item xs={4}>
+              <Typography variant="h4" component="span">
+                {marketSummary.live}
+              </Typography>
+              <Typography color="textSecondary" variant="body2">
+                <em>Available Offers</em>
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography variant="h4" component="span">
+                {marketSummary.reserved}
+              </Typography>
+              <Typography color="textSecondary" variant="body2">
+                <em>On Reserved</em>
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography variant="h4" component="span">
+                {marketSummary.sold}
+              </Typography>
+              <Typography color="textSecondary" variant="body2">
+                <em>Delivered Items</em>
+              </Typography>
+            </Grid>
+          </Grid>
+          <Divider className={classes.divider} light variant="middle" />
+          <br />
+
           <Grid container spacing={2}>
             <Grid item sm={6} xs={12}>
               <Typography className={classes.footLinks}>Top Treasures</Typography>
@@ -191,14 +226,16 @@ export default function Index({ totalEntries, popularItems }) {
   )
 }
 Index.propTypes = {
-  totalEntries: PropTypes.string.isRequired,
+  marketSummary: PropTypes.object.isRequired,
   popularItems: PropTypes.object.isRequired,
 }
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const res = await statsMarketSummary()
-  const totalEntries = format.numberWithCommas(res.live || 0)
+  const marketSummary = await statsMarketSummary()
+  marketSummary.live = format.numberWithCommas(marketSummary.live)
+  marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
+  marketSummary.sold = format.numberWithCommas(marketSummary.sold)
 
   let popularItems = { error: null }
   try {
@@ -209,7 +246,7 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      totalEntries,
+      marketSummary,
       popularItems,
       unstable_revalidate: 60,
     },
