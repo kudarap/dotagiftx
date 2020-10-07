@@ -178,6 +178,7 @@ export default function ItemDetails({
                     size="small"
                     component={Link}
                     href={`/post-item?s=${item.slug}`}
+                    disableUnderline
                     fullWidth>
                     Post this Item
                   </Button>
