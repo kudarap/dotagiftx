@@ -22,9 +22,9 @@ func handleStatsMarketSummary(marketSvc core.MarketService, cache core.Cache) ht
 
 		var err error
 		summary := struct {
-			Live      int `json:"live"`
-			Reserved  int `json:"reserved"`
-			Delivered int `json:"delivered"`
+			Live     int `json:"live"`
+			Reserved int `json:"reserved"`
+			Sold     int `json:"sold"`
 		}{}
 
 		// Collect live market.
@@ -42,7 +42,7 @@ func handleStatsMarketSummary(marketSvc core.MarketService, cache core.Cache) ht
 		}
 
 		// Collect sold market.
-		summary.Delivered, err = marketCountByStatus(r, marketSvc, core.MarketStatusSold)
+		summary.Sold, err = marketCountByStatus(r, marketSvc, core.MarketStatusSold)
 		if err != nil {
 			respondError(w, err)
 			return
