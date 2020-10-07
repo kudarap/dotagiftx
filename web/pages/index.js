@@ -167,7 +167,7 @@ export default function Index({ marketSummary, popularItems }) {
 
           <Divider className={classes.divider} light variant="middle" />
           <Grid container spacing={2} style={{ textAlign: 'center' }}>
-            <Grid item xs={4}>
+            <Grid item sm={4} xs={12}>
               <Typography variant="h4" component="span">
                 {marketSummary.live}
               </Typography>
@@ -175,7 +175,7 @@ export default function Index({ marketSummary, popularItems }) {
                 <em>Available Offers</em>
               </Typography>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item sm={4} xs={6}>
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
@@ -183,7 +183,7 @@ export default function Index({ marketSummary, popularItems }) {
                 <em>On Reserved</em>
               </Typography>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item sm={4} xs={6}>
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>
