@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import useSWR from 'swr'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import Chip from '@material-ui/core/Chip'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { CDN_URL, marketSearch, user } from '@/service/api'
+import { CDN_URL, fetcher, marketSearch, STATS_MARKET_SUMMARY, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -15,7 +15,6 @@ import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import { APP_URL, STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
-import { dateFromNow } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -41,6 +40,8 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const marketSummaryFilter = {}
+
 export default function UserDetails({
   profile,
   filter,
@@ -52,6 +53,9 @@ export default function UserDetails({
 
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [error, setError] = React.useState(initialError)
+
+  marketSummaryFilter.user_id = profile.id
+  const { data: marketSummary } = useSWR([STATS_MARKET_SUMMARY, marketSummaryFilter], fetcher)
 
   // Handle market request on page change.
   React.useEffect(() => {
@@ -108,23 +112,32 @@ export default function UserDetails({
                 <Typography color="textSecondary" component="span">
                   {`History: `}
                 </Typography>
-                <ChipLink
-                  color="default"
-                  avatar={<Avatar>5</Avatar>}
-                  label="Reservations"
-                  href="#reserve"
-                  target={null}
-                  rel={null}
-                />
-                &nbsp;
-                <ChipLink
-                  color="default"
-                  avatar={<Avatar>120</Avatar>}
-                  label="Delivered"
-                  href="#deliv"
-                  target={null}
-                  rel={null}
-                />
+                <Typography variant="body2" component="span">
+                  <Link href={`${linkProps.href}/history#reserved`}>
+                    {marketSummary ? marketSummary.reserved : '--'} Reserved
+                  </Link>{' '}
+                  &middot;{' '}
+                  <Link href={`${linkProps.href}/history#delivered`}>
+                    {marketSummary ? marketSummary.sold : '--'} Delivered
+                  </Link>
+                </Typography>
+                {/* <ChipLink */}
+                {/*  color="default" */}
+                {/*  avatar={<Avatar>5</Avatar>} */}
+                {/*  label="Reservations" */}
+                {/*  href="#reserve" */}
+                {/*  target={null} */}
+                {/*  rel={null} */}
+                {/* /> */}
+                {/* &nbsp; */}
+                {/* <ChipLink */}
+                {/*  color="default" */}
+                {/*  avatar={<Avatar>120</Avatar>} */}
+                {/*  label="Delivered" */}
+                {/*  href="#deliv" */}
+                {/*  target={null} */}
+                {/*  rel={null} */}
+                {/* /> */}
                 <br />
                 <Typography color="textSecondary" component="span">
                   {`Links: `}

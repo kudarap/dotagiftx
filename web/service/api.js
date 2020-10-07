@@ -23,6 +23,7 @@ export const CATALOGS = '/catalogs'
 export const STATS = '/stats'
 export const STATS_TOP_ORIGINS = `${STATS}/top-origins`
 export const STATS_TOP_HEROES = `${STATS}/top-heroes`
+export const STATS_MARKET_SUMMARY = `${STATS}/market-summary`
 const VERSION = '/'
 const TRACK = '/t'
 
