@@ -126,13 +126,13 @@ export default function HistoryViewDialog(props) {
               <br />
 
               <Typography color="textSecondary" component="span">
-                {`Listed Date: `}
+                {`Listed: `}
               </Typography>
               {dateCalendar(market.created_at)}
               <br />
 
               <Typography color="textSecondary" component="span">
-                {`Updated Date: `}
+                {`Updated: `}
               </Typography>
               {dateCalendar(market.updated_at)}
               <br />
