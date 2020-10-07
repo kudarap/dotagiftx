@@ -24,12 +24,10 @@ import SearchInput from '@/components/SearchInput'
 import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
 import { APP_URL } from '@/constants/strings'
-import Button from '@/components/Button'
-import ChipLink from '@/components/ChipLink'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(0),
   },
   searchBar: {
     margin: '0 auto',
