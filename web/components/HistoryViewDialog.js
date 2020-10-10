@@ -1,17 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import DeliveredIcon from '@material-ui/icons/AssignmentTurnedIn'
-import CancelIcon from '@material-ui/icons/Cancel'
 import { myMarket } from '@/service/api'
-import Button from '@/components/Button'
 import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
@@ -42,6 +38,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function HistoryViewDialog(props) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const { market, open, onClose } = props
 
@@ -89,6 +87,7 @@ export default function HistoryViewDialog(props) {
   return (
     <Dialog
       fullWidth
+      fullScreen={isMobile}
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
