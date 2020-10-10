@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   },
   link: {
     [theme.breakpoints.down('xs')]: {
-      paddingLeft: theme.spacing(2),
+      paddingLeft: theme.spacing(0),
     },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
@@ -50,7 +50,9 @@ export default function CatalogList({ items = [], error, variant }) {
         <TableHead>
           <TableRow>
             <TableHeadCell>Item</TableHeadCell>
-            <TableHeadCell align="right">{isRecentMode ? 'Listed' : 'Qty'}</TableHeadCell>
+            {!isMobile && (
+              <TableHeadCell align="right">{isRecentMode ? 'Listed' : 'Qty'}</TableHeadCell>
+            )}
             <TableHeadCell align="right">Price</TableHeadCell>
           </TableRow>
         </TableHead>
@@ -83,14 +85,12 @@ export default function CatalogList({ items = [], error, variant }) {
                   href="/item/[slug]"
                   as={`/item/${item.slug}`}
                   disableUnderline>
-                  {!isMobile && (
-                    <ItemImage
-                      className={classes.image}
-                      image={`/200x100/${item.image}`}
-                      title={item.name}
-                      rarity={item.rarity}
-                    />
-                  )}
+                  <ItemImage
+                    className={classes.image}
+                    image={`/200x100/${item.image}`}
+                    title={item.name}
+                    rarity={item.rarity}
+                  />
 
                   <div>
                     <strong>{item.name}</strong>
@@ -103,11 +103,13 @@ export default function CatalogList({ items = [], error, variant }) {
                 </Link>
               </TableCell>
 
-              <TableCell align="right">
-                <Typography variant="body2" color="textSecondary">
-                  {isRecentMode ? moment(item.recent_ask).fromNow() : item.quantity}
-                </Typography>
-              </TableCell>
+              {!isMobile && (
+                <TableCell align="right">
+                  <Typography variant="body2" color="textSecondary">
+                    {isRecentMode ? moment(item.recent_ask).fromNow() : item.quantity}
+                  </Typography>
+                </TableCell>
+              )}
 
               <TableCell align="right">
                 <Typography variant="body2">${item.lowest_ask.toFixed(2)}</Typography>
