@@ -116,14 +116,17 @@ export default function UserDetails({
                   {`History: `}
                 </Typography>
                 <Typography variant="body2" component="span">
-                  <Link href={`${linkProps.href}/history#reserved`}>
+                  {/* <Link href={`${linkProps.href}/history#reserved`}>
                     {!marketSummaryLoading && marketSummary ? marketSummary.reserved : '--'}{' '}
                     Reserved
                   </Link>{' '}
                   &middot;{' '}
                   <Link href={`${linkProps.href}/history#delivered`}>
                     {!marketSummaryLoading && marketSummary ? marketSummary.sold : '--'} Delivered
-                  </Link>
+                  </Link> */}
+                  {!marketSummaryLoading && marketSummary ? marketSummary.reserved : '--'} Reserved
+                  &middot; {!marketSummaryLoading && marketSummary ? marketSummary.sold : '--'}{' '}
+                  Delivered
                 </Typography>
                 {/* <ChipLink */}
                 {/*  color="default" */}
