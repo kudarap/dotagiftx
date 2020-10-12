@@ -73,7 +73,7 @@ export default function ReserveUpdateDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
-        router.push(`/history#${MARKET_STATUS_MAP_TEXT[payload.status].toLowerCase()}`)
+        router.push(`/my-history#${MARKET_STATUS_MAP_TEXT[payload.status].toLowerCase()}`)
       } catch (e) {
         setError(`Error: ${e.message}`)
       }

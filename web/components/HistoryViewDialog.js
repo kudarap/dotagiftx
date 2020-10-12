@@ -71,7 +71,7 @@ export default function HistoryViewDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
-        router.push('/history')
+        router.push('/my-history')
       } catch (e) {
         setError(`Error: ${e.message}`)
       }

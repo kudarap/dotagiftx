@@ -97,7 +97,7 @@ export default function MarketUpdateDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
-        router.push('/reservations')
+        router.push('/my-reservations')
       } catch (e) {
         setError(`Error: ${e.message}`)
       }

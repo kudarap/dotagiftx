@@ -38,7 +38,7 @@ const initialDatatable = {
   error: null,
 }
 
-export default function History() {
+export default function MyHistory() {
   const classes = useStyles()
 
   const [soldItems, setSoldItems] = React.useState(initialDatatable)

@@ -200,19 +200,19 @@ export default function Header({ disableSearch }) {
                         component={Link}
                         href="/my-listings"
                         disableUnderline>
-                        My Listings
+                        Listings
                       </MenuItem>
                       <MenuItem
                         onClick={handleClose}
                         component={Link}
-                        href="/reservations"
+                        href="/my-reservations"
                         disableUnderline>
                         Reservations
                       </MenuItem>
                       <MenuItem
                         onClick={handleClose}
                         component={Link}
-                        href="/history"
+                        href="/my-history"
                         disableUnderline>
                         History
                       </MenuItem>
