@@ -13,7 +13,11 @@ import Container from '@/components/Container'
 import { Link } from '@material-ui/core'
 import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
-import { MARKET_STATUS_MAP_TEXT, MARKET_STATUS_RESERVED } from '@/constants/market'
+import {
+  MARKET_STATUS_MAP_COLOR,
+  MARKET_STATUS_MAP_TEXT,
+  MARKET_STATUS_RESERVED,
+} from '@/constants/market'
 import { dateFromNow } from '@/lib/format'
 import ItemImage from '@/components/ItemImage'
 
@@ -53,19 +57,24 @@ export default function UserReserved({ profile, canonicalURL }) {
             <Avatar src={`${CDN_URL}/${profile.avatar}`} />
             Reserved Items
           </Typography>
+          {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
-            {data &&
+            {!isValidating &&
+              data &&
               data.data.map(market => (
                 <li>
                   <ItemImage
-                    style={{ width: 60, height: 40, marginRight: 4, float: 'left' }}
+                    style={{ width: 60, height: 40, marginRight: 8, float: 'left' }}
                     image={`/200x100/${market.item.image}`}
                     title={market.item.name}
                     rarity={market.item.rarity}
                   />
                   <Typography variant="body2">
                     {market.user.name}{' '}
-                    <strong>{MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}</strong>&nbsp;
+                    <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
+                      {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
+                    </span>
+                    &nbsp;
                     <Link href={`/item/${market.item.slug}`} color="secondary">
                       {market.item.name}
                     </Link>
