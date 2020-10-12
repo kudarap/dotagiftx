@@ -2,23 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import useSWR from 'swr'
-import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import Divider from '@material-ui/core/Divider'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { Link } from '@material-ui/core'
 import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
-import {
-  MARKET_STATUS_MAP_COLOR,
-  MARKET_STATUS_MAP_TEXT,
-  MARKET_STATUS_SOLD,
-} from '@/constants/market'
-import ItemImage from '@/components/ItemImage'
+import { MARKET_STATUS_SOLD } from '@/constants/market'
 import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
