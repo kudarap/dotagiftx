@@ -28,6 +28,12 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(4),
   },
+  profile: {
+    float: 'left',
+    marginRight: theme.spacing(1),
+    width: 60,
+    height: 60,
+  },
 }))
 
 const filter = {
@@ -39,7 +45,7 @@ export default function UserReserved({ profile, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
-  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
+  const { data, error } = useSWR([MARKETS, filter], fetcher)
 
   return (
     <>
@@ -53,16 +59,28 @@ export default function UserReserved({ profile, canonicalURL }) {
 
       <main className={classes.main}>
         <Container>
-          <Typography component="h1" gutterBottom>
-            <Avatar src={`${CDN_URL}/${profile.avatar}`} />
-            Reserved Items
-          </Typography>
+          <div>
+            <Avatar
+              className={classes.profile}
+              src={`${CDN_URL}/${profile.avatar}`}
+              component={Link}
+              href={`/user/${profile.steam_id}`}
+            />
+            <Typography
+              variant="h6"
+              color="textPrimary"
+              component={Link}
+              href={`/user/${profile.steam_id}`}>
+              {profile.name}
+            </Typography>
+            <Typography color="textSecondary">{data && data.total_count} Reserved Items</Typography>
+          </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
-            {!isValidating &&
-              data &&
+            {data &&
               data.data.map(market => (
                 <li>
+                  <Divider style={{ margin: '8px 0 8px' }} light />
                   <ItemImage
                     style={{ width: 60, height: 40, marginRight: 8, float: 'left' }}
                     image={`/200x100/${market.item.image}`}
@@ -75,6 +93,7 @@ export default function UserReserved({ profile, canonicalURL }) {
                       {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
                     </span>
                     &nbsp;
+                    {market.item.hero}&apos;s&nbsp;
                     <Link href={`/item/${market.item.slug}`} color="secondary">
                       {market.item.name}
                     </Link>
@@ -84,7 +103,6 @@ export default function UserReserved({ profile, canonicalURL }) {
                   <Typography component="pre" color="textSecondary" variant="caption">
                     {market.notes}
                   </Typography>
-                  <Divider style={{ margin: '8px 0 8px' }} light />
                 </li>
               ))}
           </ul>
