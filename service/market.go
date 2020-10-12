@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
@@ -101,8 +103,8 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 
 	// Check Item quantity limit.
 	qty, err := s.marketStg.Count(core.FindOpts{
-		Filter:        core.Market{ItemID: mkt.ItemID, Status: core.MarketStatusLive},
-		UserID:        mkt.UserID,
+		Filter: core.Market{ItemID: mkt.ItemID, Status: core.MarketStatusLive},
+		UserID: mkt.UserID,
 	})
 	if err != nil {
 		return err
@@ -125,7 +127,7 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 }
 
 func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
-	_, err := s.checkOwnership(ctx, mkt.ID)
+	cur, err := s.checkOwnership(ctx, mkt.ID)
 	if err != nil {
 		return err
 	}
@@ -133,6 +135,9 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	if err := mkt.CheckUpdate(); err != nil {
 		return err
 	}
+
+	// Append note to existing notes.
+	mkt.Notes = strings.TrimSpace(fmt.Sprintf("%s\n%s", cur.Notes, mkt.Notes))
 
 	// Do not allow update on these fields.
 	mkt.UserID = ""
