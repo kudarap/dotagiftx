@@ -10,7 +10,11 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { fetcher, MARKETS } from '@/service/api'
 import MarketActivity from '@/components/MarketActivity'
-import { MARKET_STATUS_RESERVED, MARKET_STATUS_SOLD } from '@/constants/market'
+import {
+  MARKET_STATUS_MAP_TEXT,
+  MARKET_STATUS_RESERVED,
+  MARKET_STATUS_SOLD,
+} from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -50,7 +54,7 @@ export default function History({ status }) {
       <main className={classes.main}>
         <Container>
           <Typography color="textSecondary" variant="h6" component="h1">
-            {data && data.total_count} Delivered Items
+            {data && data.total_count} {MARKET_STATUS_MAP_TEXT[status]} Items
           </Typography>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           {data && <MarketActivity data={data.data} />}
