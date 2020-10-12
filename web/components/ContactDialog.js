@@ -43,6 +43,7 @@ export default function ContactDialog(props) {
 
   const { market, open, onClose } = props
 
+  const [loading, setLoading] = React.useState(true)
   const [marketSummary, setMarketSummary] = React.useState(null)
   React.useEffect(() => {
     if (!market) {
@@ -57,7 +58,13 @@ export default function ContactDialog(props) {
       } catch (e) {
         console.log('error getting stats market summary', e.message)
       }
+      setLoading(false)
     })()
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      setMarketSummary(null)
+    }
   }, [market])
 
   if (!market) {
@@ -95,11 +102,11 @@ export default function ContactDialog(props) {
               </Typography>
               <Typography variant="body2" component="span">
                 <Link href={`/user/${market.user.steam_id}/reserved`}>
-                  {marketSummary ? marketSummary.reserved : '--'} Reserved
+                  {!loading && marketSummary ? marketSummary.reserved : '--'} Reserved
                 </Link>{' '}
                 &middot;{' '}
                 <Link href={`/user/${market.user.steam_id}/delivered`}>
-                  {marketSummary ? marketSummary.sold : '--'} Delivered
+                  {!loading && marketSummary ? marketSummary.sold : '--'} Delivered
                 </Link>
               </Typography>
               <br />
