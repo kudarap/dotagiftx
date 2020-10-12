@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import useSWR from 'swr'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Dialog from '@material-ui/core/Dialog'
@@ -8,7 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
-import { CDN_URL } from '@/service/api'
+import { CDN_URL, fetcher, STATS_MARKET_SUMMARY, statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
@@ -33,12 +34,33 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const marketSummaryFilter = {}
+
 export default function ContactDialog(props) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const { market, open, onClose } = props
+
+  if (market) {
+    marketSummaryFilter.user_id = market.user.id
+  }
+  const [marketSummary, setMarketSummary] = React.useState(null)
+  React.useEffect(() => {
+    if (!market) {
+      return
+    }
+
+    ;(async () => {
+      try {
+        const res = await statsMarketSummary(marketSummaryFilter)
+        setMarketSummary(res)
+      } catch (e) {
+        console.log('error getting stats market summary', e.message)
+      }
+    })()
+  }, [market])
 
   if (!market) {
     return null
@@ -70,6 +92,19 @@ export default function ContactDialog(props) {
               <Typography component="p" variant="h4">
                 {market.user.name}
               </Typography>
+              <Typography color="textSecondary" component="span">
+                {`History: `}
+              </Typography>
+              <Typography variant="body2" component="span">
+                <Link href={`/user/${market.user.steam_id}/reserved`}>
+                  {marketSummary ? marketSummary.reserved : '--'} Reserved
+                </Link>{' '}
+                &middot;{' '}
+                <Link href={`/user/${market.user.steam_id}/delivered`}>
+                  {marketSummary ? marketSummary.sold : '--'} Delivered
+                </Link>
+              </Typography>
+              <br />
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
                   {`Links: `}
