@@ -152,7 +152,10 @@ export default function ItemDetails({
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
         {/* Rich Results */}
-        <script type="application/ld+json">{JSON.stringify(schemaOrgProd)}</script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgProd) }}
+        />
       </Head>
 
       <Header />
