@@ -16,7 +16,7 @@ import { APP_URL } from '@/constants/strings'
 import {
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
-  MARKET_STATUS_RESERVED,
+  MARKET_STATUS_SOLD,
 } from '@/constants/market'
 import ItemImage from '@/components/ItemImage'
 
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const filter = {
-  status: MARKET_STATUS_RESERVED,
+  status: MARKET_STATUS_SOLD,
   sort: 'updated_at:desc',
 }
 
@@ -52,8 +52,8 @@ export default function UserReserved({ profile, canonicalURL }) {
       <Header />
 
       <Head>
-        <title>{`DotagiftX :: ${profile.name} reserved items`}</title>
-        <meta name="description" content={`${profile.name}'s on-reserved giftable items`} />
+        <title>{`DotagiftX :: ${profile.name} delivered items`}</title>
+        <meta name="description" content={`${profile.name}'s delivered giftable items`} />
         <link rel="canonical" href={canonicalURL} />
       </Head>
 
@@ -73,7 +73,9 @@ export default function UserReserved({ profile, canonicalURL }) {
               href={`/user/${profile.steam_id}`}>
               {profile.name}
             </Typography>
-            <Typography color="textSecondary">{data && data.total_count} Reserved Items</Typography>
+            <Typography color="textSecondary">
+              {data && data.total_count} Delivered Items
+            </Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
