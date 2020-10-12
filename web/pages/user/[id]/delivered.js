@@ -19,6 +19,7 @@ import {
   MARKET_STATUS_SOLD,
 } from '@/constants/market'
 import ItemImage from '@/components/ItemImage'
+import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -41,7 +42,7 @@ const filter = {
   sort: 'updated_at:desc',
 }
 
-export default function UserReserved({ profile, canonicalURL }) {
+export default function UserDelivered({ profile, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
@@ -78,36 +79,7 @@ export default function UserReserved({ profile, canonicalURL }) {
             </Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
-            {data &&
-              data.data.map(market => (
-                <li>
-                  <Divider style={{ margin: '8px 0 8px' }} light />
-                  <ItemImage
-                    className={classes.itemImage}
-                    image={`/200x100/${market.item.image}`}
-                    title={market.item.name}
-                    rarity={market.item.rarity}
-                  />
-                  <Typography variant="body2">
-                    {market.user.name}{' '}
-                    <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
-                      {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
-                    </span>
-                    &nbsp;
-                    {market.item.hero}&apos;s&nbsp;
-                    <Link href={`/item/${market.item.slug}`} color="secondary">
-                      {market.item.name}
-                    </Link>
-                    &nbsp;
-                    {moment(market.updated_at).fromNow()}
-                  </Typography>
-                  <Typography component="pre" color="textSecondary" variant="caption">
-                    {market.notes}
-                  </Typography>
-                </li>
-              ))}
-          </ul>
+          {data && <MarketActivity data={data.data} />}
         </Container>
       </main>
 
@@ -115,7 +87,7 @@ export default function UserReserved({ profile, canonicalURL }) {
     </>
   )
 }
-UserReserved.propTypes = {
+UserDelivered.propTypes = {
   profile: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
 }
