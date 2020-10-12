@@ -6,6 +6,7 @@ import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
+import Divider from '@material-ui/core/Divider'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -14,6 +15,7 @@ import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_MAP_TEXT, MARKET_STATUS_RESERVED } from '@/constants/market'
 import { dateFromNow } from '@/lib/format'
+import ItemImage from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -48,28 +50,32 @@ export default function UserReserved({ profile, canonicalURL }) {
       <main className={classes.main}>
         <Container>
           <Typography component="h1" gutterBottom>
+            <Avatar src={`${CDN_URL}/${profile.avatar}`} />
             Reserved Items
           </Typography>
-          <ul>
+          <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
             {data &&
               data.data.map(market => (
                 <li>
+                  <ItemImage
+                    style={{ width: 60, height: 40, marginRight: 4, float: 'left' }}
+                    image={`/200x100/${market.item.image}`}
+                    title={market.item.name}
+                    rarity={market.item.rarity}
+                  />
                   <Typography variant="body2">
-                    {market.user.name} {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}&nbsp;
+                    {market.user.name}{' '}
+                    <strong>{MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}</strong>&nbsp;
                     <Link href={`/item/${market.item.slug}`} color="secondary">
                       {market.item.name}
                     </Link>
                     &nbsp;
                     {moment(market.updated_at).fromNow()}
                   </Typography>
-                  <Typography
-                    component="pre"
-                    color="textSecondary"
-                    variant="caption"
-                    paragraph
-                    style={{ marginLeft: 4 }}>
+                  <Typography component="pre" color="textSecondary" variant="caption">
                     {market.notes}
                   </Typography>
+                  <Divider style={{ margin: '8px 0 8px' }} light />
                 </li>
               ))}
           </ul>
