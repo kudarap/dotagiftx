@@ -4,9 +4,9 @@ import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
-import { Link } from '@material-ui/core'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
 import ItemImage from '@/components/ItemImage'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -30,7 +30,7 @@ export default function MarketActivity({ data }) {
   return (
     <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
       {data.map(market => (
-        <li>
+        <li style={{ display: 'flow-root' }}>
           <Divider style={{ margin: '8px 0 8px' }} light />
           <ItemImage
             className={classes.itemImage}
@@ -39,7 +39,10 @@ export default function MarketActivity({ data }) {
             rarity={market.item.rarity}
           />
           <Typography variant="body2">
-            {market.user.name}{' '}
+            <Link href={`/user/${market.user.steam_id}`} color="textPrimary">
+              {market.user.name}
+            </Link>
+            &nbsp;
             <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
               {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
             </span>

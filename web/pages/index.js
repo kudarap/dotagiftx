@@ -171,7 +171,8 @@ export default function Index({ marketSummary, popularItems }) {
               <Typography variant="h4" component="span">
                 {marketSummary.live}
               </Typography>
-              <Typography color="textSecondary" variant="body2">
+              <br />
+              <Typography color="textSecondary" variant="body2" component={Link} href="/search">
                 <em>Available Offers</em>
               </Typography>
             </Grid>
@@ -179,7 +180,12 @@ export default function Index({ marketSummary, popularItems }) {
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
-              <Typography color="textSecondary" variant="body2">
+              <br />
+              <Typography
+                color="textSecondary"
+                variant="body2"
+                component={Link}
+                href="/history?reserved">
                 <em>On Reserved</em>
               </Typography>
             </Grid>
@@ -187,7 +193,12 @@ export default function Index({ marketSummary, popularItems }) {
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>
-              <Typography color="textSecondary" variant="body2">
+              <br />
+              <Typography
+                color="textSecondary"
+                variant="body2"
+                component={Link}
+                href="/history?delivered">
                 <em>Delivered Items</em>
               </Typography>
             </Grid>
