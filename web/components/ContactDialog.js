@@ -43,9 +43,6 @@ export default function ContactDialog(props) {
 
   const { market, open, onClose } = props
 
-  if (market) {
-    marketSummaryFilter.user_id = market.user.id
-  }
   const [marketSummary, setMarketSummary] = React.useState(null)
   React.useEffect(() => {
     if (!market) {
@@ -53,6 +50,7 @@ export default function ContactDialog(props) {
     }
 
     ;(async () => {
+      marketSummaryFilter.user_id = market.user.id
       try {
         const res = await statsMarketSummary(marketSummaryFilter)
         setMarketSummary(res)
