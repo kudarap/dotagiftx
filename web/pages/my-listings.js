@@ -12,7 +12,10 @@ import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(6),
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(1),
+    },
+    marginTop: theme.spacing(4),
   },
 }))
 
