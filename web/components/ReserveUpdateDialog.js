@@ -141,20 +141,20 @@ export default function ReserveUpdateDialog(props) {
                 {amount(market.price, market.currency)}
                 <br />
                 <Typography color="textSecondary" component="span">
-                  {`Reserved Date: `}
+                  {`Reserved: `}
                 </Typography>
                 {dateCalendar(market.updated_at)}
                 {market.notes && (
                   <>
                     <br />
                     <Typography color="textSecondary" component="span">
-                      {`Reservation Notes: `}
+                      {`Notes: `}
                     </Typography>
-                    <ul style={{ marginTop: 0 }}>
+                    <Typography component="ul" variant="body2" style={{ marginTop: 0 }}>
                       {market.notes.split('\n').map(s => (
                         <li>{s}</li>
                       ))}
-                    </ul>
+                    </Typography>
                   </>
                 )}
               </Typography>
