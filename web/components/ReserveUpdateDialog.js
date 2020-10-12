@@ -150,7 +150,11 @@ export default function ReserveUpdateDialog(props) {
                     <Typography color="textSecondary" component="span">
                       {`Reservation Notes: `}
                     </Typography>
-                    {market.notes}
+                    <ul style={{ marginTop: 0 }}>
+                      {market.notes.split('\n').map(s => (
+                        <li>{s}</li>
+                      ))}
+                    </ul>
                   </>
                 )}
               </Typography>

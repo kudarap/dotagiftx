@@ -141,7 +141,11 @@ export default function HistoryViewDialog(props) {
                   <Typography color="textSecondary" component="span">
                     {`Notes: `}
                   </Typography>
-                  {market.notes}
+                  <ul style={{ marginTop: 0 }}>
+                    {market.notes.split('\n').map(s => (
+                      <li>{s}</li>
+                    ))}
+                  </ul>
                 </>
               )}
             </Typography>
