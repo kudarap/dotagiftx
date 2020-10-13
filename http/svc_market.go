@@ -144,7 +144,7 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 		data := newDataWithMeta(list, md)
 		go func() {
 			if err := cache.Set(cacheKey, data, catalogCacheExpr); err != nil {
-				logger.Errorf("could save cache on market index list: %s", err)
+				logger.Errorf("could save cache on catalog list: %s", err)
 			}
 		}()
 
@@ -161,5 +161,46 @@ func handleMarketCatalogDetail(svc core.MarketService) http.HandlerFunc {
 		}
 
 		respondOK(w, c)
+	}
+}
+
+const catalogTrendCacheExpr = time.Minute * 2
+
+func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var noCache bool
+		opts, err := findOptsFromURL(r.URL, &core.Catalog{})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
+		list, md, err := svc.TrendingCatalog(opts)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		if list == nil {
+			list = []core.Catalog{}
+		}
+
+		// Save result to cache.
+		data := newDataWithMeta(list, md)
+		go func() {
+			if err := cache.Set(cacheKey, data, catalogCacheExpr); err != nil {
+				logger.Errorf("could save cache on catalog trend list: %s", err)
+			}
+		}()
+
+		respondOK(w, data)
 	}
 }

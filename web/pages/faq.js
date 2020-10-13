@@ -57,7 +57,7 @@ export default function Faq() {
             Can I trust the users on this website?
           </Typography>
           <Typography color="textSecondary">
-            No, but there are quick links like SteamRep and Steam Profile to help you verify them.
+            No, but there are quick links for SteamRep and Steam Profile to help you validate them.
           </Typography>
           <br />
 

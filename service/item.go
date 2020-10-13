@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -46,6 +47,44 @@ func (s *itemService) Items(opts core.FindOpts) ([]core.Item, *core.FindMetadata
 
 func (s *itemService) Item(id string) (*core.Item, error) {
 	return s.itemStg.Get(id)
+}
+
+func (s *itemService) TopOrigins() ([]string, error) {
+	items, err := s.itemStg.Find(core.FindOpts{})
+	if err != nil {
+		return nil, err
+	}
+
+	col := map[string]int{}
+	for _, ii := range items {
+		col[ii.Origin] += ii.ViewCount
+	}
+
+	var pt []string
+	for _, s := range sortedKeys(col) {
+		pt = append(pt, s)
+	}
+
+	return pt, nil
+}
+
+func (s *itemService) TopHeroes() ([]string, error) {
+	items, err := s.itemStg.Find(core.FindOpts{})
+	if err != nil {
+		return nil, err
+	}
+
+	col := map[string]int{}
+	for _, ii := range items {
+		col[ii.Hero] += ii.ViewCount
+	}
+
+	var ph []string
+	for _, s := range sortedKeys(col) {
+		ph = append(ph, s)
+	}
+
+	return ph, nil
 }
 
 func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
@@ -141,4 +180,35 @@ func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
 	}
 
 	return n, nil
+}
+
+type sortedMap struct {
+	m map[string]int
+	s []string
+}
+
+func (sm *sortedMap) Len() int {
+	return len(sm.m)
+}
+
+func (sm *sortedMap) Less(i, j int) bool {
+	return sm.m[sm.s[i]] > sm.m[sm.s[j]]
+}
+
+func (sm *sortedMap) Swap(i, j int) {
+	sm.s[i], sm.s[j] = sm.s[j], sm.s[i]
+}
+
+// sortedKeys sorts map string by int value.
+func sortedKeys(m map[string]int) []string {
+	sm := new(sortedMap)
+	sm.m = m
+	sm.s = make([]string, len(m))
+	i := 0
+	for key, _ := range m {
+		sm.s[i] = key
+		i++
+	}
+	sort.Sort(sm)
+	return sm.s
 }

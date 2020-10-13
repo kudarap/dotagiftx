@@ -1,14 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
+import useSWR from 'swr'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
-import { CDN_URL } from '@/service/api'
+import { CDN_URL, fetcher, STATS_MARKET_SUMMARY, statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
@@ -33,10 +34,38 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const marketSummaryFilter = {}
+
 export default function ContactDialog(props) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const { market, open, onClose } = props
+
+  const [loading, setLoading] = React.useState(true)
+  const [marketSummary, setMarketSummary] = React.useState(null)
+  React.useEffect(() => {
+    if (!market) {
+      return
+    }
+
+    ;(async () => {
+      marketSummaryFilter.user_id = market.user.id
+      try {
+        const res = await statsMarketSummary(marketSummaryFilter)
+        setMarketSummary(res)
+      } catch (e) {
+        console.log('error getting stats market summary', e.message)
+      }
+      setLoading(false)
+    })()
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      setMarketSummary(null)
+    }
+  }, [market])
 
   if (!market) {
     return null
@@ -50,6 +79,7 @@ export default function ContactDialog(props) {
     <div>
       <Dialog
         fullWidth
+        fullScreen={isMobile}
         open={open}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
@@ -67,15 +97,28 @@ export default function ContactDialog(props) {
               <Typography component="p" variant="h4">
                 {market.user.name}
               </Typography>
+              <Typography color="textSecondary" component="span">
+                {`History: `}
+              </Typography>
+              <Typography variant="body2" component="span">
+                <Link href={`/user/${market.user.steam_id}/reserved`}>
+                  {!loading && marketSummary ? marketSummary.reserved : '--'} Reserved
+                </Link>{' '}
+                &middot;{' '}
+                <Link href={`/user/${market.user.steam_id}/delivered`}>
+                  {!loading && marketSummary ? marketSummary.sold : '--'} Delivered
+                </Link>
+              </Typography>
+              <br />
               <Typography gutterBottom>
                 <Typography color="textSecondary" component="span">
-                  {`quick links: `}
+                  {`Links: `}
                 </Typography>
                 {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
                 {/* &nbsp; */}
                 <ChipLink
                   label="SteamRep"
-                  href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
+                  href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                 />
                 &nbsp;
                 <ChipLink label="Steam Inventory" href={dota2Inventory} />
@@ -83,19 +126,30 @@ export default function ContactDialog(props) {
                   <>
                     <br />
                     <Typography color="textSecondary" component="span">
-                      {`notes: `}
+                      {`Notes: `}
                     </Typography>
-                    <u>{market.notes}</u>
+                    {market.notes}
                   </>
                 )}
               </Typography>
             </Typography>
           </div>
 
-          <div>
+          <Typography variant="body2" color="textSecondary">
             <br />
-            Guides for Giftables
+            Guides for buying Giftables
             <ul>
+              <li>
+                Always check the item/set availability on seller&apos;s Dota 2 {` `}
+                <Link
+                  style={{ textDecoration: 'underline' }}
+                  href={dota2Inventory}
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  inventory
+                </Link>
+                .
+              </li>
               <li>
                 Dota 2 giftables transaction only viable if the two steam user parties have been
                 friends for 30 days.
@@ -104,22 +158,28 @@ export default function ContactDialog(props) {
                 As giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
                 <Link
-                  href={`${STEAMREP_PROFILE_BASE_URL}/profiles/${market.user.steam_id}`}
+                  style={{ textDecoration: 'underline' }}
+                  href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                   target="_blank"
                   rel="noreferrer noopener">
                   SteamRep
                 </Link>
                 .
               </li>
+
               <li>
-                Always check the item/set availability on seller&apos;s Dota 2 {` `}
-                <Link href={dota2Inventory} target="_blank" rel="noreferrer noopener">
-                  inventory
-                </Link>
-                .
+                Official steamrep middleman may assist in middle manning for the trade, or{' '}
+                <Link
+                  style={{ textDecoration: 'underline' }}
+                  href="https://www.reddit.com/r/dota2trade/"
+                  target="_blank"
+                  rel="noreferrer noopener">
+                  r/Dota2Trade
+                </Link>{' '}
+                mod may assist as well in this.
               </li>
             </ul>
-          </div>
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>

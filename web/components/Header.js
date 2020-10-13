@@ -5,7 +5,6 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import AppBar from '@material-ui/core/AppBar'
 import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
-import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
@@ -156,17 +155,14 @@ export default function Header({ disableSearch }) {
                 <span style={{ flexGrow: 1 }} />
 
                 {/* Post item button */}
-                {isLoggedIn ? (
-                  <Button variant="outlined" color="secondary" component={Link} href="/post-item">
-                    Post Item
-                  </Button>
-                ) : (
-                  <Tooltip title="You must be logged in to post an item" arrow>
-                    <Button variant="outlined" color="secondary">
-                      Post Item
-                    </Button>
-                  </Tooltip>
-                )}
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  component={Link}
+                  href="/post-item"
+                  disableUnderline>
+                  Post Item
+                </Button>
                 <span className={classes.spacer} />
 
                 {/* Avatar menu button */}
@@ -204,19 +200,19 @@ export default function Header({ disableSearch }) {
                         component={Link}
                         href="/my-listings"
                         disableUnderline>
-                        My Listings
+                        Listings
                       </MenuItem>
                       <MenuItem
                         onClick={handleClose}
                         component={Link}
-                        href="/reservations"
+                        href="/my-reservations"
                         disableUnderline>
                         Reservations
                       </MenuItem>
                       <MenuItem
                         onClick={handleClose}
                         component={Link}
-                        href="/history"
+                        href="/my-history"
                         disableUnderline>
                         History
                       </MenuItem>

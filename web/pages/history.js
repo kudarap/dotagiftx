@@ -1,109 +1,84 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import Head from 'next/head'
+import useSWR from 'swr'
+import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import LinearProgress from '@material-ui/core/LinearProgress'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { myMarketSearch } from '@/service/api'
-import { MARKET_STATUS_CANCELLED, MARKET_STATUS_SOLD } from '@/constants/market'
-import HistoryList from '@/components/HistoryList'
-import TablePagination from '@/components/TablePagination'
+import { fetcher, MARKETS } from '@/service/api'
+import MarketActivity from '@/components/MarketActivity'
+import {
+  MARKET_STATUS_MAP_TEXT,
+  MARKET_STATUS_RESERVED,
+  MARKET_STATUS_SOLD,
+} from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(6),
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(1),
+    },
+    marginTop: theme.spacing(4),
   },
+  profile: {
+    float: 'left',
+    marginRight: theme.spacing(1),
+    width: 60,
+    height: 60,
+  },
+  itemImage: { width: 60, height: 40, marginRight: 8, float: 'left' },
 }))
 
-const activeMarketFilter = {
-  status: MARKET_STATUS_SOLD,
+const filter = {
   sort: 'updated_at:desc',
-  page: 1,
-}
-const cancelledMarketFilter = {
-  status: MARKET_STATUS_CANCELLED,
-  sort: 'updated_at:desc',
-  page: 1,
+  limit: 50,
 }
 
-const initialDatatable = {
-  data: [],
-  result_count: 0,
-  total_count: 0,
-  loading: true,
-  error: null,
-}
-
-export default function History() {
+export default function History({ status }) {
   const classes = useStyles()
 
-  const [soldItems, setSoldItems] = React.useState(initialDatatable)
-  const [soldFilter, setSoldFilter] = React.useState(activeMarketFilter)
-
-  const [cancelledItems, setCancelledItems] = React.useState(initialDatatable)
-  const [cancelledFilter, setCancelledFilter] = React.useState(cancelledMarketFilter)
-
-  React.useEffect(() => {
-    ;(async () => {
-      try {
-        const res = await myMarketSearch(soldFilter)
-        setSoldItems({ ...soldItems, loading: false, ...res })
-      } catch (e) {
-        setSoldItems({ ...soldItems, loading: false, error: e.message })
-      }
-
-      try {
-        const res = await myMarketSearch(cancelledFilter)
-        setCancelledItems({ ...cancelledItems, loading: false, ...res })
-      } catch (e) {
-        setCancelledItems({ ...cancelledItems, loading: false, error: e.message })
-      }
-    })()
-  }, [soldFilter])
-
-  const handleSoldPageChange = (e, page) => {
-    setSoldFilter({ ...soldFilter, page })
-  }
-  const handleCancelledPageChange = (e, page) => {
-    setCancelledFilter({ ...soldFilter, page })
-  }
+  filter.status = status
+  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
 
   return (
     <>
       <Header />
 
+      <Head>
+        <title>DotagiftX :: Market History</title>
+        <meta name="description" content="Market activities" />
+      </Head>
+
       <main className={classes.main}>
         <Container>
-          <Typography id="delivered" variant="h5" component="h1" gutterBottom>
-            Delivered Items
+          <Typography color="textSecondary" variant="h6" component="h1">
+            {data && data.total_count} {MARKET_STATUS_MAP_TEXT[status]} Items
           </Typography>
-          {soldItems.error && <div>failed to load sold items</div>}
-          {soldItems.loading && <LinearProgress color="secondary" />}
-          <HistoryList datatable={soldItems} />
-          <TablePagination
-            style={{ textAlign: 'right' }}
-            count={soldItems.total_count || 0}
-            page={soldFilter.page}
-            onChangePage={handleSoldPageChange}
-          />
-
-          <Typography id="cancelled" variant="h5" component="h1" gutterBottom>
-            Cancelled Items
-          </Typography>
-          {cancelledItems.error && <div>failed to load cancelled</div>}
-          {cancelledItems.loading && <LinearProgress color="secondary" />}
-          <HistoryList datatable={cancelledItems} />
-          <TablePagination
-            style={{ textAlign: 'right' }}
-            count={cancelledItems.total_count || 0}
-            page={cancelledFilter.page}
-            onChangePage={handleCancelledPageChange}
-          />
+          {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
+          <MarketActivity data={data ? data.data : null} loading={isValidating} />
         </Container>
       </main>
 
       <Footer />
     </>
   )
+}
+History.propTypes = {
+  status: PropTypes.number.isRequired,
+}
+
+export async function getServerSideProps({ query }) {
+  let status = null
+  if (has(query, 'reserved')) {
+    status = MARKET_STATUS_RESERVED
+  } else if (has(query, 'delivered')) {
+    status = MARKET_STATUS_SOLD
+  }
+
+  return {
+    props: { status },
+  }
 }

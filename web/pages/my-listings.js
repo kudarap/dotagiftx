@@ -12,7 +12,10 @@ import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(6),
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(1),
+    },
+    marginTop: theme.spacing(4),
   },
 }))
 
@@ -57,7 +60,7 @@ export default function MyListings() {
 
       <main className={classes.main}>
         <Container>
-          <Typography variant="h5" component="h1" gutterBottom>
+          <Typography component="h1" gutterBottom>
             My Active Listings
           </Typography>
 

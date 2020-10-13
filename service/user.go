@@ -65,6 +65,26 @@ func (s *userService) Update(ctx context.Context, u *core.User) error {
 	return s.userStg.Update(u)
 }
 
+func (s *userService) SteamSync(sp *core.SteamPlayer) (*core.User, error) {
+	res, err := s.userStg.Find(core.FindOpts{Filter: core.User{SteamID: sp.ID}})
+	if err != nil {
+		return nil, err
+	}
+	u := res[0]
+	u.Name = sp.Name
+	u.URL = sp.URL
+	u.Avatar, err = s.downloadProfileImage(sp.Avatar)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.userStg.Update(&u); err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
 // downloadProfileImage saves image file from a url.
 func (s *userService) downloadProfileImage(url string) (string, error) {
 	resp, err := http.Get(url)

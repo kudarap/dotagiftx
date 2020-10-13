@@ -6,8 +6,18 @@ import Router from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
-import { CATALOGS, fetcher, marketSearch, catalogSearch } from '@/service/api'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
+import Grid from '@material-ui/core/Grid'
+import Divider from '@material-ui/core/Divider'
+import {
+  fetcher,
+  CATALOGS,
+  CATALOGS_TREND,
+  STATS_TOP_ORIGINS,
+  STATS_TOP_HEROES,
+  catalogSearch,
+  catalogTrendSearch,
+  statsMarketSummary,
+} from '@/service/api'
 import * as format from '@/lib/format'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -15,10 +25,11 @@ import Container from '@/components/Container'
 import SearchInput from '@/components/SearchInput'
 import CatalogList from '@/components/CatalogList'
 import Link from '@/components/Link'
+import { APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(0),
   },
   searchBar: {
     margin: '0 auto',
@@ -37,6 +48,15 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'bold',
     color: theme.palette.app.white,
   },
+  footLinks: {
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+    },
+  },
+  divider: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+  },
 }))
 
 const popularItemsFilter = {
@@ -48,28 +68,44 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index({ totalEntries, popularItems }) {
+export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
+  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
+  const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
   }
 
-  const description = `Search on ${totalEntries || ''} giftable items`
+  const description = `Search on ${marketSummary.live} giftable items`
+
+  const metaTitle = 'DotagiftX - Dota 2 giftable items marketplace'
+  const metaDesc = `${description}. DotagiftX was made to provide better search and pricing for 
+          Dota 2 giftable items like Collector's Caches which are not available on Steam Community Market. 
+          The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`
 
   return (
     <>
       <Head>
-        <title>DotagiftX - Dota 2 giftables market</title>
-        <meta
-          name="description"
-          content={`${description}. DotagiftX was made to provide better search and pricing for 
-          Dota 2 giftable items like Collector's Caches which are not available on Steam Community Market. 
-          The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`}
-        />
-        <link rel="canonical" href="https://dotagiftx.com" />
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={APP_URL} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDesc} />
+        <meta name="twitter:image" content={`${APP_URL}/assets/gift.png`} />
+        <meta name="twitter:site" content="@DotagiftX" />
+        {/* OpenGraph */}
+        <meta property="og:url" content={APP_URL} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:image" content={`${APP_URL}/assets/gift.png`} />
       </Head>
 
       <Header disableSearch />
@@ -105,19 +141,13 @@ export default function Index({ totalEntries, popularItems }) {
           <SearchInput helperText={description} onSubmit={handleSubmit} />
           <br />
 
-          <Typography>
-            Popular Items
-            <Link
-              href={`/search?sort=${popularItemsFilter.sort}`}
-              color="secondary"
-              style={{ float: 'right' }}>
-              See All
-            </Link>
-          </Typography>
-          {popularItems.error && <div>failed to load popular items: {popularItems.error}</div>}
-          {!popularItems.error && <CatalogList items={popularItems.data} />}
+          {/* Trending Items */}
+          <Typography>Trending Items</Typography>
+          {trendingItems.error && <div>failed to load popular items: {trendingItems.error}</div>}
+          {!trendingItems.error && <CatalogList items={trendingItems.data} />}
           <br />
 
+          {/* Recent Market items */}
           <Typography>
             Recently Posted
             <Link
@@ -131,6 +161,80 @@ export default function Index({ totalEntries, popularItems }) {
           {!recentItems && <LinearProgress color="secondary" />}
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
+
+          {/* Popular Market items */}
+          <Typography>
+            Most Popular
+            <Link
+              href={`/search?sort=${popularItemsFilter.sort}`}
+              color="secondary"
+              style={{ float: 'right' }}>
+              See All
+            </Link>
+          </Typography>
+          {popularError && <div>failed to load popular items</div>}
+          {!popularItems && <LinearProgress color="secondary" />}
+          {!popularError && popularItems && <CatalogList items={popularItems.data} />}
+          <br />
+
+          {/* Market stats */}
+          <Divider className={classes.divider} light variant="middle" />
+          <Grid container spacing={2} style={{ textAlign: 'center' }}>
+            <Grid item sm={4} xs={12} component={Link} href="/search" disableUnderline>
+              <Typography variant="h4" component="span">
+                {marketSummary.live}
+              </Typography>
+              <br />
+              <Typography color="textSecondary" variant="body2">
+                <em>Available Offers</em>
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={6} component={Link} href="/history?reserved" disableUnderline>
+              <Typography variant="h4" component="span">
+                {marketSummary.reserved}
+              </Typography>
+              <br />
+              <Typography color="textSecondary" variant="body2">
+                <em>On Reserved</em>
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={6} component={Link} href="/history?delivered" disableUnderline>
+              <Typography variant="h4" component="span">
+                {marketSummary.sold}
+              </Typography>
+              <br />
+              <Typography color="textSecondary" variant="body2">
+                <em>Delivered Items</em>
+              </Typography>
+            </Grid>
+          </Grid>
+          <Divider className={classes.divider} light variant="middle" />
+          <br />
+
+          {/* Top links */}
+          <Grid container spacing={2}>
+            <Grid item sm={6} xs={12}>
+              <Typography className={classes.footLinks}>Top Treasures</Typography>
+              {topOrigins &&
+                topOrigins.map(origin => (
+                  <Link
+                    href={`/search?q=${origin}`}
+                    color="secondary"
+                    className={classes.footLinks}>
+                    <Typography variant="subtitle1">{origin}</Typography>
+                  </Link>
+                ))}
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <Typography className={classes.footLinks}>Top Heroes</Typography>
+              {topHeroes &&
+                topHeroes.map(hero => (
+                  <Link href={`/search?q=${hero}`} color="secondary" className={classes.footLinks}>
+                    <Typography variant="subtitle1">{hero}</Typography>
+                  </Link>
+                ))}
+            </Grid>
+          </Grid>
         </Container>
       </main>
 
@@ -139,26 +243,28 @@ export default function Index({ totalEntries, popularItems }) {
   )
 }
 Index.propTypes = {
-  totalEntries: PropTypes.string.isRequired,
-  popularItems: PropTypes.object.isRequired,
+  marketSummary: PropTypes.object.isRequired,
+  trendingItems: PropTypes.object.isRequired,
 }
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const res = await marketSearch({ limit: 1, status: MARKET_STATUS_LIVE })
-  const totalEntries = format.numberWithCommas(res.total_count || 0)
+  const marketSummary = await statsMarketSummary()
+  marketSummary.live = format.numberWithCommas(marketSummary.live)
+  marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
+  marketSummary.sold = format.numberWithCommas(marketSummary.sold)
 
-  let popularItems = { error: null }
+  let trendingItems = { error: null }
   try {
-    popularItems = await catalogSearch(popularItemsFilter)
+    trendingItems = await catalogTrendSearch()
   } catch (e) {
-    popularItems.error = e
+    trendingItems.error = e
   }
 
   return {
     props: {
-      totalEntries,
-      popularItems,
+      marketSummary,
+      trendingItems,
       unstable_revalidate: 60,
     },
   }

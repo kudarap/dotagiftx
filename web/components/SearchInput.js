@@ -78,7 +78,7 @@ export default function SearchInput(props) {
             </InputAdornment>
           ),
         }}
-        placeholder="Search for item name, hero, origin"
+        placeholder="Search for item name, hero, treasure"
         variant="outlined"
         color="secondary"
         fullWidth

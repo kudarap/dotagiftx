@@ -5,17 +5,18 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { isOk as checkLoggedIn, get as getLoggedInUser } from '@/service/auth'
-import { catalog, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
+import { catalog, item as itemGet, CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
+import { APP_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import ContactDialog from '@/components/ContactDialog'
+import ChipLink from '@/components/ChipLink'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -35,8 +36,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       margin: '0 auto !important',
     },
-    width: 150,
-    height: 100,
+    width: 164,
+    height: 109,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
@@ -44,16 +45,42 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       margin: '8px auto !important',
     },
-    width: 150,
+    width: 164,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
 }))
 
-export default function ItemDetails({ item, filter, markets: initialMarkets, canonicalURL }) {
+export default function ItemDetails({
+  item,
+  error: initialError,
+  filter,
+  markets: initialMarkets,
+  canonicalURL,
+}) {
   const classes = useStyles()
 
-  const [page, setPage] = React.useState(filter.page)
+  if (initialError) {
+    return (
+      <>
+        <Header />
+
+        <main className={classes.main}>
+          <Container>
+            <Typography variant="h5" component="h1" gutterBottom align="center">
+              Item Error
+            </Typography>
+            <Typography color="textSecondary" align="center">
+              {initialError}
+            </Typography>
+          </Container>
+        </main>
+
+        <Footer />
+      </>
+    )
+  }
+
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [error, setError] = React.useState(null)
 
@@ -61,31 +88,49 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
   React.useEffect(() => {
     ;(async () => {
       try {
-        const res = await marketSearch({ ...filter, page })
+        const res = await marketSearch(filter)
         setMarkets(res)
       } catch (e) {
         setError(e.message)
       }
     })()
-  }, [page])
-
-  const handlePageChange = (e, p) => {
-    setPage(p)
-  }
-
-  const linkProps = { href: '/item/[slug]', as: `/item/${item.slug}` }
+  }, [filter])
 
   const metaTitle = `DotagiftX :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
-  const metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} for ${
-    item.hero
-  }. Price start at $${item.lowest_ask.toFixed(2)}`
+  let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
+  const schemaOrgProd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    productID: item.id,
+    name: item.name,
+    image: `${CDN_URL}/${item.image}`,
+    description: metaDesc,
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'USD',
+      url: canonicalURL,
+    },
+  }
+  if (item.lowest_ask) {
+    const startingPrice = item.lowest_ask.toFixed(2)
+    metaDesc += ` Price starting at $${startingPrice}`
+    schemaOrgProd.offers.availability = 'https://schema.org/InStock'
+    schemaOrgProd.offers.price = startingPrice
+  } else {
+    schemaOrgProd.offers.availability = 'https://schema.org/OutOfStock'
+    schemaOrgProd.offers.price = '0'
+  }
 
   const isLoggedIn = checkLoggedIn()
   let currentUserID = null
   if (isLoggedIn) {
     currentUserID = getLoggedInUser().user_id
   }
+
+  const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
+
+  const linkProps = { href: `/item/${item.slug}` }
 
   return (
     <>
@@ -102,10 +147,15 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
         <meta name="twitter:site" content="@DotagiftX" />
         {/* OpenGraph */}
         <meta property="og:url" content={canonicalURL} />
-        <meta property="og:type" content="article" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
+        {/* Rich Results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgProd) }}
+        />
       </Head>
 
       <Header />
@@ -115,12 +165,14 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
           <div className={classes.details}>
             {item.image && (
               <div>
-                <ItemImage
-                  className={classes.media}
-                  image={`/300x170/${item.image}`}
-                  title={item.name}
-                  rarity={item.rarity}
-                />
+                <a href={wikiLink} target="_blank" rel="noreferrer noopener">
+                  <ItemImage
+                    className={classes.media}
+                    image={`/300x170/${item.image}`}
+                    title={item.name}
+                    rarity={item.rarity}
+                  />
+                </a>
                 {isLoggedIn && (
                   <Button
                     className={classes.postItemButton}
@@ -129,6 +181,7 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
                     size="small"
                     component={Link}
                     href={`/post-item?s=${item.slug}`}
+                    disableUnderline
                     fullWidth>
                     Post this Item
                   </Button>
@@ -145,7 +198,12 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
                 {item.rarity !== 'regular' && (
                   <>
                     &mdash;
-                    <RarityTag rarity={item.rarity} variant="body1" component="span" />
+                    <RarityTag
+                      rarity={item.rarity}
+                      variant="body1"
+                      component={Link}
+                      href={`/search?q=${item.rarity}`}
+                    />
                   </>
                 )}
                 <br />
@@ -153,6 +211,11 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
                   {`Used by: `}
                 </Typography>
                 <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
+                <br />
+                <Typography color="textSecondary" component="span">
+                  {`Links: `}
+                </Typography>
+                <ChipLink label="Dota 2 Wiki" href={wikiLink} />
               </Typography>
             </Typography>
           </div>
@@ -163,8 +226,7 @@ export default function ItemDetails({ item, filter, markets: initialMarkets, can
               linkProps={linkProps}
               style={{ textAlign: 'right' }}
               count={markets.total_count}
-              page={page}
-              onChangePage={handlePageChange}
+              page={filter.page}
             />
           )}
         </Container>
@@ -181,12 +243,14 @@ ItemDetails.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
   markets: PropTypes.object,
+  error: PropTypes.string,
 }
 ItemDetails.defaultProps = {
   filter: {},
   markets: {
     data: [],
   },
+  error: null,
 }
 
 const marketSearchFilter = {
@@ -197,22 +261,34 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps(props) {
-  const { params, query, req } = props
+  const { params, query } = props
 
-  const canonicalURL = `https://${req.headers.host}${req.url}`
-
+  // Handles invalid item slug
   let item = {}
   try {
-    item = await catalog(params.slug)
+    item = await itemGet(params.slug)
   } catch (e) {
-    console.log(`error: ${e.message}`)
-
     return {
       props: {
         item,
-        canonicalURL,
+        error: e.message,
         filter: {},
         markets: {},
+      },
+    }
+  }
+
+  // Handles no market entry on item
+  try {
+    item = await catalog(params.slug)
+  } catch (e) {
+    console.log(`catalog get error: ${e.message}`)
+  }
+  if (!item.id) {
+    return {
+      props: {
+        item,
+        filter: {},
       },
     }
   }
@@ -227,8 +303,11 @@ export async function getServerSideProps(props) {
   try {
     markets = await marketSearch(filter)
   } catch (e) {
+    console.log(`market search error: ${e.message}`)
     error = e.message
   }
+
+  const canonicalURL = `${APP_URL}/item/${params.slug}`
 
   return {
     props: {

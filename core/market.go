@@ -30,10 +30,9 @@ func init() {
 }
 
 const (
-	 maxMarketNotesLen = 200
-	 MaxMarketQtyLimitPerUser = 5
+	maxMarketNotesLen        = 200
+	MaxMarketQtyLimitPerUser = 5
 )
-
 
 // Market statuses.
 const (
@@ -84,6 +83,9 @@ type (
 
 		// CatalogDetails returns catalog details by item id.
 		CatalogDetails(id string) (*Catalog, error)
+
+		// TrendingCatalog returns a top 10 trending catalogs.
+		TrendingCatalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
 	}
 
 	// MarketStorage defines operation for market records.

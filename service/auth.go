@@ -42,17 +42,20 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 	if err != nil && err != core.AuthErrNotFound {
 		return nil, err
 	}
-
 	// Account existed and checks login credentials.
 	if au != nil {
 		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {
 			return nil, core.AuthErrLogin
 		}
 
+		if _, err := s.userSvc.SteamSync(steamPlayer); err != nil {
+			return nil, errors.New(core.UserErrSteamSync, err)
+		}
+
 		return au, nil
 	}
 
-	// Process account registration and save twitter details.
+	// Process account registration and save details.
 	au, err = s.createAccountFromTwitter(steamPlayer)
 	if err != nil {
 		return nil, err

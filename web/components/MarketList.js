@@ -13,7 +13,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import { CDN_URL, myMarket } from '@/service/api'
-import { amount } from '@/lib/format'
+import { amount, dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
@@ -86,6 +86,14 @@ export default function MarketList({ data, error, currentUserID }) {
               </TableRow>
             )}
 
+            {!error && data.total_count === 0 && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  No offers available
+                </TableCell>
+              </TableRow>
+            )}
+
             {data.data &&
               data.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
@@ -102,7 +110,8 @@ export default function MarketList({ data, error, currentUserID }) {
                           <strong>{market.user.name}</strong>
                           <br />
                           <Typography variant="caption" color="textSecondary">
-                            {market.user.steam_id}
+                            {/* {market.user.steam_id} */}
+                            Posted {dateFromNow(market.created_at)}
                           </Typography>
                         </div>
                       </div>

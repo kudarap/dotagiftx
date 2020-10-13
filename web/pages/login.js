@@ -9,6 +9,7 @@ import Container from '@/components/Container'
 import Button from '@/components/Button'
 import SteamIcon from '@/components/SteamIcon'
 import { set as setAuth } from '@/service/auth'
+import * as Storage from '@/service/storage'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -30,6 +31,7 @@ export default function Login() {
       try {
         const auth = await authSteam(query)
         setAuth(auth)
+        Storage.removeAll()
         // eslint-disable-next-line no-undef
         window.location = '/'
       } catch (e) {

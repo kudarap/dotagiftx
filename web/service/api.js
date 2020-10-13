@@ -20,6 +20,11 @@ export const USERS = '/users'
 export const ITEMS = '/items'
 export const MARKETS = '/markets'
 export const CATALOGS = '/catalogs'
+export const CATALOGS_TREND = '/catalogs-trend'
+export const STATS = '/stats'
+export const STATS_TOP_ORIGINS = `${STATS}/top-origins`
+export const STATS_TOP_HEROES = `${STATS}/top-heroes`
+export const STATS_MARKET_SUMMARY = `${STATS}/market-summary`
 const VERSION = '/'
 const TRACK = '/t'
 
@@ -33,6 +38,8 @@ export const version = () => http.request(http.GET, VERSION)
 export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
 export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
+export const statsMarketSummary = (filter = {}) =>
+  http.request(http.GET, parseParams(STATS_MARKET_SUMMARY, filter))
 
 export const myMarketSearch = http.baseSearchRequest(MY_MARKETS)
 export const myMarket = {
@@ -47,6 +54,7 @@ export const myProfile = {
 export const itemSearch = http.baseSearchRequest(ITEMS)
 export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)
+export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
 export const getLoginURL = `${API_URL}${AUTH_STEAM}`

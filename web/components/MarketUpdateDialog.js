@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -45,6 +46,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function MarketUpdateDialog(props) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const { market, open, onClose } = props
 
@@ -94,7 +97,7 @@ export default function MarketUpdateDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
-        router.push('/reservations')
+        router.push('/my-reservations')
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -110,6 +113,7 @@ export default function MarketUpdateDialog(props) {
   return (
     <Dialog
       fullWidth
+      fullScreen={isMobile}
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
@@ -159,7 +163,11 @@ export default function MarketUpdateDialog(props) {
                     <Typography color="textSecondary" component="span">
                       {`Notes: `}
                     </Typography>
-                    {market.notes}
+                    <Typography component="ul" variant="body2" style={{ marginTop: 0 }}>
+                      {market.notes.split('\n').map(s => (
+                        <li>{s}</li>
+                      ))}
+                    </Typography>
                   </>
                 )}
               </Typography>
