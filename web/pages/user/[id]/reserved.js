@@ -33,6 +33,7 @@ const useStyles = makeStyles(theme => ({
 const filter = {
   status: MARKET_STATUS_RESERVED,
   sort: 'updated_at:desc',
+  limit: 50,
 }
 
 export default function UserReserved({ profile, canonicalURL }) {

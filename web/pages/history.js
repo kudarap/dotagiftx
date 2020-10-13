@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 
 const filter = {
   sort: 'updated_at:desc',
+  limit: 50,
 }
 
 export default function History({ status }) {
