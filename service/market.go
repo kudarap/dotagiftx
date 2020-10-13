@@ -210,6 +210,22 @@ func (s *marketService) Catalog(opts core.FindOpts) ([]core.Catalog, *core.FindM
 	}, nil
 }
 
+func (s *marketService) TrendingCatalog(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
+	res, err := s.catalogStg.Trending()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !opts.WithMeta {
+		return res, nil, err
+	}
+
+	return res, &core.FindMetadata{
+		ResultCount: len(res),
+		TotalCount:  10, // Fixed value of top 10
+	}, nil
+}
+
 func (s *marketService) CatalogDetails(id string) (*core.Catalog, error) {
 	if id == "" {
 		return nil, core.CatalogErrNotFound
