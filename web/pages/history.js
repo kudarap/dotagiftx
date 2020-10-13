@@ -41,7 +41,7 @@ export default function History({ status }) {
   const classes = useStyles()
 
   filter.status = status
-  const { data, error } = useSWR([MARKETS, filter], fetcher)
+  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
 
   return (
     <>
@@ -58,7 +58,7 @@ export default function History({ status }) {
             {data && data.total_count} {MARKET_STATUS_MAP_TEXT[status]} Items
           </Typography>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          {data && <MarketActivity data={data.data} />}
+          {data && <MarketActivity data={data.data} loading={isValidating} />}
         </Container>
       </main>
 
