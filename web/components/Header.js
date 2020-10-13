@@ -238,6 +238,7 @@ export default function Header({ disableSearch }) {
                   onClick={handleMoreClick}>
                   <MoreIcon />
                 </IconButton>
+
                 <Menu
                   className={classes.avatarMenu}
                   id="more-menu"
@@ -248,17 +249,54 @@ export default function Header({ disableSearch }) {
                   <MenuItem
                     onClick={handleMoreClose}
                     component={Link}
-                    href="/login"
-                    disableUnderline>
-                    Sign in
-                  </MenuItem>
-                  <MenuItem
-                    onClick={handleMoreClose}
-                    component={Link}
                     href="/post-item"
                     disableUnderline>
                     Post Item
                   </MenuItem>
+
+                  {isLoggedIn ? (
+                    <>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/user/[id]"
+                        as={`/user/${profile.steam_id}`}
+                        disableUnderline>
+                        Profile
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/my-listings"
+                        disableUnderline>
+                        Listings
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/my-reservations"
+                        disableUnderline>
+                        Reservations
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/my-history"
+                        disableUnderline>
+                        History
+                      </MenuItem>
+                      {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
+                      <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+                    </>
+                  ) : (
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/login"
+                      disableUnderline>
+                      Sign in
+                    </MenuItem>
+                  )}
                 </Menu>
               </>
             )}
