@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	tableMarket       = "market"
-	marketFieldItemID = "item_id"
+	tableMarket          = "market"
+	marketFieldItemID    = "item_id"
+	marketFieldStatus    = "status"
+	marketFieldCreatedAt = "created_at"
 )
 
 // NewMarket creates new instance of market data store.

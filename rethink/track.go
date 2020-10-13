@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	tableTrack       = "track"
-	trackFieldItemID = "item_id"
+	tableTrack          = "track"
+	trackFieldItemID    = "item_id"
+	trackFieldType      = "type"
+	trackFieldCreatedAt = "created_at"
 )
 
 // NewTrack creates new instance of track data store.

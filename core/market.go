@@ -32,6 +32,11 @@ func init() {
 const (
 	maxMarketNotesLen        = 200
 	MaxMarketQtyLimitPerUser = 5
+
+	// Trend scoring rates use for trend ranking.
+	TrendScoreRateView        = 0.05
+	TrendScoreRateMarketEntry = 0.01
+	TrendScoreRateReserved    = 4
 )
 
 // Market statuses.

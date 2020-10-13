@@ -27,13 +27,13 @@ type (
 	// Track represents tracking data.
 	Track struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
-		Type      string     `json:"type"       db:"type,omitempty"`
-		ItemID    string     `json:"item_id"    db:"item_id,omitempty"`
+		Type      string     `json:"type"       db:"type,omitempty,indexed"`
+		ItemID    string     `json:"item_id"    db:"item_id,omitempty,indexed"`
 		Keyword   string     `json:"keyword"    db:"keyword,omitempty"`
 		ClientIP  string     `json:"client_ip"  db:"client_ip,omitempty"`
 		UserAgent string     `json:"user_agent" db:"user_agent,omitempty"`
 		Referer   string     `json:"referer"    db:"referer,omitempty"`
-		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
+		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty,indexed"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 	}
 
