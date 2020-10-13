@@ -11,10 +11,8 @@ import Divider from '@material-ui/core/Divider'
 import {
   fetcher,
   CATALOGS,
-  CATALOGS_TREND,
   STATS_TOP_ORIGINS,
   STATS_TOP_HEROES,
-  catalogSearch,
   catalogTrendSearch,
   statsMarketSummary,
 } from '@/service/api'
