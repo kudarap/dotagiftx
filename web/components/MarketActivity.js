@@ -52,7 +52,11 @@ export default function MarketActivity({ data, loading }) {
             &nbsp;
             {moment(market.updated_at).fromNow()}
           </Typography>
-          <Typography component="pre" color="textSecondary" variant="caption">
+          <Typography
+            component="pre"
+            color="textSecondary"
+            variant="caption"
+            style={{ whiteSpace: 'pre-wrap' }}>
             {market.notes}
           </Typography>
         </li>
