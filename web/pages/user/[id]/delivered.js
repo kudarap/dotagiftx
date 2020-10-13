@@ -73,8 +73,7 @@ export default function UserDelivered({ profile, canonicalURL }) {
             </Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          {isValidating && <Typography>Loading...</Typography>}
-          {!isValidating && data && <MarketActivity data={data.data} />}
+          <MarketActivity data={data ? data.data : null} loading={isValidating} />
         </Container>
       </main>
 

@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 export default function MarketActivity({ data, loading }) {
   const classes = useStyles()
 
-  if (loading) {
+  if (loading || !data) {
     return <LinearProgress color="secondary" />
   }
 

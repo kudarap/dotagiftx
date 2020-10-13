@@ -58,7 +58,7 @@ export default function History({ status }) {
             {data && data.total_count} {MARKET_STATUS_MAP_TEXT[status]} Items
           </Typography>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          {data && <MarketActivity data={data.data} loading={isValidating} />}
+          <MarketActivity data={data ? data.data : null} loading={isValidating} />
         </Container>
       </main>
 
