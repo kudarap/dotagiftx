@@ -11,6 +11,7 @@ const (
 	UserErrRequiredID
 	UserErrRequiredFields
 	UserErrProfileImageDL
+	UserErrSteamSync
 )
 
 // sets error text definition.
@@ -19,6 +20,7 @@ func init() {
 	appErrorText[UserErrRequiredID] = "user id is required"
 	appErrorText[UserErrRequiredFields] = "user fields are required"
 	appErrorText[UserErrProfileImageDL] = "user profile image could not download"
+	appErrorText[UserErrSteamSync] = "user profile steam sync error"
 }
 
 type (
@@ -49,6 +51,9 @@ type (
 
 		// Update saves user changes.
 		Update(context.Context, *User) error
+
+		// SteamSync saves updated steam info.
+		SteamSync(sp *SteamPlayer) (*User, error)
 	}
 
 	// UserStorage defines operation for user records.
