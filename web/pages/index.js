@@ -170,38 +170,30 @@ export default function Index({ marketSummary, popularItems }) {
           {/* Market stats */}
           <Divider className={classes.divider} light variant="middle" />
           <Grid container spacing={2} style={{ textAlign: 'center' }}>
-            <Grid item sm={4} xs={12}>
+            <Grid item sm={4} xs={12} component={Link} href="/search" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.live}
               </Typography>
               <br />
-              <Typography color="textSecondary" variant="body2" component={Link} href="/search">
+              <Typography color="textSecondary" variant="body2">
                 <em>Available Offers</em>
               </Typography>
             </Grid>
-            <Grid item sm={4} xs={6}>
+            <Grid item sm={4} xs={6} component={Link} href="/history?reserved" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
               <br />
-              <Typography
-                color="textSecondary"
-                variant="body2"
-                component={Link}
-                href="/history?reserved">
+              <Typography color="textSecondary" variant="body2">
                 <em>On Reserved</em>
               </Typography>
             </Grid>
-            <Grid item sm={4} xs={6}>
+            <Grid item sm={4} xs={6} component={Link} href="/history?delivered" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>
               <br />
-              <Typography
-                color="textSecondary"
-                variant="body2"
-                component={Link}
-                href="/history?delivered">
+              <Typography color="textSecondary" variant="body2">
                 <em>Delivered Items</em>
               </Typography>
             </Grid>
