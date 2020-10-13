@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftx v0.7.0",
+    "name": "dotagiftx v0.8.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -538,13 +538,14 @@
           }
         },
         "url": {
-          "raw": "{{host}}/markets?q=phantom",
+          "raw": "{{host}}/markets",
           "host": ["{{host}}"],
           "path": ["markets"],
           "query": [
             {
               "key": "q",
-              "value": "phantom"
+              "value": "phantom",
+              "disabled": true
             },
             {
               "key": "user_id",
@@ -798,6 +799,39 @@
       "response": []
     },
     {
+      "name": "catalogs trending top 10",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/catalogs-trend",
+          "host": ["{{host}}"],
+          "path": ["catalogs-trend"],
+          "query": [
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "api info",
       "protocolProfileBehavior": {
         "disableBodyPruning": true
@@ -863,6 +897,110 @@
             {
               "key": "q",
               "value": "phantom",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "stats top origins",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/stats/top-origins",
+          "host": ["{{host}}"],
+          "path": ["stats", "top-origins"],
+          "query": [
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "stats top heroes",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/stats/top-heroes",
+          "host": ["{{host}}"],
+          "path": ["stats", "top-heroes"],
+          "query": [
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "stats market summary",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{host}}/stats/market-summary",
+          "host": ["{{host}}"],
+          "path": ["stats", "market-summary"],
+          "query": [
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            },
+            {
+              "key": "user_id",
+              "value": "f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17",
               "disabled": true
             }
           ]
