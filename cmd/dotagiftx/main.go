@@ -89,6 +89,11 @@ func (a *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 
+	t, _ := catalogStg.Trending()
+	for _, tt := range t {
+		fmt.Println(tt)
+	}
+
 	// Service inits.
 	log.Println("setting up services...")
 	fileMgr := setupFileManager(a.config)

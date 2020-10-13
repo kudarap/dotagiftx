@@ -52,5 +52,8 @@ type (
 
 		// Index persists a new catalog to data store.
 		Index(itemID string) (*Catalog, error)
+
+		// Trending returns a list if top 10 trending catalog.
+		Trending() ([]Catalog, error)
 	}
 )

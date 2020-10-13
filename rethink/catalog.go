@@ -32,6 +32,49 @@ type catalogStorage struct {
 	logger        *logrus.Logger
 }
 
+func (s *catalogStorage) Trending() ([]core.Catalog, error) {
+	/*
+		r.db('d2g')
+		.table('track')
+		.filter({type: 'v'})
+		.orderBy(r.desc('created_at'))
+		.limit(100)
+		.group('item_id').count()
+		.ungroup().orderBy(r.desc('reduction'))
+		.map(function(doc) {
+		  return {
+		    item_id: doc('group'),
+		    score: doc('reduction'),
+		  }
+		})
+		.eqJoin('item_id', r.db('d2g').table('catalog'))
+		.zip()
+		.orderBy(r.desc('score'))
+		.limit(10)
+	*/
+
+	// Accumulate views of the recent 100 records.
+	q := r.Table(tableTrack).Filter(map[string]string{"type": "v"}).
+		OrderBy(r.Desc("created_at")).Limit(100).
+		Group("item_id").Count().
+		Ungroup().OrderBy(r.Desc("reduction")).
+		Map(func(t r.Term) interface{} {
+			return map[string]interface{}{
+				"item_id": t.Field("group"),
+				"score":   t.Field("reduction"),
+			}
+		}).
+		EqJoin("item_id", r.Table(tableCatalog)).Zip().
+		OrderBy(r.Desc("score")).Limit(10)
+
+	var res []core.Catalog
+	if err := s.db.list(q, &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
@@ -193,8 +236,8 @@ func (s *catalogStorage) update(in *core.Catalog) error {
 // zeroQtyCatalog reset the catalog entry price when it reaches zero entry/qty.
 func (s *catalogStorage) zeroQtyCatalog(catalogID string) error {
 	q := s.table().Get(catalogID).Update(map[string]int{
-		"quantity": 0,
-		"lowest_ask": 0,
+		"quantity":    0,
+		"lowest_ask":  0,
 		"highest_bid": 0,
 	})
 	return s.db.update(q)
