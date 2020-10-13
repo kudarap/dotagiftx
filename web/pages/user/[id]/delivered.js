@@ -40,7 +40,7 @@ export default function UserDelivered({ profile, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
-  const { data, error } = useSWR([MARKETS, filter], fetcher)
+  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
 
   return (
     <>
@@ -73,7 +73,8 @@ export default function UserDelivered({ profile, canonicalURL }) {
             </Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          {data && <MarketActivity data={data.data} />}
+          {isValidating && <Typography>Loading...</Typography>}
+          {!isValidating && data && <MarketActivity data={data.data} />}
         </Container>
       </main>
 

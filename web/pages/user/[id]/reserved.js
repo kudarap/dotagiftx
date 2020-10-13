@@ -40,7 +40,7 @@ export default function UserReserved({ profile, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
-  const { data, error } = useSWR([MARKETS, filter], fetcher)
+  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
 
   return (
     <>
@@ -71,7 +71,8 @@ export default function UserReserved({ profile, canonicalURL }) {
             <Typography color="textSecondary">{data && data.total_count} Reserved Items</Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          {data && <MarketActivity data={data.data} />}
+          {isValidating && <Typography>Loading...</Typography>}
+          {!isValidating && data && <MarketActivity data={data.data} />}
         </Container>
       </main>
 
