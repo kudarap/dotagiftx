@@ -9,12 +9,6 @@ import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
-  main: {
-    [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(1),
-    },
-    marginTop: theme.spacing(4),
-  },
   profile: {
     float: 'left',
     marginRight: theme.spacing(1),
@@ -24,8 +18,12 @@ const useStyles = makeStyles(theme => ({
   itemImage: { width: 60, height: 40, marginRight: 8, float: 'left' },
 }))
 
-export default function MarketActivity({ data }) {
+export default function MarketActivity({ data, loading }) {
   const classes = useStyles()
+
+  if (loading) {
+    return <Typography>Loading...</Typography>
+  }
 
   return (
     <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
@@ -64,4 +62,8 @@ export default function MarketActivity({ data }) {
 }
 MarketActivity.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  loading: PropTypes.bool,
+}
+MarketActivity.defaultProps = {
+  loading: false,
 }

@@ -71,8 +71,7 @@ export default function UserReserved({ profile, canonicalURL }) {
             <Typography color="textSecondary">{data && data.total_count} Reserved Items</Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          {isValidating && <Typography>Loading...</Typography>}
-          {!isValidating && data && <MarketActivity data={data.data} />}
+          {!isValidating && data && <MarketActivity data={data.data} loading={isValidating} />}
         </Container>
       </main>
 
