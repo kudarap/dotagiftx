@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
   item: {
     [theme.breakpoints.down('xs')]: {
-      paddingLeft: theme.spacing(2),
+      paddingLeft: theme.spacing(0),
     },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
@@ -33,6 +33,7 @@ const useStyles = makeStyles(theme => ({
   image: {
     margin: theme.spacing(-1, 1, -1, 1),
     width: 77,
+    height: 55,
   },
 }))
 
@@ -64,8 +65,12 @@ export default function MyMarketList({ datatable, error }) {
               <TableHeadCell>
                 Items ({format.numberWithCommas(datatable.total_count)})
               </TableHeadCell>
-              <TableHeadCell align="right">Listed</TableHeadCell>
-              <TableHeadCell align="right">Price</TableHeadCell>
+              {!isMobile && (
+                <>
+                  <TableHeadCell align="right">Listed</TableHeadCell>
+                  <TableHeadCell align="right">Price</TableHeadCell>
+                </>
+              )}
               <TableHeadCell align="center" width={70} />
             </TableRow>
           </TableHead>
@@ -79,14 +84,12 @@ export default function MyMarketList({ datatable, error }) {
                     padding="none"
                     className={classes.item}
                     onClick={() => handleUpdateClick(idx)}>
-                    {!isMobile && (
-                      <ItemImage
-                        className={classes.image}
-                        image={`/200x100/${market.item.image}`}
-                        title={market.item.name}
-                        rarity={market.item.rarity}
-                      />
-                    )}
+                    <ItemImage
+                      className={classes.image}
+                      image={`/200x100/${market.item.image}`}
+                      title={market.item.name}
+                      rarity={market.item.rarity}
+                    />
                     <div>
                       <strong>{market.item.name}</strong>
                       <br />
@@ -96,12 +99,20 @@ export default function MyMarketList({ datatable, error }) {
                       <RarityTag rarity={market.item.rarity} />
                     </div>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">{format.dateFromNow(market.created_at)}</Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-                  </TableCell>
+                  {!isMobile && (
+                    <>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {format.dateFromNow(market.created_at)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {amount(market.price, market.currency)}
+                        </Typography>
+                      </TableCell>
+                    </>
+                  )}
                   <TableCell align="center">
                     <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
                       Update
