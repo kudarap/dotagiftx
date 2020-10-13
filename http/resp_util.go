@@ -1,13 +1,15 @@
 package http
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func respond(w http.ResponseWriter, code int, body interface{}) {
 	w.Header().Set("Content-Type", "application/json")
