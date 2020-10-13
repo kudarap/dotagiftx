@@ -138,6 +138,7 @@ export default function Index({ marketSummary, popularItems }) {
           <SearchInput helperText={description} onSubmit={handleSubmit} />
           <br />
 
+          {/* Top Market items */}
           <Typography>
             Popular Items
             <Link
@@ -151,6 +152,7 @@ export default function Index({ marketSummary, popularItems }) {
           {!popularItems.error && <CatalogList items={popularItems.data} />}
           <br />
 
+          {/* Recent Market items */}
           <Typography>
             Recently Posted
             <Link
@@ -165,6 +167,7 @@ export default function Index({ marketSummary, popularItems }) {
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
 
+          {/* Market stats */}
           <Divider className={classes.divider} light variant="middle" />
           <Grid container spacing={2} style={{ textAlign: 'center' }}>
             <Grid item sm={4} xs={12}>
@@ -206,6 +209,7 @@ export default function Index({ marketSummary, popularItems }) {
           <Divider className={classes.divider} light variant="middle" />
           <br />
 
+          {/* Top links */}
           <Grid container spacing={2}>
             <Grid item sm={6} xs={12}>
               <Typography className={classes.footLinks}>Top Treasures</Typography>
