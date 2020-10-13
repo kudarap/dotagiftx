@@ -20,6 +20,7 @@ export const USERS = '/users'
 export const ITEMS = '/items'
 export const MARKETS = '/markets'
 export const CATALOGS = '/catalogs'
+export const CATALOGS_TREND = '/catalogs-trend'
 export const STATS = '/stats'
 export const STATS_TOP_ORIGINS = `${STATS}/top-origins`
 export const STATS_TOP_HEROES = `${STATS}/top-heroes`
@@ -53,6 +54,7 @@ export const myProfile = {
 export const itemSearch = http.baseSearchRequest(ITEMS)
 export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)
+export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
 export const getLoginURL = `${API_URL}${AUTH_STEAM}`

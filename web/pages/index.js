@@ -9,11 +9,13 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Divider from '@material-ui/core/Divider'
 import {
-  CATALOGS,
   fetcher,
-  catalogSearch,
+  CATALOGS,
+  CATALOGS_TREND,
   STATS_TOP_ORIGINS,
   STATS_TOP_HEROES,
+  catalogSearch,
+  catalogTrendSearch,
   statsMarketSummary,
 } from '@/service/api'
 import * as format from '@/lib/format'
@@ -140,7 +142,7 @@ export default function Index({ marketSummary, popularItems }) {
 
           {/* Top Market items */}
           <Typography>
-            Popular Items
+            Trending Items
             <Link
               href={`/search?sort=${popularItemsFilter.sort}`}
               color="secondary"
@@ -246,7 +248,7 @@ export async function getServerSideProps() {
 
   let popularItems = { error: null }
   try {
-    popularItems = await catalogSearch(popularItemsFilter)
+    popularItems = await catalogTrendSearch(popularItemsFilter)
   } catch (e) {
     popularItems.error = e
   }
