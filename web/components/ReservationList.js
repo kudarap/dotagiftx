@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
   image: {
     margin: theme.spacing(-1, 1, -1, 1),
     width: 77,
+    height: 55,
   },
 }))
 
@@ -65,8 +66,12 @@ export default function ReservationList({ datatable, error }) {
               <TableHeadCell>
                 Items ({format.numberWithCommas(datatable.total_count)})
               </TableHeadCell>
-              <TableHeadCell align="right">Reserved</TableHeadCell>
-              <TableHeadCell align="right">Price</TableHeadCell>
+              {!isMobile && (
+                <>
+                  <TableHeadCell align="right">Reserved</TableHeadCell>
+                  <TableHeadCell align="right">Price</TableHeadCell>
+                </>
+              )}
               <TableHeadCell align="center" width={70} />
             </TableRow>
           </TableHead>
@@ -97,12 +102,20 @@ export default function ReservationList({ datatable, error }) {
                       <RarityTag rarity={market.item.rarity} />
                     </div>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">{moment(market.updated_at).fromNow()}</Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-                  </TableCell>
+                  {!isMobile && (
+                    <>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {moment(market.updated_at).fromNow()}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {amount(market.price, market.currency)}
+                        </Typography>
+                      </TableCell>
+                    </>
+                  )}
                   <TableCell align="center">
                     <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
                       Update

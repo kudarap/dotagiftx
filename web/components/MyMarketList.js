@@ -23,9 +23,6 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
   item: {
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: theme.spacing(0),
-    },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
     cursor: 'pointer',

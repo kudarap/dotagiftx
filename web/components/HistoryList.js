@@ -65,8 +65,12 @@ export default function HistoryList({ datatable, error }) {
               <TableHeadCell>
                 Items ({format.numberWithCommas(datatable.total_count)})
               </TableHeadCell>
-              <TableHeadCell align="right">Updated</TableHeadCell>
-              <TableHeadCell align="right">Price</TableHeadCell>
+              {!isMobile && (
+                <>
+                  <TableHeadCell align="right">Updated</TableHeadCell>
+                  <TableHeadCell align="right">Price</TableHeadCell>
+                </>
+              )}
               <TableHeadCell align="center" width={70} />
             </TableRow>
           </TableHead>
@@ -97,12 +101,20 @@ export default function HistoryList({ datatable, error }) {
                       <RarityTag rarity={market.item.rarity} />
                     </div>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">{moment(market.updated_at).fromNow()}</Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-                  </TableCell>
+                  {!isMobile && (
+                    <>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {moment(market.updated_at).fromNow()}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {amount(market.price, market.currency)}
+                        </Typography>
+                      </TableCell>
+                    </>
+                  )}
                   <TableCell align="center">
                     <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
                       View
