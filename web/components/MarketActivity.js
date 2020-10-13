@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import LinearProgress from '@material-ui/core/LinearProgress'
 import Divider from '@material-ui/core/Divider'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
 import ItemImage from '@/components/ItemImage'
@@ -22,7 +23,7 @@ export default function MarketActivity({ data, loading }) {
   const classes = useStyles()
 
   if (loading) {
-    return <Typography>Loading...</Typography>
+    return <LinearProgress color="secondary" />
   }
 
   return (
