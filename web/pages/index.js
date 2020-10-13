@@ -68,10 +68,11 @@ const recentItemsFilter = {
   limit: 5,
 }
 
-export default function Index({ marketSummary, popularItems }) {
+export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
+  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
   const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
   const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
 
@@ -140,18 +141,10 @@ export default function Index({ marketSummary, popularItems }) {
           <SearchInput helperText={description} onSubmit={handleSubmit} />
           <br />
 
-          {/* Top Market items */}
-          <Typography>
-            Trending Items
-            <Link
-              href={`/search?sort=${popularItemsFilter.sort}`}
-              color="secondary"
-              style={{ float: 'right' }}>
-              See All
-            </Link>
-          </Typography>
-          {popularItems.error && <div>failed to load popular items: {popularItems.error}</div>}
-          {!popularItems.error && <CatalogList items={popularItems.data} />}
+          {/* Trending Items */}
+          <Typography>Trending Items</Typography>
+          {trendingItems.error && <div>failed to load popular items: {trendingItems.error}</div>}
+          {!trendingItems.error && <CatalogList items={trendingItems.data} />}
           <br />
 
           {/* Recent Market items */}
@@ -167,6 +160,21 @@ export default function Index({ marketSummary, popularItems }) {
           {recentError && <div>failed to load recent items</div>}
           {!recentItems && <LinearProgress color="secondary" />}
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
+          <br />
+
+          {/* Popular Market items */}
+          <Typography>
+            Most Popular
+            <Link
+              href={`/search?sort=${popularItemsFilter.sort}`}
+              color="secondary"
+              style={{ float: 'right' }}>
+              See All
+            </Link>
+          </Typography>
+          {popularError && <div>failed to load popular items</div>}
+          {!popularItems && <LinearProgress color="secondary" />}
+          {!popularError && popularItems && <CatalogList items={popularItems.data} />}
           <br />
 
           {/* Market stats */}
@@ -236,7 +244,7 @@ export default function Index({ marketSummary, popularItems }) {
 }
 Index.propTypes = {
   marketSummary: PropTypes.object.isRequired,
-  popularItems: PropTypes.object.isRequired,
+  trendingItems: PropTypes.object.isRequired,
 }
 
 // This gets called on every request
@@ -246,17 +254,17 @@ export async function getServerSideProps() {
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)
 
-  let popularItems = { error: null }
+  let trendingItems = { error: null }
   try {
-    popularItems = await catalogTrendSearch(popularItemsFilter)
+    trendingItems = await catalogTrendSearch()
   } catch (e) {
-    popularItems.error = e
+    trendingItems.error = e
   }
 
   return {
     props: {
       marketSummary,
-      popularItems,
+      trendingItems,
       unstable_revalidate: 60,
     },
   }
