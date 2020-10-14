@@ -1,7 +1,11 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import InputBase from '@material-ui/core/InputBase'
+import InputAdornment from '@material-ui/core/InputAdornment'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import Paper from '@material-ui/core/Paper'
+import SearchIcon from '@material-ui/icons/Search'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -16,6 +20,29 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
+  },
+  searchPaper: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
+    float: 'right',
+    flexGrow: 1,
+    padding: '3px 12px',
+    marginBottom: 2,
+    display: 'flex',
+    alignItems: 'center',
+    fontStyle: 'italic',
+    // '&:hover': {
+    //   borderColor: theme.palette.grey[700],
+    // },
+    backgroundColor: theme.palette.primary.dark,
+    opacity: 0.8,
+  },
+  searchInput: {
+    marginLeft: theme.spacing(1),
+  },
+  searchIcon: {
+    color: theme.palette.grey[500],
   },
 }))
 
@@ -60,9 +87,21 @@ export default function MyListings() {
 
       <main className={classes.main}>
         <Container>
-          <Typography component="h1" gutterBottom>
-            My Active Listings
-          </Typography>
+          <div>
+            <Typography component="span" gutterBottom>
+              My Active Listings
+            </Typography>
+            <Paper className={classes.searchPaper} elevation={0}>
+              <SearchIcon className={classes.searchIcon} />
+              <InputBase
+                fullWidth
+                className={classes.searchInput}
+                color="secondary"
+                placeholder="Search Listings"
+                style={{ float: 'right' }}
+              />
+            </Paper>
+          </div>
 
           {activeLists.error && <div>failed to load active listings</div>}
           {activeLists.loading && <LinearProgress color="secondary" />}
