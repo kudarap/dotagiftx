@@ -196,7 +196,7 @@ func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logg
 		// Save result to cache.
 		data := newDataWithMeta(list, md)
 		go func() {
-			if err := cache.Set(cacheKey, data, catalogCacheExpr); err != nil {
+			if err := cache.Set(cacheKey, data, catalogTrendCacheExpr); err != nil {
 				logger.Errorf("could save cache on catalog trend list: %s", err)
 			}
 		}()
