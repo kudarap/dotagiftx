@@ -58,7 +58,7 @@ export default function History({ status }) {
         <Container>
           <Typography component="h1">
             {MARKET_STATUS_MAP_TEXT[status]} Items {data && `(${data && data.total_count})`}
-            {/*<CircularProgress color="secondary" size={15} />*/}
+            {/* <CircularProgress color="secondary" size={15} /> */}
           </Typography>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <MarketActivity data={data ? data.data : null} loading={isValidating} />
