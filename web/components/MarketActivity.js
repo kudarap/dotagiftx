@@ -22,47 +22,47 @@ const useStyles = makeStyles(theme => ({
 export default function MarketActivity({ data, loading }) {
   const classes = useStyles()
 
-  if (loading || !data) {
-    return <LinearProgress color="secondary" />
-  }
-
   return (
-    <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
-      {data.map(market => (
-        <li style={{ display: 'flow-root' }}>
-          <Divider style={{ margin: '8px 0 8px' }} light />
-          <ItemImage
-            className={classes.itemImage}
-            image={`/200x100/${market.item.image}`}
-            title={market.item.name}
-            rarity={market.item.rarity}
-          />
-          <Typography variant="body2">
-            <Link href={`/user/${market.user.steam_id}`} color="textPrimary">
-              {market.user.name}
-            </Link>
-            &nbsp;
-            <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
-              {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
-            </span>
-            &nbsp;
-            {market.item.hero}&apos;s&nbsp;
-            <Link href={`/item/${market.item.slug}`} color="secondary">
-              {market.item.name}
-            </Link>
-            &nbsp;
-            {moment(market.updated_at).fromNow()}
-          </Typography>
-          <Typography
-            component="pre"
-            color="textSecondary"
-            variant="caption"
-            style={{ whiteSpace: 'pre-wrap' }}>
-            {market.notes}
-          </Typography>
-        </li>
-      ))}
-    </ul>
+    <>
+      {(loading || !data) && <LinearProgress color="secondary" />}
+      <ul style={{ paddingLeft: 0, listStyle: 'none', opacity: loading ? 0.5 : 1 }}>
+        {data &&
+          data.map(market => (
+            <li style={{ display: 'flow-root' }}>
+              <Divider style={{ margin: '8px 0 8px' }} light />
+              <ItemImage
+                className={classes.itemImage}
+                image={`/200x100/${market.item.image}`}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+              <Typography variant="body2">
+                <Link href={`/user/${market.user.steam_id}`} color="textPrimary">
+                  {market.user.name}
+                </Link>
+                &nbsp;
+                <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
+                  {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
+                </span>
+                &nbsp;
+                {market.item.hero}&apos;s&nbsp;
+                <Link href={`/item/${market.item.slug}`} color="secondary">
+                  {market.item.name}
+                </Link>
+                &nbsp;
+                {moment(market.updated_at).fromNow()}
+              </Typography>
+              <Typography
+                component="pre"
+                color="textSecondary"
+                variant="caption"
+                style={{ whiteSpace: 'pre-wrap' }}>
+                {market.notes}
+              </Typography>
+            </li>
+          ))}
+      </ul>
+    </>
   )
 }
 MarketActivity.propTypes = {

@@ -41,7 +41,9 @@ export default function History({ status }) {
   const classes = useStyles()
 
   filter.status = status
-  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
+  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
+    revalidateOnFocus: false,
+  })
 
   return (
     <>
@@ -54,8 +56,9 @@ export default function History({ status }) {
 
       <main className={classes.main}>
         <Container>
-          <Typography color="textSecondary" variant="h6" component="h1">
-            {data && data.total_count} {MARKET_STATUS_MAP_TEXT[status]} Items
+          <Typography component="h1">
+            {MARKET_STATUS_MAP_TEXT[status]} Items {data && `(${data && data.total_count})`}
+            {/*<CircularProgress color="secondary" size={15} />*/}
           </Typography>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <MarketActivity data={data ? data.data : null} loading={isValidating} />
