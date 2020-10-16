@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import debounce from 'lodash/debounce'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
@@ -62,6 +63,11 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
     setCurrentMarket(datatable.data[marketIdx])
   }
 
+  const debounceSearch = debounce(onSearchInput, 500)
+  const handleSearchInput = e => {
+    debounceSearch(e.target.value)
+  }
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -69,15 +75,15 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableHeadCell padding="none" colspan={isMobile ? 2 : 1}>
+              <TableHeadCell padding="none" colSpan={isMobile ? 2 : 1}>
                 <Paper className={classes.searchPaper} elevation={0}>
                   <SearchIcon className={classes.searchIcon} />
                   <InputBase
                     fullWidth
-                    onInput={onSearchInput}
+                    onInput={handleSearchInput}
                     className={classes.searchInput}
                     color="secondary"
-                    placeholder="Filter active items"
+                    placeholder="Filter items"
                   />
                 </Paper>
               </TableHeadCell>

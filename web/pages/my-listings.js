@@ -49,7 +49,7 @@ const initialDatatable = {
   data: [],
   result_count: 0,
   total_count: 0,
-  loading: true,
+  loading: false,
   error: null,
 }
 
@@ -62,6 +62,7 @@ export default function MyListings() {
 
   React.useEffect(() => {
     ;(async () => {
+      setData({ ...data, loading: true })
       try {
         const res = await myMarketSearch(filter)
         setData({ ...data, loading: false, ...res })
@@ -82,9 +83,8 @@ export default function MyListings() {
     setFilter({ ...filter, page })
   }
 
-  const handleSearchInput = ({ target }) => {
-    const q = target.value
-    setFilter({ ...filter, loading: true, q })
+  const handleSearchInput = value => {
+    setFilter({ ...filter, loading: true, q: value })
   }
 
   return (
