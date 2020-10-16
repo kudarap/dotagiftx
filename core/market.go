@@ -65,8 +65,8 @@ type (
 		CreatedAt *time.Time   `json:"created_at" db:"created_at,omitempty,indexed"`
 		UpdatedAt *time.Time   `json:"updated_at" db:"updated_at,omitempty,indexed"`
 		// Include related fields.
-		User *User `json:"user,omitempty" db:"-"`
-		Item *Item `json:"item,omitempty" db:"-"`
+		User *User `json:"user,omitempty" db:"user,omitempty"`
+		Item *Item `json:"item,omitempty" db:"item,omitempty"`
 	}
 
 	// MarketService provides access to market service.

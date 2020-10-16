@@ -12,8 +12,11 @@ import (
 const (
 	tableMarket          = "market"
 	marketFieldItemID    = "item_id"
+	marketFieldUserID    = "user_id"
 	marketFieldStatus    = "status"
 	marketFieldCreatedAt = "created_at"
+	// Hidden field for searching item details.
+	marketItemSearchTags = "item_tags"
 )
 
 // NewMarket creates new instance of market data store.
@@ -25,7 +28,7 @@ func NewMarket(c *Client) core.MarketStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &marketStorage{c, itemSearchFields}
+	return &marketStorage{c, []string{marketItemSearchTags}}
 }
 
 type marketStorage struct {
@@ -35,8 +38,9 @@ type marketStorage struct {
 
 func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	var res []core.Market
+	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
-	q := newFindOptsQuery(s.table(), o)
+	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -46,14 +50,39 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 
 func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
-		Keyword:      o.Keyword,
-		Filter:       o.Filter,
-		UserID:       o.UserID,
-		IndexSorting: true,
+		Keyword:       o.Keyword,
+		KeywordFields: s.keywordFields,
+		Filter:        o.Filter,
+		UserID:        o.UserID,
+		IndexSorting:  true,
 	}
-	q := newFindOptsQuery(s.table(), o)
+	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	err = s.db.one(q.Count(), &num)
 	return
+}
+
+// includeRelatedFields injects item and user details base on market foreign keys.
+func (s *marketStorage) includeRelatedFields(q r.Term) r.Term {
+	return q.
+		EqJoin(marketFieldItemID, r.Table(tableItem)).
+		Map(func(t r.Term) r.Term {
+			item := t.Field("right")
+			tags := item.Field(itemSearchFields[0])
+			for _, ff := range itemSearchFields[1:] {
+				tags = tags.Add(" ", item.Field(ff))
+			}
+
+			return t.Field("left").Merge(map[string]interface{}{
+				tableItem:            item,
+				marketItemSearchTags: tags,
+			})
+		}).
+		EqJoin(marketFieldUserID, r.Table(tableUser)).
+		Map(func(t r.Term) r.Term {
+			return t.Field("left").Merge(map[string]interface{}{
+				tableUser: t.Field("right"),
+			})
+		})
 }
 
 func (s *marketStorage) Get(id string) (*core.Market, error) {
@@ -74,6 +103,8 @@ func (s *marketStorage) Create(in *core.Market) error {
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
+	in.User = nil
+	in.Item = nil
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
@@ -90,6 +121,8 @@ func (s *marketStorage) Update(in *core.Market) error {
 	}
 
 	in.UpdatedAt = now()
+	in.User = nil
+	in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)

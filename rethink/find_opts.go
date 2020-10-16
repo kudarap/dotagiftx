@@ -15,21 +15,21 @@ func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
 	return findOpts(o).parseOpts(q, nil)
 }
 
-func newCatalogFindOptsQuery(q r.Term, o core.FindOpts, filterFn func(r.Term)r.Term) r.Term {
-	return findOpts(o).parseOpts(q, filterFn)
+func newCatalogFindOptsQuery(q r.Term, o core.FindOpts, hookFn func(r.Term) r.Term) r.Term {
+	return findOpts(o).parseOpts(q, hookFn)
 }
 
-func (o findOpts) parseOpts(q r.Term, filterFn func(r.Term)r.Term) r.Term {
+func (o findOpts) parseOpts(q r.Term, hookFn func(r.Term) r.Term) r.Term {
 	if o.IndexSorting && o.Sort != "" {
 		q = q.OrderBy(r.OrderByOpts{Index: o.parseOrder()})
 	}
 
-	if strings.TrimSpace(o.Keyword) != "" {
-		q = q.Filter(o.parseKeyword())
+	if hookFn != nil {
+		q = hookFn(q)
 	}
 
-	if filterFn != nil {
-		q = filterFn(q)
+	if strings.TrimSpace(o.Keyword) != "" {
+		q = q.Filter(o.parseKeyword())
 	}
 
 	if o.Filter != nil {
