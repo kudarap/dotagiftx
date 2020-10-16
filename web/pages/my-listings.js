@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const activeMarketFilter = {
+const marketFilter = {
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
   page: 1,
@@ -58,7 +58,7 @@ export default function MyListings() {
 
   const [data, setData] = React.useState(initialDatatable)
   const [total, setTotal] = React.useState(0)
-  const [filter, setFilter] = React.useState(activeMarketFilter)
+  const [filter, setFilter] = React.useState(marketFilter)
 
   React.useEffect(() => {
     ;(async () => {

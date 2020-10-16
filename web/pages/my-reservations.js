@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const activeMarketFilter = {
+const marketFilter = {
   status: MARKET_STATUS_RESERVED,
   sort: 'updated_at:desc',
   page: 1,
@@ -37,7 +37,7 @@ export default function Reservations() {
   const classes = useStyles()
 
   const [reservations, setReservations] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState(activeMarketFilter)
+  const [filter, setFilter] = React.useState(marketFilter)
 
   React.useEffect(() => {
     ;(async () => {

@@ -103,7 +103,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
                   Error retrieving data
                   <br />
                   <Typography variant="caption" color="textSecondary">
-                    {error}
+                    {format.errorSimple(error)}
                   </Typography>
                 </TableCell>
               </TableRow>
