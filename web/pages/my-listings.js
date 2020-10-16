@@ -1,11 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import InputBase from '@material-ui/core/InputBase'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import Paper from '@material-ui/core/Paper'
-import SearchIcon from '@material-ui/icons/Search'
+import * as format from '@/lib/format'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -32,9 +28,6 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     fontStyle: 'italic',
-    // '&:hover': {
-    //   borderColor: theme.palette.grey[700],
-    // },
     backgroundColor: theme.palette.primary.dark,
     opacity: 0.8,
   },
@@ -63,19 +56,27 @@ const initialDatatable = {
 export default function MyListings() {
   const classes = useStyles()
 
-  const [activeLists, setActiveLists] = React.useState(initialDatatable)
+  const [data, setData] = React.useState(initialDatatable)
+  const [total, setTotal] = React.useState(0)
   const [filter, setFilter] = React.useState(activeMarketFilter)
 
   React.useEffect(() => {
     ;(async () => {
       try {
         const res = await myMarketSearch(filter)
-        setActiveLists({ ...activeLists, loading: false, ...res })
+        setData({ ...data, loading: false, ...res })
       } catch (e) {
-        setActiveLists({ ...activeLists, loading: false, error: e.message })
+        setData({ ...data, loading: false, error: e.message })
       }
     })()
   }, [filter])
+
+  React.useEffect(() => {
+    ;(async () => {
+      const res = await myMarketSearch(filter)
+      setTotal(res.total_count)
+    })()
+  }, [])
 
   const handlePageChange = (e, page) => {
     setFilter({ ...filter, page })
@@ -83,7 +84,7 @@ export default function MyListings() {
 
   const handleSearchInput = ({ target }) => {
     const q = target.value
-    setFilter({ ...filter, q })
+    setFilter({ ...filter, loading: true, q })
   }
 
   return (
@@ -92,29 +93,19 @@ export default function MyListings() {
 
       <main className={classes.main}>
         <Container>
-          <div>
-            <Typography component="span" gutterBottom>
-              My Active Listings
-            </Typography>
-            <Paper className={classes.searchPaper} elevation={0}>
-              <SearchIcon className={classes.searchIcon} />
-              <InputBase
-                fullWidth
-                className={classes.searchInput}
-                onInput={handleSearchInput}
-                color="secondary"
-                placeholder="Search Listings"
-                style={{ float: 'right' }}
-              />
-            </Paper>
-          </div>
+          <Typography component="h1" gutterBottom>
+            Active Listings {total !== 0 && `(${format.numberWithCommas(total)})`}
+          </Typography>
 
-          {activeLists.error && <div>failed to load active listings</div>}
-          {activeLists.loading && <LinearProgress color="secondary" />}
-          <MyMarketList datatable={activeLists} />
+          <MyMarketList
+            datatable={data}
+            loading={data.loading}
+            error={data.error}
+            onSearchInput={handleSearchInput}
+          />
           <TablePagination
             style={{ textAlign: 'right' }}
-            count={activeLists.total_count || 0}
+            count={data.total_count || 0}
             page={filter.page}
             onChangePage={handlePageChange}
           />

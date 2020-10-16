@@ -9,6 +9,9 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
+import InputBase from '@material-ui/core/InputBase'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import SearchIcon from '@material-ui/icons/Search'
 import Typography from '@material-ui/core/Typography'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
@@ -16,7 +19,6 @@ import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import MarketUpdateDialog from '@/components/MarketUpdateDialog'
-import { amount } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -32,9 +34,24 @@ const useStyles = makeStyles(theme => ({
     width: 77,
     height: 55,
   },
+  searchPaper: {
+    padding: '3px 12px',
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: theme.palette.primary.dark,
+    opacity: 0.8,
+    margin: theme.spacing(1),
+  },
+  searchInput: {
+    fontSize: theme.typography.body2.fontSize,
+    marginLeft: theme.spacing(1),
+  },
+  searchIcon: {
+    color: theme.palette.grey[500],
+  },
 }))
 
-export default function MyMarketList({ datatable, error }) {
+export default function MyMarketList({ datatable, loading, error, onSearchInput }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -45,33 +62,55 @@ export default function MyMarketList({ datatable, error }) {
     setCurrentMarket(datatable.data[marketIdx])
   }
 
-  if (error) {
-    return <p>Error</p>
-  }
-
-  if (!datatable) {
-    return <p>Loading...</p>
-  }
-
   return (
     <>
       <TableContainer component={Paper}>
+        {loading && <LinearProgress color="secondary" />}
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableHeadCell>
-                Items ({format.numberWithCommas(datatable.total_count)})
+              <TableHeadCell padding="none" colspan={isMobile ? 2 : 1}>
+                <Paper className={classes.searchPaper} elevation={0}>
+                  <SearchIcon className={classes.searchIcon} />
+                  <InputBase
+                    fullWidth
+                    onInput={onSearchInput}
+                    className={classes.searchInput}
+                    color="secondary"
+                    placeholder="Filter active items"
+                  />
+                </Paper>
               </TableHeadCell>
               {!isMobile && (
                 <>
                   <TableHeadCell align="right">Listed</TableHeadCell>
                   <TableHeadCell align="right">Price</TableHeadCell>
+                  <TableHeadCell align="center" width={70} />
                 </>
               )}
-              <TableHeadCell align="center" width={70} />
             </TableRow>
           </TableHead>
           <TableBody>
+            {error && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  Error retrieving data
+                  <br />
+                  <Typography variant="caption" color="textSecondary">
+                    {error}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+
+            {!error && datatable.data.length === 0 && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  No Result
+                </TableCell>
+              </TableRow>
+            )}
+
             {datatable.data &&
               datatable.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
@@ -105,7 +144,7 @@ export default function MyMarketList({ datatable, error }) {
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="body2">
-                          {amount(market.price, market.currency)}
+                          {format.amount(market.price, market.currency)}
                         </Typography>
                       </TableCell>
                     </>
@@ -130,8 +169,12 @@ export default function MyMarketList({ datatable, error }) {
 }
 MyMarketList.propTypes = {
   datatable: PropTypes.object.isRequired,
+  onSearchInput: PropTypes.func,
+  loading: PropTypes.bool,
   error: PropTypes.string,
 }
 MyMarketList.defaultProps = {
+  onSearchInput: () => {},
+  loading: false,
   error: null,
 }

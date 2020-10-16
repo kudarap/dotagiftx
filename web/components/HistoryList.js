@@ -17,7 +17,6 @@ import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import HistoryViewDialog from '@/components/HistoryViewDialog'
-import { amount } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -110,7 +109,7 @@ export default function HistoryList({ datatable, error }) {
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="body2">
-                          {amount(market.price, market.currency)}
+                          {format.amount(market.price, market.currency)}
                         </Typography>
                       </TableCell>
                     </>
