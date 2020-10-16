@@ -81,6 +81,11 @@ export default function MyListings() {
     setFilter({ ...filter, page })
   }
 
+  const handleSearchInput = ({ target }) => {
+    const q = target.value
+    setFilter({ ...filter, q })
+  }
+
   return (
     <>
       <Header />
@@ -96,6 +101,7 @@ export default function MyListings() {
               <InputBase
                 fullWidth
                 className={classes.searchInput}
+                onInput={handleSearchInput}
                 color="secondary"
                 placeholder="Search Listings"
                 style={{ float: 'right' }}
