@@ -84,7 +84,7 @@ export default function MyListings() {
   }
 
   const handleSearchInput = value => {
-    setFilter({ ...filter, loading: true, q: value })
+    setFilter({ ...filter, loading: true, page: 1, q: value })
   }
 
   return (
