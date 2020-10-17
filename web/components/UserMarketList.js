@@ -119,9 +119,7 @@ export default function UserMarketList({ data, error }) {
                       align="right"
                       onClick={() => handleContactClick(idx)}
                       style={{ cursor: 'pointer' }}>
-                      <Typography variant="body2" className={classes.buyText}>
-                        ${market.price.toFixed(2)}
-                      </Typography>
+                      <Typography variant="body2">${market.price.toFixed(2)}</Typography>
                       <Typography variant="caption" color="textSecondary">
                         <u>View</u>
                       </Typography>

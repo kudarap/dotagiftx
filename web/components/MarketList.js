@@ -150,15 +150,13 @@ export default function MarketList({ data, error, currentUserID }) {
                           : handleContactClick(idx)
                       }
                       style={{ cursor: 'pointer' }}>
+                      <Typography variant="body2">${market.price.toFixed(2)}</Typography>
                       <Typography
-                        variant="body2"
-                        className={classes.buyText}
+                        variant="caption"
+                        color="textSecondary"
                         style={{
                           color: currentUserID === market.user.id ? 'tomato' : '',
                         }}>
-                        ${market.price.toFixed(2)}
-                      </Typography>
-                      <Typography variant="caption" color="textSecondary">
                         <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
                       </Typography>
                     </TableCell>
