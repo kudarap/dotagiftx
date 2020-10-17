@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MyMarketList({ datatable, loading, error, onSearchInput }) {
+export default function MyMarketList({ datatable, loading, error, onSearchInput, onReload }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -51,10 +51,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
   }
   const handleUpdateSuccess = () => {
     setNotifOpen(true)
-    onSearchInput('') // reloads data
-  }
-  const handleRemove = () => {
-    onSearchInput('') // reloads data
+    onReload()
   }
 
   const handleNotifClose = () => {
@@ -167,7 +164,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
         open={!!currentMarket}
         market={currentMarket}
         onClose={() => handleUpdateClick(null)}
-        onRemove={handleRemove}
+        onRemove={() => onReload()}
         onSuccess={handleUpdateSuccess}
       />
       <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
@@ -184,11 +181,13 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
 MyMarketList.propTypes = {
   datatable: PropTypes.object.isRequired,
   onSearchInput: PropTypes.func,
+  onReload: PropTypes.func,
   loading: PropTypes.bool,
   error: PropTypes.string,
 }
 MyMarketList.defaultProps = {
   onSearchInput: () => {},
+  onReload: () => {},
   loading: false,
   error: null,
 }

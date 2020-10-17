@@ -39,6 +39,7 @@ export default function MyListings() {
   const [data, setData] = React.useState(initialDatatable)
   const [total, setTotal] = React.useState(0)
   const [filter, setFilter] = React.useState(marketFilter)
+  const [reload, setReload] = React.useState(false)
 
   React.useEffect(() => {
     ;(async () => {
@@ -50,7 +51,7 @@ export default function MyListings() {
         setData({ ...data, loading: false, error: e.message })
       }
     })()
-  }, [filter])
+  }, [filter, reload])
 
   React.useEffect(() => {
     ;(async () => {
@@ -59,12 +60,14 @@ export default function MyListings() {
     })()
   }, [])
 
+  const handleSearchInput = value => {
+    setFilter({ ...filter, loading: true, page: 1, q: value })
+  }
   const handlePageChange = (e, page) => {
     setFilter({ ...filter, page })
   }
-
-  const handleSearchInput = value => {
-    setFilter({ ...filter, loading: true, page: 1, q: value })
+  const handleReload = () => {
+    setReload(!reload)
   }
 
   return (
@@ -82,6 +85,7 @@ export default function MyListings() {
             loading={data.loading}
             error={data.error}
             onSearchInput={handleSearchInput}
+            onReload={handleReload}
           />
           <TablePagination
             style={{ textAlign: 'right' }}
