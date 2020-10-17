@@ -23,9 +23,6 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
   item: {
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: theme.spacing(2),
-    },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
     cursor: 'pointer',
@@ -83,14 +80,12 @@ export default function HistoryList({ datatable, error }) {
                     padding="none"
                     className={classes.item}
                     onClick={() => handleUpdateClick(idx)}>
-                    {!isMobile && (
-                      <ItemImage
-                        className={classes.image}
-                        image={`/200x100/${market.item.image}`}
-                        title={market.item.name}
-                        rarity={market.item.rarity}
-                      />
-                    )}
+                    <ItemImage
+                      className={classes.image}
+                      image={`/200x100/${market.item.image}`}
+                      title={market.item.name}
+                      rarity={market.item.rarity}
+                    />
                     <div>
                       <strong>{market.item.name}</strong>
                       <br />
@@ -100,7 +95,7 @@ export default function HistoryList({ datatable, error }) {
                       <RarityTag rarity={market.item.rarity} />
                     </div>
                   </TableCell>
-                  {!isMobile && (
+                  {!isMobile ? (
                     <>
                       <TableCell align="right">
                         <Typography variant="body2">
@@ -112,13 +107,25 @@ export default function HistoryList({ datatable, error }) {
                           {format.amount(market.price, market.currency)}
                         </Typography>
                       </TableCell>
+                      <TableCell align="center">
+                        <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
+                          View
+                        </Button>
+                      </TableCell>
                     </>
+                  ) : (
+                    <TableCell
+                      align="right"
+                      onClick={() => handleUpdateClick(idx)}
+                      style={{ cursor: 'pointer' }}>
+                      <Typography variant="body2" color="secondary">
+                        {format.amount(market.price, market.currency)}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary" noWrap>
+                        {moment(market.updated_at).fromNow()}
+                      </Typography>
+                    </TableCell>
                   )}
-                  <TableCell align="center">
-                    <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
-                      View
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
