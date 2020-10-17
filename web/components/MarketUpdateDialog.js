@@ -48,8 +48,6 @@ export default function MarketUpdateDialog(props) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
-  const { market, open } = props
-
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
@@ -68,6 +66,7 @@ export default function MarketUpdateDialog(props) {
     handleClose()
   }
 
+  const { market } = props
   const handleRemoveClick = () => {
     setLoading(true)
     setError(null)
@@ -115,6 +114,7 @@ export default function MarketUpdateDialog(props) {
     return null
   }
 
+  const { open } = props
   return (
     <Dialog
       fullWidth

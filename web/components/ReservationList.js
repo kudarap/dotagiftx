@@ -11,6 +11,9 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import Snackbar from '@material-ui/core/Snackbar'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import Alert from '@material-ui/lab/Alert'
 import * as format from '@/lib/format'
 import { amount } from '@/lib/format'
 import Button from '@/components/Button'
@@ -19,6 +22,7 @@ import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
 import TableSearchInput from '@/components/TableSearchInput'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -36,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ReservationList({ datatable, loading, error, onSearchInput }) {
+export default function ReservationList({ datatable, loading, error, onSearchInput, onReload }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -47,19 +51,19 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
   const handleUpdateClick = marketIdx => {
     setCurrentMarket(datatable.data[marketIdx])
   }
+  const handleUpdateSuccess = () => {
+    setNotifOpen(true)
+    onReload()
+  }
 
   const handleNotifClose = () => {
     setNotifOpen(false)
   }
 
-  const handleUpdateSuccess = () => {
-    setNotifOpen(true)
-    onSearchInput('')
-  }
-
   return (
     <>
       <TableContainer component={Paper}>
+        {loading && <LinearProgress color="secondary" />}
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -68,7 +72,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                   fullWidth
                   onInput={onSearchInput}
                   color="secondary"
-                  placeholder="Filter items"
+                  placeholder="Filter reserved items"
                 />
               </TableHeadCell>
               {!isMobile && (
@@ -81,6 +85,26 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
             </TableRow>
           </TableHead>
           <TableBody>
+            {error && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  Error retrieving data
+                  <br />
+                  <Typography variant="caption" color="textSecondary">
+                    {format.errorSimple(error)}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+
+            {!error && datatable.data.length === 0 && (
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  No Result
+                </TableCell>
+              </TableRow>
+            )}
+
             {datatable.data &&
               datatable.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
@@ -145,14 +169,30 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
         open={!!currentMarket}
         market={currentMarket}
         onClose={() => handleUpdateClick(null)}
+        onCancel={() => onReload()}
+        onSuccess={handleUpdateSuccess}
       />
+      <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
+        <Alert onClose={handleNotifClose} variant="filled" severity="success">
+          Item updated successfully! Check your{' '}
+          <Link style={{ textDecoration: 'underline' }} href="/my-history">
+            History Items
+          </Link>
+        </Alert>
+      </Snackbar>
     </>
   )
 }
 ReservationList.propTypes = {
   datatable: PropTypes.object.isRequired,
+  onSearchInput: PropTypes.func,
+  onReload: PropTypes.func,
+  loading: PropTypes.bool,
   error: PropTypes.string,
 }
 ReservationList.defaultProps = {
+  onSearchInput: () => {},
+  onReload: () => {},
+  loading: false,
   error: null,
 }

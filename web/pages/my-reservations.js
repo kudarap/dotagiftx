@@ -39,6 +39,7 @@ export default function MyReservations() {
   const [data, setData] = React.useState(initialDatatable)
   const [total, setTotal] = React.useState(0)
   const [filter, setFilter] = React.useState(marketFilter)
+  const [reloadFlag, setReloadFlag] = React.useState(false)
 
   React.useEffect(() => {
     ;(async () => {
@@ -50,7 +51,7 @@ export default function MyReservations() {
         setData({ ...data, loading: false, error: e.message })
       }
     })()
-  }, [filter])
+  }, [filter, reloadFlag])
 
   React.useEffect(() => {
     ;(async () => {
@@ -59,12 +60,14 @@ export default function MyReservations() {
     })()
   }, [])
 
+  const handleSearchInput = value => {
+    setFilter({ ...filter, loading: true, page: 1, q: value })
+  }
   const handlePageChange = (e, page) => {
     setFilter({ ...filter, page })
   }
-
-  const handleSearchInput = value => {
-    setFilter({ ...filter, loading: true, page: 1, q: value })
+  const handleReloadToggle = () => {
+    setReloadFlag(!reloadFlag)
   }
 
   return (
@@ -82,6 +85,7 @@ export default function MyReservations() {
             loading={data.loading}
             error={data.error}
             onSearchInput={handleSearchInput}
+            onReload={handleReloadToggle}
           />
           <TablePagination
             style={{ textAlign: 'right' }}
