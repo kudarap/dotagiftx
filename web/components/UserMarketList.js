@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
+import green from '@material-ui/core/colors/lightGreen'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -22,15 +23,16 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
   link: {
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: theme.spacing(2),
-    },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
   },
   image: {
     margin: theme.spacing(-1, 1, -1, 1),
     width: 77,
+    height: 55,
+  },
+  buyText: {
+    color: green[600],
   },
 }))
 
@@ -52,7 +54,7 @@ export default function UserMarketList({ data, error }) {
             <TableRow>
               <TableHeadCell>Sell Items ({data.total_count})</TableHeadCell>
               <TableHeadCell align="right">Price</TableHeadCell>
-              <TableHeadCell align="right" width={156} />
+              {!isMobile && <TableHeadCell align="right" width={156} />}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -85,14 +87,12 @@ export default function UserMarketList({ data, error }) {
                       href="/item/[slug]"
                       as={`/item/${market.item.slug}`}
                       disableUnderline>
-                      {!isMobile && (
-                        <ItemImage
-                          className={classes.image}
-                          image={`/200x100/${market.item.image}`}
-                          title={market.item.name}
-                          rarity={market.item.rarity}
-                        />
-                      )}
+                      <ItemImage
+                        className={classes.image}
+                        image={`/200x100/${market.item.image}`}
+                        title={market.item.name}
+                        rarity={market.item.rarity}
+                      />
                       <div>
                         <strong>{market.item.name}</strong>
                         <br />
@@ -103,14 +103,30 @@ export default function UserMarketList({ data, error }) {
                       </div>
                     </Link>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
-                      Contact Seller
-                    </BuyButton>
-                  </TableCell>
+                  {!isMobile ? (
+                    <>
+                      <TableCell align="right">
+                        <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                          Contact Seller
+                        </BuyButton>
+                      </TableCell>
+                    </>
+                  ) : (
+                    <TableCell
+                      align="right"
+                      onClick={() => handleContactClick(idx)}
+                      style={{ cursor: 'pointer' }}>
+                      <Typography variant="body2" className={classes.buyText}>
+                        ${market.price.toFixed(2)}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        Contact
+                      </Typography>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
           </TableBody>

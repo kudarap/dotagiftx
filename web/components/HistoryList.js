@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
   image: {
     margin: theme.spacing(-1, 1, -1, 1),
     width: 77,
+    height: 55,
   },
 }))
 
