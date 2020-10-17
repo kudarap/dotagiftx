@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import debounce from 'lodash/debounce'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
@@ -10,12 +9,10 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
-import InputBase from '@material-ui/core/InputBase'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
-import SearchIcon from '@material-ui/icons/Search'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
@@ -154,7 +151,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
                       align="right"
                       onClick={() => handleUpdateClick(idx)}
                       style={{ cursor: 'pointer' }}>
-                      <Typography variant="body2">
+                      <Typography variant="body2" color="secondary">
                         {format.amount(market.price, market.currency)}
                       </Typography>
                     </TableCell>

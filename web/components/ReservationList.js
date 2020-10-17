@@ -18,15 +18,13 @@ import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
+import TableSearchInput from '@/components/TableSearchInput'
 
 const useStyles = makeStyles(theme => ({
   seller: {
     display: 'inline-flex',
   },
   item: {
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: theme.spacing(2),
-    },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
     cursor: 'pointer',
@@ -38,23 +36,25 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ReservationList({ datatable, error }) {
+export default function ReservationList({ datatable, loading, error, onSearchInput }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
+  const [notifOpen, setNotifOpen] = React.useState(false)
 
   const handleUpdateClick = marketIdx => {
     setCurrentMarket(datatable.data[marketIdx])
   }
 
-  if (error) {
-    return <p>Error</p>
+  const handleNotifClose = () => {
+    setNotifOpen(false)
   }
 
-  if (!datatable) {
-    return <p>Loading...</p>
+  const handleUpdateSuccess = () => {
+    setNotifOpen(true)
+    onSearchInput('')
   }
 
   return (
@@ -63,16 +63,21 @@ export default function ReservationList({ datatable, error }) {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableHeadCell>
-                Items ({format.numberWithCommas(datatable.total_count)})
+              <TableHeadCell padding="none" colSpan={isMobile ? 2 : 1}>
+                <TableSearchInput
+                  fullWidth
+                  onInput={onSearchInput}
+                  color="secondary"
+                  placeholder="Filter items"
+                />
               </TableHeadCell>
               {!isMobile && (
                 <>
                   <TableHeadCell align="right">Reserved</TableHeadCell>
                   <TableHeadCell align="right">Price</TableHeadCell>
+                  <TableHeadCell align="center" width={70} />
                 </>
               )}
-              <TableHeadCell align="center" width={70} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -85,14 +90,12 @@ export default function ReservationList({ datatable, error }) {
                     padding="none"
                     className={classes.item}
                     onClick={() => handleUpdateClick(idx)}>
-                    {!isMobile && (
-                      <ItemImage
-                        className={classes.image}
-                        image={`/200x100/${market.item.image}`}
-                        title={market.item.name}
-                        rarity={market.item.rarity}
-                      />
-                    )}
+                    <ItemImage
+                      className={classes.image}
+                      image={`/200x100/${market.item.image}`}
+                      title={market.item.name}
+                      rarity={market.item.rarity}
+                    />
                     <div>
                       <strong>{market.item.name}</strong>
                       <br />
@@ -102,7 +105,7 @@ export default function ReservationList({ datatable, error }) {
                       <RarityTag rarity={market.item.rarity} />
                     </div>
                   </TableCell>
-                  {!isMobile && (
+                  {!isMobile ? (
                     <>
                       <TableCell align="right">
                         <Typography variant="body2">
@@ -114,13 +117,25 @@ export default function ReservationList({ datatable, error }) {
                           {amount(market.price, market.currency)}
                         </Typography>
                       </TableCell>
+                      <TableCell align="center">
+                        <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
+                          Update
+                        </Button>
+                      </TableCell>
                     </>
+                  ) : (
+                    <TableCell
+                      align="right"
+                      onClick={() => handleUpdateClick(idx)}
+                      style={{ cursor: 'pointer' }}>
+                      <Typography variant="body2" color="secondary">
+                        {format.amount(market.price, market.currency)}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary" noWrap>
+                        {moment(market.updated_at).fromNow()}
+                      </Typography>
+                    </TableCell>
                   )}
-                  <TableCell align="center">
-                    <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
-                      Update
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>

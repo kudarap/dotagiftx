@@ -1,11 +1,11 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import * as format from '@/lib/format'
+import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { myMarketSearch } from '@/service/api'
 import { MARKET_STATUS_RESERVED } from '@/constants/market'
 import ReservationList from '@/components/ReservationList'
 import TablePagination from '@/components/TablePagination'
@@ -29,29 +29,42 @@ const initialDatatable = {
   data: [],
   result_count: 0,
   total_count: 0,
-  loading: true,
+  loading: false,
   error: null,
 }
 
-export default function Reservations() {
+export default function MyReservations() {
   const classes = useStyles()
 
-  const [reservations, setReservations] = React.useState(initialDatatable)
+  const [data, setData] = React.useState(initialDatatable)
+  const [total, setTotal] = React.useState(0)
   const [filter, setFilter] = React.useState(marketFilter)
 
   React.useEffect(() => {
     ;(async () => {
+      setData({ ...data, loading: true })
       try {
         const res = await myMarketSearch(filter)
-        setReservations({ ...reservations, loading: false, ...res })
+        setData({ ...data, loading: false, ...res })
       } catch (e) {
-        setReservations({ ...reservations, loading: false, error: e.message })
+        setData({ ...data, loading: false, error: e.message })
       }
     })()
   }, [filter])
 
+  React.useEffect(() => {
+    ;(async () => {
+      const res = await myMarketSearch(filter)
+      setTotal(res.total_count)
+    })()
+  }, [])
+
   const handlePageChange = (e, page) => {
     setFilter({ ...filter, page })
+  }
+
+  const handleSearchInput = value => {
+    setFilter({ ...filter, loading: true, page: 1, q: value })
   }
 
   return (
@@ -61,15 +74,18 @@ export default function Reservations() {
       <main className={classes.main}>
         <Container>
           <Typography component="h1" gutterBottom>
-            Buyer Reservations
+            Buyer Reservations {total !== 0 && `(${format.numberWithCommas(total)})`}
           </Typography>
 
-          {reservations.error && <div>failed to load reservations</div>}
-          {reservations.loading && <LinearProgress color="secondary" />}
-          <ReservationList datatable={reservations} />
+          <ReservationList
+            datatable={data}
+            loading={data.loading}
+            error={data.error}
+            onSearchInput={handleSearchInput}
+          />
           <TablePagination
             style={{ textAlign: 'right' }}
-            count={reservations.total_count || 0}
+            count={data.total_count || 0}
             page={filter.page}
             onChangePage={handlePageChange}
           />
