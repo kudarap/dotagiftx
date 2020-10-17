@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import green from '@material-ui/core/colors/lightGreen'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -11,6 +10,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import green from '@material-ui/core/colors/lightGreen'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
@@ -123,7 +123,7 @@ export default function UserMarketList({ data, error }) {
                         ${market.price.toFixed(2)}
                       </Typography>
                       <Typography variant="caption" color="textSecondary">
-                        <u>Contact</u>
+                        <u>View</u>
                       </Typography>
                     </TableCell>
                   )}

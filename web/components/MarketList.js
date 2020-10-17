@@ -12,6 +12,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import green from '@material-ui/core/colors/lightGreen'
 import { CDN_URL, myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
@@ -28,6 +29,9 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     marginRight: theme.spacing(1.5),
+  },
+  buyText: {
+    color: green[600],
   },
 }))
 
@@ -62,7 +66,7 @@ export default function MarketList({ data, error, currentUserID }) {
             <TableRow>
               <TableHeadCell>Seller</TableHeadCell>
               <TableHeadCell align="right">Price</TableHeadCell>
-              <TableHeadCell align="center" width={156} />
+              {!isMobile && <TableHeadCell align="center" width={156} />}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -100,12 +104,10 @@ export default function MarketList({ data, error, currentUserID }) {
                   <TableCell component="th" scope="row" padding="none">
                     <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
                       <div className={classes.seller}>
-                        {!isMobile && (
-                          <Avatar
-                            className={classes.avatar}
-                            src={`${CDN_URL}/${market.user.avatar}`}
-                          />
-                        )}
+                        <Avatar
+                          className={classes.avatar}
+                          src={`${CDN_URL}/${market.user.avatar}`}
+                        />
                         <div>
                           <strong>{market.user.name}</strong>
                           <br />
@@ -117,23 +119,50 @@ export default function MarketList({ data, error, currentUserID }) {
                       </div>
                     </Link>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    {currentUserID === market.user.id ? (
-                      // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
-                      <div>
-                        <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
-                          Remove
-                        </Button>
-                      </div>
-                    ) : (
-                      <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
-                        Contact Seller
-                      </BuyButton>
-                    )}
-                  </TableCell>
+                  {!isMobile ? (
+                    <>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {amount(market.price, market.currency)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        {currentUserID === market.user.id ? (
+                          // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+                          <div>
+                            <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
+                              Remove
+                            </Button>
+                          </div>
+                        ) : (
+                          <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                            Contact Seller
+                          </BuyButton>
+                        )}
+                      </TableCell>
+                    </>
+                  ) : (
+                    <TableCell
+                      align="right"
+                      onClick={() =>
+                        currentUserID === market.user.id
+                          ? handleRemoveClick(idx)
+                          : handleContactClick(idx)
+                      }
+                      style={{ cursor: 'pointer' }}>
+                      <Typography
+                        variant="body2"
+                        className={classes.buyText}
+                        style={{
+                          color: currentUserID === market.user.id ? 'tomato' : '',
+                        }}>
+                        ${market.price.toFixed(2)}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
+                      </Typography>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
           </TableBody>
