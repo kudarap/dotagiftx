@@ -19,8 +19,8 @@ import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import MarketUpdateDialog from '@/components/MarketUpdateDialog'
-import Link from '@/components/Link'
 import TableSearchInput from '@/components/TableSearchInput'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -49,14 +49,16 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
   const handleUpdateClick = marketIdx => {
     setCurrentMarket(datatable.data[marketIdx])
   }
+  const handleUpdateSuccess = () => {
+    setNotifOpen(true)
+    onSearchInput('') // reloads data
+  }
+  const handleRemove = () => {
+    onSearchInput('') // reloads data
+  }
 
   const handleNotifClose = () => {
     setNotifOpen(false)
-  }
-
-  const handleUpdateSuccess = () => {
-    setNotifOpen(true)
-    onSearchInput('')
   }
 
   return (
@@ -165,6 +167,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
         open={!!currentMarket}
         market={currentMarket}
         onClose={() => handleUpdateClick(null)}
+        onRemove={handleRemove}
         onSuccess={handleUpdateSuccess}
       />
       <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
