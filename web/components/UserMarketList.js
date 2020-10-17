@@ -123,7 +123,7 @@ export default function UserMarketList({ data, error }) {
                         ${market.price.toFixed(2)}
                       </Typography>
                       <Typography variant="caption" color="textSecondary">
-                        Contact
+                        <u>Contact</u>
                       </Typography>
                     </TableCell>
                   )}
