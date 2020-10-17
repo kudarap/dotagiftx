@@ -12,14 +12,17 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import InputBase from '@material-ui/core/InputBase'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import SearchIcon from '@material-ui/icons/Search'
 import Typography from '@material-ui/core/Typography'
+import Snackbar from '@material-ui/core/Snackbar'
+import Alert from '@material-ui/lab/Alert'
+import SearchIcon from '@material-ui/icons/Search'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import MarketUpdateDialog from '@/components/MarketUpdateDialog'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -58,6 +61,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
+  const [notifOpen, setNotifOpen] = React.useState(false)
 
   const handleUpdateClick = marketIdx => {
     setCurrentMarket(datatable.data[marketIdx])
@@ -66,6 +70,15 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
   const debounceSearch = debounce(onSearchInput, 500)
   const handleSearchInput = e => {
     debounceSearch(e.target.value)
+  }
+
+  const handleNotifClose = () => {
+    setNotifOpen(false)
+  }
+
+  const handleUpdateSuccess = () => {
+    setNotifOpen(true)
+    onSearchInput('')
   }
 
   return (
@@ -169,7 +182,16 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
         open={!!currentMarket}
         market={currentMarket}
         onClose={() => handleUpdateClick(null)}
+        onSuccess={handleUpdateSuccess}
       />
+      <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
+        <Alert onClose={handleNotifClose} variant="filled" severity="success">
+          Item updated successfully! Check your{' '}
+          <Link style={{ textDecoration: 'underline' }} href="/my-reservations">
+            Reserved Items
+          </Link>
+        </Alert>
+      </Snackbar>
     </>
   )
 }

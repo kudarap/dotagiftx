@@ -79,6 +79,7 @@ export default function MarketUpdateDialog(props) {
     })()
   }
 
+  const { onSuccess } = props
   const onFormSubmit = evt => {
     evt.preventDefault()
 
@@ -97,7 +98,7 @@ export default function MarketUpdateDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
-        router.push('/my-reservations')
+        onSuccess()
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -111,111 +112,117 @@ export default function MarketUpdateDialog(props) {
   }
 
   return (
-    <Dialog
-      fullWidth
-      fullScreen={isMobile}
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
-      <form onSubmit={onFormSubmit}>
-        <DialogTitle id="alert-dialog-title">
-          Update Listing
-          <DialogCloseButton onClick={handleClose} />
-        </DialogTitle>
-        <DialogContent>
-          <div className={classes.details}>
-            <ItemImage
-              className={classes.media}
-              image={`/300x170/${market.item.image}`}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
+    <>
+      <Dialog
+        fullWidth
+        fullScreen={isMobile}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <form onSubmit={onFormSubmit}>
+          <DialogTitle id="alert-dialog-title">
+            Update Listing
+            <DialogCloseButton onClick={handleClose} />
+          </DialogTitle>
+          <DialogContent>
+            <div className={classes.details}>
+              <ItemImage
+                className={classes.media}
+                image={`/300x170/${market.item.image}`}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
 
-            <Typography component="h1">
-              <Typography
-                variant="h6"
-                component={Link}
-                href="/item/[slug]"
-                as={`/item/${market.item.slug}`}>
-                {market.item.name}
+              <Typography component="h1">
+                <Typography
+                  variant="h6"
+                  component={Link}
+                  href="/item/[slug]"
+                  as={`/item/${market.item.slug}`}>
+                  {market.item.name}
+                </Typography>
+                <Typography gutterBottom>
+                  <Typography color="textSecondary" component="span">
+                    {`Status: `}
+                  </Typography>
+                  <strong style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
+                    {MARKET_STATUS_MAP_TEXT[market.status]}
+                  </strong>
+                  <br />
+                  <Typography color="textSecondary" component="span">
+                    {`Price: `}
+                  </Typography>
+                  {amount(market.price, market.currency)}
+                  <br />
+                  <Typography color="textSecondary" component="span">
+                    {`Listed: `}
+                  </Typography>
+                  {dateCalendar(market.updated_at)}
+                  {market.notes && (
+                    <>
+                      <br />
+                      <Typography color="textSecondary" component="span">
+                        {`Notes: `}
+                      </Typography>
+                      <Typography component="ul" variant="body2" style={{ marginTop: 0 }}>
+                        {market.notes.split('\n').map(s => (
+                          <li>{s}</li>
+                        ))}
+                      </Typography>
+                    </>
+                  )}
+                </Typography>
               </Typography>
-              <Typography gutterBottom>
-                <Typography color="textSecondary" component="span">
-                  {`Status: `}
-                </Typography>
-                <strong style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
-                  {MARKET_STATUS_MAP_TEXT[market.status]}
-                </strong>
-                <br />
-                <Typography color="textSecondary" component="span">
-                  {`Price: `}
-                </Typography>
-                {amount(market.price, market.currency)}
-                <br />
-                <Typography color="textSecondary" component="span">
-                  {`Listed: `}
-                </Typography>
-                {dateCalendar(market.updated_at)}
-                {market.notes && (
-                  <>
-                    <br />
-                    <Typography color="textSecondary" component="span">
-                      {`Notes: `}
-                    </Typography>
-                    <Typography component="ul" variant="body2" style={{ marginTop: 0 }}>
-                      {market.notes.split('\n').map(s => (
-                        <li>{s}</li>
-                      ))}
-                    </Typography>
-                  </>
-                )}
-              </Typography>
+            </div>
+            <div>
+              <TextField
+                disabled={loading}
+                fullWidth
+                required
+                color="secondary"
+                variant="outlined"
+                label="Reservation notes"
+                helperText="Buyer's Steam profile URL & delivery date."
+                placeholder="https://steamcommunity.com/profiles/..."
+                value={notes}
+                onInput={e => setNotes(e.target.value)}
+              />
+            </div>
+          </DialogContent>
+          {error && (
+            <Typography color="error" align="center" variant="body2">
+              {error}
             </Typography>
-          </div>
-          <div>
-            <TextField
-              disabled={loading}
-              fullWidth
-              required
-              color="secondary"
+          )}
+          <DialogActions>
+            <Button disabled={loading} startIcon={<RemoveIcon />} onClick={handleRemoveClick}>
+              Remove listing
+            </Button>
+            <Button
+              startIcon={
+                loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />
+              }
               variant="outlined"
-              label="Reservation notes"
-              helperText="Buyer's Steam profile URL & delivery date."
-              placeholder="https://steamcommunity.com/profiles/..."
-              value={notes}
-              onInput={e => setNotes(e.target.value)}
-            />
-          </div>
-        </DialogContent>
-        {error && (
-          <Typography color="error" align="center" variant="body2">
-            {error}
-          </Typography>
-        )}
-        <DialogActions>
-          <Button disabled={loading} startIcon={<RemoveIcon />} onClick={handleRemoveClick}>
-            Remove listing
-          </Button>
-          <Button
-            startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
-            variant="outlined"
-            color="secondary"
-            type="submit">
-            Reserve to Buyer
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+              color="secondary"
+              type="submit">
+              Reserve to Buyer
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </>
   )
 }
 MarketUpdateDialog.propTypes = {
   market: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  onSuccess: PropTypes.func,
 }
 MarketUpdateDialog.defaultProps = {
   market: null,
   open: false,
   onClose: () => {},
+  onSuccess: () => {},
 }
