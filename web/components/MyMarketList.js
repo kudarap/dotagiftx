@@ -153,6 +153,9 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                       <Typography variant="body2" color="secondary">
                         {format.amount(market.price, market.currency)}
                       </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        <u>Update</u>
+                      </Typography>
                     </TableCell>
                   )}
                 </TableRow>
