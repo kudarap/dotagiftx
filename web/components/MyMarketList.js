@@ -131,7 +131,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
                       <RarityTag rarity={market.item.rarity} />
                     </div>
                   </TableCell>
-                  {!isMobile && (
+                  {!isMobile ? (
                     <>
                       <TableCell align="right">
                         <Typography variant="body2">
@@ -143,13 +143,22 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
                           {format.amount(market.price, market.currency)}
                         </Typography>
                       </TableCell>
+                      <TableCell align="center">
+                        <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
+                          Update
+                        </Button>
+                      </TableCell>
                     </>
+                  ) : (
+                    <TableCell
+                      align="right"
+                      onClick={() => handleUpdateClick(idx)}
+                      style={{ cursor: 'pointer' }}>
+                      <Typography variant="body2">
+                        {format.amount(market.price, market.currency)}
+                      </Typography>
+                    </TableCell>
                   )}
-                  <TableCell align="center">
-                    <Button variant="outlined" onClick={() => handleUpdateClick(idx)}>
-                      Update
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
