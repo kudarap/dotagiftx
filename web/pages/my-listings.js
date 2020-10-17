@@ -17,26 +17,6 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(4),
   },
-  searchPaper: {
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-    },
-    float: 'right',
-    flexGrow: 1,
-    padding: '3px 12px',
-    marginBottom: 2,
-    display: 'flex',
-    alignItems: 'center',
-    fontStyle: 'italic',
-    backgroundColor: theme.palette.primary.dark,
-    opacity: 0.8,
-  },
-  searchInput: {
-    marginLeft: theme.spacing(1),
-  },
-  searchIcon: {
-    color: theme.palette.grey[500],
-  },
 }))
 
 const marketFilter = {

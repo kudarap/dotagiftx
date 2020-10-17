@@ -23,6 +23,7 @@ import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import MarketUpdateDialog from '@/components/MarketUpdateDialog'
 import Link from '@/components/Link'
+import TableSearchInput from '@/components/TableSearchInput'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -38,21 +39,6 @@ const useStyles = makeStyles(theme => ({
     width: 77,
     height: 55,
   },
-  searchPaper: {
-    padding: '3px 12px',
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: theme.palette.primary.dark,
-    opacity: 0.8,
-    margin: theme.spacing(1),
-  },
-  searchInput: {
-    fontSize: theme.typography.body2.fontSize,
-    marginLeft: theme.spacing(1),
-  },
-  searchIcon: {
-    color: theme.palette.grey[500],
-  },
 }))
 
 export default function MyMarketList({ datatable, loading, error, onSearchInput }) {
@@ -65,11 +51,6 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
 
   const handleUpdateClick = marketIdx => {
     setCurrentMarket(datatable.data[marketIdx])
-  }
-
-  const debounceSearch = debounce(onSearchInput, 500)
-  const handleSearchInput = e => {
-    debounceSearch(e.target.value)
   }
 
   const handleNotifClose = () => {
@@ -89,16 +70,12 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput 
           <TableHead>
             <TableRow>
               <TableHeadCell padding="none" colSpan={isMobile ? 2 : 1}>
-                <Paper className={classes.searchPaper} elevation={0}>
-                  <SearchIcon className={classes.searchIcon} />
-                  <InputBase
-                    fullWidth
-                    onInput={handleSearchInput}
-                    className={classes.searchInput}
-                    color="secondary"
-                    placeholder="Filter items"
-                  />
-                </Paper>
+                <TableSearchInput
+                  fullWidth
+                  onInput={onSearchInput}
+                  color="secondary"
+                  placeholder="Filter items"
+                />
               </TableHeadCell>
               {!isMobile && (
                 <>
