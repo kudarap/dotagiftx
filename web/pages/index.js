@@ -9,11 +9,11 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Divider from '@material-ui/core/Divider'
 import {
-  fetcher,
   CATALOGS,
-  STATS_TOP_ORIGINS,
-  STATS_TOP_HEROES,
   catalogTrendSearch,
+  fetcher,
+  STATS_TOP_HEROES,
+  STATS_TOP_ORIGINS,
   statsMarketSummary,
 } from '@/service/api'
 import * as format from '@/lib/format'

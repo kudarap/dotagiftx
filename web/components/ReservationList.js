@@ -12,12 +12,12 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import * as format from '@/lib/format'
+import { amount } from '@/lib/format'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
-import { amount } from '@/lib/format'
 
 const useStyles = makeStyles(theme => ({
   seller: {
