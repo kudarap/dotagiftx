@@ -13,8 +13,8 @@ import IconButton from '@material-ui/core/IconButton'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
-import { CDN_URL, myProfile } from '@/service/api'
-import { clear as destroyLoginSess, isOk as checkLoggedIn } from '@/service/auth'
+import { authRevoke, CDN_URL, myProfile } from '@/service/api'
+import { clear as destroyLoginSess, isOk as checkLoggedIn, get as getAuth } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import SearchInputMini from '@/components/SearchInputMini'
@@ -120,10 +120,14 @@ export default function Header({ disableSearch }) {
   }
 
   const handleLogout = () => {
-    destroyLoginSess()
-    handleClose()
-    // eslint-disable-next-line no-undef
-    window.location = '/'
+    ;(async () => {
+      const auth = getAuth()
+      await authRevoke(auth.refresh_token)
+      destroyLoginSess()
+      handleClose()
+      // eslint-disable-next-line no-undef
+      window.location = '/'
+    })()
   }
 
   const isLoggedIn = checkLoggedIn()

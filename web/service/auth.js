@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 import moment from 'moment'
-import { authRenew } from './api'
+// import { authRenew } from './api'
 
 const AUTH_KEY = 'dgxAu'
 const userIDKey = 'user_id'
@@ -38,25 +38,25 @@ export function isAccessTokenExpired() {
   return moment(auth.expires_at).diff(moment()) <= renewLeeway
 }
 
-export function renewAccessToken(onSuccess = () => {}, onError = () => {}) {
-  const auth = get()
-  // check expired access token
-  if (moment(auth.expires_at).diff(moment()) >= renewLeeway) {
-    return
-  }
-
-  // renew access token using refresh token and save
-  authRenew(auth.refresh_token)
-    .then(res => {
-      auth.token = res.token
-      auth.expires_at = res.expires_at
-      set(auth)
-      onSuccess(auth)
-    })
-    .catch(e => {
-      onError(e)
-    })
-}
+// export function renewAccessToken(onSuccess = () => {}, onError = () => {}) {
+//   const auth = get()
+//   // check expired access token
+//   if (moment(auth.expires_at).diff(moment()) >= renewLeeway) {
+//     return
+//   }
+//
+//   // renew access token using refresh token and save
+//   authRenew(auth.refresh_token)
+//     .then(res => {
+//       auth.token = res.token
+//       auth.expires_at = res.expires_at
+//       set(auth)
+//       onSuccess(auth)
+//     })
+//     .catch(e => {
+//       onError(e)
+//     })
+// }
 
 export default {
   isOk,
