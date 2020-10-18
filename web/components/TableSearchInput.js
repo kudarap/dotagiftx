@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import InputBase from '@material-ui/core/InputBase'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import SearchIcon from '@material-ui/icons/Search'
 
 const useStyles = makeStyles(theme => ({
@@ -24,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function TableSearchInput({ onInput, ...other }) {
+export default function TableSearchInput({ onInput, loading, ...other }) {
   const classes = useStyles()
 
   const debounceSearch = debounce(onInput, 500)
@@ -34,14 +35,20 @@ export default function TableSearchInput({ onInput, ...other }) {
 
   return (
     <Paper className={classes.root} elevation={0}>
-      <SearchIcon className={classes.icon} />
+      {loading ? (
+        <CircularProgress color="secondary" size={24} style={{ marginLeft: 1 }} />
+      ) : (
+        <SearchIcon className={classes.icon} />
+      )}
       <InputBase className={classes.input} {...other} onInput={handleSearchInput} />
     </Paper>
   )
 }
 TableSearchInput.propTypes = {
   onInput: PropTypes.func,
+  loading: PropTypes.bool,
 }
 TableSearchInput.defaultProps = {
   onInput: () => {},
+  loading: false,
 }
