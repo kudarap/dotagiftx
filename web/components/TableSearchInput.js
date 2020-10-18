@@ -31,7 +31,8 @@ export default function TableSearchInput({ onInput, loading, ...other }) {
 
   const [value, setValue] = React.useState('')
 
-  const debounceSearch = debounce(onInput, 500)
+  const debounceSearch = React.useCallback(debounce(onInput, 500), [])
+
   const handleSearchInput = e => {
     const v = e.target.value
     setValue(v)
@@ -46,7 +47,7 @@ export default function TableSearchInput({ onInput, loading, ...other }) {
   return (
     <Paper className={classes.root} elevation={0}>
       {loading ? (
-        <CircularProgress color="secondary" size={24} style={{ marginLeft: 1 }} />
+        <CircularProgress color="secondary" size={24} style={{ marginRight: 2.5 }} />
       ) : (
         <SearchIcon className={classes.icon} />
       )}
