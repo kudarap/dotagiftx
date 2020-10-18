@@ -6,6 +6,7 @@ import Paper from '@material-ui/core/Paper'
 import InputBase from '@material-ui/core/InputBase'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,9 +29,18 @@ const useStyles = makeStyles(theme => ({
 export default function TableSearchInput({ onInput, loading, ...other }) {
   const classes = useStyles()
 
+  const [value, setValue] = React.useState('')
+
   const debounceSearch = debounce(onInput, 500)
   const handleSearchInput = e => {
-    debounceSearch(e.target.value)
+    const v = e.target.value
+    setValue(v)
+    debounceSearch(v)
+  }
+
+  const handleSearchClear = () => {
+    setValue('')
+    debounceSearch('')
   }
 
   return (
@@ -40,7 +50,9 @@ export default function TableSearchInput({ onInput, loading, ...other }) {
       ) : (
         <SearchIcon className={classes.icon} />
       )}
-      <InputBase className={classes.input} {...other} onInput={handleSearchInput} />
+      <InputBase className={classes.input} value={value} {...other} onInput={handleSearchInput} />
+
+      {value && <CloseIcon style={{ cursor: 'pointer' }} onClick={handleSearchClear} />}
     </Paper>
   )
 }
