@@ -12,7 +12,6 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Snackbar from '@material-ui/core/Snackbar'
-import LinearProgress from '@material-ui/core/LinearProgress'
 import Alert from '@material-ui/lab/Alert'
 import * as format from '@/lib/format'
 import { amount } from '@/lib/format'
@@ -63,13 +62,13 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
   return (
     <>
       <TableContainer component={Paper}>
-        {loading && <LinearProgress color="secondary" />}
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableHeadCell padding="none" colSpan={isMobile ? 2 : 1}>
                 <TableSearchInput
                   fullWidth
+                  loading={loading}
                   onInput={onSearchInput}
                   color="secondary"
                   placeholder="Filter reserved items"
@@ -84,7 +83,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
               )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody style={loading ? { opacity: 0.5 } : null}>
             {error && (
               <TableRow>
                 <TableCell align="center" colSpan={3}>

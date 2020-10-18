@@ -9,7 +9,6 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
-import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
@@ -61,13 +60,13 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
   return (
     <>
       <TableContainer component={Paper}>
-        {loading && <LinearProgress color="secondary" />}
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableHeadCell padding="none" colSpan={isMobile ? 2 : 1}>
                 <TableSearchInput
                   fullWidth
+                  loading={loading}
                   onInput={onSearchInput}
                   color="secondary"
                   placeholder="Filter active items"
@@ -82,7 +81,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
               )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody style={loading ? { opacity: 0.5 } : null}>
             {error && (
               <TableRow>
                 <TableCell align="center" colSpan={3}>
