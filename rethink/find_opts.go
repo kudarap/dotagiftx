@@ -79,8 +79,9 @@ func (o findOpts) parseKeyword() interface{} {
 
 // normalizeKeyword handles special case for the word "Collector's" with apostrophe.
 func normalizeKeyword(keyword string) string {
-	// Special case for the word "Collector's" with apostrophe.
 	s := strings.ToLower(keyword)
+
+	// Special case for the word "Collector's" with apostrophe.
 	if strings.Contains(s, "collectors") {
 		s = strings.ReplaceAll(s, "collectors", "collector's")
 	}
