@@ -62,16 +62,15 @@ func (o findOpts) parseKeyword() interface{} {
 
 	return func(t r.Term) r.Term {
 		// Concatenate values of search fields to create a fake index.
-		tags := t.Field(o.KeywordFields[0])
+		searchText := t.Field(o.KeywordFields[0])
 		for _, ff := range o.KeywordFields[1:] {
-			tags = tags.Add(" ", t.Field(ff))
+			searchText = searchText.Add(" ", t.Field(ff))
 		}
 
 		// Matches that contains the keywords non case sensitive.
-		kws := strings.Split(o.Keyword, " ")
-		q := tags
-		for _, ww := range kws {
-			q = q.And(tags.Match(fmt.Sprintf("(?i)%s", ww)))
+		q := searchText
+		for _, ww := range strings.Split(o.Keyword, " ") {
+			q = q.And(searchText.Match(fmt.Sprintf("(?i)%s", ww)))
 		}
 
 		return q
