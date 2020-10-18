@@ -17,6 +17,7 @@ import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import ContactDialog from '@/components/ContactDialog'
+import TableSearchInput from '@/components/TableSearchInput'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -36,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function UserMarketList({ data, error }) {
+export default function UserMarketList({ data, loading, error, onSearchInput }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -52,12 +53,24 @@ export default function UserMarketList({ data, error }) {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableHeadCell>Sell Items ({data.total_count})</TableHeadCell>
-              <TableHeadCell align="right">Price</TableHeadCell>
-              {!isMobile && <TableHeadCell align="right" width={156} />}
+              <TableHeadCell padding="none" colSpan={isMobile ? 2 : 1}>
+                <TableSearchInput
+                  fullWidth
+                  loading={loading}
+                  onInput={onSearchInput}
+                  color="secondary"
+                  placeholder="Filter user items"
+                />
+              </TableHeadCell>
+              {!isMobile && (
+                <>
+                  <TableHeadCell align="right">Price</TableHeadCell>
+                  <TableHeadCell align="right" width={156} />
+                </>
+              )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody style={loading ? { opacity: 0.5 } : null}>
             {error && (
               <TableRow>
                 <TableCell align="center" colSpan={3}>
@@ -139,9 +152,13 @@ export default function UserMarketList({ data, error }) {
   )
 }
 UserMarketList.propTypes = {
+  onSearchInput: PropTypes.func,
   data: PropTypes.object.isRequired,
+  loading: PropTypes.bool,
   error: PropTypes.string,
 }
 UserMarketList.defaultProps = {
+  onSearchInput: () => {},
+  loading: false,
   error: null,
 }

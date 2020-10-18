@@ -1,19 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import useSWR from 'swr'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import {
-  CDN_URL,
-  fetcher,
-  marketSearch,
-  STATS_MARKET_SUMMARY,
-  statsMarketSummary,
-  user,
-} from '@/service/api'
+import { CDN_URL, marketSearch, statsMarketSummary, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -47,8 +40,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketSummaryFilter = {}
-
 export default function UserDetails({
   profile,
   filter,
@@ -59,34 +50,46 @@ export default function UserDetails({
   const classes = useStyles()
 
   const [markets, setMarkets] = React.useState(initialMarkets)
+  const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(initialError)
-
-  marketSummaryFilter.user_id = profile.id
-  const { data: marketSummary, isValidating: marketSummaryLoading } = useSWR(
-    [STATS_MARKET_SUMMARY, marketSummaryFilter],
-    fetcher,
-    { revalidateOnFocus: false }
-  )
 
   // Handle market request on page change.
   React.useEffect(() => {
     ;(async () => {
+      setLoading(true)
       try {
         const res = await marketSearch(filter)
         setMarkets(res)
       } catch (e) {
         setError(e.message)
       }
+      setLoading(false)
     })()
   }, [filter])
+
+  const router = useRouter()
+  const qFilter = router.query.filter
+  const linkProps = {
+    href: `/user/${profile.steam_id}`,
+  }
+  if (String(qFilter).trim() !== '') {
+    linkProps.query = { filter: qFilter }
+  }
+
+  const handleSearchInput = text => {
+    let url = `${linkProps.href}?filter=${text}`
+    if (String(text).trim() === '') {
+      url = linkProps.href
+    }
+
+    router.push(url)
+  }
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
   const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `DotagiftX :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
-
-  const linkProps = { href: `/user/${profile.steam_id}` }
 
   return (
     <>
@@ -136,7 +139,12 @@ export default function UserDetails({
             </Typography>
           </div>
 
-          <UserMarketList data={markets} error={error} />
+          <UserMarketList
+            onSearchInput={handleSearchInput}
+            data={markets}
+            loading={loading}
+            error={error}
+          />
           {!error && (
             <TablePaginationRouter
               linkProps={linkProps}
@@ -178,6 +186,9 @@ export async function getServerSideProps({ params, query }) {
   const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
+  if (query.filter) {
+    filter.q = query.filter
+  }
 
   profile.stats = await statsMarketSummary({ user_id: profile.id })
 
