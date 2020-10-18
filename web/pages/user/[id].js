@@ -5,9 +5,15 @@ import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { CDN_URL, fetcher, marketSearch, STATS_MARKET_SUMMARY, user } from '@/service/api'
+import {
+  CDN_URL,
+  fetcher,
+  marketSearch,
+  STATS_MARKET_SUMMARY,
+  statsMarketSummary,
+  user,
+} from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -82,9 +88,6 @@ export default function UserDetails({
 
   const linkProps = { href: `/user/${profile.steam_id}` }
 
-  const isStatsLoading = !marketSummaryLoading && marketSummary
-  const statsLoader = <CircularProgress color="secondary" size={10} style={{ margin: '0 4px' }} />
-
   return (
     <>
       <Head>
@@ -118,17 +121,10 @@ export default function UserDetails({
               </Typography>
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
-                  <Link href={`${linkProps.href}`}>
-                    {isStatsLoading ? marketSummary.live : statsLoader} Items
-                  </Link>{' '}
+                  <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
+                  <Link href={`${linkProps.href}/reserved`}>{profile.stats.reserved} Reserved</Link>{' '}
                   &middot;{' '}
-                  <Link href={`${linkProps.href}/reserved`}>
-                    {isStatsLoading ? marketSummary.reserved : statsLoader} Reserved
-                  </Link>{' '}
-                  &middot;{' '}
-                  <Link href={`${linkProps.href}/delivered`}>
-                    {isStatsLoading ? marketSummary.sold : statsLoader} Delivered
-                  </Link>
+                  <Link href={`${linkProps.href}/delivered`}>{profile.stats.sold} Delivered</Link>
                 </Typography>
                 <br />
                 <ChipLink label="Steam Profile" href={profileURL} />
@@ -182,6 +178,8 @@ export async function getServerSideProps({ params, query }) {
   const profile = await user(String(params.id))
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
+
+  profile.stats = await statsMarketSummary({ user_id: profile.id })
 
   let markets = {}
   let error = null

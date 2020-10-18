@@ -96,10 +96,11 @@ export default function ContactDialog(props) {
               <Typography component="p" variant="h4">
                 {market.user.name}
               </Typography>
-              <Typography color="textSecondary" component="span">
-                {`History: `}
-              </Typography>
               <Typography variant="body2" component="span">
+                <Link href={`/user/${market.user.steam_id}/reserved`}>
+                  {!loading && marketSummary ? marketSummary.live : '--'} Items
+                </Link>{' '}
+                &middot;{' '}
                 <Link href={`/user/${market.user.steam_id}/reserved`}>
                   {!loading && marketSummary ? marketSummary.reserved : '--'} Reserved
                 </Link>{' '}
@@ -110,9 +111,9 @@ export default function ContactDialog(props) {
               </Typography>
               <br />
               <Typography gutterBottom>
-                <Typography color="textSecondary" component="span">
-                  {`Links: `}
-                </Typography>
+                {/* <Typography color="textSecondary" component="span"> */}
+                {/*  {`Links: `} */}
+                {/* </Typography> */}
                 {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
                 {/* &nbsp; */}
                 <ChipLink
