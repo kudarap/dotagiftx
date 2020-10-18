@@ -5,6 +5,7 @@ import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { CDN_URL, fetcher, marketSearch, STATS_MARKET_SUMMARY, user } from '@/service/api'
 import Header from '@/components/Header'
@@ -57,7 +58,8 @@ export default function UserDetails({
   marketSummaryFilter.user_id = profile.id
   const { data: marketSummary, isValidating: marketSummaryLoading } = useSWR(
     [STATS_MARKET_SUMMARY, marketSummaryFilter],
-    fetcher
+    fetcher,
+    { revalidateOnFocus: false }
   )
 
   // Handle market request on page change.
@@ -79,6 +81,9 @@ export default function UserDetails({
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
 
   const linkProps = { href: `/user/${profile.steam_id}` }
+
+  const isStatsLoading = !marketSummaryLoading && marketSummary
+  const statsLoader = <CircularProgress color="secondary" size={10} style={{ margin: '0 4px' }} />
 
   return (
     <>
@@ -112,40 +117,20 @@ export default function UserDetails({
                 {profile.name}
               </Typography>
               <Typography gutterBottom>
-                <Typography color="textSecondary" component="span">
-                  {`History: `}
-                </Typography>
                 <Typography variant="body2" component="span">
+                  <Link href={`${linkProps.href}`}>
+                    {isStatsLoading ? marketSummary.live : statsLoader} Items
+                  </Link>{' '}
+                  &middot;{' '}
                   <Link href={`${linkProps.href}/reserved`}>
-                    {!marketSummaryLoading && marketSummary ? marketSummary.reserved : '--'}{' '}
-                    Reserved
+                    {isStatsLoading ? marketSummary.reserved : statsLoader} Reserved
                   </Link>{' '}
                   &middot;{' '}
                   <Link href={`${linkProps.href}/delivered`}>
-                    {!marketSummaryLoading && marketSummary ? marketSummary.sold : '--'} Delivered
+                    {isStatsLoading ? marketSummary.sold : statsLoader} Delivered
                   </Link>
                 </Typography>
-                {/* <ChipLink */}
-                {/*  color="default" */}
-                {/*  avatar={<Avatar>5</Avatar>} */}
-                {/*  label="Reservations" */}
-                {/*  href="#reserve" */}
-                {/*  target={null} */}
-                {/*  rel={null} */}
-                {/* /> */}
-                {/* &nbsp; */}
-                {/* <ChipLink */}
-                {/*  color="default" */}
-                {/*  avatar={<Avatar>120</Avatar>} */}
-                {/*  label="Delivered" */}
-                {/*  href="#deliv" */}
-                {/*  target={null} */}
-                {/*  rel={null} */}
-                {/* /> */}
                 <br />
-                <Typography color="textSecondary" component="span">
-                  {`Links: `}
-                </Typography>
                 <ChipLink label="Steam Profile" href={profileURL} />
                 &nbsp;
                 {/* <ChipLink label="Steam Inventory" href={`${profileURL}/inventory`} /> */}
