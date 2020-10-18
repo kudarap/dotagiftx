@@ -43,7 +43,7 @@ export default function MyListings() {
 
   React.useEffect(() => {
     ;(async () => {
-      setData({ ...data, loading: true })
+      setData({ ...data, loading: true, error: null })
       try {
         const res = await myMarketSearch(filter)
         setData({ ...data, loading: false, ...res })

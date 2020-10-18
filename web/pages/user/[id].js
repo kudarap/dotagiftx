@@ -56,6 +56,7 @@ export default function UserDetails({
   // Handle market request on page change.
   React.useEffect(() => {
     ;(async () => {
+      setError(null)
       setLoading(true)
       try {
         const res = await marketSearch(filter)
