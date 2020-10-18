@@ -69,12 +69,23 @@ func (o findOpts) parseKeyword() interface{} {
 
 		// Matches that contains the keywords non case sensitive.
 		q := searchText
-		for _, ww := range strings.Split(o.Keyword, " ") {
+		for _, ww := range strings.Split(normalizeKeyword(o.Keyword), " ") {
 			q = q.And(searchText.Match(fmt.Sprintf("(?i)%s", ww)))
 		}
 
 		return q
 	}
+}
+
+// normalizeKeyword handles special case for the word "Collector's" with apostrophe.
+func normalizeKeyword(keyword string) string {
+	// Special case for the word "Collector's" with apostrophe.
+	s := strings.ToLower(keyword)
+	if strings.Contains(s, "collectors") {
+		s = strings.ReplaceAll(s, "collectors", "collector's")
+	}
+
+	return s
 }
 
 func (o findOpts) parseFilter() map[string]interface{} {
