@@ -59,13 +59,13 @@ export default function UserReserved({ profile, canonicalURL }) {
               className={classes.profile}
               src={`${CDN_URL}/${profile.avatar}`}
               component={Link}
-              href={`/profile/${profile.steam_id}`}
+              href={`/profiles/${profile.steam_id}`}
             />
             <Typography
               variant="h6"
               color="textPrimary"
               component={Link}
-              href={`/profile/${profile.steam_id}`}>
+              href={`/profiles/${profile.steam_id}`}>
               {profile.name}
             </Typography>
             <Typography color="textSecondary">{data && data.total_count} Reserved Items</Typography>
@@ -86,7 +86,7 @@ UserReserved.propTypes = {
 
 export async function getServerSideProps({ params }) {
   const profile = await user(String(params.id))
-  const canonicalURL = `${APP_URL}/profile/${params.id}/reserve`
+  const canonicalURL = `${APP_URL}/profiles/${params.id}/reserve`
 
   return {
     props: {

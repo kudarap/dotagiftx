@@ -71,7 +71,7 @@ export default function UserDetails({
   const router = useRouter()
   const qFilter = router.query.filter
   const linkProps = {
-    href: `/profile/${profile.steam_id}`,
+    href: `/profiles/${profile.steam_id}`,
   }
   if (String(qFilter).trim() !== '') {
     linkProps.query = { filter: qFilter }
@@ -201,7 +201,7 @@ export async function getServerSideProps({ params, query }) {
     error = e.message
   }
 
-  const canonicalURL = `${APP_URL}/profile/${params.id}`
+  const canonicalURL = `${APP_URL}/profiles/${params.id}`
 
   return {
     props: {
