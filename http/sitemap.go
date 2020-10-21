@@ -27,7 +27,7 @@ func buildSitemap(items []core.Item, users []core.User) *stm.Sitemap {
 	origins := map[string]struct{}{}
 	heroes := map[string]struct{}{}
 	for _, ii := range items {
-		sitemap.Add(stm.URL{{"loc", "/item/" + ii.Slug}, {"changefreq", "daily"}, {"priority", 0.7}})
+		sitemap.Add(stm.URL{{"loc", "/" + ii.Slug}, {"changefreq", "daily"}, {"priority", 0.7}})
 		origins[ii.Origin] = struct{}{}
 		heroes[ii.Hero] = struct{}{}
 	}
@@ -41,7 +41,7 @@ func buildSitemap(items []core.Item, users []core.User) *stm.Sitemap {
 
 	// Add user profile locations.
 	for _, uu := range users {
-		sitemap.Add(stm.URL{{"loc", "/user/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.6}})
+		sitemap.Add(stm.URL{{"loc", "/profiles/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.6}})
 	}
 
 	return sitemap
@@ -51,6 +51,8 @@ func handleSitemap(itemSvc core.ItemService, userSvc core.UserService) http.Hand
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(core.FindOpts{})
 		users, _ := userSvc.Users(core.FindOpts{})
+
+		w.Header().Set("content-type", "text/xml")
 		w.Write(buildSitemap(items, users).XMLContent())
 		return
 	}
