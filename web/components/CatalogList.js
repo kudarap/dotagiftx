@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function CatalogList({ items = [], error, variant }) {
+export default function CatalogList({ items = [], loading, error, variant }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -56,7 +56,7 @@ export default function CatalogList({ items = [], error, variant }) {
             <TableHeadCell align="right">Price</TableHeadCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody style={loading ? { opacity: 0.5 } : null}>
           {error && (
             <TableRow>
               <TableCell align="center" colSpan={3}>
@@ -120,9 +120,11 @@ export default function CatalogList({ items = [], error, variant }) {
 CatalogList.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   variant: PropTypes.string,
+  loading: PropTypes.bool,
   error: PropTypes.string,
 }
 CatalogList.defaultProps = {
   variant: '',
+  loading: false,
   error: null,
 }
