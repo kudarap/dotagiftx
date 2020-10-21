@@ -252,8 +252,9 @@ export default function ItemDetails({
                 </Button>
               </div>
               <Typography
+                noWrap
                 component="h1"
-                variant="h5"
+                variant="h6"
                 style={
                   item.rarity !== 'regular' ? { color: itemRarityColorMap[item.rarity] } : null
                 }>
@@ -270,7 +271,7 @@ export default function ItemDetails({
                 {item.origin}
                 {item.rarity !== 'regular' && (
                   <>
-                    &nbsp; &middot; &nbsp;
+                    &nbsp;&middot;
                     <RarityTag
                       color="textSecondary"
                       variant="body2"
