@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
@@ -48,6 +49,8 @@ export default function UserDetails({
   canonicalURL,
 }) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [loading, setLoading] = React.useState(false)
@@ -120,7 +123,7 @@ export default function UserDetails({
           <div className={classes.details}>
             <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
-              <Typography component="p" variant="h4">
+              <Typography component="p" variant={!isMobile ? 'h4' : 'h6'}>
                 {profile.name}
               </Typography>
               <Typography gutterBottom>
