@@ -27,7 +27,7 @@ import { APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(0),
+    marginTop: theme.spacing(4),
   },
   searchBar: {
     margin: '0 auto',
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(0),
     },
-    margin: theme.spacing(4, 0, 2, 0),
+    margin: theme.spacing(0, 0, 2, 0),
     padding: theme.spacing(1.5),
     border: '1px solid #52564e',
     background: '#2d3431',
@@ -121,7 +121,7 @@ export default function Index({ marketSummary, trendingItems }) {
               <Typography color="secondary" component="span">
                 DotagiftX
               </Typography>{' '}
-              was made to provide better search and pricing for Dota 2 Giftable items like
+              was made to provide better search and pricing for Dota 2 giftable items like
               Collector&apos;s Caches which are not available on{' '}
               <Link href="https://steamcommunity.com" rel="noreferrer noopener" target="_blank">
                 Steam Community Market
