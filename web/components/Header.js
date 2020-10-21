@@ -18,6 +18,7 @@ import { clear as destroyLoginSess, isOk as checkLoggedIn, get as getAuth } from
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import SearchInputMini from '@/components/SearchInputMini'
+import { Icon } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -81,7 +82,8 @@ export default function Header({ disableSearch }) {
   const theme = useTheme()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs')) && !disableSearch
+  const isXsScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  const isMobile = isXsScreen && !disableSearch
 
   const [profile, setProfile] = React.useState(defaultProfile)
 
@@ -172,18 +174,30 @@ export default function Header({ disableSearch }) {
                 {/* Avatar menu button */}
                 {isLoggedIn ? (
                   <>
-                    <Button
-                      aria-controls="avatar-menu"
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      startIcon={
+                    {isXsScreen ? (
+                      <IconButton
+                        aria-controls="avatar-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}>
                         <Avatar
                           className={classes.avatar}
                           src={profile && `${CDN_URL}/${profile.avatar}`}
                         />
-                      }>
-                      {profile && profile.name}
-                    </Button>
+                      </IconButton>
+                    ) : (
+                      <Button
+                        aria-controls="avatar-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        startIcon={
+                          <Avatar
+                            className={classes.avatar}
+                            src={profile && `${CDN_URL}/${profile.avatar}`}
+                          />
+                        }>
+                        {profile && profile.name}
+                      </Button>
+                    )}
                     <Menu
                       className={classes.avatarMenu}
                       id="avatar-menu"
