@@ -261,61 +261,66 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps(props) {
-  const { params, query } = props
+  const { params, query, res } = props
 
-  // Handles invalid item slug
-  let item = {}
-  try {
-    item = await itemGet(params.slug)
-  } catch (e) {
-    return {
-      props: {
-        item,
-        error: e.message,
-        filter: {},
-        markets: {},
-      },
-    }
-  }
+  res.setHeader('location', `/${params.slug}`)
+  res.statusCode = 302
+  res.end()
+  return { props: {} }
 
-  // Handles no market entry on item
-  try {
-    item = await catalog(params.slug)
-  } catch (e) {
-    console.log(`catalog get error: ${e.message}`)
-  }
-  if (!item.id) {
-    return {
-      props: {
-        item,
-        filter: {},
-      },
-    }
-  }
-
-  const filter = { ...marketSearchFilter, item_id: item.id }
-  if (query.page) {
-    filter.page = Number(query.page)
-  }
-
-  let markets = {}
-  let error = null
-  try {
-    markets = await marketSearch(filter)
-  } catch (e) {
-    console.log(`market search error: ${e.message}`)
-    error = e.message
-  }
-
-  const canonicalURL = `${APP_URL}/${params.slug}`
-
-  return {
-    props: {
-      item,
-      canonicalURL,
-      filter,
-      markets,
-      error,
-    },
-  }
+  // // Handles invalid item slug
+  // let item = {}
+  // try {
+  //   item = await itemGet(params.slug)
+  // } catch (e) {
+  //   return {
+  //     props: {
+  //       item,
+  //       error: e.message,
+  //       filter: {},
+  //       markets: {},
+  //     },
+  //   }
+  // }
+  //
+  // // Handles no market entry on item
+  // try {
+  //   item = await catalog(params.slug)
+  // } catch (e) {
+  //   console.log(`catalog get error: ${e.message}`)
+  // }
+  // if (!item.id) {
+  //   return {
+  //     props: {
+  //       item,
+  //       filter: {},
+  //     },
+  //   }
+  // }
+  //
+  // const filter = { ...marketSearchFilter, item_id: item.id }
+  // if (query.page) {
+  //   filter.page = Number(query.page)
+  // }
+  //
+  // let markets = {}
+  // let error = null
+  // try {
+  //   markets = await marketSearch(filter)
+  // } catch (e) {
+  //   console.log(`market search error: ${e.message}`)
+  //   error = e.message
+  // }
+  //
+  // const canonicalURL = `${APP_URL}/${params.slug}`
+  //
+  // return {
+  //   props: {
+  //     item,
+  //     canonicalURL,
+  //     filter,
+  //     markets,
+  //     error,
+  //   },
+  // }
 }

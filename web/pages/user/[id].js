@@ -183,33 +183,39 @@ const marketSearchFilter = {
 }
 
 // This gets called on every request
-export async function getServerSideProps({ params, query }) {
-  const profile = await user(String(params.id))
-  const filter = { ...marketSearchFilter, user_id: profile.id }
-  filter.page = Number(query.page || 1)
-  if (query.filter) {
-    filter.q = query.filter
-  }
+export async function getServerSideProps({ params, query, res }) {
+  res.setHeader('location', `/profiles/${params.id}`)
+  res.statusCode = 302
+  res.end()
+  return { props: {} }
 
-  profile.stats = await statsMarketSummary({ user_id: profile.id })
-
-  let markets = {}
-  let error = null
-  try {
-    markets = await marketSearch(filter)
-  } catch (e) {
-    error = e.message
-  }
-
-  const canonicalURL = `${APP_URL}/profiles/${params.id}`
-
-  return {
-    props: {
-      profile,
-      canonicalURL,
-      filter,
-      markets,
-      error,
-    },
-  }
+  // const profile = await user(String(params.id))
+  //
+  // const filter = { ...marketSearchFilter, user_id: profile.id }
+  // filter.page = Number(query.page || 1)
+  // if (query.filter) {
+  //   filter.q = query.filter
+  // }
+  //
+  // profile.stats = await statsMarketSummary({ user_id: profile.id })
+  //
+  // let markets = {}
+  // let error = null
+  // try {
+  //   markets = await marketSearch(filter)
+  // } catch (e) {
+  //   error = e.message
+  // }
+  //
+  // const canonicalURL = `${APP_URL}/profiles/${params.id}`
+  //
+  // return {
+  //   props: {
+  //     profile,
+  //     canonicalURL,
+  //     filter,
+  //     markets,
+  //     error,
+  //   },
+  // }
 }
