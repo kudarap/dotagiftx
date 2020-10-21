@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   title: {},
   media: {
     [theme.breakpoints.down('xs')]: {
-      margin: '0 auto !important',
+      margin: '8px auto 8px !important',
       width: 300,
       height: 170,
     },
