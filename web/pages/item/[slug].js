@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Typography from '@material-ui/core/Typography'
 import { get as getLoggedInUser, isOk as checkLoggedIn } from '@/service/auth'
 import { CDN_URL, marketSearch, trackViewURL } from '@/service/api'
@@ -15,11 +16,12 @@ import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import ChipLink from '@/components/ChipLink'
+import { itemRarityColorMap } from '@/constants/palette'
 
 const useStyles = makeStyles(theme => ({
   main: {
     [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0),
     },
     marginTop: theme.spacing(4),
   },
@@ -30,9 +32,12 @@ const useStyles = makeStyles(theme => ({
     },
     display: 'inline-flex',
   },
+  title: {},
   media: {
     [theme.breakpoints.down('xs')]: {
       margin: '0 auto !important',
+      width: 300,
+      height: 170,
     },
     width: 164,
     height: 109,
@@ -41,7 +46,8 @@ const useStyles = makeStyles(theme => ({
   },
   postItemButton: {
     [theme.breakpoints.down('xs')]: {
-      margin: '8px auto !important',
+      margin: `8px auto !important`,
+      width: 300,
     },
     width: 164,
     marginRight: theme.spacing(1.5),
@@ -57,6 +63,8 @@ export default function ItemDetails({
   canonicalURL,
 }) {
   const classes = useStyles()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   if (initialError) {
     return (
@@ -160,63 +168,125 @@ export default function ItemDetails({
 
       <main className={classes.main}>
         <Container>
-          <div className={classes.details}>
-            {item.image && (
-              <div>
+          {!isMobile ? (
+            <div className={classes.details}>
+              {item.image && (
+                <div>
+                  <a href={wikiLink} target="_blank" rel="noreferrer noopener">
+                    <ItemImage
+                      className={classes.media}
+                      image={`/300x170/${item.image}`}
+                      title={item.name}
+                      rarity={item.rarity}
+                    />
+                  </a>
+                  {isLoggedIn && (
+                    <Button
+                      className={classes.postItemButton}
+                      variant="outlined"
+                      color="secondary"
+                      size="small"
+                      component={Link}
+                      href={`/post-item?s=${item.slug}`}
+                      disableUnderline
+                      fullWidth>
+                      Post this Item
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              <Typography component="h1">
+                <Typography component="p" variant="h4">
+                  {item.name}
+                </Typography>
+                <Typography gutterBottom>
+                  <Link href={`/search?q=${item.origin}`}>{item.origin}</Link>{' '}
+                  {item.rarity !== 'regular' && (
+                    <>
+                      &mdash;
+                      <RarityTag
+                        rarity={item.rarity}
+                        variant="body1"
+                        component={Link}
+                        href={`/search?q=${item.rarity}`}
+                      />
+                    </>
+                  )}
+                  <br />
+                  <Typography color="textSecondary" component="span">
+                    {`Used by: `}
+                  </Typography>
+                  <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
+                  <br />
+                  <Typography color="textSecondary" component="span">
+                    {`Links: `}
+                  </Typography>
+                  <ChipLink label="Dota 2 Wiki" href={wikiLink} />
+                </Typography>
+              </Typography>
+            </div>
+          ) : (
+            /* mobile screen */
+            <div>
+              {item.image && (
                 <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                   <ItemImage
                     className={classes.media}
                     image={`/300x170/${item.image}`}
                     title={item.name}
-                    rarity={item.rarity}
                   />
                 </a>
-                {isLoggedIn && (
-                  <Button
-                    className={classes.postItemButton}
-                    variant="outlined"
-                    color="secondary"
-                    size="small"
-                    component={Link}
-                    href={`/post-item?s=${item.slug}`}
-                    disableUnderline
-                    fullWidth>
-                    Post this Item
-                  </Button>
-                )}
+              )}
+              <div align="center">
+                <Button
+                  className={classes.postItemButton}
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  component={Link}
+                  href={`/post-item?s=${item.slug}`}
+                  disableUnderline
+                  fullWidth>
+                  Post this Item
+                </Button>
               </div>
-            )}
-
-            <Typography component="h1">
-              <Typography component="p" variant="h4">
+              <Typography
+                component="h1"
+                variant="h5"
+                style={
+                  item.rarity !== 'regular' ? { color: itemRarityColorMap[item.rarity] } : null
+                }>
                 {item.name}
               </Typography>
-              <Typography gutterBottom>
-                <Link href={`/search?q=${item.origin}`}>{item.origin}</Link>{' '}
+              <Typography>
+                <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
                 {item.rarity !== 'regular' && (
                   <>
-                    &mdash;
-                    <RarityTag
-                      rarity={item.rarity}
-                      variant="body1"
+                    &nbsp; &middot; &nbsp;
+                    <Typography
+                      color="textSecondary"
+                      variant="body2"
                       component={Link}
-                      href={`/search?q=${item.rarity}`}
-                    />
+                      href={`/search?q=${item.rarity}`}>
+                      {item.rarity}
+                    </Typography>
                   </>
                 )}
-                <br />
-                <Typography color="textSecondary" component="span">
-                  {`Used by: `}
-                </Typography>
-                <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
-                <br />
-                <Typography color="textSecondary" component="span">
-                  {`Links: `}
-                </Typography>
-                <ChipLink label="Dota 2 Wiki" href={wikiLink} />
               </Typography>
-            </Typography>
-          </div>
+              <Typography
+                color="textSecondary"
+                variant="body2"
+                component={Link}
+                href={`/search?q=${item.origin}`}>
+                {item.origin}
+              </Typography>
+              <div style={{ marginTop: 8 }}>
+                <ChipLink label="Dota 2 Wiki" href={wikiLink} />
+              </div>
+            </div>
+          )}
+          <br />
 
           <MarketList data={markets} currentUserID={currentUserID} error={error} />
           {!error && (
