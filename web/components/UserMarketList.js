@@ -97,8 +97,8 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                   <TableCell component="th" scope="row" padding="none">
                     <Link
                       className={classes.link}
-                      href="/item/[slug]"
-                      as={`/item/${market.item.slug}`}
+                      href="/[slug]"
+                      as={`/${market.item.slug}`}
                       disableUnderline>
                       <ItemImage
                         className={classes.image}

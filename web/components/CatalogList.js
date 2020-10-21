@@ -80,11 +80,7 @@ export default function CatalogList({ items = [], error, variant }) {
           {items.map(item => (
             <TableRow key={item.id} hover>
               <TableCell className={classes.th} component="th" scope="row" padding="none">
-                <Link
-                  className={classes.link}
-                  href="/item/[slug]"
-                  as={`/item/${item.slug}`}
-                  disableUnderline>
+                <Link className={classes.link} href="/[slug]" as={`/${item.slug}`} disableUnderline>
                   <ItemImage
                     className={classes.image}
                     image={`/200x100/${item.image}`}

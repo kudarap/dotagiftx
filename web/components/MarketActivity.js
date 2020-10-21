@@ -46,7 +46,7 @@ export default function MarketActivity({ data, loading }) {
                 </span>
                 &nbsp;
                 {market.item.hero}&apos;s&nbsp;
-                <Link href={`/item/${market.item.slug}`} color="secondary">
+                <Link href={`/${market.item.slug}`} color="secondary">
                   {market.item.name}
                 </Link>
                 &nbsp;
