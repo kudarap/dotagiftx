@@ -175,7 +175,7 @@ export default function ItemDetails({
                   <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                     <ItemImage
                       className={classes.media}
-                      image={`/600x340/${item.image}`}
+                      image={`/300x170/${item.image}`}
                       title={item.name}
                       rarity={item.rarity}
                     />
@@ -233,7 +233,7 @@ export default function ItemDetails({
                 <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                   <ItemImage
                     className={classes.media}
-                    image={`/300x170/${item.image}`}
+                    image={`/600x340/${item.image}`}
                     title={item.name}
                   />
                 </a>
