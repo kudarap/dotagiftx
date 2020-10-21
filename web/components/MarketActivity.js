@@ -37,7 +37,7 @@ export default function MarketActivity({ data, loading }) {
                 rarity={market.item.rarity}
               />
               <Typography variant="body2">
-                <Link href={`/user/${market.user.steam_id}`} color="textPrimary">
+                <Link href={`/profile/${market.user.steam_id}`} color="textPrimary">
                   {market.user.name}
                 </Link>
                 &nbsp;

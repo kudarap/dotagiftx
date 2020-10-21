@@ -70,7 +70,7 @@ export default function ContactDialog(props) {
     return null
   }
 
-  const storeProfile = `/user/${market.user.steam_id}`
+  const storeProfile = `/profile/${market.user.steam_id}`
   const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
   const dota2Inventory = `${steamProfileURL}/inventory#570`
 
@@ -97,15 +97,15 @@ export default function ContactDialog(props) {
                 {market.user.name}
               </Typography>
               <Typography variant="body2" component="span">
-                <Link href={`/user/${market.user.steam_id}/reserved`}>
+                <Link href={`/profile/${market.user.steam_id}/reserved`}>
                   {!loading && marketSummary ? marketSummary.live : '--'} Items
                 </Link>{' '}
                 &middot;{' '}
-                <Link href={`/user/${market.user.steam_id}/reserved`}>
+                <Link href={`/profile/${market.user.steam_id}/reserved`}>
                   {!loading && marketSummary ? marketSummary.reserved : '--'} Reserved
                 </Link>{' '}
                 &middot;{' '}
-                <Link href={`/user/${market.user.steam_id}/delivered`}>
+                <Link href={`/profile/${market.user.steam_id}/delivered`}>
                   {!loading && marketSummary ? marketSummary.sold : '--'} Delivered
                 </Link>
               </Typography>
