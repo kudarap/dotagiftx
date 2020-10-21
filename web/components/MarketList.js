@@ -102,7 +102,10 @@ export default function MarketList({ data, error, currentUserID }) {
               data.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
                   <TableCell component="th" scope="row" padding="none">
-                    <Link href="/user/[id]" as={`/user/${market.user.steam_id}`} disableUnderline>
+                    <Link
+                      href="/profiles/[id]"
+                      as={`/profiles/${market.user.steam_id}`}
+                      disableUnderline>
                       <div className={classes.seller}>
                         <Avatar
                           className={classes.avatar}

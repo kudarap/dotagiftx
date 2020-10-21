@@ -194,8 +194,8 @@ export default function Header({ disableSearch }) {
                       <MenuItem
                         onClick={handleClose}
                         component={Link}
-                        href="/user/[id]"
-                        as={`/user/${profile.steam_id}`}
+                        href="/profiles/[id]"
+                        as={`/profiles/${profile.steam_id}`}
                         disableUnderline>
                         Profile
                       </MenuItem>
@@ -263,8 +263,8 @@ export default function Header({ disableSearch }) {
                       <MenuItem
                         onClick={handleMoreClose}
                         component={Link}
-                        href="/user/[id]"
-                        as={`/user/${profile.steam_id}`}
+                        href="/profiles/[id]"
+                        as={`/profiles/${profile.steam_id}`}
                         disableUnderline>
                         Profile
                       </MenuItem>

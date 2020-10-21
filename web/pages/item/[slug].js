@@ -130,7 +130,7 @@ export default function ItemDetails({
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
 
-  const linkProps = { href: `/item/${item.slug}` }
+  const linkProps = { href: `/${item.slug}` }
 
   return (
     <>
@@ -307,7 +307,7 @@ export async function getServerSideProps(props) {
     error = e.message
   }
 
-  const canonicalURL = `${APP_URL}/item/${params.slug}`
+  const canonicalURL = `${APP_URL}/${params.slug}`
 
   return {
     props: {
