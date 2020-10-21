@@ -31,7 +31,7 @@ const marketSearchFilter = {
 export async function getServerSideProps(props) {
   const { params, query } = props
 
-  const reference = params.path
+  const reference = params.slug
 
   // Handles invalid item slug
   let item = {}
