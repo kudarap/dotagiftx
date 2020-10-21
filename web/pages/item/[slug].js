@@ -238,19 +238,21 @@ export default function ItemDetails({
                   />
                 </a>
               )}
-              <div align="center">
-                <Button
-                  className={classes.postItemButton}
-                  variant="outlined"
-                  color="secondary"
-                  size="small"
-                  component={Link}
-                  href={`/post-item?s=${item.slug}`}
-                  disableUnderline
-                  fullWidth>
-                  Post this Item
-                </Button>
-              </div>
+              {isLoggedIn && (
+                <div align="center">
+                  <Button
+                    className={classes.postItemButton}
+                    variant="outlined"
+                    color="secondary"
+                    size="small"
+                    component={Link}
+                    href={`/post-item?s=${item.slug}`}
+                    disableUnderline
+                    fullWidth>
+                    Post this Item
+                  </Button>
+                </div>
+              )}
               <Typography
                 noWrap
                 component="h1"
