@@ -23,6 +23,11 @@ const useStyles = makeStyles(theme => ({
     },
     display: 'inline-flex',
   },
+  profileName: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: theme.typography.h6.fontSize,
+    },
+  },
   avatar: {
     [theme.breakpoints.down('xs')]: {
       margin: '0 auto',
@@ -93,7 +98,7 @@ export default function ContactDialog(props) {
               <Avatar className={classes.avatar} src={`${CDN_URL}/${market.user.avatar}`} />
             </a>
             <Typography component="h1">
-              <Typography component="p" variant="h4">
+              <Typography className={classes.profileName} component="p" variant="h4">
                 {market.user.name}
               </Typography>
               <Typography variant="body2" component="span">
