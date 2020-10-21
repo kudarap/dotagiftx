@@ -31,7 +31,7 @@ export default function Faq() {
           </Typography>
           <Typography color="textSecondary">
             Market for Dota 2 giftables, items that can be gift or giftable-once are probably belong
-            here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread.
+            here. If you are on Dota2Trade subreddit, its basicxy the Giftable Megathread.
           </Typography>
           <br />
 
