@@ -261,18 +261,6 @@ export default function ItemDetails({
               </Typography>
               <Typography>
                 <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
-                {item.rarity !== 'regular' && (
-                  <>
-                    &nbsp; &middot; &nbsp;
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                      component={Link}
-                      href={`/search?q=${item.rarity}`}>
-                      {item.rarity}
-                    </Typography>
-                  </>
-                )}
               </Typography>
               <Typography
                 color="textSecondary"
@@ -280,6 +268,18 @@ export default function ItemDetails({
                 component={Link}
                 href={`/search?q=${item.origin}`}>
                 {item.origin}
+                {item.rarity !== 'regular' && (
+                  <>
+                    &nbsp; &middot; &nbsp;
+                    <RarityTag
+                      color="textSecondary"
+                      variant="body2"
+                      component={Link}
+                      rarity={item.rarity}
+                      href={`/search?q=${item.rarity}`}
+                    />
+                  </>
+                )}
               </Typography>
               <div style={{ marginTop: 8 }}>
                 <ChipLink label="Dota 2 Wiki" href={wikiLink} />
