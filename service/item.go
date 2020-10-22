@@ -121,7 +121,7 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 	return s.itemStg.Create(itm)
 }
 
-func (s *itemService) Update(ctx context.Context, it *core.Item) error {
+func (s *itemService) Update(ctx context.Context, itm *core.Item) error {
 	panic("implement me")
 }
 
@@ -148,22 +148,47 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (core.ItemImportR
 		return res, errors.New(core.ItemErrImport, err)
 	}
 
+	res.Total = len(yf.Items)
 	for _, ii := range yf.Items {
-		res.Total++
-		if err := s.Create(ctx, &core.Item{
+		itm := &core.Item{
 			Origin: yf.Origin,
 			Name:   ii.Name,
 			Hero:   ii.Hero,
 			Image:  ii.Image,
 			Rarity: ii.Rarity,
-		}); err != nil {
-			res.Bad++
+		}
+
+		// Update current item if exists.
+		if cur, _ := s.getItemByName(ii.Name); cur != nil {
+			if err := s.itemStg.Update(itm); err != nil {
+				res.Error++
+				continue
+			}
+			res.Updated++
 			continue
 		}
-		res.Ok++
+
+		if err := s.Create(ctx, itm); err != nil {
+			res.Error++
+			continue
+		}
+		res.Created++
 	}
 
 	return res, nil
+}
+
+func (s *itemService) getItemByName(name string) (*core.Item, error) {
+	itm, err := s.itemStg.Find(core.FindOpts{Filter: core.Item{Name: name}})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(itm) == 0 {
+		return nil, core.ItemErrNotFound
+	}
+
+	return &itm[0], nil
 }
 
 // downloadItemImage saves image file from a url.
