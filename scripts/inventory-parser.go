@@ -56,6 +56,7 @@ const (
 func main() {
 	filterDescPtr := flag.String("filter", "2019", "description filter")
 	filterTypePtr := flag.String("type", "Mythical Bundle", "type filter")
+	filterNamePtr := flag.String("name", "", "name filter")
 	flag.Parse()
 
 	ids := flag.Args()
@@ -89,6 +90,9 @@ func main() {
 	const filter = "International 2019"
 	items := map[string]Item{}
 	for _, ii := range inv.Items {
+		if !strings.Contains(strings.ToLower(ii.Name), strings.ToLower(*filterNamePtr)) {
+			continue
+		}
 		if !strings.Contains(strings.ToLower(ii.Type), strings.ToLower(*filterTypePtr)) {
 			continue
 		}
