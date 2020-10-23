@@ -107,7 +107,7 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 		return err
 	}
 
-	// Download image when available
+	// Download image when available.
 	if itm.Image != "" {
 		img, err := s.downloadItemImage(itm.MakeSlug(), itm.Image)
 		if err != nil {
@@ -121,8 +121,31 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 	return s.itemStg.Create(itm)
 }
 
-func (s *itemService) Update(ctx context.Context, it *core.Item) error {
-	panic("implement me")
+func (s *itemService) Update(ctx context.Context, itm *core.Item) error {
+	// TODO check moderator/contributors
+	au := core.AuthFromContext(ctx)
+	if au == nil {
+		return core.AuthErrNoAccess
+	}
+
+	if itm.ID == "" {
+		return core.ItemErrRequiredID
+	}
+
+	itm.Name = strings.TrimSpace(itm.Name)
+	itm.Hero = strings.TrimSpace(itm.Hero)
+	itm.Rarity = strings.ToLower(itm.Rarity)
+
+	// Download image when available.
+	if itm.Image != "" {
+		img, err := s.downloadItemImage(itm.MakeSlug(), itm.Image)
+		if err != nil {
+			return err
+		}
+		itm.Image = img
+	}
+
+	return s.itemStg.Update(itm)
 }
 
 type yamlFile struct {
@@ -148,22 +171,48 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (core.ItemImportR
 		return res, errors.New(core.ItemErrImport, err)
 	}
 
+	res.Total = len(yf.Items)
 	for _, ii := range yf.Items {
-		res.Total++
-		if err := s.Create(ctx, &core.Item{
+		itm := &core.Item{
 			Origin: yf.Origin,
 			Name:   ii.Name,
 			Hero:   ii.Hero,
 			Image:  ii.Image,
 			Rarity: ii.Rarity,
-		}); err != nil {
-			res.Bad++
+		}
+
+		// Update current item if exists.
+		if cur, _ := s.getItemByName(ii.Name); cur != nil {
+			itm.ID = cur.ID
+			if err := s.Update(ctx, itm); err != nil {
+				res.Error++
+				continue
+			}
+			res.Updated++
 			continue
 		}
-		res.Ok++
+
+		if err := s.Create(ctx, itm); err != nil {
+			res.Error++
+			continue
+		}
+		res.Created++
 	}
 
 	return res, nil
+}
+
+func (s *itemService) getItemByName(name string) (*core.Item, error) {
+	itm, err := s.itemStg.Find(core.FindOpts{Filter: core.Item{Name: name}})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(itm) == 0 {
+		return nil, core.ItemErrNotFound
+	}
+
+	return &itm[0], nil
 }
 
 // downloadItemImage saves image file from a url.
