@@ -11,24 +11,30 @@ import (
 var json = jsoniter.ConfigFastest
 
 type Item struct {
-	ClassID string `json:"classid"`
-	Name    string `json:"name"`
-	Image   string `json:"icon_url_large"`
-	Type    string `json:"type"`
-	Descs   []struct {
-		Value string `json:"value"`
-	} `json:"descriptionsX"`
-	Des1        interface{} `json:"descriptions"`
-	Description string      `json:"description"`
+	ClassID     string      `json:"classid"`
+	Name        string      `json:"name"`
+	Image       string      `json:"icon_url_large"`
+	Type        string      `json:"type"`
+	DescRaw     interface{} `json:"descriptions"`
+	Description string
+	Hero        string
 }
 
-func (i Item) stringifyDesc() string {
-	var s []string
-	for _, dd := range i.Descs {
-		s = append(s, dd.Value)
+func (i Item) stringifyDesc() (description, hero string) {
+	s := fmt.Sprintf("%s", i.DescRaw)
+
+	// Extract hero name
+	const seg1 = "value:Used By: "
+	for _, hh := range strings.Split(s, "] map[") {
+		if strings.Contains(hh, seg1) {
+			hs := strings.Split(hh, seg1)
+			hero = hs[len(hs)-1]
+			break
+		}
+
 	}
 
-	return strings.Join(s, " ")
+	return s, hero
 }
 
 type Inventory struct {
@@ -59,7 +65,7 @@ func main() {
 			continue
 		}
 
-		desc := fmt.Sprintf("%s", ii.Des1)
+		desc, hero := ii.stringifyDesc()
 		if !strings.Contains(strings.ToLower(desc), strings.ToLower(filter)) {
 			continue
 		}
@@ -70,13 +76,15 @@ func main() {
 			Type:        ii.Type,
 			Image:       ii.Image,
 			Description: desc,
+			Hero:        hero,
 		}
 	}
 
 	for _, ii := range items {
 		fmt.Println(ii.Name)
+		fmt.Println(ii.Hero)
 		fmt.Println(ii.Image)
-		fmt.Println(ii.Description)
+		//fmt.Println(ii.Description)
 		fmt.Println(strings.Repeat("-", 55))
 	}
 
