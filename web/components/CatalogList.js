@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function CatalogList({ items = [], error, variant }) {
+export default function CatalogList({ items = [], loading, error, variant }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -56,7 +56,7 @@ export default function CatalogList({ items = [], error, variant }) {
             <TableHeadCell align="right">Price</TableHeadCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody style={loading ? { opacity: 0.5 } : null}>
           {error && (
             <TableRow>
               <TableCell align="center" colSpan={3}>
@@ -80,11 +80,7 @@ export default function CatalogList({ items = [], error, variant }) {
           {items.map(item => (
             <TableRow key={item.id} hover>
               <TableCell className={classes.th} component="th" scope="row" padding="none">
-                <Link
-                  className={classes.link}
-                  href="/item/[slug]"
-                  as={`/item/${item.slug}`}
-                  disableUnderline>
+                <Link className={classes.link} href="/[slug]" as={`/${item.slug}`} disableUnderline>
                   <ItemImage
                     className={classes.image}
                     image={`/200x100/${item.image}`}
@@ -124,9 +120,11 @@ export default function CatalogList({ items = [], error, variant }) {
 CatalogList.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   variant: PropTypes.string,
+  loading: PropTypes.bool,
   error: PropTypes.string,
 }
 CatalogList.defaultProps = {
   variant: '',
+  loading: false,
   error: null,
 }

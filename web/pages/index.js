@@ -9,13 +9,11 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Divider from '@material-ui/core/Divider'
 import {
-  fetcher,
   CATALOGS,
-  CATALOGS_TREND,
-  STATS_TOP_ORIGINS,
-  STATS_TOP_HEROES,
-  catalogSearch,
   catalogTrendSearch,
+  fetcher,
+  STATS_TOP_HEROES,
+  STATS_TOP_ORIGINS,
   statsMarketSummary,
 } from '@/service/api'
 import * as format from '@/lib/format'
@@ -29,7 +27,10 @@ import { APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(0),
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(1),
+    },
+    marginTop: theme.spacing(4),
   },
   searchBar: {
     margin: '0 auto',
@@ -39,14 +40,16 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(0),
     },
-    margin: theme.spacing(4, 0, 4, 0),
+    margin: theme.spacing(0, 0, 2, 0),
+    padding: theme.spacing(1.5),
+    border: '1px solid #52564e',
+    background: '#2d3431',
+    borderRadius: 4,
   },
   bannerText: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 35,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: theme.typography.body2.fontSize,
     },
-    fontWeight: 'bold',
-    color: theme.palette.app.white,
   },
   footLinks: {
     [theme.breakpoints.down('xs')]: {
@@ -84,8 +87,8 @@ export default function Index({ marketSummary, trendingItems }) {
 
   const metaTitle = 'DotagiftX - Dota 2 giftable items marketplace'
   const metaDesc = `${description}. DotagiftX was made to provide better search and pricing for 
-          Dota 2 giftable items like Collector's Caches which are not available on Steam Community Market. 
-          The project was heavily inspired by All Giftable Megathread from r/Dota2Trade.`
+          Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market. 
+          The project was heavily inspired by Giftable Megathread from r/Dota2Trade.`
 
   return (
     <>
@@ -113,7 +116,11 @@ export default function Index({ marketSummary, trendingItems }) {
       <main className={classes.main}>
         <Container>
           <div className={classes.banner}>
-            <Typography component="h1" color="textSecondary">
+            <Typography
+              className={classes.bannerText}
+              component="h1"
+              variant="body2"
+              color="textSecondary">
               <Typography color="secondary" component="span">
                 DotagiftX
               </Typography>{' '}
@@ -122,7 +129,7 @@ export default function Index({ marketSummary, trendingItems }) {
               <Link href="https://steamcommunity.com" rel="noreferrer noopener" target="_blank">
                 Steam Community Market
               </Link>
-              . The project was heavily inspired by <strong>All Giftable Megathread</strong> from{' '}
+              . The project was heavily inspired by <strong>Giftable Megathread</strong> from{' '}
               <Link
                 href="https://www.reddit.com/r/Dota2Trade"
                 rel="noreferrer noopener"

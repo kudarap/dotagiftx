@@ -32,6 +32,11 @@ func init() {
 const (
 	maxMarketNotesLen        = 200
 	MaxMarketQtyLimitPerUser = 5
+
+	// Trend scoring rates use for trend ranking.
+	TrendScoreRateView        = 0.05
+	TrendScoreRateMarketEntry = 0.01
+	TrendScoreRateReserved    = 4
 )
 
 // Market statuses.
@@ -60,8 +65,8 @@ type (
 		CreatedAt *time.Time   `json:"created_at" db:"created_at,omitempty,indexed"`
 		UpdatedAt *time.Time   `json:"updated_at" db:"updated_at,omitempty,indexed"`
 		// Include related fields.
-		User *User `json:"user,omitempty" db:"-"`
-		Item *Item `json:"item,omitempty" db:"-"`
+		User *User `json:"user,omitempty" db:"user,omitempty"`
+		Item *Item `json:"item,omitempty" db:"item,omitempty"`
 	}
 
 	// MarketService provides access to market service.

@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Dialog from '@material-ui/core/Dialog'
@@ -48,12 +47,11 @@ export default function ReserveUpdateDialog(props) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
-  const { market, open, onClose } = props
-
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
+  const { onClose } = props
   const handleClose = () => {
     setNotes('')
     setError('')
@@ -61,7 +59,7 @@ export default function ReserveUpdateDialog(props) {
     onClose()
   }
 
-  const router = useRouter()
+  const { market, onSuccess, onCancel } = props
   const marketUpdate = payload => {
     if (loading) {
       return
@@ -72,8 +70,13 @@ export default function ReserveUpdateDialog(props) {
     ;(async () => {
       try {
         await myMarket.PATCH(market.id, payload)
+        if (payload.status === MARKET_STATUS_SOLD) {
+          onSuccess()
+        } else {
+          onCancel()
+        }
+
         handleClose()
-        router.push(`/my-history#${MARKET_STATUS_MAP_TEXT[payload.status].toLowerCase()}`)
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -101,6 +104,7 @@ export default function ReserveUpdateDialog(props) {
     return null
   }
 
+  const { open } = props
   return (
     <Dialog
       fullWidth
@@ -202,9 +206,13 @@ ReserveUpdateDialog.propTypes = {
   market: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  onCancel: PropTypes.func,
+  onSuccess: PropTypes.func,
 }
 ReserveUpdateDialog.defaultProps = {
   market: null,
   open: false,
   onClose: () => {},
+  onCancel: () => {},
+  onSuccess: () => {},
 }

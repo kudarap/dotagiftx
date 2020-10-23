@@ -47,9 +47,10 @@ type (
 
 	// ItemImportResult represents import process result.
 	ItemImportResult struct {
-		Ok    int `json:"ok"`
-		Bad   int `json:"bad"`
-		Total int `json:"total"`
+		Created int `json:"created"`
+		Updated int `json:"updated"`
+		Error   int `json:"error"`
+		Total   int `json:"total"`
 	}
 
 	// ItemService provides access to item service.

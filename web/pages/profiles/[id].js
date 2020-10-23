@@ -23,6 +23,11 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(4),
   },
+  profileName: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: theme.typography.h6.fontSize,
+    },
+  },
   details: {
     [theme.breakpoints.down('xs')]: {
       textAlign: 'center',
@@ -120,7 +125,7 @@ export default function UserDetails({
           <div className={classes.details}>
             <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
-              <Typography component="p" variant="h4">
+              <Typography className={classes.profileName} component="p" variant="h4">
                 {profile.name}
               </Typography>
               <Typography gutterBottom>
@@ -183,39 +188,33 @@ const marketSearchFilter = {
 }
 
 // This gets called on every request
-export async function getServerSideProps({ params, query, res }) {
-  res.setHeader('location', `/profiles/${params.id}`)
-  res.statusCode = 302
-  res.end()
-  return { props: {} }
+export async function getServerSideProps({ params, query }) {
+  const profile = await user(String(params.id))
+  const filter = { ...marketSearchFilter, user_id: profile.id }
+  filter.page = Number(query.page || 1)
+  if (query.filter) {
+    filter.q = query.filter
+  }
 
-  // const profile = await user(String(params.id))
-  //
-  // const filter = { ...marketSearchFilter, user_id: profile.id }
-  // filter.page = Number(query.page || 1)
-  // if (query.filter) {
-  //   filter.q = query.filter
-  // }
-  //
-  // profile.stats = await statsMarketSummary({ user_id: profile.id })
-  //
-  // let markets = {}
-  // let error = null
-  // try {
-  //   markets = await marketSearch(filter)
-  // } catch (e) {
-  //   error = e.message
-  // }
-  //
-  // const canonicalURL = `${APP_URL}/profiles/${params.id}`
-  //
-  // return {
-  //   props: {
-  //     profile,
-  //     canonicalURL,
-  //     filter,
-  //     markets,
-  //     error,
-  //   },
-  // }
+  profile.stats = await statsMarketSummary({ user_id: profile.id })
+
+  let markets = {}
+  let error = null
+  try {
+    markets = await marketSearch(filter)
+  } catch (e) {
+    error = e.message
+  }
+
+  const canonicalURL = `${APP_URL}/profiles/${params.id}`
+
+  return {
+    props: {
+      profile,
+      canonicalURL,
+      filter,
+      markets,
+      error,
+    },
+  }
 }

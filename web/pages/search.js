@@ -26,17 +26,20 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
   const classes = useStyles()
 
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
+  const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
 
   // Handle catalog request on page change.
   React.useEffect(() => {
     ;(async () => {
+      setLoading(true)
       try {
         const res = await catalogSearch(filter)
         setCatalogs(res)
       } catch (e) {
         setError(e.message)
       }
+      setLoading(false)
     })()
   }, [filter])
 
@@ -72,7 +75,7 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
           {!catalogs && <LinearProgress color="secondary" />}
           {catalogs && (
             <div>
-              <CatalogList items={catalogs.data} error={error} />
+              <CatalogList items={catalogs.data} loading={loading} error={error} />
               {!error && (
                 <TablePaginationRouter
                   linkProps={linkProps}

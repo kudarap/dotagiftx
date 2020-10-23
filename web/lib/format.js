@@ -34,3 +34,11 @@ export function dateFromNow(date) {
 export function dateCalendar(date) {
   return moment(date).format('MMMM DD, YYYY')
 }
+
+export function errorSimple(error) {
+  if (!error) {
+    return ''
+  }
+
+  return error.split(':')[0]
+}

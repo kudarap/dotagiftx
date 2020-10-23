@@ -2,10 +2,10 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { Link } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -41,6 +41,10 @@ export default function About() {
               rel="noreferrer noopener"
               href="https://www.reddit.com/message/compose/?to=kudarap">
               Reddit
+            </Link>{' '}
+            or{' '}
+            <Link color="secondary" href="mailto:goto@chiligarlic.com">
+              goto@chiligarlic.com
             </Link>{' '}
             if you have issues or suggestions.
           </Typography>

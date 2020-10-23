@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Dialog from '@material-ui/core/Dialog'
@@ -49,12 +48,11 @@ export default function MarketUpdateDialog(props) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
-  const { market, open, onClose } = props
-
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
+  const { onClose } = props
   const handleClose = () => {
     setNotes('')
     setError('')
@@ -62,15 +60,20 @@ export default function MarketUpdateDialog(props) {
     onClose()
   }
 
-  const router = useRouter()
+  const { onRemove } = props
+  const handleRemove = () => {
+    onRemove()
+    handleClose()
+  }
+
+  const { market } = props
   const handleRemoveClick = () => {
     setLoading(true)
     setError(null)
     ;(async () => {
       try {
         await myMarket.PATCH(market.id, { status: MARKET_STATUS_REMOVED })
-        handleClose()
-        router.reload()
+        handleRemove()
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -79,6 +82,7 @@ export default function MarketUpdateDialog(props) {
     })()
   }
 
+  const { onSuccess } = props
   const onFormSubmit = evt => {
     evt.preventDefault()
 
@@ -97,7 +101,7 @@ export default function MarketUpdateDialog(props) {
       try {
         await myMarket.PATCH(market.id, payload)
         handleClose()
-        router.push('/my-reservations')
+        onSuccess()
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -110,6 +114,7 @@ export default function MarketUpdateDialog(props) {
     return null
   }
 
+  const { open } = props
   return (
     <Dialog
       fullWidth
@@ -133,11 +138,7 @@ export default function MarketUpdateDialog(props) {
             />
 
             <Typography component="h1">
-              <Typography
-                variant="h6"
-                component={Link}
-                href="/item/[slug]"
-                as={`/item/${market.item.slug}`}>
+              <Typography variant="h6" component={Link} href="/[slug]" as={`/${market.item.slug}`}>
                 {market.item.name}
               </Typography>
               <Typography gutterBottom>
@@ -213,9 +214,13 @@ MarketUpdateDialog.propTypes = {
   market: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  onRemove: PropTypes.func,
+  onSuccess: PropTypes.func,
 }
 MarketUpdateDialog.defaultProps = {
   market: null,
   open: false,
   onClose: () => {},
+  onRemove: () => {},
+  onSuccess: () => {},
 }

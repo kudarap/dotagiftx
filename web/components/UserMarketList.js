@@ -10,31 +10,34 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import green from '@material-ui/core/colors/lightGreen'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import ContactDialog from '@/components/ContactDialog'
+import TableSearchInput from '@/components/TableSearchInput'
 
 const useStyles = makeStyles(theme => ({
   seller: {
     display: 'inline-flex',
   },
   link: {
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: theme.spacing(2),
-    },
     padding: theme.spacing(2, 2, 2, 0),
     display: 'flex',
   },
   image: {
     margin: theme.spacing(-1, 1, -1, 1),
     width: 77,
+    height: 55,
+  },
+  buyText: {
+    color: green[600],
   },
 }))
 
-export default function UserMarketList({ data, error }) {
+export default function UserMarketList({ data, loading, error, onSearchInput }) {
   const classes = useStyles()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
@@ -50,12 +53,24 @@ export default function UserMarketList({ data, error }) {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableHeadCell>Sell Items ({data.total_count})</TableHeadCell>
-              <TableHeadCell align="right">Price</TableHeadCell>
-              <TableHeadCell align="right" width={156} />
+              <TableHeadCell padding="none" colSpan={isMobile ? 2 : 1}>
+                <TableSearchInput
+                  fullWidth
+                  loading={loading}
+                  onInput={onSearchInput}
+                  color="secondary"
+                  placeholder="Filter user items"
+                />
+              </TableHeadCell>
+              {!isMobile && (
+                <>
+                  <TableHeadCell align="right">Price</TableHeadCell>
+                  <TableHeadCell align="right" width={156} />
+                </>
+              )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody style={loading ? { opacity: 0.5 } : null}>
             {error && (
               <TableRow>
                 <TableCell align="center" colSpan={3}>
@@ -82,17 +97,15 @@ export default function UserMarketList({ data, error }) {
                   <TableCell component="th" scope="row" padding="none">
                     <Link
                       className={classes.link}
-                      href="/item/[slug]"
-                      as={`/item/${market.item.slug}`}
+                      href="/[slug]"
+                      as={`/${market.item.slug}`}
                       disableUnderline>
-                      {!isMobile && (
-                        <ItemImage
-                          className={classes.image}
-                          image={`/200x100/${market.item.image}`}
-                          title={market.item.name}
-                          rarity={market.item.rarity}
-                        />
-                      )}
+                      <ItemImage
+                        className={classes.image}
+                        image={`/200x100/${market.item.image}`}
+                        title={market.item.name}
+                        rarity={market.item.rarity}
+                      />
                       <div>
                         <strong>{market.item.name}</strong>
                         <br />
@@ -103,14 +116,28 @@ export default function UserMarketList({ data, error }) {
                       </div>
                     </Link>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
-                      Contact Seller
-                    </BuyButton>
-                  </TableCell>
+                  {!isMobile ? (
+                    <>
+                      <TableCell align="right">
+                        <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                          Contact Seller
+                        </BuyButton>
+                      </TableCell>
+                    </>
+                  ) : (
+                    <TableCell
+                      align="right"
+                      onClick={() => handleContactClick(idx)}
+                      style={{ cursor: 'pointer' }}>
+                      <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        <u>View</u>
+                      </Typography>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
           </TableBody>
@@ -125,9 +152,13 @@ export default function UserMarketList({ data, error }) {
   )
 }
 UserMarketList.propTypes = {
+  onSearchInput: PropTypes.func,
   data: PropTypes.object.isRequired,
+  loading: PropTypes.bool,
   error: PropTypes.string,
 }
 UserMarketList.defaultProps = {
+  onSearchInput: () => {},
+  loading: false,
   error: null,
 }

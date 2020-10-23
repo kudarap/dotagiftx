@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftx v0.8.0",
+    "name": "dotagiftx v0.9.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -19,7 +19,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token}}",
+                  "value": "{{jwt}}",
                   "type": "string"
                 }
               ]
@@ -126,7 +126,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token}}",
+                  "value": "{{jwt}}",
                   "type": "string"
                 }
               ]
@@ -253,7 +253,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token}}",
+                  "value": "{{jwt}}",
                   "type": "string"
                 }
               ]
@@ -266,7 +266,7 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "src": "/home/kudarap/Downloads/dota items/cache 2020.yml"
+                  "src": "/home/kudarap/Dropbox/DotagiftX/imports/cache 2018 1.yml"
                 }
               ],
               "options": {
@@ -365,7 +365,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"refresh_token\": \"4d30c259dd1165c33afe8676f7dd4d7e42ff3665\"\n}",
+          "raw": "{\n\t\"refresh_token\": \"d96ec2e84cbaf6a7de6232f4753f41f0e45fac28\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -817,14 +817,13 @@
           }
         },
         "url": {
-          "raw": "{{host}}/catalogs-trend",
+          "raw": "{{host}}/catalogs-trend?nocache=1",
           "host": ["{{host}}"],
           "path": ["catalogs-trend"],
           "query": [
             {
               "key": "nocache",
-              "value": "1",
-              "disabled": true
+              "value": "1"
             }
           ]
         }

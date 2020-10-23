@@ -1,11 +1,14 @@
 package steam
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	jsoniter "github.com/json-iterator/go"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 type PlayerSummaries struct {
 	SteamId                  string `json:"steamid"`

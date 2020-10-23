@@ -41,9 +41,6 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 	if err != nil {
 		return nil, nil, err
 	}
-	for i := range res {
-		s.getRelatedFields(&res[i])
-	}
 
 	if !opts.WithMeta {
 		return res, nil, err

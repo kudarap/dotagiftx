@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import useSWR from 'swr'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Dialog from '@material-ui/core/Dialog'
@@ -9,7 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
-import { CDN_URL, fetcher, STATS_MARKET_SUMMARY, statsMarketSummary } from '@/service/api'
+import { CDN_URL, statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
@@ -23,6 +22,11 @@ const useStyles = makeStyles(theme => ({
       display: 'block',
     },
     display: 'inline-flex',
+  },
+  profileName: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: theme.typography.h6.fontSize,
+    },
   },
   avatar: {
     [theme.breakpoints.down('xs')]: {
@@ -71,7 +75,7 @@ export default function ContactDialog(props) {
     return null
   }
 
-  const storeProfile = `/user/${market.user.steam_id}`
+  const storeProfile = `/profiles/${market.user.steam_id}`
   const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
   const dota2Inventory = `${steamProfileURL}/inventory#570`
 
@@ -94,26 +98,27 @@ export default function ContactDialog(props) {
               <Avatar className={classes.avatar} src={`${CDN_URL}/${market.user.avatar}`} />
             </a>
             <Typography component="h1">
-              <Typography component="p" variant="h4">
+              <Typography className={classes.profileName} component="p" variant="h4">
                 {market.user.name}
               </Typography>
-              <Typography color="textSecondary" component="span">
-                {`History: `}
-              </Typography>
               <Typography variant="body2" component="span">
-                <Link href={`/user/${market.user.steam_id}/reserved`}>
+                <Link href={`/profiles/${market.user.steam_id}/reserved`}>
+                  {!loading && marketSummary ? marketSummary.live : '--'} Items
+                </Link>{' '}
+                &middot;{' '}
+                <Link href={`/profiles/${market.user.steam_id}/reserved`}>
                   {!loading && marketSummary ? marketSummary.reserved : '--'} Reserved
                 </Link>{' '}
                 &middot;{' '}
-                <Link href={`/user/${market.user.steam_id}/delivered`}>
+                <Link href={`/profiles/${market.user.steam_id}/delivered`}>
                   {!loading && marketSummary ? marketSummary.sold : '--'} Delivered
                 </Link>
               </Typography>
               <br />
               <Typography gutterBottom>
-                <Typography color="textSecondary" component="span">
-                  {`Links: `}
-                </Typography>
+                {/* <Typography color="textSecondary" component="span"> */}
+                {/*  {`Links: `} */}
+                {/* </Typography> */}
                 {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
                 {/* &nbsp; */}
                 <ChipLink

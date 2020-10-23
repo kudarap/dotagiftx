@@ -13,11 +13,12 @@ import IconButton from '@material-ui/core/IconButton'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
-import { CDN_URL, myProfile } from '@/service/api'
-import { isOk as checkLoggedIn, clear as destroyLoginSess } from '@/service/auth'
+import { authRevoke, CDN_URL, myProfile } from '@/service/api'
+import { clear as destroyLoginSess, isOk as checkLoggedIn, get as getAuth } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import SearchInputMini from '@/components/SearchInputMini'
+import { Icon } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -81,7 +82,8 @@ export default function Header({ disableSearch }) {
   const theme = useTheme()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs')) && !disableSearch
+  const isXsScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  const isMobile = isXsScreen && !disableSearch
 
   const [profile, setProfile] = React.useState(defaultProfile)
 
@@ -120,10 +122,14 @@ export default function Header({ disableSearch }) {
   }
 
   const handleLogout = () => {
-    destroyLoginSess()
-    handleClose()
-    // eslint-disable-next-line no-undef
-    window.location = '/'
+    ;(async () => {
+      const auth = getAuth()
+      await authRevoke(auth.refresh_token)
+      destroyLoginSess()
+      handleClose()
+      // eslint-disable-next-line no-undef
+      window.location = '/'
+    })()
   }
 
   const isLoggedIn = checkLoggedIn()
@@ -168,18 +174,30 @@ export default function Header({ disableSearch }) {
                 {/* Avatar menu button */}
                 {isLoggedIn ? (
                   <>
-                    <Button
-                      aria-controls="avatar-menu"
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      startIcon={
+                    {isXsScreen ? (
+                      <IconButton
+                        aria-controls="avatar-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}>
                         <Avatar
                           className={classes.avatar}
                           src={profile && `${CDN_URL}/${profile.avatar}`}
                         />
-                      }>
-                      {profile && profile.name}
-                    </Button>
+                      </IconButton>
+                    ) : (
+                      <Button
+                        aria-controls="avatar-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        startIcon={
+                          <Avatar
+                            className={classes.avatar}
+                            src={profile && `${CDN_URL}/${profile.avatar}`}
+                          />
+                        }>
+                        {profile && profile.name}
+                      </Button>
+                    )}
                     <Menu
                       className={classes.avatarMenu}
                       id="avatar-menu"
@@ -190,8 +208,8 @@ export default function Header({ disableSearch }) {
                       <MenuItem
                         onClick={handleClose}
                         component={Link}
-                        href="/user/[id]"
-                        as={`/user/${profile.steam_id}`}
+                        href="/profiles/[id]"
+                        as={`/profiles/${profile.steam_id}`}
                         disableUnderline>
                         Profile
                       </MenuItem>
@@ -238,6 +256,7 @@ export default function Header({ disableSearch }) {
                   onClick={handleMoreClick}>
                   <MoreIcon />
                 </IconButton>
+
                 <Menu
                   className={classes.avatarMenu}
                   id="more-menu"
@@ -248,17 +267,54 @@ export default function Header({ disableSearch }) {
                   <MenuItem
                     onClick={handleMoreClose}
                     component={Link}
-                    href="/login"
-                    disableUnderline>
-                    Sign in
-                  </MenuItem>
-                  <MenuItem
-                    onClick={handleMoreClose}
-                    component={Link}
                     href="/post-item"
                     disableUnderline>
                     Post Item
                   </MenuItem>
+
+                  {isLoggedIn ? (
+                    <>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/profiles/[id]"
+                        as={`/profiles/${profile.steam_id}`}
+                        disableUnderline>
+                        Profile
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/my-listings"
+                        disableUnderline>
+                        Listings
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/my-reservations"
+                        disableUnderline>
+                        Reservations
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleMoreClose}
+                        component={Link}
+                        href="/my-history"
+                        disableUnderline>
+                        History
+                      </MenuItem>
+                      {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
+                      <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+                    </>
+                  ) : (
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/login"
+                      disableUnderline>
+                      Sign in
+                    </MenuItem>
+                  )}
                 </Menu>
               </>
             )}

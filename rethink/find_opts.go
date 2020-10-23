@@ -15,21 +15,21 @@ func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
 	return findOpts(o).parseOpts(q, nil)
 }
 
-func newCatalogFindOptsQuery(q r.Term, o core.FindOpts, filterFn func(r.Term)r.Term) r.Term {
-	return findOpts(o).parseOpts(q, filterFn)
+func newCatalogFindOptsQuery(q r.Term, o core.FindOpts, hookFn func(r.Term) r.Term) r.Term {
+	return findOpts(o).parseOpts(q, hookFn)
 }
 
-func (o findOpts) parseOpts(q r.Term, filterFn func(r.Term)r.Term) r.Term {
+func (o findOpts) parseOpts(q r.Term, hookFn func(r.Term) r.Term) r.Term {
 	if o.IndexSorting && o.Sort != "" {
 		q = q.OrderBy(r.OrderByOpts{Index: o.parseOrder()})
 	}
 
-	if strings.TrimSpace(o.Keyword) != "" {
-		q = q.Filter(o.parseKeyword())
+	if hookFn != nil {
+		q = hookFn(q)
 	}
 
-	if filterFn != nil {
-		q = filterFn(q)
+	if strings.TrimSpace(o.Keyword) != "" {
+		q = q.Filter(o.parseKeyword())
 	}
 
 	if o.Filter != nil {
@@ -62,14 +62,31 @@ func (o findOpts) parseKeyword() interface{} {
 
 	return func(t r.Term) r.Term {
 		// Concatenate values of search fields to create a fake index.
-		f := t.Field(o.KeywordFields[0])
-		for _, kf := range o.KeywordFields[1:] {
-			f = f.Add(" ", t.Field(kf))
+		searchText := t.Field(o.KeywordFields[0])
+		for _, ff := range o.KeywordFields[1:] {
+			searchText = searchText.Add(" ", t.Field(ff))
 		}
 
-		// Matches that contains the keyword non case sensitive.
-		return f.Match(fmt.Sprintf("(?i)%s", o.Keyword))
+		// Matches that contains the keywords non case sensitive.
+		q := searchText
+		for _, ww := range strings.Split(normalizeKeyword(o.Keyword), " ") {
+			q = q.And(searchText.Match(fmt.Sprintf("(?i)%s", ww)))
+		}
+
+		return q
 	}
+}
+
+// normalizeKeyword handles special case for the word "Collector's" with apostrophe.
+func normalizeKeyword(keyword string) string {
+	s := strings.ToLower(keyword)
+
+	// Special case for the word "Collector's" with apostrophe.
+	if strings.Contains(s, "collectors") {
+		s = strings.ReplaceAll(s, "collectors", "collector's")
+	}
+
+	return s
 }
 
 func (o findOpts) parseFilter() map[string]interface{} {

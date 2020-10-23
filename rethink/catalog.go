@@ -34,38 +34,77 @@ type catalogStorage struct {
 
 func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 	/*
-		r.db('d2g')
-		.table('track')
-		.filter({type: 'v'})
-		.orderBy(r.desc('created_at'))
-		.limit(100)
-		.group('item_id').count()
-		.ungroup().orderBy(r.desc('reduction'))
-		.map(function(doc) {
-		  return {
-		    item_id: doc('group'),
-		    score: doc('reduction'),
-		  }
-		})
-		.eqJoin('item_id', r.db('d2g').table('catalog'))
-		.zip()
-		.orderBy(r.desc('score'))
-		.limit(10)
+		r.db('dotagiftables')
+		  .table('track')
+		  .between(r.now().sub(604800), r.now(), {index: 'created_at'})
+		  .filter({ type: 'v' })
+		  .group('item_id').count()
+		  .ungroup().orderBy(r.desc('reduction'))
+		  .map(function(doc) {
+		    let market = r.db('dotagiftables').table('market')
+		        .between(r.now().sub(604800), r.now(), {index: 'created_at'})
+		        .filter({item_id: doc('group')});
+
+		    let viewScore = doc('reduction').mul(0.5);
+		   	let entryScore = market.count().mul(0.1);
+		    let reserveScore = market.filter({ status: 300 }).count().mul(4);
+		    let score = r.expr([
+		      viewScore,
+		      entryScore,
+		      reserveScore,
+		    ]).sum();
+
+		    return {
+		      item_id: doc('group'),
+		      score: score,
+		      score_vw: viewScore,
+		      score_ent: entryScore,
+		      score_rsv: reserveScore
+		    }
+		  })
+		  .eqJoin('item_id', r.db('dotagiftables').table('catalog'))
+		  .zip()
+		  .orderBy(r.desc('score'))
+		  .limit(10)
 	*/
 
-	// Accumulate views of the recent 100 records.
-	q := r.Table(tableTrack).Filter(map[string]string{"type": "v"}).
-		OrderBy(r.Desc("created_at")).Limit(100).
-		Group("item_id").Count().
-		Ungroup().OrderBy(r.Desc("reduction")).
+	// Scoring rate values from item views, entry, and reservations.
+	const scoreFieldName = "score"
+
+	// Date coverage for last 7 days.
+	const last7Days = -time.Hour * 24 * 7
+	endTime := time.Now()
+	startTime := endTime.Add(last7Days)
+
+	const reductionField = "reduction"
+	q := r.Table(tableTrack).
+		Between(startTime, endTime, r.BetweenOpts{Index: trackFieldCreatedAt}).
+		Filter(map[string]string{trackFieldType: core.TrackTypeView}).
+		Group(trackFieldItemID).Count().
+		Ungroup().OrderBy(r.Desc(reductionField)).
 		Map(func(t r.Term) interface{} {
+			itemID := t.Field("group")
+			qm := r.Table(tableMarket).
+				Between(startTime, endTime, r.BetweenOpts{Index: marketFieldCreatedAt}).
+				Filter(map[string]interface{}{marketFieldItemID: itemID})
+			// Score rate evaluation.
+			viewScore := t.Field(reductionField)
+			entryScore := qm.Count()
+			reserveScore := qm.Filter(map[string]interface{}{marketFieldStatus: core.MarketStatusReserved}).Count()
+			finalScore := r.Expr([]r.Term{
+				viewScore.Mul(core.TrendScoreRateView),
+				entryScore.Mul(core.TrendScoreRateMarketEntry),
+				reserveScore.Mul(core.TrendScoreRateReserved),
+			}).Sum()
+
 			return map[string]interface{}{
-				"item_id": t.Field("group"),
-				"score":   t.Field("reduction"),
+				trackFieldItemID: itemID,
+				scoreFieldName:   finalScore,
+				"view_count":     finalScore,
 			}
 		}).
-		EqJoin("item_id", r.Table(tableCatalog)).Zip().
-		OrderBy(r.Desc("score")).Limit(10)
+		EqJoin(trackFieldItemID, r.Table(tableCatalog)).Zip().
+		OrderBy(r.Desc(scoreFieldName)).Limit(10)
 
 	var res []core.Catalog
 	if err := s.db.list(q, &res); err != nil {
@@ -300,4 +339,47 @@ func (s *catalogStorage) groupIndexMap(catalog r.Term) interface{} {
 		live.Max("created_at").Field("created_at").Default(nil),
 		//r.Table(tableItem).Get(id),
 	}
+}
+
+func (s *catalogStorage) trendingV0() ([]core.Catalog, error) {
+	/*
+		r.db('d2g')
+		.table('track')
+		.filter({type: 'v'})
+		.orderBy(r.desc('created_at'))
+		.limit(100)
+		.group('item_id').count()
+		.ungroup().orderBy(r.desc('reduction'))
+		.map(function(doc) {
+		  return {
+		    item_id: doc('group'),
+		    score: doc('reduction'),
+		  }
+		})
+		.eqJoin('item_id', r.db('d2g').table('catalog'))
+		.zip()
+		.orderBy(r.desc('score'))
+		.limit(10)
+	*/
+
+	// Accumulate views of the recent 100 records.
+	q := r.Table(tableTrack).Filter(map[string]string{"type": "v"}).
+		OrderBy(r.Desc("created_at")).Limit(100).
+		Group("item_id").Count().
+		Ungroup().OrderBy(r.Desc("reduction")).
+		Map(func(t r.Term) interface{} {
+			return map[string]interface{}{
+				"item_id": t.Field("group"),
+				"score":   t.Field("reduction"),
+			}
+		}).
+		EqJoin("item_id", r.Table(tableCatalog)).Zip().
+		OrderBy(r.Desc("score")).Limit(10)
+
+	var res []core.Catalog
+	if err := s.db.list(q, &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
