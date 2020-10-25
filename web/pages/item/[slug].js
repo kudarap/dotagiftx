@@ -328,7 +328,7 @@ ItemDetails.defaultProps = {
 export async function getServerSideProps(props) {
   const { res, params } = props
   res.setHeader('location', `/${params.slug}`)
-  res.statusCode = 302
+  res.statusCode = 301
   res.end()
   return { props: {} }
 }
