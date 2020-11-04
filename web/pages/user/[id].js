@@ -185,7 +185,7 @@ const marketSearchFilter = {
 // This gets called on every request
 export async function getServerSideProps({ params, query, res }) {
   res.setHeader('location', `/profiles/${params.id}`)
-  res.statusCode = 302
+  res.statusCode = 301
   res.end()
   return { props: {} }
 
