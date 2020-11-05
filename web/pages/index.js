@@ -225,7 +225,7 @@ export default function Index({ marketSummary, trendingItems }) {
               {topOrigins &&
                 topOrigins.map(origin => (
                   <Link
-                    href={`/search?q=${origin}`}
+                    href={`/search?origin=${origin}`}
                     color="secondary"
                     className={classes.footLinks}>
                     <Typography variant="subtitle1">{origin}</Typography>
@@ -236,7 +236,10 @@ export default function Index({ marketSummary, trendingItems }) {
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&
                 topHeroes.map(hero => (
-                  <Link href={`/search?q=${hero}`} color="secondary" className={classes.footLinks}>
+                  <Link
+                    href={`/search?hero=${hero}`}
+                    color="secondary"
+                    className={classes.footLinks}>
                     <Typography variant="subtitle1">{hero}</Typography>
                   </Link>
                 ))}
