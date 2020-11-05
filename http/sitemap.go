@@ -33,10 +33,10 @@ func buildSitemap(items []core.Item, users []core.User) *stm.Sitemap {
 	}
 	// Add item origin and heroes.
 	for i, _ := range origins {
-		sitemap.Add(stm.URL{{"loc", "/search?q=" + i}})
+		sitemap.Add(stm.URL{{"loc", "/search?origin=" + i}})
 	}
 	for i, _ := range heroes {
-		sitemap.Add(stm.URL{{"loc", "/search?q=" + i}})
+		sitemap.Add(stm.URL{{"loc", "/search?hero=" + i}})
 	}
 
 	// Add user profile locations.
