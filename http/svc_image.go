@@ -57,8 +57,9 @@ func handleImageThumbnail(svc core.ImageService) http.HandlerFunc {
 			respondError(w, err)
 			return
 		}
-		fmt.Println(path)
-		w.Header().Add("Cache-Control", fmt.Sprintf("max-age=%d", imageCacheMaxAge))
+
+		cc := fmt.Sprintf("max-age=%d, public", imageCacheMaxAge)
+		w.Header().Add("Cache-Control", cc)
 		http.ServeFile(w, r, path)
 	}
 }
