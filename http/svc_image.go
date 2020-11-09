@@ -31,6 +31,12 @@ func handleImageUpload(svc core.ImageService) http.HandlerFunc {
 	}
 }
 
+const (
+	dayAge               = 3600 * 24    // 1 day
+	imageCacheMaxAge     = dayAge       // 1 day for profile and raw image
+	imageCacheItemMaxAge = dayAge * 365 // 1 year for item images
+)
+
 func handleImage(svc core.ImageService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
@@ -40,11 +46,11 @@ func handleImage(svc core.ImageService) http.HandlerFunc {
 			return
 		}
 
+		cc := fmt.Sprintf("max-age=%d, public", imageCacheMaxAge)
+		w.Header().Add("Cache-Control", cc)
 		http.ServeFile(w, r, path)
 	}
 }
-
-const imageCacheMaxAge = 3600 * 24 // 1 day
 
 func handleImageThumbnail(svc core.ImageService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +64,7 @@ func handleImageThumbnail(svc core.ImageService) http.HandlerFunc {
 			return
 		}
 
-		cc := fmt.Sprintf("max-age=%d, public", imageCacheMaxAge)
+		cc := fmt.Sprintf("max-age=%d, public", imageCacheItemMaxAge)
 		w.Header().Add("Cache-Control", cc)
 		http.ServeFile(w, r, path)
 	}
