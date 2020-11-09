@@ -19,10 +19,11 @@ export default function MyApp(props) {
     <>
       <Head>
         <title>DotagiftX - Dota 2 giftables market</title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
+        {/*<meta*/}
+        {/*  name="viewport"*/}
+        {/*  content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"*/}
+        {/*/>*/}
       </Head>
       <Theme>
         <Component {...pageProps} />
