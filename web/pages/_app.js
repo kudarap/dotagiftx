@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import dynamic from 'next/dynamic'
-// import Theme from '@/components/Theme'
-const Theme = dynamic(() => import('@/components/Theme'))
+import Theme from '@/components/Theme'
 
 export default function MyApp(props) {
   const { Component, pageProps } = props

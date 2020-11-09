@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import dynamic from 'next/dynamic'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import AppBar from '@material-ui/core/AppBar'
@@ -17,8 +18,8 @@ import { authRevoke, CDN_URL, myProfile } from '@/service/api'
 import { clear as destroyLoginSess, isOk as checkLoggedIn, get as getAuth } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
-import SearchInputMini from '@/components/SearchInputMini'
-import { Icon } from '@material-ui/core'
+// import SearchInputMini from '@/components/SearchInputMini'
+const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
 const useStyles = makeStyles(theme => ({
   root: {},

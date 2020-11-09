@@ -5,10 +5,10 @@ import Head from 'next/head'
 import Router from 'next/router'
 import dynamic from 'next/dynamic'
 import { makeStyles } from '@material-ui/core/styles'
-// import LinearProgress from '@material-ui/core/LinearProgress'
-// import Typography from '@material-ui/core/Typography'
-// import Grid from '@material-ui/core/Grid'
-// import Divider from '@material-ui/core/Divider'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import Typography from '@material-ui/core/Typography'
+import Grid from '@material-ui/core/Grid'
+import Divider from '@material-ui/core/Divider'
 import { APP_URL } from '@/constants/strings'
 import {
   CATALOGS,
@@ -19,20 +19,15 @@ import {
   statsMarketSummary,
 } from '@/service/api'
 import * as format from '@/lib/format'
-// import Header from '@/components/Header'
-// import Container from '@/components/Container'
+import Header from '@/components/Header'
+import Container from '@/components/Container'
 // import SearchInput from '@/components/SearchInput'
 // import CatalogList from '@/components/CatalogList'
 // import Link from '@/components/Link'
 // import Footer from '@/components/Footer'
 
-const Typography = dynamic(() => import('@material-ui/core/Typography'))
-const Grid = dynamic(() => import('@material-ui/core/Grid'))
-const Divider = dynamic(() => import('@material-ui/core/Divider'))
-const LinearProgress = dynamic(() => import('@material-ui/core/LinearProgress'))
-
-const Header = dynamic(() => import('@/components/Header'))
-const Container = dynamic(() => import('@/components/Container'))
+// const Header = dynamic(() => import('@/components/Header'))
+// const Container = dynamic(() => import('@/components/Container'))
 const SearchInput = dynamic(() => import('@/components/SearchInput'))
 const CatalogList = dynamic(() => import('@/components/CatalogList'))
 const Link = dynamic(() => import('@/components/Link'))
