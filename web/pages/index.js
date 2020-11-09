@@ -153,7 +153,7 @@ export default function Index({ marketSummary, trendingItems }) {
             {/* </Typography> */}
           </div>
 
-          <SearchInput helperText={description} onSubmit={handleSubmit} />
+          <SearchInput label={description} onSubmit={handleSubmit} />
           <br />
 
           {/* Trending Items */}
@@ -236,7 +236,9 @@ export default function Index({ marketSummary, trendingItems }) {
                     href={`/search?origin=${origin}`}
                     color="secondary"
                     className={classes.footLinks}>
-                    <Typography variant="subtitle1">{origin}</Typography>
+                    <Typography variant="subtitle1" component="p">
+                      {origin}
+                    </Typography>
                   </Link>
                 ))}
             </Grid>
@@ -248,7 +250,9 @@ export default function Index({ marketSummary, trendingItems }) {
                     href={`/search?hero=${hero}`}
                     color="secondary"
                     className={classes.footLinks}>
-                    <Typography variant="subtitle1">{hero}</Typography>
+                    <Typography variant="subtitle1" component="p">
+                      {hero}
+                    </Typography>
                   </Link>
                 ))}
             </Grid>
