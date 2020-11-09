@@ -44,6 +44,8 @@ func handleImage(svc core.ImageService) http.HandlerFunc {
 	}
 }
 
+const imageCacheMaxAge = 3600 * 24 // 1 day
+
 func handleImageThumbnail(svc core.ImageService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
@@ -55,7 +57,8 @@ func handleImageThumbnail(svc core.ImageService) http.HandlerFunc {
 			respondError(w, err)
 			return
 		}
-
+		fmt.Println(path)
+		w.Header().Add("Cache-Control", fmt.Sprintf("max-age=%d", imageCacheMaxAge))
 		http.ServeFile(w, r, path)
 	}
 }
