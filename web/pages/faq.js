@@ -1,10 +1,10 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
+import Footer from '@/components/Footer'
 
 const useStyles = makeStyles(theme => ({
   main: {

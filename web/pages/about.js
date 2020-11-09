@@ -3,9 +3,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
-import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import Footer from '@/components/Footer'
 
 const useStyles = makeStyles(theme => ({
   main: {

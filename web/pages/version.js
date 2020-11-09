@@ -1,8 +1,9 @@
+import React from 'react'
 import Head from 'next/head'
-import Container from '@/components/Container'
+import dynamic from 'next/dynamic'
 import Header from '@/components/Header'
+import Container from '@/components/Container'
 import Footer from '@/components/Footer'
-import { version } from '@/service/api'
 
 export default function Version({ data }) {
   return (
