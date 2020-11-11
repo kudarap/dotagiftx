@@ -39,8 +39,8 @@ const useStyles = makeStyles(theme => ({
       width: 300,
       height: 170,
     },
-    width: 164,
-    height: 109,
+    width: 165,
+    height: 110,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
       margin: `8px auto !important`,
       width: 300,
     },
-    width: 164,
+    width: 165,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
@@ -175,8 +175,9 @@ export default function ItemDetails({
                   <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                     <ItemImage
                       className={classes.media}
-                      image={`/164x109/${item.image}`}
-                      srcSet={`${CDN_URL}/164x109/${item.image}, ${CDN_URL}/300x170/${item.image} 2x`}
+                      image={item.image}
+                      width={165}
+                      height={110}
                       title={item.name}
                       rarity={item.rarity}
                     />
@@ -234,7 +235,9 @@ export default function ItemDetails({
                 <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                   <ItemImage
                     className={classes.media}
-                    image={`/600x340/${item.image}`}
+                    image={item.image}
+                    width={300}
+                    height={170}
                     title={item.name}
                   />
                 </a>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
-export default function ItemImage({ image, title, rarity, className, ...other }) {
+export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
   const contStyle = {
     display: 'flex',
     lineHeight: 1,
@@ -25,18 +25,31 @@ export default function ItemImage({ image, title, rarity, className, ...other })
     textIndent: '10000px',
   }
 
+  let baseSrc = CDN_URL + image
+  // using srcset to support high dpi or retina displays when
+  // dimension were set.
+  let srcSet = null
+  if (width && height) {
+    baseSrc = `${CDN_URL}/${width}x${height}/${image}`
+    srcSet = `${baseSrc}, ${CDN_URL}/${width * 2}x${height * 2}/${image} 2x`
+  }
+
   return (
     <div style={contStyle} className={className}>
-      <img src={CDN_URL + image} alt={title || image} style={imgStyle} {...other} />
+      <img src={baseSrc} srcSet={srcSet} alt={title || image} style={imgStyle} {...other} />
     </div>
   )
 }
 ItemImage.propTypes = {
   image: PropTypes.string.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
   title: PropTypes.string,
   rarity: PropTypes.string,
+  className: PropTypes.string,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
+  className: '',
 }
