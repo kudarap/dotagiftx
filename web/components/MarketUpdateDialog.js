@@ -132,7 +132,9 @@ export default function MarketUpdateDialog(props) {
           <div className={classes.details}>
             <ItemImage
               className={classes.media}
-              image={`/300x170/${market.item.image}`}
+              image={market.item.image}
+              width={150}
+              height={100}
               title={market.item.name}
               rarity={market.item.rarity}
             />

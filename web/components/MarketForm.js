@@ -183,7 +183,9 @@ export default function MarketForm() {
           <div>
             <ItemImage
               className={classes.itemImage}
-              image={`/300x170/${item.image}`}
+              image={item.image}
+              width={150}
+              height={100}
               rarity={item.rarity}
               title={item.name}
             />

@@ -113,7 +113,9 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                     onClick={() => handleUpdateClick(idx)}>
                     <ItemImage
                       className={classes.image}
-                      image={`/200x100/${market.item.image}`}
+                      image={market.item.image}
+                      width={77}
+                      height={55}
                       title={market.item.name}
                       rarity={market.item.rarity}
                     />

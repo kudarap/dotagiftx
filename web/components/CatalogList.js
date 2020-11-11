@@ -83,7 +83,9 @@ export default function CatalogList({ items = [], loading, error, variant }) {
                 <Link className={classes.link} href="/[slug]" as={`/${item.slug}`} disableUnderline>
                   <ItemImage
                     className={classes.image}
-                    image={`/200x100/${item.image}`}
+                    image={item.image}
+                    width={77}
+                    height={55}
                     title={item.name}
                     rarity={item.rarity}
                   />

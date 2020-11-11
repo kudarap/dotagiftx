@@ -54,32 +54,6 @@ export default function HistoryViewDialog(props) {
 
   const router = useRouter()
 
-  const onFormSubmit = evt => {
-    evt.preventDefault()
-
-    if (loading) {
-      return
-    }
-
-    const payload = {
-      status: MARKET_STATUS_SOLD,
-    }
-
-    setLoading(true)
-    setError(null)
-    ;(async () => {
-      try {
-        await myMarket.PATCH(market.id, payload)
-        handleClose()
-        router.push('/my-history')
-      } catch (e) {
-        setError(`Error: ${e.message}`)
-      }
-
-      setLoading(false)
-    })()
-  }
-
   if (!market) {
     return null
   }
@@ -100,7 +74,9 @@ export default function HistoryViewDialog(props) {
         <div className={classes.details}>
           <ItemImage
             className={classes.media}
-            image={`/300x170/${market.item.image}`}
+            image={market.item.image}
+            width={150}
+            height={100}
             title={market.item.name}
             rarity={market.item.rarity}
           />
