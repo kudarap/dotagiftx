@@ -175,7 +175,8 @@ export default function ItemDetails({
                   <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                     <ItemImage
                       className={classes.media}
-                      image={`/300x170/${item.image}`}
+                      image={`/164x109/${item.image}`}
+                      srcSet={`${CDN_URL}/164x109/${item.image}, ${CDN_URL}/300x170/${item.image} 2x`}
                       title={item.name}
                       rarity={item.rarity}
                     />

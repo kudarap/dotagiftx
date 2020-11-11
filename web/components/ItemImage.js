@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
-export default function ItemImage({ image, title, rarity, ...other }) {
+export default function ItemImage({ image, title, rarity, className, ...other }) {
   const contStyle = {
     display: 'flex',
     lineHeight: 1,
@@ -26,8 +26,8 @@ export default function ItemImage({ image, title, rarity, ...other }) {
   }
 
   return (
-    <div style={contStyle} {...other}>
-      <img src={CDN_URL + image} alt={title || image} style={imgStyle} />
+    <div style={contStyle} className={className}>
+      <img src={CDN_URL + image} alt={title || image} style={imgStyle} {...other} />
     </div>
   )
 }
