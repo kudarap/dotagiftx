@@ -21,6 +21,7 @@ import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
+import { retinaSrcSet } from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -109,7 +110,8 @@ export default function MarketList({ data, error, currentUserID }) {
                       <div className={classes.seller}>
                         <Avatar
                           className={classes.avatar}
-                          src={`${CDN_URL}/${market.user.avatar}`}
+                          alt={market.user.name}
+                          {...retinaSrcSet(market.user.avatar, 40, 40)}
                         />
                         <div>
                           <strong>{market.user.name}</strong>

@@ -3,6 +3,12 @@ import PropTypes from 'prop-types'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
+export function retinaSrcSet(filename, width, height) {
+  const src = `${CDN_URL}/${width}x${height}/${filename}`
+  const src2x = `${CDN_URL}/${width * 2}x${height * 2}/${filename}`
+  return { src, srcSet: `${src} 1x, ${src2x} 2x` }
+}
+
 export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
   const contStyle = {
     display: 'flex',
@@ -30,8 +36,9 @@ export default function ItemImage({ image, title, rarity, className, width, heig
   // dimension were set.
   let srcSet = null
   if (width && height) {
-    baseSrc = `${CDN_URL}/${width}x${height}/${image}`
-    srcSet = `${baseSrc}, ${CDN_URL}/${width * 2}x${height * 2}/${image} 2x`
+    const rs = retinaSrcSet(image, width, height)
+    baseSrc = rs.src
+    srcSet = rs.srcSet
   }
 
   return (
