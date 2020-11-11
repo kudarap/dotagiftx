@@ -4,7 +4,7 @@ import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
 export function retinaSrcSet(filename, width, height) {
-  const src = `${CDN_URL}/${width}x${height}/${filename}`
+  const src = `${CDN_URL}/${width * 1.1}x${height * 1.1}/${filename}`
   const src2x = `${CDN_URL}/${width * 2}x${height * 2}/${filename}`
   return { src, srcSet: `${src} 1x, ${src2x} 2x` }
 }
