@@ -8,12 +8,13 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
-import { CDN_URL, statsMarketSummary } from '@/service/api'
+import { statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
+import { retinaSrcSet } from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -95,7 +96,7 @@ export default function ContactDialog(props) {
         <DialogContent>
           <div className={classes.details}>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
-              <Avatar className={classes.avatar} src={`${CDN_URL}/${market.user.avatar}`} />
+              <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
             </a>
             <Typography component="h1">
               <Typography className={classes.profileName} component="p" variant="h4">

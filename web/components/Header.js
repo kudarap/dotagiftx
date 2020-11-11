@@ -18,6 +18,7 @@ import { authRevoke, CDN_URL, myProfile } from '@/service/api'
 import { clear as destroyLoginSess, isOk as checkLoggedIn, get as getAuth } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
+import { retinaSrcSet } from '@/components/ItemImage'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -182,7 +183,7 @@ export default function Header({ disableSearch }) {
                         onClick={handleClick}>
                         <Avatar
                           className={classes.avatar}
-                          src={profile && `${CDN_URL}/${profile.avatar}`}
+                          {...retinaSrcSet(profile.avatar, 24, 24)}
                         />
                       </IconButton>
                     ) : (
@@ -193,7 +194,7 @@ export default function Header({ disableSearch }) {
                         startIcon={
                           <Avatar
                             className={classes.avatar}
-                            src={profile && `${CDN_URL}/${profile.avatar}`}
+                            {...retinaSrcSet(profile.avatar, 24, 24)}
                           />
                         }>
                         {profile && profile.name}
