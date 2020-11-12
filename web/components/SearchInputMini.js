@@ -9,20 +9,27 @@ import InputBase from '@material-ui/core/InputBase'
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
 
+const bgColor = '#435a64'
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     padding: '3px 12px',
     display: 'flex',
     alignItems: 'center',
+    backgroundColor: theme.palette.grey[100],
     // border: `1px solid ${theme.palette.background.paper}`,
     // '&:hover': {
     //   borderColor: theme.palette.grey[700],
     // },
   },
   input: {
+    [theme.breakpoints.down('sm')]: {
+      height: 42,
+    },
     margin: '0 auto',
-    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.grey[800],
+    // backgroundColor: theme.palette.background.paper,
   },
   verticalDivider: {
     borderRight: `1px solid ${theme.palette.grey[300]}`,

@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
     filter: 'drop-shadow(0px 0px 10px black)',
     letterSpacing: 2,
     cursor: 'pointer',
+    paddingRight: theme.spacing(1),
   },
   titleMini: {
     fontSize: 17,
