@@ -8,7 +8,6 @@ import SubmitIcon from '@material-ui/icons/Check'
 import Alert from '@material-ui/lab/Alert'
 import { catalog, myMarket } from '@/service/api'
 import * as format from '@/lib/format'
-import { isOk as checkLoggedIn } from '@/service/auth'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
@@ -147,10 +146,6 @@ export default function MarketForm() {
 
   const handleQtyChange = e => {
     const qty = e.target.value
-    if (qty <= 0) {
-      return
-    }
-
     setPayload({ ...payload, qty })
   }
 
@@ -246,6 +241,13 @@ export default function MarketForm() {
             style={{ width: '30%', marginLeft: '1%' }}
             onInput={handleQtyChange}
             onChange={handleQtyChange}
+            onBlur={e => {
+              let qty = Number(e.target.value)
+              if (qty < 1) {
+                qty = 1
+              }
+              setPayload({ ...payload, qty })
+            }}
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         </div>
