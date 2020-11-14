@@ -10,7 +10,7 @@ const NextComposed = React.forwardRef(function NextComposed(props, ref) {
   const { as, href, ...other } = props
 
   return (
-    <NextLink href={href} as={as} shallow>
+    <NextLink href={href} as={as}>
       <a ref={ref} {...other} />
     </NextLink>
   )
