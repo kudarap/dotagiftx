@@ -13,7 +13,7 @@ function Root({ children }) {
   const currentAuth = get()
   const isLoggedIn = isOk()
   const s = new Date()
-  console.log('bench root', s.getMilliseconds() - t.getMilliseconds())
+  console.log('bench root', s - t)
   return (
     <AppContext.Provider value={{ isMobile, currentAuth, isLoggedIn }}>
       <Theme>{children}</Theme>

@@ -272,7 +272,7 @@ export default function Header({ disableSearch }) {
                   </MenuItem>
 
                   {isLoggedIn ? (
-                    <>
+                    [
                       <MenuItem
                         onClick={handleMoreClose}
                         component={Link}
@@ -280,31 +280,31 @@ export default function Header({ disableSearch }) {
                         as={`/profiles/${profile.steam_id}`}
                         disableUnderline>
                         Profile
-                      </MenuItem>
+                      </MenuItem>,
                       <MenuItem
                         onClick={handleMoreClose}
                         component={Link}
                         href="/my-listings"
                         disableUnderline>
                         Listings
-                      </MenuItem>
+                      </MenuItem>,
                       <MenuItem
                         onClick={handleMoreClose}
                         component={Link}
                         href="/my-reservations"
                         disableUnderline>
                         Reservations
-                      </MenuItem>
+                      </MenuItem>,
                       <MenuItem
                         onClick={handleMoreClose}
                         component={Link}
                         href="/my-history"
                         disableUnderline>
                         History
-                      </MenuItem>
-                      {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
-                      <MenuItem onClick={handleLogout}>Sign out</MenuItem>
-                    </>
+                      </MenuItem>,
+                      <MenuItem onClick={handleLogout}>Sign out</MenuItem>,
+                      // <MenuItem onClick={handleClose}>Buy Orders</MenuItem>
+                    ]
                   ) : (
                     <MenuItem
                       onClick={handleMoreClose}
