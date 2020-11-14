@@ -7,10 +7,13 @@ import Theme from '@/components/Theme'
 import AppContext from '@/components/AppContext'
 
 function Root({ children }) {
+  const t = new Date()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
   const currentAuth = get()
   const isLoggedIn = isOk()
+  const s = new Date()
+  console.log('bench root', s.getMilliseconds() - t.getMilliseconds())
   return (
     <AppContext.Provider value={{ isMobile, currentAuth, isLoggedIn }}>
       <Theme>{children}</Theme>
