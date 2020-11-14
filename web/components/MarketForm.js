@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
@@ -14,6 +14,7 @@ import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import { MARKET_QTY_LIMIT } from '@/constants/market'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -57,6 +58,7 @@ const checkMarketPayload = payload => {
 
 export default function MarketForm() {
   const classes = useStyles()
+  const { isLoggedIn } = useContext(AppContext)
 
   const [item, setItem] = React.useState(defaultItem)
   const [payload, setPayload] = React.useState(defaultPayload)
@@ -151,8 +153,6 @@ export default function MarketForm() {
 
     setPayload({ ...payload, qty })
   }
-
-  const isLoggedIn = checkLoggedIn()
 
   return (
     <>
