@@ -1,21 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { useRouter } from 'next/router'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import { myMarket } from '@/service/api'
 import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
-import {
-  MARKET_STATUS_MAP_COLOR,
-  MARKET_STATUS_MAP_TEXT,
-  MARKET_STATUS_SOLD,
-} from '@/constants/market'
+import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -38,21 +32,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function HistoryViewDialog(props) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props
 
-  const [error, setError] = React.useState('')
-  const [loading, setLoading] = React.useState(false)
-
   const handleClose = () => {
-    setError('')
-    setLoading(false)
     onClose()
   }
-
-  const router = useRouter()
 
   if (!market) {
     return null
@@ -128,11 +114,6 @@ export default function HistoryViewDialog(props) {
           </Typography>
         </div>
       </DialogContent>
-      {error && (
-        <Typography color="error" align="center" variant="body2">
-          {error}
-        </Typography>
-      )}
     </Dialog>
   )
 }

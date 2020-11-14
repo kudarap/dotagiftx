@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -15,6 +14,7 @@ import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { retinaSrcSet } from '@/components/ItemImage'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -43,8 +43,7 @@ const marketSummaryFilter = {}
 
 export default function ContactDialog(props) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props
 

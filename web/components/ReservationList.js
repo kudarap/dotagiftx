@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -22,6 +21,7 @@ import ItemImage from '@/components/ItemImage'
 import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import Link from '@/components/Link'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -41,8 +41,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function ReservationList({ datatable, loading, error, onSearchInput, onReload }) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const [notifOpen, setNotifOpen] = React.useState(false)

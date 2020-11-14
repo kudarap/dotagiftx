@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -15,6 +14,7 @@ import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   th: {
@@ -39,8 +39,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CatalogList({ items = [], loading, error, variant }) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const isRecentMode = variant === 'recent'
 
