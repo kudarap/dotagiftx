@@ -7,6 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import SubmitIcon from '@material-ui/icons/Check'
 import Alert from '@material-ui/lab/Alert'
 import { catalog, myMarket } from '@/service/api'
+import { itemRarityColorMap } from '@/constants/palette'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
@@ -192,7 +193,14 @@ export default function MarketForm() {
             </Typography>
             <Typography variant="body2" color="textSecondary">
               Rarity:{' '}
-              <Typography variant="body2" color="textPrimary" component="span">
+              <Typography
+                variant="body2"
+                color="textPrimary"
+                component="span"
+                style={{
+                  textTransform: 'capitalize',
+                  color: itemRarityColorMap[item.rarity],
+                }}>
                 {item.rarity}
               </Typography>
             </Typography>
@@ -204,9 +212,9 @@ export default function MarketForm() {
             </Typography>
             <Typography variant="body2" color="textSecondary">
               Starting at:{' '}
-              <Typography variant="body2" color="textPrimary" component="span">
+              <Link href={`/${item.slug}`}>
                 {item.lowest_ask ? format.amount(item.lowest_ask, 'USD') : 'no offers yet'}
-              </Typography>
+              </Link>
             </Typography>
             <br />
             <br />
