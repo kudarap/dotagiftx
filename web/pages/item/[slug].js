@@ -1,10 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { get as getLoggedInUser, isOk as checkLoggedIn } from '@/service/auth'
 import { CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -17,6 +15,7 @@ import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import ChipLink from '@/components/ChipLink'
 import { itemRarityColorMap } from '@/constants/palette'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -63,8 +62,8 @@ export default function ItemDetails({
   canonicalURL,
 }) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+
+  const { isMobile, isLoggedIn } = useContext(AppContext)
 
   if (initialError) {
     return (
@@ -126,12 +125,6 @@ export default function ItemDetails({
   } else {
     schemaOrgProd.offers.availability = 'https://schema.org/OutOfStock'
     schemaOrgProd.offers.price = '0'
-  }
-
-  const isLoggedIn = checkLoggedIn()
-  let currentUserID = null
-  if (isLoggedIn) {
-    currentUserID = getLoggedInUser().user_id
   }
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
@@ -295,7 +288,7 @@ export default function ItemDetails({
           )}
           <br />
 
-          <MarketList data={markets} currentUserID={currentUserID} error={error} />
+          <MarketList data={markets} error={error} />
           {!error && (
             <TablePaginationRouter
               linkProps={linkProps}

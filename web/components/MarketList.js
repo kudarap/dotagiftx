@@ -36,9 +36,10 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MarketList({ data, error, currentUserID }) {
+export default function MarketList({ data, error }) {
   const classes = useStyles()
-  const { isMobile } = useContext(AppContext)
+  const { isMobile, currentAuth } = useContext(AppContext)
+  const currentUserID = currentAuth.user_id || null
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
@@ -181,9 +182,7 @@ export default function MarketList({ data, error, currentUserID }) {
 MarketList.propTypes = {
   data: PropTypes.object.isRequired,
   error: PropTypes.string,
-  currentUserID: PropTypes.string,
 }
 MarketList.defaultProps = {
   error: null,
-  currentUserID: null,
 }
