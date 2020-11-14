@@ -260,13 +260,13 @@ export default function ItemDetails({
                 {item.name}
               </Typography>
               <Typography>
-                <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
+                <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
               </Typography>
               <Typography
                 color="textSecondary"
                 variant="body2"
                 component={Link}
-                href={`/search?q=${item.origin}`}>
+                href={`/search?origin=${item.origin}`}>
                 {item.origin}
                 {item.rarity !== 'regular' && (
                   <>
@@ -276,7 +276,7 @@ export default function ItemDetails({
                       variant="body2"
                       component={Link}
                       rarity={item.rarity}
-                      href={`/search?q=${item.rarity}`}
+                      href={`/search?rarity=${item.rarity}`}
                     />
                   </>
                 )}
