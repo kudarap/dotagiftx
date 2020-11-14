@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import Theme from '@/components/Theme'
+import Root from '@/components/Root'
 
 export default function MyApp(props) {
   const { Component, pageProps } = props
@@ -20,14 +20,14 @@ export default function MyApp(props) {
       <Head>
         <title>DotagiftX - Dota 2 giftables market</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
-        {/*<meta*/}
-        {/*  name="viewport"*/}
-        {/*  content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"*/}
-        {/*/>*/}
+        {/* <meta */}
+        {/*  name="viewport" */}
+        {/*  content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" */}
+        {/* /> */}
       </Head>
-      <Theme>
+      <Root>
         <Component {...pageProps} />
-      </Theme>
+      </Root>
     </>
   )
 }

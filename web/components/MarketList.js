@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -22,6 +21,7 @@ import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -38,8 +38,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MarketList({ data, error, currentUserID }) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {

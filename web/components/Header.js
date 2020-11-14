@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -19,6 +18,7 @@ import { clear as destroyLoginSess, isOk as checkLoggedIn, get as getAuth } from
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { retinaSrcSet } from '@/components/ItemImage'
+import AppContext from '@/components/AppContext'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -82,10 +82,9 @@ const defaultProfile = {
 
 export default function Header({ disableSearch }) {
   const classes = useStyles()
-  const theme = useTheme()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
-  const isXsScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile: isXsScreen, isLoggedIn, currentAuth } = useContext(AppContext)
   const isMobile = isXsScreen && !disableSearch
 
   const [profile, setProfile] = React.useState(defaultProfile)
@@ -126,16 +125,13 @@ export default function Header({ disableSearch }) {
 
   const handleLogout = () => {
     ;(async () => {
-      const auth = getAuth()
-      await authRevoke(auth.refresh_token)
+      await authRevoke(currentAuth.refresh_token)
       destroyLoginSess()
       handleClose()
       // eslint-disable-next-line no-undef
       window.location = '/'
     })()
   }
-
-  const isLoggedIn = checkLoggedIn()
 
   return (
     <header>
