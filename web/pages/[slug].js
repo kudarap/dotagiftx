@@ -33,12 +33,13 @@ export async function getServerSideProps(props) {
   const { slug } = params
 
   let item = {}
+  let error = null
 
   // Handles no market entry on item
   try {
     item = await catalog(slug)
   } catch (e) {
-    console.log(`catalog get error: ${e.message}`)
+    error = `catalog get error: ${e.message}`
   }
   if (!item.id) {
     return {
@@ -54,14 +55,13 @@ export async function getServerSideProps(props) {
     filter.page = Number(query.page)
   }
 
-  let markets = {}
-  let error = null
-  try {
-    markets = await marketSearch(filter)
-  } catch (e) {
-    console.log(`market search error: ${e.message}`)
-    error = e.message
-  }
+  const markets = {}
+  // try {
+  //   markets = await marketSearch(filter)
+  // } catch (e) {
+  //   console.log(`market search error: ${e.message}`)
+  //   error = e.message
+  // }
 
   const canonicalURL = `${APP_URL}/${slug}`
 
