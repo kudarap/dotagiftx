@@ -9,7 +9,7 @@ import (
 
 const statsCacheMarketSummary = time.Minute * 2
 
-func handleStatsMarketSummary(marketSvc core.MarketService, cache core.Cache) http.HandlerFunc {
+func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := core.CacheKeyFromRequest(r)
@@ -20,36 +20,20 @@ func handleStatsMarketSummary(marketSvc core.MarketService, cache core.Cache) ht
 			}
 		}
 
-		var err error
-		summary := struct {
-			Live     int `json:"live"`
-			Reserved int `json:"reserved"`
-			Sold     int `json:"sold"`
-		}{}
+		f := &core.Market{}
+		if err := findOptsFilter(r.URL, f); err != nil {
+			respondError(w, err)
+			return
+		}
 
-		// Collect live market.
-		summary.Live, err = marketCountByStatus(r, marketSvc, core.MarketStatusLive)
+		res, err := svc.CountMarketStatus(core.FindOpts{Filter: f})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		// Collect reserve market.
-		summary.Reserved, err = marketCountByStatus(r, marketSvc, core.MarketStatusReserved)
-		if err != nil {
-			respondError(w, err)
-			return
-		}
-
-		// Collect sold market.
-		summary.Sold, err = marketCountByStatus(r, marketSvc, core.MarketStatusSold)
-		if err != nil {
-			respondError(w, err)
-			return
-		}
-
-		_ = cache.Set(cacheKey, summary, statsCacheMarketSummary)
-		respondOK(w, summary)
+		_ = cache.Set(cacheKey, res, statsCacheMarketSummary)
+		respondOK(w, res)
 	}
 }
 

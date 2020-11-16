@@ -15,13 +15,12 @@ type statsStorage struct {
 }
 
 func (s *statsStorage) CountMarketStatus(o core.FindOpts) (*core.MarketStatusCount, error) {
-	q := r.Table(tableMarket).GroupByIndex(marketFieldStatus).Count()
-
 	var res []struct {
 		Group     core.MarketStatus `db:"group"`
 		Reduction int               `db:"reduction"`
 	}
-	if err := s.db.list(q, &res); err != nil {
+	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), o)
+	if err := s.db.list(q.Count(), &res); err != nil {
 		return nil, err
 	}
 	mapRes := map[core.MarketStatus]int{}

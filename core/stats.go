@@ -35,11 +35,10 @@ type (
 
 	// StatsService provides access to stats service.
 	StatsService interface {
-		CountTotalMarketStatus() (*MarketStatusCount, error)
-		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
-	}
-
-	StatsStorage interface {
+		//CountTotalMarketStatus() (*MarketStatusCount, error)
+		//CountUserMarketStatus(userID string) (*MarketStatusCount, error)
 		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
 	}
+
+	StatsStorage StatsService
 )
