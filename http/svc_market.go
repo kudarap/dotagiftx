@@ -9,8 +9,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
+const marketCacheExpr = time.Minute
+
+func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
@@ -32,7 +43,13 @@ func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger
 			list = []core.Market{}
 		}
 
-		respondOK(w, newDataWithMeta(list, md))
+		o := newDataWithMeta(list, md)
+		go func() {
+			if err := cache.Set(cacheKey, o, marketCacheExpr); err != nil {
+				logger.Errorf("could save cache on catalog details: %s", err)
+			}
+		}()
+		respondOK(w, o)
 	}
 }
 
@@ -123,7 +140,6 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 
 		// Check for cache hit and render them.
 		cacheKey, noCache := core.CacheKeyFromRequest(r)
-
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -152,13 +168,28 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 	}
 }
 
-func handleMarketCatalogDetail(svc core.MarketService) http.HandlerFunc {
+func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
 		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"))
 		if err != nil {
 			respondError(w, err)
 			return
 		}
+
+		go func() {
+			if err := cache.Set(cacheKey, c, catalogCacheExpr); err != nil {
+				logger.Errorf("could save cache on catalog details: %s", err)
+			}
+		}()
 
 		respondOK(w, c)
 	}
