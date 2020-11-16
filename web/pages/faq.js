@@ -22,9 +22,6 @@ export default function Faq() {
 
       <main className={classes.main}>
         <Container>
-          <Link2 href="/profiles/76561198287849998" shallow>
-            TEST SHALLOW
-          </Link2>
           <Typography variant="h5" component="h1" gutterBottom>
             Frequently Asked Questions
           </Typography>
