@@ -32,6 +32,7 @@ func (s *statsStorage) CountMarketStatus(o core.FindOpts) (*core.MarketStatusCou
 		Pending:   mapRes[core.MarketStatusPending],
 		Live:      mapRes[core.MarketStatusLive],
 		Sold:      mapRes[core.MarketStatusSold],
+		Reserved:  mapRes[core.MarketStatusReserved],
 		Removed:   mapRes[core.MarketStatusRemoved],
 		Cancelled: mapRes[core.MarketStatusCancelled],
 	}
