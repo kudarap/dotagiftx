@@ -12,10 +12,11 @@ var pixel = filepath.Join("assets/image/pixel.gif")
 
 func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := svc.CreateFromRequest(r); err != nil {
-			logger.Errorf("tracker error: %s", err)
-			return
-		}
+		go func(r *http.Request) {
+			if err := svc.CreateFromRequest(r); err != nil {
+				logger.Errorf("tracker error: %s", err)
+			}
+		}(r)
 
 		// unset JSON headers
 		w.Header().Set("Access-Control-Allow-Headers", "")
