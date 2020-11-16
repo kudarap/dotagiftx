@@ -11,6 +11,8 @@ import (
 type Cache interface {
 	Set(key string, val interface{}, expr time.Duration) error
 	Get(key string) (val string, err error)
+	Del(key string) error
+	BulkDel(keyPrefix string) error
 }
 
 const cacheSkipKey = "nocache"
@@ -21,4 +23,10 @@ func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Skip caching when nocache flag exists.
 	_, noCache = r.URL.Query()[cacheSkipKey]
 	return r.URL.Path + ":" + hash.MD5(r.URL.RawQuery), noCache
+}
+
+func CacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, noCache bool) {
+	key, noCache = CacheKeyFromRequest(r)
+	key = prefix + ":" + key
+	return
 }

@@ -32,27 +32,9 @@ func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.Hand
 			return
 		}
 
-		_ = cache.Set(cacheKey, res, statsCacheMarketSummary)
+		go cache.Set(cacheKey, res, statsCacheMarketSummary)
 		respondOK(w, res)
 	}
-}
-
-func marketCountByStatus(r *http.Request, marketSvc core.MarketService, status core.MarketStatus) (int, error) {
-	opts, err := findOptsFromURL(r.URL, &core.Market{})
-	if err != nil {
-		return 0, err
-	}
-	opts.Limit = 1
-	filter := opts.Filter.(*core.Market)
-	filter.Status = status
-	opts.Filter = filter
-
-	_, meta, err := marketSvc.Markets(r.Context(), opts)
-	if err != nil {
-		return 0, err
-	}
-
-	return meta.TotalCount, nil
 }
 
 const statsCacheExpr = time.Hour
@@ -83,7 +65,7 @@ func topStatsBaseHandler(fn func() ([]string, error), cache core.Cache) http.Han
 		}
 		top10 := l[:10]
 
-		_ = cache.Set(cacheKey, top10, statsCacheExpr)
+		go cache.Set(cacheKey, top10, statsCacheExpr)
 		respondOK(w, top10)
 	}
 }

@@ -41,9 +41,9 @@ func (s *Server) privateRouter(r chi.Router) {
 			r.Get("/profile", handleProfile(s.userSvc))
 			r.Route("/markets", func(r chi.Router) {
 				r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.logger, s.cache))
-				r.Post("/", handleMarketCreate(s.marketSvc))
+				r.Post("/", handleMarketCreate(s.marketSvc, s.cache))
 				r.Get("/{id}", handleMarketDetail(s.marketSvc))
-				r.Patch("/{id}", handleMarketUpdate(s.marketSvc))
+				r.Patch("/{id}", handleMarketUpdate(s.marketSvc, s.cache))
 			})
 		})
 		r.Post("/items", handleItemCreate(s.itemSvc))

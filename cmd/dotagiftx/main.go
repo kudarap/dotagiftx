@@ -75,6 +75,7 @@ func (a *application) setup() error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(redisClient.BulkDel("svc_market"))
 	rethinkClient, err := setupRethink(a.config.Rethink)
 	if err != nil {
 		return err
