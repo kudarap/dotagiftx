@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kudarap/dotagiftx/core"
+
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/logger"
@@ -88,6 +90,8 @@ func (a *application) setup() error {
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
+	statsStg := rethink.NewStats(rethinkClient)
+	fmt.Println(statsStg.CountMarketStatus(core.FindOpts{}))
 
 	// Service inits.
 	log.Println("setting up services...")
