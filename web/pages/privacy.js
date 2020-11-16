@@ -8,6 +8,9 @@ import Container from '@/components/Container'
 
 const useStyles = makeStyles(theme => ({
   main: {
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(2),
+    },
     marginTop: theme.spacing(6),
   },
 }))

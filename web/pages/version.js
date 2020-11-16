@@ -1,6 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
-import dynamic from 'next/dynamic'
+import Typography from '@material-ui/core/Typography'
+import { version } from '@/service/api'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
@@ -17,12 +18,15 @@ export default function Version({ data }) {
 
       <main>
         <Container>
-          <p>Your viewing version page</p>
-          <p>
+          <br />
+          <Typography variant="h5" component="h1">
+            Version
+          </Typography>
+          <code>
             tag: {data.version} <br />
             hash: {data.hash} <br />
             built: {data.built} <br />
-          </p>
+          </code>
         </Container>
       </main>
 
