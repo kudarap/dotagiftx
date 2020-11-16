@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { catalog, item as itemGet, marketSearch } from '@/service/api'
+import { catalog, marketSearch } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import ItemPage from './item/[slug]'
 import ErrorPage from './404'
@@ -30,27 +30,13 @@ const marketSearchFilter = {
 // This gets called on every request
 export async function getServerSideProps(props) {
   const { params, query } = props
+  const { slug } = params
 
-  const reference = params.slug
-
-  // Handles invalid item slug
   let item = {}
-  try {
-    item = await itemGet(reference)
-  } catch (e) {
-    return {
-      props: {
-        item,
-        error: e.message,
-        filter: {},
-        markets: {},
-      },
-    }
-  }
 
   // Handles no market entry on item
   try {
-    item = await catalog(reference)
+    item = await catalog(slug)
   } catch (e) {
     console.log(`catalog get error: ${e.message}`)
   }
@@ -77,7 +63,7 @@ export async function getServerSideProps(props) {
     error = e.message
   }
 
-  const canonicalURL = `${APP_URL}/${reference}`
+  const canonicalURL = `${APP_URL}/${slug}`
 
   return {
     props: {
