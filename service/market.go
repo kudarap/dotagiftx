@@ -223,10 +223,24 @@ func (s *marketService) TrendingCatalog(opts core.FindOpts) ([]core.Catalog, *co
 	}, nil
 }
 
-func (s *marketService) CatalogDetails(id string) (*core.Catalog, error) {
-	if id == "" {
+func (s *marketService) CatalogDetails(slug string) (*core.Catalog, error) {
+	if slug == "" {
 		return nil, core.CatalogErrNotFound
 	}
 
-	return s.catalogStg.Get(id)
+	c, err := s.catalogStg.Get(slug)
+	if err == core.CatalogErrNotFound {
+		i, err := s.itemStg.GetBySlug(slug)
+		if err != nil {
+			return nil, err
+		}
+
+		c := i.ToCatalog()
+		return &c, nil
+
+	} else if err != nil {
+		return nil, err
+	}
+
+	return c, err
 }

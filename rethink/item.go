@@ -60,7 +60,7 @@ func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
 }
 
 func (s *itemStorage) Get(id string) (*core.Item, error) {
-	row, _ := s.getBySlug(id)
+	row, _ := s.GetBySlug(id)
 	if row != nil {
 		return row, nil
 	}
@@ -77,7 +77,7 @@ func (s *itemStorage) Get(id string) (*core.Item, error) {
 	return row, nil
 }
 
-func (s *itemStorage) getBySlug(slug string) (*core.Item, error) {
+func (s *itemStorage) GetBySlug(slug string) (*core.Item, error) {
 	row := &core.Item{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(q, row); err != nil {
