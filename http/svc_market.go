@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	marketCacheKeyPrefix = "svc_market" // For cache invalidation control.
-	marketCacheExpr      = time.Hour
+	marketCacheKeyPrefix = "svc_market"   // For cache invalidation control.
+	marketCacheExpr      = time.Hour * 24 // Full day cache since its using on-demand invalidation and caching.
 )
 
 func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger, cache core.Cache) http.HandlerFunc {
