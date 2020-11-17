@@ -22,7 +22,14 @@ const cacheSkipKey = "nocache"
 func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Skip caching when nocache flag exists.
 	_, noCache = r.URL.Query()[cacheSkipKey]
-	return r.URL.Path + ":" + hash.MD5(r.URL.RawQuery), noCache
+	// Set owner user id for scoped requests.
+	userID := ""
+	au := AuthFromContext(r.Context())
+	if au != nil {
+		userID = au.UserID
+	}
+
+	return userID + r.URL.Path + ":" + hash.MD5(r.URL.RawQuery), noCache
 }
 
 func CacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, noCache bool) {
