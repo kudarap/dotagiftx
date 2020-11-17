@@ -61,7 +61,6 @@ const useStyles = makeStyles(theme => ({
   avatar: {
     width: theme.spacing(4),
     height: theme.spacing(4),
-    borderRadius: '15%',
   },
   avatarMenu: {
     marginTop: theme.spacing(4),

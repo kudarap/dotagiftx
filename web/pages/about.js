@@ -32,7 +32,7 @@ export default function About() {
           </Typography>
           <Avatar
             src="https://api.dotagiftx.com/images/adfb7fc8133861692abc5631d67b5f51dfd5753f.jpg"
-            style={{ width: 100, height: 100, borderRadius: '16%' }}
+            style={{ width: 100, height: 100 }}
           />
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; programmer
