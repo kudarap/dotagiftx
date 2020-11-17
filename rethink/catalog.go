@@ -48,10 +48,12 @@ func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 		    let viewScore = doc('reduction').mul(0.5);
 		   	let entryScore = market.count().mul(0.1);
 		    let reserveScore = market.filter({ status: 300 }).count().mul(4);
+			let soldScore = market.filter({ status: 400 }).count().mul(4);
 		    let score = r.expr([
 		      viewScore,
 		      entryScore,
 		      reserveScore,
+			  soldScore,
 		    ]).sum();
 
 		    return {
@@ -59,7 +61,8 @@ func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 		      score: score,
 		      score_vw: viewScore,
 		      score_ent: entryScore,
-		      score_rsv: reserveScore
+			  score_rsv: reserveScore,
+		      score_sold: soldScore
 		    }
 		  })
 		  .eqJoin('item_id', r.db('dotagiftables').table('catalog'))
@@ -91,10 +94,12 @@ func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 			viewScore := t.Field(reductionField)
 			entryScore := qm.Count()
 			reserveScore := qm.Filter(map[string]interface{}{marketFieldStatus: core.MarketStatusReserved}).Count()
+			soldScore := qm.Filter(map[string]interface{}{marketFieldStatus: core.MarketStatusSold}).Count()
 			finalScore := r.Expr([]r.Term{
 				viewScore.Mul(core.TrendScoreRateView),
 				entryScore.Mul(core.TrendScoreRateMarketEntry),
 				reserveScore.Mul(core.TrendScoreRateReserved),
+				soldScore.Mul(core.TrendScoreRateSold),
 			}).Sum()
 
 			return map[string]interface{}{

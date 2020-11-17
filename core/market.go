@@ -37,6 +37,7 @@ const (
 	TrendScoreRateView        = 0.05
 	TrendScoreRateMarketEntry = 0.01
 	TrendScoreRateReserved    = 4
+	TrendScoreRateSold        = 4
 )
 
 // Market statuses.
