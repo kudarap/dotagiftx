@@ -59,8 +59,9 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 1, 0, 1),
   },
   avatar: {
-    width: theme.spacing(3),
-    height: theme.spacing(3),
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+    borderRadius: '15%',
   },
   avatarMenu: {
     marginTop: theme.spacing(4),
@@ -160,6 +161,10 @@ export default function Header({ disableSearch }) {
                 <span style={{ flexGrow: 1 }} />
 
                 {/* Post item button */}
+                {/*<Button variant="outlined" component={Link} href="/buy-order" disableUnderline>*/}
+                {/*  Buy Order*/}
+                {/*</Button>*/}
+                {/*<span className={classes.spacer} />*/}
                 <Button
                   variant="outlined"
                   color="secondary"
@@ -173,30 +178,16 @@ export default function Header({ disableSearch }) {
                 {/* Avatar menu button */}
                 {isLoggedIn ? (
                   <>
-                    {isXsScreen ? (
-                      <IconButton
-                        aria-controls="avatar-menu"
-                        aria-haspopup="true"
-                        onClick={handleClick}>
-                        <Avatar
-                          className={classes.avatar}
-                          {...retinaSrcSet(profile.avatar, 24, 24)}
-                        />
-                      </IconButton>
-                    ) : (
-                      <Button
-                        aria-controls="avatar-menu"
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                        startIcon={
-                          <Avatar
-                            className={classes.avatar}
-                            {...retinaSrcSet(profile.avatar, 24, 24)}
-                          />
-                        }>
-                        {profile && profile.name}
-                      </Button>
-                    )}
+                    <IconButton
+                      style={{ padding: 0 }}
+                      aria-controls="avatar-menu"
+                      aria-haspopup="true"
+                      onClick={handleClick}>
+                      <Avatar
+                        className={classes.avatar}
+                        {...retinaSrcSet(profile.avatar, 32, 32)}
+                      />
+                    </IconButton>
                     <Menu
                       className={classes.avatarMenu}
                       id="avatar-menu"

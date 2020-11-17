@@ -13,6 +13,8 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(6),
+    // background: 'url("/assets/gift.png") no-repeat bottom right',
+    // backgroundSize: 100,
   },
 }))
 
@@ -30,7 +32,7 @@ export default function About() {
           </Typography>
           <Avatar
             src="https://api.dotagiftx.com/images/adfb7fc8133861692abc5631d67b5f51dfd5753f.jpg"
-            style={{ width: 100, height: 100, borderRadius: 0 }}
+            style={{ width: 100, height: 100, borderRadius: '16%' }}
           />
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; programmer
