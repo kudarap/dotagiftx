@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -10,6 +11,7 @@ import Button from '@/components/Button'
 import SteamIcon from '@/components/SteamIcon'
 import { set as setAuth } from '@/service/auth'
 import * as Storage from '@/service/storage'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -19,9 +21,16 @@ const useStyles = makeStyles(theme => ({
 
 export default function Login() {
   const classes = useStyles()
+  const { isLoggedIn } = useContext(AppContext)
 
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
+
+  const router = useRouter()
+  if (isLoggedIn) {
+    router.push('/my-listings')
+    return null
+  }
 
   React.useEffect(() => {
     // eslint-disable-next-line no-undef
