@@ -293,7 +293,7 @@ export default function ItemDetails({
             <TablePaginationRouter
               linkProps={linkProps}
               style={{ textAlign: 'right' }}
-              count={markets.total_count}
+              count={markets.total_count || 0}
               page={filter.page}
             />
           )}
