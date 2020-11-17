@@ -25,7 +25,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/catalogs-trend", handleMarketCatalogTrendList(s.marketSvc, s.cache, s.logger))
 		r.Get("/catalogs", handleMarketCatalogList(s.marketSvc, s.trackSvc, s.cache, s.logger))
 		r.Get("/catalogs/{slug}", handleMarketCatalogDetail(s.marketSvc, s.cache, s.logger))
-		r.Get("/users/{id}", handlePublicProfile(s.userSvc))
+		r.Get("/users/{id}", handlePublicProfile(s.userSvc, s.cache))
 		r.Get("/t", handleTracker(s.trackSvc, s.logger))
 		r.Get("/sitemap.xml", handleSitemap(s.itemSvc, s.userSvc))
 		r.Get("/stats/market-summary", handleStatsMarketSummary(s.statsSvc, s.cache))
@@ -38,7 +38,7 @@ func (s *Server) privateRouter(r chi.Router) {
 	r.Group(func(r chi.Router) {
 		r.Use(s.authorizer)
 		r.Route("/my", func(r chi.Router) {
-			r.Get("/profile", handleProfile(s.userSvc))
+			r.Get("/profile", handleProfile(s.userSvc, s.cache))
 			r.Route("/markets", func(r chi.Router) {
 				r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.cache, s.logger))
 				r.Post("/", handleMarketCreate(s.marketSvc, s.cache))
