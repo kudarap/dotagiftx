@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -78,10 +77,8 @@ func (c *Client) Del(key string) error {
 }
 
 func (c *Client) BulkDel(keyPrefix string) error {
-	fmt.Println("bul", keyPrefix)
-	iter := c.db.Scan(ctx, uint64(c.cfg.Db), keyPrefix+"*", 0).Iterator()
+	iter := c.db.Scan(ctx, 0, keyPrefix+"*", 0).Iterator()
 	for iter.Next(ctx) {
-		fmt.Println("iter", iter.Val())
 		if err := c.Del(iter.Val()); err != nil {
 			return err
 		}
