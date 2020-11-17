@@ -24,6 +24,13 @@ export const muiTheme = createMuiTheme({
       white: '#FFFBF1',
     },
   },
+  overrides: {
+    MuiAvatar: {
+      root: {
+        borderRadius: '15%',
+      },
+    },
+  },
 })
 
 function Theme({ children }) {
