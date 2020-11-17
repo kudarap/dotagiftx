@@ -7,12 +7,10 @@ import (
 	"github.com/kudarap/dotagiftx/core"
 )
 
-const statsCacheMarketSummary = time.Minute * 2
-
 func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -32,7 +30,7 @@ func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.Hand
 			return
 		}
 
-		go cache.Set(cacheKey, res, statsCacheMarketSummary)
+		go cache.Set(cacheKey, res, statsCacheExpr)
 		respondOK(w, res)
 	}
 }

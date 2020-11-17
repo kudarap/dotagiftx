@@ -81,8 +81,11 @@ func handleMarketCreate(svc core.MarketService, cache core.Cache) http.HandlerFu
 			return
 		}
 
-		// Invalidate market cache.
 		go cache.BulkDel(marketCacheKeyPrefix)
+		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+		//	respondError(w, err)
+		//	return
+		//}
 
 		respondOK(w, m)
 	}
@@ -102,15 +105,17 @@ func handleMarketUpdate(svc core.MarketService, cache core.Cache) http.HandlerFu
 			return
 		}
 
-		// Invalidate market cache.
 		go cache.BulkDel(marketCacheKeyPrefix)
+		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+		//	respondError(w, err)
+		//	return
+		//}
 
 		respondOK(w, m)
 	}
 }
 
 const (
-	catalogCacheExpr      = time.Hour
 	queryFlagRecentItems  = "recent"
 	queryFlagPopularItems = "popular"
 )
@@ -168,7 +173,7 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 		// Save result to cache.
 		data := newDataWithMeta(list, md)
 		go func() {
-			if err := cache.Set(cacheKey, data, catalogCacheExpr); err != nil {
+			if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
 				logger.Errorf("could save cache on catalog list: %s", err)
 			}
 		}()
@@ -195,7 +200,7 @@ func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger 
 		}
 
 		go func() {
-			if err := cache.Set(cacheKey, c, catalogCacheExpr); err != nil {
+			if err := cache.Set(cacheKey, c, marketCacheExpr); err != nil {
 				logger.Errorf("could save cache on catalog details: %s", err)
 			}
 		}()
