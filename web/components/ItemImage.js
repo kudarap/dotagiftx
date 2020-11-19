@@ -44,7 +44,14 @@ export default function ItemImage({ image, title, rarity, className, width, heig
 
   return (
     <div style={contStyle} className={className}>
-      <img src={baseSrc} srcSet={srcSet} alt={title || image} style={imgStyle} {...other} />
+      <img
+        loading="lazy"
+        src={baseSrc}
+        srcSet={srcSet}
+        alt={title || image}
+        style={imgStyle}
+        {...other}
+      />
     </div>
   )
 }
