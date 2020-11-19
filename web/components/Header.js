@@ -59,8 +59,12 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 1, 0, 1),
   },
   avatar: {
-    width: theme.spacing(4),
-    height: theme.spacing(4),
+    width: 36,
+    height: 36,
+    border: `1px solid ${theme.palette.grey[700]}`,
+    '&:hover': {
+      borderColor: theme.palette.grey[600],
+    },
   },
   avatarMenu: {
     marginTop: theme.spacing(4),
@@ -184,7 +188,7 @@ export default function Header({ disableSearch }) {
                       onClick={handleClick}>
                       <Avatar
                         className={classes.avatar}
-                        {...retinaSrcSet(profile.avatar, 32, 32)}
+                        {...retinaSrcSet(profile.avatar, 36, 36)}
                       />
                     </IconButton>
                     <Menu
