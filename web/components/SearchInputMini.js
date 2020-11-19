@@ -12,7 +12,8 @@ import CloseIcon from '@material-ui/icons/Close'
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    padding: '2px 8px',
+    padding: '4px 12px 2px',
+    marginBottom: 3,
     display: 'flex',
     alignItems: 'center',
     backgroundColor: theme.palette.grey[100],

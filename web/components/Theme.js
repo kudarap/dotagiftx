@@ -13,7 +13,8 @@ export const muiTheme = createMuiTheme({
       main: '#263238',
     },
     secondary: {
-      main: '#C79123',
+      // main: '#C79123',
+      main: '#E6AB4E',
     },
     background: {
       default: '#263238',

@@ -19,7 +19,7 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap"
             rel="stylesheet"
           />
-          <link rel="icon" href="/icon.svg" />
+          <link rel="icon" href="/plain.png" />
 
           {process.env.NEXT_PUBLIC_GA && (
             <>
