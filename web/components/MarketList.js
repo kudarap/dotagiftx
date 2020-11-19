@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
+// import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -22,6 +22,7 @@ import ContactDialog from '@/components/ContactDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import Avatar from '@/components/Avatar'
 
 const useStyles = makeStyles(theme => ({
   seller: {

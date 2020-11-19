@@ -1,6 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import Header from '@/components/Header'
