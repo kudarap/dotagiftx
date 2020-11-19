@@ -9,12 +9,11 @@ import InputBase from '@material-ui/core/InputBase'
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
 
-const bgColor = '#435a64'
-
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    padding: '3px 12px',
+    padding: '4px 12px 2px',
+    marginBottom: 3,
     display: 'flex',
     alignItems: 'center',
     backgroundColor: theme.palette.grey[100],
