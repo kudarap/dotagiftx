@@ -320,12 +320,3 @@ ItemDetails.defaultProps = {
   },
   error: null,
 }
-
-// This gets called on every request
-export async function getServerSideProps(props) {
-  const { res, params } = props
-  res.setHeader('location', `/${params.slug}`)
-  res.statusCode = 301
-  res.end()
-  return { props: {} }
-}

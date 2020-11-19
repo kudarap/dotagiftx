@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
 import { catalog, marketSearch } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
-import ItemPage from './item/[slug]'
+import ItemDetails from '@/components/ItemDetails'
 import ErrorPage from './404'
 
 export default function DynamicPage(props) {
@@ -12,7 +12,7 @@ export default function DynamicPage(props) {
     return <ErrorPage />
   }
 
-  return <ItemPage {...props} />
+  return <ItemDetails {...props} />
 }
 DynamicPage.propTypes = {
   error: PropTypes.string,
