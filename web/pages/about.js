@@ -35,7 +35,7 @@ export default function About() {
             style={{ width: 100, height: 100 }}
           />
           <Typography color="textSecondary">
-            <strong>kudarap</strong> &mdash; programmer
+            <strong>kudarap</strong> &mdash; author
             <br />
             Feel free to message me on{' '}
             <Link
