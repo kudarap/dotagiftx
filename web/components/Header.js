@@ -204,7 +204,7 @@ export default function Header({ disableSearch }) {
                         href="/profiles/[id]"
                         as={`/profiles/${profile.steam_id}`}
                         disableUnderline>
-                        Profile
+                        View Profile
                       </MenuItem>
                       <MenuItem
                         onClick={handleClose}
@@ -273,7 +273,7 @@ export default function Header({ disableSearch }) {
                         href="/profiles/[id]"
                         as={`/profiles/${profile.steam_id}`}
                         disableUnderline>
-                        Profile
+                        View Profile
                       </MenuItem>,
                       <MenuItem
                         onClick={handleMoreClose}
