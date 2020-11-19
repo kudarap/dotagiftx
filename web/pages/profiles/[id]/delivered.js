@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -13,6 +12,7 @@ import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_SOLD } from '@/constants/market'
 import MarketActivity from '@/components/MarketActivity'
+import Avatar from '@/components/Avatar'
 
 const useStyles = makeStyles(theme => ({
   main: {
