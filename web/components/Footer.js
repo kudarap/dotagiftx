@@ -4,6 +4,7 @@ import Divider from '@material-ui/core/Divider'
 import Typography from '@material-ui/core/Typography'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
+import { APP_NAME } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -82,7 +83,7 @@ export default function Footer() {
           </li>
           <li style={{ float: 'right' }}>
             <Typography variant="caption" color="textSecondary" style={{ verticalAlign: 'middle' }}>
-              DotagiftX is not affiliated with Valve or Steam.
+              {APP_NAME} is not affiliated with Valve or Steam.
             </Typography>
           </li>
           {/* <li> */}

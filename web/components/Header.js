@@ -19,6 +19,7 @@ import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import { APP_NAME } from '@/constants/strings'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -34,14 +35,13 @@ const useStyles = makeStyles(theme => ({
       fontSize: 15,
     },
     fontSize: 17,
-    color: 'white',
-    // textShadow: '0px 0px 16px #C79123',
+    textShadow: '0px 0px 16px #C79123',
     // textTransform: 'uppercase',
     // fontWeight: 'bold',
-    // background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
-    // '-webkit-background-clip': 'text',
-    // '-webkit-text-fill-color': 'transparent',
-    // filter: 'drop-shadow(0px 0px 10px black)',
+    background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
+    '-webkit-background-clip': 'text',
+    '-webkit-text-fill-color': 'transparent',
+    filter: 'drop-shadow(0px 0px 10px black)',
     letterSpacing: 2,
     cursor: 'pointer',
     paddingRight: theme.spacing(1),
@@ -139,39 +139,108 @@ export default function Header({ disableSearch }) {
   }
 
   return (
-    <header>
-      <AppBar position="static" variant="outlined" className={classes.appBar}>
-        <Container disableMinHeight>
-          <Toolbar variant="dense" disableGutters>
-            {/* Branding button */}
-            {/* Desktop nav branding */}
-            <Link href="/" disableUnderline>
-              {!isMobile ? (
-                <div style={{ display: 'flex', opacity: 0.8 }}>
-                  {/*<Typography component="h1" className={classes.title} color="secondary">*/}
-                  {/*  <strong>DotaGift</strong>*/}
-                  {/*</Typography>*/}
-                  {/*<img*/}
-                  {/*  src="/favicon.png"*/}
-                  {/*  style={{*/}
-                  {/*    height: 28,*/}
-                  {/*    marginLeft: -8,*/}
-                  {/*    filter: 'brightness(100)',*/}
-                  {/*  }}*/}
-                  {/*/>*/}
-                  <img
-                    src="/brand3.png"
-                    style={{
-                      height: 34,
-                      filter: 'brightness(100)',
-                    }}
-                  />
-                </div>
+    <AppBar position="static" variant="outlined" className={classes.appBar}>
+      <Container disableMinHeight>
+        <Toolbar variant="dense" disableGutters>
+          {/* Branding button */}
+          {/* Desktop nav branding */}
+          <Link href="/" disableUnderline>
+            {!isMobile ? (
+              <img
+                src="/brand2.png"
+                alt={APP_NAME}
+                style={{
+                  height: 36,
+                  filter: 'brightness(100)',
+                  opacity: 0.7,
+                  marginBottom: -5,
+                }}
+              />
+            ) : (
+              <img
+                src="/icon4.png"
+                alt={APP_NAME}
+                style={{ height: 36, marginBottom: -10, filter: 'brightness(100)', opacity: 0.7 }}
+              />
+            )}
+          </Link>
+          <span className={classes.spacer} />
+          {!disableSearch && <SearchInputMini />}
+
+          {/* Desktop nav buttons */}
+          {!isMobile && (
+            <>
+              <span style={{ flexGrow: 1 }} />
+
+              {/* Post item button */}
+              {/*<Button variant="outlined" component={Link} href="/buy-order" disableUnderline>*/}
+              {/*  Buy Order*/}
+              {/*</Button>*/}
+              {/*<span className={classes.spacer} />*/}
+              <Button
+                variant="outlined"
+                color="secondary"
+                component={Link}
+                href="/post-item"
+                disableUnderline>
+                Post Item
+              </Button>
+              <span className={classes.spacer} />
+
+              {/* Avatar menu button */}
+              {isLoggedIn ? (
+                <>
+                  <IconButton
+                    style={{ padding: 0 }}
+                    aria-controls="avatar-menu"
+                    aria-haspopup="true"
+                    onClick={handleClick}>
+                    <Avatar className={classes.avatar} {...retinaSrcSet(profile.avatar, 36, 36)} />
+                  </IconButton>
+                  <Menu
+                    className={classes.avatarMenu}
+                    id="avatar-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/profiles/[id]"
+                      as={`/profiles/${profile.steam_id}`}
+                      disableUnderline>
+                      View Profile
+                    </MenuItem>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/my-listings"
+                      disableUnderline>
+                      Listings
+                    </MenuItem>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/my-reservations"
+                      disableUnderline>
+                      Reservations
+                    </MenuItem>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/my-history"
+                      disableUnderline>
+                      History
+                    </MenuItem>
+                    {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
+                    <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+                  </Menu>
+                </>
               ) : (
-                <img
-                  src="/plain.png"
-                  style={{ height: 34, filter: 'brightness(100)', opacity: 0.8 }}
-                />
+                <Button startIcon={<SteamIcon />} component={Link} href="/login">
+                  Sign in
+                </Button>
               )}
             </>
           )}

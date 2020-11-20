@@ -9,7 +9,7 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Divider from '@material-ui/core/Divider'
-import { APP_URL } from '@/constants/strings'
+import { APP_NAME, APP_URL } from '@/constants/strings'
 import {
   CATALOGS,
   catalogTrendSearch,
@@ -130,7 +130,7 @@ export default function Index({ marketSummary, trendingItems }) {
               variant="body2"
               color="textSecondary">
               <Typography color="secondary" component="span">
-                DotagiftX
+                {APP_NAME}
               </Typography>{' '}
               was made to provide better search and pricing for Dota 2 giftable items like
               Collector&apos;s Caches which are not available on{' '}
