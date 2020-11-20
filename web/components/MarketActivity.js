@@ -32,7 +32,9 @@ export default function MarketActivity({ data, loading }) {
               <Divider style={{ margin: '8px 0 8px' }} light />
               <ItemImage
                 className={classes.itemImage}
-                image={`/200x100/${market.item.image}`}
+                image={market.item.image}
+                width={60}
+                height={40}
                 title={market.item.name}
                 rarity={market.item.rarity}
               />

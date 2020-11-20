@@ -3,17 +3,39 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/sirupsen/logrus"
 )
 
-// itemKey use for accessing this item related endpoint like import and item creation.
-const itemKey = "item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8"
+const (
+	// itemKey use for accessing this item related endpoint like import and item creation.
+	itemKey = "item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8"
 
-func handleItemList(svc core.ItemService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
+	itemImportFileType = "text/yaml"
+
+	itemCacheKeyPrefix = "svc_item"
+	itemCacheExpr      = time.Hour * 24 * 365 // Full year expiration since item update only happens during BP.
+)
+
+func handleItemList(
+	svc core.ItemService,
+	trackSvc core.TrackService,
+	cache core.Cache,
+	logger *logrus.Logger,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
 		opts, err := findOptsFromURL(r.URL, &core.Item{})
 		if err != nil {
 			respondError(w, err)
@@ -35,23 +57,43 @@ func handleItemList(svc core.ItemService, trackSvc core.TrackService, logger *lo
 			list = []core.Item{}
 		}
 
-		respondOK(w, newDataWithMeta(list, md))
+		o := newDataWithMeta(list, md)
+		go func() {
+			if err := cache.Set(cacheKey, o, itemCacheExpr); err != nil {
+				logger.Errorf("could save cache on catalog details: %s", err)
+			}
+		}()
+		respondOK(w, o)
 	}
 }
 
-func handleItemDetail(svc core.ItemService) http.HandlerFunc {
+func handleItemDetail(svc core.ItemService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
 		i, err := svc.Item(chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
+		go func() {
+			if err := cache.Set(cacheKey, i, itemCacheExpr); err != nil {
+				logger.Errorf("could save cache on catalog details: %s", err)
+			}
+		}()
 		respondOK(w, i)
 	}
 }
 
-func handleItemCreate(svc core.ItemService) http.HandlerFunc {
+func handleItemCreate(svc core.ItemService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isItemKeyValid(r); err != nil {
 			respondError(w, err)
@@ -69,11 +111,13 @@ func handleItemCreate(svc core.ItemService) http.HandlerFunc {
 			return
 		}
 
+		go cache.BulkDel(itemCacheKeyPrefix)
+
 		respondOK(w, i)
 	}
 }
 
-func handleItemImport(svc core.ItemService) http.HandlerFunc {
+func handleItemImport(svc core.ItemService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isItemKeyValid(r); err != nil {
 			respondError(w, err)
@@ -88,9 +132,9 @@ func handleItemImport(svc core.ItemService) http.HandlerFunc {
 		}
 		defer f.Close()
 
-		// Read yaml file.
+		// Check and read yaml file.
 		ct := fh.Header.Get("content-type")
-		if ct != "text/yaml" {
+		if ct != itemImportFileType {
 			respondError(w, fmt.Errorf("could not parse content-type: %s", ct))
 			return
 		}
@@ -100,6 +144,8 @@ func handleItemImport(svc core.ItemService) http.HandlerFunc {
 			respondError(w, err)
 			return
 		}
+
+		go cache.BulkDel(itemCacheKeyPrefix)
 
 		respondOK(w, res)
 	}

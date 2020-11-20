@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { MARKET_STATUS_LIVE } from '@/constants/market'
-import { catalog, item as itemGet, marketSearch } from '@/service/api'
+import { catalog, marketSearch } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
-import ItemPage from './item/[slug]'
+import ItemDetails from '@/components/ItemDetails'
 import ErrorPage from './404'
 
 export default function DynamicPage(props) {
@@ -12,7 +12,7 @@ export default function DynamicPage(props) {
     return <ErrorPage />
   }
 
-  return <ItemPage {...props} />
+  return <ItemDetails {...props} />
 }
 DynamicPage.propTypes = {
   error: PropTypes.string,
@@ -30,29 +30,16 @@ const marketSearchFilter = {
 // This gets called on every request
 export async function getServerSideProps(props) {
   const { params, query } = props
+  const { slug } = params
 
-  const reference = params.slug
-
-  // Handles invalid item slug
   let item = {}
-  try {
-    item = await itemGet(reference)
-  } catch (e) {
-    return {
-      props: {
-        item,
-        error: e.message,
-        filter: {},
-        markets: {},
-      },
-    }
-  }
+  let error = null
 
   // Handles no market entry on item
   try {
-    item = await catalog(reference)
+    item = await catalog(slug)
   } catch (e) {
-    console.log(`catalog get error: ${e.message}`)
+    error = `catalog get error: ${e.message}`
   }
   if (!item.id) {
     return {
@@ -68,16 +55,15 @@ export async function getServerSideProps(props) {
     filter.page = Number(query.page)
   }
 
-  let markets = {}
-  let error = null
-  try {
-    markets = await marketSearch(filter)
-  } catch (e) {
-    console.log(`market search error: ${e.message}`)
-    error = e.message
-  }
+  const markets = {}
+  // try {
+  //   markets = await marketSearch(filter)
+  // } catch (e) {
+  //   console.log(`market search error: ${e.message}`)
+  //   error = e.message
+  // }
 
-  const canonicalURL = `${APP_URL}/${reference}`
+  const canonicalURL = `${APP_URL}/${slug}`
 
   return {
     props: {

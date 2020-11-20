@@ -8,6 +8,11 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
+          {/* resolves dns for fast load time from other resources */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://www.googleanalytics.com" />
+          <link rel="preconnect" href="https://www.googletagmanager.com" />
+
           {/* PWA primary color */}
           <meta name="theme-color" content={muiTheme.palette.primary.main} />
           <link

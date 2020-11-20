@@ -3,11 +3,13 @@ import PropTypes from 'prop-types'
 import useSWR from 'swr'
 import Head from 'next/head'
 import Router from 'next/router'
+import dynamic from 'next/dynamic'
 import { makeStyles } from '@material-ui/core/styles'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Divider from '@material-ui/core/Divider'
+import { APP_URL } from '@/constants/strings'
 import {
   CATALOGS,
   catalogTrendSearch,
@@ -17,13 +19,19 @@ import {
   statsMarketSummary,
 } from '@/service/api'
 import * as format from '@/lib/format'
-import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import SearchInput from '@/components/SearchInput'
-import CatalogList from '@/components/CatalogList'
-import Link from '@/components/Link'
-import { APP_URL } from '@/constants/strings'
+// import SearchInput from '@/components/SearchInput'
+// import CatalogList from '@/components/CatalogList'
+// import Link from '@/components/Link'
+// import Footer from '@/components/Footer'
+
+// const Header = dynamic(() => import('@/components/Header'))
+// const Container = dynamic(() => import('@/components/Container'))
+const SearchInput = dynamic(() => import('@/components/SearchInput'))
+const CatalogList = dynamic(() => import('@/components/CatalogList'))
+const Link = dynamic(() => import('@/components/Link'))
+const Footer = dynamic(() => import('@/components/Footer'))
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -145,7 +153,7 @@ export default function Index({ marketSummary, trendingItems }) {
             {/* </Typography> */}
           </div>
 
-          <SearchInput helperText={description} onSubmit={handleSubmit} />
+          <SearchInput label={description} onSubmit={handleSubmit} />
           <br />
 
           {/* Trending Items */}
@@ -225,10 +233,12 @@ export default function Index({ marketSummary, trendingItems }) {
               {topOrigins &&
                 topOrigins.map(origin => (
                   <Link
-                    href={`/search?q=${origin}`}
+                    href={`/search?origin=${origin}`}
                     color="secondary"
                     className={classes.footLinks}>
-                    <Typography variant="subtitle1">{origin}</Typography>
+                    <Typography variant="subtitle1" component="p">
+                      {origin}
+                    </Typography>
                   </Link>
                 ))}
             </Grid>
@@ -236,8 +246,13 @@ export default function Index({ marketSummary, trendingItems }) {
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&
                 topHeroes.map(hero => (
-                  <Link href={`/search?q=${hero}`} color="secondary" className={classes.footLinks}>
-                    <Typography variant="subtitle1">{hero}</Typography>
+                  <Link
+                    href={`/search?hero=${hero}`}
+                    color="secondary"
+                    className={classes.footLinks}>
+                    <Typography variant="subtitle1" component="p">
+                      {hero}
+                    </Typography>
                   </Link>
                 ))}
             </Grid>

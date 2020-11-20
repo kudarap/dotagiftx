@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -13,7 +12,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import green from '@material-ui/core/colors/lightGreen'
-import { CDN_URL, myMarket } from '@/service/api'
+import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
@@ -21,6 +20,8 @@ import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
+import { retinaSrcSet } from '@/components/ItemImage'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -35,10 +36,10 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MarketList({ data, error, currentUserID }) {
+export default function MarketList({ data, error }) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile, currentAuth } = useContext(AppContext)
+  const currentUserID = currentAuth.user_id || null
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
@@ -109,7 +110,8 @@ export default function MarketList({ data, error, currentUserID }) {
                       <div className={classes.seller}>
                         <Avatar
                           className={classes.avatar}
-                          src={`${CDN_URL}/${market.user.avatar}`}
+                          alt={market.user.name}
+                          {...retinaSrcSet(market.user.avatar, 40, 40)}
                         />
                         <div>
                           <strong>{market.user.name}</strong>
@@ -180,9 +182,7 @@ export default function MarketList({ data, error, currentUserID }) {
 MarketList.propTypes = {
   data: PropTypes.object.isRequired,
   error: PropTypes.string,
-  currentUserID: PropTypes.string,
 }
 MarketList.defaultProps = {
   error: null,
-  currentUserID: null,
 }

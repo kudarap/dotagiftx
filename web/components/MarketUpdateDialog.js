@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -23,6 +22,7 @@ import {
   MARKET_STATUS_REMOVED,
   MARKET_STATUS_RESERVED,
 } from '@/constants/market'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -45,8 +45,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MarketUpdateDialog(props) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
@@ -132,7 +131,9 @@ export default function MarketUpdateDialog(props) {
           <div className={classes.details}>
             <ItemImage
               className={classes.media}
-              image={`/300x170/${market.item.image}`}
+              image={market.item.image}
+              width={150}
+              height={100}
               title={market.item.name}
               rarity={market.item.rarity}
             />

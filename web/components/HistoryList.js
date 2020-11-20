@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -17,6 +16,7 @@ import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import HistoryViewDialog from '@/components/HistoryViewDialog'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -36,8 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function HistoryList({ datatable, error }) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
 
@@ -83,7 +82,9 @@ export default function HistoryList({ datatable, error }) {
                     onClick={() => handleUpdateClick(idx)}>
                     <ItemImage
                       className={classes.image}
-                      image={`/200x100/${market.item.image}`}
+                      image={market.item.image}
+                      width={77}
+                      height={55}
                       title={market.item.name}
                       rarity={market.item.rarity}
                     />

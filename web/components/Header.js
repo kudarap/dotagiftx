@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import dynamic from 'next/dynamic'
+import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -13,12 +13,14 @@ import IconButton from '@material-ui/core/IconButton'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
-import { authRevoke, CDN_URL, myProfile } from '@/service/api'
-import { clear as destroyLoginSess, isOk as checkLoggedIn, get as getAuth } from '@/service/auth'
+import { authRevoke, myProfile } from '@/service/api'
+import { clear as destroyLoginSess, isOk as checkLoggedIn } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
-import SearchInputMini from '@/components/SearchInputMini'
-import { Icon } from '@material-ui/core'
+import { retinaSrcSet } from '@/components/ItemImage'
+import AppContext from '@/components/AppContext'
+// import SearchInputMini from '@/components/SearchInputMini'
+const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -41,6 +43,7 @@ const useStyles = makeStyles(theme => ({
     filter: 'drop-shadow(0px 0px 10px black)',
     letterSpacing: 2,
     cursor: 'pointer',
+    paddingRight: theme.spacing(1),
   },
   titleMini: {
     fontSize: 17,
@@ -56,8 +59,12 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 1, 0, 1),
   },
   avatar: {
-    width: theme.spacing(3),
-    height: theme.spacing(3),
+    width: 36,
+    height: 36,
+    border: `1px solid ${theme.palette.grey[700]}`,
+    '&:hover': {
+      borderColor: theme.palette.grey[600],
+    },
   },
   avatarMenu: {
     marginTop: theme.spacing(4),
@@ -79,10 +86,9 @@ const defaultProfile = {
 
 export default function Header({ disableSearch }) {
   const classes = useStyles()
-  const theme = useTheme()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
-  const isXsScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile: isXsScreen, isLoggedIn, currentAuth } = useContext(AppContext)
   const isMobile = isXsScreen && !disableSearch
 
   const [profile, setProfile] = React.useState(defaultProfile)
@@ -123,8 +129,7 @@ export default function Header({ disableSearch }) {
 
   const handleLogout = () => {
     ;(async () => {
-      const auth = getAuth()
-      await authRevoke(auth.refresh_token)
+      await authRevoke(currentAuth.refresh_token)
       destroyLoginSess()
       handleClose()
       // eslint-disable-next-line no-undef
@@ -132,196 +137,176 @@ export default function Header({ disableSearch }) {
     })()
   }
 
-  const isLoggedIn = checkLoggedIn()
-
   return (
-    <header>
-      <AppBar position="static" variant="outlined" className={classes.appBar}>
-        <Container disableMinHeight>
-          <Toolbar variant="dense" disableGutters>
-            {/* Branding button */}
-            {/* Desktop nav branding */}
-            <Link href="/" disableUnderline>
-              {!isMobile ? (
-                <Typography component="h1" className={classes.title}>
-                  <strong>DotagiftX</strong>
-                </Typography>
+    <AppBar position="static" variant="outlined" className={classes.appBar}>
+      <Container disableMinHeight>
+        <Toolbar variant="dense" disableGutters>
+          {/* Branding button */}
+          {/* Desktop nav branding */}
+          <Link href="/" disableUnderline>
+            {!isMobile ? (
+              <Typography component="h1" className={classes.title}>
+                <strong>DotagiftX</strong>
+              </Typography>
+            ) : (
+              <Typography component="h1" className={classes.titleMini}>
+                <strong>DX</strong>
+              </Typography>
+            )}
+          </Link>
+          <span className={classes.spacer} />
+          {!disableSearch && <SearchInputMini />}
+
+          {/* Desktop nav buttons */}
+          {!isMobile && (
+            <>
+              <span style={{ flexGrow: 1 }} />
+
+              {/* Post item button */}
+              {/*<Button variant="outlined" component={Link} href="/buy-order" disableUnderline>*/}
+              {/*  Buy Order*/}
+              {/*</Button>*/}
+              {/*<span className={classes.spacer} />*/}
+              <Button
+                variant="outlined"
+                color="secondary"
+                component={Link}
+                href="/post-item"
+                disableUnderline>
+                Post Item
+              </Button>
+              <span className={classes.spacer} />
+
+              {/* Avatar menu button */}
+              {isLoggedIn ? (
+                <>
+                  <IconButton
+                    style={{ padding: 0 }}
+                    aria-controls="avatar-menu"
+                    aria-haspopup="true"
+                    onClick={handleClick}>
+                    <Avatar className={classes.avatar} {...retinaSrcSet(profile.avatar, 36, 36)} />
+                  </IconButton>
+                  <Menu
+                    className={classes.avatarMenu}
+                    id="avatar-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/profiles/[id]"
+                      as={`/profiles/${profile.steam_id}`}
+                      disableUnderline>
+                      View Profile
+                    </MenuItem>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/my-listings"
+                      disableUnderline>
+                      Listings
+                    </MenuItem>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/my-reservations"
+                      disableUnderline>
+                      Reservations
+                    </MenuItem>
+                    <MenuItem
+                      onClick={handleClose}
+                      component={Link}
+                      href="/my-history"
+                      disableUnderline>
+                      History
+                    </MenuItem>
+                    {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
+                    <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+                  </Menu>
+                </>
               ) : (
-                <Typography component="h1" className={classes.titleMini}>
-                  <strong>DX</strong>
-                </Typography>
+                <Button startIcon={<SteamIcon />} component={Link} href="/login">
+                  Sign in
+                </Button>
               )}
-            </Link>
-            <span className={classes.spacer} />
-            {!disableSearch && <SearchInputMini />}
+            </>
+          )}
 
-            {/* Desktop nav buttons */}
-            {!isMobile && (
-              <>
-                <span style={{ flexGrow: 1 }} />
+          {/* Mobile buttons */}
+          {isMobile && (
+            <>
+              <span className={classes.spacer} />
+              <IconButton aria-controls="more-menu" aria-haspopup="true" onClick={handleMoreClick}>
+                <MoreIcon />
+              </IconButton>
 
-                {/* Post item button */}
-                <Button
-                  variant="outlined"
-                  color="secondary"
+              <Menu
+                className={classes.avatarMenu}
+                id="more-menu"
+                anchorEl={moreEl}
+                keepMounted
+                open={Boolean(moreEl)}
+                onClose={handleMoreClose}>
+                <MenuItem
+                  onClick={handleMoreClose}
                   component={Link}
                   href="/post-item"
                   disableUnderline>
                   Post Item
-                </Button>
-                <span className={classes.spacer} />
+                </MenuItem>
 
-                {/* Avatar menu button */}
                 {isLoggedIn ? (
-                  <>
-                    {isXsScreen ? (
-                      <IconButton
-                        aria-controls="avatar-menu"
-                        aria-haspopup="true"
-                        onClick={handleClick}>
-                        <Avatar
-                          className={classes.avatar}
-                          src={profile && `${CDN_URL}/${profile.avatar}`}
-                        />
-                      </IconButton>
-                    ) : (
-                      <Button
-                        aria-controls="avatar-menu"
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                        startIcon={
-                          <Avatar
-                            className={classes.avatar}
-                            src={profile && `${CDN_URL}/${profile.avatar}`}
-                          />
-                        }>
-                        {profile && profile.name}
-                      </Button>
-                    )}
-                    <Menu
-                      className={classes.avatarMenu}
-                      id="avatar-menu"
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}>
-                      <MenuItem
-                        onClick={handleClose}
-                        component={Link}
-                        href="/profiles/[id]"
-                        as={`/profiles/${profile.steam_id}`}
-                        disableUnderline>
-                        Profile
-                      </MenuItem>
-                      <MenuItem
-                        onClick={handleClose}
-                        component={Link}
-                        href="/my-listings"
-                        disableUnderline>
-                        Listings
-                      </MenuItem>
-                      <MenuItem
-                        onClick={handleClose}
-                        component={Link}
-                        href="/my-reservations"
-                        disableUnderline>
-                        Reservations
-                      </MenuItem>
-                      <MenuItem
-                        onClick={handleClose}
-                        component={Link}
-                        href="/my-history"
-                        disableUnderline>
-                        History
-                      </MenuItem>
-                      {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
-                      <MenuItem onClick={handleLogout}>Sign out</MenuItem>
-                    </Menu>
-                  </>
-                ) : (
-                  <Button startIcon={<SteamIcon />} component={Link} href="/login">
-                    Sign in
-                  </Button>
-                )}
-              </>
-            )}
-
-            {/* Mobile buttons */}
-            {isMobile && (
-              <>
-                <span className={classes.spacer} />
-                <IconButton
-                  aria-controls="more-menu"
-                  aria-haspopup="true"
-                  onClick={handleMoreClick}>
-                  <MoreIcon />
-                </IconButton>
-
-                <Menu
-                  className={classes.avatarMenu}
-                  id="more-menu"
-                  anchorEl={moreEl}
-                  keepMounted
-                  open={Boolean(moreEl)}
-                  onClose={handleMoreClose}>
-                  <MenuItem
-                    onClick={handleMoreClose}
-                    component={Link}
-                    href="/post-item"
-                    disableUnderline>
-                    Post Item
-                  </MenuItem>
-
-                  {isLoggedIn ? (
-                    <>
-                      <MenuItem
-                        onClick={handleMoreClose}
-                        component={Link}
-                        href="/profiles/[id]"
-                        as={`/profiles/${profile.steam_id}`}
-                        disableUnderline>
-                        Profile
-                      </MenuItem>
-                      <MenuItem
-                        onClick={handleMoreClose}
-                        component={Link}
-                        href="/my-listings"
-                        disableUnderline>
-                        Listings
-                      </MenuItem>
-                      <MenuItem
-                        onClick={handleMoreClose}
-                        component={Link}
-                        href="/my-reservations"
-                        disableUnderline>
-                        Reservations
-                      </MenuItem>
-                      <MenuItem
-                        onClick={handleMoreClose}
-                        component={Link}
-                        href="/my-history"
-                        disableUnderline>
-                        History
-                      </MenuItem>
-                      {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
-                      <MenuItem onClick={handleLogout}>Sign out</MenuItem>
-                    </>
-                  ) : (
+                  [
                     <MenuItem
                       onClick={handleMoreClose}
                       component={Link}
-                      href="/login"
+                      href="/profiles/[id]"
+                      as={`/profiles/${profile.steam_id}`}
                       disableUnderline>
-                      Sign in
-                    </MenuItem>
-                  )}
-                </Menu>
-              </>
-            )}
-          </Toolbar>
-        </Container>
-      </AppBar>
-    </header>
+                      View Profile
+                    </MenuItem>,
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/my-listings"
+                      disableUnderline>
+                      Listings
+                    </MenuItem>,
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/my-reservations"
+                      disableUnderline>
+                      Reservations
+                    </MenuItem>,
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/my-history"
+                      disableUnderline>
+                      History
+                    </MenuItem>,
+                    <MenuItem onClick={handleLogout}>Sign out</MenuItem>,
+                    // <MenuItem onClick={handleClose}>Buy Orders</MenuItem>
+                  ]
+                ) : (
+                  <MenuItem
+                    onClick={handleMoreClose}
+                    component={Link}
+                    href="/login"
+                    disableUnderline>
+                    Sign in
+                  </MenuItem>
+                )}
+              </Menu>
+            </>
+          )}
+        </Toolbar>
+      </Container>
+    </AppBar>
   )
 }
 Header.propTypes = {

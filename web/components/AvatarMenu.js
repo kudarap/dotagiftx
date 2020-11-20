@@ -6,7 +6,7 @@ import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Link from '@/components/Link'
-import { CDN_URL } from '@/service/api'
+import { retinaSrcSet } from '@/components/ItemImage'
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -37,9 +37,7 @@ export default function AvatarMenu({ profile }) {
         aria-controls="avatar-menu"
         aria-haspopup="true"
         onClick={handleClick}
-        startIcon={
-          <Avatar className={classes.avatar} src={profile && `${CDN_URL}/${profile.avatar}`} />
-        }>
+        startIcon={<Avatar className={classes.avatar} {...retinaSrcSet(profile.avatar, 24, 24)} />}>
         {profile && profile.name}
       </Button>
       <Menu

@@ -88,6 +88,9 @@ type (
 		// Get returns item details by id from data store.
 		Get(id string) (*Item, error)
 
+		// GetBySlug returns item details slug id from data store.
+		GetBySlug(slug string) (*Item, error)
+
 		// Create persists a new item to data store.
 		Create(*Item) error
 
@@ -126,4 +129,20 @@ func (i *Item) SetDefaults() *Item {
 
 	i.Slug = i.MakeSlug()
 	return i
+}
+
+func (i *Item) ToCatalog() Catalog {
+	return Catalog{
+		ID:           i.ID,
+		Slug:         i.Slug,
+		Name:         i.Name,
+		Hero:         i.Hero,
+		Image:        i.Image,
+		Origin:       i.Origin,
+		Rarity:       i.Rarity,
+		Contributors: i.Contributors,
+		ViewCount:    i.ViewCount,
+		CreatedAt:    i.CreatedAt,
+		UpdatedAt:    i.UpdatedAt,
+	}
 }

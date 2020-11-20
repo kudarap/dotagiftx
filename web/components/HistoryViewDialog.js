@@ -1,21 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { useRouter } from 'next/router'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import { myMarket } from '@/service/api'
 import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
-import {
-  MARKET_STATUS_MAP_COLOR,
-  MARKET_STATUS_MAP_TEXT,
-  MARKET_STATUS_SOLD,
-} from '@/constants/market'
+import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -38,46 +32,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function HistoryViewDialog(props) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props
 
-  const [error, setError] = React.useState('')
-  const [loading, setLoading] = React.useState(false)
-
   const handleClose = () => {
-    setError('')
-    setLoading(false)
     onClose()
-  }
-
-  const router = useRouter()
-
-  const onFormSubmit = evt => {
-    evt.preventDefault()
-
-    if (loading) {
-      return
-    }
-
-    const payload = {
-      status: MARKET_STATUS_SOLD,
-    }
-
-    setLoading(true)
-    setError(null)
-    ;(async () => {
-      try {
-        await myMarket.PATCH(market.id, payload)
-        handleClose()
-        router.push('/my-history')
-      } catch (e) {
-        setError(`Error: ${e.message}`)
-      }
-
-      setLoading(false)
-    })()
   }
 
   if (!market) {
@@ -100,7 +60,9 @@ export default function HistoryViewDialog(props) {
         <div className={classes.details}>
           <ItemImage
             className={classes.media}
-            image={`/300x170/${market.item.image}`}
+            image={market.item.image}
+            width={150}
+            height={100}
             title={market.item.name}
             rarity={market.item.rarity}
           />
@@ -152,11 +114,6 @@ export default function HistoryViewDialog(props) {
           </Typography>
         </div>
       </DialogContent>
-      {error && (
-        <Typography color="error" align="center" variant="body2">
-          {error}
-        </Typography>
-      )}
     </Dialog>
   )
 }

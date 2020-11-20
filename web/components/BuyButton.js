@@ -1,13 +1,13 @@
 import { withStyles } from '@material-ui/core/styles'
-import green from '@material-ui/core/colors/lightGreen'
+import primary from '@material-ui/core/colors/lightGreen'
 import Button from '@/components/Button'
 
 export default withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(green[700]),
-    backgroundColor: green[700],
+    color: theme.palette.getContrastText(primary[900]),
+    backgroundColor: primary[900],
     '&:hover': {
-      backgroundColor: green[800],
+      backgroundColor: primary[800],
     },
   },
 }))(Button)

@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import SearchIcon from '@material-ui/icons/Search'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
@@ -31,10 +32,14 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[500],
     cursor: 'pointer',
   },
+  label: {
+    margin: theme.spacing(0.4, 0, 0, 1.8),
+    display: 'block',
+  },
 }))
 
 export default function SearchInput(props) {
-  const { value, onChange, onSubmit, onClear, ...other } = props
+  const { value, onChange, onSubmit, onClear, label, ...other } = props
 
   const classes = useStyles()
 
@@ -58,6 +63,7 @@ export default function SearchInput(props) {
   return (
     <form onSubmit={handleSubmit}>
       <TextField
+        id="search_input"
         className={classes.searchBar}
         InputProps={{
           startAdornment: (
@@ -86,17 +92,29 @@ export default function SearchInput(props) {
         onChange={handleChange}
         {...other}
       />
+      {label && (
+        <Typography
+          className={classes.label}
+          variant="caption"
+          color="textSecondary"
+          component="label"
+          htmlFor="search_input">
+          {label}
+        </Typography>
+      )}
     </form>
   )
 }
 SearchInput.propTypes = {
   value: PropTypes.string,
+  label: PropTypes.string,
   onChange: PropTypes.func,
   onSubmit: PropTypes.func,
   onClear: PropTypes.func,
 }
 SearchInput.defaultProps = {
   value: '',
+  label: 'Search giftable items',
   onChange: () => {},
   onSubmit: () => {},
   onClear: () => {},

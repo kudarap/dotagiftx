@@ -3,7 +3,14 @@ import PropTypes from 'prop-types'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
-export default function ItemImage({ image, title, rarity, ...other }) {
+const baseSizeQuality = 20
+export function retinaSrcSet(filename, width, height) {
+  const src = `${CDN_URL}/${width + baseSizeQuality}x${height + baseSizeQuality}/${filename}`
+  const src2x = `${CDN_URL}/${width * 2}x${height * 2}/${filename}`
+  return { src, srcSet: `${src} 1x, ${src2x} 2x` }
+}
+
+export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
   const contStyle = {
     display: 'flex',
     lineHeight: 1,
@@ -25,18 +32,39 @@ export default function ItemImage({ image, title, rarity, ...other }) {
     textIndent: '10000px',
   }
 
+  let baseSrc = CDN_URL + image
+  // using srcset to support high dpi or retina displays when
+  // dimension were set.
+  let srcSet = null
+  if (width && height) {
+    const rs = retinaSrcSet(image, width, height)
+    baseSrc = rs.src
+    srcSet = rs.srcSet
+  }
+
   return (
-    <div style={contStyle} {...other}>
-      <img src={CDN_URL + image} alt={title || image} style={imgStyle} />
+    <div style={contStyle} className={className}>
+      <img
+        loading="lazy"
+        src={baseSrc}
+        srcSet={srcSet}
+        alt={title || image}
+        style={imgStyle}
+        {...other}
+      />
     </div>
   )
 }
 ItemImage.propTypes = {
   image: PropTypes.string.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
   title: PropTypes.string,
   rarity: PropTypes.string,
+  className: PropTypes.string,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
+  className: '',
 }

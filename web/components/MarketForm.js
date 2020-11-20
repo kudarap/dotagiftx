@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
@@ -7,13 +7,14 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import SubmitIcon from '@material-ui/icons/Check'
 import Alert from '@material-ui/lab/Alert'
 import { catalog, myMarket } from '@/service/api'
+import { itemRarityColorMap } from '@/constants/palette'
 import * as format from '@/lib/format'
-import { isOk as checkLoggedIn } from '@/service/auth'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import { MARKET_QTY_LIMIT } from '@/constants/market'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -57,6 +58,7 @@ const checkMarketPayload = payload => {
 
 export default function MarketForm() {
   const classes = useStyles()
+  const { isLoggedIn } = useContext(AppContext)
 
   const [item, setItem] = React.useState(defaultItem)
   const [payload, setPayload] = React.useState(defaultPayload)
@@ -145,14 +147,8 @@ export default function MarketForm() {
 
   const handleQtyChange = e => {
     const qty = e.target.value
-    if (qty <= 0) {
-      return
-    }
-
     setPayload({ ...payload, qty })
   }
-
-  const isLoggedIn = checkLoggedIn()
 
   return (
     <>
@@ -183,7 +179,9 @@ export default function MarketForm() {
           <div>
             <ItemImage
               className={classes.itemImage}
-              image={`/300x170/${item.image}`}
+              image={item.image}
+              width={150}
+              height={100}
               rarity={item.rarity}
               title={item.name}
             />
@@ -195,7 +193,14 @@ export default function MarketForm() {
             </Typography>
             <Typography variant="body2" color="textSecondary">
               Rarity:{' '}
-              <Typography variant="body2" color="textPrimary" component="span">
+              <Typography
+                variant="body2"
+                color="textPrimary"
+                component="span"
+                style={{
+                  textTransform: 'capitalize',
+                  color: itemRarityColorMap[item.rarity],
+                }}>
                 {item.rarity}
               </Typography>
             </Typography>
@@ -207,9 +212,9 @@ export default function MarketForm() {
             </Typography>
             <Typography variant="body2" color="textSecondary">
               Starting at:{' '}
-              <Typography variant="body2" color="textPrimary" component="span">
+              <Link href={`/${item.slug}`}>
                 {item.lowest_ask ? format.amount(item.lowest_ask, 'USD') : 'no offers yet'}
-              </Typography>
+              </Link>
             </Typography>
             <br />
             <br />
@@ -244,6 +249,13 @@ export default function MarketForm() {
             style={{ width: '30%', marginLeft: '1%' }}
             onInput={handleQtyChange}
             onChange={handleQtyChange}
+            onBlur={e => {
+              let qty = Number(e.target.value)
+              if (qty < 1) {
+                qty = 1
+              }
+              setPayload({ ...payload, qty })
+            }}
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         </div>

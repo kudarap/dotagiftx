@@ -1,10 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { get as getLoggedInUser, isOk as checkLoggedIn } from '@/service/auth'
 import { CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -17,6 +15,7 @@ import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import ChipLink from '@/components/ChipLink'
 import { itemRarityColorMap } from '@/constants/palette'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -39,8 +38,8 @@ const useStyles = makeStyles(theme => ({
       width: 300,
       height: 170,
     },
-    width: 164,
-    height: 109,
+    width: 165,
+    height: 110,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
@@ -49,7 +48,7 @@ const useStyles = makeStyles(theme => ({
       margin: `8px auto !important`,
       width: 300,
     },
-    width: 164,
+    width: 165,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
@@ -63,8 +62,8 @@ export default function ItemDetails({
   canonicalURL,
 }) {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+
+  const { isMobile, isLoggedIn } = useContext(AppContext)
 
   if (initialError) {
     return (
@@ -128,12 +127,6 @@ export default function ItemDetails({
     schemaOrgProd.offers.price = '0'
   }
 
-  const isLoggedIn = checkLoggedIn()
-  let currentUserID = null
-  if (isLoggedIn) {
-    currentUserID = getLoggedInUser().user_id
-  }
-
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
 
   const linkProps = { href: `/${item.slug}` }
@@ -175,7 +168,9 @@ export default function ItemDetails({
                   <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                     <ItemImage
                       className={classes.media}
-                      image={`/300x170/${item.image}`}
+                      image={item.image}
+                      width={165}
+                      height={110}
                       title={item.name}
                       rarity={item.rarity}
                     />
@@ -201,7 +196,7 @@ export default function ItemDetails({
                   {item.name}
                 </Typography>
                 <Typography gutterBottom>
-                  <Link href={`/search?q=${item.origin}`}>{item.origin}</Link>{' '}
+                  <Link href={`/search?origin=${item.origin}`}>{item.origin}</Link>{' '}
                   {item.rarity !== 'regular' && (
                     <>
                       &mdash;
@@ -209,7 +204,7 @@ export default function ItemDetails({
                         rarity={item.rarity}
                         variant="body1"
                         component={Link}
-                        href={`/search?q=${item.rarity}`}
+                        href={`/search?rarity=${item.rarity}`}
                       />
                     </>
                   )}
@@ -217,7 +212,7 @@ export default function ItemDetails({
                   <Typography color="textSecondary" component="span">
                     {`Used by: `}
                   </Typography>
-                  <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
+                  <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
                   <br />
                   <Typography color="textSecondary" component="span">
                     {`Links: `}
@@ -233,7 +228,9 @@ export default function ItemDetails({
                 <a href={wikiLink} target="_blank" rel="noreferrer noopener">
                   <ItemImage
                     className={classes.media}
-                    image={`/600x340/${item.image}`}
+                    image={item.image}
+                    width={300}
+                    height={170}
                     title={item.name}
                   />
                 </a>
@@ -263,13 +260,13 @@ export default function ItemDetails({
                 {item.name}
               </Typography>
               <Typography>
-                <Link href={`/search?q=${item.hero}`}>{item.hero}</Link>
+                <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
               </Typography>
               <Typography
                 color="textSecondary"
                 variant="body2"
                 component={Link}
-                href={`/search?q=${item.origin}`}>
+                href={`/search?origin=${item.origin}`}>
                 {item.origin}
                 {item.rarity !== 'regular' && (
                   <>
@@ -279,7 +276,7 @@ export default function ItemDetails({
                       variant="body2"
                       component={Link}
                       rarity={item.rarity}
-                      href={`/search?q=${item.rarity}`}
+                      href={`/search?rarity=${item.rarity}`}
                     />
                   </>
                 )}
@@ -291,12 +288,12 @@ export default function ItemDetails({
           )}
           <br />
 
-          <MarketList data={markets} currentUserID={currentUserID} error={error} />
+          <MarketList data={markets} error={error} />
           {!error && (
             <TablePaginationRouter
               linkProps={linkProps}
               style={{ textAlign: 'right' }}
-              count={markets.total_count}
+              count={markets.total_count || 0}
               page={filter.page}
             />
           )}
@@ -322,13 +319,4 @@ ItemDetails.defaultProps = {
     data: [],
   },
   error: null,
-}
-
-// This gets called on every request
-export async function getServerSideProps(props) {
-  const { res, params } = props
-  res.setHeader('location', `/${params.slug}`)
-  res.statusCode = 302
-  res.end()
-  return { props: {} }
 }

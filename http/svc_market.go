@@ -9,8 +9,27 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
+const (
+	marketCacheKeyPrefix = "svc_market"   // For cache invalidation control.
+	marketCacheExpr      = time.Hour * 24 // Full day cache since its using on-demand invalidation and caching.
+)
+
+func handleMarketList(
+	svc core.MarketService,
+	trackSvc core.TrackService,
+	cache core.Cache,
+	logger *logrus.Logger,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
@@ -32,23 +51,44 @@ func handleMarketList(svc core.MarketService, trackSvc core.TrackService, logger
 			list = []core.Market{}
 		}
 
-		respondOK(w, newDataWithMeta(list, md))
+		data := newDataWithMeta(list, md)
+		go func() {
+			if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
+				logger.Errorf("could save cache on market list: %s", err)
+			}
+		}()
+		respondOK(w, data)
 	}
 }
 
-func handleMarketDetail(svc core.MarketService) http.HandlerFunc {
+func handleMarketDetail(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
 		m, err := svc.Market(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
+		go func() {
+			if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
+				logger.Errorf("could save cache on market list: %s", err)
+			}
+		}()
+
 		respondOK(w, m)
 	}
 }
 
-func handleMarketCreate(svc core.MarketService) http.HandlerFunc {
+func handleMarketCreate(svc core.MarketService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(core.Market)
 		if err := parseForm(r, m); err != nil {
@@ -61,11 +101,17 @@ func handleMarketCreate(svc core.MarketService) http.HandlerFunc {
 			return
 		}
 
+		go cache.BulkDel(marketCacheKeyPrefix)
+		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+		//	respondError(w, err)
+		//	return
+		//}
+
 		respondOK(w, m)
 	}
 }
 
-func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
+func handleMarketUpdate(svc core.MarketService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(core.Market)
 		if err := parseForm(r, m); err != nil {
@@ -79,17 +125,27 @@ func handleMarketUpdate(svc core.MarketService) http.HandlerFunc {
 			return
 		}
 
+		go cache.BulkDel(marketCacheKeyPrefix)
+		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+		//	respondError(w, err)
+		//	return
+		//}
+
 		respondOK(w, m)
 	}
 }
 
 const (
-	catalogCacheExpr      = time.Minute
 	queryFlagRecentItems  = "recent"
 	queryFlagPopularItems = "popular"
 )
 
-func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogList(
+	svc core.MarketService,
+	trackSvc core.TrackService,
+	cache core.Cache,
+	logger *logrus.Logger,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var noCache bool
 		query := r.URL.Query()
@@ -122,8 +178,7 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 		}()
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := core.CacheKeyFromRequest(r)
-
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -143,7 +198,7 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 		// Save result to cache.
 		data := newDataWithMeta(list, md)
 		go func() {
-			if err := cache.Set(cacheKey, data, catalogCacheExpr); err != nil {
+			if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
 				logger.Errorf("could save cache on catalog list: %s", err)
 			}
 		}()
@@ -152,19 +207,34 @@ func handleMarketCatalogList(svc core.MarketService, trackSvc core.TrackService,
 	}
 }
 
-func handleMarketCatalogDetail(svc core.MarketService) http.HandlerFunc {
+func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
 		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"))
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
+		go func() {
+			if err := cache.Set(cacheKey, c, marketCacheExpr); err != nil {
+				logger.Errorf("could save cache on catalog details: %s", err)
+			}
+		}()
+
 		respondOK(w, c)
 	}
 }
 
-const catalogTrendCacheExpr = time.Minute * 2
+const catalogTrendCacheExpr = time.Hour
 
 func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -176,7 +246,7 @@ func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logg
 		}
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
