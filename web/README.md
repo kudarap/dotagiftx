@@ -4,9 +4,9 @@ DotagiftX web user interface
 
 ### Tech Stack
 
-- React 16.13
-- Next 9.4
-- Material UI 4.10
+- React 17
+- Next 10
+- Material UI 4
 
 ### Features
 
