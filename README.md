@@ -4,9 +4,10 @@ Market place for giftable Dota 2 items
 
 ### Tech Stack
 
-- Docker 19
-- RethinkDB 2.4
 - Go 1.15
+- RethinkDB 2.4
+- Redis 6.0
+- Docker 19
 
 ### Architecture
 
@@ -31,13 +32,15 @@ Market place for giftable Dota 2 items
   - [x] `GET /auth/revoke` -- revokes access token
   - [x] `GET /items` -- item search
   - [x] `GET /items/{item-id}` -- item details
-  - [x] `GET /catalog` -- indexed market search
-  - [x] `GET /catalog/{item-id}` -- indexed market search
+  - [x] `GET /catalogs` -- indexed market search
+  - [x] `GET /catalogs/{item-id}` -- indexed market search
   - [x] `GET /markets` -- market search
   - [x] `GET /markets/{market-id}` -- item market details
   - [x] `GET /users/{steam-id}` -- user details
   - [x] `GET /stats/top-origins` -- top origins stats
   - [x] `GET /stats/top-heroes` -- top heroes stats
+  - [x] `GET /stats/market-summary` -- market status count
+  - [x] `GET /catalogs-trend` -- trending items
   - [x] `GET /` -- api info
 
 - private
@@ -47,3 +50,4 @@ Market place for giftable Dota 2 items
   - [x] `POST /my/markets` -- create user market
   - [x] `PATCH /my/markets` -- update user market
   - [x] `POST /items` -- create item
+  - [x] `POST /items_import` -- yaml items import
