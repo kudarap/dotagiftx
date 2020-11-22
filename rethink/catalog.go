@@ -211,9 +211,15 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		}
 	}
 
-	// Get lowest price on the market by item ID.
+	// Get lowest sale price on the market by item ID.
 	q = baseQ.Min("price").Field("price").Default(0)
 	if err = s.db.one(q, &cat.LowestAsk); err != nil {
+		return nil, errors.New(core.CatalogErrIndexing, err)
+	}
+
+	// Get average sale price on the market by item ID.
+	q = baseQ.Avg("price").Default(0)
+	if err = s.db.one(q, &cat.AverageAsk); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
