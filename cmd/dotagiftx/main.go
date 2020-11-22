@@ -111,6 +111,7 @@ func (a *application) setup() error {
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
+	redisClient.BulkDel("")
 
 	// Server setup.
 	log.Println("setting up http server...")
