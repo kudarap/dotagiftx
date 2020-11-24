@@ -147,21 +147,15 @@ export default function Header({ disableSearch }) {
           <Link href="/" disableUnderline>
             {!isMobile ? (
               <img
-                src="/brand2.png"
+                src="/brand.png"
                 alt={APP_NAME}
                 style={{
-                  height: 36,
-                  filter: 'brightness(100)',
-                  opacity: 0.7,
+                  height: 30,
                   marginBottom: -5,
                 }}
               />
             ) : (
-              <img
-                src="/icon4.png"
-                alt={APP_NAME}
-                style={{ height: 36, marginBottom: -10, filter: 'brightness(100)', opacity: 0.7 }}
-              />
+              <img src="/icon.png" alt={APP_NAME} style={{ height: 30, marginBottom: -5 }} />
             )}
           </Link>
           <span className={classes.spacer} />
