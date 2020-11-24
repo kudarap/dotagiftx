@@ -30,34 +30,9 @@ const useStyles = makeStyles(theme => ({
     borderRight: 'none',
     borderLeft: 'none',
   },
-  title: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 15,
-    },
-    fontSize: 17,
-    textShadow: '0px 0px 16px #C79123',
-    // textTransform: 'uppercase',
-    // fontWeight: 'bold',
-    background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
-    filter: 'drop-shadow(0px 0px 10px black)',
-    letterSpacing: 2,
-    cursor: 'pointer',
-    paddingRight: theme.spacing(1),
-  },
-  titleMini: {
-    fontSize: 17,
-    textShadow: '0px 0px 16px #C79123',
-    // textTransform: 'uppercase',
-    // fontWeight: 'bold',
-    background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
-    filter: 'drop-shadow(0px 0px 10px black)',
-    letterSpacing: 2,
-    cursor: 'pointer',
-    padding: theme.spacing(0, 1, 0, 1),
+  brand: {
+    height: 30,
+    marginBottom: -5,
   },
   avatar: {
     width: 36,
@@ -147,15 +122,18 @@ export default function Header({ disableSearch }) {
           <Link href="/" disableUnderline>
             {!isMobile ? (
               <img
-                src="/brand.png"
+                className={classes.brand}
+                src="/brand_1x.png"
+                srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
                 alt={APP_NAME}
-                style={{
-                  height: 30,
-                  marginBottom: -5,
-                }}
               />
             ) : (
-              <img src="/icon.png" alt={APP_NAME} style={{ height: 30, marginBottom: -5 }} />
+              <img
+                className={classes.brand}
+                src="/icon_1x.png"
+                srcSet="/icon_1x.png 1x, /icon_2x.png 2x"
+                alt={APP_NAME}
+              />
             )}
           </Link>
           <span className={classes.spacer} />
