@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     [theme.breakpoints.down('sm')]: {
-      height: 42,
+      height: 39,
     },
     margin: '0 auto',
     color: theme.palette.grey[800],
