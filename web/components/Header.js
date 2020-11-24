@@ -210,7 +210,7 @@ export default function Header({ disableSearch }) {
                   </Menu>
                 </>
               ) : (
-                <Button startIcon={<SteamIcon />} component={Link} href="/login">
+                <Button startIcon={<SteamIcon />} component={Link} href="/login" disableUnderline>
                   Sign in
                 </Button>
               )}
