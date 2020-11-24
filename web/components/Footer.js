@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
+import ContactDialog from '@/components/ContactDialog'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -97,6 +98,13 @@ export default function Footer() {
           {/*  </MuiLink> */}
           {/* </li> */}
         </ul>
+        <br />
+        <br />
+        <br />
+        <Typography variant="caption" color="textSecondary" align="center" component="p">
+          Game content and materials are trademarks and copyrights of their respective publisher and
+          its licensors. All rights reserved.
+        </Typography>
       </Container>
     </footer>
   )
