@@ -37,7 +37,7 @@ export default function About() {
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; author
             <br />
-            Feel free to message me on{' '}
+            Feel free to contact me on{' '}
             <Link
               color="secondary"
               target="_blank"
@@ -46,8 +46,12 @@ export default function About() {
               Reddit
             </Link>{' '}
             or{' '}
-            <Link color="secondary" href="mailto:goto@chiligarlic.com">
-              goto@chiligarlic.com
+            <Link
+              color="secondary"
+              target="_blank"
+              rel="noreferrer noopener"
+              href="https://discord.gg/UFt9Ny42kM">
+              Discord
             </Link>{' '}
             if you have issues or suggestions.
           </Typography>
