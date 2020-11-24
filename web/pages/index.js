@@ -109,14 +109,14 @@ export default function Index({ marketSummary, trendingItems }) {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDesc} />
-        <meta name="twitter:image" content={`${APP_URL}/assets/gift.png`} />
+        <meta name="twitter:image" content={`${APP_URL}/icon.png`} />
         <meta name="twitter:site" content="@DotagiftX" />
         {/* OpenGraph */}
         <meta property="og:url" content={APP_URL} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDesc} />
-        <meta property="og:image" content={`${APP_URL}/assets/gift.png`} />
+        <meta property="og:image" content={`${APP_URL}/icon.png`} />
       </Head>
 
       <Header disableSearch />

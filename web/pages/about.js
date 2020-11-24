@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(6),
-    // background: 'url("/assets/gift.png") no-repeat bottom right',
+    // background: 'url("/icon.png") no-repeat bottom right',
     // backgroundSize: 100,
   },
 }))
