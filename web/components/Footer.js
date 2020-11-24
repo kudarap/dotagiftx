@@ -76,7 +76,7 @@ export default function Footer() {
             {/* </MuiLink> */}
             <Link href="/about" color="textSecondary">
               <Typography component="span" color="secondary">
-                DotagiftX
+                {APP_NAME}
               </Typography>{' '}
               by kudarap
             </Link>

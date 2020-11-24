@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { APP_NAME } from '@/constants/strings'
 import { authSteam, getLoginURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -61,7 +62,7 @@ export default function Login() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            Signing in to <strong>DotagiftX</strong> allows you to access additional features.
+            Signing in to <strong>{APP_NAME}</strong> allows you to access additional features.
           </Typography>
           {/* <Typography> */}
           {/*  <ul> */}

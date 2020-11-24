@@ -93,8 +93,8 @@ export default function Index({ marketSummary, trendingItems }) {
 
   const description = `Search on ${marketSummary.live} giftable items`
 
-  const metaTitle = 'DotagiftX - Dota 2 giftable items marketplace'
-  const metaDesc = `${description}. DotagiftX was made to provide better search and pricing for 
+  const metaTitle = `${APP_NAME} - Dota 2 giftable items marketplace`
+  const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for 
           Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market. 
           The project was heavily inspired by Giftable Megathread from r/Dota2Trade.`
 
@@ -110,7 +110,7 @@ export default function Index({ marketSummary, trendingItems }) {
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDesc} />
         <meta name="twitter:image" content={`${APP_URL}/icon.png`} />
-        <meta name="twitter:site" content="@DotagiftX" />
+        <meta name="twitter:site" content={`@${APP_NAME}`} />
         {/* OpenGraph */}
         <meta property="og:url" content={APP_URL} />
         <meta property="og:type" content="website" />

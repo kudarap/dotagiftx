@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -50,7 +51,7 @@ export default function History({ status }) {
       <Header />
 
       <Head>
-        <title>DotagiftX :: Market History</title>
+        <title>{APP_NAME} :: Market History</title>
         <meta name="description" content="Market activities" />
       </Head>
 
