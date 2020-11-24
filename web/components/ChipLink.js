@@ -7,7 +7,6 @@ export default function ChipLink(props) {
     <Chip
       size="small"
       variant="outlined"
-      color="secondary"
       clickable
       component={Link}
       target="_blank"

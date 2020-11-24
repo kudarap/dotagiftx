@@ -16,6 +16,7 @@ import TablePaginationRouter from '@/components/TablePaginationRouter'
 import ChipLink from '@/components/ChipLink'
 import { itemRarityColorMap } from '@/constants/palette'
 import AppContext from '@/components/AppContext'
+import { APP_NAME } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -101,7 +102,7 @@ export default function ItemDetails({
     })()
   }, [filter])
 
-  const metaTitle = `DotagiftX :: Listings for ${item.name}`
+  const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
   let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
   const schemaOrgProd = {
@@ -143,7 +144,7 @@ export default function ItemDetails({
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDesc} />
         <meta name="twitter:image" content={`${CDN_URL}/${item.image}`} />
-        <meta name="twitter:site" content="@DotagiftX" />
+        <meta name="twitter:site" content={`${APP_NAME}`} />
         {/* OpenGraph */}
         <meta property="og:url" content={canonicalURL} />
         <meta property="og:type" content="website" />

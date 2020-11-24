@@ -13,7 +13,12 @@ import Container from '@/components/Container'
 import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import { APP_URL, STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import {
+  APP_NAME,
+  APP_URL,
+  STEAM_PROFILE_BASE_URL,
+  STEAMREP_PROFILE_BASE_URL,
+} from '@/constants/strings'
 import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
@@ -94,7 +99,7 @@ export default function UserDetails({
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
   const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
 
-  const metaTitle = `DotagiftX :: ${profile.name}`
+  const metaTitle = `${APP_NAME} :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
 
   return (
@@ -109,7 +114,7 @@ export default function UserDetails({
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDesc} />
         <meta name="twitter:image" content={`${CDN_URL}/${profile.avatar}`} />
-        <meta name="twitter:site" content="@DotagiftX" />
+        <meta name="twitter:site" content={`@${APP_NAME}`} />
         {/* OpenGraph */}
         <meta property="og:url" content={canonicalURL} />
         <meta property="og:type" content="website" />

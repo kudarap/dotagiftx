@@ -7,6 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import SubmitIcon from '@material-ui/icons/Check'
 import Alert from '@material-ui/lab/Alert'
 import { catalog, myMarket } from '@/service/api'
+import { APP_NAME } from '@/constants/strings'
 import { itemRarityColorMap } from '@/constants/palette'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
@@ -163,7 +164,7 @@ export default function MarketForm() {
 
       <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1">
-          Post your item on DotagiftX
+          Post your item on ${APP_NAME}
         </Typography>
         <br />
 

@@ -10,7 +10,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { Link } from '@material-ui/core'
 import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
-import { APP_URL } from '@/constants/strings'
+import { APP_NAME, APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_SOLD } from '@/constants/market'
 import MarketActivity from '@/components/MarketActivity'
 
@@ -47,7 +47,7 @@ export default function UserDelivered({ profile, canonicalURL }) {
       <Header />
 
       <Head>
-        <title>{`DotagiftX :: ${profile.name} delivered items`}</title>
+        <title>{`${APP_NAME} :: ${profile.name} delivered items`}</title>
         <meta name="description" content={`${profile.name}'s delivered giftable items`} />
         <link rel="canonical" href={canonicalURL} />
       </Head>

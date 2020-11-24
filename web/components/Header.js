@@ -19,6 +19,7 @@ import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import { APP_NAME } from '@/constants/strings'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -145,13 +146,16 @@ export default function Header({ disableSearch }) {
           {/* Desktop nav branding */}
           <Link href="/" disableUnderline>
             {!isMobile ? (
-              <Typography component="h1" className={classes.title}>
-                <strong>DotagiftX</strong>
-              </Typography>
+              <img
+                src="/brand.png"
+                alt={APP_NAME}
+                style={{
+                  height: 30,
+                  marginBottom: -5,
+                }}
+              />
             ) : (
-              <Typography component="h1" className={classes.titleMini}>
-                <strong>DX</strong>
-              </Typography>
+              <img src="/icon.png" alt={APP_NAME} style={{ height: 30, marginBottom: -5 }} />
             )}
           </Link>
           <span className={classes.spacer} />

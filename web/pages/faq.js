@@ -1,7 +1,7 @@
 import React from 'react'
-import Link2 from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
@@ -31,7 +31,7 @@ export default function Faq() {
           <br />
 
           <Typography variant="h6" component="h2">
-            What is DotagiftX?
+            What is {APP_NAME}?
           </Typography>
           <Typography color="textSecondary">
             Market for Dota 2 giftables, items that can be gift or giftable-once are probably belong
