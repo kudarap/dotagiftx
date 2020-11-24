@@ -33,6 +33,14 @@ const useStyles = makeStyles(theme => ({
       marginRight: theme.spacing(2),
     },
   },
+  vavleCopyright: {
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing(0),
+      marginBottom: theme.spacing(3),
+    },
+    display: 'block',
+    marginTop: theme.spacing(5),
+  },
 }))
 
 export default function Footer() {
@@ -99,9 +107,12 @@ export default function Footer() {
           {/* </li> */}
         </ul>
         <br />
-        <br />
-        <br />
-        <Typography variant="caption" color="textSecondary" align="center" component="p">
+        <Typography
+          className={classes.vavleCopyright}
+          variant="caption"
+          color="textSecondary"
+          align="center"
+          component="p">
           Game content and materials are trademarks and copyrights of their respective publisher and
           its licensors. All rights reserved.
         </Typography>
