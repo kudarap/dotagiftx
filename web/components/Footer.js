@@ -64,6 +64,11 @@ export default function Footer() {
             </Link>
           </li>
           <li>
+            <Link href="/donate" color="textSecondary">
+              Donate
+            </Link>
+          </li>
+          <li>
             {/* <MuiLink */}
             {/*  href="http://github.com/kudarap" */}
             {/*  target="_blank" */}

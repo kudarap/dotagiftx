@@ -30,6 +30,7 @@ export default function About() {
           <Typography variant="h5" component="h1" gutterBottom>
             Who is behind this?
           </Typography>
+          <br />
           <Avatar
             src="https://api.dotagiftx.com/images/adfb7fc8133861692abc5631d67b5f51dfd5753f.jpg"
             style={{ width: 100, height: 100 }}
