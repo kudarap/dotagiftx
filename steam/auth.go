@@ -2,6 +2,7 @@ package steam
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -27,6 +28,14 @@ type OpenId struct {
 }
 
 func NewOpenId(r *http.Request, cfg Config) *OpenId {
+	// Check callback URL override and create a config.
+	cb := r.URL.Query().Get("callback")
+	if cb != "" {
+		u, _ := url.Parse(cb)
+		cfg.Realm = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		cfg.Return = cb
+	}
+
 	id := new(OpenId)
 
 	proto := "http://"

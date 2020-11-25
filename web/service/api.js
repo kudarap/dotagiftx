@@ -2,6 +2,7 @@ import querystring from 'querystring'
 import trimEnd from 'lodash/trimEnd'
 import * as http from './http'
 
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
 export const CDN_URL = trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')
 
@@ -57,4 +58,4 @@ export const catalogSearch = http.baseSearchRequest(CATALOGS)
 export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
-export const getLoginURL = `${API_URL}${AUTH_STEAM}?callback=https://dev.dotagiftx.com/login`
+export const getLoginURL = `${API_URL}${AUTH_STEAM}?callback=${APP_URL}/login`

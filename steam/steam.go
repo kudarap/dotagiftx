@@ -25,16 +25,24 @@ func New(c Config) (*Client, error) {
 	return &Client{c}, nil
 }
 
-func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
+const overrideCallbackKey = "callback"
+
+func (c *Client) overrideConfig(r *http.Request) Config {
 	// Check callback URL override and create a config.
-	cb := r.URL.Query().Get("callback")
+	cfg := c.config
+	cb := r.URL.Query().Get(overrideCallbackKey)
 	if cb != "" {
 		u, _ := url.Parse(cb)
-		c.config.Realm = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-		c.config.Return = cb
+		cfg.Realm = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		cfg.Return = cb
 	}
 
-	oid := NewOpenId(r, c.config)
+	return cfg
+}
+
+func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
+	cfg := c.overrideConfig(r)
+	oid := NewOpenId(r, cfg)
 	if oid.Mode() != "" {
 		err = fmt.Errorf("could not get redirect URL: %s", oid.Mode())
 		return
@@ -44,7 +52,8 @@ func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
 }
 
 func (c *Client) Authenticate(r *http.Request) (*core.SteamPlayer, error) {
-	oid := NewOpenId(r, c.config)
+	cfg := c.overrideConfig(r)
+	oid := NewOpenId(r, cfg)
 	m := oid.Mode()
 	if m == "cancel" {
 		return nil, fmt.Errorf("authorization cancelled")
