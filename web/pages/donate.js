@@ -31,12 +31,12 @@ export default function Faq() {
           <br />
 
           <Typography color="textSecondary">
-            <img src="/assets/tango.png" style={{ float: 'right' }} />
-            {/*I had this idea once to create a community market for Dota 2 giftables items and now*/}
-            {/*here we are, although the idea is free but the time to develop and server are not and*/}
-            {/*running on someone else&apos;s server 🤫.*/}
-            If this project helped you somehow and want to support it, you can toss a tango coin to
-            your developer.
+            <img src="/assets/tango.png" style={{ float: 'right' }} alt="tango" />
+            {/* I had this idea once to create a community market for Dota 2 giftables items and now */}
+            {/* here we are, although the idea is free but the time to develop and server are not and */}
+            {/* running on someone else&apos;s server 🤫. */}
+            If this project helped you somehow and want to support it, you can toss a tango to your
+            developer.
           </Typography>
           <br />
 
@@ -47,7 +47,7 @@ export default function Faq() {
               <input type="hidden" name="currency_code" value="USD" />
               <input
                 type="image"
-                src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
+                src="/assets/tango.png"
                 border="0"
                 name="submit"
                 title="PayPal - The safer, easier way to pay online!"
