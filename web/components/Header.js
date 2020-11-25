@@ -33,6 +33,12 @@ const useStyles = makeStyles(theme => ({
   brand: {
     height: 30,
     marginBottom: -5,
+    filter: 'brightness(90%)',
+    '-webkit-transition': 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    '&:hover': {
+      filter: 'brightness(110%)',
+    },
   },
   avatar: {
     width: 36,
@@ -113,6 +119,13 @@ export default function Header({ disableSearch }) {
 
   return (
     <AppBar position="static" variant="outlined" className={classes.appBar}>
+      {/*<div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>*/}
+      {/*  You are viewing a development version of this site.&nbsp;*/}
+      {/*  <Link href="https://dotagiftx.com">*/}
+      {/*    <strong>Take me to live site</strong>*/}
+      {/*  </Link>*/}
+      {/*  <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>*/}
+      {/*</div>*/}
       <Container disableMinHeight>
         <Toolbar variant="dense" disableGutters>
           {/* Branding button */}
