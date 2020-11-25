@@ -33,11 +33,10 @@ const useStyles = makeStyles(theme => ({
   brand: {
     height: 30,
     marginBottom: -5,
-    filter: 'brightness(90%)',
     '-webkit-transition': 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     '&:hover': {
-      filter: 'brightness(110%)',
+      filter: 'brightness(115%)',
     },
   },
   avatar: {
