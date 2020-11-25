@@ -21,7 +21,7 @@ func NewTrack(c *Client) *trackStorage {
 		log.Fatalf("could not create %s table: %s", tableTrack, err)
 	}
 
-	if err := c.createIndex(tableMarket, trackFieldItemID); err != nil {
+	if err := c.autoIndex(tableTrack, core.Track{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
