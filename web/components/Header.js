@@ -99,7 +99,11 @@ export default function Header({ disableSearch }) {
 
   const handleLogout = () => {
     ;(async () => {
-      await authRevoke(currentAuth.refresh_token)
+      try {
+        await authRevoke(currentAuth.refresh_token)
+      } catch (e) {
+        console.warn(e.message)
+      }
       destroyLoginSess()
       handleClose()
       // eslint-disable-next-line no-undef
