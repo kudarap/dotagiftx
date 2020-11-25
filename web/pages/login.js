@@ -4,14 +4,15 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { APP_NAME } from '@/constants/strings'
-import { authSteam, getLoginURL } from '@/service/api'
+import { APP_CACHE_PROFILE } from '@/constants/app'
+import * as Storage from '@/service/storage'
+import { authSteam, getLoginURL, myProfile } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Button from '@/components/Button'
 import SteamIcon from '@/components/SteamIcon'
 import { set as setAuth } from '@/service/auth'
-import * as Storage from '@/service/storage'
 import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
@@ -39,9 +40,15 @@ export default function Login() {
     const login = async () => {
       setLoading(true)
       try {
+        // Store auth details.
         const auth = await authSteam(query)
         setAuth(auth)
         Storage.removeAll()
+
+        // Store user profile.
+        const user = await myProfile.GET()
+        Storage.save(APP_CACHE_PROFILE, user)
+
         // eslint-disable-next-line no-undef
         window.location = '/'
       } catch (e) {

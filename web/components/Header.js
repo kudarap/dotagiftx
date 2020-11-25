@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -14,12 +13,13 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
 import { authRevoke, myProfile } from '@/service/api'
-import { clear as destroyLoginSess, isOk as checkLoggedIn } from '@/service/auth'
+import { clear as destroyLoginSess } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
+import { APP_CACHE_PROFILE } from '@/constants/app'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -50,8 +50,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const PROFILE_CACHE_KEY = 'profile'
-
 const defaultProfile = {
   id: '',
   steam_id: '',
@@ -70,21 +68,17 @@ export default function Header({ disableSearch }) {
   const [profile, setProfile] = React.useState(defaultProfile)
 
   React.useEffect(() => {
-    const get = async () => {
-      const res = await myProfile.GET()
-      setProfile(res)
-      Storage.save(PROFILE_CACHE_KEY, res)
+    const profile = Storage.get(APP_CACHE_PROFILE)
+    if (profile) {
+      setProfile(profile)
+      return
     }
 
-    if (checkLoggedIn()) {
-      const hit = Storage.get(PROFILE_CACHE_KEY)
-      if (hit) {
-        setProfile(hit)
-        return
-      }
-      // fetch data from api
-      get()
-    }
+    ;(async () => {
+      const res = await myProfile.GET()
+      setProfile(res)
+      Storage.save(APP_CACHE_PROFILE, res)
+    })()
   }, [])
 
   const [anchorEl, setAnchorEl] = React.useState(null)
