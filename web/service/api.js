@@ -57,4 +57,4 @@ export const catalogSearch = http.baseSearchRequest(CATALOGS)
 export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
 
 export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
-export const getLoginURL = `${API_URL}${AUTH_STEAM}`
+export const getLoginURL = `${API_URL}${AUTH_STEAM}?callback=https://dev.dotagiftx.com/login`

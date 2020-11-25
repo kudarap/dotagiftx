@@ -3,6 +3,7 @@ package steam
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/kudarap/dotagiftx/core"
 )
@@ -25,6 +26,14 @@ func New(c Config) (*Client, error) {
 }
 
 func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
+	// Check callback URL override and create a config.
+	cb := r.URL.Query().Get("callback")
+	if cb != "" {
+		u, _ := url.Parse(cb)
+		c.config.Realm = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		c.config.Return = cb
+	}
+
 	oid := NewOpenId(r, c.config)
 	if oid.Mode() != "" {
 		err = fmt.Errorf("could not get redirect URL: %s", oid.Mode())
