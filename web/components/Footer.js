@@ -5,7 +5,11 @@ import Typography from '@material-ui/core/Typography'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
-import ContactDialog from '@/components/ContactDialog'
+import { APP_FOOTER_HEIGHT } from '@/constants/app'
+
+// Stole from SteamDB dota 2 page footer.
+const dotaHeroImage =
+  'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1605830961'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,6 +18,8 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(5),
     paddingBottom: theme.spacing(5),
+    height: APP_FOOTER_HEIGHT,
+    background: `linear-gradient(to bottom, rgba(38, 50, 56, 0.6) ${APP_FOOTER_HEIGHT}px, transparent), url(${dotaHeroImage}) center -140px`,
   },
   list: {
     [theme.breakpoints.down('xs')]: {
