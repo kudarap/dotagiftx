@@ -45,10 +45,10 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
 
   let metaTitle = `${APP_NAME} :: Search`
   let metaDesc = `Search for item name, hero, treasure`
-  const term = filter.q || filter.hero || filter.origin || filter.rarity
-  if (term) {
-    metaTitle += ` ${term}`
-    metaDesc = `${catalogs && catalogs.total_count} results for "${term}"`
+  const searchTerm = filter.q || filter.hero || filter.origin || filter.rarity
+  if (searchTerm) {
+    metaTitle += ` ${searchTerm}`
+    metaDesc = `${catalogs && catalogs.total_count} results for "${searchTerm}"`
   }
 
   const linkProps = { href: '/search', query: filter }
@@ -64,10 +64,10 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
 
       <main className={classes.main}>
         <Container>
-          {filter.q && (
+          {searchTerm && (
             <>
               <Typography component="h1" variant="h6">
-                {catalogs && catalogs.total_count} results for &quot;{filter.q}&quot;
+                {catalogs && catalogs.total_count} results for &quot;{searchTerm}&quot;
               </Typography>
               <br />
             </>
