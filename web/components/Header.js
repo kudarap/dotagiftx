@@ -74,16 +74,16 @@ export default function Header({ disableSearch }) {
 
   React.useEffect(() => {
     const profile = Storage.get(APP_CACHE_PROFILE)
-    if (profile) {
-      setProfile(profile)
+    if (!profile) {
       return
     }
 
-    ;(async () => {
-      const res = await myProfile.GET()
-      setProfile(res)
-      Storage.save(APP_CACHE_PROFILE, res)
-    })()
+    setProfile(profile)
+    // ;(async () => {
+    //   const res = await myProfile.GET()
+    //   setProfile(res)
+    //   Storage.save(APP_CACHE_PROFILE, res)
+    // })()
   }, [])
 
   const [anchorEl, setAnchorEl] = React.useState(null)
