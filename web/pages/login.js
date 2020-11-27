@@ -15,6 +15,7 @@ import Button from '@/components/Button'
 import SteamIcon from '@/components/SteamIcon'
 import { set as setAuth } from '@/service/auth'
 import AppContext from '@/components/AppContext'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -22,6 +23,15 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
+  },
+  warningText: {
+    color: theme.palette.info.main,
+  },
+  list: {
+    listStyle: 'none',
+    '& li:before': {
+      content: `'✔ '`,
+    },
   },
 }))
 
@@ -50,8 +60,8 @@ export default function Login() {
         Storage.removeAll()
 
         // Store user profile.
-        const user = await myProfile.GET()
-        Storage.save(APP_CACHE_PROFILE, user)
+        const profile = await myProfile.GET()
+        Storage.save(APP_CACHE_PROFILE, profile)
 
         // eslint-disable-next-line no-undef
         window.location = '/'
@@ -79,15 +89,19 @@ export default function Login() {
           <Typography variant="h5" component="h1" gutterBottom>
             Signing in to <strong>{APP_NAME}</strong> allows you to access additional features.
           </Typography>
-          {/* <Typography> */}
-          {/*  <ul> */}
-          {/*    <li>Item Listing</li> */}
-          {/*    <li>Reservation</li> */}
-          {/*  </ul> */}
-          {/* </Typography> */}
+          <Typography component="h2">
+            <ul className={classes.list}>
+              <li>Post Items</li>
+              <li>Track Reservations</li>
+              <li>Record Sales History</li>
+              {/* <li>Place Buy Order</li> */}
+            </ul>
+          </Typography>
           <br />
 
-          <Typography>This website is not affiliated with Valve Corporation or Steam.</Typography>
+          <Typography className={classes.warningText}>
+            This website is not affiliated with Valve Corporation or Steam.
+          </Typography>
           <br />
 
           <Button
@@ -105,7 +119,14 @@ export default function Login() {
           <br />
 
           <Typography color="textSecondary" variant="body2">
-            By signing in, We ask for public information about your account from the Steam Web API
+            By signing in, We ask for public information about your account from the{' '}
+            <Link
+              target="_blank"
+              rel="noreferrer noopener"
+              href="https://developer.valvesoftware.com/wiki/Steam_Web_API"
+              color="secondary">
+              Steam Web API
+            </Link>{' '}
             this includes (<em>steam id, profile name, and avatar image</em>) and use cookies to
             keep your signed in session active.
           </Typography>
