@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -64,6 +65,10 @@ export default function Login() {
 
   return (
     <>
+      <Head>
+        <title>{APP_NAME} :: Sign In</title>
+      </Head>
+
       <Header />
 
       <main className={classes.main}>

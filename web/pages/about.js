@@ -1,8 +1,10 @@
 import React from 'react'
+import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
@@ -23,6 +25,10 @@ export default function About() {
 
   return (
     <>
+      <Head>
+        <title>{APP_NAME} :: About</title>
+      </Head>
+
       <Header />
 
       <main className={classes.main}>

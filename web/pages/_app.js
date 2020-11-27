@@ -19,7 +19,7 @@ export default function MyApp(props) {
   return (
     <>
       <Head>
-        <title>{APP_NAME} - Dota 2 giftables market</title>
+        <title>{APP_NAME} :: Dota 2 Giftables Community Market</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
         {/* <meta */}
         {/*  name="viewport" */}

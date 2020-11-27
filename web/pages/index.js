@@ -93,7 +93,7 @@ export default function Index({ marketSummary, trendingItems }) {
 
   const description = `Search on ${marketSummary.live} giftable items`
 
-  const metaTitle = `${APP_NAME} - Dota 2 giftable items marketplace`
+  const metaTitle = `${APP_NAME} :: Dota 2 Giftables Community Market`
   const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for 
           Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market. 
           The project was heavily inspired by Giftable Megathread from r/Dota2Trade.`

@@ -51,8 +51,10 @@ export default function History({ status }) {
       <Header />
 
       <Head>
-        <title>{APP_NAME} :: Market History</title>
-        <meta name="description" content="Market activities" />
+        <title>
+          {APP_NAME} :: Market {MARKET_STATUS_MAP_TEXT[status]} History
+        </title>
+        <meta name="description" content="Market transaction history" />
       </Head>
 
       <main className={classes.main}>

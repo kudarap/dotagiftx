@@ -1,6 +1,8 @@
 import React from 'react'
+import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { APP_NAME } from '@/constants/strings'
 import Container from '@/components/Container'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -16,6 +18,10 @@ export default function Custom404() {
 
   return (
     <>
+      <Head>
+        <title>{APP_NAME} :: 404 - Page Not Found</title>
+      </Head>
+
       <Header />
 
       <main className={classes.main}>

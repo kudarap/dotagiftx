@@ -1,4 +1,5 @@
 import React from 'react'
+import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { APP_NAME } from '@/constants/strings'
@@ -29,6 +30,10 @@ export default function Faq() {
 
   return (
     <>
+      <Head>
+        <title>{APP_NAME} :: Frequently Asked Questions</title>
+      </Head>
+
       <Header />
 
       <main className={classes.main}>
