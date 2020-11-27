@@ -11,6 +11,8 @@ import { APP_FOOTER_HEIGHT } from '@/constants/app'
 const dotaHeroImage =
   'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1605830961'
 
+const heroImage = '/assets/bg_hero.png'
+
 const mobileHeightCompensator = 31
 
 const useStyles = makeStyles(theme => ({

@@ -41,10 +41,7 @@ export default function About() {
             Who is behind this?
           </Typography>
           <br />
-          <Avatar
-            src="https://api.dotagiftx.com/images/adfb7fc8133861692abc5631d67b5f51dfd5753f.jpg"
-            style={{ width: 100, height: 100 }}
-          />
+          <Avatar src="/kudarap.jpg" style={{ width: 100, height: 100 }} />
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; author
             <br />
