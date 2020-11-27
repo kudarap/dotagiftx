@@ -104,7 +104,7 @@ export default function Faq() {
             startIcon={<PaypalIcon />}
             size="large"
             href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=LBY7VY8PQ9D3Y&item_name=Support+DotagiftX.com&currency_code=USD">
-            PayPal
+            Donate with PayPal
           </PaypalButton>
 
           <Grid container className={classes.grid} alignContent="center">
