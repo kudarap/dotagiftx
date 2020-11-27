@@ -19,17 +19,13 @@ const useStyles = makeStyles(theme => ({
 
 function Question({ children }) {
   return (
-    <Typography component="h2" gutterBottom>
+    <Typography component="h2" gutterBottom style={{ fontWeight: 'bold' }}>
       {children}
     </Typography>
   )
 }
 function Answer({ children }) {
-  return (
-    <Typography color="textSecondary" variant="body2">
-      {children}
-    </Typography>
-  )
+  return <Typography color="textSecondary">{children}</Typography>
 }
 
 export default function Faq() {
