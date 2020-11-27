@@ -96,7 +96,8 @@ export default function Faq() {
             {/* here we are, although the idea is free but the time to develop and server are not and */}
             {/* running on someone else&apos;s server 🤫. */}
             If this project helped you somehow and want to support it, you can toss a tango to your
-            developer.
+            developer – feel free to donate whatever sum you want, whenever you want. PayPal and
+            QR-codes can be scanned by crypto apps on your phone.
           </Typography>
           <br />
 
