@@ -37,9 +37,8 @@ const useStyles = makeStyles(theme => ({
     '& li:before': {
       content: `'✔ '`,
     },
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: 0,
-    },
+    paddingLeft: theme.spacing(2),
+    marginTop: 0,
   },
   banner: {
     [theme.breakpoints.down('xs')]: {
@@ -153,9 +152,9 @@ export default function Login() {
 
           <Typography className={classes.banner} variant="body2">
             <strong style={{ color: 'white' }}>How do I know this is real?</strong> When you click
-            the sign in button, you will be redirected to https://steamcommunity.com and if you are
-            already signed into the Steam community, that page will allow you simply click
-            &quot;Sign In&quot; without entering your password.
+            the sign in button, you will be redirected to <u>https://steamcommunity.com</u> and if
+            you are already signed into the Steam community, that page will allow you simply click{' '}
+            <strong>&quot;Sign In&quot;</strong> without entering your password.
           </Typography>
         </Container>
       </main>
