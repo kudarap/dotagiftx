@@ -27,17 +27,37 @@ const useStyles = makeStyles(theme => ({
   warningText: {
     color: theme.palette.info.main,
   },
+  heading: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: theme.typography.h6.fontSize,
+    },
+  },
   list: {
     listStyle: 'none',
     '& li:before': {
       content: `'✔ '`,
     },
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 0,
+    },
+  },
+  banner: {
+    [theme.breakpoints.down('xs')]: {
+      maxWidth: 'none',
+    },
+    maxWidth: theme.breakpoints.values.sm,
+    margin: theme.spacing(0, 0, 2, 0),
+    padding: theme.spacing(1.5),
+    border: '1px solid #52564e',
+    background: '#2d3431',
+    borderRadius: 4,
+    color: theme.palette.warning.light,
   },
 }))
 
 export default function Login() {
   const classes = useStyles()
-  const { isLoggedIn } = useContext(AppContext)
+  const { isLoggedIn, isMobile } = useContext(AppContext)
 
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
@@ -86,7 +106,7 @@ export default function Login() {
 
       <main className={classes.main}>
         <Container>
-          <Typography variant="h5" component="h1" gutterBottom>
+          <Typography variant="h5" component="h1" gutterBottom className={classes.heading}>
             Signing in to <strong>{APP_NAME}</strong> allows you to access additional features.
           </Typography>
           <Typography component="h2">
@@ -97,14 +117,14 @@ export default function Login() {
               {/* <li>Place Buy Order</li> */}
             </ul>
           </Typography>
-          <br />
 
-          <Typography className={classes.warningText}>
+          <Typography className={classes.warningText} gutterBottom>
             This website is not affiliated with Valve Corporation or Steam.
           </Typography>
           <br />
 
           <Button
+            fullWidth={isMobile}
             disabled={loading}
             onClick={() => setLoading(true)}
             startIcon={loading ? <CircularProgress color="secondary" size={22} /> : <SteamIcon />}
@@ -116,9 +136,8 @@ export default function Login() {
           {error && <Typography color="error">{error.message}</Typography>}
           <Typography />
           <br />
-          <br />
 
-          <Typography color="textSecondary" variant="body2">
+          <Typography color="textSecondary" variant="body2" gutterBottom>
             By signing in, We ask for public information about your account from the{' '}
             <Link
               target="_blank"
@@ -129,6 +148,14 @@ export default function Login() {
             </Link>{' '}
             this includes (<em>steam id, profile name, and avatar image</em>) and use cookies to
             keep your signed in session active.
+          </Typography>
+          <br />
+
+          <Typography className={classes.banner} variant="body2">
+            <strong style={{ color: 'white' }}>How do I know this is real?</strong> When you click
+            the sign in button, you will be redirected to https://steamcommunity.com and if you are
+            already signed into the Steam community, that page will allow you simply click
+            &quot;Sign In&quot; without entering your password.
           </Typography>
         </Container>
       </main>
