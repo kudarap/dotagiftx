@@ -43,11 +43,12 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
     })()
   }, [filter])
 
-  let metaTitle = `${APP_NAME} Search`
+  let metaTitle = `${APP_NAME} :: Search`
   let metaDesc = `Search for item name, hero, treasure`
-  if (filter.q) {
-    metaTitle += ` :: ${filter.q}`
-    metaDesc = `${catalogs && catalogs.total_count} results for "${filter.q}"`
+  const term = filter.q || filter.hero || filter.origin || filter.rarity
+  if (term) {
+    metaTitle += ` ${term}`
+    metaDesc = `${catalogs && catalogs.total_count} results for "${term}"`
   }
 
   const linkProps = { href: '/search', query: filter }
