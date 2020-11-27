@@ -164,7 +164,7 @@ export default function MarketForm() {
 
       <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1">
-          Post your item on ${APP_NAME}
+          Post your item on {APP_NAME}
         </Typography>
         <br />
 
