@@ -38,6 +38,7 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       filter: 'brightness(115%)',
     },
+    outline: 'none',
   },
   avatar: {
     width: 36,
