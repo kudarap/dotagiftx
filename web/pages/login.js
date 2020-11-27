@@ -117,7 +117,7 @@ export default function Login() {
             </ul>
           </Typography>
 
-          <Typography className={classes.warningText} gutterBottom>
+          <Typography className={classes.warningText}>
             This website is not affiliated with Valve Corporation or Steam.
           </Typography>
           <br />
@@ -150,7 +150,7 @@ export default function Login() {
           </Typography>
           <br />
 
-          <Typography className={classes.banner} variant="body2">
+          <Typography className={classes.banner} variant="body2" color="textSecondary">
             <strong style={{ color: 'white' }}>How do I know this is real?</strong> When you click
             the sign in button, you will be redirected to <u>https://steamcommunity.com</u> and if
             you are already signed into the Steam community, that page will allow you simply click{' '}
