@@ -25,7 +25,11 @@ function Question({ children }) {
   )
 }
 function Answer({ children }) {
-  return <Typography color="textSecondary">{children}</Typography>
+  return (
+    <Typography color="textSecondary" gutterBottom>
+      {children}
+    </Typography>
+  )
 }
 
 export default function Faq() {
