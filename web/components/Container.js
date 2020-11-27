@@ -20,7 +20,7 @@ export default function Container({ children, disableMinHeight }) {
       className={classes.root}
       maxWidth="md"
       disableGutters
-      style={{ minHeight: disableMinHeight ? 0 : `calc(90vh - ${APP_FOOTER_HEIGHT}px)` }}>
+      style={{ minHeight: disableMinHeight ? 0 : `calc(86vh - ${APP_FOOTER_HEIGHT}px)` }}>
       {children}
     </MuiContainer>
   )

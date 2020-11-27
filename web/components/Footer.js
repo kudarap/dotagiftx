@@ -13,13 +13,19 @@ const dotaHeroImage =
 
 const useStyles = makeStyles(theme => ({
   root: {
+    [theme.breakpoints.down('xs')]: {
+      // Keeps the footer on the bottom of the screen on small screens.
+      height: APP_FOOTER_HEIGHT + 10,
+    },
     [theme.breakpoints.down('sm')]: {
       paddingBottom: theme.spacing(0),
     },
     marginTop: theme.spacing(5),
     paddingBottom: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
-    background: `linear-gradient(to bottom, rgba(38, 50, 56, 0.6) ${APP_FOOTER_HEIGHT}px, transparent), url(${dotaHeroImage}) center -140px`,
+    background: `linear-gradient(to bottom, rgba(38, 50, 56, 0.7) ${
+      APP_FOOTER_HEIGHT + 9
+    }px, transparent), url(${dotaHeroImage}) center -140px`,
   },
   list: {
     [theme.breakpoints.down('xs')]: {
