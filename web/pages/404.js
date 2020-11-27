@@ -9,7 +9,10 @@ import Footer from '@/components/Footer'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(6),
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(2),
+    },
+    marginTop: theme.spacing(4),
   },
 }))
 

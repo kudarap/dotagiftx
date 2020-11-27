@@ -21,7 +21,7 @@ import { APP_NAME } from '@/constants/strings'
 const useStyles = makeStyles(theme => ({
   main: {
     [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(0),
+      marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
   },

@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(2),
     },
-    marginTop: theme.spacing(6),
+    marginTop: theme.spacing(4),
     // background: 'url("/icon.png") no-repeat bottom right',
     // backgroundSize: 100,
   },

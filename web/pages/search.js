@@ -14,7 +14,7 @@ import { APP_NAME, APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(2.5),
+    marginTop: theme.spacing(2),
   },
   listControl: {},
   paginator: {

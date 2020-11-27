@@ -20,7 +20,7 @@ import {
 const useStyles = makeStyles(theme => ({
   main: {
     [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
   },
