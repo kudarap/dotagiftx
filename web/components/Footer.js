@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
       display: 'flex',
       justifyContent: 'space-evenly',
       flexWrap: 'wrap',
+      margin: 0,
     },
     display: 'block',
     listStyle: 'none',
@@ -28,6 +29,8 @@ const useStyles = makeStyles(theme => ({
       [theme.breakpoints.down('xs')]: {
         float: 'none',
         marginRight: 0,
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
       },
       float: 'left',
       marginRight: theme.spacing(2),
@@ -37,9 +40,10 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       marginTop: theme.spacing(0),
       marginBottom: theme.spacing(3),
+      textAlign: 'center',
     },
     display: 'block',
-    marginTop: theme.spacing(5),
+    marginTop: theme.spacing(4),
   },
 }))
 
@@ -95,11 +99,6 @@ export default function Footer() {
               by kudarap
             </Link>
           </li>
-          <li style={{ float: 'right' }}>
-            <Typography variant="caption" color="textSecondary" style={{ verticalAlign: 'middle' }}>
-              {APP_NAME} is not affiliated with Valve or Steam.
-            </Typography>
-          </li>
           {/* <li> */}
           {/*  <MuiLink href="http://chiligarlic.com" target="_blank"> */}
           {/*    A chiliGarlic project */}
@@ -111,8 +110,9 @@ export default function Footer() {
           className={classes.vavleCopyright}
           variant="caption"
           color="textSecondary"
-          align="center"
           component="p">
+          {APP_NAME} is a community website and not affiliated with Valve or Steam.
+          <br />
           Game content and materials are trademarks and copyrights of their respective publisher and
           its licensors. All rights reserved.
         </Typography>
