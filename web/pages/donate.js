@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(4),
   },
   crypto: {
-    margin: theme.spacing(4, 8, 0, 0),
+    margin: theme.spacing(2, 8, 0, 0),
     '& img': {
       margin: theme.spacing(2, 0, 0, 2),
     },
@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 const PaypalButton = withStyles(theme => ({
   root: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2),
     width: 300,
     color: theme.palette.getContrastText('#ffc439'),
     backgroundColor: '#ffc439',
