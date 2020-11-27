@@ -19,8 +19,15 @@ const useStyles = makeStyles(theme => ({
 
 function Question({ children }) {
   return (
-    <Typography component="h2">
-      <strong>{children}</strong>
+    <Typography component="h2" gutterBottom>
+      {children}
+    </Typography>
+  )
+}
+function Answer({ children }) {
+  return (
+    <Typography color="textSecondary" variant="body2">
+      {children}
     </Typography>
   )
 }
@@ -44,52 +51,67 @@ export default function Faq() {
           <br />
 
           <Question>What is {APP_NAME}?</Question>
-          <Typography color="textSecondary">
+          <Answer>
             Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
             belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
             with a kick.
-          </Typography>
+          </Answer>
           <br />
 
           <Question>What items I can find or post here?</Question>
-          <Typography color="textSecondary">
+          <Answer>
             Anything Dota 2 items that can be gift to a friend like set bundles from
             Collector&apos;s Cache, In-game drops, or Immortal treasures.
-          </Typography>
+          </Answer>
           <br />
 
           <Question>Why do I need to sign in with Steam?</Question>
-          <Typography color="textSecondary">
+          <Answer>
             It verifies Steam account ownership and provides some helpful links to check your
             profile and reputation.
-          </Typography>
+          </Answer>
           <br />
 
           <Question>Can I trust the users on this website?</Question>
-          <Typography color="textSecondary">
+          <Answer>
             Not really, but there are quick links like SteamRep and Steam on their profile to help
             you check them.
-          </Typography>
+          </Answer>
           <br />
 
           <Question>Why do I need to wait 30 days to send the item?</Question>
-          <Typography color="textSecondary">
+          <Answer>
             Valve&apos;s rule that you need to have 30-day cooldown as friend to send giftable
             items.
-          </Typography>
+          </Answer>
           <br />
 
           <Question>How do I report scammers?</Question>
-          <Typography color="textSecondary">
-            You can use <Link href="https://steamrep.com/">SteamRep</Link> or inquire on{' '}
-            <Link href="https://www.reddit.com/r/Dota2Trade/">r/Dota2Trade</Link>.
-          </Typography>
+          <Answer>
+            You can use{' '}
+            <Link
+              href="https://steamrep.com/"
+              target="_blank"
+              color="secondary"
+              rel="noreferrer noopener">
+              SteamRep
+            </Link>{' '}
+            or inquire on{' '}
+            <Link
+              href="https://www.reddit.com/r/Dota2Trade/"
+              target="_blank"
+              color="secondary"
+              rel="noreferrer noopener">
+              r/Dota2Trade
+            </Link>
+            .
+          </Answer>
           <br />
 
           <Question>Why do this?</Question>
-          <Typography color="textSecondary">
+          <Answer>
             Wanted to make tool that can be easily search and post these giftable items.
-          </Typography>
+          </Answer>
           <br />
         </Container>
       </main>
