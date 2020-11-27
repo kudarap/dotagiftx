@@ -11,11 +11,13 @@ import { APP_FOOTER_HEIGHT } from '@/constants/app'
 const dotaHeroImage =
   'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1605830961'
 
+const mobileHeightCompensator = 31
+
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.down('xs')]: {
       // Keeps the footer on the bottom of the screen on small screens.
-      height: APP_FOOTER_HEIGHT + 10,
+      height: APP_FOOTER_HEIGHT + mobileHeightCompensator,
     },
     [theme.breakpoints.down('sm')]: {
       paddingBottom: theme.spacing(0),
@@ -23,9 +25,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(5),
     paddingBottom: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
-    background: `linear-gradient(to bottom, rgba(38, 50, 56, 0.7) ${
-      APP_FOOTER_HEIGHT + 9
-    }px, transparent), url(${dotaHeroImage}) center -140px`,
+    // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -140px`,
   },
   list: {
     [theme.breakpoints.down('xs')]: {
