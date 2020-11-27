@@ -38,7 +38,14 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       filter: 'brightness(115%)',
     },
-    outline: 'none',
+    // This fixes the tap highlight effect on mobile.
+    '-webkit-touch-callout': 'none',
+    '-webkit-user-select': 'none',
+    '-khtml-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none',
+    'user-select': 'none',
+    '-webkit-tap-highlight-color': 'transparent',
   },
   avatar: {
     width: 36,
