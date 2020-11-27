@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { APP_FOOTER_HEIGHT } from '@/constants/app'
+import { APP_FOOTER_HEIGHT_TOTAL } from '@/constants/app'
 import { makeStyles } from '@material-ui/core/styles'
 import MuiContainer from '@material-ui/core/Container'
 
@@ -20,7 +20,7 @@ export default function Container({ children, disableMinHeight }) {
       className={classes.root}
       maxWidth="md"
       disableGutters
-      style={{ minHeight: disableMinHeight ? 0 : `calc(86vh - ${APP_FOOTER_HEIGHT}px)` }}>
+      style={{ minHeight: disableMinHeight ? 0 : `calc(100vh - ${APP_FOOTER_HEIGHT_TOTAL}px)` }}>
       {children}
     </MuiContainer>
   )

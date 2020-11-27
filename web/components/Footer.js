@@ -26,7 +26,6 @@ const useStyles = makeStyles(theme => ({
       paddingBottom: theme.spacing(0),
     },
     marginTop: theme.spacing(5),
-    paddingBottom: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
     // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
     background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -140px`,
