@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       // Keeps the footer on the bottom of the screen on small screens.
       height: APP_FOOTER_HEIGHT + mobileHeightCompensator,
+      backgroundPositionX: '0, -70%',
     },
     [theme.breakpoints.down('sm')]: {
       paddingBottom: theme.spacing(0),
