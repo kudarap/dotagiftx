@@ -4,10 +4,14 @@ import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import RedditIcon from '@material-ui/icons/Reddit'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
+import Button from '@/components/Button'
+import SteamIcon from '@/components/SteamIcon'
+import DiscordIcon from '@/components/DiscordIcon'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -44,24 +48,35 @@ export default function About() {
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; author
             <br />
-            Feel free to contact me on{' '}
-            <Link
-              color="secondary"
-              target="_blank"
-              rel="noreferrer noopener"
-              href="https://www.reddit.com/message/compose/?to=kudarap">
-              Reddit
-            </Link>{' '}
-            or{' '}
-            <Link
-              color="secondary"
-              target="_blank"
-              rel="noreferrer noopener"
-              href="https://discord.gg/UFt9Ny42kM">
-              Discord
-            </Link>{' '}
-            if you have issues or suggestions.
+            Feel free to contact me if you have issues or suggestions.
           </Typography>
+          <Button
+            startIcon={<DiscordIcon />}
+            size="large"
+            component={Link}
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://discord.gg/UFt9Ny42kM">
+            Discord
+          </Button>
+          <Button
+            startIcon={<RedditIcon />}
+            size="large"
+            component={Link}
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://www.reddit.com/message/compose/?to=kudarap">
+            Reddit
+          </Button>
+          <Button
+            startIcon={<SteamIcon />}
+            size="large"
+            component={Link}
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://steamcommunity.com/profiles/76561198088587178">
+            Steam
+          </Button>
         </Container>
       </main>
 
