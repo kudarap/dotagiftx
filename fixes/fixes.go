@@ -15,7 +15,10 @@ func ReIndexAll(
 ) {
 	ii, _ := itemStg.Find(core.FindOpts{})
 	for _, item := range ii {
-		catalogStg.Index(item.ID)
+		if _, err := catalogStg.Index(item.ID); err != nil {
+			log.Println("err", err)
+		}
+
 	}
 }
 

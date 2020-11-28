@@ -202,7 +202,8 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 
 	// Get total market count by item ID
 	// and remove them if there's no entry
-	if err = s.db.one(baseQ.Count(), &cat.Quantity); err != nil {
+	quantity := baseQ.Count()
+	if err = s.db.one(quantity, &cat.Quantity); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 	if cat.Quantity == 0 {
@@ -218,8 +219,13 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 
 	// Get average sale price on the market by item ID.
-	q = baseQ.Avg("price").Default(0)
-	if err = s.db.one(q, &cat.AverageAsk); err != nil {
+	//q = baseQ.Avg("price").Default(0)
+	//if err = s.db.one(q, &cat.AverageAsk); err != nil {
+	//	return nil, errors.New(core.CatalogErrIndexing, err)
+	//}
+	medianPos := quantity.Div(2).Floor()
+	q = baseQ.OrderBy("price").Nth(medianPos).Field("price").Default(0)
+	if err = s.db.one(q, &cat.MeanAsk); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
