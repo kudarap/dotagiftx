@@ -2,6 +2,7 @@ package rethink
 
 import (
 	"log"
+	"math"
 	"time"
 
 	"github.com/imdario/mergo"
@@ -223,8 +224,17 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	//if err = s.db.one(q, &cat.AverageAsk); err != nil {
 	//	return nil, errors.New(core.CatalogErrIndexing, err)
 	//}
-	medianPos := quantity.Div(2).Floor()
-	q = baseQ.OrderBy("price").Nth(medianPos).Field("price").Default(0)
+
+	skip := cat.Quantity / 2
+	limit := 1
+	if cat.Quantity%2 == 0 {
+		limit = 2
+		skip--
+	} else {
+		skip = int(math.Floor(float64(cat.Quantity) / 2))
+	}
+	//medianPos := quantity.Div(2).Floor()
+	q = baseQ.OrderBy("price").Skip(skip).Limit(limit).Field("price").Default(0)
 	if err = s.db.one(q, &cat.MeanAsk); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
