@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(4),
   },
   grid: {
-    marginTop: theme.spacing(4),
+    margin: theme.spacing(3, 0, 6),
   },
   crypto: {
     margin: theme.spacing(2, 8, 0, 0),
@@ -33,11 +33,11 @@ const PaypalButton = withStyles(theme => ({
   root: {
     marginTop: theme.spacing(2),
     width: 300,
-    color: theme.palette.getContrastText('#ffc439'),
-    backgroundColor: '#ffc439',
+    color: theme.palette.getContrastText('#0070ba'),
+    backgroundColor: '#0070ba',
     '&:hover': {
-      color: theme.palette.getContrastText('#0070ba'),
-      backgroundColor: '#0070ba',
+      color: theme.palette.getContrastText('#ffc439'),
+      backgroundColor: '#ffc439',
     },
   },
 }))(Button)
@@ -86,7 +86,7 @@ export default function Faq() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            Share a Tango <img src="/assets/tango.png" height={25} alt="tango" />
+            Tip a Tango <img src="/assets/tango.png" height={25} alt="tango" />
           </Typography>
           <br />
 
@@ -95,8 +95,8 @@ export default function Faq() {
             {/* I had this idea once to create a community market for Dota 2 giftables items and now */}
             {/* here we are, although the idea is free but the time to develop and server are not and */}
             {/* running on someone else&apos;s server 🤫. */}
-            If this project helped you somehow and want to support it, you can toss a tango to your
-            developer – feel free to donate whatever sum you want, whenever you want. PayPal and
+            If this project helped you sell or buy items and want to support it, you can toss a
+            tango to your developer – feel free to donate whatever sum you want, whenever you want.
             QR-codes can be scanned by crypto apps on your phone.
           </Typography>
           <br />
@@ -126,11 +126,8 @@ export default function Faq() {
               <img src="/assets/eth_qr.png" alt="Bitcoin QR" />
             </Grid>
           </Grid>
-          <br />
-          <br />
-          <br />
 
-          <Typography color="textSecondary" variant="caption">
+          <Typography color="textSecondary" variant="body2">
             Trivia: In the original DotA, Tango&apos;s full name was &quot;
             <strong>Ancient Tango of Essifation</strong>&quot;&nbsp;
             <Link
