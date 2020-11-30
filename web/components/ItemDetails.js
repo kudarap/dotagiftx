@@ -219,6 +219,11 @@ export default function ItemDetails({
                     {`Links: `}
                   </Typography>
                   <ChipLink label="Dota 2 Wiki" href={wikiLink} />
+                  {/* <br /> */}
+                  {/* <Typography color="textSecondary" component="span"> */}
+                  {/*  {`Median Ask: `} */}
+                  {/* </Typography> */}
+                  {/* {item.median_ask.toFixed(2)} */}
                 </Typography>
               </Typography>
             </div>
