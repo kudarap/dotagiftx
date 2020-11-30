@@ -61,7 +61,8 @@ export default function Faq() {
           <Question>What items I can find or post here?</Question>
           <Answer>
             Anything Dota 2 items that can be gift to a friend like set bundles from
-            Collector&apos;s Cache, In-game drops, or Immortal treasures.
+            Collector&apos;s Cache, Immortal Treasure items, or rare in-game drops from Treasure of
+            the Cryptic Beacon.
           </Answer>
           <br />
 
