@@ -219,23 +219,8 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
-	// Get average sale price on the market by item ID.
-	//q = baseQ.Avg("price").Default(0)
-	//if err = s.db.one(q, &cat.AverageAsk); err != nil {
-	//	return nil, errors.New(core.CatalogErrIndexing, err)
-	//}
-
-	skip := cat.Quantity / 2
-	limit := 1
-	if cat.Quantity%2 == 0 {
-		limit = 2
-		skip--
-	} else {
-		skip = int(math.Floor(float64(cat.Quantity) / 2))
-	}
-	//medianPos := quantity.Div(2).Floor()
-	q = baseQ.OrderBy("price").Skip(skip).Limit(limit).Field("price").Default(0)
-	if err = s.db.one(q, &cat.MeanAsk); err != nil {
+	// Get median sale price on the market by item ID.
+	if err = s.db.one(s.medianPriceQuery(cat.Quantity, baseQ).Default(0), &cat.MedianAsk); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
@@ -265,6 +250,22 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 
 	return cat, nil
+}
+
+func (s *catalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
+	q := t.OrderBy("price")
+	if qty < 2 {
+		return q.Field("price")
+	}
+
+	skip := int(math.Floor(float64(qty) / 2))
+	limit := 1
+	if qty%2 == 0 {
+		skip--
+		limit = 2
+	}
+
+	return q.Skip(skip).Limit(limit).Avg("price")
 }
 
 func (s *catalogStorage) create(in *core.Catalog) error {
@@ -328,10 +329,6 @@ func (s *catalogStorage) indexBaseQuery() r.Term {
 		Map(s.groupIndexMap).
 		EqJoin(marketFieldItemID, r.Table(tableItem)).
 		Zip()
-}
-
-func (s *catalogStorage) table() r.Term {
-	return r.Table(tableCatalog)
 }
 
 func (s *catalogStorage) groupIndexMap(catalog r.Term) interface{} {
@@ -409,4 +406,8 @@ func (s *catalogStorage) trendingV0() ([]core.Catalog, error) {
 	}
 
 	return res, nil
+}
+
+func (s *catalogStorage) table() r.Term {
+	return r.Table(tableCatalog)
 }
