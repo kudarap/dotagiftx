@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Avatar from '@material-ui/core/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
 import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -14,11 +13,13 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
 import { authRevoke, myProfile } from '@/service/api'
-import { clear as destroyLoginSess, isOk as checkLoggedIn } from '@/service/auth'
+import { clear as destroyLoginSess } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import { APP_NAME } from '@/constants/strings'
+import { APP_CACHE_PROFILE } from '@/constants/app'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -29,34 +30,22 @@ const useStyles = makeStyles(theme => ({
     borderRight: 'none',
     borderLeft: 'none',
   },
-  title: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 15,
+  brand: {
+    height: 30,
+    marginBottom: -5,
+    '-webkit-transition': 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    '&:hover': {
+      filter: 'brightness(115%)',
     },
-    fontSize: 17,
-    textShadow: '0px 0px 16px #C79123',
-    // textTransform: 'uppercase',
-    // fontWeight: 'bold',
-    background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
-    filter: 'drop-shadow(0px 0px 10px black)',
-    letterSpacing: 2,
-    cursor: 'pointer',
-    paddingRight: theme.spacing(1),
-  },
-  titleMini: {
-    fontSize: 17,
-    textShadow: '0px 0px 16px #C79123',
-    // textTransform: 'uppercase',
-    // fontWeight: 'bold',
-    background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
-    filter: 'drop-shadow(0px 0px 10px black)',
-    letterSpacing: 2,
-    cursor: 'pointer',
-    padding: theme.spacing(0, 1, 0, 1),
+    // This fixes the tap highlight effect on mobile.
+    '-webkit-touch-callout': 'none',
+    '-webkit-user-select': 'none',
+    '-khtml-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none',
+    'user-select': 'none',
+    '-webkit-tap-highlight-color': 'transparent',
   },
   avatar: {
     width: 36,
@@ -73,8 +62,6 @@ const useStyles = makeStyles(theme => ({
     width: theme.spacing(1),
   },
 }))
-
-const PROFILE_CACHE_KEY = 'profile'
 
 const defaultProfile = {
   id: '',
@@ -94,21 +81,17 @@ export default function Header({ disableSearch }) {
   const [profile, setProfile] = React.useState(defaultProfile)
 
   React.useEffect(() => {
-    const get = async () => {
-      const res = await myProfile.GET()
-      setProfile(res)
-      Storage.save(PROFILE_CACHE_KEY, res)
+    const profile = Storage.get(APP_CACHE_PROFILE)
+    if (!profile) {
+      return
     }
 
-    if (checkLoggedIn()) {
-      const hit = Storage.get(PROFILE_CACHE_KEY)
-      if (hit) {
-        setProfile(hit)
-        return
-      }
-      // fetch data from api
-      get()
-    }
+    setProfile(profile)
+    // ;(async () => {
+    //   const res = await myProfile.GET()
+    //   setProfile(res)
+    //   Storage.save(APP_CACHE_PROFILE, res)
+    // })()
   }, [])
 
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -129,7 +112,11 @@ export default function Header({ disableSearch }) {
 
   const handleLogout = () => {
     ;(async () => {
-      await authRevoke(currentAuth.refresh_token)
+      try {
+        await authRevoke(currentAuth.refresh_token)
+      } catch (e) {
+        console.warn(e.message)
+      }
       destroyLoginSess()
       handleClose()
       // eslint-disable-next-line no-undef
@@ -139,19 +126,32 @@ export default function Header({ disableSearch }) {
 
   return (
     <AppBar position="static" variant="outlined" className={classes.appBar}>
+      {/*<div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>*/}
+      {/*  You are viewing a development version of this site.&nbsp;*/}
+      {/*  <Link href="https://dotagiftx.com">*/}
+      {/*    <strong>Take me to live site</strong>*/}
+      {/*  </Link>*/}
+      {/*  <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>*/}
+      {/*</div>*/}
       <Container disableMinHeight>
         <Toolbar variant="dense" disableGutters>
           {/* Branding button */}
           {/* Desktop nav branding */}
           <Link href="/" disableUnderline>
             {!isMobile ? (
-              <Typography component="h1" className={classes.title}>
-                <strong>DotagiftX</strong>
-              </Typography>
+              <img
+                className={classes.brand}
+                src="/brand_1x.png"
+                srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
+                alt={APP_NAME}
+              />
             ) : (
-              <Typography component="h1" className={classes.titleMini}>
-                <strong>DX</strong>
-              </Typography>
+              <img
+                className={classes.brand}
+                src="/icon_1x.png"
+                srcSet="/icon_1x.png 1x, /icon_2x.png 2x"
+                alt={APP_NAME}
+              />
             )}
           </Link>
           <span className={classes.spacer} />
@@ -228,7 +228,7 @@ export default function Header({ disableSearch }) {
                   </Menu>
                 </>
               ) : (
-                <Button startIcon={<SteamIcon />} component={Link} href="/login">
+                <Button startIcon={<SteamIcon />} component={Link} href="/login" disableUnderline>
                   Sign in
                 </Button>
               )}

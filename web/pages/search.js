@@ -14,7 +14,7 @@ import { APP_NAME, APP_URL } from '@/constants/strings'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    marginTop: theme.spacing(2.5),
+    marginTop: theme.spacing(2),
   },
   listControl: {},
   paginator: {
@@ -43,11 +43,12 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
     })()
   }, [filter])
 
-  let metaTitle = `${APP_NAME} Search`
+  let metaTitle = `${APP_NAME} :: Search`
   let metaDesc = `Search for item name, hero, treasure`
-  if (filter.q) {
-    metaTitle += ` :: ${filter.q}`
-    metaDesc = `${catalogs && catalogs.total_count} results for "${filter.q}"`
+  const searchTerm = filter.q || filter.hero || filter.origin || filter.rarity
+  if (searchTerm) {
+    metaTitle += ` ${searchTerm}`
+    metaDesc = `${catalogs && catalogs.total_count} results for "${searchTerm}"`
   }
 
   const linkProps = { href: '/search', query: filter }
@@ -63,10 +64,10 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
 
       <main className={classes.main}>
         <Container>
-          {filter.q && (
+          {searchTerm && (
             <>
               <Typography component="h1" variant="h6">
-                {catalogs && catalogs.total_count} results for &quot;{filter.q}&quot;
+                {catalogs && catalogs.total_count} results for &quot;{searchTerm}&quot;
               </Typography>
               <br />
             </>

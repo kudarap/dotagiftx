@@ -12,6 +12,7 @@ export default class MyDocument extends Document {
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://www.googleanalytics.com" />
           <link rel="preconnect" href="https://www.googletagmanager.com" />
+          <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" />
 
           {/* PWA primary color */}
           <meta name="theme-color" content={muiTheme.palette.primary.main} />
@@ -19,7 +20,7 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap"
             rel="stylesheet"
           />
-          <link rel="icon" href="/icon.svg" />
+          <link rel="icon" href="/favicon.ico" />
 
           {process.env.NEXT_PUBLIC_GA && (
             <>

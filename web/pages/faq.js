@@ -1,7 +1,8 @@
 import React from 'react'
-import Link2 from 'next/link'
+import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
@@ -12,15 +13,34 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(2),
     },
-    marginTop: theme.spacing(6),
+    marginTop: theme.spacing(4),
   },
 }))
+
+function Question({ children }) {
+  return (
+    <Typography component="h2" gutterBottom style={{ fontWeight: 'bold' }}>
+      {children}
+    </Typography>
+  )
+}
+function Answer({ children }) {
+  return (
+    <Typography color="textSecondary" gutterBottom>
+      {children}
+    </Typography>
+  )
+}
 
 export default function Faq() {
   const classes = useStyles()
 
   return (
     <>
+      <Head>
+        <title>{APP_NAME} :: Frequently Asked Questions</title>
+      </Head>
+
       <Header />
 
       <main className={classes.main}>
@@ -30,56 +50,69 @@ export default function Faq() {
           </Typography>
           <br />
 
-          <Typography variant="h6" component="h2">
-            What is DotagiftX?
-          </Typography>
-          <Typography color="textSecondary">
-            Market for Dota 2 giftables, items that can be gift or giftable-once are probably belong
-            here. If you are on Dota2Trade subreddit, its basicxy the Giftable Megathread.
-          </Typography>
+          <Question>What is {APP_NAME}?</Question>
+          <Answer>
+            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
+            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
+            with a kick.
+          </Answer>
           <br />
 
-          <Typography variant="h6" component="h2">
-            What items can I find or post here?
-          </Typography>
-          <Typography color="textSecondary">
-            Anything Dota 2 items that can be gift to a friend like items from Collector&apos;s
-            Caches, In-game drops, or Immortal treasures.
-          </Typography>
+          <Question>What items I can find or post here?</Question>
+          <Answer>
+            Anything Dota 2 items that can be gift to a friend like set bundles from
+            Collector&apos;s Cache, Immortal Treasure items, or rare in-game drops from Treasure of
+            the Cryptic Beacon.
+          </Answer>
           <br />
 
-          <Typography variant="h6" component="h2">
-            Why do you I need to sign in with Steam?
-          </Typography>
-          <Typography color="textSecondary">
+          <Question>Why do I need to sign in with Steam?</Question>
+          <Answer>
             It verifies Steam account ownership and provides some helpful links to check your
             profile and reputation.
-          </Typography>
+          </Answer>
           <br />
 
-          <Typography variant="h6" component="h2">
-            Can I trust the users on this website?
-          </Typography>
-          <Typography color="textSecondary">
-            No, but there are quick links for SteamRep and Steam Profile to help you validate them.
-          </Typography>
+          <Question>Can I trust the users on this website?</Question>
+          <Answer>
+            Not really, but there are quick links like SteamRep and Steam on their profile to help
+            you check them.
+          </Answer>
           <br />
 
-          <Typography variant="h6" component="h2">
-            How can I report scammers?
-          </Typography>
-          <Typography color="textSecondary">
-            You can use <Link href="https://steamrep.com/">SteamRep</Link> or inquire on{' '}
-            <Link href="https://www.reddit.com/r/Dota2Trade/">r/Dota2Trade</Link>.
-          </Typography>
+          <Question>Why do I need to wait 30 days to send the item?</Question>
+          <Answer>
+            Valve&apos;s rule that you need to have 30-day cooldown as friend to send giftable
+            items.
+          </Answer>
           <br />
 
-          <Typography variant="h6" component="h2">
-            Why do this?
-          </Typography>
-          <Typography color="textSecondary">
+          <Question>How do I report scammers?</Question>
+          <Answer>
+            You can use{' '}
+            <Link
+              href="https://steamrep.com/"
+              target="_blank"
+              color="secondary"
+              rel="noreferrer noopener">
+              SteamRep
+            </Link>{' '}
+            or inquire on{' '}
+            <Link
+              href="https://www.reddit.com/r/Dota2Trade/"
+              target="_blank"
+              color="secondary"
+              rel="noreferrer noopener">
+              r/Dota2Trade
+            </Link>
+            .
+          </Answer>
+          <br />
+
+          <Question>Why do this?</Question>
+          <Answer>
             Wanted to make tool that can be easily search and post these giftable items.
-          </Typography>
+          </Answer>
           <br />
         </Container>
       </main>

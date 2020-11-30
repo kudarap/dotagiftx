@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -19,7 +20,7 @@ import {
 const useStyles = makeStyles(theme => ({
   main: {
     [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
   },
@@ -50,8 +51,10 @@ export default function History({ status }) {
       <Header />
 
       <Head>
-        <title>DotagiftX :: Market History</title>
-        <meta name="description" content="Market activities" />
+        <title>
+          {APP_NAME} :: Market {MARKET_STATUS_MAP_TEXT[status]} History
+        </title>
+        <meta name="description" content="Market transaction history" />
       </Head>
 
       <main className={classes.main}>

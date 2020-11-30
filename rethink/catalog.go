@@ -2,6 +2,7 @@ package rethink
 
 import (
 	"log"
+	"math"
 	"time"
 
 	"github.com/imdario/mergo"
@@ -202,7 +203,8 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 
 	// Get total market count by item ID
 	// and remove them if there's no entry
-	if err = s.db.one(baseQ.Count(), &cat.Quantity); err != nil {
+	quantity := baseQ.Count()
+	if err = s.db.one(quantity, &cat.Quantity); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 	if cat.Quantity == 0 {
@@ -211,17 +213,22 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		}
 	}
 
-	// Get lowest price on the market by item ID.
+	// Get lowest sale price on the market by item ID.
 	q = baseQ.Min("price").Field("price").Default(0)
 	if err = s.db.one(q, &cat.LowestAsk); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
-	// Get highest price on the market by item ID.
-	q = baseQ.Max("price").Field("price").Default(0)
-	if err = s.db.one(q, &cat.HighestBid); err != nil {
+	// Get median sale price on the market by item ID.
+	if err = s.db.one(s.medianPriceQuery(cat.Quantity, baseQ).Default(0), &cat.MedianAsk); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
+
+	// Get highest price on the market by item ID.
+	//q = baseQ.Max("price").Field("price").Default(0)
+	//if err = s.db.one(q, &cat.HighestBid); err != nil {
+	//	return nil, errors.New(core.CatalogErrIndexing, err)
+	//}
 
 	// Get recent_ask on the market by item ID.
 	q = baseQ.Max("created_at").Field("created_at")
@@ -243,6 +250,22 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 
 	return cat, nil
+}
+
+func (s *catalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
+	q := t.OrderBy("price")
+	if qty < 2 {
+		return q.Field("price")
+	}
+
+	skip := int(math.Floor(float64(qty) / 2))
+	limit := 1
+	if qty%2 == 0 {
+		skip--
+		limit = 2
+	}
+
+	return q.Skip(skip).Limit(limit).Avg("price")
 }
 
 func (s *catalogStorage) create(in *core.Catalog) error {
@@ -282,13 +305,18 @@ func (s *catalogStorage) zeroQtyCatalog(catalogID string) error {
 	q := s.table().Get(catalogID).Update(map[string]int{
 		"quantity":    0,
 		"lowest_ask":  0,
+		"median_ask":  0,
 		"highest_bid": 0,
 	})
 	return s.db.update(q)
 }
 
-// NOTE! deprecated method and not being used.
-func (s *catalogStorage) findIndex(o core.FindOpts) ([]core.Catalog, error) {
+func (s *catalogStorage) table() r.Term {
+	return r.Table(tableCatalog)
+}
+
+// NOTE! deprecated method and not being used and for reference only.
+func (s *catalogStorage) findIndexLegacy(o core.FindOpts) ([]core.Catalog, error) {
 	q := s.indexBaseQuery()
 
 	var res []core.Catalog
@@ -301,6 +329,7 @@ func (s *catalogStorage) findIndex(o core.FindOpts) ([]core.Catalog, error) {
 	return res, nil
 }
 
+// NOTE! deprecated method and not being used and for reference only.
 func (s *catalogStorage) indexBaseQuery() r.Term {
 	return s.table().GroupByIndex(marketFieldItemID).Ungroup().
 		Map(s.groupIndexMap).
@@ -308,10 +337,7 @@ func (s *catalogStorage) indexBaseQuery() r.Term {
 		Zip()
 }
 
-func (s *catalogStorage) table() r.Term {
-	return r.Table(tableCatalog)
-}
-
+// NOTE! deprecated method and not being used and for reference only.
 func (s *catalogStorage) groupIndexMap(catalog r.Term) interface{} {
 	//r.db('dotagiftables').table('market').group({index: 'item_id'}).ungroup().map(
 	//    function (doc) {
@@ -346,6 +372,7 @@ func (s *catalogStorage) groupIndexMap(catalog r.Term) interface{} {
 	}
 }
 
+// NOTE! deprecated method and not being used and for reference only.
 func (s *catalogStorage) trendingV0() ([]core.Catalog, error) {
 	/*
 		r.db('d2g')

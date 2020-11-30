@@ -33,6 +33,7 @@ type (
 		// Market summary details.
 		Quantity   int        `json:"quantity"    db:"quantity,omitempty,indexed"`
 		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty,indexed"`
+		MedianAsk  float64    `json:"median_ask"  db:"median_ask,omitempty,indexed"`
 		HighestBid float64    `json:"-"           db:"highest_bid,omitempty,indexed"`
 		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty,indexed"`
 		CreatedAt  *time.Time `json:"created_at"  db:"created_at,omitempty,indexed"`

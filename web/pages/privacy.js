@@ -1,7 +1,9 @@
 import React from 'react'
+import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -11,7 +13,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(2),
     },
-    marginTop: theme.spacing(6),
+    marginTop: theme.spacing(4),
   },
 }))
 
@@ -20,6 +22,10 @@ export default function Privacy() {
 
   return (
     <>
+      <Head>
+        <title>{APP_NAME} :: Privacy Policy</title>
+      </Head>
+
       <Header />
 
       <main className={classes.main}>

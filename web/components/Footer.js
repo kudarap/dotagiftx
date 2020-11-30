@@ -4,20 +4,38 @@ import Divider from '@material-ui/core/Divider'
 import Typography from '@material-ui/core/Typography'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
+import { APP_NAME } from '@/constants/strings'
+import { APP_FOOTER_HEIGHT } from '@/constants/app'
+
+// Stole from SteamDB dota 2 page footer.
+const dotaHeroImage =
+  'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1605830961'
+
+const heroImage = '/assets/bg_hero.png'
+
+const mobileHeightCompensator = 31
 
 const useStyles = makeStyles(theme => ({
   root: {
+    [theme.breakpoints.down('xs')]: {
+      // Keeps the footer on the bottom of the screen on small screens.
+      height: APP_FOOTER_HEIGHT + mobileHeightCompensator,
+      backgroundPositionX: '0, -70%',
+    },
     [theme.breakpoints.down('sm')]: {
       paddingBottom: theme.spacing(0),
     },
     marginTop: theme.spacing(5),
-    paddingBottom: theme.spacing(5),
+    height: APP_FOOTER_HEIGHT,
+    // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -140px`,
   },
   list: {
     [theme.breakpoints.down('xs')]: {
       display: 'flex',
       justifyContent: 'space-evenly',
       flexWrap: 'wrap',
+      margin: 0,
     },
     display: 'block',
     listStyle: 'none',
@@ -26,10 +44,21 @@ const useStyles = makeStyles(theme => ({
       [theme.breakpoints.down('xs')]: {
         float: 'none',
         marginRight: 0,
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
       },
       float: 'left',
       marginRight: theme.spacing(2),
     },
+  },
+  vavleCopyright: {
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing(0),
+      marginBottom: theme.spacing(3),
+      textAlign: 'center',
+    },
+    display: 'block',
+    marginTop: theme.spacing(4),
   },
 }))
 
@@ -63,6 +92,11 @@ export default function Footer() {
             </Link>
           </li>
           <li>
+            <Link href="/donate" color="textSecondary">
+              Donate
+            </Link>
+          </li>
+          <li>
             {/* <MuiLink */}
             {/*  href="http://github.com/kudarap" */}
             {/*  target="_blank" */}
@@ -75,15 +109,10 @@ export default function Footer() {
             {/* </MuiLink> */}
             <Link href="/about" color="textSecondary">
               <Typography component="span" color="secondary">
-                DotagiftX
+                {APP_NAME}
               </Typography>{' '}
               by kudarap
             </Link>
-          </li>
-          <li style={{ float: 'right' }}>
-            <Typography variant="caption" color="textSecondary" style={{ verticalAlign: 'middle' }}>
-              DotagiftX is not affiliated with Valve or Steam.
-            </Typography>
           </li>
           {/* <li> */}
           {/*  <MuiLink href="http://chiligarlic.com" target="_blank"> */}
@@ -91,6 +120,17 @@ export default function Footer() {
           {/*  </MuiLink> */}
           {/* </li> */}
         </ul>
+        <br />
+        <Typography
+          className={classes.vavleCopyright}
+          variant="caption"
+          color="textSecondary"
+          component="p">
+          {APP_NAME} is a community website and not affiliated with Valve or Steam.
+          <br />
+          Game content and materials are trademarks and copyrights of their respective publisher and
+          its licensors. All rights reserved.
+        </Typography>
       </Container>
     </footer>
   )
