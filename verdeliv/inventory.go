@@ -28,9 +28,14 @@ NOTES!
 
 */
 
+// Inventory description field prefix and flags.
 const (
-	inventEndpoint  = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?count=5000"
-	inventEndpoint2 = "https://steamcommunity.com/inventory/%s/570/2?count=5000"
+	inventPrefixHero         = "Used By: "
+	inventPrefixGiftFrom     = "Gift From: "
+	inventPrefixDateReceived = "Date Received: "
+	inventPrefixDedication   = "Dedication: "
+	inventFlagGiftOnce       = "( Not Tradable )"
+	inventFlagNotTradable    = "( This item may be gifted once )"
 )
 
 type (
@@ -120,15 +125,6 @@ func newFlatInventoryFromFile(path string) ([]flatInventory, error) {
 	return flat, nil
 }
 
-const (
-	inventPrefixHero         = "Used By: "
-	inventPrefixGiftFrom     = "Gift From: "
-	inventPrefixDateReceived = "Date Received: "
-	inventPrefixDedication   = "Dedication: "
-	inventFlagGiftOnce       = "( Not Tradable )"
-	inventFlagNotTradable    = "( This item may be gifted once )"
-)
-
 func (d description) toFlatInventory() flatInventory {
 	fi := flatInventory{
 		Name:  d.Name,
@@ -174,8 +170,4 @@ func extractValueFromPrefix(s, prefix string) (value string, ok bool) {
 
 func isFlagExists(s, flag string) (ok bool) {
 	return strings.ToUpper(s) == strings.ToUpper(flag)
-}
-
-func (v *inventory) ItemsGiftFrom(personaName string) ([]description, error) {
-	panic("implement m")
 }
