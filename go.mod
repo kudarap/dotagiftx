@@ -3,12 +3,15 @@ module github.com/kudarap/dotagiftx
 go 1.15
 
 require (
+	github.com/PuerkitoBio/goquery v1.6.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/go-redis/redis/v8 v8.0.0-beta.6
 	github.com/gorilla/schema v1.1.0
+	github.com/headzoo/surf v1.0.0
+	github.com/headzoo/ut v0.0.0-20181013193318-a13b5a7a02ca // indirect
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
 	github.com/imdario/mergo v0.3.9
 	github.com/joho/godotenv v1.3.0

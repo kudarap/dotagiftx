@@ -1,14 +1,14 @@
 package verdeliv
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"strings"
-	//jsoniter "github.com/json-iterator/go"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
-//var fastjson = jsoniter.ConfigFastest
+var fastjson = jsoniter.ConfigFastest
 
 /*
 
@@ -95,7 +95,7 @@ func newInventoryFromFile(path string) (*inventory, error) {
 	}
 
 	inv := &inventory{}
-	if err := json.Unmarshal(data, inv); err != nil {
+	if err := fastjson.Unmarshal(data, inv); err != nil {
 		return nil, fmt.Errorf("could not parse json: %s", err)
 	}
 
@@ -171,7 +171,7 @@ func (d *itemDetails) UnmarshalJSON(data []byte) error {
 	var details []struct {
 		Value string `json:"value"`
 	}
-	if err := json.Unmarshal(data, &details); err != nil {
+	if err := fastjson.Unmarshal(data, &details); err != nil {
 		return err
 	}
 	*d = itemDetails(details)

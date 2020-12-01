@@ -1,12 +1,17 @@
 package verdeliv
 
 import (
+	"encoding/json"
 	"fmt"
+	"html"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/headzoo/surf"
 )
 
 /*
@@ -33,10 +38,11 @@ process:
 */
 
 const (
-	inventEndpoint  = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?count=5000"
-	inventEndpoint2 = "https://steamcommunity.com/inventory/%s/570/2?count=5000"
+	inventEndpoint  = "https://steamcommunity.com/profiles/%s/inventory/json/570/2"
+	inventEndpoint2 = "https://steamcommunity.com/inventory/%s/570/2"
 
-	steamInventoryAPI = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?count=5000"
+	//steamInventoryAPI = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?start=963"
+	steamInventoryAPI = "https://steamcommunity.com/profiles/%s/inventory/json/570/2"
 	filenameFmt       = "dgx-inv-%s.json"
 )
 
@@ -64,7 +70,8 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 			continue
 		}
 
-		if !strings.Contains(strings.Join(inv.Descriptions, "|"), itemName) {
+		if !strings.Contains(strings.Join(inv.Descriptions, "|"), itemName) &&
+			!strings.Contains(inv.Name, itemName) {
 			continue
 		}
 
@@ -80,7 +87,39 @@ func getSource(steamID string) string {
 
 func dlInventory(steamID string) error {
 	url := fmt.Sprintf(steamInventoryAPI, steamID)
-	fmt.Println(url)
+	fmt.Println("downloading", url, "...")
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	inv := struct {
+		Success bool `json:"success"`
+	}{}
+	data, err := ioutil.ReadAll(resp.Body)
+	if err := json.Unmarshal(data, &inv); err != nil {
+		return err
+	}
+	// Skip caching if no success.
+	if !inv.Success || string(data) == "" {
+		return fmt.Errorf("please try again later: %s", data)
+	}
+
+	out, err := os.Create(getSource(steamID))
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = out.Write(data)
+	return err
+}
+
+func dlInventory2(steamID string) error {
+	url := fmt.Sprintf(steamInventoryAPI, steamID)
+	fmt.Println("downloading", url, "...")
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -93,6 +132,38 @@ func dlInventory(steamID string) error {
 	}
 	defer out.Close()
 
+	inv := struct {
+		Success bool `json:"success"`
+	}{}
+	data, err := ioutil.ReadAll(resp.Body)
+	if err := json.Unmarshal(data, &inv); err != nil {
+		return err
+	}
+	// Skip caching if no success.
+	if !inv.Success {
+		return fmt.Errorf("please try again later")
+	}
+
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+func dlInventorySurf(steamID string) error {
+	url := fmt.Sprintf(steamInventoryAPI, steamID)
+	fmt.Println("downloading", url, "with surf...")
+
+	bow := surf.NewBrowser()
+	if err := bow.Open(url); err != nil {
+		panic(err)
+	}
+	respStr := html.UnescapeString(bow.Body())
+
+	f, err := os.Create(getSource(steamID))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(respStr)
+	return nil
 }
