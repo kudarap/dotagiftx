@@ -86,23 +86,6 @@ type (
 	}
 )
 
-func (d *itemDetails) UnmarshalJSON(data []byte) error {
-	s := string(data)
-	if s == `""` {
-		*d = nil
-		return nil
-	}
-
-	var details []struct {
-		Value string `json:"value"`
-	}
-	if err := json.Unmarshal(data, &details); err != nil {
-		return err
-	}
-	*d = itemDetails(details)
-	return nil
-}
-
 // parses json file into struct.
 func newInventoryFromFile(path string) (*inventory, error) {
 	data, err := ioutil.ReadFile(path)
@@ -175,6 +158,23 @@ func (d description) toFlatInventory() flatInventory {
 	fi.Descriptions = desc
 
 	return fi
+}
+
+func (d *itemDetails) UnmarshalJSON(data []byte) error {
+	s := string(data)
+	if s == `""` {
+		*d = nil
+		return nil
+	}
+
+	var details []struct {
+		Value string `json:"value"`
+	}
+	if err := json.Unmarshal(data, &details); err != nil {
+		return err
+	}
+	*d = itemDetails(details)
+	return nil
 }
 
 func extractValueFromPrefix(s, prefix string) (value string, ok bool) {
