@@ -1,14 +1,14 @@
 package verdeliv
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"strings"
-
-	jsoniter "github.com/json-iterator/go"
+	//jsoniter "github.com/json-iterator/go"
 )
 
-var fastjson = jsoniter.ConfigFastest
+//var fastjson = jsoniter.ConfigFastest
 
 /*
 
@@ -57,16 +57,16 @@ type (
 
 	// description represents steam's raw description inventory data model.
 	description struct {
-		ClassID      string        `json:"classid"`
-		InstanceID   string        `json:"instanceid"`
-		Name         string        `json:"name"`
-		Image        string        `json:"icon_url_large"`
-		Type         string        `json:"type"`
-		Descriptions []itemDetails `json:"descriptions"`
+		ClassID      string      `json:"classid"`
+		InstanceID   string      `json:"instanceid"`
+		Name         string      `json:"name"`
+		Image        string      `json:"icon_url_large"`
+		Type         string      `json:"type"`
+		Descriptions itemDetails `json:"descriptions"`
 	}
 
 	// itemDetails represents steam's raw description detail values data model.
-	itemDetails struct {
+	itemDetails []struct {
 		Value string `json:"value"`
 	}
 
@@ -86,6 +86,23 @@ type (
 	}
 )
 
+func (d *itemDetails) UnmarshalJSON(data []byte) error {
+	s := string(data)
+	if s == `""` {
+		*d = nil
+		return nil
+	}
+
+	var details []struct {
+		Value string `json:"value"`
+	}
+	if err := json.Unmarshal(data, &details); err != nil {
+		return err
+	}
+	*d = itemDetails(details)
+	return nil
+}
+
 // parses json file into struct.
 func newInventoryFromFile(path string) (*inventory, error) {
 	data, err := ioutil.ReadFile(path)
@@ -94,7 +111,7 @@ func newInventoryFromFile(path string) (*inventory, error) {
 	}
 
 	inv := &inventory{}
-	if err := fastjson.Unmarshal(data, inv); err != nil {
+	if err := json.Unmarshal(data, inv); err != nil {
 		return nil, fmt.Errorf("could not parse json: %s", err)
 	}
 
