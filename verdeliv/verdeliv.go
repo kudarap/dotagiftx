@@ -36,8 +36,8 @@ const (
 	inventEndpoint  = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?count=5000"
 	inventEndpoint2 = "https://steamcommunity.com/inventory/%s/570/2?count=5000"
 
-	steamInventoryAPI = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?start=1090"
-	filenameFmt       = "dgx-inventory-%s.json"
+	steamInventoryAPI = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?count=5000"
+	filenameFmt       = "dgx-inv-%s.json"
 )
 
 func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, error) {
@@ -53,7 +53,6 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 		}
 	}
 
-	fmt.Println("file", fp)
 	res, err := newFlatInventoryFromFile(fp)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse file: %s", err)
@@ -81,6 +80,7 @@ func getSource(steamID string) string {
 
 func dlInventory(steamID string) error {
 	url := fmt.Sprintf(steamInventoryAPI, steamID)
+	fmt.Println(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
