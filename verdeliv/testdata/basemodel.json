@@ -21,7 +21,9 @@
           "type": "html",
           "value": "The International 2019",
           "color": "99ccff"
-        }
+        },
+        { "value": "Gift From: gippeum", "color": "99ccff" },
+        { "type": "html", "value": "Date Received: Aug 24, 2020 (23:15:11)" }
       ]
     }
   },
