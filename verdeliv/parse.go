@@ -3,6 +3,7 @@ package verdeliv
 import (
 	"fmt"
 	"io/ioutil"
+	"strings"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -58,8 +59,21 @@ type (
 	itemDetails struct {
 		Value string `json:"value"`
 	}
+
+	flatInventory struct {
+		AssetID      string   `json:"asset_id"`
+		Name         string   `json:"name"`
+		Image        string   `json:"image"`
+		Type         string   `json:"type"`
+		Hero         string   `json:"hero"`
+		GiftFrom     string   `json:"gift_from"`
+		DateReceived string   `json:"date_received"`
+		Dedication   string   `json:"dedication"`
+		Descriptions []string `json:"descriptions"`
+	}
 )
 
+// parses json file into struct.
 func newInventoryFromFile(path string) (*inventory, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -71,6 +85,75 @@ func newInventoryFromFile(path string) (*inventory, error) {
 		return nil, fmt.Errorf("could not parse json: %s", err)
 	}
 
-	fmt.Println("parsed", len(inv.Descriptions))
 	return inv, nil
+}
+
+// transform original data struct to flat format.
+func newFlatInventoryFromFile(path string) ([]flatInventory, error) {
+	inv, err := newInventoryFromFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	assetMapIDs := map[string]string{}
+	for _, aa := range inv.Assets {
+		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+	}
+
+	var flat []flatInventory
+	for ci, ii := range inv.Descriptions {
+		fi := ii.toFlatInventory()
+		fi.AssetID = assetMapIDs[ci]
+		flat = append(flat, fi)
+	}
+
+	return flat, nil
+}
+
+const (
+	inventPrefixHero         = "Used By: "
+	inventPrefixGiftFrom     = "Gift From: "
+	inventPrefixDateReceived = "Date Received: "
+	inventPrefixDedication   = "Dedication: "
+)
+
+func (d description) toFlatInventory() flatInventory {
+	fi := flatInventory{
+		Name:  d.Name,
+		Image: d.Image,
+		Type:  d.Type,
+	}
+
+	var desc []string
+	for _, dd := range d.Descriptions {
+		v := dd.Value
+		desc = append(desc, v)
+		if pv, ok := extractValueFromPrefix(v, inventPrefixHero); ok {
+			fi.Hero = pv
+		}
+		if pv, ok := extractValueFromPrefix(v, inventPrefixGiftFrom); ok {
+			fi.GiftFrom = pv
+		}
+		if pv, ok := extractValueFromPrefix(v, inventPrefixDateReceived); ok {
+			fi.DateReceived = pv
+		}
+		if pv, ok := extractValueFromPrefix(v, inventPrefixDedication); ok {
+			fi.Dedication = pv
+		}
+	}
+	fi.Descriptions = desc
+
+	return fi
+}
+
+func extractValueFromPrefix(s, prefix string) (value string, ok bool) {
+	if !strings.HasPrefix(s, prefix) {
+		return
+	}
+
+	return strings.TrimPrefix(s, prefix), true
+}
+
+func (v *inventory) ItemsGiftFrom(personaName string) ([]description, error) {
+	panic("implement m")
 }
