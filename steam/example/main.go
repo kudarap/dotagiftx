@@ -10,7 +10,7 @@ import (
 var client *steam.Client
 
 func main() {
-	c, err := steam.New(steam.Config{"STEAM_WEB_API_KEY"})
+	c, err := steam.New(steam.Config{Key: "STEAM_WEB_API_KEY"})
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -3,6 +3,7 @@ package steam
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
 )
@@ -61,4 +62,27 @@ func (c *Client) Player(steamID string) (*core.SteamPlayer, error) {
 		URL:    su.ProfileUrl,
 		Avatar: su.AvatarFull,
 	}, nil
+}
+
+const (
+	vanityPrefixID      = "https://steamcommunity.com/id/"
+	vanityPrefixProfile = "https://steamcommunity.com/profiles/"
+)
+
+func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
+	rawURL = strings.TrimRight(rawURL, "/")
+
+	// SteamID might be present on the URL already.
+	if strings.HasPrefix(rawURL, vanityPrefixProfile) {
+		return strings.TrimPrefix(rawURL, vanityPrefixProfile), nil
+	}
+
+	// Its probably steam ID.
+	if !strings.HasPrefix(rawURL, vanityPrefixID) {
+		err = fmt.Errorf("could not parse URL (%s)", rawURL)
+		return
+	}
+
+	v := strings.TrimPrefix(rawURL, vanityPrefixID)
+	return ResolveVanityURL(v, c.config.Key)
 }
