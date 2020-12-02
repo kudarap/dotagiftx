@@ -5,6 +5,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/fatih/structs"
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
@@ -124,7 +125,8 @@ func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
-	q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
+	q := newFindOptsQuery(s.table(), o)
+	//q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -139,7 +141,8 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 		Filter:        o.Filter,
 		IndexSorting:  true,
 	}
-	q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
+	q := newFindOptsQuery(s.table(), o)
+	//q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
 	err = s.db.one(q.Count(), &num)
 	return
 }
@@ -181,11 +184,9 @@ func (s *catalogStorage) getBySlug(slug string) (*core.Catalog, error) {
 }
 
 func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
-	// Benchmark indexing.
-	// avg proc time 2.555710726s
-	tStart := time.Now()
+	bs := time.Now()
 	defer func() {
-		s.logger.Infof("catalog indexed %s @ %s\n", itemID, time.Now().Sub(tStart))
+		s.logger.Infof("catalog indexed %s @ %s\n", itemID, time.Now().Sub(bs))
 	}()
 
 	cat := &core.Catalog{}
@@ -201,42 +202,39 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
-	// Get total market count by item ID
-	// and remove them if there's no entry
-	quantity := baseQ.Count()
-	if err = s.db.one(quantity, &cat.Quantity); err != nil {
+	// Get total market count by item ID and remove them if there's no entry
+	q = baseQ.Count()
+	if err = s.db.one(q, &cat.Quantity); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
-	if cat.Quantity == 0 {
-		if err := s.zeroQtyCatalog(cat.ID); err != nil {
+
+	if cat.Quantity > 0 {
+		// Get lowest sale price on the market by item ID.
+		q = baseQ.Min("price").Field("price").Default(0)
+		if err = s.db.one(q, &cat.LowestAsk); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, err)
 		}
-	}
 
-	// Get lowest sale price on the market by item ID.
-	q = baseQ.Min("price").Field("price").Default(0)
-	if err = s.db.one(q, &cat.LowestAsk); err != nil {
-		return nil, errors.New(core.CatalogErrIndexing, err)
-	}
+		// Get highest price on the market by item ID.
+		//q = baseQ.Max("price").Field("price").Default(0)
+		//if err = s.db.one(q, &cat.HighestBid); err != nil {
+		//	return nil, errors.New(core.CatalogErrIndexing, err)
+		//}
 
-	// Get median sale price on the market by item ID.
-	if err = s.db.one(s.medianPriceQuery(cat.Quantity, baseQ).Default(0), &cat.MedianAsk); err != nil {
-		return nil, errors.New(core.CatalogErrIndexing, err)
-	}
+		// Get median sale price on the market by item ID.
+		q = s.medianPriceQuery(cat.Quantity, baseQ).Default(0)
+		if err = s.db.one(q, &cat.MedianAsk); err != nil {
+			return nil, errors.New(core.CatalogErrIndexing, err)
+		}
 
-	// Get highest price on the market by item ID.
-	//q = baseQ.Max("price").Field("price").Default(0)
-	//if err = s.db.one(q, &cat.HighestBid); err != nil {
-	//	return nil, errors.New(core.CatalogErrIndexing, err)
-	//}
-
-	// Get recent_ask on the market by item ID.
-	q = baseQ.Max("created_at").Field("created_at")
-	recentAsk := &time.Time{}
-	if err = s.db.one(q, recentAsk); err != nil {
-		return nil, errors.New(core.CatalogErrIndexing, err)
+		// Get recent_ask on the market by item ID.
+		q = baseQ.Max("created_at").Field("created_at").Default(nil)
+		t := &time.Time{}
+		if err = s.db.one(q, t); err != nil {
+			return nil, errors.New(core.CatalogErrIndexing, err)
+		}
+		cat.RecentAsk = t
 	}
-	cat.RecentAsk = recentAsk
 
 	// Check for exiting entry for update or create.
 	if cur, _ := s.Get(itemID); cur == nil {
@@ -274,7 +272,10 @@ func (s *catalogStorage) create(in *core.Catalog) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
-	if _, err := s.db.insert(s.table().Insert(in)); err != nil {
+	// Convert catalog into map to insert zero value fields.
+	m := catalogToMap(in)
+
+	if _, err := s.db.insert(s.table().Insert(m)); err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
 
@@ -288,7 +289,10 @@ func (s *catalogStorage) update(in *core.Catalog) error {
 	}
 
 	in.UpdatedAt = now()
-	err = s.db.update(s.table().Get(in.ID).Update(in))
+	// Convert catalog into map to insert zero value fields.
+	m := catalogToMap(in)
+
+	err = s.db.update(s.table().Get(in.ID).Update(m))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
@@ -302,17 +306,32 @@ func (s *catalogStorage) update(in *core.Catalog) error {
 
 // zeroQtyCatalog reset the catalog entry price when it reaches zero entry/qty.
 func (s *catalogStorage) zeroQtyCatalog(catalogID string) error {
-	q := s.table().Get(catalogID).Update(map[string]int{
-		"quantity":    0,
-		"lowest_ask":  0,
-		"median_ask":  0,
-		"highest_bid": 0,
-	})
-	return s.db.update(q)
+	cat := map[string]interface{}{
+		"quantity":   0,
+		"lowest_ask": 0,
+		"median_ask": 0,
+		//"highest_bid": 0,
+		"recent_ask": nil,
+	}
+
+	var err error
+	if cur, _ := s.Get(catalogID); cur == nil {
+		_, err = s.db.insert(s.table().Insert(cat))
+	} else {
+		err = s.db.update(s.table().Get(catalogID).Update(cat))
+	}
+
+	return err
 }
 
 func (s *catalogStorage) table() r.Term {
 	return r.Table(tableCatalog)
+}
+
+func catalogToMap(cat *core.Catalog) map[string]interface{} {
+	s := structs.New(cat)
+	s.TagName = "json"
+	return s.Map()
 }
 
 // NOTE! deprecated method and not being used and for reference only.
