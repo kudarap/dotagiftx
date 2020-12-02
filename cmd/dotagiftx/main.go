@@ -104,6 +104,7 @@ func (a *application) setup() error {
 		itemStg,
 		trackStg,
 		catalogStg,
+		steamClient,
 		log,
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)

@@ -17,9 +17,10 @@ func NewMarket(
 	is core.ItemStorage,
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
+	sc core.SteamClient,
 	lg *logrus.Logger,
 ) core.MarketService {
-	return &marketService{ss, us, is, ts, cs, lg}
+	return &marketService{ss, us, is, ts, cs, sc, lg}
 }
 
 type marketService struct {
@@ -28,6 +29,7 @@ type marketService struct {
 	itemStg    core.ItemStorage
 	trackStg   core.TrackStorage
 	catalogStg core.CatalogStorage
+	steam      core.SteamClient
 	logger     *logrus.Logger
 }
 
@@ -131,6 +133,14 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 
 	if err := mkt.CheckUpdate(); err != nil {
 		return err
+	}
+
+	// Resolved steam profile URL input as partner steam id.
+	if mkt.PartnerSteamID != "" && mkt.Status == core.MarketStatusReserved {
+		mkt.PartnerSteamID, err = s.steam.ResolveVanityURL(mkt.PartnerSteamID)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Append note to existing notes.
