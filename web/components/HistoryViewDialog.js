@@ -10,11 +10,11 @@ import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
+import { TextField } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   details: {
     [theme.breakpoints.down('xs')]: {
-      textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
@@ -22,11 +22,12 @@ const useStyles = makeStyles(theme => ({
   media: {
     [theme.breakpoints.down('xs')]: {
       margin: '0 auto !important',
+      width: 300,
+      height: 170,
     },
-    width: 150,
-    height: 100,
-    marginRight: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
+    width: 165,
+    height: 110,
+    margin: theme.spacing(0, 1.5, 1.5, 0),
   },
 }))
 
@@ -58,14 +59,25 @@ export default function HistoryViewDialog(props) {
       </DialogTitle>
       <DialogContent>
         <div className={classes.details}>
-          <ItemImage
-            className={classes.media}
-            image={market.item.image}
-            width={150}
-            height={100}
-            title={market.item.name}
-            rarity={market.item.rarity}
-          />
+          {isMobile ? (
+            <ItemImage
+              className={classes.media}
+              image={market.item.image}
+              width={300}
+              height={170}
+              title={market.item.name}
+              rarity={market.item.rarity}
+            />
+          ) : (
+            <ItemImage
+              className={classes.media}
+              image={market.item.image}
+              width={165}
+              height={110}
+              title={market.item.name}
+              rarity={market.item.rarity}
+            />
+          )}
 
           <Typography component="h1">
             <Typography component="p" variant="h6">
@@ -112,6 +124,17 @@ export default function HistoryViewDialog(props) {
               )}
             </Typography>
           </Typography>
+        </div>
+        <div>
+          <TextField
+            style={{ marginTop: 16, marginBottom: 16 }}
+            disabled
+            fullWidth
+            color="secondary"
+            variant="outlined"
+            label="Buyer's Steam profile URL"
+            value={market.partner_steam_id}
+          />
         </div>
       </DialogContent>
     </Dialog>

@@ -27,7 +27,6 @@ import AppContext from '@/components/AppContext'
 const useStyles = makeStyles(theme => ({
   details: {
     [theme.breakpoints.down('xs')]: {
-      textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
@@ -35,11 +34,12 @@ const useStyles = makeStyles(theme => ({
   media: {
     [theme.breakpoints.down('xs')]: {
       margin: '0 auto !important',
+      width: 300,
+      height: 170,
     },
-    width: 150,
-    height: 100,
-    marginRight: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
+    width: 165,
+    height: 110,
+    margin: theme.spacing(0, 1.5, 1.5, 0),
   },
 }))
 
@@ -47,12 +47,14 @@ export default function MarketUpdateDialog(props) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
+  const [steamProfileURL, setSteamProfileURL] = React.useState('')
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
   const { onClose } = props
   const handleClose = () => {
+    setSteamProfileURL('')
     setNotes('')
     setError('')
     setLoading(false)
@@ -91,6 +93,7 @@ export default function MarketUpdateDialog(props) {
 
     const payload = {
       status: MARKET_STATUS_RESERVED,
+      partner_steam_id: steamProfileURL,
       notes,
     }
 
@@ -129,14 +132,25 @@ export default function MarketUpdateDialog(props) {
         </DialogTitle>
         <DialogContent>
           <div className={classes.details}>
-            <ItemImage
-              className={classes.media}
-              image={market.item.image}
-              width={150}
-              height={100}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
+            {isMobile ? (
+              <ItemImage
+                className={classes.media}
+                image={market.item.image}
+                width={300}
+                height={170}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+            ) : (
+              <ItemImage
+                className={classes.media}
+                image={market.item.image}
+                width={165}
+                height={110}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+            )}
 
             <Typography component="h1">
               <Typography variant="h6" component={Link} href="/[slug]" as={`/${market.item.slug}`}>
@@ -177,14 +191,27 @@ export default function MarketUpdateDialog(props) {
           </div>
           <div>
             <TextField
+              style={{ marginTop: 8 }}
               disabled={loading}
               fullWidth
               required
               color="secondary"
               variant="outlined"
-              label="Reservation notes"
-              helperText="Buyer's Steam profile URL & delivery date."
+              label="Buyer's Steam profile URL"
               placeholder="https://steamcommunity.com/profiles/..."
+              value={steamProfileURL}
+              onInput={e => setSteamProfileURL(e.target.value)}
+            />
+            <br />
+            <br />
+            <TextField
+              disabled={loading}
+              fullWidth
+              color="secondary"
+              variant="outlined"
+              label="Reservation Notes"
+              helperText="Delivery date and deposit details"
+              placeholder="Jan 2 with $1 deposit"
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />
@@ -196,8 +223,12 @@ export default function MarketUpdateDialog(props) {
           </Typography>
         )}
         <DialogActions>
-          <Button disabled={loading} startIcon={<RemoveIcon />} onClick={handleRemoveClick}>
-            Remove listing
+          <Button
+            disabled={loading}
+            startIcon={<RemoveIcon />}
+            onClick={handleRemoveClick}
+            variant="outlined">
+            Remove Listing
           </Button>
           <Button
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}

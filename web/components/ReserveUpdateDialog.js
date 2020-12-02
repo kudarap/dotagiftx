@@ -26,7 +26,6 @@ import AppContext from '@/components/AppContext'
 const useStyles = makeStyles(theme => ({
   details: {
     [theme.breakpoints.down('xs')]: {
-      textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
@@ -34,11 +33,12 @@ const useStyles = makeStyles(theme => ({
   media: {
     [theme.breakpoints.down('xs')]: {
       margin: '0 auto !important',
+      width: 300,
+      height: 170,
     },
-    width: 150,
-    height: 100,
-    marginRight: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
+    width: 165,
+    height: 110,
+    margin: theme.spacing(0, 1.5, 1.5, 0),
   },
 }))
 
@@ -87,6 +87,7 @@ export default function ReserveUpdateDialog(props) {
   const handleCancelClick = () => {
     marketUpdate({
       status: MARKET_STATUS_CANCELLED,
+      notes,
     })
   }
 
@@ -119,14 +120,25 @@ export default function ReserveUpdateDialog(props) {
         </DialogTitle>
         <DialogContent>
           <div className={classes.details}>
-            <ItemImage
-              className={classes.media}
-              image={market.item.image}
-              width={150}
-              height={100}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
+            {isMobile ? (
+              <ItemImage
+                className={classes.media}
+                image={market.item.image}
+                width={300}
+                height={170}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+            ) : (
+              <ItemImage
+                className={classes.media}
+                image={market.item.image}
+                width={165}
+                height={110}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+            )}
 
             <Typography component="h1">
               <Typography component="p" variant="h6">
@@ -167,13 +179,24 @@ export default function ReserveUpdateDialog(props) {
           </div>
           <div>
             <TextField
+              style={{ marginTop: 16 }}
+              disabled
+              fullWidth
+              color="secondary"
+              variant="outlined"
+              label="Buyer's Steam profile URL"
+              value={market.partner_steam_id}
+            />
+            <br />
+            <br />
+            <TextField
               disabled={loading}
               fullWidth
               required
               color="secondary"
               variant="outlined"
-              label="Delivery notes"
-              helperText="Screenshot URL for verification."
+              label="Notes"
+              helperText="Screenshot URL for verification or Reason for cancellation"
               placeholder="https://imgur.com/a/..."
               value={notes}
               onInput={e => setNotes(e.target.value)}
@@ -186,7 +209,11 @@ export default function ReserveUpdateDialog(props) {
           </Typography>
         )}
         <DialogActions>
-          <Button disabled={loading} startIcon={<CancelIcon />} onClick={handleCancelClick}>
+          <Button
+            disabled={loading}
+            startIcon={<CancelIcon />}
+            onClick={handleCancelClick}
+            variant="outlined">
             Cancel Reservation
           </Button>
           <Button
@@ -196,7 +223,7 @@ export default function ReserveUpdateDialog(props) {
             variant="outlined"
             color="secondary"
             type="submit">
-            Item Delivered to Buyer
+            {isMobile ? 'Item Delivered' : 'Item Delivered to Buyer'}
           </Button>
         </DialogActions>
       </form>
