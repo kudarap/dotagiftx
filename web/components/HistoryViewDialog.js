@@ -100,7 +100,7 @@ export default function HistoryViewDialog(props) {
         <div>
           <TextField
             style={{ marginTop: 16, marginBottom: 16 }}
-            disabled
+            InputProps={{ readOnly: true }}
             fullWidth
             color="secondary"
             variant="outlined"

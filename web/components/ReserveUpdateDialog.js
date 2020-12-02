@@ -152,7 +152,7 @@ export default function ReserveUpdateDialog(props) {
           <div>
             <TextField
               style={{ marginTop: 16 }}
-              disabled
+              InputProps={{ readOnly: true }}
               fullWidth
               color="secondary"
               variant="outlined"
