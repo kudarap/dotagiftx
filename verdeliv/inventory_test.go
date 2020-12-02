@@ -54,12 +54,32 @@ func Test_newInventoryFromFile(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"good base inventory",
+			"good base model",
 			args{"./testdata/basemodel.json"},
 			&inventory{
 				Success:   true,
 				More:      false,
-				MoreStart: false,
+				MoreStart: 0,
+				Assets: map[string]asset{
+					"100000000": {
+						ID:         "100000000",
+						ClassID:    "3305750400",
+						InstanceID: "3307872803",
+					},
+				},
+				Descriptions: map[string]description{
+					"3305750400_3307872803": descGothicWhisper,
+				},
+			},
+			false,
+		},
+		{
+			"paginated",
+			args{"./testdata/paginated.json"},
+			&inventory{
+				Success:   true,
+				More:      false,
+				MoreStart: 1,
 				Assets: map[string]asset{
 					"100000000": {
 						ID:         "100000000",
@@ -79,7 +99,7 @@ func Test_newInventoryFromFile(t *testing.T) {
 			&inventory{
 				Success:   true,
 				More:      false,
-				MoreStart: false,
+				MoreStart: 0,
 				Assets: map[string]asset{
 					"100000000": {
 						ID:         "100000000",

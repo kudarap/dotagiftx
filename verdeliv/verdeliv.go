@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/headzoo/surf"
 )
@@ -54,6 +55,8 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 	// Read file cache if exist, else download.
 	fp := getSource(buyerSteamID)
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
+		// Sleep for the next request
+		time.Sleep(time.Minute * 5)
 		if err := dlInventory(buyerSteamID); err != nil {
 			return nil, fmt.Errorf("could not dl file: %s", err)
 		}

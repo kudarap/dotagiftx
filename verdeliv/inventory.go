@@ -43,7 +43,7 @@ type (
 	inventory struct {
 		Success      bool                   `json:"success"`
 		More         bool                   `json:"more"`
-		MoreStart    bool                   `json:"more_start"`
+		MoreStart    paginationOffset       `json:"more_start"`
 		Assets       map[string]asset       `json:"rgInventory"`
 		Descriptions map[string]description `json:"rgDescriptions"`
 		Error        string                 `json:"Error"`
@@ -70,6 +70,8 @@ type (
 	itemDetails []struct {
 		Value string `json:"value"`
 	}
+
+	paginationOffset int
 
 	// flatInventory represents a flat formatted inventory base of steam model.
 	flatInventory struct {
@@ -175,6 +177,21 @@ func (d *itemDetails) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*d = itemDetails(details)
+	return nil
+}
+
+func (po *paginationOffset) UnmarshalJSON(data []byte) error {
+	s := string(data)
+	if s == `false` {
+		*po = 0
+		return nil
+	}
+
+	o := 0
+	if err := fastjson.Unmarshal(data, &o); err != nil {
+		return err
+	}
+	*po = paginationOffset(o)
 	return nil
 }
 
