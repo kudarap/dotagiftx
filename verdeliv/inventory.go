@@ -46,6 +46,7 @@ type (
 		MoreStart    bool                   `json:"more_start"`
 		Assets       map[string]asset       `json:"rgInventory"`
 		Descriptions map[string]description `json:"rgDescriptions"`
+		Error        string                 `json:"Error"`
 	}
 
 	// asset represents steam's raw asset inventory data model.

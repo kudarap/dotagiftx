@@ -93,12 +93,37 @@ func Test_newInventoryFromFile(t *testing.T) {
 			},
 			false,
 		},
-		// TODO: valid empty inventory
+		{
+			"success false",
+			args{"./testdata/success_false.json"},
+			&inventory{
+				Success: false,
+			},
+			false,
+		},
+		{
+			"private inventory",
+			args{"./testdata/private.json"},
+			&inventory{
+				Success: false,
+				Error:   "This profile is private.",
+			},
+			false,
+		},
+		{
+			"bad filepath",
+			args{"./testdata/badfilepath.json"},
+			nil,
+			true,
+		},
+		{
+			"bad json or malformed",
+			args{"./testdata/malformed.json"},
+			nil,
+			true,
+		},
 		// TODO: sample inventory
-		// TODO: private inventory
-		// TODO: bad filepath
-		// TODO: bad json or malformed
-		// TODO: success false
+		// TODO: valid empty inventory
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
