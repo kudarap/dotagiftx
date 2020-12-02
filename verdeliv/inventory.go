@@ -93,7 +93,7 @@ type (
 func newInventoryFromFile(path string) (*inventory, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("could not read file: %s", err)
+		return nil, fmt.Errorf("could not read file(%s): %s", path, err)
 	}
 
 	inv := &inventory{}

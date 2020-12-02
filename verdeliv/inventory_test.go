@@ -55,7 +55,7 @@ func Test_newInventoryFromFile(t *testing.T) {
 	}{
 		{
 			"good base model",
-			args{"./testdata/basemodel.json"},
+			args{"./testdata/base_model.json"},
 			&inventory{
 				Success:   true,
 				More:      false,
@@ -142,8 +142,6 @@ func Test_newInventoryFromFile(t *testing.T) {
 			nil,
 			true,
 		},
-		// TODO: sample inventory
-		// TODO: valid empty inventory
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -169,10 +167,9 @@ func Test_newFlatInventoryFromFile(t *testing.T) {
 		want    []flatInventory
 		wantErr bool
 	}{
-		// TODO: base model
 		{
 			"base model",
-			args{"./testdata/basemodel.json"},
+			args{"./testdata/base_model.json"},
 			[]flatInventory{
 				flatGothicWhisper,
 			},
@@ -190,6 +187,18 @@ func Test_newFlatInventoryFromFile(t *testing.T) {
 				},
 			},
 			false,
+		},
+		{
+			"bad filepath",
+			args{"./testdata/badfilepath.json"},
+			nil,
+			true,
+		},
+		{
+			"bad json or malformed",
+			args{"./testdata/malformed.json"},
+			nil,
+			true,
 		},
 		// TODO: parse error
 	}
