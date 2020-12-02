@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
+import startsWith from 'lodash/startsWith'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -45,6 +46,8 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
 }))
+
+const steamCommunityBaseURL = 'https://steamcommunity.com'
 
 export default function MarketUpdateDialog(props) {
   const classes = useStyles()
@@ -93,9 +96,12 @@ export default function MarketUpdateDialog(props) {
     // if (loading || notes.trim() === '') {
     //   return
     // }
-
     if (!isValidURL(steamProfileURL)) {
       setError('Steam Profile is not a valid URL.')
+      return
+    }
+    if (!startsWith(steamProfileURL, steamCommunityBaseURL, 0)) {
+      setError(`Steam Profile should start with ${steamCommunityBaseURL}`)
       return
     }
 
