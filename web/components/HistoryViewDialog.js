@@ -105,7 +105,7 @@ export default function HistoryViewDialog(props) {
             color="secondary"
             variant="outlined"
             label="Buyer's Steam profile URL"
-            value={market.partner_steam_id}
+            value={`https://steamcommunity.com/profiles/${market.partner_steam_id}`}
           />
         </div>
       </DialogContent>
