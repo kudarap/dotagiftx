@@ -5,12 +5,12 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import { TextField } from '@material-ui/core'
+import ItemImageDialog from '@/components/ItemImageDialog'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -18,16 +18,6 @@ const useStyles = makeStyles(theme => ({
       display: 'block',
     },
     display: 'inline-flex',
-  },
-  media: {
-    [theme.breakpoints.down('xs')]: {
-      margin: '0 auto !important',
-      width: 300,
-      height: 170,
-    },
-    width: 165,
-    height: 110,
-    margin: theme.spacing(0, 1.5, 1.5, 0),
   },
 }))
 
@@ -59,25 +49,7 @@ export default function HistoryViewDialog(props) {
       </DialogTitle>
       <DialogContent>
         <div className={classes.details}>
-          {isMobile ? (
-            <ItemImage
-              className={classes.media}
-              image={market.item.image}
-              width={300}
-              height={170}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
-          ) : (
-            <ItemImage
-              className={classes.media}
-              image={market.item.image}
-              width={165}
-              height={110}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
-          )}
+          <ItemImageDialog item={market.item} />
 
           <Typography component="h1">
             <Typography component="p" variant="h6">

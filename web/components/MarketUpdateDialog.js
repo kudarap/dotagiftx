@@ -13,7 +13,6 @@ import RemoveIcon from '@material-ui/icons/Delete'
 import { myMarket } from '@/service/api'
 import { amount, dateCalendar } from '@/lib/format'
 import Button from '@/components/Button'
-import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
@@ -23,6 +22,7 @@ import {
   MARKET_STATUS_RESERVED,
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
+import ItemImageDialog from '@/components/ItemImageDialog'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -30,16 +30,6 @@ const useStyles = makeStyles(theme => ({
       display: 'block',
     },
     display: 'inline-flex',
-  },
-  media: {
-    [theme.breakpoints.down('xs')]: {
-      margin: '0 auto !important',
-      width: 300,
-      height: 170,
-    },
-    width: 165,
-    height: 110,
-    margin: theme.spacing(0, 1.5, 1.5, 0),
   },
 }))
 
@@ -132,25 +122,7 @@ export default function MarketUpdateDialog(props) {
         </DialogTitle>
         <DialogContent>
           <div className={classes.details}>
-            {isMobile ? (
-              <ItemImage
-                className={classes.media}
-                image={market.item.image}
-                width={300}
-                height={170}
-                title={market.item.name}
-                rarity={market.item.rarity}
-              />
-            ) : (
-              <ItemImage
-                className={classes.media}
-                image={market.item.image}
-                width={165}
-                height={110}
-                title={market.item.name}
-                rarity={market.item.rarity}
-              />
-            )}
+            <ItemImageDialog item={market.item} />
 
             <Typography component="h1">
               <Typography variant="h6" component={Link} href="/[slug]" as={`/${market.item.slug}`}>
