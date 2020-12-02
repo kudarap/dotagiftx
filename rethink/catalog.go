@@ -126,7 +126,7 @@ func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
-	//q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
+	//q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -142,7 +142,7 @@ func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 		IndexSorting:  true,
 	}
 	q := newFindOptsQuery(s.table(), o)
-	//q := findOpts(o).parseOpts(s.table(), s.filterOutZeroQty)
+	//q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
 	err = s.db.one(q.Count(), &num)
 	return
 }
