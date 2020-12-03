@@ -217,13 +217,19 @@ export default function Header({ disableSearch }) {
                       Reservations
                     </MenuItem>
                     <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/my-buy-orders"
+                      disableUnderline>
+                      Buy Orders
+                    </MenuItem>
+                    <MenuItem
                       onClick={handleClose}
                       component={Link}
                       href="/my-history"
                       disableUnderline>
                       History
                     </MenuItem>
-                    {/* <MenuItem onClick={handleClose}>Buy Orders</MenuItem> */}
                     <MenuItem onClick={handleLogout}>Sign out</MenuItem>
                   </Menu>
                 </>
@@ -289,12 +295,18 @@ export default function Header({ disableSearch }) {
                     <MenuItem
                       onClick={handleMoreClose}
                       component={Link}
+                      href="/my-buy-orders"
+                      disableUnderline>
+                      Buy Orders
+                    </MenuItem>,
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
                       href="/my-history"
                       disableUnderline>
                       History
                     </MenuItem>,
                     <MenuItem onClick={handleLogout}>Sign out</MenuItem>,
-                    // <MenuItem onClick={handleClose}>Buy Orders</MenuItem>
                   ]
                 ) : (
                   <MenuItem
