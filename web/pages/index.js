@@ -232,17 +232,7 @@ export default function Index({ marketSummary, trendingItems }) {
 
           {/* Top 10 foot links */}
           <Grid container spacing={2}>
-            <Grid item sm={4} xs={12}>
-              <Typography className={classes.footLinks}>Top Sellers</Typography>
-              {topSellers &&
-                topSellers.data.map(item => (
-                  <Link href={`/${item.slug}`} color="secondary" className={classes.footLinks}>
-                    <Typography variant="subtitle1" component="p">
-                      {item.name}
-                    </Typography>
-                  </Link>
-                ))}
-            </Grid>
+            {/* Top 10 Heroes*/}
             <Grid item sm={4} xs={12}>
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&
@@ -257,6 +247,19 @@ export default function Index({ marketSummary, trendingItems }) {
                   </Link>
                 ))}
             </Grid>
+            {/* Top 10 Sellers */}
+            <Grid item sm={4} xs={12}>
+              <Typography className={classes.footLinks}>Top Sellers</Typography>
+              {topSellers &&
+                topSellers.data.map(item => (
+                  <Link href={`/${item.slug}`} color="secondary" className={classes.footLinks}>
+                    <Typography variant="subtitle1" component="p">
+                      {item.name}
+                    </Typography>
+                  </Link>
+                ))}
+            </Grid>
+            {/* Top 10 Treasures */}
             <Grid item sm={4} xs={12}>
               <Typography className={classes.footLinks}>Top Treasures</Typography>
               {topOrigins &&
