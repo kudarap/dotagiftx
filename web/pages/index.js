@@ -236,10 +236,7 @@ export default function Index({ marketSummary, trendingItems }) {
               <Typography className={classes.footLinks}>Top Sellers</Typography>
               {topSellers &&
                 topSellers.data.map(item => (
-                  <Link
-                    href={`/search?origin=${item.slug}`}
-                    color="secondary"
-                    className={classes.footLinks}>
+                  <Link href={`/${item.slug}`} color="secondary" className={classes.footLinks}>
                     <Typography variant="subtitle1" component="p">
                       {item.name}
                     </Typography>
