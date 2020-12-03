@@ -21,7 +21,11 @@ func MarketExtractProfileURLFromNotes(
 	sold, _ := marketStg.Find(core.FindOpts{
 		Filter: core.Market{Status: core.MarketStatusSold},
 	})
-	for _, m := range append(rsvd, sold...) {
+	cnld, _ := marketStg.Find(core.FindOpts{
+		Filter: core.Market{Status: core.MarketStatusCancelled},
+	})
+
+	for _, m := range append(append(rsvd, sold...), cnld...) {
 		vURL, newNotes := extractProfURLFromNotes(m.Notes)
 		if vURL == "" {
 			fmt.Println("Skipped", m.ID)
