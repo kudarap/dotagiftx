@@ -112,6 +112,7 @@ func (a *application) setup() error {
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
+	//fixes.MarketExtractProfileURLFromNotes(marketStg, steamClient)
 	redisClient.BulkDel("")
 
 	// Server setup.
