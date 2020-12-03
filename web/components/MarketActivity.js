@@ -65,7 +65,8 @@ export default function MarketActivity({ data, loading }) {
                   <Link
                     color="textSecondary"
                     href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
-                    {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}\n`}
+                    {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+                    {market.notes && '\n'}
                   </Link>
                 )}
                 {market.notes}
