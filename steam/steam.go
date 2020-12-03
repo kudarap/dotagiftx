@@ -89,7 +89,7 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 	vanity := strings.TrimPrefix(rawURL, VanityPrefixID)
 	cacheKey := fmt.Sprintf("steam/resolvedvanity/%s", vanity)
 	if hit, _ := c.cache.Get(cacheKey); hit != "" {
-		return hit, nil
+		return strings.ReplaceAll(hit, `"`, ""), nil
 	}
 
 	steamID, err = ResolveVanityURL(vanity, c.config.Key)
