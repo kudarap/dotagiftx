@@ -242,8 +242,9 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 
 	// Get Market sales stats from reserved and sold statuses.
 	marketSale := r.Table(tableMarket).Filter(func(doc r.Term) r.Term {
-		return doc.Field(marketFieldStatus).
-			Eq(core.MarketStatusReserved).Or(core.MarketStatusSold).And(doc.Field(marketFieldItemID).Eq(itemID))
+		return doc.Field(marketFieldItemID).Eq(itemID).And(
+			doc.Field(marketFieldStatus).Eq(core.MarketStatusReserved).Or(
+				doc.Field(marketFieldStatus).Eq(core.MarketStatusSold)))
 	})
 	q = marketSale.Count()
 	if err = s.db.one(q, &cat.SaleCount); err != nil {
