@@ -230,7 +230,7 @@ export default function Index({ marketSummary, trendingItems }) {
           <Divider className={classes.divider} light variant="middle" />
           <br />
 
-          {/* Top foot links */}
+          {/* Top 10 foot links */}
           <Grid container spacing={2}>
             <Grid item sm={4} xs={12}>
               <Typography className={classes.footLinks}>Top Sellers</Typography>
