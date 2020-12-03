@@ -21,16 +21,11 @@ func MarketExtractProfileURLFromNotes(
 		Filter: core.Market{Status: core.MarketStatusSold},
 	})
 	for _, m := range append(rsvd, sold...) {
-		s := extractProfURLFromNotes(m.Notes)
-		if s == "" {
+		vURL, newNotes := extractProfURLFromNotes(m.Notes)
+		if vURL == "" {
+			fmt.Println("Skipped", m.ID)
 			continue
 		}
-
-		// Trim notes line to get only the url.
-		vURL := strings.Split(s, " ")[0]
-		notes := strings.ReplaceAll(m.Notes, vURL, "")
-		notes = strings.Trim(notes, "\n")
-		notes = strings.TrimSpace(notes)
 
 		steamID, err := steamClient.ResolveVanityURL(vURL)
 		if err != nil {
@@ -43,7 +38,7 @@ func MarketExtractProfileURLFromNotes(
 			ID:             m.ID,
 			UpdatedAt:      m.UpdatedAt, // Skips the time update
 			PartnerSteamID: steamID,
-			Notes:          notes,
+			Notes:          newNotes,
 		})
 
 		fmt.Println(m.ID)
@@ -54,6 +49,10 @@ func MarketExtractProfileURLFromNotes(
 
 	fmt.Println("starting update...")
 	for _, m := range updates {
+		if m.Notes == "" {
+			m.Notes = "-"
+		}
+
 		if err := marketStg.Update(&m); err != nil {
 			fmt.Println("ERR! could not update:", err)
 		}
@@ -63,16 +62,32 @@ func MarketExtractProfileURLFromNotes(
 	fmt.Println("update done!")
 }
 
-func extractProfURLFromNotes(notes string) (url string) {
+const lineBreaker = "\n"
+
+func extractProfURLFromNotes(notes string) (url, newNotes string) {
 	if notes == "" {
 		return
 	}
 
-	for _, n := range strings.Split(notes, "\n") {
-		if strings.HasPrefix(n, steam.VanityPrefixID) {
-			return n
-		} else if strings.HasPrefix(n, steam.VanityPrefixProfile) {
-			return n
+	ss := strings.Split(notes, lineBreaker)
+	for i, n := range ss {
+		if strings.HasPrefix(n, steam.VanityPrefixID) || strings.HasPrefix(n, steam.VanityPrefixProfile) {
+			// Current data shows all line notes start with the url.
+			url = strings.Split(n, " ")[0]
+			// Removes the url and additional spaces.
+			ss[i] = strings.ReplaceAll(n, url, "")
+			ss[i] = strings.TrimSpace(ss[i])
+
+			var nn []string
+			for _, s := range ss {
+				if strings.TrimSpace(s) == "" {
+					continue
+				}
+
+				nn = append(nn, s)
+			}
+
+			return url, strings.Join(nn, lineBreaker)
 		}
 	}
 
