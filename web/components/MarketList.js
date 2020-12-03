@@ -22,6 +22,7 @@ import ContactDialog from '@/components/ContactDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import { Tab, Tabs } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -31,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   avatar: {
     marginRight: theme.spacing(1.5),
   },
-  buyText: {
+  tableHead: {
     color: green[600],
   },
 }))
@@ -40,6 +41,8 @@ export default function MarketList({ data, error }) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
+
+  const [tabIdx, setTabIdx] = React.useState(0)
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
@@ -59,116 +62,160 @@ export default function MarketList({ data, error }) {
     })()
   }
 
+  const handleTabChange = (e, value) => {
+    setTabIdx(value)
+  }
+
   return (
     <>
       <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
+        <Table className={classes.table} aria-label="market list table">
           <TableHead>
             <TableRow>
-              <TableHeadCell>Seller</TableHeadCell>
-              <TableHeadCell align="right">Price</TableHeadCell>
-              {!isMobile && <TableHeadCell align="center" width={156} />}
+              <TableHeadCell colSpan={3} padding="none">
+                <Tabs variant="fullWidth" value={tabIdx} onChange={handleTabChange}>
+                  <Tab
+                    value={0}
+                    label={`${data.total_count || ''} Offers`}
+                    style={{ textTransform: 'none' }}
+                  />
+                  <Tab value={1} label={`${2} Buy Orders`} style={{ textTransform: 'none' }} />
+                </Tabs>
+              </TableHeadCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {error && (
+
+          {tabIdx === 0 ? (
+            <TableBody>
               <TableRow>
-                <TableCell align="center" colSpan={3}>
-                  Error retrieving data
-                  <br />
-                  <Typography variant="caption" color="textSecondary">
-                    {error}
+                <TableHeadCell size="small">
+                  <Typography color="textSecondary" variant="body2">
+                    Seller
                   </Typography>
-                </TableCell>
+                </TableHeadCell>
+                <TableHeadCell size="small" align="right">
+                  <Typography color="textSecondary" variant="body2">
+                    Price
+                  </Typography>
+                </TableHeadCell>
+                {!isMobile && <TableHeadCell size="small" align="center" width={156} />}
               </TableRow>
-            )}
 
-            {!error && !data && (
-              <TableRow>
-                <TableCell align="center" colSpan={3}>
-                  Loading...
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!error && data.total_count === 0 && (
-              <TableRow>
-                <TableCell align="center" colSpan={3}>
-                  No offers available
-                </TableCell>
-              </TableRow>
-            )}
-
-            {data.data &&
-              data.data.map((market, idx) => (
-                <TableRow key={market.id} hover>
-                  <TableCell component="th" scope="row" padding="none">
-                    <Link
-                      href="/profiles/[id]"
-                      as={`/profiles/${market.user.steam_id}`}
-                      disableUnderline>
-                      <div className={classes.seller}>
-                        <Avatar
-                          className={classes.avatar}
-                          alt={market.user.name}
-                          {...retinaSrcSet(market.user.avatar, 40, 40)}
-                        />
-                        <div>
-                          <strong>{market.user.name}</strong>
-                          <br />
-                          <Typography variant="caption" color="textSecondary">
-                            {/* {market.user.steam_id} */}
-                            Posted {dateFromNow(market.created_at)}
-                          </Typography>
-                        </div>
-                      </div>
-                    </Link>
+              {error && (
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    Error retrieving data
+                    <br />
+                    <Typography variant="caption" color="textSecondary">
+                      {error}
+                    </Typography>
                   </TableCell>
-                  {!isMobile ? (
-                    <>
-                      <TableCell align="right">
-                        <Typography variant="body2">
-                          {amount(market.price, market.currency)}
+                </TableRow>
+              )}
+
+              {!error && !data && (
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!error && data.total_count === 0 && (
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    No offers available
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {data.data &&
+                data.data.map((market, idx) => (
+                  <TableRow key={market.id} hover>
+                    <TableCell component="th" scope="row" padding="none">
+                      <Link
+                        href="/profiles/[id]"
+                        as={`/profiles/${market.user.steam_id}`}
+                        disableUnderline>
+                        <div className={classes.seller}>
+                          <Avatar
+                            className={classes.avatar}
+                            alt={market.user.name}
+                            {...retinaSrcSet(market.user.avatar, 40, 40)}
+                          />
+                          <div>
+                            <strong>{market.user.name}</strong>
+                            <br />
+                            <Typography variant="caption" color="textSecondary">
+                              {/* {market.user.steam_id} */}
+                              Posted {dateFromNow(market.created_at)}
+                            </Typography>
+                          </div>
+                        </div>
+                      </Link>
+                    </TableCell>
+                    {!isMobile ? (
+                      <>
+                        <TableCell align="right">
+                          <Typography variant="body2">
+                            {amount(market.price, market.currency)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          {currentUserID === market.user.id ? (
+                            // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+                            <div>
+                              <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
+                                Remove
+                              </Button>
+                            </div>
+                          ) : (
+                            <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                              Contact Seller
+                            </BuyButton>
+                          )}
+                        </TableCell>
+                      </>
+                    ) : (
+                      <TableCell
+                        align="right"
+                        onClick={() =>
+                          currentUserID === market.user.id
+                            ? handleRemoveClick(idx)
+                            : handleContactClick(idx)
+                        }
+                        style={{ cursor: 'pointer' }}>
+                        <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                        <Typography
+                          variant="caption"
+                          color="textSecondary"
+                          style={{
+                            color: currentUserID === market.user.id ? 'tomato' : '',
+                          }}>
+                          <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
                         </Typography>
                       </TableCell>
-                      <TableCell align="center">
-                        {currentUserID === market.user.id ? (
-                          // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
-                          <div>
-                            <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
-                              Remove
-                            </Button>
-                          </div>
-                        ) : (
-                          <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
-                            Contact Seller
-                          </BuyButton>
-                        )}
-                      </TableCell>
-                    </>
-                  ) : (
-                    <TableCell
-                      align="right"
-                      onClick={() =>
-                        currentUserID === market.user.id
-                          ? handleRemoveClick(idx)
-                          : handleContactClick(idx)
-                      }
-                      style={{ cursor: 'pointer' }}>
-                      <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-                      <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        style={{
-                          color: currentUserID === market.user.id ? 'tomato' : '',
-                        }}>
-                        <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
-                      </Typography>
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-          </TableBody>
+                    )}
+                  </TableRow>
+                ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableHeadCell size="small">
+                  <Typography color="textSecondary" variant="body2">
+                    Buyer
+                  </Typography>
+                </TableHeadCell>
+                <TableHeadCell size="small" align="right">
+                  <Typography color="textSecondary" variant="body2">
+                    Price
+                  </Typography>
+                </TableHeadCell>
+                {!isMobile && <TableHeadCell size="small" align="center" width={156} />}
+              </TableRow>
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
       <ContactDialog

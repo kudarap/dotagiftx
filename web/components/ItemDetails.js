@@ -254,22 +254,7 @@ export default function ItemDetails({
                   </a>
                 )}
               </div>
-              {isLoggedIn && (
-                <div align="center" style={{ display: 'flex' }}>
-                  <Button
-                    className={classes.postItemButton}
-                    variant="outlined"
-                    color="secondary"
-                    component={Link}
-                    href={`/post-item?s=${item.slug}`}
-                    disableUnderline>
-                    Post this Item
-                  </Button>
-                  <BidButton className={classes.postItemButton} variant="outlined" disableUnderline>
-                    Place Buy Order
-                  </BidButton>
-                </div>
-              )}
+
               <Typography
                 noWrap
                 component="h1"
@@ -304,9 +289,26 @@ export default function ItemDetails({
               <div style={{ marginTop: 8 }}>
                 <ChipLink label="Dota 2 Wiki" href={wikiLink} />
               </div>
+
+              <br />
+              {isLoggedIn && (
+                <div align="center" style={{ display: 'flex' }}>
+                  <Button
+                    className={classes.postItemButton}
+                    variant="outlined"
+                    color="secondary"
+                    component={Link}
+                    href={`/post-item?s=${item.slug}`}
+                    disableUnderline>
+                    Post this Item
+                  </Button>
+                  <BidButton className={classes.postItemButton} variant="outlined" disableUnderline>
+                    Place Buy Order
+                  </BidButton>
+                </div>
+              )}
             </div>
           )}
-          <br />
 
           <MarketList data={markets} error={error} />
           {!error && (
