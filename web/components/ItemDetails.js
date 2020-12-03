@@ -230,17 +230,19 @@ export default function ItemDetails({
           ) : (
             /* mobile screen */
             <div>
-              {item.image && (
-                <a href={wikiLink} target="_blank" rel="noreferrer noopener">
-                  <ItemImage
-                    className={classes.media}
-                    image={item.image}
-                    width={300}
-                    height={170}
-                    title={item.name}
-                  />
-                </a>
-              )}
+              <div style={{ background: 'rgba(0, 0, 0, 0.15)' }}>
+                {item.image && (
+                  <a href={wikiLink} target="_blank" rel="noreferrer noopener">
+                    <ItemImage
+                      className={classes.media}
+                      image={item.image}
+                      width={300}
+                      height={170}
+                      title={item.name}
+                    />
+                  </a>
+                )}
+              </div>
               {isLoggedIn && (
                 <div align="center">
                   <Button
