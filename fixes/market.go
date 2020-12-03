@@ -41,6 +41,7 @@ func MarketExtractProfileURLFromNotes(
 		// Queue for market update.
 		updates = append(updates, core.Market{
 			ID:             m.ID,
+			UpdatedAt:      m.UpdatedAt, // Skips the time update
 			PartnerSteamID: steamID,
 			Notes:          notes,
 		})
