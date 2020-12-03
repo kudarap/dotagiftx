@@ -1,0 +1,14 @@
+// Copy records from production
+r.db('d2g').table('auth').delete();
+r.db('d2g').table('catalog').delete();
+r.db('d2g').table('item').delete();
+r.db('d2g').table('market').delete();
+r.db('d2g').table('user').delete();
+r.db('d2g').table('track').delete();
+
+r.db('d2g').table('auth').insert(r.db('d2g_production').table('auth'));
+r.db('d2g').table('catalog').insert(r.db('d2g_production').table('catalog'));
+r.db('d2g').table('item').insert(r.db('d2g_production').table('item'));
+r.db('d2g').table('market').insert(r.db('d2g_production').table('market'));
+r.db('d2g').table('user').insert(r.db('d2g_production').table('user'));
+r.db('d2g').table('track').insert(r.db('d2g_production').table('track')).limit(100);
