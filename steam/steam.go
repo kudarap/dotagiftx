@@ -73,12 +73,6 @@ const (
 )
 
 func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
-	cacheKey := fmt.Sprintf("steam/vanity/%s", rawURL)
-	if hit, err := c.cache.Get(cacheKey); err != nil {
-		fmt.Println("cache hit!")
-		return hit, err
-	}
-
 	rawURL = strings.TrimRight(rawURL, "/")
 
 	// SteamID might be present on the URL already.
@@ -92,8 +86,13 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 		return
 	}
 
-	v := strings.TrimPrefix(rawURL, VanityPrefixID)
-	steamID, err = ResolveVanityURL(v, c.config.Key)
+	vanity := strings.TrimPrefix(rawURL, VanityPrefixID)
+	cacheKey := fmt.Sprintf("steam/resolvedvanity/%s", vanity)
+	if hit, _ := c.cache.Get(cacheKey); hit != "" {
+		return hit, nil
+	}
+
+	steamID, err = ResolveVanityURL(vanity, c.config.Key)
 	if err != nil {
 		return
 	}
