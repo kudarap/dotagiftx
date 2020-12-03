@@ -4,6 +4,8 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Alert from '@material-ui/lab/Alert'
+import AlertTitle from '@material-ui/lab/AlertTitle'
 import { APP_NAME } from '@/constants/strings'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import * as Storage from '@/service/storage'
@@ -50,7 +52,8 @@ const useStyles = makeStyles(theme => ({
     border: '1px solid #52564e',
     background: '#2d3431',
     borderRadius: 4,
-    color: theme.palette.warning.light,
+    // color: theme.palette.warning.light,
+    color: '#ceb48c',
   },
 }))
 
@@ -113,7 +116,9 @@ export default function Login() {
               <li>Post Items</li>
               <li>Track Reservations</li>
               <li>Record Sales History</li>
-              {/* <li>Place Buy Order</li> */}
+              <li>
+                Place Buy Order <sup style={{ color: 'yellowgreen' }}>New!</sup>
+              </li>
             </ul>
           </Typography>
 
@@ -150,7 +155,14 @@ export default function Login() {
           </Typography>
           <br />
 
-          <Typography className={classes.banner} variant="body2" color="textSecondary">
+          <Alert severity="warning">
+            <AlertTitle>How do I know this is real?</AlertTitle>
+            When you click the sign in button, you will be redirected to{' '}
+            <u>https://steamcommunity.com</u> and if you are already signed into the Steam
+            community, that page will allow you simply click <strong>&quot;Sign In&quot;</strong>{' '}
+            without entering your password.
+          </Alert>
+          <Typography className={classes.banner} variant="body2" color="textSecondary" hidden>
             <strong style={{ color: 'white' }}>How do I know this is real?</strong> When you click
             the sign in button, you will be redirected to <u>https://steamcommunity.com</u> and if
             you are already signed into the Steam community, that page will allow you simply click{' '}
