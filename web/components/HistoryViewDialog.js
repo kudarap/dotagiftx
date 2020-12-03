@@ -6,6 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { amount, dateCalendar } from '@/lib/format'
+import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
@@ -105,7 +106,7 @@ export default function HistoryViewDialog(props) {
             color="secondary"
             variant="outlined"
             label="Buyer's Steam profile URL"
-            value={`https://steamcommunity.com/profiles/${market.partner_steam_id}`}
+            value={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
           />
         </div>
       </DialogContent>

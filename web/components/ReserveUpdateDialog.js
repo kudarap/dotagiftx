@@ -10,9 +10,10 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import TextField from '@material-ui/core/TextField'
 import DeliveredIcon from '@material-ui/icons/AssignmentTurnedIn'
 import CancelIcon from '@material-ui/icons/Cancel'
+import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import { myMarket } from '@/service/api'
-import Button from '@/components/Button'
 import { amount, dateCalendar } from '@/lib/format'
+import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
   MARKET_STATUS_CANCELLED,
@@ -157,7 +158,7 @@ export default function ReserveUpdateDialog(props) {
               color="secondary"
               variant="outlined"
               label="Buyer's Steam profile URL"
-              value={`https://steamcommunity.com/profiles/${market.partner_steam_id}`}
+              value={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
             />
             <br />
             <br />
