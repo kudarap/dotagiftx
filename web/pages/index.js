@@ -78,12 +78,16 @@ const recentItemsFilter = {
   sort: 'recent',
   limit: 5,
 }
+const topSellerItemsFilter = {
+  sort: 'sale_count:desc',
+}
 
 export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
   const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  const { data: topSellers } = useSWR([CATALOGS, topSellerItemsFilter], fetcher)
   const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
   const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
 
@@ -226,23 +230,23 @@ export default function Index({ marketSummary, trendingItems }) {
           <Divider className={classes.divider} light variant="middle" />
           <br />
 
-          {/* Top links */}
+          {/* Top foot links */}
           <Grid container spacing={2}>
-            <Grid item sm={6} xs={12}>
-              <Typography className={classes.footLinks}>Top Treasures</Typography>
-              {topOrigins &&
-                topOrigins.map(origin => (
+            <Grid item sm={4} xs={12}>
+              <Typography className={classes.footLinks}>Top Sellers</Typography>
+              {topSellers &&
+                topSellers.data.map(item => (
                   <Link
-                    href={`/search?origin=${origin}`}
+                    href={`/search?origin=${item.slug}`}
                     color="secondary"
                     className={classes.footLinks}>
                     <Typography variant="subtitle1" component="p">
-                      {origin}
+                      {item.name}
                     </Typography>
                   </Link>
                 ))}
             </Grid>
-            <Grid item sm={6} xs={12}>
+            <Grid item sm={4} xs={12}>
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&
                 topHeroes.map(hero => (
@@ -252,6 +256,20 @@ export default function Index({ marketSummary, trendingItems }) {
                     className={classes.footLinks}>
                     <Typography variant="subtitle1" component="p">
                       {hero}
+                    </Typography>
+                  </Link>
+                ))}
+            </Grid>
+            <Grid item sm={4} xs={12}>
+              <Typography className={classes.footLinks}>Top Treasures</Typography>
+              {topOrigins &&
+                topOrigins.map(origin => (
+                  <Link
+                    href={`/search?origin=${origin}`}
+                    color="secondary"
+                    className={classes.footLinks}>
+                    <Typography variant="subtitle1" component="p">
+                      {origin}
                     </Typography>
                   </Link>
                 ))}
