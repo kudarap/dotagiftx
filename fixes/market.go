@@ -8,6 +8,7 @@ import (
 	"github.com/kudarap/dotagiftx/steam"
 )
 
+// MarketExtractProfileURLFromNotes WARNING! only use these once and just keeping for reference.
 func MarketExtractProfileURLFromNotes(
 	marketStg core.MarketStorage,
 	steamClient core.SteamClient,
