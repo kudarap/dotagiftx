@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/kudarap/dotagiftx/core"
 )
@@ -18,11 +19,12 @@ type Config struct {
 // Client represents steam client.
 type Client struct {
 	config Config
+	cache  core.Cache
 }
 
 // New create new steam client instance.
-func New(c Config) (*Client, error) {
-	return &Client{c}, nil
+func New(c Config, ca core.Cache) (*Client, error) {
+	return &Client{c, ca}, nil
 }
 
 func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
@@ -71,6 +73,12 @@ const (
 )
 
 func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
+	cacheKey := fmt.Sprintf("steam/vanity/%s", rawURL)
+	if hit, err := c.cache.Get(cacheKey); err != nil {
+		fmt.Println("cache hit!")
+		return hit, err
+	}
+
 	rawURL = strings.TrimRight(rawURL, "/")
 
 	// SteamID might be present on the URL already.
@@ -85,5 +93,11 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 	}
 
 	v := strings.TrimPrefix(rawURL, VanityPrefixID)
-	return ResolveVanityURL(v, c.config.Key)
+	steamID, err = ResolveVanityURL(v, c.config.Key)
+	if err != nil {
+		return
+	}
+
+	c.cache.Set(cacheKey, steamID, time.Hour*24)
+	return
 }
