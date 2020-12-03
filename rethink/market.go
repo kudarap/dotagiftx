@@ -125,10 +125,7 @@ func (s *marketStorage) Update(in *core.Market) error {
 		return err
 	}
 
-	if in.UpdatedAt == nil {
-		in.UpdatedAt = now()
-	}
-
+	in.UpdatedAt = now()
 	in.User = nil
 	in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))
