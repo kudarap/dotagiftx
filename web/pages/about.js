@@ -74,6 +74,15 @@ export default function About() {
             href="https://steamcommunity.com/profiles/76561198088587178">
             Steam
           </Button>
+          {/* <Button */}
+          {/*  startIcon={ */}
+          {/*    <img src="/icon_1x.png" style={{ height: 22, filter: 'brightness(10)' }} alt="dgx" /> */}
+          {/*  } */}
+          {/*  size="large" */}
+          {/*  component={Link} */}
+          {/*  href="/profiles/76561198088587178"> */}
+          {/*  DotagiftX */}
+          {/* </Button> */}
         </Container>
       </main>
 
