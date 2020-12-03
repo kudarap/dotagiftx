@@ -29,7 +29,9 @@ func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 		userID = au.UserID
 	}
 
-	return userID + r.URL.Path + ":" + hash.MD5(r.URL.RawQuery), noCache
+	q := r.URL.Query()
+	q.Del(cacheSkipKey)
+	return userID + r.URL.Path + ":" + hash.MD5(q.Encode()), noCache
 }
 
 func CacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, noCache bool) {
