@@ -9,6 +9,7 @@ import ErrorPage from './404'
 export default function DynamicPage(props) {
   const { error } = props
   if (error) {
+    console.error(error)
     return <ErrorPage />
   }
 
