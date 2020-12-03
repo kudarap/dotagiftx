@@ -239,7 +239,11 @@ export default function Header({ disableSearch }) {
           {isMobile && (
             <>
               <span className={classes.spacer} />
-              <IconButton aria-controls="more-menu" aria-haspopup="true" onClick={handleMoreClick}>
+              <IconButton
+                aria-controls="more-menu"
+                aria-haspopup="true"
+                size="small"
+                onClick={handleMoreClick}>
                 <MoreIcon />
               </IconButton>
 
