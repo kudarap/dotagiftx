@@ -41,11 +41,13 @@ export async function getServerSideProps(props) {
   } catch (e) {
     error = `catalog get error: ${e.message}`
   }
+
   if (!item.id) {
     return {
       props: {
         item,
         filter: {},
+        error: 'catalog not found',
       },
     }
   }
