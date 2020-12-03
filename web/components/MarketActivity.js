@@ -55,16 +55,19 @@ export default function MarketActivity({ data, loading }) {
                 &nbsp;
                 {moment(market.updated_at).fromNow()}
               </Typography>
+
               <Typography
                 component="pre"
                 color="textSecondary"
                 variant="caption"
-                style={{ whiteSpace: 'pre-wrap' }}>
-                <Typography
-                  variant="caption"
-                  color="textSecondary"
-                  component={Link}
-                  href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>{`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id} `}</Typography>
+                style={{ whiteSpace: 'pre-wrap', float: 'inline-start' }}>
+                {market.partner_steam_id && (
+                  <Link
+                    color="textSecondary"
+                    href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
+                    {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}\n`}
+                  </Link>
+                )}
                 {market.notes}
               </Typography>
             </li>
