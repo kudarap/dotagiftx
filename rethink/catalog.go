@@ -190,8 +190,12 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}()
 
 	cat := &core.Catalog{}
-	opts := core.FindOpts{Filter: core.Market{ItemID: itemID, Status: core.MarketStatusLive}}
-	baseQ := newFindOptsQuery(r.Table(tableMarket), opts)
+	marketLive := newFindOptsQuery(r.Table(tableMarket), core.FindOpts{
+		Filter: core.Market{
+			ItemID: itemID,
+			Status: core.MarketStatusLive,
+		},
+	})
 
 	var q r.Term
 	var err error
@@ -202,38 +206,62 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
-	// Get total market count by item ID and remove them if there's no entry
-	q = baseQ.Count()
+	// Get total market count by item ID.
+	q = marketLive.Count()
 	if err = s.db.one(q, &cat.Quantity); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	if cat.Quantity > 0 {
 		// Get lowest sale price on the market by item ID.
-		q = baseQ.Min("price").Field("price").Default(0)
+		q = marketLive.Min("price").Field("price").Default(0)
 		if err = s.db.one(q, &cat.LowestAsk); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, err)
 		}
 
 		// Get highest price on the market by item ID.
-		//q = baseQ.Max("price").Field("price").Default(0)
+		//q = marketLive.Max("price").Field("price").Default(0)
 		//if err = s.db.one(q, &cat.HighestBid); err != nil {
 		//	return nil, errors.New(core.CatalogErrIndexing, err)
 		//}
 
 		// Get median sale price on the market by item ID.
-		q = s.medianPriceQuery(cat.Quantity, baseQ).Default(0)
+		q = s.medianPriceQuery(cat.Quantity, marketLive).Default(0)
 		if err = s.db.one(q, &cat.MedianAsk); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, err)
 		}
 
 		// Get recent_ask on the market by item ID.
-		q = baseQ.Max("created_at").Field("created_at").Default(nil)
+		q = marketLive.Max("created_at").Field("created_at").Default(nil)
 		t := &time.Time{}
 		if err = s.db.one(q, t); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, err)
 		}
 		cat.RecentAsk = t
+	}
+
+	// Get Market sales stats from reserved and sold statuses.
+	marketSale := r.Table(tableMarket).Filter(func(doc r.Term) r.Term {
+		return doc.Field(marketFieldStatus).
+			Eq(core.MarketStatusReserved).Or(core.MarketStatusSold).And(doc.Field(marketFieldItemID).Eq(itemID))
+	})
+	q = marketSale.Count()
+	if err = s.db.one(q, &cat.SaleCount); err != nil {
+		return nil, errors.New(core.CatalogErrIndexing, err)
+	}
+	if cat.SaleCount > 0 {
+		// Get average sale price.
+		q = marketSale.Avg("price").Default(0)
+		if err = s.db.one(q, &cat.AvgSale); err != nil {
+			return nil, errors.New(core.CatalogErrIndexing, err)
+		}
+		// Get recent sale data.
+		q = marketSale.Max("created_at").Field("created_at").Default(nil)
+		t := &time.Time{}
+		if err = s.db.one(q, t); err != nil {
+			return nil, errors.New(core.CatalogErrIndexing, err)
+		}
+		cat.RecentSale = t
 	}
 
 	// Check for exiting entry for update or create.

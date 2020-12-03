@@ -32,10 +32,13 @@ type (
 		ViewCount    int      `json:"view_count" db:"view_count,omitempty,indexed"`
 		// Market summary details.
 		Quantity   int        `json:"quantity"    db:"quantity,omitempty,indexed"`
+		HighestBid float64    `json:"-"           db:"highest_bid,omitempty,indexed"`
 		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty,indexed"`
 		MedianAsk  float64    `json:"median_ask"  db:"median_ask,omitempty,indexed"`
-		HighestBid float64    `json:"-"           db:"highest_bid,omitempty,indexed"`
 		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty,indexed"`
+		SaleCount  int        `json:"sale_count"  db:"sale_count,omitempty,indexed"`
+		AvgSale    float64    `json:"avg_sale"    db:"avg_sale,omitempty,indexed"`
+		RecentSale *time.Time `json:"recent_sale"  db:"recent_sale,omitempty,indexed"`
 		CreatedAt  *time.Time `json:"created_at"  db:"created_at,omitempty,indexed"`
 		UpdatedAt  *time.Time `json:"updated_at"  db:"updated_at,omitempty,indexed"`
 	}
