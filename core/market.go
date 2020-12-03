@@ -16,6 +16,7 @@ const (
 	MarketErrNotesLimit
 	MarketErrInvalidPrice
 	MarketErrQtyLimitPerUser
+	MarketErrRequiredPartnerURL
 )
 
 // sets error text definition.
@@ -27,6 +28,7 @@ func init() {
 	appErrorText[MarketErrNotesLimit] = "market notes text limit reached"
 	appErrorText[MarketErrInvalidPrice] = "market price is invalid"
 	appErrorText[MarketErrQtyLimitPerUser] = "market quantity limit(5) per item reached"
+	appErrorText[MarketErrRequiredPartnerURL] = "market partner steam url is required"
 }
 
 const (
@@ -152,6 +154,10 @@ func (m Market) CheckUpdate() error {
 	_, ok := MarketStatusTexts[m.Status]
 	if m.Status != 0 && !ok {
 		return MarketErrInvalidStatus
+	}
+
+	if m.Status == MarketStatusReserved && m.PartnerSteamID == "" {
+		return MarketErrRequiredPartnerURL
 	}
 
 	return nil

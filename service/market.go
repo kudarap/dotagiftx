@@ -136,7 +136,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	}
 
 	// Resolved steam profile URL input as partner steam id.
-	if mkt.PartnerSteamID != "" && mkt.Status == core.MarketStatusReserved {
+	if mkt.Status == core.MarketStatusReserved {
 		mkt.PartnerSteamID, err = s.steam.ResolveVanityURL(mkt.PartnerSteamID)
 		if err != nil {
 			return err
