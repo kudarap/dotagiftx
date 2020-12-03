@@ -63,13 +63,6 @@ func (a *application) setup() error {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
 
-	// External services setup.
-	log.Println("setting up external services...")
-	steamClient, err := setupSteam(a.config.Steam)
-	if err != nil {
-		return err
-	}
-
 	// Database setup.
 	log.Println("setting up database...")
 	redisClient, err := setupRedis(a.config.Redis)
@@ -77,6 +70,13 @@ func (a *application) setup() error {
 		return err
 	}
 	rethinkClient, err := setupRethink(a.config.Rethink)
+	if err != nil {
+		return err
+	}
+
+	// External services setup.
+	log.Println("setting up external services...")
+	steamClient, err := setupSteam(a.config.Steam, redisClient)
 	if err != nil {
 		return err
 	}
@@ -104,6 +104,7 @@ func (a *application) setup() error {
 		itemStg,
 		trackStg,
 		catalogStg,
+		steamClient,
 		log,
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
@@ -111,8 +112,8 @@ func (a *application) setup() error {
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
-	fixes.ReIndexAll(itemStg, catalogStg)
-	redisClient.BulkDel("")
+	//fixes.ReIndexAll(itemStg, catalogStg)
+	fixes.MarketExtractProfileURLFromNotes(marketStg, steamClient)
 
 	// Server setup.
 	log.Println("setting up http server...")
@@ -156,8 +157,8 @@ func newApp() *application {
 	return a
 }
 
-func setupSteam(cfg steam.Config) (*steam.Client, error) {
-	c, err := steam.New(cfg)
+func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
+	c, err := steam.New(cfg, rc)
 	if err != nil {
 		return nil, fmt.Errorf("could not setup steam client: %s", err)
 	}

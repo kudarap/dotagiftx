@@ -16,6 +16,7 @@ const (
 	MarketErrNotesLimit
 	MarketErrInvalidPrice
 	MarketErrQtyLimitPerUser
+	MarketErrRequiredPartnerURL
 )
 
 // sets error text definition.
@@ -27,6 +28,7 @@ func init() {
 	appErrorText[MarketErrNotesLimit] = "market notes text limit reached"
 	appErrorText[MarketErrInvalidPrice] = "market price is invalid"
 	appErrorText[MarketErrQtyLimitPerUser] = "market quantity limit(5) per item reached"
+	appErrorText[MarketErrRequiredPartnerURL] = "market partner steam url is required"
 }
 
 const (
@@ -56,15 +58,16 @@ type (
 
 	// Market represents market information.
 	Market struct {
-		ID        string       `json:"id"         db:"id,omitempty"`
-		UserID    string       `json:"user_id"    db:"user_id,omitempty,indexed"     valid:"required"`
-		ItemID    string       `json:"item_id"    db:"item_id,omitempty,indexed"     valid:"required"`
-		Price     float64      `json:"price"      db:"price,omitempty,indexed"       valid:"required"`
-		Currency  string       `json:"currency"   db:"currency,omitempty"`
-		Notes     string       `json:"notes"      db:"notes,omitempty"`
-		Status    MarketStatus `json:"status"     db:"status,omitempty,indexed"`
-		CreatedAt *time.Time   `json:"created_at" db:"created_at,omitempty,indexed"`
-		UpdatedAt *time.Time   `json:"updated_at" db:"updated_at,omitempty,indexed"`
+		ID             string       `json:"id"               db:"id,omitempty"`
+		UserID         string       `json:"user_id"          db:"user_id,omitempty,indexed"   valid:"required"`
+		ItemID         string       `json:"item_id"          db:"item_id,omitempty,indexed"   valid:"required"`
+		Status         MarketStatus `json:"status"           db:"status,omitempty,indexed"    valid:"required"`
+		Price          float64      `json:"price"            db:"price,omitempty,indexed"     valid:"required"`
+		Currency       string       `json:"currency"         db:"currency,omitempty"`
+		PartnerSteamID string       `json:"partner_steam_id" db:"partner_steam_id,omitempty"`
+		Notes          string       `json:"notes"            db:"notes,omitempty"`
+		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
+		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 		Item *Item `json:"item,omitempty" db:"item,omitempty"`
@@ -151,6 +154,10 @@ func (m Market) CheckUpdate() error {
 	_, ok := MarketStatusTexts[m.Status]
 	if m.Status != 0 && !ok {
 		return MarketErrInvalidStatus
+	}
+
+	if m.Status == MarketStatusReserved && m.PartnerSteamID == "" {
+		return MarketErrRequiredPartnerURL
 	}
 
 	return nil
