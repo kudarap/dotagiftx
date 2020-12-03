@@ -79,6 +79,10 @@ func ResolveVanityURL(vanityURL, apiKey string) (steamID string, err error) {
 		return
 	}
 
-	fmt.Println("XXX", data.Response.SteamID)
+	if data.Response.Success != 1 {
+		err = fmt.Errorf("steam resolve vanity url error %d", data.Response.Success)
+		return
+	}
+
 	return data.Response.SteamID, nil
 }
