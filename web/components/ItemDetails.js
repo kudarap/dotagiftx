@@ -17,6 +17,8 @@ import ChipLink from '@/components/ChipLink'
 import { itemRarityColorMap } from '@/constants/palette'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
+import BuyButton from '@/components/BuyButton'
+import BidButton from '@/components/BidButton'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -47,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   postItemButton: {
     [theme.breakpoints.down('xs')]: {
       margin: `8px auto !important`,
-      width: 300,
+      width: '48%',
     },
     width: 165,
     marginRight: theme.spacing(1.5),
@@ -225,6 +227,15 @@ export default function ItemDetails({
                   {/* </Typography> */}
                   {/* {item.median_ask.toFixed(2)} */}
                 </Typography>
+                <BidButton
+                  className={classes.postItemButton}
+                  style={{ marginTop: 1 }}
+                  variant="outlined"
+                  size="small"
+                  disableUnderline
+                  fullWidth>
+                  Place Buy Order
+                </BidButton>
               </Typography>
             </div>
           ) : (
@@ -244,18 +255,19 @@ export default function ItemDetails({
                 )}
               </div>
               {isLoggedIn && (
-                <div align="center">
+                <div align="center" style={{ display: 'flex' }}>
                   <Button
                     className={classes.postItemButton}
                     variant="outlined"
                     color="secondary"
-                    size="small"
                     component={Link}
                     href={`/post-item?s=${item.slug}`}
-                    disableUnderline
-                    fullWidth>
+                    disableUnderline>
                     Post this Item
                   </Button>
+                  <BidButton className={classes.postItemButton} variant="outlined" disableUnderline>
+                    Place Buy Order
+                  </BidButton>
                 </div>
               )}
               <Typography
