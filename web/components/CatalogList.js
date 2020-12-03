@@ -103,7 +103,7 @@ export default function CatalogList({ items = [], loading, error, variant }) {
               {!isMobile && (
                 <TableCell align="right">
                   <Typography variant="body2" color="textSecondary">
-                    {isRecentMode ? moment(item.recent_ask).fromNow() : item.sale_count}
+                    {isRecentMode ? moment(item.recent_ask).fromNow() : item.quantity}
                   </Typography>
                 </TableCell>
               )}
