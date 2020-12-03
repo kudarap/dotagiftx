@@ -17,7 +17,6 @@ import ChipLink from '@/components/ChipLink'
 import { itemRarityColorMap } from '@/constants/palette'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
-import BuyButton from '@/components/BuyButton'
 import BidButton from '@/components/BidButton'
 
 const useStyles = makeStyles(theme => ({
@@ -292,7 +291,7 @@ export default function ItemDetails({
 
               <br />
               {isLoggedIn && (
-                <div align="center" style={{ display: 'flex' }}>
+                <div align="center" style={{ display: 'flex', marginBottom: 2 }}>
                   <Button
                     className={classes.postItemButton}
                     variant="outlined"
