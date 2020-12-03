@@ -64,25 +64,26 @@ func (c *Client) Player(steamID string) (*core.SteamPlayer, error) {
 	}, nil
 }
 
+// Vanity URL prefixes.
 const (
-	vanityPrefixID      = "https://steamcommunity.com/id/"
-	vanityPrefixProfile = "https://steamcommunity.com/profiles/"
+	VanityPrefixID      = "https://steamcommunity.com/id/"
+	VanityPrefixProfile = "https://steamcommunity.com/profiles/"
 )
 
 func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 	rawURL = strings.TrimRight(rawURL, "/")
 
 	// SteamID might be present on the URL already.
-	if strings.HasPrefix(rawURL, vanityPrefixProfile) {
-		return strings.TrimPrefix(rawURL, vanityPrefixProfile), nil
+	if strings.HasPrefix(rawURL, VanityPrefixProfile) {
+		return strings.TrimPrefix(rawURL, VanityPrefixProfile), nil
 	}
 
 	// Its probably steam ID.
-	if !strings.HasPrefix(rawURL, vanityPrefixID) {
+	if !strings.HasPrefix(rawURL, VanityPrefixID) {
 		err = fmt.Errorf("could not parse URL (%s)", rawURL)
 		return
 	}
 
-	v := strings.TrimPrefix(rawURL, vanityPrefixID)
+	v := strings.TrimPrefix(rawURL, VanityPrefixID)
 	return ResolveVanityURL(v, c.config.Key)
 }
