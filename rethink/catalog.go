@@ -214,7 +214,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 	if cat.Quantity > 0 {
 		// Get lowest ask price on the market by item ID.
-		q = marketOffer.Min("price").Field("price").Default(0)
+		q = marketOffer.Min(marketFieldPrice).Field(marketFieldPrice).Default(0)
 		if err = s.db.one(q, &cat.LowestAsk); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get lowest ask price: %s", err))
 		}
@@ -226,7 +226,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		}
 
 		// Get recent_ask on the market by item ID.
-		q = marketOffer.Max("created_at").Field("created_at").Default(nil)
+		q = marketOffer.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
 		t := &time.Time{}
 		if err = s.db.one(q, t); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get recent ask date: %s", err))
@@ -249,12 +249,12 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 	if cat.SaleCount > 0 {
 		// Get average sale price on the market by item ID.
-		q = marketSale.Avg("price").Default(0)
+		q = marketSale.Avg(marketFieldPrice).Default(0)
 		if err = s.db.one(q, &cat.AvgSale); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get avg sales price: %s", err))
 		}
 		// Get recent sale data on the market by item ID.
-		q = marketSale.Max("created_at").Field("created_at").Default(nil)
+		q = marketSale.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
 		t := &time.Time{}
 		if err = s.db.one(q, t); err != nil {
 			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get recent sale date: %s", err))
@@ -277,9 +277,9 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 }
 
 func (s *catalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
-	q := t.OrderBy("price")
+	q := t.OrderBy(marketFieldPrice)
 	if qty < 2 {
-		return q.Field("price")
+		return q.Field(marketFieldPrice)
 	}
 
 	skip := int(math.Floor(float64(qty) / 2))
@@ -289,7 +289,7 @@ func (s *catalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
 		limit = 2
 	}
 
-	return q.Skip(skip).Limit(limit).Avg("price")
+	return q.Skip(skip).Limit(limit).Avg(marketFieldPrice)
 }
 
 func (s *catalogStorage) create(in *core.Catalog) error {
