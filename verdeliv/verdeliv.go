@@ -56,7 +56,7 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 	fp := getSource(buyerSteamID)
 	var sleep time.Duration
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
-		sleep = time.Minute * 4
+		sleep = time.Minute * 2 // last 4
 		if err := dlInventory(buyerSteamID); err != nil {
 			return nil, fmt.Errorf("could not dl file: %s", err)
 		}
