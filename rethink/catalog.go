@@ -90,19 +90,22 @@ func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 		Ungroup().OrderBy(r.Desc(reductionField)).
 		Map(func(t r.Term) interface{} {
 			itemID := t.Field("group")
-			qm := r.Table(tableMarket).
+			mq := r.Table(tableMarket).
 				Between(startTime, endTime, r.BetweenOpts{Index: marketFieldCreatedAt}).
 				Filter(map[string]interface{}{marketFieldItemID: itemID})
+			askQ := mq.Filter(map[string]interface{}{marketFieldType: core.MarketTypeAsk})
 			// Score rate evaluation.
 			viewScore := t.Field(reductionField)
-			entryScore := qm.Count()
-			reserveScore := qm.Filter(map[string]interface{}{marketFieldStatus: core.MarketStatusReserved}).Count()
-			soldScore := qm.Filter(map[string]interface{}{marketFieldStatus: core.MarketStatusSold}).Count()
+			entryScore := askQ.Count()
+			reserveScore := askQ.Filter(map[string]interface{}{marketFieldStatus: core.MarketStatusReserved}).Count()
+			soldScore := askQ.Filter(map[string]interface{}{marketFieldStatus: core.MarketStatusSold}).Count()
+			bidScore := mq.Filter(map[string]interface{}{marketFieldType: core.MarketTypeBid}).Count()
 			finalScore := r.Expr([]r.Term{
 				viewScore.Mul(core.TrendScoreRateView),
 				entryScore.Mul(core.TrendScoreRateMarketEntry),
 				reserveScore.Mul(core.TrendScoreRateReserved),
 				soldScore.Mul(core.TrendScoreRateSold),
+				bidScore.Mul(core.TrendScoreRateBid),
 			}).Sum()
 
 			return map[string]interface{}{

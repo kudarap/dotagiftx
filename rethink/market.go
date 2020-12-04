@@ -13,6 +13,7 @@ const (
 	tableMarket          = "market"
 	marketFieldItemID    = "item_id"
 	marketFieldUserID    = "user_id"
+	marketFieldType      = "type"
 	marketFieldStatus    = "status"
 	marketFieldNotes     = "notes"
 	marketFieldPrice     = "price"

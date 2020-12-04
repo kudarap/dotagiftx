@@ -40,6 +40,7 @@ const (
 	TrendScoreRateMarketEntry = 0.01
 	TrendScoreRateReserved    = 4
 	TrendScoreRateSold        = 4
+	TrendScoreRateBid         = 2
 )
 
 // Market types.
