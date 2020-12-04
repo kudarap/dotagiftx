@@ -204,75 +204,22 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
-	// Get market offers from LIVE status.
-	marketOffer := r.Table(tableMarket).Filter(core.Market{
-		ItemID: itemID,
-		Type:   core.MarketTypeAsk,
-		Status: core.MarketStatusLive,
-	})
-	// Get offer count on the market by item ID.
-	q = marketOffer.Count()
-	if err = s.db.one(q, &cat.Quantity); err != nil {
-		return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get ask count: %s", err))
-	}
-	if cat.Quantity > 0 {
-		// Get lowest ask price on the market by item ID.
-		q = marketOffer.Min(marketFieldPrice).Field(marketFieldPrice).Default(0)
-		if err = s.db.one(q, &cat.LowestAsk); err != nil {
-			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get lowest ask price: %s", err))
-		}
-
-		// Get median ask price on the market by item ID.
-		q = s.medianPriceQuery(cat.Quantity, marketOffer).Default(0)
-		if err = s.db.one(q, &cat.MedianAsk); err != nil {
-			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get median ask price: %s", err))
-		}
-
-		// Get recent_ask on the market by item ID.
-		q = marketOffer.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
-		t := &time.Time{}
-		if err = s.db.one(q, t); err != nil {
-			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get recent ask date: %s", err))
-		}
-		cat.RecentAsk = t
+	// Get market offers summary from LIVE status.
+	cat.Quantity, cat.LowestAsk, cat.MedianAsk, cat.RecentAsk, err = s.getOffersSummary(itemID)
+	if err != nil {
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	// Get market sales stats which calculated from RESERVED and SOLD statuses.
-	marketSale := r.Table(tableMarket).Filter(core.Market{
-		ItemID: itemID,
-		Type:   core.MarketTypeAsk,
-	}).Filter(func(doc r.Term) r.Term {
-		return doc.Field(marketFieldStatus).Eq(core.MarketStatusReserved).
-			Or(doc.Field(marketFieldStatus).Eq(core.MarketStatusSold))
-	})
-	// Get sale count on the market by item ID.
-	q = marketSale.Count()
-	if err = s.db.one(q, &cat.SaleCount); err != nil {
-		return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get sales count: %s", err))
-	}
-	if cat.SaleCount > 0 {
-		// Get average sale price on the market by item ID.
-		q = marketSale.Avg(marketFieldPrice).Default(0)
-		if err = s.db.one(q, &cat.AvgSale); err != nil {
-			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get avg sales price: %s", err))
-		}
-		// Get recent sale data on the market by item ID.
-		q = marketSale.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
-		t := &time.Time{}
-		if err = s.db.one(q, t); err != nil {
-			return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get recent sale date: %s", err))
-		}
-		cat.RecentSale = t
+	cat.SaleCount, cat.AvgSale, cat.RecentSale, err = s.getSaleSummary(itemID)
+	if err != nil {
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
 	// Get reserved and sold count on the market by item ID.
-	marketReservedCount := r.Table(tableMarket).Filter(core.Market{
-		ItemID: itemID,
-		Type:   core.MarketTypeAsk,
-		Status: core.MarketStatusReserved,
-	}).Count()
-	if err = s.db.one(marketReservedCount, &cat.ReservedCount); err != nil {
-		return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get reserved count: %s", err))
+	cat.ReservedCount, err = s.getReservedCounts(itemID)
+	if err != nil {
+		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 	cat.SoldCount = cat.SaleCount - cat.ReservedCount
 
@@ -288,6 +235,100 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 
 	return cat, nil
+}
+
+// getOffersSummary returns market offers summary from LIVE status.
+func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
+	// Get market offers from LIVE status.
+	marketOffer := r.Table(tableMarket).Filter(core.Market{
+		ItemID: itemID,
+		Type:   core.MarketTypeAsk,
+		Status: core.MarketStatusLive,
+	})
+	// Get offer count on the market by item ID.
+	q := marketOffer.Count()
+	if err = s.db.one(q, &count); err != nil {
+		err = fmt.Errorf("could not get ask count: %s", err)
+		return
+	}
+	if count == 0 {
+		return
+	}
+
+	// Get lowest ask price on the market by item ID.
+	q = marketOffer.Min(marketFieldPrice).Field(marketFieldPrice).Default(0)
+	if err = s.db.one(q, &lowest); err != nil {
+		err = fmt.Errorf("could not get lowest ask price: %s", err)
+		return
+	}
+
+	// Get median ask price on the market by item ID.
+	q = s.medianPriceQuery(count, marketOffer).Default(0)
+	if err = s.db.one(q, &median); err != nil {
+		err = fmt.Errorf("could not get median ask price: %s", err)
+		return
+	}
+
+	// Get recent_ask on the market by item ID.
+	q = marketOffer.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
+	t := &time.Time{}
+	if err = s.db.one(q, t); err != nil {
+		err = fmt.Errorf("could not get recent ask date: %s", err)
+		return
+	}
+	recent = t
+	return
+}
+
+// getSaleSummary returns market sales stats which calculated from RESERVED and SOLD statuses.
+func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, recent *time.Time, err error) {
+	marketSale := r.Table(tableMarket).Filter(core.Market{
+		ItemID: itemID,
+		Type:   core.MarketTypeAsk,
+	}).Filter(func(doc r.Term) r.Term {
+		return doc.Field(marketFieldStatus).Eq(core.MarketStatusReserved).
+			Or(doc.Field(marketFieldStatus).Eq(core.MarketStatusSold))
+	})
+
+	// Get sale count on the market by item ID.
+	q := marketSale.Count()
+	if err = s.db.one(q, &count); err != nil {
+		err = fmt.Errorf("could not get sales count: %s", err)
+		return
+	}
+	if count == 0 {
+		return
+	}
+
+	// Get average sale price on the market by item ID.
+	q = marketSale.Avg(marketFieldPrice).Default(0)
+	if err = s.db.one(q, &avg); err != nil {
+		err = fmt.Errorf("could not get avg sales price: %s", err)
+		return
+	}
+	// Get recent sale data on the market by item ID.
+	q = marketSale.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
+	t := &time.Time{}
+	if err = s.db.one(q, t); err != nil {
+		err = fmt.Errorf("could not get recent sale date: %s", err)
+		return
+	}
+	recent = t
+	return
+}
+
+func (s *catalogStorage) getReservedCounts(itemID string) (count int, err error) {
+	marketReservedCount := r.Table(tableMarket).Filter(core.Market{
+		ItemID: itemID,
+		Type:   core.MarketTypeAsk,
+		Status: core.MarketStatusReserved,
+	}).Count()
+
+	if err = s.db.one(marketReservedCount, &count); err != nil {
+		err = fmt.Errorf("could not get reserved count: %s", err)
+	}
+
+	return
 }
 
 func (s *catalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
