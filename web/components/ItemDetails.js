@@ -223,11 +223,11 @@ export default function ItemDetails({
                   <ChipLink label="Dota 2 Wiki" href={wikiLink} />
                   &nbsp;&middot;&nbsp;
                   <Typography variant="body2" component={Link} href={`${item.slug}/#reserved`}>
-                    4 Reserved
+                    {item.reserved_count} Reserved
                   </Typography>
                   &nbsp;&middot;&nbsp;
                   <Typography variant="body2" component={Link} href={`${item.slug}/#delivered`}>
-                    1 Delivered
+                    {item.sold_count} Delivered
                   </Typography>
                   {/* <br /> */}
                   {/* <Typography color="textSecondary" component="span"> */}
