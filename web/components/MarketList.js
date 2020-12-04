@@ -18,6 +18,7 @@ import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
+import ContactBuyerDialog from '@/components/ContactBuyerDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
@@ -277,9 +278,12 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
                               </Button>
                             </div>
                           ) : (
-                            <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                            <Button
+                              color="primary"
+                              variant="contained"
+                              onClick={() => handleContactClick(idx)}>
                               Contact Buyer
-                            </BuyButton>
+                            </Button>
                           )}
                         </TableCell>
                       </>
@@ -315,7 +319,13 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
 
       <ContactDialog
         market={currentMarket}
-        open={!!currentMarket}
+        open={tabIdx === 0 && !!currentMarket}
+        onClose={() => handleContactClick(null)}
+      />
+
+      <ContactBuyerDialog
+        market={currentMarket}
+        open={tabIdx === 1 && !!currentMarket}
         onClose={() => handleContactClick(null)}
       />
     </>
