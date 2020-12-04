@@ -324,8 +324,10 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
 MarketList.propTypes = {
   offers: PropTypes.object.isRequired,
   buyOrders: PropTypes.object.isRequired,
+  pagination: PropTypes.element,
   error: PropTypes.string,
 }
 MarketList.defaultProps = {
+  pagination: null,
   error: null,
 }
