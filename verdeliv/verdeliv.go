@@ -54,9 +54,9 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 
 	// Read file cache if exist, else download.
 	fp := getSource(buyerSteamID)
+	var sleep time.Duration
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
-		// Sleep for the next request
-		time.Sleep(time.Minute * 5)
+		sleep = time.Minute * 4
 		if err := dlInventory(buyerSteamID); err != nil {
 			return nil, fmt.Errorf("could not dl file: %s", err)
 		}
@@ -85,6 +85,8 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 		fi = append(fi, inv)
 	}
 
+	// Sleep for the next request
+	time.Sleep(sleep)
 	return fi, nil
 }
 

@@ -17,22 +17,6 @@ func main() {
 	params := []struct {
 		persona, steamID, item string
 	}{
-		{"karosu!", "76561198088587178", "Ravenous Abyss"},
-		{"Araragi-", "76561198809365008", "Master of the Searing Path"},
-		{"Accel", "76561198042690669", "Forsworn Legacy"},
-		{"Dark Knight", "76561198116319576", "Legends of Darkheart Pursuit"},
-
-		//{"ZAAALLGO", "76561197970672021", "Souls Tyrant"},
-		//{"ZAAALLGO", "76561197970672021", "Glimmer of the Sacred Hunt"},
-		{"ZAAALLGO", "76561198203634725", "Cunning Corsair"},
-
-		{"Berserk", "76561198355627060", "Shattered Greatsword"},
-		{"Berserk", "76561198042690669", "Ancient Inheritance"},
-		{"Berserk", "76561198042690669", "Poacher's Bane"},
-		{"Berserk", "76561198042690669", "Allure of the Faeshade Flower"},
-		{"Berserk", "76561198256569879", "Endless Night"},
-		{"Berserk", "76561198139657329", "Glimmer of the Sacred Hunt"},
-
 		{"kudarap", "76561198042690669", "Riddle of the Hierophant"},
 		{"kudarap", "76561198436826874", "Fowl Omen"},
 		{"kudarap", "76561198170463425", "Cinder Sensei"},
@@ -41,6 +25,21 @@ func main() {
 		{"kudarap", "76561198872556187", "Tales of the Windward Rogue"},
 		{"kudarap", "76561198203634725", "Adornments of the Jade Emissary"},
 		{"gippeum", "76561198088587178", "Elements of the Endless Plane"},
+
+		{"Berserk", "76561198355627060", "Shattered Greatsword"},
+		{"Berserk", "76561198042690669", "Ancient Inheritance"},
+		{"Berserk", "76561198042690669", "Poacher's Bane"},
+		{"Berserk", "76561198042690669", "Allure of the Faeshade Flower"},
+		{"Berserk", "76561198256569879", "Endless Night"},
+		{"Berserk", "76561198139657329", "Glimmer of the Sacred Hunt"},
+
+		{"karosu!", "76561198088587178", "Ravenous Abyss"},
+		{"Araragi-", "76561198809365008", "Master of the Searing Path"},
+		{"Accel", "76561198042690669", "Forsworn Legacy"},
+		{"Dark Knight", "76561198116319576", "Legends of Darkheart Pursuit"},
+		{"ZAAALLGO", "76561198203634725", "Cunning Corsair"},
+		//{"ZAAALLGO", "76561197970672021", "Souls Tyrant"},
+		//{"ZAAALLGO", "76561197970672021", "Glimmer of the Sacred Hunt"},
 	}
 
 	for _, param := range params {
