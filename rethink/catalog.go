@@ -207,7 +207,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		Type:   core.MarketTypeAsk,
 		Status: core.MarketStatusLive,
 	})
-	// Get total offer count on the market by item ID.
+	// Get offer count on the market by item ID.
 	q = marketOffer.Count()
 	if err = s.db.one(q, &cat.Quantity); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get ask count: %s", err))
@@ -242,7 +242,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return doc.Field(marketFieldStatus).Eq(core.MarketStatusReserved).
 			Or(doc.Field(marketFieldStatus).Eq(core.MarketStatusSold))
 	})
-	// Get total sale count on the market by item ID.
+	// Get sale count on the market by item ID.
 	q = marketSale.Count()
 	if err = s.db.one(q, &cat.SaleCount); err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get sales count: %s", err))
@@ -261,6 +261,17 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		}
 		cat.RecentSale = t
 	}
+
+	// Get reserved and sold count on the market by item ID.
+	marketReservedCount := r.Table(tableMarket).Filter(core.Market{
+		ItemID: itemID,
+		Type:   core.MarketTypeAsk,
+		Status: core.MarketStatusReserved,
+	}).Count()
+	if err = s.db.one(marketReservedCount, &cat.ReservedCount); err != nil {
+		return nil, errors.New(core.CatalogErrIndexing, fmt.Errorf("could not get reserved count: %s", err))
+	}
+	cat.SoldCount = cat.SaleCount - cat.ReservedCount
 
 	// Check for exiting entry for update or create.
 	if cur, _ := s.Get(itemID); cur == nil {
