@@ -11,7 +11,6 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import green from '@material-ui/core/colors/lightGreen'
 import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
@@ -33,7 +32,13 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1.5),
   },
   tableHead: {
-    color: green[600],
+    // background: theme.palette.grey[900],
+    background: '#202a2f',
+  },
+  tabs: {
+    '& .MuiTabs-indicator': {
+      background: theme.palette.grey[100],
+    },
   },
 }))
 
@@ -70,10 +75,14 @@ export default function MarketList({ data, error }) {
     <>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="market list table">
-          <TableHead>
+          <TableHead className={classes.tableHead}>
             <TableRow>
               <TableHeadCell colSpan={3} padding="none">
-                <Tabs variant="fullWidth" value={tabIdx} onChange={handleTabChange}>
+                <Tabs
+                  className={classes.tabs}
+                  variant="fullWidth"
+                  value={tabIdx}
+                  onChange={handleTabChange}>
                   <Tab
                     value={0}
                     label={`${data.total_count || ''} Offers`}

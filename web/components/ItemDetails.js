@@ -53,6 +53,7 @@ const useStyles = makeStyles(theme => ({
     width: 165,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
+    // height: 40,
   },
 }))
 
@@ -182,7 +183,6 @@ export default function ItemDetails({
                       className={classes.postItemButton}
                       variant="outlined"
                       color="secondary"
-                      size="small"
                       component={Link}
                       href={`/post-item?s=${item.slug}`}
                       disableUnderline
@@ -230,7 +230,6 @@ export default function ItemDetails({
                   className={classes.postItemButton}
                   style={{ marginTop: 1 }}
                   variant="outlined"
-                  size="small"
                   disableUnderline
                   fullWidth>
                   Place Buy Order
