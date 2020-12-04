@@ -61,6 +61,7 @@ const useStyles = makeStyles(theme => ({
 const marketBuyOrderFilter = {
   type: MARKET_TYPE_BID,
   status: MARKET_STATUS_LIVE,
+  sort: 'price:desc',
 }
 
 export default function ItemDetails({
