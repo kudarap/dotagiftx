@@ -42,6 +42,12 @@ const (
 	TrendScoreRateSold        = 4
 )
 
+// Market types.
+const (
+	MarketTypeAsk MarketType = 10 // default
+	MarketTypeBid MarketType = 20
+)
+
 // Market statuses.
 const (
 	MarketStatusPending   MarketStatus = 100
@@ -50,9 +56,13 @@ const (
 	MarketStatusSold      MarketStatus = 400
 	MarketStatusRemoved   MarketStatus = 500
 	MarketStatusCancelled MarketStatus = 600
+	MarketStatusExpired   MarketStatus = 700
 )
 
 type (
+	// MarketType represents market type.
+	MarketType uint
+
 	// MarketStatus represents market status.
 	MarketStatus uint
 
@@ -61,6 +71,7 @@ type (
 		ID             string       `json:"id"               db:"id,omitempty"`
 		UserID         string       `json:"user_id"          db:"user_id,omitempty,indexed"   valid:"required"`
 		ItemID         string       `json:"item_id"          db:"item_id,omitempty,indexed"   valid:"required"`
+		Type           MarketType   `json:"type"             db:"type,omitempty,indexed"      valid:"required"`
 		Status         MarketStatus `json:"status"           db:"status,omitempty,indexed"    valid:"required"`
 		Price          float64      `json:"price"            db:"price,omitempty,indexed"     valid:"required"`
 		Currency       string       `json:"currency"         db:"currency,omitempty"`
@@ -123,6 +134,7 @@ var MarketStatusTexts = map[MarketStatus]string{
 	MarketStatusSold:      "sold",
 	MarketStatusRemoved:   "removed",
 	MarketStatusCancelled: "cancelled",
+	MarketStatusExpired:   "expired",
 }
 
 // CheckCreate validates field on creating new market.
@@ -170,6 +182,9 @@ func (m *Market) SetDefaults() {
 	m.Status = MarketStatusLive
 	m.Currency = defaultCurrency
 	m.Price = priceToTenths(m.Price)
+	if m.Type == 0 {
+		m.Type = MarketTypeAsk
+	}
 }
 
 // String returns text value of a post status.
