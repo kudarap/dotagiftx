@@ -325,15 +325,21 @@ export default function ItemDetails({
             </div>
           )}
 
-          <MarketList offers={markets} buyOrders={buyOrders} error={error} />
-          {!error && (
-            <TablePaginationRouter
-              linkProps={linkProps}
-              style={{ textAlign: 'right' }}
-              count={markets.total_count || 0}
-              page={filter.page}
-            />
-          )}
+          <MarketList
+            offers={markets}
+            buyOrders={buyOrders}
+            error={error}
+            pagination={
+              !error && (
+                <TablePaginationRouter
+                  linkProps={linkProps}
+                  style={{ textAlign: 'right' }}
+                  count={markets.total_count || 0}
+                  page={filter.page}
+                />
+              )
+            }
+          />
         </Container>
 
         <img src={trackViewURL(item.id)} alt="" />

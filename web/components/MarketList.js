@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MarketList({ offers, buyOrders, error }) {
+export default function MarketList({ offers, buyOrders, error, pagination }) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
@@ -309,6 +309,10 @@ export default function MarketList({ offers, buyOrders, error }) {
           )}
         </Table>
       </TableContainer>
+
+      {/* Only display pagination on offers */}
+      {tabIdx === 0 ? pagination : null}
+
       <ContactDialog
         market={currentMarket}
         open={!!currentMarket}
