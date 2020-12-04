@@ -1,3 +1,13 @@
+// Market entity constants
+
+export const MARKET_TYPE_ASK = 10
+export const MARKET_TYPE_BID = 20
+
+export const MARKET_TYPE_MAP_TEXT = {
+  [MARKET_TYPE_ASK]: 'Offer',
+  [MARKET_TYPE_BID]: 'Buy Order',
+}
+
 export const MARKET_STATUS_PENDING = 100
 export const MARKET_STATUS_LIVE = 200
 export const MARKET_STATUS_RESERVED = 300

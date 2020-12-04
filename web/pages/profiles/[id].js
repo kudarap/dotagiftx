@@ -5,7 +5,7 @@ import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { CDN_URL, marketSearch, statsMarketSummary, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -194,6 +194,7 @@ UserDetails.defaultProps = {
 
 const marketSearchFilter = {
   page: 1,
+  type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
 }

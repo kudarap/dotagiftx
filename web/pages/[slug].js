@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { catalog, marketSearch } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import ItemDetails from '@/components/ItemDetails'
@@ -24,6 +24,7 @@ DynamicPage.defaultProps = {
 
 const marketSearchFilter = {
   page: 1,
+  type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   sort: 'price',
 }

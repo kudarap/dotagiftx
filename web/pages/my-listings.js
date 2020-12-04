@@ -6,7 +6,7 @@ import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
 
@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const marketFilter = {
+  type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
   page: 1,
