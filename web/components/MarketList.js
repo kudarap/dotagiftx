@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MarketList({ data, error }) {
+export default function MarketList({ offers, buyOrders, error }) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
@@ -51,12 +51,12 @@ export default function MarketList({ data, error }) {
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
-    setCurrentMarket(data.data[marketIdx])
+    setCurrentMarket(offers.data[marketIdx])
   }
 
   const router = useRouter()
   const handleRemoveClick = marketIdx => {
-    const mktID = data.data[marketIdx].id
+    const mktID = offers.data[marketIdx].id
     ;(async () => {
       try {
         await myMarket.PATCH(mktID, { status: MARKET_STATUS_REMOVED })
@@ -85,10 +85,14 @@ export default function MarketList({ data, error }) {
                   onChange={handleTabChange}>
                   <Tab
                     value={0}
-                    label={`${data.total_count || ''} Offers`}
+                    label={`${offers.total_count || ''} Offers`}
                     style={{ textTransform: 'none' }}
                   />
-                  <Tab value={1} label={`${2} Buy Orders`} style={{ textTransform: 'none' }} />
+                  <Tab
+                    value={1}
+                    label={`${buyOrders.total_count || ''} Buy Orders`}
+                    style={{ textTransform: 'none' }}
+                  />
                 </Tabs>
               </TableHeadCell>
             </TableRow>
@@ -122,7 +126,7 @@ export default function MarketList({ data, error }) {
                 </TableRow>
               )}
 
-              {!error && !data && (
+              {!error && !offers && (
                 <TableRow>
                   <TableCell align="center" colSpan={3}>
                     Loading...
@@ -130,7 +134,7 @@ export default function MarketList({ data, error }) {
                 </TableRow>
               )}
 
-              {!error && data.total_count === 0 && (
+              {!error && offers.total_count === 0 && (
                 <TableRow>
                   <TableCell align="center" colSpan={3}>
                     No offers available
@@ -138,8 +142,8 @@ export default function MarketList({ data, error }) {
                 </TableRow>
               )}
 
-              {data.data &&
-                data.data.map((market, idx) => (
+              {offers.data &&
+                offers.data.map((market, idx) => (
                   <TableRow key={market.id} hover>
                     <TableCell component="th" scope="row" padding="none">
                       <Link
@@ -221,8 +225,86 @@ export default function MarketList({ data, error }) {
                     Price
                   </Typography>
                 </TableHeadCell>
-                {!isMobile && <TableHeadCell size="small" align="center" width={156} />}
+                {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
               </TableRow>
+
+              {!error && buyOrders.total_count === 0 && (
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    No buy orders
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {buyOrders.data &&
+                buyOrders.data.map((market, idx) => (
+                  <TableRow key={market.id} hover>
+                    <TableCell component="th" scope="row" padding="none">
+                      <Link
+                        href="/profiles/[id]"
+                        as={`/profiles/${market.user.steam_id}`}
+                        disableUnderline>
+                        <div className={classes.seller}>
+                          <Avatar
+                            className={classes.avatar}
+                            alt={market.user.name}
+                            {...retinaSrcSet(market.user.avatar, 40, 40)}
+                          />
+                          <div>
+                            <strong>{market.user.name}</strong>
+                            <br />
+                            <Typography variant="caption" color="textSecondary">
+                              {/* {market.user.steam_id} */}
+                              Posted {dateFromNow(market.created_at)}
+                            </Typography>
+                          </div>
+                        </div>
+                      </Link>
+                    </TableCell>
+                    {!isMobile ? (
+                      <>
+                        <TableCell align="right">
+                          <Typography variant="body2">
+                            {amount(market.price, market.currency)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          {currentUserID === market.user.id ? (
+                            // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+                            <div>
+                              <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
+                                Remove
+                              </Button>
+                            </div>
+                          ) : (
+                            <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                              Contact Buyer
+                            </BuyButton>
+                          )}
+                        </TableCell>
+                      </>
+                    ) : (
+                      <TableCell
+                        align="right"
+                        onClick={() =>
+                          currentUserID === market.user.id
+                            ? handleRemoveClick(idx)
+                            : handleContactClick(idx)
+                        }
+                        style={{ cursor: 'pointer' }}>
+                        <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                        <Typography
+                          variant="caption"
+                          color="textSecondary"
+                          style={{
+                            color: currentUserID === market.user.id ? 'tomato' : '',
+                          }}>
+                          <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
+                        </Typography>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
             </TableBody>
           )}
         </Table>
@@ -236,7 +318,8 @@ export default function MarketList({ data, error }) {
   )
 }
 MarketList.propTypes = {
-  data: PropTypes.object.isRequired,
+  offers: PropTypes.object.isRequired,
+  buyOrders: PropTypes.object.isRequired,
   error: PropTypes.string,
 }
 MarketList.defaultProps = {

@@ -4,6 +4,8 @@ import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { CDN_URL, marketSearch, trackViewURL } from '@/service/api'
+import { itemRarityColorMap } from '@/constants/palette'
+import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -14,10 +16,9 @@ import Link from '@/components/Link'
 import Button from '@/components/Button'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import ChipLink from '@/components/ChipLink'
-import { itemRarityColorMap } from '@/constants/palette'
 import AppContext from '@/components/AppContext'
-import { APP_NAME } from '@/constants/strings'
 import BidButton from '@/components/BidButton'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -57,6 +58,11 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const marketBuyOrderFilter = {
+  type: MARKET_TYPE_BID,
+  status: MARKET_STATUS_LIVE,
+}
+
 export default function ItemDetails({
   item,
   error: initialError,
@@ -90,14 +96,18 @@ export default function ItemDetails({
   }
 
   const [markets, setMarkets] = React.useState(initialMarkets)
+  const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
   const [error, setError] = React.useState(null)
 
   // Handle market request on page change.
+  marketBuyOrderFilter.item_id = item.id
   React.useEffect(() => {
     ;(async () => {
       try {
         const res = await marketSearch(filter)
         setMarkets(res)
+        const res2 = await marketSearch(marketBuyOrderFilter)
+        setBuyOrders(res2)
       } catch (e) {
         setError(e.message)
       }
@@ -178,18 +188,16 @@ export default function ItemDetails({
                       rarity={item.rarity}
                     />
                   </a>
-                  {isLoggedIn && (
-                    <Button
-                      className={classes.postItemButton}
-                      variant="outlined"
-                      color="secondary"
-                      component={Link}
-                      href={`/post-item?s=${item.slug}`}
-                      disableUnderline
-                      fullWidth>
-                      Post this Item
-                    </Button>
-                  )}
+                  <Button
+                    className={classes.postItemButton}
+                    variant="outlined"
+                    color="secondary"
+                    component={Link}
+                    href={`/post-item?s=${item.slug}`}
+                    disableUnderline
+                    fullWidth>
+                    Post this Item
+                  </Button>
                 </div>
               )}
 
@@ -317,7 +325,7 @@ export default function ItemDetails({
             </div>
           )}
 
-          <MarketList data={markets} error={error} />
+          <MarketList offers={markets} buyOrders={buyOrders} error={error} />
           {!error && (
             <TablePaginationRouter
               linkProps={linkProps}
