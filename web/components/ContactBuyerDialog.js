@@ -7,7 +7,6 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
-import { statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
@@ -40,37 +39,11 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const marketSummaryFilter = {}
-
 export default function ContactDialog(props) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props
-
-  // const [loading, setLoading] = React.useState(true)
-  // const [marketSummary, setMarketSummary] = React.useState(null)
-  // React.useEffect(() => {
-  //   if (!market) {
-  //     return
-  //   }
-  //
-  //   ;(async () => {
-  //     marketSummaryFilter.user_id = market.user.id
-  //     try {
-  //       const res = await statsMarketSummary(marketSummaryFilter)
-  //       setMarketSummary(res)
-  //     } catch (e) {
-  //       console.log('error getting stats market summary', e.message)
-  //     }
-  //     setLoading(false)
-  //   })()
-  //
-  //   // eslint-disable-next-line consistent-return
-  //   return () => {
-  //     setMarketSummary(null)
-  //   }
-  // }, [market])
 
   if (!market) {
     return null
@@ -102,26 +75,7 @@ export default function ContactDialog(props) {
               <Typography className={classes.profileName} component="p" variant="h4">
                 {market.user.name}
               </Typography>
-              {/* <Typography variant="body2" component="span"> */}
-              {/*  <Link href={`/profiles/${market.user.steam_id}/reserved`}> */}
-              {/*    {!loading && marketSummary ? marketSummary.live : '--'} Items */}
-              {/*  </Link>{' '} */}
-              {/*  &middot;{' '} */}
-              {/*  <Link href={`/profiles/${market.user.steam_id}/reserved`}> */}
-              {/*    {!loading && marketSummary ? marketSummary.reserved : '--'} Reserved */}
-              {/*  </Link>{' '} */}
-              {/*  &middot;{' '} */}
-              {/*  <Link href={`/profiles/${market.user.steam_id}/delivered`}> */}
-              {/*    {!loading && marketSummary ? marketSummary.sold : '--'} Delivered */}
-              {/*  </Link> */}
-              {/* </Typography> */}
-              {/* <br /> */}
               <Typography gutterBottom>
-                {/* <Typography color="textSecondary" component="span"> */}
-                {/*  {`Links: `} */}
-                {/* </Typography> */}
-                {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
-                {/* &nbsp; */}
                 <ChipLink
                   label="SteamRep"
                   href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
