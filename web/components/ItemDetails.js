@@ -198,7 +198,9 @@ export default function ItemDetails({
                   {item.name}
                 </Typography>
                 <Typography gutterBottom>
-                  <Link href={`/search?origin=${item.origin}`}>{item.origin}</Link>{' '}
+                  <Link href={`/search?origin=${item.origin}`} color="textSecondary">
+                    {item.origin}
+                  </Link>{' '}
                   {item.rarity !== 'regular' && (
                     <>
                       &mdash;
@@ -214,12 +216,19 @@ export default function ItemDetails({
                   <Typography color="textSecondary" component="span">
                     {`Used by: `}
                   </Typography>
-                  <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
+                  <Link color="textSecondary" href={`/search?hero=${item.hero}`}>
+                    {item.hero}
+                  </Link>
                   <br />
-                  <Typography color="textSecondary" component="span">
-                    {`Links: `}
-                  </Typography>
                   <ChipLink label="Dota 2 Wiki" href={wikiLink} />
+                  &nbsp;&middot;&nbsp;
+                  <Typography variant="body2" component={Link} href={`${item.slug}/#reserved`}>
+                    4 Reserved
+                  </Typography>
+                  &nbsp;&middot;&nbsp;
+                  <Typography variant="body2" component={Link} href={`${item.slug}/#delivered`}>
+                    1 Delivered
+                  </Typography>
                   {/* <br /> */}
                   {/* <Typography color="textSecondary" component="span"> */}
                   {/*  {`Median Ask: `} */}
