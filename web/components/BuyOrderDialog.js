@@ -2,25 +2,20 @@ import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
-
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
+import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import Paper from '@material-ui/core/Paper'
-import { Avatar, CircularProgress, TextField } from '@material-ui/core'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import SubmitIcon from '@material-ui/icons/Check'
 import * as format from '@/lib/format'
-import ChipLink from '@/components/ChipLink'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
-import Button from '@/components/Button'
-import DialogCloseButton from '@/components/DialogCloseButton'
-import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
-import AppContext from '@/components/AppContext'
+import ItemImage from '@/components/ItemImage'
 import BidButton from '@/components/BidButton'
-import { itemRarityColorMap } from '@/constants/palette'
+import AppContext from '@/components/AppContext'
 import { MARKET_TYPE_BID } from '@/constants/market'
+import { itemRarityColorMap } from '@/constants/palette'
+import DialogCloseButton from '@/components/DialogCloseButton'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -229,16 +224,6 @@ export default function BuyOrderDialog(props) {
             </ul>
           </Typography>
         </DialogContent>
-        {/*<DialogActions>*/}
-        {/*  <BidButton*/}
-        {/*    type="submit"*/}
-        {/*    variant="outlined"*/}
-        {/*    target="_blank"*/}
-        {/*    rel="noreferrer noopener"*/}
-        {/*    disableUnderline>*/}
-        {/*    Place buy order*/}
-        {/*  </BidButton>*/}
-        {/*</DialogActions>*/}
       </form>
     </Dialog>
   )
