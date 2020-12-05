@@ -100,9 +100,13 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 	mkt.ItemID = i.ID
 
-	// Check Item quantity limit.
+	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(core.FindOpts{
-		Filter: core.Market{ItemID: mkt.ItemID, Status: core.MarketStatusLive},
+		Filter: core.Market{
+			ItemID: mkt.ItemID,
+			Type:   core.MarketTypeAsk,
+			Status: core.MarketStatusLive,
+		},
 		UserID: mkt.UserID,
 	})
 	if err != nil {
