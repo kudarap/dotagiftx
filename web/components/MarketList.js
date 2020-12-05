@@ -52,7 +52,12 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
-    setCurrentMarket(offers.data[marketIdx])
+    let src = offers
+    if (tabIdx === 1) {
+      src = buyOrders
+    }
+
+    setCurrentMarket(src.data[marketIdx])
   }
 
   const router = useRouter()

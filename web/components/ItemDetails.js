@@ -254,7 +254,6 @@ export default function ItemDetails({
                   className={classes.postItemButton}
                   style={{ marginTop: 1 }}
                   variant="outlined"
-                  disableUnderline
                   fullWidth>
                   Place buy order
                 </BidButton>

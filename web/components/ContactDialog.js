@@ -196,7 +196,6 @@ export default function ContactDialog(props) {
             component={Link}
             target="_blank"
             rel="noreferrer noopener"
-            disableUnderline
             href={steamProfileURL}>
             Check Steam Profile
           </Button>
