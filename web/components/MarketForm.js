@@ -14,7 +14,7 @@ import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import { MARKET_QTY_LIMIT } from '@/constants/market'
+import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
@@ -52,6 +52,11 @@ const checkMarketPayload = payload => {
 
   if (Number(payload.quantity) > MARKET_QTY_LIMIT) {
     return `Quantity limit ${MARKET_QTY_LIMIT} per post`
+  }
+
+  const notesLen = String(payload.notes).length
+  if (notesLen > MARKET_NOTES_MAX_LEN) {
+    return `Notes max length limit reached ${notesLen}/${MARKET_NOTES_MAX_LEN}`
   }
 
   return null
@@ -267,7 +272,7 @@ export default function MarketForm() {
           color="secondary"
           label="Notes"
           value={payload.notes}
-          helperText="Keep it short, This will be display when they check your offer."
+          helperText="Keep it short, This will be displayed when they check your offer."
           onInput={e => setPayload({ ...payload, notes: e.target.value })}
           disabled={loading || !isLoggedIn || Boolean(newMarketID)}
         />

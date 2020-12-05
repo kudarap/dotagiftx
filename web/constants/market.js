@@ -34,3 +34,4 @@ export const MARKET_STATUS_MAP_COLOR = {
 }
 
 export const MARKET_QTY_LIMIT = 5
+export const MARKET_NOTES_MAX_LEN = 200

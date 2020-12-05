@@ -14,7 +14,7 @@ import Link from '@/components/Link'
 import ItemImage from '@/components/ItemImage'
 import BidButton from '@/components/BidButton'
 import AppContext from '@/components/AppContext'
-import { MARKET_TYPE_BID } from '@/constants/market'
+import { MARKET_NOTES_MAX_LEN, MARKET_TYPE_BID } from '@/constants/market'
 import { itemRarityColorMap } from '@/constants/palette'
 import DialogCloseButton from '@/components/DialogCloseButton'
 
@@ -55,6 +55,11 @@ const checkPayload = payload => {
     return 'Price must be atleast 0.01 USD'
   }
 
+  const notesLen = String(payload.notes).length
+  if (notesLen > MARKET_NOTES_MAX_LEN) {
+    return `Notes max length limit reached ${notesLen}/${MARKET_NOTES_MAX_LEN}`
+  }
+
   return null
 }
 
@@ -65,6 +70,7 @@ export default function BuyOrderDialog(props) {
   const { catalog, open, onClose } = props
 
   const [price, setPrice] = useState('')
+  const [notes, setNotes] = useState('')
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
@@ -76,6 +82,7 @@ export default function BuyOrderDialog(props) {
       type: MARKET_TYPE_BID,
       item_id: catalog.id,
       price: Number(price),
+      notes: String(notes),
     }
     const err = checkPayload(buyOrder)
     if (err) {
@@ -194,6 +201,18 @@ export default function BuyOrderDialog(props) {
               }}
             />
           </div>
+          <br />
+          <TextField
+            disabled={loading}
+            fullWidth
+            color="secondary"
+            variant="outlined"
+            label="Notes"
+            helperText="Keep it short, This will be displayed when they check your buy order."
+            value={notes}
+            onInput={e => setNotes(e.target.value)}
+          />
+          <br />
           <br />
 
           <BidButton
