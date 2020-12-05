@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
 import startsWith from 'lodash/startsWith'
 import { makeStyles } from '@material-ui/core/styles'
@@ -207,7 +208,7 @@ export default function MarketUpdateDialog(props) {
               variant="outlined"
               label="Reservation Notes"
               helperText="Delivery date and deposit details"
-              placeholder="Jan 2 with $1 deposit"
+              placeholder={`${moment().add(30, 'days').format('MMM D')} - $1 deposit`}
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />
