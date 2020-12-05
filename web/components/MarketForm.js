@@ -47,7 +47,7 @@ const checkMarketPayload = payload => {
   }
 
   if (Number(payload.price) <= 0) {
-    return 'Price must be atleast USD 0.01'
+    return 'Price must be atleast 0.01 USD'
   }
 
   if (Number(payload.quantity) > MARKET_QTY_LIMIT) {

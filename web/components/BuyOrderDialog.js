@@ -1,12 +1,15 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
+
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import { Avatar, TextField } from '@material-ui/core'
+import Paper from '@material-ui/core/Paper'
+import { Avatar, CircularProgress, TextField } from '@material-ui/core'
+import SubmitIcon from '@material-ui/icons/Check'
 import * as format from '@/lib/format'
 import ChipLink from '@/components/ChipLink'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
@@ -17,6 +20,7 @@ import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import { itemRarityColorMap } from '@/constants/palette'
+import { MARKET_TYPE_BID } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -45,7 +49,18 @@ const useStyles = makeStyles(theme => ({
     float: 'left',
     marginRight: theme.spacing(1),
   },
+  spacer: {
+    width: theme.spacing(1),
+  },
 }))
+
+const checkPayload = payload => {
+  if (Number(payload.price) <= 0) {
+    return 'Price must be atleast 0.01 USD'
+  }
+
+  return null
+}
 
 export default function BuyOrderDialog(props) {
   const classes = useStyles()
@@ -53,15 +68,40 @@ export default function BuyOrderDialog(props) {
 
   const { catalog, open, onClose } = props
 
+  const [price, setPrice] = useState('')
+  const [error, setError] = React.useState(null)
+  const [loading, setLoading] = React.useState(false)
+
+  const handleSubmit = e => {
+    e.preventDefault()
+
+    // format and validate payload
+    const payload = {
+      type: MARKET_TYPE_BID,
+      item_id: catalog.item_id,
+      price: Number(price),
+    }
+    const err = checkPayload(payload)
+    if (err) {
+      setError(`Error: ${err}`)
+      return
+    }
+
+    setLoading(true)
+    alert('market bid ready to fly')
+  }
+
+  const handlePriceChange = e => setPrice(e.target.value)
+
   return (
-    <div>
-      <Dialog
-        fullWidth
-        fullScreen={isMobile}
-        open={open}
-        onClose={onClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
+    <Dialog
+      component="form"
+      fullScreen={isMobile}
+      open={open}
+      onClose={onClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
+      <form onSubmit={handleSubmit}>
         <DialogTitle id="alert-dialog-title">
           Buy - {catalog.name}
           <DialogCloseButton onClick={onClose} />
@@ -111,24 +151,61 @@ export default function BuyOrderDialog(props) {
             <br />
           </div>
 
-          <TextField
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography color="textSecondary" style={{ marginTop: -22 }}>
+              <Typography color="textPrimary" component="span">
+                {catalog.bid_count}
+              </Typography>{' '}
+              requests to buy at{' '}
+              <Typography color="textPrimary" component="span">
+                {format.amount(catalog.highest_bid, 'USD')}
+              </Typography>{' '}
+              or lower
+            </Typography>
+            <span className={classes.spacer} />
+            <TextField
+              required
+              variant="outlined"
+              color="secondary"
+              label="Price"
+              placeholder="1.00"
+              type="number"
+              helperText="Price you want to pay in USD."
+              disabled={loading}
+              value={price}
+              onInput={handlePriceChange}
+              onChange={handlePriceChange}
+              onBlur={e => {
+                const p = format.amount(e.target.value)
+                setPrice(p)
+              }}
+            />
+          </div>
+          <br />
+
+          <BidButton
+            fullWidth
+            disableUnderline
+            size="large"
+            type="submit"
             variant="outlined"
-            required
-            color="secondary"
-            label="Price"
-            placeholder="1.00"
-            type="number"
-            helperText="Price you want to pay in USD."
-          />
+            target="_blank"
+            rel="noreferrer noopener"
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}>
+            Place buy order
+          </BidButton>
+
+          {error && (
+            <Typography align="center" variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
 
           <Typography variant="body2" color="textSecondary">
             <br />
-            Guides for placing buy order on Giftables
+            Placing buy order on Giftables
             <ul>
-              {/*<li>*/}
-              {/*  Dota 2 giftables transaction only viable if the two steam user parties have been*/}
-              {/*  friends for 30 days.*/}
-              {/*</li>*/}
               <li>
                 As giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
@@ -141,17 +218,6 @@ export default function BuyOrderDialog(props) {
                 </Link>
                 .
               </li>
-              {/*<li>*/}
-              {/*  Official SteamRep middleman may assist in middle manning for the trade, or{' '}*/}
-              {/*  <Link*/}
-              {/*    style={{ textDecoration: 'underline' }}*/}
-              {/*    href="https://www.reddit.com/r/dota2trade/"*/}
-              {/*    target="_blank"*/}
-              {/*    rel="noreferrer noopener">*/}
-              {/*    r/Dota2Trade*/}
-              {/*  </Link>{' '}*/}
-              {/*  mod may assist as well in this.*/}
-              {/*</li>*/}
               <li>
                 Payment agreements will be done between you and the seller. This website does not
                 accept or integrate any payment service.
@@ -163,14 +229,18 @@ export default function BuyOrderDialog(props) {
             </ul>
           </Typography>
         </DialogContent>
-        <DialogActions>
-          {/* <Button component="a">Buyer Profile</Button> */}
-          <BidButton variant="outlined" target="_blank" rel="noreferrer noopener" disableUnderline>
-            Place buy order
-          </BidButton>
-        </DialogActions>
-      </Dialog>
-    </div>
+        {/*<DialogActions>*/}
+        {/*  <BidButton*/}
+        {/*    type="submit"*/}
+        {/*    variant="outlined"*/}
+        {/*    target="_blank"*/}
+        {/*    rel="noreferrer noopener"*/}
+        {/*    disableUnderline>*/}
+        {/*    Place buy order*/}
+        {/*  </BidButton>*/}
+        {/*</DialogActions>*/}
+      </form>
+    </Dialog>
   )
 }
 BuyOrderDialog.propTypes = {
