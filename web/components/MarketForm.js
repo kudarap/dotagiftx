@@ -101,7 +101,7 @@ export default function MarketForm() {
     const newMarket = {
       item_id: payload.item_id,
       price: Number(payload.price),
-      notes: payload.notes,
+      notes: String(payload.notes).trim(),
     }
 
     const err = checkMarketPayload({ ...newMarket, quantity })

@@ -82,7 +82,7 @@ export default function BuyOrderDialog(props) {
       type: MARKET_TYPE_BID,
       item_id: catalog.id,
       price: Number(price),
-      notes: String(notes),
+      notes: String(notes).trim(),
     }
     const err = checkPayload(buyOrder)
     if (err) {
