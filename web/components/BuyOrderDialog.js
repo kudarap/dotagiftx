@@ -39,19 +39,11 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ContactBuyerDialog(props) {
+export default function BuyOrderDialog(props) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props
-
-  if (!market) {
-    return null
-  }
-
-  const storeProfile = `/profiles/${market.user.steam_id}`
-  const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
-  const dota2Inventory = `${steamProfileURL}/inventory#570`
 
   return (
     <div>
@@ -63,41 +55,15 @@ export default function ContactBuyerDialog(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">
-          Contact Buyer
+          Place Buy Order
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <div className={classes.details}>
-            <a href={storeProfile} target="_blank" rel="noreferrer noopener">
-              <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
-            </a>
-            <Typography component="h1">
-              <Typography className={classes.profileName} component="p" variant="h4">
-                {market.user.name}
-              </Typography>
-              <Typography gutterBottom>
-                <ChipLink
-                  label="SteamRep"
-                  href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
-                />
-                &nbsp;
-                <ChipLink label="Steam Inventory" href={dota2Inventory} />
-                {market.notes && (
-                  <>
-                    <br />
-                    <Typography color="textSecondary" component="span">
-                      {`Notes: `}
-                    </Typography>
-                    {market.notes}
-                  </>
-                )}
-              </Typography>
-            </Typography>
-          </div>
+          <div className={classes.details}>hello</div>
 
           <Typography variant="body2" color="textSecondary">
             <br />
-            Guides for selling Giftables
+            Guides for placing buy order Giftables
             <ul>
               <li>Please be respectful on the price stated by the buyer.</li>
               <li>Make sure your item exist in your inventory.</li>
@@ -113,29 +79,21 @@ export default function ContactBuyerDialog(props) {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button component="a" href={storeProfile}>
-            Buyer Profile
-          </Button>
-          <BidButton
-            variant="outlined"
-            component={Link}
-            target="_blank"
-            rel="noreferrer noopener"
-            disableUnderline
-            href={steamProfileURL}>
-            Check Steam Profile
+          {/*<Button component="a">Buyer Profile</Button>*/}
+          <BidButton variant="outlined" target="_blank" rel="noreferrer noopener" disableUnderline>
+            Place buy order
           </BidButton>
         </DialogActions>
       </Dialog>
     </div>
   )
 }
-ContactBuyerDialog.propTypes = {
+BuyOrderDialog.propTypes = {
   market: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,
 }
-ContactBuyerDialog.defaultProps = {
+BuyOrderDialog.defaultProps = {
   market: null,
   open: false,
   onClose: () => {},

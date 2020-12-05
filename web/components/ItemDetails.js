@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { CDN_URL, marketSearch, trackViewURL } from '@/service/api'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
 import { itemRarityColorMap } from '@/constants/palette'
 import { APP_NAME } from '@/constants/strings'
+import { CDN_URL, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -18,7 +19,7 @@ import TablePaginationRouter from '@/components/TablePaginationRouter'
 import ChipLink from '@/components/ChipLink'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
-import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
+import BuyOrderDialog from '@/components/BuyOrderDialog'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -99,6 +100,7 @@ export default function ItemDetails({
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
   const [error, setError] = React.useState(null)
+  const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
 
   // Handle market request on page change.
   marketBuyOrderFilter.item_id = item.id
@@ -114,6 +116,10 @@ export default function ItemDetails({
       }
     })()
   }, [filter])
+
+  const handleBuyOrderClick = () => {
+    setOpenBuyOrderDialog(true)
+  }
 
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
@@ -142,7 +148,6 @@ export default function ItemDetails({
   }
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
-
   const linkProps = { href: `/${item.slug}` }
 
   return (
@@ -245,12 +250,13 @@ export default function ItemDetails({
                   {/* {item.median_ask.toFixed(2)} */}
                 </Typography>
                 <BidButton
+                  onClick={handleBuyOrderClick}
                   className={classes.postItemButton}
                   style={{ marginTop: 1 }}
                   variant="outlined"
                   disableUnderline
                   fullWidth>
-                  Place Buy Order
+                  Place buy order
                 </BidButton>
               </Typography>
             </div>
@@ -342,7 +348,12 @@ export default function ItemDetails({
             }
           />
         </Container>
-
+        <BuyOrderDialog
+          open={openBuyOrderDialog}
+          onClose={() => {
+            setOpenBuyOrderDialog(false)
+          }}
+        />
         <img src={trackViewURL(item.id)} alt="" />
       </main>
 
