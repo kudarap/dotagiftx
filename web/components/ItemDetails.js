@@ -349,6 +349,7 @@ export default function ItemDetails({
           />
         </Container>
         <BuyOrderDialog
+          catalog={item}
           open={openBuyOrderDialog}
           onClose={() => {
             setOpenBuyOrderDialog(false)
