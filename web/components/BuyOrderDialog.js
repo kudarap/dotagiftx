@@ -9,6 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import SubmitIcon from '@material-ui/icons/Check'
 import * as format from '@/lib/format'
+import { myMarket } from '@/service/api'
 import Link from '@/components/Link'
 import ItemImage from '@/components/ItemImage'
 import BidButton from '@/components/BidButton'
@@ -67,39 +68,56 @@ export default function BuyOrderDialog(props) {
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
-  const handleSubmit = e => {
-    e.preventDefault()
+  const handleSubmit = evt => {
+    evt.preventDefault()
 
     // format and validate payload
-    const payload = {
+    const buyOrder = {
       type: MARKET_TYPE_BID,
-      item_id: catalog.item_id,
+      item_id: catalog.id,
       price: Number(price),
     }
-    const err = checkPayload(payload)
+    const err = checkPayload(buyOrder)
     if (err) {
       setError(`Error: ${err}`)
       return
     }
 
+    // submit buy order payload
+    setError(null)
     setLoading(true)
-    alert('market bid ready to fly')
+    ;(async () => {
+      console.log(buyOrder)
+      try {
+        await myMarket.POST(buyOrder)
+      } catch (e) {
+        setError(`Error: ${e.message}`)
+      }
+
+      setLoading(false)
+    })()
   }
 
-  const handlePriceChange = e => setPrice(e.target.value)
+  const handleClose = () => {
+    setPrice('')
+    setError(null)
+    setLoading(false)
+    onClose()
+  }
+
+  const handlePriceChange = evt => setPrice(evt.target.value)
 
   return (
     <Dialog
-      component="form"
       fullScreen={isMobile}
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
       <form onSubmit={handleSubmit}>
         <DialogTitle id="alert-dialog-title">
           Buy - {catalog.name}
-          <DialogCloseButton onClick={onClose} />
+          <DialogCloseButton onClick={handleClose} />
         </DialogTitle>
         <DialogContent>
           <div>
@@ -180,7 +198,6 @@ export default function BuyOrderDialog(props) {
 
           <BidButton
             fullWidth
-            disableUnderline
             size="large"
             type="submit"
             variant="outlined"
