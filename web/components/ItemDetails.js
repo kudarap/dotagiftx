@@ -74,7 +74,7 @@ export default function ItemDetails({
 }) {
   const classes = useStyles()
 
-  const { isMobile, isLoggedIn } = useContext(AppContext)
+  const { isMobile } = useContext(AppContext)
 
   if (initialError) {
     return (
@@ -312,26 +312,24 @@ export default function ItemDetails({
               </div>
 
               <br />
-              {isLoggedIn && (
-                <div align="center" style={{ display: 'flex', marginBottom: 2 }}>
-                  <Button
-                    className={classes.postItemButton}
-                    variant="outlined"
-                    color="secondary"
-                    component={Link}
-                    href={`/post-item?s=${item.slug}`}
-                    disableUnderline>
-                    Post this item
-                  </Button>
-                  <BidButton
-                    onClick={handleBuyOrderClick}
-                    className={classes.postItemButton}
-                    variant="outlined"
-                    disableUnderline>
-                    Place buy order
-                  </BidButton>
-                </div>
-              )}
+              <div align="center" style={{ display: 'flex', marginBottom: 2 }}>
+                <Button
+                  className={classes.postItemButton}
+                  variant="outlined"
+                  color="secondary"
+                  component={Link}
+                  href={`/post-item?s=${item.slug}`}
+                  disableUnderline>
+                  Post this item
+                </Button>
+                <BidButton
+                  onClick={handleBuyOrderClick}
+                  className={classes.postItemButton}
+                  variant="outlined"
+                  disableUnderline>
+                  Place buy order
+                </BidButton>
+              </div>
             </div>
           )}
 

@@ -67,7 +67,7 @@ const checkPayload = payload => {
 
 export default function BuyOrderDialog(props) {
   const classes = useStyles()
-  const { isMobile } = useContext(AppContext)
+  const { isMobile, isLoggedIn } = useContext(AppContext)
 
   const { catalog, open, onClose } = props
 
@@ -137,6 +137,8 @@ export default function BuyOrderDialog(props) {
 
   const handlePriceChange = evt => setPrice(evt.target.value)
 
+  const isInputDisabled = loading || Boolean(market) || !isLoggedIn
+
   return (
     <Dialog
       fullScreen={isMobile}
@@ -150,6 +152,15 @@ export default function BuyOrderDialog(props) {
           <DialogCloseButton onClick={handleClose} />
         </DialogTitle>
         <DialogContent>
+          {!isLoggedIn && (
+            <>
+              <Alert severity="warning">
+                You must be signed in to place buy order — <Link href="/login">Sign in now</Link>
+              </Alert>
+              <br />
+            </>
+          )}
+
           <div>
             <ItemImage
               className={classes.itemImage}
@@ -193,7 +204,6 @@ export default function BuyOrderDialog(props) {
             <br />
             <br />
           </div>
-
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Typography color="textSecondary" style={{ marginTop: -22 }}>
               <Typography color="textPrimary" component="span">
@@ -214,7 +224,7 @@ export default function BuyOrderDialog(props) {
               placeholder="1.00"
               type="number"
               helperText="Price you want to pay in USD."
-              disabled={loading || Boolean(market)}
+              disabled={isInputDisabled}
               value={price}
               onInput={handlePriceChange}
               onChange={handlePriceChange}
@@ -226,7 +236,7 @@ export default function BuyOrderDialog(props) {
           </div>
           <br />
           <TextField
-            disabled={loading || Boolean(market)}
+            disabled={isInputDisabled}
             fullWidth
             color="secondary"
             variant="outlined"
@@ -237,7 +247,6 @@ export default function BuyOrderDialog(props) {
           />
           <br />
           <br />
-
           {!market && (
             <Button
               fullWidth
@@ -246,12 +255,11 @@ export default function BuyOrderDialog(props) {
               variant="contained"
               target="_blank"
               rel="noreferrer noopener"
-              disabled={loading}
+              disabled={isInputDisabled}
               startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}>
               Place Order
             </Button>
           )}
-
           <div style={{ marginTop: 2 }}>
             {Boolean(market) && (
               <Alert
@@ -275,7 +283,6 @@ export default function BuyOrderDialog(props) {
               </Typography>
             )}
           </div>
-
           <Typography variant="body2" color="textSecondary" component="div">
             <br />
             Placing buy order on Giftables
