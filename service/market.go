@@ -146,6 +146,15 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 }
 
 func (s *marketService) checkBidType(bid *core.Market) error {
+	// Check if bid price is lower than lowest ask price.
+	ask, err := s.catalogStg.Index(bid.ItemID)
+	if err != nil {
+		return err
+	}
+	if ask.LowestAsk <= bid.Price {
+		return core.MarketErrInvalidBidPrice
+	}
+
 	// Remove existing buy order if exists.
 	res, err := s.marketStg.Find(core.FindOpts{
 		Filter: core.Market{
