@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Alert from '@material-ui/lab/Alert'
 import SubmitIcon from '@material-ui/icons/Check'
 import * as format from '@/lib/format'
 import { myMarket } from '@/service/api'
@@ -69,6 +70,7 @@ export default function BuyOrderDialog(props) {
 
   const { catalog, open, onClose } = props
 
+  const [market, setMarket] = useState(null)
   const [price, setPrice] = useState('')
   const [notes, setNotes] = useState('')
   const [error, setError] = React.useState(null)
@@ -94,9 +96,9 @@ export default function BuyOrderDialog(props) {
     setError(null)
     setLoading(true)
     ;(async () => {
-      console.log(buyOrder)
       try {
-        await myMarket.POST(buyOrder)
+        const res = await myMarket.POST(buyOrder)
+        setMarket(res)
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -106,10 +108,18 @@ export default function BuyOrderDialog(props) {
   }
 
   const handleClose = () => {
-    setPrice('')
-    setError(null)
-    setLoading(false)
     onClose()
+    setTimeout(() => {
+      setError(null)
+      setLoading(false)
+      setNotes('')
+      setPrice('')
+      setMarket(null)
+    }, 500)
+  }
+
+  const handleDone = () => {
+    handleClose()
   }
 
   const handlePriceChange = evt => setPrice(evt.target.value)
@@ -191,7 +201,7 @@ export default function BuyOrderDialog(props) {
               placeholder="1.00"
               type="number"
               helperText="Price you want to pay in USD."
-              disabled={loading}
+              disabled={loading || market}
               value={price}
               onInput={handlePriceChange}
               onChange={handlePriceChange}
@@ -203,7 +213,7 @@ export default function BuyOrderDialog(props) {
           </div>
           <br />
           <TextField
-            disabled={loading}
+            disabled={loading || market}
             fullWidth
             color="secondary"
             variant="outlined"
@@ -215,28 +225,49 @@ export default function BuyOrderDialog(props) {
           <br />
           <br />
 
-          <Button
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-            target="_blank"
-            rel="noreferrer noopener"
-            disabled={loading}
-            startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}>
-            Place buy order
-          </Button>
-
-          {error && (
-            <Typography align="center" variant="body2" color="error">
-              {error}
-            </Typography>
+          {!market && (
+            <Button
+              fullWidth
+              size="large"
+              type="submit"
+              variant="contained"
+              target="_blank"
+              rel="noreferrer noopener"
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}>
+              Place buy order
+            </Button>
           )}
+
+          <div style={{ marginTop: 2 }}>
+            {market && (
+              <Alert
+                severity="success"
+                variant="filled"
+                action={
+                  <Button color="inherit" size="small" onClick={handleDone}>
+                    Done
+                  </Button>
+                }>
+                Your buy order has been placed and now open for sellers. Check your{' '}
+                <Link style={{ textDecoration: 'underline' }} href="/my-buy-orders">
+                  Buy Orders
+                </Link>
+                .
+              </Alert>
+            )}
+            {error && (
+              <Typography align="center" variant="body2" color="error">
+                {error}
+              </Typography>
+            )}
+          </div>
 
           <Typography variant="body2" color="textSecondary">
             <br />
             Placing buy order on Giftables
             <ul>
+              <li>Buy order details are only visible to the users of this website.</li>
               <li>
                 As giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;

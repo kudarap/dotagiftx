@@ -304,6 +304,7 @@ export default function MarketForm() {
               <Link style={{ textDecoration: 'underline' }} href="/my-listings">
                 Item Listings
               </Link>
+              .
             </Alert>
           )}
           {error && (
