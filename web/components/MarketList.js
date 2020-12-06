@@ -62,7 +62,12 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
 
   const router = useRouter()
   const handleRemoveClick = marketIdx => {
-    const mktID = offers.data[marketIdx].id
+    let src = offers
+    if (tabIdx === 1) {
+      src = buyOrders
+    }
+
+    const mktID = src.data[marketIdx].id
     ;(async () => {
       try {
         await myMarket.PATCH(mktID, { status: MARKET_STATUS_REMOVED })
