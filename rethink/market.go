@@ -13,8 +13,10 @@ const (
 	tableMarket          = "market"
 	marketFieldItemID    = "item_id"
 	marketFieldUserID    = "user_id"
+	marketFieldType      = "type"
 	marketFieldStatus    = "status"
 	marketFieldNotes     = "notes"
+	marketFieldPrice     = "price"
 	marketFieldCreatedAt = "created_at"
 	// Hidden field for searching item details.
 	marketItemSearchTags = "item_tags"

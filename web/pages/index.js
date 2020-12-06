@@ -21,6 +21,7 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import { MARKET_TYPE_ASK } from '@/constants/market'
 // import SearchInput from '@/components/SearchInput'
 // import CatalogList from '@/components/CatalogList'
 // import Link from '@/components/Link'
@@ -238,6 +239,7 @@ export default function Index({ marketSummary, trendingItems }) {
               {topHeroes &&
                 topHeroes.map(hero => (
                   <Link
+                    key={hero}
                     href={`/search?hero=${hero}`}
                     color="secondary"
                     className={classes.footLinks}>
@@ -252,7 +254,11 @@ export default function Index({ marketSummary, trendingItems }) {
               <Typography className={classes.footLinks}>Top Sellers</Typography>
               {topSellers &&
                 topSellers.data.map(item => (
-                  <Link href={`/${item.slug}`} color="secondary" className={classes.footLinks}>
+                  <Link
+                    key={item.slug}
+                    href={`/${item.slug}`}
+                    color="secondary"
+                    className={classes.footLinks}>
                     <Typography variant="subtitle1" component="p">
                       {item.name}
                     </Typography>
@@ -265,6 +271,7 @@ export default function Index({ marketSummary, trendingItems }) {
               {topOrigins &&
                 topOrigins.map(origin => (
                   <Link
+                    key={origin}
                     href={`/search?origin=${origin}`}
                     color="secondary"
                     className={classes.footLinks}>
@@ -289,7 +296,9 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const marketSummary = await statsMarketSummary()
+  const marketSummary = await statsMarketSummary({
+    type: MARKET_TYPE_ASK,
+  })
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)

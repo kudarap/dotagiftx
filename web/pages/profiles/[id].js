@@ -5,7 +5,7 @@ import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { CDN_URL, marketSearch, statsMarketSummary, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -20,6 +20,7 @@ import {
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
 import Link from '@/components/Link'
+import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -62,6 +63,11 @@ export default function UserDetails({
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(initialError)
+
+  if (error) {
+    console.error(error)
+    return <ErrorPage>{error}</ErrorPage>
+  }
 
   // Handle market request on page change.
   React.useEffect(() => {
@@ -188,13 +194,24 @@ UserDetails.defaultProps = {
 
 const marketSearchFilter = {
   page: 1,
+  type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
 }
 
 // This gets called on every request
 export async function getServerSideProps({ params, query }) {
-  const profile = await user(String(params.id))
+  let profile
+  try {
+    profile = await user(String(params.id))
+  } catch (e) {
+    return {
+      props: {
+        error: e.message,
+      },
+    }
+  }
+
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
   if (query.filter) {

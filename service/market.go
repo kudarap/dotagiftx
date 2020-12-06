@@ -100,16 +100,16 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 	mkt.ItemID = i.ID
 
-	// Check Item quantity limit.
-	qty, err := s.marketStg.Count(core.FindOpts{
-		Filter: core.Market{ItemID: mkt.ItemID, Status: core.MarketStatusLive},
-		UserID: mkt.UserID,
-	})
-	if err != nil {
-		return err
-	}
-	if qty >= core.MaxMarketQtyLimitPerUser {
-		return core.MarketErrQtyLimitPerUser
+	// Check market details by type.
+	switch mkt.Type {
+	case core.MarketTypeAsk:
+		if err := s.checkAskType(mkt); err != nil {
+			return err
+		}
+	case core.MarketTypeBid:
+		if err := s.checkBidType(mkt); err != nil {
+			return err
+		}
 	}
 
 	if err := s.marketStg.Create(mkt); err != nil {
@@ -121,6 +121,58 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
 	//}()
+
+	return nil
+}
+
+func (s *marketService) checkAskType(ask *core.Market) error {
+	// Check Item max offer limit.
+	qty, err := s.marketStg.Count(core.FindOpts{
+		Filter: core.Market{
+			ItemID: ask.ItemID,
+			Type:   core.MarketTypeAsk,
+			Status: core.MarketStatusLive,
+		},
+		UserID: ask.UserID,
+	})
+	if err != nil {
+		return err
+	}
+	if qty >= core.MaxMarketQtyLimitPerUser {
+		return core.MarketErrQtyLimitPerUser
+	}
+
+	return nil
+}
+
+func (s *marketService) checkBidType(bid *core.Market) error {
+	// Check if bid price is lower than lowest ask price.
+	ask, err := s.catalogStg.Index(bid.ItemID)
+	if err != nil {
+		return err
+	}
+	if ask.LowestAsk <= bid.Price {
+		return core.MarketErrInvalidBidPrice
+	}
+
+	// Remove existing buy order if exists.
+	res, err := s.marketStg.Find(core.FindOpts{
+		Filter: core.Market{
+			ItemID: bid.ItemID,
+			Type:   core.MarketTypeBid,
+			Status: core.MarketStatusLive,
+		},
+		UserID: bid.UserID,
+	})
+	if err != nil {
+		return err
+	}
+	for _, m := range res {
+		m.Status = core.MarketStatusRemoved
+		if err := s.marketStg.Update(&m); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

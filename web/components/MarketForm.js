@@ -14,7 +14,7 @@ import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import { MARKET_QTY_LIMIT } from '@/constants/market'
+import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
@@ -47,11 +47,16 @@ const checkMarketPayload = payload => {
   }
 
   if (Number(payload.price) <= 0) {
-    return 'Price must be atleast USD 0.01'
+    return 'Price must be atleast 0.01 USD'
   }
 
   if (Number(payload.quantity) > MARKET_QTY_LIMIT) {
     return `Quantity limit ${MARKET_QTY_LIMIT} per post`
+  }
+
+  const notesLen = String(payload.notes).length
+  if (notesLen > MARKET_NOTES_MAX_LEN) {
+    return `Notes max length limit reached ${notesLen}/${MARKET_NOTES_MAX_LEN}`
   }
 
   return null
@@ -96,7 +101,7 @@ export default function MarketForm() {
     const newMarket = {
       item_id: payload.item_id,
       price: Number(payload.price),
-      notes: payload.notes,
+      notes: String(payload.notes).trim(),
     }
 
     const err = checkMarketPayload({ ...newMarket, quantity })
@@ -156,7 +161,7 @@ export default function MarketForm() {
       {!isLoggedIn && (
         <>
           <Alert severity="warning">
-            You must signed in to post an item — <Link href="/login">Sign in now</Link>
+            You must be signed in to post an item — <Link href="/login">Sign in now</Link>
           </Alert>
           <br />
         </>
@@ -267,7 +272,7 @@ export default function MarketForm() {
           color="secondary"
           label="Notes"
           value={payload.notes}
-          helperText="Keep it short, This will be display when they check your offer."
+          helperText="Keep it short, This will be displayed when they check your offer."
           onInput={e => setPayload({ ...payload, notes: e.target.value })}
           disabled={loading || !isLoggedIn || Boolean(newMarketID)}
         />
@@ -299,6 +304,7 @@ export default function MarketForm() {
               <Link style={{ textDecoration: 'underline' }} href="/my-listings">
                 Item Listings
               </Link>
+              .
             </Alert>
           )}
           {error && (
@@ -307,7 +313,7 @@ export default function MarketForm() {
             </Typography>
           )}
         </div>
-        <Typography variant="caption" color="textSecondary">
+        <Typography variant="body2" color="textSecondary" component="div">
           <br />
           Guides for selling Giftables
           <ul>
