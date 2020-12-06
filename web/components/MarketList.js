@@ -122,7 +122,7 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
                     Price
                   </Typography>
                 </TableHeadCell>
-                {!isMobile && <TableHeadCell size="small" align="center" width={156} />}
+                {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
               </TableRow>
 
               {error && (
@@ -325,7 +325,14 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
       </TableContainer>
 
       {/* Only display pagination on offers */}
-      {tabIdx === 0 ? pagination : null}
+      {tabIdx === 0 && pagination}
+
+      {tabIdx === 1 && buyOrders.total_count > 10 && (
+        <Typography color="textSecondary" align="right" variant="body2" style={{ margin: 8 }}>
+          {/* $9.50 or less on 5 buy orders */} {buyOrders.total_count - 10} more hidden buy orders
+          at {amount(buyOrders.data[9].price, 'USD')} or less
+        </Typography>
+      )}
 
       <ContactDialog
         market={currentMarket}
