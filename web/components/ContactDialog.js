@@ -140,7 +140,7 @@ export default function ContactDialog(props) {
             </Typography>
           </div>
 
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="textSecondary" component="div">
             <br />
             Guides for buying Giftables
             <ul>

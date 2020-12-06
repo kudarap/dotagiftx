@@ -313,7 +313,7 @@ export default function MarketForm() {
             </Typography>
           )}
         </div>
-        <Typography variant="caption" color="textSecondary">
+        <Typography variant="body2" color="textSecondary" component="div">
           <br />
           Guides for selling Giftables
           <ul>
