@@ -12,11 +12,11 @@ import * as format from '@/lib/format'
 import { myMarket } from '@/service/api'
 import Link from '@/components/Link'
 import ItemImage from '@/components/ItemImage'
-import BidButton from '@/components/BidButton'
 import AppContext from '@/components/AppContext'
 import { MARKET_NOTES_MAX_LEN, MARKET_TYPE_BID } from '@/constants/market'
 import { itemRarityColorMap } from '@/constants/palette'
 import DialogCloseButton from '@/components/DialogCloseButton'
+import Button from '@/components/Button'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -215,17 +215,17 @@ export default function BuyOrderDialog(props) {
           <br />
           <br />
 
-          <BidButton
+          <Button
             fullWidth
             size="large"
             type="submit"
-            variant="outlined"
+            variant="contained"
             target="_blank"
             rel="noreferrer noopener"
             disabled={loading}
             startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}>
             Place buy order
-          </BidButton>
+          </Button>
 
           {error && (
             <Typography align="center" variant="body2" color="error">
