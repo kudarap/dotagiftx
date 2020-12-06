@@ -218,7 +218,7 @@ export default function BuyOrderDialog(props) {
             color="secondary"
             variant="outlined"
             label="Notes"
-            helperText="Keep it short, This will be displayed when they check your buy order."
+            helperText="Keep it short, This will be displayed when they check your order."
             value={notes}
             onInput={e => setNotes(e.target.value)}
           />
