@@ -101,7 +101,13 @@ export default function BuyOrderDialog(props) {
         const res = await myMarket.POST(buyOrder)
         setMarket(res)
       } catch (e) {
-        setError(`Error: ${e.message}`)
+        // special case reword error
+        let m = e.messsage
+        if (e.message === 'market bid should be lower than lowest ask price') {
+          m = 'buy order price should be lower than lowest offer price'
+        }
+
+        setError(`Error: ${m}`)
       }
 
       setLoading(false)
