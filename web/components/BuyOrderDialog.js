@@ -53,8 +53,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const checkPayload = payload => {
-  if (Number(payload.price) <= 0) {
-    return 'Price must be atleast 0.01 USD'
+  if (Number(payload.price) < 0.5) {
+    return 'Price must be atleast 0.50 USD'
   }
 
   const notesLen = String(payload.notes).length
@@ -119,7 +119,7 @@ export default function BuyOrderDialog(props) {
       setMarket(null)
     }, 500)
 
-    if (Boolean(market)) {
+    if (market) {
       // Forces to refresh buy order table
       router.push(`${router.query.slug}?buyorder`)
     }
