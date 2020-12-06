@@ -100,20 +100,16 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 	mkt.ItemID = i.ID
 
-	// Check Item max offer limit.
-	qty, err := s.marketStg.Count(core.FindOpts{
-		Filter: core.Market{
-			ItemID: mkt.ItemID,
-			Type:   core.MarketTypeAsk,
-			Status: core.MarketStatusLive,
-		},
-		UserID: mkt.UserID,
-	})
-	if err != nil {
-		return err
-	}
-	if qty >= core.MaxMarketQtyLimitPerUser {
-		return core.MarketErrQtyLimitPerUser
+	// Check market details by type.
+	switch mkt.Type {
+	case core.MarketTypeAsk:
+		if err := s.checkAskType(mkt); err != nil {
+			return err
+		}
+	case core.MarketTypeBid:
+		if err := s.checkBidType(mkt); err != nil {
+			return err
+		}
 	}
 
 	if err := s.marketStg.Create(mkt); err != nil {
@@ -126,6 +122,30 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 	//}()
 
+	return nil
+}
+
+func (s *marketService) checkAskType(ask *core.Market) error {
+	// Check Item max offer limit.
+	qty, err := s.marketStg.Count(core.FindOpts{
+		Filter: core.Market{
+			ItemID: ask.ItemID,
+			Type:   core.MarketTypeAsk,
+			Status: core.MarketStatusLive,
+		},
+		UserID: ask.UserID,
+	})
+	if err != nil {
+		return err
+	}
+	if qty >= core.MaxMarketQtyLimitPerUser {
+		return core.MarketErrQtyLimitPerUser
+	}
+
+	return nil
+}
+
+func (s *marketService) checkBidType(bid *core.Market) error {
 	return nil
 }
 
