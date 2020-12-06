@@ -45,7 +45,8 @@ export default function ContactBuyerDialog(props) {
 
   const { market, open, onClose } = props
 
-  if (!market) {
+  // Check for redacted user and disabled them for opening the dialog.
+  if (!market || (market && !market.user.id)) {
     return null
   }
 
