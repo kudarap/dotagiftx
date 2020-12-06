@@ -319,6 +319,7 @@ func redactBuyers(list []core.Market) []core.Market {
 			continue
 		}
 
+		market.User.ID = ""
 		market.User.Name = strings.Repeat(redactChar, len(market.User.Name))
 		market.User.SteamID = strings.Repeat(redactChar, len(market.User.SteamID))
 		market.User.URL = strings.Repeat(redactChar, len(market.User.URL))
