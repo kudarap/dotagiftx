@@ -146,6 +146,25 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 }
 
 func (s *marketService) checkBidType(bid *core.Market) error {
+	// Remove existing buy order if exists.
+	res, err := s.marketStg.Find(core.FindOpts{
+		Filter: core.Market{
+			ItemID: bid.ItemID,
+			Type:   core.MarketTypeBid,
+			Status: core.MarketStatusLive,
+		},
+		UserID: bid.UserID,
+	})
+	if err != nil {
+		return err
+	}
+	for _, m := range res {
+		m.Status = core.MarketStatusRemoved
+		if err := s.marketStg.Update(&m); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
