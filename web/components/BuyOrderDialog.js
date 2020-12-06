@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react'
+import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
@@ -107,6 +108,7 @@ export default function BuyOrderDialog(props) {
     })()
   }
 
+  const router = useRouter()
   const handleClose = () => {
     onClose()
     setTimeout(() => {
@@ -116,6 +118,11 @@ export default function BuyOrderDialog(props) {
       setPrice('')
       setMarket(null)
     }, 500)
+
+    if (Boolean(market)) {
+      // Forces to refresh buy order table
+      router.push(`${router.query.slug}?buyorder`)
+    }
   }
 
   const handleDone = () => {
@@ -201,7 +208,7 @@ export default function BuyOrderDialog(props) {
               placeholder="1.00"
               type="number"
               helperText="Price you want to pay in USD."
-              disabled={loading || market}
+              disabled={loading || Boolean(market)}
               value={price}
               onInput={handlePriceChange}
               onChange={handlePriceChange}
@@ -213,7 +220,7 @@ export default function BuyOrderDialog(props) {
           </div>
           <br />
           <TextField
-            disabled={loading || market}
+            disabled={loading || Boolean(market)}
             fullWidth
             color="secondary"
             variant="outlined"
@@ -240,7 +247,7 @@ export default function BuyOrderDialog(props) {
           )}
 
           <div style={{ marginTop: 2 }}>
-            {market && (
+            {Boolean(market) && (
               <Alert
                 severity="success"
                 variant="filled"
@@ -251,7 +258,7 @@ export default function BuyOrderDialog(props) {
                 }>
                 Your buy order has been placed and now open for sellers. Check your{' '}
                 <Link style={{ textDecoration: 'underline' }} href="/my-buyorders">
-                  Buy Orders
+                  Buy orders
                 </Link>
                 .
               </Alert>
@@ -263,7 +270,7 @@ export default function BuyOrderDialog(props) {
             )}
           </div>
 
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="textSecondary" component="div">
             <br />
             Placing buy order on Giftables
             <ul>

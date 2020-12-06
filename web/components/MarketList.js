@@ -1,5 +1,6 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import has from 'lodash/has'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
@@ -50,6 +51,25 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
 
   const [tabIdx, setTabIdx] = React.useState(0)
 
+  const router = useRouter()
+  useEffect(() => {
+    if (has(router.query, 'buyorder')) {
+      setTabIdx(1)
+    } else {
+      setTabIdx(0)
+    }
+  }, [router.query])
+
+  const handleTabChange = (e, value) => {
+    setTabIdx(value)
+    let p = `/${router.query.slug}`
+    if (value === 1) {
+      p += '?buyorder'
+    }
+
+    router.push(p)
+  }
+
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
     let src = offers
@@ -60,7 +80,6 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
     setCurrentMarket(src.data[marketIdx])
   }
 
-  const router = useRouter()
   const handleRemoveClick = marketIdx => {
     let src = offers
     if (tabIdx === 1) {
@@ -76,10 +95,6 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
         console.error(`Error: ${e.message}`)
       }
     })()
-  }
-
-  const handleTabChange = (e, value) => {
-    setTabIdx(value)
   }
 
   return (
