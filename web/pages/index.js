@@ -21,6 +21,7 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import { MARKET_TYPE_ASK } from '@/constants/market'
 // import SearchInput from '@/components/SearchInput'
 // import CatalogList from '@/components/CatalogList'
 // import Link from '@/components/Link'
@@ -289,7 +290,9 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const marketSummary = await statsMarketSummary()
+  const marketSummary = await statsMarketSummary({
+    type: MARKET_TYPE_ASK,
+  })
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)
