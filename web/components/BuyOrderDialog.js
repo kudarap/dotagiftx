@@ -172,7 +172,7 @@ export default function BuyOrderDialog(props) {
               </Typography>
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Starting at:{' '}
+              Lowest Price:{' '}
               <Link href={`/${catalog.slug}`}>
                 {catalog.lowest_ask ? format.amount(catalog.lowest_ask, 'USD') : 'no offers yet'}
               </Link>
@@ -235,7 +235,7 @@ export default function BuyOrderDialog(props) {
               rel="noreferrer noopener"
               disabled={loading}
               startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}>
-              Place buy order
+              Place Order
             </Button>
           )}
 

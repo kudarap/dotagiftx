@@ -202,7 +202,7 @@ export default function ItemDetails({
                     href={`/post-item?s=${item.slug}`}
                     disableUnderline
                     fullWidth>
-                    Post this Item
+                    Post this item
                   </Button>
                 </div>
               )}
@@ -321,10 +321,14 @@ export default function ItemDetails({
                     component={Link}
                     href={`/post-item?s=${item.slug}`}
                     disableUnderline>
-                    Post this Item
+                    Post this item
                   </Button>
-                  <BidButton className={classes.postItemButton} variant="outlined" disableUnderline>
-                    Place Buy Order
+                  <BidButton
+                    onClick={handleBuyOrderClick}
+                    className={classes.postItemButton}
+                    variant="outlined"
+                    disableUnderline>
+                    Place buy order
                   </BidButton>
                 </div>
               )}
