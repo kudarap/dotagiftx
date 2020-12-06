@@ -54,6 +54,7 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       borderColor: theme.palette.grey[600],
     },
+    cursor: 'pointer',
   },
   avatarMenu: {
     marginTop: theme.spacing(4),
@@ -180,13 +181,13 @@ export default function Header({ disableSearch }) {
               {/* Avatar menu button */}
               {isLoggedIn ? (
                 <>
-                  <IconButton
-                    style={{ padding: 0 }}
+                  <Avatar
                     aria-controls="avatar-menu"
                     aria-haspopup="true"
-                    onClick={handleClick}>
-                    <Avatar className={classes.avatar} {...retinaSrcSet(profile.avatar, 36, 36)} />
-                  </IconButton>
+                    onClick={handleClick}
+                    className={classes.avatar}
+                    {...retinaSrcSet(profile.avatar, 36, 36)}
+                  />
                   <Menu
                     className={classes.avatarMenu}
                     id="avatar-menu"
