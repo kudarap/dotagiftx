@@ -250,7 +250,7 @@ export default function BuyOrderDialog(props) {
                   </Button>
                 }>
                 Your buy order has been placed and now open for sellers. Check your{' '}
-                <Link style={{ textDecoration: 'underline' }} href="/my-buy-orders">
+                <Link style={{ textDecoration: 'underline' }} href="/my-buyorders">
                   Buy Orders
                 </Link>
                 .

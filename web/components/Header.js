@@ -219,7 +219,7 @@ export default function Header({ disableSearch }) {
                     <MenuItem
                       onClick={handleMoreClose}
                       component={Link}
-                      href="/my-buy-orders"
+                      href="/my-buyorders"
                       disableUnderline>
                       Buy Orders
                     </MenuItem>
@@ -295,7 +295,7 @@ export default function Header({ disableSearch }) {
                     <MenuItem
                       onClick={handleMoreClose}
                       component={Link}
-                      href="/my-buy-orders"
+                      href="/my-buyorders"
                       disableUnderline>
                       Buy Orders
                     </MenuItem>,
