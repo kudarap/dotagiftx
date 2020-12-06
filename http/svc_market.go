@@ -76,46 +76,6 @@ func handleMarketList(
 	}
 }
 
-const redactChar = "█"
-
-func redactBuyers(list []core.Market) []core.Market {
-	for i, market := range list {
-		if market.Type != core.MarketTypeBid {
-			continue
-		}
-
-		market.User.Name = strings.Repeat(redactChar, len(market.User.Name))
-		market.User.SteamID = strings.Repeat(redactChar, len(market.User.SteamID))
-		market.User.URL = strings.Repeat(redactChar, len(market.User.URL))
-		list[i] = market
-	}
-
-	return list
-}
-
-func redactBuyersFromCache(hit string) interface{} {
-	d := struct {
-		Data        []core.Market `json:"data"`
-		ResultCount int           `json:"result_count"`
-		TotalCount  int           `json:"total_count"`
-	}{}
-	if err := json.UnmarshalFromString(hit, &d); err != nil {
-		return nil
-	}
-
-	d.Data = redactBuyers(d.Data)
-	return d
-}
-
-func isReqAuthorized(r *http.Request) bool {
-	c, _ := jwt.ParseFromHeader(r.Header)
-	if c == nil {
-		return false
-	}
-
-	return c.UserID != ""
-}
-
 func handleMarketDetail(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
@@ -153,23 +113,6 @@ func handleMarketDetail(svc core.MarketService, cache core.Cache, logger *logrus
 
 		respondOK(w, m)
 	}
-}
-
-func redactBuyer(m *core.Market) *core.Market {
-	if m == nil {
-		return nil
-	}
-
-	return &redactBuyers([]core.Market{*m})[0]
-}
-
-func redactBuyerFromCache(hit string) *core.Market {
-	d := &core.Market{}
-	if err := json.UnmarshalFromString(hit, &d); err != nil {
-		return nil
-	}
-
-	return redactBuyer(d)
 }
 
 func handleMarketCreate(svc core.MarketService, cache core.Cache) http.HandlerFunc {
@@ -357,4 +300,61 @@ func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logg
 
 		respondOK(w, data)
 	}
+}
+
+func isReqAuthorized(r *http.Request) bool {
+	c, _ := jwt.ParseFromHeader(r.Header)
+	if c == nil {
+		return false
+	}
+
+	return c.UserID != ""
+}
+
+const redactChar = "█"
+
+func redactBuyers(list []core.Market) []core.Market {
+	for i, market := range list {
+		if market.Type != core.MarketTypeBid {
+			continue
+		}
+
+		market.User.Name = strings.Repeat(redactChar, len(market.User.Name))
+		market.User.SteamID = strings.Repeat(redactChar, len(market.User.SteamID))
+		market.User.URL = strings.Repeat(redactChar, len(market.User.URL))
+		list[i] = market
+	}
+
+	return list
+}
+
+func redactBuyersFromCache(hit string) interface{} {
+	d := struct {
+		Data        []core.Market `json:"data"`
+		ResultCount int           `json:"result_count"`
+		TotalCount  int           `json:"total_count"`
+	}{}
+	if err := json.UnmarshalFromString(hit, &d); err != nil {
+		return nil
+	}
+
+	d.Data = redactBuyers(d.Data)
+	return d
+}
+
+func redactBuyer(m *core.Market) *core.Market {
+	if m == nil {
+		return nil
+	}
+
+	return &redactBuyers([]core.Market{*m})[0]
+}
+
+func redactBuyerFromCache(hit string) *core.Market {
+	d := &core.Market{}
+	if err := json.UnmarshalFromString(hit, &d); err != nil {
+		return nil
+	}
+
+	return redactBuyer(d)
 }
