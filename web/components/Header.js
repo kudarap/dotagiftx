@@ -181,15 +181,13 @@ export default function Header({ disableSearch }) {
               {/* Avatar menu button */}
               {isLoggedIn ? (
                 <>
-                  {profile.avatar && (
-                    <Avatar
-                      aria-controls="avatar-menu"
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      className={classes.avatar}
-                      {...retinaSrcSet(profile.avatar, 36, 36)}
-                    />
-                  )}
+                  <Avatar
+                    aria-controls="avatar-menu"
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    className={classes.avatar}
+                    {...retinaSrcSet(profile.avatar, 36, 36)}
+                  />
                   <Menu
                     className={classes.avatarMenu}
                     id="avatar-menu"
