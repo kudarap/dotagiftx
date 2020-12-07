@@ -149,8 +149,8 @@ export default function BuyOrderDialog(props) {
       aria-describedby="alert-dialog-description">
       <form onSubmit={handleSubmit}>
         <DialogTitle id="alert-dialog-title">
-          Buy - {catalog.name}
           <DialogCloseButton onClick={handleClose} />
+          Buy - {catalog.name}
         </DialogTitle>
         <DialogContent>
           {!isLoggedIn && (
@@ -326,8 +326,10 @@ BuyOrderDialog.propTypes = {
   catalog: PropTypes.object.isRequired,
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  onChange: PropTypes.func,
 }
 BuyOrderDialog.defaultProps = {
   open: false,
   onClose: () => {},
+  onChange: () => {},
 }
