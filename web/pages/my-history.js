@@ -107,7 +107,7 @@ export default function MyHistory() {
           {soldItems.loading && <LinearProgress color="secondary" />}
           <HistoryList datatable={soldItems} />
           <TablePagination
-            style={{ textAlign: 'right' }}
+            style={{ textAlign: 'right', minHeight: 48 }}
             count={soldItems.total_count || 0}
             page={soldFilter.page}
             onChangePage={handleSoldPageChange}
@@ -120,7 +120,7 @@ export default function MyHistory() {
           {completedItems.loading && <LinearProgress color="secondary" />}
           <HistoryList datatable={completedItems} />
           <TablePagination
-            style={{ textAlign: 'right' }}
+            style={{ textAlign: 'right', minHeight: 48 }}
             count={completedItems.total_count || 0}
             page={completedFilter.page}
             onChangePage={handleCompletedPageChange}
@@ -133,7 +133,7 @@ export default function MyHistory() {
           {cancelledItems.loading && <LinearProgress color="secondary" />}
           <HistoryList datatable={cancelledItems} />
           <TablePagination
-            style={{ textAlign: 'right' }}
+            style={{ textAlign: 'right', minHeight: 48 }}
             count={cancelledItems.total_count || 0}
             page={cancelledFilter.page}
             onChangePage={handleCancelledPageChange}
