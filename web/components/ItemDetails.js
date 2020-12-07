@@ -124,7 +124,6 @@ export default function ItemDetails({
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
 
   // Retrieve offers and handle page change.
-  marketBuyOrderFilter.item_id = item.id
   React.useEffect(() => {
     ;(async () => {
       setLoading(true)
@@ -137,18 +136,21 @@ export default function ItemDetails({
       setLoading(false)
     })()
   }, [filter.page])
+
   // Retrieve buy orders.
+  marketBuyOrderFilter.item_id = item.id
+  const getBuyOrders = async () => {
+    setLoading(true)
+    try {
+      const res = await marketSearch(marketBuyOrderFilter)
+      setBuyOrders(res)
+    } catch (e) {
+      setError(e.message)
+    }
+    setLoading(false)
+  }
   React.useEffect(() => {
-    ;(async () => {
-      setLoading(true)
-      try {
-        const res = await marketSearch(marketBuyOrderFilter)
-        setBuyOrders(res)
-      } catch (e) {
-        setError(e.message)
-      }
-      setLoading(false)
-    })()
+    getBuyOrders()
   }, [])
 
   // Retrieve market history.
@@ -174,6 +176,11 @@ export default function ItemDetails({
 
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
+  }
+
+  const handleBuyerChange = () => {
+    console.log('changd')
+    getBuyOrders()
   }
 
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
@@ -439,6 +446,7 @@ export default function ItemDetails({
           onClose={() => {
             setOpenBuyOrderDialog(false)
           }}
+          onChange={handleBuyerChange}
         />
         <img src={trackViewURL(item.id)} alt="" />
       </main>

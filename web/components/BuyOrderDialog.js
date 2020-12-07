@@ -69,7 +69,7 @@ export default function BuyOrderDialog(props) {
   const classes = useStyles()
   const { isMobile, isLoggedIn } = useContext(AppContext)
 
-  const { catalog, open, onClose } = props
+  const { catalog, open, onClose, onChange } = props
 
   const [market, setMarket] = useState(null)
   const [price, setPrice] = useState('')
@@ -100,6 +100,7 @@ export default function BuyOrderDialog(props) {
       try {
         const res = await myMarket.POST(buyOrder)
         setMarket(res)
+        onChange()
       } catch (e) {
         // special case reword error
         let m = e.messsage
@@ -115,8 +116,8 @@ export default function BuyOrderDialog(props) {
   }
 
   const router = useRouter()
-  const handleClose = () => {
-    onClose()
+  const handleClose = isChanged => {
+    onClose(isChanged)
     setTimeout(() => {
       setError(null)
       setLoading(false)
