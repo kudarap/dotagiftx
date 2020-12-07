@@ -151,7 +151,7 @@ func (s *marketService) checkBidType(bid *core.Market) error {
 	if err != nil {
 		return err
 	}
-	if ask.LowestAsk <= bid.Price {
+	if ask.Quantity != 0 && ask.LowestAsk <= bid.Price {
 		return core.MarketErrInvalidBidPrice
 	}
 
