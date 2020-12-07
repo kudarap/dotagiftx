@@ -81,8 +81,13 @@ export default function Header({ disableSearch }) {
 
   const [profile, setProfile] = React.useState(defaultProfile)
 
+  // load profile data if logged in.
   React.useEffect(() => {
     ;(async () => {
+      if (!isLoggedIn) {
+        return
+      }
+
       let profile = Storage.get(APP_CACHE_PROFILE)
       if (profile) {
         setProfile(profile)
