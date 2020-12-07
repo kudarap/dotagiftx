@@ -138,7 +138,7 @@ export default function ItemDetails({
       }
       setLoading(false)
     })()
-  }, [filter])
+  }, [filter.page])
 
   // Load market history.
   const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
