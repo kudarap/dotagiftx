@@ -103,7 +103,7 @@ export default function BuyOrderDialog(props) {
         onChange()
       } catch (e) {
         // special case reword error
-        let m = e.messsage
+        let m = e.message
         if (e.message === 'market bid should be lower than lowest ask price') {
           m = 'buy order price should be lower than lowest offer price'
         }

@@ -69,7 +69,7 @@ const baseRequest = (method, endpoint, body, token = null) => {
     .then(json => {
       // Handle user error.
       if (json.error) {
-        throw Error(json.msg)
+        throw Error(json.msg || json.type || 'server error')
       }
 
       return json
