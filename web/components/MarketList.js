@@ -403,9 +403,8 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
         </Typography>
       )}
 
-      {((tabIdx === 0 && !pagination) || (tabIdx === 1 && buyOrders.total_count <= 10)) && (
-        <div style={{ margin: 8 }}>&nbsp;</div>
-      )}
+      {((tabIdx === 0 && offers.total_count === 0) ||
+        (tabIdx === 1 && buyOrders.total_count <= 10)) && <div style={{ margin: 8 }}>&nbsp;</div>}
 
       <ContactDialog
         market={currentMarket}
