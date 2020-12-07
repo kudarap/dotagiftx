@@ -118,17 +118,23 @@ export default function ItemDetails({
   }
 
   marketReservedFilter.item_id = item.id
-  const { data: marketReserved, error: marketReservedError } = useSWR(
-    [MARKETS, marketReservedFilter],
-    fetcher,
-    { revalidateOnFocus: false }
-  )
+  const {
+    data: marketReserved,
+    error: marketReservedError,
+    isValidating: marketReservedLoading,
+  } = useSWR([MARKETS, marketReservedFilter], fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+  })
   marketDeliveredFilter.item_id = item.id
-  const { data: marketDelivered, error: marketDeliveredError } = useSWR(
-    [MARKETS, marketDeliveredFilter],
-    fetcher,
-    { revalidateOnFocus: false }
-  )
+  const {
+    data: marketDelivered,
+    error: marketDeliveredError,
+    isValidating: marketDeliveredLoading,
+  } = useSWR([MARKETS, marketDeliveredFilter], fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+  })
 
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
@@ -383,13 +389,17 @@ export default function ItemDetails({
           />
 
           <div>
-            <div id="reserved">{item.name} history</div>
-            {!marketReservedError && marketReserved && (
-              <MarketActivity data={marketReserved.data} />
-            )}
-            {!marketDeliveredError && marketDelivered && (
-              <MarketActivity data={marketDelivered.data} />
-            )}
+            <div>{item.name} history</div>
+            <div id="reserved">
+              {!marketReservedError && marketReserved && (
+                <MarketActivity data={marketReserved.data} loading={marketReservedLoading} />
+              )}
+            </div>
+            <div id="delivered">
+              {!marketDeliveredError && marketDelivered && (
+                <MarketActivity data={marketDelivered.data} loading={marketReservedLoading} />
+              )}
+            </div>
           </div>
         </Container>
         <BuyOrderDialog
