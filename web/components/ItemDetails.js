@@ -123,7 +123,7 @@ export default function ItemDetails({
   const [loading, setLoading] = React.useState(false)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
 
-  // Handle market request on page change.
+  // Retrieve offers and handle page change.
   marketBuyOrderFilter.item_id = item.id
   React.useEffect(() => {
     ;(async () => {
@@ -131,16 +131,27 @@ export default function ItemDetails({
       try {
         const res = await marketSearch(filter)
         setMarkets(res)
-        const res2 = await marketSearch(marketBuyOrderFilter)
-        setBuyOrders(res2)
       } catch (e) {
         setError(e.message)
       }
       setLoading(false)
     })()
   }, [filter.page])
+  // Retrieve buy orders.
+  React.useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const res = await marketSearch(marketBuyOrderFilter)
+        setBuyOrders(res)
+      } catch (e) {
+        setError(e.message)
+      }
+      setLoading(false)
+    })()
+  }, [])
 
-  // Load market history.
+  // Retrieve market history.
   const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
   marketReservedFilter.item_id = item.id
   const {
