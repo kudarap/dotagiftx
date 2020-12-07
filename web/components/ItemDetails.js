@@ -179,7 +179,6 @@ export default function ItemDetails({
   }
 
   const handleBuyerChange = () => {
-    console.log('changd')
     getBuyOrders()
   }
 
