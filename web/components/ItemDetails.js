@@ -198,6 +198,7 @@ export default function ItemDetails({
   if (!marketDeliveredError && marketDelivered) {
     historyCount += marketDelivered.total_count
   }
+  const isHistoryLoading = marketReservedLoading || marketDeliveredLoading
 
   return (
     <>
@@ -394,9 +395,9 @@ export default function ItemDetails({
             }
           />
 
-          {marketReservedLoading || marketDeliveredLoading ? (
-            <div>Loading {item.name} history...</div>
-          ) : (
+          {shouldLoadHistory && isHistoryLoading && <div>Loading {item.name} history...</div>}
+
+          {shouldLoadHistory && !isHistoryLoading && (
             <div>
               <div>{item.name} history</div>
               {historyCount === 0 && (
