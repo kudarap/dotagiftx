@@ -189,6 +189,14 @@ export default function ItemDetails({
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
   const linkProps = { href: `/${item.slug}` }
 
+  let historyCount = false
+  if (!marketReservedError && marketReserved) {
+    historyCount = marketReserved.total_count
+  }
+  if (!marketDeliveredError && marketDelivered) {
+    historyCount += marketDelivered.total_count
+  }
+
   return (
     <>
       <Head>
@@ -389,14 +397,19 @@ export default function ItemDetails({
           ) : (
             <div>
               <div>{item.name} history</div>
+              {historyCount === 0 && (
+                <Typography variant="body2" color="textSecondary">
+                  No history yet
+                </Typography>
+              )}
               <div id="reserved">
                 {!marketReservedError && marketReserved && (
-                  <MarketActivity data={marketReserved.data} loading={marketReservedLoading} />
+                  <MarketActivity data={marketReserved.data} />
                 )}
               </div>
               <div id="delivered">
                 {!marketDeliveredError && marketDelivered && (
-                  <MarketActivity data={marketDelivered.data} loading={marketDeliveredLoading} />
+                  <MarketActivity data={marketDelivered.data} />
                 )}
               </div>
             </div>
