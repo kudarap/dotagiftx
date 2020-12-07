@@ -392,7 +392,7 @@ export default function ItemDetails({
             }
           />
 
-          {marketReservedLoading || marketReservedLoading ? (
+          {marketReservedLoading || marketDeliveredLoading ? (
             <div>Loading {item.name} history...</div>
           ) : (
             <div>
