@@ -287,7 +287,13 @@ export default function BuyOrderDialog(props) {
             <br />
             Placing buy order on Giftables
             <ul>
-              <li>Buy order details are only visible to the users of this website.</li>
+              <li>
+                Buyer profile details are{' '}
+                <Typography component="span" variant="inherit" color="textPrimary">
+                  only visible
+                </Typography>{' '}
+                to signed in website users.
+              </li>
               <li>
                 As giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;

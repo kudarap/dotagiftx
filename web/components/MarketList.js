@@ -286,10 +286,29 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                 buyOrders.data.map((market, idx) => (
                   <TableRow key={market.id} hover>
                     <TableCell component="th" scope="row" padding="none">
-                      <Link
-                        href="/profiles/[id]"
-                        as={`/profiles/${market.user.steam_id}`}
-                        disableUnderline>
+                      {/* Check for redacted display */}
+                      {market.user.id ? (
+                        <Link
+                          href="/profiles/[id]"
+                          as={`/profiles/${market.user.steam_id}`}
+                          disableUnderline>
+                          <div className={classes.seller}>
+                            <Avatar
+                              className={classes.avatar}
+                              alt={market.user.name}
+                              {...retinaSrcSet(market.user.avatar, 40, 40)}
+                            />
+                            <div>
+                              <strong>{market.user.name}</strong>
+                              <br />
+                              <Typography variant="caption" color="textSecondary">
+                                {/* {market.user.steam_id} */}
+                                Posted {dateFromNow(market.created_at)}
+                              </Typography>
+                            </div>
+                          </div>
+                        </Link>
+                      ) : (
                         <div className={classes.seller}>
                           <Avatar
                             className={classes.avatar}
@@ -305,7 +324,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                             </Typography>
                           </div>
                         </div>
-                      </Link>
+                      )}
                     </TableCell>
                     {!isMobile ? (
                       <>
@@ -329,7 +348,13 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                               color="primary"
                               variant="contained"
                               onClick={() => handleContactClick(idx)}>
-                              Contact Buyer
+                              {market.user.id ? (
+                                'Contact Buyer'
+                              ) : (
+                                <Typography variant="caption" color="textSecondary">
+                                  Sign in to view
+                                </Typography>
+                              )}
                             </BuyButton>
                           )}
                         </TableCell>
@@ -337,11 +362,18 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                     ) : (
                       <TableCell
                         align="right"
-                        onClick={() =>
-                          currentUserID === market.user.id
-                            ? handleRemoveClick(idx)
-                            : handleContactClick(idx)
-                        }
+                        onClick={() => {
+                          if (!market.user.id) {
+                            return
+                          }
+
+                          if (currentUserID === market.user.id) {
+                            handleRemoveClick(idx)
+                            return
+                          }
+
+                          handleContactClick(idx)
+                        }}
                         style={{ cursor: 'pointer' }}>
                         <Typography variant="body2">${market.price.toFixed(2)}</Typography>
                         <Typography
