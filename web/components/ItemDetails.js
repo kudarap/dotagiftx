@@ -384,19 +384,23 @@ export default function ItemDetails({
             }
           />
 
-          <div>
-            <div>{item.name} history</div>
-            <div id="reserved">
-              {!marketReservedError && marketReserved && (
-                <MarketActivity data={marketReserved.data} loading={marketReservedLoading} />
-              )}
+          {marketReservedLoading || marketReservedLoading ? (
+            <div>Loading {item.name} history...</div>
+          ) : (
+            <div>
+              <div>{item.name} history</div>
+              <div id="reserved">
+                {!marketReservedError && marketReserved && (
+                  <MarketActivity data={marketReserved.data} loading={marketReservedLoading} />
+                )}
+              </div>
+              <div id="delivered">
+                {!marketDeliveredError && marketDelivered && (
+                  <MarketActivity data={marketDelivered.data} loading={marketDeliveredLoading} />
+                )}
+              </div>
             </div>
-            <div id="delivered">
-              {!marketDeliveredError && marketDelivered && (
-                <MarketActivity data={marketDelivered.data} loading={marketDeliveredLoading} />
-              )}
-            </div>
-          </div>
+          )}
         </Container>
         <BuyOrderDialog
           catalog={item}
