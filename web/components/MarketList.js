@@ -152,7 +152,7 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
                 </TableRow>
               )}
 
-              {!error && !offers && (
+              {!offers.data && (
                 <TableRow>
                   <TableCell align="center" colSpan={3}>
                     Loading...
