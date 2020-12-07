@@ -396,17 +396,15 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
       {/* Only display pagination on offers */}
       {tabIdx === 0 && pagination}
 
-      {tabIdx === 1 && (
+      {tabIdx === 1 && buyOrders.total_count > 10 && (
         <Typography color="textSecondary" align="right" variant="body2" style={{ margin: 8 }}>
-          {buyOrders.total_count > 10 ? (
-            `${buyOrders.total_count - 10} more hidden buy orders at ${amount(
-              buyOrders.data[9].price,
-              'USD'
-            )} or less`
-          ) : (
-            <span>&nbsp;</span>
-          )}
+          `${buyOrders.total_count - 10} more hidden buy orders at $
+          {amount(buyOrders.data[9].price, 'USD')} or less`
         </Typography>
+      )}
+
+      {((tabIdx === 0 && !pagination) || (tabIdx === 1 && buyOrders.total_count <= 10)) && (
+        <div style={{ margin: 8 }}>&nbsp;</div>
       )}
 
       <ContactDialog
