@@ -403,6 +403,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
         </Typography>
       )}
 
+      {/* Fixes bottom spacing */}
       {((tabIdx === 0 && offers.total_count === 0) ||
         (tabIdx === 1 && buyOrders.total_count <= 10)) && <div style={{ margin: 8 }}>&nbsp;</div>}
 
