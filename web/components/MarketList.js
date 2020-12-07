@@ -303,14 +303,14 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
                               </Button>
                             </div>
                           ) : (
-                            <Button
+                            <BuyButton
                               // Check for redacted user and disabled them for opening the dialog.
                               disabled={!market.user.id}
                               color="primary"
                               variant="contained"
                               onClick={() => handleContactClick(idx)}>
                               Contact Buyer
-                            </Button>
+                            </BuyButton>
                           )}
                         </TableCell>
                       </>
