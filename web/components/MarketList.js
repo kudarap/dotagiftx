@@ -254,6 +254,26 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
                 {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
               </TableRow>
 
+              {error && (
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    Error retrieving data
+                    <br />
+                    <Typography variant="caption" color="textSecondary">
+                      {error}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!buyOrders.data && (
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              )}
+
               {!error && buyOrders.total_count === 0 && (
                 <TableRow>
                   <TableCell align="center" colSpan={3}>
