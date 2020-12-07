@@ -120,12 +120,14 @@ export default function ItemDetails({
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
   const [error, setError] = React.useState(null)
+  const [loading, setLoading] = React.useState(false)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
 
   // Handle market request on page change.
   marketBuyOrderFilter.item_id = item.id
   React.useEffect(() => {
     ;(async () => {
+      setLoading(true)
       try {
         const res = await marketSearch(filter)
         setMarkets(res)
@@ -134,6 +136,7 @@ export default function ItemDetails({
       } catch (e) {
         setError(e.message)
       }
+      setLoading(false)
     })()
   }, [filter])
 
@@ -383,6 +386,7 @@ export default function ItemDetails({
             offers={markets}
             buyOrders={buyOrders}
             error={error}
+            loading={loading}
             pagination={
               !error && (
                 <TablePaginationRouter

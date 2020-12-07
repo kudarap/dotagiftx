@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MarketList({ offers, buyOrders, error, pagination }) {
+export default function MarketList({ offers, buyOrders, error, loading, pagination }) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
@@ -125,7 +125,7 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
           </TableHead>
 
           {tabIdx === 0 ? (
-            <TableBody>
+            <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
               <TableRow>
                 <TableHeadCell size="small">
                   <Typography color="textSecondary" variant="body2">
@@ -239,7 +239,7 @@ export default function MarketList({ offers, buyOrders, error, pagination }) {
                 ))}
             </TableBody>
           ) : (
-            <TableBody>
+            <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
               <TableRow>
                 <TableHeadCell size="small">
                   <Typography color="textSecondary" variant="body2">
