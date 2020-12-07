@@ -7,6 +7,7 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import Divider from '@material-ui/core/Divider'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
+import { amount } from '@/lib/format'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 
@@ -50,7 +51,7 @@ export default function MarketActivity({ data, loading }) {
                 &nbsp;
                 {market.item.hero}&apos;s&nbsp;
                 <Link href={`/${market.item.slug}`} color="secondary">
-                  {market.item.name}
+                  {`${amount(market.price, market.currency)} ${market.item.name}`}
                 </Link>
                 &nbsp;
                 {moment(market.updated_at).fromNow()}

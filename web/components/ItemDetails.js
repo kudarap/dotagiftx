@@ -251,9 +251,7 @@ export default function ItemDetails({
                   {item.name}
                 </Typography>
                 <Typography gutterBottom>
-                  <Link href={`/search?origin=${item.origin}`} color="textSecondary">
-                    {item.origin}
-                  </Link>{' '}
+                  <Link href={`/search?origin=${item.origin}`}>{item.origin}</Link>{' '}
                   {item.rarity !== 'regular' && (
                     <>
                       &mdash;
@@ -269,9 +267,7 @@ export default function ItemDetails({
                   <Typography color="textSecondary" component="span">
                     {`Used by: `}
                   </Typography>
-                  <Link color="textSecondary" href={`/search?hero=${item.hero}`}>
-                    {item.hero}
-                  </Link>
+                  <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
                   <br />
                   <ChipLink label="Dota 2 Wiki" href={wikiLink} />
                   &nbsp;&middot;&nbsp;
@@ -397,7 +393,7 @@ export default function ItemDetails({
             </div>
             <div id="delivered">
               {!marketDeliveredError && marketDelivered && (
-                <MarketActivity data={marketDelivered.data} loading={marketReservedLoading} />
+                <MarketActivity data={marketDelivered.data} loading={marketDeliveredLoading} />
               )}
             </div>
           </div>
