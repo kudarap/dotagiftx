@@ -61,7 +61,7 @@ export default function MarketActivity({ data, loading }) {
                 component="pre"
                 color="textSecondary"
                 variant="caption"
-                style={{ whiteSpace: 'pre-wrap', float: 'inline-start' }}>
+                style={{ whiteSpace: 'pre-wrap', display: 'inline-block' }}>
                 {market.partner_steam_id && (
                   <Link
                     color="textSecondary"
