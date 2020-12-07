@@ -117,25 +117,6 @@ export default function ItemDetails({
     )
   }
 
-  marketReservedFilter.item_id = item.id
-  const {
-    data: marketReserved,
-    error: marketReservedError,
-    isValidating: marketReservedLoading,
-  } = useSWR([MARKETS, marketReservedFilter], fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
-  marketDeliveredFilter.item_id = item.id
-  const {
-    data: marketDelivered,
-    error: marketDeliveredError,
-    isValidating: marketDeliveredLoading,
-  } = useSWR([MARKETS, marketDeliveredFilter], fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
-
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
   const [error, setError] = React.useState(null)
@@ -155,6 +136,27 @@ export default function ItemDetails({
       }
     })()
   }, [filter])
+
+  // Load market history.
+  const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
+  marketReservedFilter.item_id = item.id
+  const {
+    data: marketReserved,
+    error: marketReservedError,
+    isValidating: marketReservedLoading,
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+  })
+  marketDeliveredFilter.item_id = item.id
+  const {
+    data: marketDelivered,
+    error: marketDeliveredError,
+    isValidating: marketDeliveredLoading,
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+  })
 
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
