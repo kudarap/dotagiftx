@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import startsWith from 'lodash/startsWith'
 import { makeStyles } from '@material-ui/core/styles'
@@ -19,6 +18,7 @@ import Button from '@/components/Button'
 import Link from '@/components/Link'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
+  MARKET_STATUS_BID_COMPLETED,
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_REMOVED,
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 
 const steamCommunityBaseURL = 'https://steamcommunity.com'
 
-export default function MarketUpdateDialog(props) {
+export default function BuyOrderUpdateDialog(props) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
@@ -82,9 +82,6 @@ export default function MarketUpdateDialog(props) {
   const onFormSubmit = evt => {
     evt.preventDefault()
 
-    // if (loading || notes.trim() === '') {
-    //   return
-    // }
     if (!url.isValid(steamProfileURL)) {
       setError('Steam Profile is not a valid URL.')
       return
@@ -95,7 +92,7 @@ export default function MarketUpdateDialog(props) {
     }
 
     const payload = {
-      status: MARKET_STATUS_RESERVED,
+      status: MARKET_STATUS_BID_COMPLETED,
       partner_steam_id: steamProfileURL,
       notes,
     }
@@ -130,7 +127,7 @@ export default function MarketUpdateDialog(props) {
       aria-describedby="alert-dialog-description">
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
-          Update Listing
+          Update Order
           <DialogCloseButton onClick={handleClose} />
         </DialogTitle>
         <DialogContent>
@@ -182,7 +179,8 @@ export default function MarketUpdateDialog(props) {
               required
               color="secondary"
               variant="outlined"
-              label="Buyer's Steam profile URL"
+              label="Seller's Steam profile URL"
+              helperText="Records seller history for tracking good and bad reputation."
               placeholder="https://steamcommunity.com/..."
               value={steamProfileURL}
               onInput={e => setSteamProfileURL(e.target.value)}
@@ -194,9 +192,7 @@ export default function MarketUpdateDialog(props) {
               fullWidth
               color="secondary"
               variant="outlined"
-              label="Reservation Notes"
-              helperText="Delivery date and deposit details"
-              placeholder={`${moment().add(30, 'days').format('MMM D')} - $1 deposit`}
+              label="Notes"
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />
@@ -213,28 +209,28 @@ export default function MarketUpdateDialog(props) {
             startIcon={<RemoveIcon />}
             onClick={handleRemoveClick}
             variant="outlined">
-            Remove Listing
+            Remove Order
           </Button>
           <Button
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
             variant="outlined"
             color="secondary"
             type="submit">
-            Reserve to Buyer
+            Complete
           </Button>
         </DialogActions>
       </form>
     </Dialog>
   )
 }
-MarketUpdateDialog.propTypes = {
+BuyOrderUpdateDialog.propTypes = {
   market: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,
   onRemove: PropTypes.func,
   onSuccess: PropTypes.func,
 }
-MarketUpdateDialog.defaultProps = {
+BuyOrderUpdateDialog.defaultProps = {
   market: null,
   open: false,
   onClose: () => {},

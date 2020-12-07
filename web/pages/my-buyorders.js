@@ -7,7 +7,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
-import MyMarketList from '@/components/MyMarketList'
+import MyBuyOrderList from '@/components/MyBuyOrderList'
 import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
@@ -81,7 +81,7 @@ export default function MyListings() {
             My buy orders {total !== 0 && `(${format.numberWithCommas(total)})`}
           </Typography>
 
-          <MyMarketList
+          <MyBuyOrderList
             datatable={data}
             loading={data.loading}
             error={data.error}

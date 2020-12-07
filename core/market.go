@@ -53,13 +53,14 @@ const (
 
 // Market statuses.
 const (
-	MarketStatusPending   MarketStatus = 100
-	MarketStatusLive      MarketStatus = 200
-	MarketStatusReserved  MarketStatus = 300
-	MarketStatusSold      MarketStatus = 400
-	MarketStatusRemoved   MarketStatus = 500
-	MarketStatusCancelled MarketStatus = 600
-	MarketStatusExpired   MarketStatus = 700
+	MarketStatusPending      MarketStatus = 100
+	MarketStatusLive         MarketStatus = 200
+	MarketStatusReserved     MarketStatus = 300
+	MarketStatusSold         MarketStatus = 400
+	MarketStatusBidCompleted MarketStatus = 410
+	MarketStatusRemoved      MarketStatus = 500
+	MarketStatusCancelled    MarketStatus = 600
+	MarketStatusExpired      MarketStatus = 700
 )
 
 type (
@@ -131,13 +132,14 @@ type (
 )
 
 var MarketStatusTexts = map[MarketStatus]string{
-	MarketStatusPending:   "pending",
-	MarketStatusLive:      "live",
-	MarketStatusReserved:  "reserved",
-	MarketStatusSold:      "sold",
-	MarketStatusRemoved:   "removed",
-	MarketStatusCancelled: "cancelled",
-	MarketStatusExpired:   "expired",
+	MarketStatusPending:      "pending",
+	MarketStatusLive:         "live",
+	MarketStatusReserved:     "reserved",
+	MarketStatusSold:         "sold",
+	MarketStatusBidCompleted: "completed",
+	MarketStatusRemoved:      "removed",
+	MarketStatusCancelled:    "cancelled",
+	MarketStatusExpired:      "expired",
 }
 
 // CheckCreate validates field on creating new market.

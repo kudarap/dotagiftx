@@ -12,6 +12,7 @@ export const MARKET_STATUS_PENDING = 100
 export const MARKET_STATUS_LIVE = 200
 export const MARKET_STATUS_RESERVED = 300
 export const MARKET_STATUS_SOLD = 400
+export const MARKET_STATUS_BID_COMPLETED = 410
 export const MARKET_STATUS_REMOVED = 500
 export const MARKET_STATUS_CANCELLED = 600
 
@@ -20,6 +21,7 @@ export const MARKET_STATUS_MAP_TEXT = {
   [MARKET_STATUS_LIVE]: 'Listed',
   [MARKET_STATUS_RESERVED]: 'Reserved',
   [MARKET_STATUS_SOLD]: 'Delivered',
+  [MARKET_STATUS_BID_COMPLETED]: 'Completed Order',
   [MARKET_STATUS_REMOVED]: 'Removed',
   [MARKET_STATUS_CANCELLED]: 'Cancelled',
 }
@@ -29,6 +31,7 @@ export const MARKET_STATUS_MAP_COLOR = {
   [MARKET_STATUS_LIVE]: 'lightgreen',
   [MARKET_STATUS_RESERVED]: 'violet',
   [MARKET_STATUS_SOLD]: 'aqua',
+  [MARKET_STATUS_BID_COMPLETED]: 'deepskyblue',
   [MARKET_STATUS_REMOVED]: 'grey',
   [MARKET_STATUS_CANCELLED]: 'orangered',
 }

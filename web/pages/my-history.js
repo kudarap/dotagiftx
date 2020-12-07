@@ -6,7 +6,11 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { myMarketSearch } from '@/service/api'
-import { MARKET_STATUS_CANCELLED, MARKET_STATUS_SOLD } from '@/constants/market'
+import {
+  MARKET_STATUS_BID_COMPLETED,
+  MARKET_STATUS_CANCELLED,
+  MARKET_STATUS_SOLD,
+} from '@/constants/market'
 import HistoryList from '@/components/HistoryList'
 import TablePagination from '@/components/TablePagination'
 
@@ -21,6 +25,11 @@ const useStyles = makeStyles(theme => ({
 
 const activeMarketFilter = {
   status: MARKET_STATUS_SOLD,
+  sort: 'updated_at:desc',
+  page: 1,
+}
+const completedBidFilter = {
+  status: MARKET_STATUS_BID_COMPLETED,
   sort: 'updated_at:desc',
   page: 1,
 }
@@ -44,6 +53,9 @@ export default function MyHistory() {
   const [soldItems, setSoldItems] = React.useState(initialDatatable)
   const [soldFilter, setSoldFilter] = React.useState(activeMarketFilter)
 
+  const [completedItems, setCompletedItems] = React.useState(initialDatatable)
+  const [completedFilter, setCompletedFilter] = React.useState(completedBidFilter)
+
   const [cancelledItems, setCancelledItems] = React.useState(initialDatatable)
   const [cancelledFilter, setCancelledFilter] = React.useState(cancelledMarketFilter)
 
@@ -57,6 +69,13 @@ export default function MyHistory() {
       }
 
       try {
+        const res = await myMarketSearch(completedFilter)
+        setCompletedItems({ ...completedItems, loading: false, ...res })
+      } catch (e) {
+        setCompletedItems({ ...completedItems, loading: false, error: e.message })
+      }
+
+      try {
         const res = await myMarketSearch(cancelledFilter)
         setCancelledItems({ ...cancelledItems, loading: false, ...res })
       } catch (e) {
@@ -67,6 +86,9 @@ export default function MyHistory() {
 
   const handleSoldPageChange = (e, page) => {
     setSoldFilter({ ...soldFilter, page })
+  }
+  const handleCompletedPageChange = (e, page) => {
+    setCompletedFilter({ ...completedFilter, page })
   }
   const handleCancelledPageChange = (e, page) => {
     setCancelledFilter({ ...soldFilter, page })
@@ -90,7 +112,19 @@ export default function MyHistory() {
             page={soldFilter.page}
             onChangePage={handleSoldPageChange}
           />
-          <br />
+
+          <Typography id="delivered" component="h1" gutterBottom>
+            Completed Orders
+          </Typography>
+          {completedItems.error && <div>failed to load completed orders</div>}
+          {completedItems.loading && <LinearProgress color="secondary" />}
+          <HistoryList datatable={completedItems} />
+          <TablePagination
+            style={{ textAlign: 'right' }}
+            count={completedItems.total_count || 0}
+            page={completedFilter.page}
+            onChangePage={handleCompletedPageChange}
+          />
 
           <Typography id="cancelled" component="h1" gutterBottom>
             Cancelled Items
