@@ -1,12 +1,19 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
+import useSWR from 'swr'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
+import {
+  MARKET_STATUS_LIVE,
+  MARKET_STATUS_RESERVED,
+  MARKET_STATUS_SOLD,
+  MARKET_TYPE_ASK,
+  MARKET_TYPE_BID,
+} from '@/constants/market'
 import { itemRarityColorMap } from '@/constants/palette'
 import { APP_NAME } from '@/constants/strings'
-import { CDN_URL, marketSearch, trackViewURL } from '@/service/api'
+import { CDN_URL, fetcher, MARKETS, marketSearch, trackViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -20,6 +27,7 @@ import ChipLink from '@/components/ChipLink'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
+import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -65,6 +73,18 @@ const marketBuyOrderFilter = {
   sort: 'price:desc',
 }
 
+const marketReservedFilter = {
+  type: MARKET_TYPE_ASK,
+  status: MARKET_STATUS_RESERVED,
+  sort: 'updated_at:desc',
+}
+
+const marketDeliveredFilter = {
+  type: MARKET_TYPE_ASK,
+  status: MARKET_STATUS_SOLD,
+  sort: 'updated_at:desc',
+}
+
 export default function ItemDetails({
   item,
   error: initialError,
@@ -96,6 +116,19 @@ export default function ItemDetails({
       </>
     )
   }
+
+  marketReservedFilter.item_id = item.id
+  const { data: marketReserved, error: marketReservedError } = useSWR(
+    [MARKETS, marketReservedFilter],
+    fetcher,
+    { revalidateOnFocus: false }
+  )
+  marketDeliveredFilter.item_id = item.id
+  const { data: marketDelivered, error: marketDeliveredError } = useSWR(
+    [MARKETS, marketDeliveredFilter],
+    fetcher,
+    { revalidateOnFocus: false }
+  )
 
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
@@ -348,6 +381,16 @@ export default function ItemDetails({
               )
             }
           />
+
+          <div>
+            <div id="reserved">{item.name} history</div>
+            {!marketReservedError && marketReserved && (
+              <MarketActivity data={marketReserved.data} />
+            )}
+            {!marketDeliveredError && marketDelivered && (
+              <MarketActivity data={marketDelivered.data} />
+            )}
+          </div>
         </Container>
         <BuyOrderDialog
           catalog={item}
