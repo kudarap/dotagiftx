@@ -426,8 +426,10 @@ MarketList.propTypes = {
   buyOrders: PropTypes.object.isRequired,
   pagination: PropTypes.element,
   error: PropTypes.string,
+  loading: PropTypes.bool,
 }
 MarketList.defaultProps = {
   pagination: null,
   error: null,
+  loading: false,
 }
