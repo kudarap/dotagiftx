@@ -5,28 +5,20 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import ItemImage from '@/components/ItemImage'
 import { amount, dateCalendar } from '@/lib/format'
+import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
+import { TextField } from '@material-ui/core'
+import ItemImageDialog from '@/components/ItemImageDialog'
 
 const useStyles = makeStyles(theme => ({
   details: {
     [theme.breakpoints.down('xs')]: {
-      textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
-  },
-  media: {
-    [theme.breakpoints.down('xs')]: {
-      margin: '0 auto !important',
-    },
-    width: 150,
-    height: 100,
-    marginRight: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
   },
 }))
 
@@ -58,14 +50,7 @@ export default function HistoryViewDialog(props) {
       </DialogTitle>
       <DialogContent>
         <div className={classes.details}>
-          <ItemImage
-            className={classes.media}
-            image={market.item.image}
-            width={150}
-            height={100}
-            title={market.item.name}
-            rarity={market.item.rarity}
-          />
+          <ItemImageDialog item={market.item} />
 
           <Typography component="h1">
             <Typography component="p" variant="h6">
@@ -112,6 +97,17 @@ export default function HistoryViewDialog(props) {
               )}
             </Typography>
           </Typography>
+        </div>
+        <div>
+          <TextField
+            style={{ marginTop: 16, marginBottom: 16 }}
+            InputProps={{ readOnly: true }}
+            fullWidth
+            color="secondary"
+            variant="outlined"
+            label="Buyer's Steam profile URL"
+            value={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+          />
         </div>
       </DialogContent>
     </Dialog>

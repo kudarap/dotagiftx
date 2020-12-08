@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MARKET_STATUS_LIVE } from '@/constants/market'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { catalog, marketSearch } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import ItemDetails from '@/components/ItemDetails'
@@ -9,6 +9,7 @@ import ErrorPage from './404'
 export default function DynamicPage(props) {
   const { error } = props
   if (error) {
+    console.error(error)
     return <ErrorPage />
   }
 
@@ -23,6 +24,7 @@ DynamicPage.defaultProps = {
 
 const marketSearchFilter = {
   page: 1,
+  type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   sort: 'price',
 }
@@ -41,11 +43,13 @@ export async function getServerSideProps(props) {
   } catch (e) {
     error = `catalog get error: ${e.message}`
   }
+
   if (!item.id) {
     return {
       props: {
         item,
         filter: {},
+        error: 'catalog not found',
       },
     }
   }

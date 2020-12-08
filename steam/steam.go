@@ -3,6 +3,8 @@ package steam
 import (
 	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/kudarap/dotagiftx/core"
 )
@@ -17,11 +19,12 @@ type Config struct {
 // Client represents steam client.
 type Client struct {
 	config Config
+	cache  core.Cache
 }
 
 // New create new steam client instance.
-func New(c Config) (*Client, error) {
-	return &Client{c}, nil
+func New(c Config, ca core.Cache) (*Client, error) {
+	return &Client{c, ca}, nil
 }
 
 func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
@@ -61,4 +64,39 @@ func (c *Client) Player(steamID string) (*core.SteamPlayer, error) {
 		URL:    su.ProfileUrl,
 		Avatar: su.AvatarFull,
 	}, nil
+}
+
+// Vanity URL prefixes.
+const (
+	VanityPrefixID      = "https://steamcommunity.com/id/"
+	VanityPrefixProfile = "https://steamcommunity.com/profiles/"
+)
+
+func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
+	rawURL = strings.TrimRight(rawURL, "/")
+
+	// SteamID might be present on the URL already.
+	if strings.HasPrefix(rawURL, VanityPrefixProfile) {
+		return strings.TrimPrefix(rawURL, VanityPrefixProfile), nil
+	}
+
+	// Its probably steam ID.
+	if !strings.HasPrefix(rawURL, VanityPrefixID) {
+		err = fmt.Errorf("could not parse URL (%s)", rawURL)
+		return
+	}
+
+	vanity := strings.TrimPrefix(rawURL, VanityPrefixID)
+	cacheKey := fmt.Sprintf("steam/resolvedvanity:%s", vanity)
+	if hit, _ := c.cache.Get(cacheKey); hit != "" {
+		return strings.ReplaceAll(hit, `"`, ""), nil
+	}
+
+	steamID, err = ResolveVanityURL(vanity, c.config.Key)
+	if err != nil {
+		return
+	}
+
+	c.cache.Set(cacheKey, steamID, time.Hour*24)
+	return
 }

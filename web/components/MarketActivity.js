@@ -5,7 +5,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Divider from '@material-ui/core/Divider'
+import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
+import { amount } from '@/lib/format'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 
@@ -49,16 +51,26 @@ export default function MarketActivity({ data, loading }) {
                 &nbsp;
                 {market.item.hero}&apos;s&nbsp;
                 <Link href={`/${market.item.slug}`} color="secondary">
+                  {/* {`${amount(market.price, market.currency)} ${market.item.name}`} */}
                   {market.item.name}
                 </Link>
                 &nbsp;
                 {moment(market.updated_at).fromNow()}
               </Typography>
+
               <Typography
                 component="pre"
                 color="textSecondary"
                 variant="caption"
-                style={{ whiteSpace: 'pre-wrap' }}>
+                style={{ whiteSpace: 'pre-wrap', display: 'inline-block' }}>
+                {market.partner_steam_id && (
+                  <Link
+                    color="textSecondary"
+                    href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
+                    {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+                    {market.notes && '\n'}
+                  </Link>
+                )}
                 {market.notes}
               </Typography>
             </li>

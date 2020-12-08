@@ -21,6 +21,7 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import { MARKET_TYPE_ASK } from '@/constants/market'
 // import SearchInput from '@/components/SearchInput'
 // import CatalogList from '@/components/CatalogList'
 // import Link from '@/components/Link'
@@ -78,12 +79,16 @@ const recentItemsFilter = {
   sort: 'recent',
   limit: 5,
 }
+const topSellerItemsFilter = {
+  sort: 'sale_count:desc',
+}
 
 export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
   const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
+  const { data: topSellers } = useSWR([CATALOGS, topSellerItemsFilter], fetcher)
   const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
   const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
 
@@ -226,32 +231,52 @@ export default function Index({ marketSummary, trendingItems }) {
           <Divider className={classes.divider} light variant="middle" />
           <br />
 
-          {/* Top links */}
+          {/* Top 10 foot links */}
           <Grid container spacing={2}>
-            <Grid item sm={6} xs={12}>
-              <Typography className={classes.footLinks}>Top Treasures</Typography>
-              {topOrigins &&
-                topOrigins.map(origin => (
-                  <Link
-                    href={`/search?origin=${origin}`}
-                    color="secondary"
-                    className={classes.footLinks}>
-                    <Typography variant="subtitle1" component="p">
-                      {origin}
-                    </Typography>
-                  </Link>
-                ))}
-            </Grid>
-            <Grid item sm={6} xs={12}>
+            {/* Top 10 Heroes*/}
+            <Grid item sm={4} xs={12}>
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&
                 topHeroes.map(hero => (
                   <Link
+                    key={hero}
                     href={`/search?hero=${hero}`}
                     color="secondary"
                     className={classes.footLinks}>
                     <Typography variant="subtitle1" component="p">
                       {hero}
+                    </Typography>
+                  </Link>
+                ))}
+            </Grid>
+            {/* Top 10 Sellers */}
+            <Grid item sm={4} xs={12}>
+              <Typography className={classes.footLinks}>Top Sellers</Typography>
+              {topSellers &&
+                topSellers.data.map(item => (
+                  <Link
+                    key={item.slug}
+                    href={`/${item.slug}`}
+                    color="secondary"
+                    className={classes.footLinks}>
+                    <Typography variant="subtitle1" component="p">
+                      {item.name}
+                    </Typography>
+                  </Link>
+                ))}
+            </Grid>
+            {/* Top 10 Treasures */}
+            <Grid item sm={4} xs={12}>
+              <Typography className={classes.footLinks}>Top Treasures</Typography>
+              {topOrigins &&
+                topOrigins.map(origin => (
+                  <Link
+                    key={origin}
+                    href={`/search?origin=${origin}`}
+                    color="secondary"
+                    className={classes.footLinks}>
+                    <Typography variant="subtitle1" component="p">
+                      {origin}
                     </Typography>
                   </Link>
                 ))}
@@ -271,7 +296,9 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const marketSummary = await statsMarketSummary()
+  const marketSummary = await statsMarketSummary({
+    type: MARKET_TYPE_ASK,
+  })
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)

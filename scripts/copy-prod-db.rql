@@ -1,0 +1,17 @@
+// Copy records from production
+var testDB = r.db('d2g');
+var productionDB = r.db('d2g_production');
+
+testDB.table('auth').delete();
+testDB.table('catalog').delete();
+testDB.table('item').delete();
+testDB.table('market').delete();
+testDB.table('user').delete();
+testDB.table('track').delete();
+
+testDB.table('auth').insert(productionDB.table('auth'));
+testDB.table('catalog').insert(productionDB.table('catalog'));
+testDB.table('item').insert(productionDB.table('item'));
+testDB.table('market').insert(productionDB.table('market'));
+testDB.table('user').insert(productionDB.table('user'));
+testDB.table('track').insert(productionDB.table('track').limit(100));

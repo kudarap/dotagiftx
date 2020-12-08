@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -29,7 +30,11 @@ func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 		userID = au.UserID
 	}
 
-	return userID + r.URL.Path + ":" + hash.MD5(r.URL.RawQuery), noCache
+	// Compose cache key and omit nocache param, this will enable force reloads.
+	q := r.URL.Query()
+	q.Del(cacheSkipKey)
+	key = fmt.Sprintf("%s%s:%s", userID, r.URL.Path, hash.MD5(q.Encode()))
+	return
 }
 
 func CacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, noCache bool) {

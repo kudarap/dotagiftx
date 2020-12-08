@@ -1,5 +1,7 @@
 import React, { useContext } from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
+import startsWith from 'lodash/startsWith'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -10,10 +12,10 @@ import TextField from '@material-ui/core/TextField'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import ReserveIcon from '@material-ui/icons/EventAvailable'
 import RemoveIcon from '@material-ui/icons/Delete'
-import { myMarket } from '@/service/api'
+import * as url from '@/lib/url'
 import { amount, dateCalendar } from '@/lib/format'
+import { myMarket } from '@/service/api'
 import Button from '@/components/Button'
-import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
@@ -23,36 +25,31 @@ import {
   MARKET_STATUS_RESERVED,
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
+import ItemImageDialog from '@/components/ItemImageDialog'
 
 const useStyles = makeStyles(theme => ({
   details: {
     [theme.breakpoints.down('xs')]: {
-      textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
   },
-  media: {
-    [theme.breakpoints.down('xs')]: {
-      margin: '0 auto !important',
-    },
-    width: 150,
-    height: 100,
-    marginRight: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
-  },
 }))
+
+const steamCommunityBaseURL = 'https://steamcommunity.com'
 
 export default function MarketUpdateDialog(props) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
+  const [steamProfileURL, setSteamProfileURL] = React.useState('')
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
   const { onClose } = props
   const handleClose = () => {
+    setSteamProfileURL('')
     setNotes('')
     setError('')
     setLoading(false)
@@ -85,12 +82,21 @@ export default function MarketUpdateDialog(props) {
   const onFormSubmit = evt => {
     evt.preventDefault()
 
-    if (loading || notes.trim() === '') {
+    // if (loading || notes.trim() === '') {
+    //   return
+    // }
+    if (!url.isValid(steamProfileURL)) {
+      setError('Steam Profile is not a valid URL.')
+      return
+    }
+    if (!startsWith(steamProfileURL, steamCommunityBaseURL, 0)) {
+      setError(`Steam Profile should start with ${steamCommunityBaseURL}`)
       return
     }
 
     const payload = {
       status: MARKET_STATUS_RESERVED,
+      partner_steam_id: steamProfileURL,
       notes,
     }
 
@@ -129,14 +135,7 @@ export default function MarketUpdateDialog(props) {
         </DialogTitle>
         <DialogContent>
           <div className={classes.details}>
-            <ItemImage
-              className={classes.media}
-              image={market.item.image}
-              width={150}
-              height={100}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
+            <ItemImageDialog item={market.item} />
 
             <Typography component="h1">
               <Typography variant="h6" component={Link} href="/[slug]" as={`/${market.item.slug}`}>
@@ -177,14 +176,27 @@ export default function MarketUpdateDialog(props) {
           </div>
           <div>
             <TextField
+              style={{ marginTop: 8 }}
               disabled={loading}
               fullWidth
               required
               color="secondary"
               variant="outlined"
-              label="Reservation notes"
-              helperText="Buyer's Steam profile URL & delivery date."
-              placeholder="https://steamcommunity.com/profiles/..."
+              label="Buyer's Steam profile URL"
+              placeholder="https://steamcommunity.com/..."
+              value={steamProfileURL}
+              onInput={e => setSteamProfileURL(e.target.value)}
+            />
+            <br />
+            <br />
+            <TextField
+              disabled={loading}
+              fullWidth
+              color="secondary"
+              variant="outlined"
+              label="Reservation Notes"
+              helperText="Delivery date and deposit details"
+              placeholder={`${moment().add(30, 'days').format('MMM D')} - $1 deposit`}
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />
@@ -196,8 +208,12 @@ export default function MarketUpdateDialog(props) {
           </Typography>
         )}
         <DialogActions>
-          <Button disabled={loading} startIcon={<RemoveIcon />} onClick={handleRemoveClick}>
-            Remove listing
+          <Button
+            disabled={loading}
+            startIcon={<RemoveIcon />}
+            onClick={handleRemoveClick}
+            variant="outlined">
+            Remove Listing
           </Button>
           <Button
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}

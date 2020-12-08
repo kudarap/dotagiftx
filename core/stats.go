@@ -20,6 +20,12 @@ type (
 		LastReservedDate  *time.Time
 	}
 
+	MarketSalesGraph struct {
+		Date  *time.Time `json:"date"  db:"date"`
+		Avg   float64    `json:"avg"   db:"avg"`
+		Count int        `json:"count" db:"count"`
+	}
+
 	// UserStats represents total users stats.
 	UserStats struct {
 		TotalUsersCount      int
@@ -38,6 +44,8 @@ type (
 		//CountTotalMarketStatus() (*MarketStatusCount, error)
 		//CountUserMarketStatus(userID string) (*MarketStatusCount, error)
 		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
+
+		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
 	}
 
 	StatsStorage StatsService

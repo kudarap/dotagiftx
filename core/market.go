@@ -16,6 +16,8 @@ const (
 	MarketErrNotesLimit
 	MarketErrInvalidPrice
 	MarketErrQtyLimitPerUser
+	MarketErrRequiredPartnerURL
+	MarketErrInvalidBidPrice
 )
 
 // sets error text definition.
@@ -27,6 +29,8 @@ func init() {
 	appErrorText[MarketErrNotesLimit] = "market notes text limit reached"
 	appErrorText[MarketErrInvalidPrice] = "market price is invalid"
 	appErrorText[MarketErrQtyLimitPerUser] = "market quantity limit(5) per item reached"
+	appErrorText[MarketErrRequiredPartnerURL] = "market partner steam url is required"
+	appErrorText[MarketErrInvalidBidPrice] = "market bid should be lower than lowest ask price"
 }
 
 const (
@@ -38,33 +42,47 @@ const (
 	TrendScoreRateMarketEntry = 0.01
 	TrendScoreRateReserved    = 4
 	TrendScoreRateSold        = 4
+	TrendScoreRateBid         = 2
+)
+
+// Market types.
+const (
+	MarketTypeAsk MarketType = 10 // default
+	MarketTypeBid MarketType = 20
 )
 
 // Market statuses.
 const (
-	MarketStatusPending   MarketStatus = 100
-	MarketStatusLive      MarketStatus = 200
-	MarketStatusReserved  MarketStatus = 300
-	MarketStatusSold      MarketStatus = 400
-	MarketStatusRemoved   MarketStatus = 500
-	MarketStatusCancelled MarketStatus = 600
+	MarketStatusPending      MarketStatus = 100
+	MarketStatusLive         MarketStatus = 200
+	MarketStatusReserved     MarketStatus = 300
+	MarketStatusSold         MarketStatus = 400
+	MarketStatusBidCompleted MarketStatus = 410
+	MarketStatusRemoved      MarketStatus = 500
+	MarketStatusCancelled    MarketStatus = 600
+	MarketStatusExpired      MarketStatus = 700
 )
 
 type (
+	// MarketType represents market type.
+	MarketType uint
+
 	// MarketStatus represents market status.
 	MarketStatus uint
 
 	// Market represents market information.
 	Market struct {
-		ID        string       `json:"id"         db:"id,omitempty"`
-		UserID    string       `json:"user_id"    db:"user_id,omitempty,indexed"     valid:"required"`
-		ItemID    string       `json:"item_id"    db:"item_id,omitempty,indexed"     valid:"required"`
-		Price     float64      `json:"price"      db:"price,omitempty,indexed"       valid:"required"`
-		Currency  string       `json:"currency"   db:"currency,omitempty"`
-		Notes     string       `json:"notes"      db:"notes,omitempty"`
-		Status    MarketStatus `json:"status"     db:"status,omitempty,indexed"`
-		CreatedAt *time.Time   `json:"created_at" db:"created_at,omitempty,indexed"`
-		UpdatedAt *time.Time   `json:"updated_at" db:"updated_at,omitempty,indexed"`
+		ID             string       `json:"id"               db:"id,omitempty"`
+		UserID         string       `json:"user_id"          db:"user_id,omitempty,indexed"   valid:"required"`
+		ItemID         string       `json:"item_id"          db:"item_id,omitempty,indexed"   valid:"required"`
+		Type           MarketType   `json:"type"             db:"type,omitempty,indexed"      valid:"required"`
+		Status         MarketStatus `json:"status"           db:"status,omitempty,indexed"    valid:"required"`
+		Price          float64      `json:"price"            db:"price,omitempty,indexed"     valid:"required"`
+		Currency       string       `json:"currency"         db:"currency,omitempty"`
+		PartnerSteamID string       `json:"partner_steam_id" db:"partner_steam_id,omitempty"`
+		Notes          string       `json:"notes"            db:"notes,omitempty"`
+		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
+		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 		Item *Item `json:"item,omitempty" db:"item,omitempty"`
@@ -114,12 +132,14 @@ type (
 )
 
 var MarketStatusTexts = map[MarketStatus]string{
-	MarketStatusPending:   "pending",
-	MarketStatusLive:      "live",
-	MarketStatusReserved:  "reserved",
-	MarketStatusSold:      "sold",
-	MarketStatusRemoved:   "removed",
-	MarketStatusCancelled: "cancelled",
+	MarketStatusPending:      "pending",
+	MarketStatusLive:         "live",
+	MarketStatusReserved:     "reserved",
+	MarketStatusSold:         "sold",
+	MarketStatusBidCompleted: "completed",
+	MarketStatusRemoved:      "removed",
+	MarketStatusCancelled:    "cancelled",
+	MarketStatusExpired:      "expired",
 }
 
 // CheckCreate validates field on creating new market.
@@ -153,6 +173,10 @@ func (m Market) CheckUpdate() error {
 		return MarketErrInvalidStatus
 	}
 
+	if m.Status == MarketStatusReserved && m.PartnerSteamID == "" {
+		return MarketErrRequiredPartnerURL
+	}
+
 	return nil
 }
 
@@ -163,6 +187,9 @@ func (m *Market) SetDefaults() {
 	m.Status = MarketStatusLive
 	m.Currency = defaultCurrency
 	m.Price = priceToTenths(m.Price)
+	if m.Type == 0 {
+		m.Type = MarketTypeAsk
+	}
 }
 
 // String returns text value of a post status.

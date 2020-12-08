@@ -6,8 +6,8 @@ import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
-import MyMarketList from '@/components/MyMarketList'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
+import MyBuyOrderList from '@/components/MyBuyOrderList'
 import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const marketFilter = {
-  type: MARKET_TYPE_ASK,
+  type: MARKET_TYPE_BID,
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
   page: 1,
@@ -78,10 +78,10 @@ export default function MyListings() {
       <main className={classes.main}>
         <Container>
           <Typography component="h1" gutterBottom>
-            Active Listings {total !== 0 && `(${format.numberWithCommas(total)})`}
+            My buy orders {total !== 0 && `(${format.numberWithCommas(total)})`}
           </Typography>
 
-          <MyMarketList
+          <MyBuyOrderList
             datatable={data}
             loading={data.loading}
             error={data.error}

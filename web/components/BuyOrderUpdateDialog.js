@@ -1,25 +1,28 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
+import startsWith from 'lodash/startsWith'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import TextField from '@material-ui/core/TextField'
-import DeliveredIcon from '@material-ui/icons/AssignmentTurnedIn'
-import CancelIcon from '@material-ui/icons/Cancel'
-import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
-import { myMarket } from '@/service/api'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import ReserveIcon from '@material-ui/icons/EventAvailable'
+import RemoveIcon from '@material-ui/icons/Delete'
+import * as url from '@/lib/url'
 import { amount, dateCalendar } from '@/lib/format'
+import { myMarket } from '@/service/api'
 import Button from '@/components/Button'
+import Link from '@/components/Link'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
-  MARKET_STATUS_CANCELLED,
+  MARKET_STATUS_BID_COMPLETED,
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
-  MARKET_STATUS_SOLD,
+  MARKET_STATUS_REMOVED,
+  MARKET_STATUS_RESERVED,
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ItemImageDialog from '@/components/ItemImageDialog'
@@ -33,40 +36,40 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ReserveUpdateDialog(props) {
+const steamCommunityBaseURL = 'https://steamcommunity.com'
+
+export default function BuyOrderUpdateDialog(props) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
+  const [steamProfileURL, setSteamProfileURL] = React.useState('')
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
   const { onClose } = props
   const handleClose = () => {
+    setSteamProfileURL('')
     setNotes('')
     setError('')
     setLoading(false)
     onClose()
   }
 
-  const { market, onSuccess, onCancel } = props
-  const marketUpdate = payload => {
-    if (loading) {
-      return
-    }
+  const { onRemove } = props
+  const handleRemove = () => {
+    onRemove()
+    handleClose()
+  }
 
+  const { market } = props
+  const handleRemoveClick = () => {
     setLoading(true)
     setError(null)
     ;(async () => {
       try {
-        await myMarket.PATCH(market.id, payload)
-        if (payload.status === MARKET_STATUS_SOLD) {
-          onSuccess()
-        } else {
-          onCancel()
-        }
-
-        handleClose()
+        await myMarket.PATCH(market.id, { status: MARKET_STATUS_REMOVED })
+        handleRemove()
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -75,20 +78,38 @@ export default function ReserveUpdateDialog(props) {
     })()
   }
 
-  const handleCancelClick = () => {
-    marketUpdate({
-      status: MARKET_STATUS_CANCELLED,
-      notes,
-    })
-  }
-
+  const { onSuccess } = props
   const onFormSubmit = evt => {
     evt.preventDefault()
 
-    marketUpdate({
-      status: MARKET_STATUS_SOLD,
+    if (!url.isValid(steamProfileURL)) {
+      setError('Steam Profile is not a valid URL.')
+      return
+    }
+    if (!startsWith(steamProfileURL, steamCommunityBaseURL, 0)) {
+      setError(`Steam Profile should start with ${steamCommunityBaseURL}`)
+      return
+    }
+
+    const payload = {
+      status: MARKET_STATUS_BID_COMPLETED,
+      partner_steam_id: steamProfileURL,
       notes,
-    })
+    }
+
+    setLoading(true)
+    setError(null)
+    ;(async () => {
+      try {
+        await myMarket.PATCH(market.id, payload)
+        handleClose()
+        onSuccess()
+      } catch (e) {
+        setError(`Error: ${e.message}`)
+      }
+
+      setLoading(false)
+    })()
   }
 
   if (!market) {
@@ -106,7 +127,7 @@ export default function ReserveUpdateDialog(props) {
       aria-describedby="alert-dialog-description">
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
-          Update Reservation
+          Update Order
           <DialogCloseButton onClick={handleClose} />
         </DialogTitle>
         <DialogContent>
@@ -114,7 +135,7 @@ export default function ReserveUpdateDialog(props) {
             <ItemImageDialog item={market.item} />
 
             <Typography component="h1">
-              <Typography component="p" variant="h6">
+              <Typography variant="h6" component={Link} href="/[slug]" as={`/${market.item.slug}`}>
                 {market.item.name}
               </Typography>
               <Typography gutterBottom>
@@ -131,7 +152,7 @@ export default function ReserveUpdateDialog(props) {
                 {amount(market.price, market.currency)}
                 <br />
                 <Typography color="textSecondary" component="span">
-                  {`Reserved: `}
+                  {`Listed: `}
                 </Typography>
                 {dateCalendar(market.updated_at)}
                 {market.notes && (
@@ -152,25 +173,26 @@ export default function ReserveUpdateDialog(props) {
           </div>
           <div>
             <TextField
-              style={{ marginTop: 16 }}
-              InputProps={{ readOnly: true }}
+              style={{ marginTop: 8 }}
+              disabled={loading}
               fullWidth
+              required
               color="secondary"
               variant="outlined"
-              label="Buyer's Steam profile URL"
-              value={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+              label="Seller's Steam profile URL"
+              helperText="Records seller history for tracking good and bad reputation."
+              placeholder="https://steamcommunity.com/..."
+              value={steamProfileURL}
+              onInput={e => setSteamProfileURL(e.target.value)}
             />
             <br />
             <br />
             <TextField
               disabled={loading}
               fullWidth
-              required
               color="secondary"
               variant="outlined"
               label="Notes"
-              helperText="Screenshot URL for verification or Reason for cancellation"
-              placeholder="https://imgur.com/a/..."
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />
@@ -184,36 +206,34 @@ export default function ReserveUpdateDialog(props) {
         <DialogActions>
           <Button
             disabled={loading}
-            startIcon={<CancelIcon />}
-            onClick={handleCancelClick}
+            startIcon={<RemoveIcon />}
+            onClick={handleRemoveClick}
             variant="outlined">
-            Cancel Reservation
+            Remove Order
           </Button>
           <Button
-            startIcon={
-              loading ? <CircularProgress size={22} color="secondary" /> : <DeliveredIcon />
-            }
+            startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
             variant="outlined"
             color="secondary"
             type="submit">
-            {isMobile ? 'Item Delivered' : 'Item Delivered to Buyer'}
+            Complete
           </Button>
         </DialogActions>
       </form>
     </Dialog>
   )
 }
-ReserveUpdateDialog.propTypes = {
+BuyOrderUpdateDialog.propTypes = {
   market: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  onCancel: PropTypes.func,
+  onRemove: PropTypes.func,
   onSuccess: PropTypes.func,
 }
-ReserveUpdateDialog.defaultProps = {
+BuyOrderUpdateDialog.defaultProps = {
   market: null,
   open: false,
   onClose: () => {},
-  onCancel: () => {},
+  onRemove: () => {},
   onSuccess: () => {},
 }

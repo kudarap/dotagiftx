@@ -21,5 +21,8 @@ type (
 
 		// Player returns player summary base on steamID.
 		Player(steamID string) (*SteamPlayer, error)
+
+		// ResolveVanityURL returns steam id from profile url.
+		ResolveVanityURL(url string) (steamID string, err error)
 	}
 )

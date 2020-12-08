@@ -31,11 +31,18 @@ type (
 		Contributors []string `json:"-"          db:"contributors,omitempty"`
 		ViewCount    int      `json:"view_count" db:"view_count,omitempty,indexed"`
 		// Market summary details.
-		Quantity   int        `json:"quantity"    db:"quantity,omitempty,indexed"`
-		LowestAsk  float64    `json:"lowest_ask"  db:"lowest_ask,omitempty,indexed"`
-		MedianAsk  float64    `json:"median_ask"  db:"median_ask,omitempty,indexed"`
-		HighestBid float64    `json:"-"           db:"highest_bid,omitempty,indexed"`
-		RecentAsk  *time.Time `json:"recent_ask"  db:"recent_ask,omitempty,indexed"`
+		Quantity      int        `json:"quantity"       db:"quantity,omitempty"`
+		LowestAsk     float64    `json:"lowest_ask"     db:"lowest_ask,omitempty"`
+		MedianAsk     float64    `json:"median_ask"     db:"median_ask,omitempty"`
+		RecentAsk     *time.Time `json:"recent_ask"     db:"recent_ask,omitempty"`
+		HighestBid    float64    `json:"highest_bid"    db:"highest_bid,omitempty"`
+		BidCount      int        `json:"bid_count"      db:"bid_count,omitempty"`
+		ReservedCount int        `json:"reserved_count" db:"reserved_count,omitempty"`
+		SoldCount     int        `json:"sold_count"     db:"sold_count,omitempty"`
+		// Sale summary details are derived from reserved and sold status and not the same as sold.
+		SaleCount  int        `json:"sale_count"  db:"sale_count,omitempty"`
+		AvgSale    float64    `json:"avg_sale"    db:"avg_sale,omitempty"`
+		RecentSale *time.Time `json:"recent_sale" db:"recent_sale,omitempty"`
 		CreatedAt  *time.Time `json:"created_at"  db:"created_at,omitempty,indexed"`
 		UpdatedAt  *time.Time `json:"updated_at"  db:"updated_at,omitempty,indexed"`
 	}
