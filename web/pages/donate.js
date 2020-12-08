@@ -9,6 +9,7 @@ import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -16,6 +17,13 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
+  },
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: theme.spacing(2),
   },
 }))
 
@@ -36,33 +44,52 @@ export default function Faq() {
             How can I donate?
             <Typography color="textSecondary">
               Thanks for your interest supporting DotagiftX! Since its not monetizing on views and I
-              do not run ads on this site(<em>fuck ads</em>).
-              <br />
-              Giving a like on Steam is good enough to help the site currently, but if you really
-              want to donate check them out bellow.
+              do not run ads on this site(<em>fuck ads</em>). Giving a{' '}
+              <Link href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224">
+                thumbs up on Steam
+              </Link>{' '}
+              is good enough to help the site atm, but if you really want to give support you can:
               {/* Currently this site is running on someone else&apos;s server that is why you don&apos;t see ads */}
             </Typography>
           </Typography>
           <br />
 
-          <div>
-            <AwardIcon color="inherit" fontSize="large" />
-            <Typography color="textSecondary">Give this project a Steam Award</Typography>
-          </div>
-          <br />
-
-          <div>
-            <KeyIcon color="inherit" fontSize="large" />
+          <div className={classes.item}>
+            <AwardIcon className={classes.icon} color="inherit" fontSize="large" />
             <Typography color="textSecondary">
-              Donate tradable keys and will give you a donator badge on your profile in return.
+              Give the project a{' '}
+              <Link
+                color="secondary"
+                href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224">
+                Steam Award
+              </Link>{' '}
+              will be very much appreciated.
             </Typography>
           </div>
           <br />
 
-          <div>
-            <MoneyIcon color="inherit" fontSize="large" />
+          <div className={classes.item}>
+            <KeyIcon className={classes.icon} color="inherit" fontSize="large" />
             <Typography color="textSecondary">
-              Paypal me if you want to help future cost on server and domain.
+              Donate{' '}
+              <Link
+                color="secondary"
+                href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW">
+                Tradable keys
+              </Link>{' '}
+              and will give you a donator badge on your profile in return.
+            </Typography>
+          </div>
+          <br />
+
+          <div className={classes.item}>
+            <MoneyIcon className={classes.icon} color="inherit" fontSize="large" />
+            <Typography color="textSecondary">
+              Toss a coin on{' '}
+              <Link color="secondary" href="/donate-coin">
+                Paypal or Crypto
+              </Link>{' '}
+              if you want to help future cost of server and domain.
             </Typography>
           </div>
         </Container>
