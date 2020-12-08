@@ -31,6 +31,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/stats/market-summary", handleStatsMarketSummary(s.statsSvc, s.cache))
 		r.Get("/stats/top-origins", handleStatsTopOrigins(s.itemSvc, s.cache))
 		r.Get("/stats/top-heroes", handleStatsTopHeroes(s.itemSvc, s.cache))
+		r.Get("/graph/market_sales", handleGraphMarketSales(s.statsSvc, s.cache))
 	})
 }
 
