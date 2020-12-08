@@ -24,3 +24,7 @@ func (s *statsService) CountUserMarketStatus(userID string) (*core.MarketStatusC
 		Filter: core.Market{UserID: userID},
 	})
 }
+
+func (s *statsService) GraphMarketSales(opts core.FindOpts) ([]core.MarketSalesGraph, error) {
+	return s.statsStg.GraphMarketSales(opts)
+}
