@@ -51,7 +51,8 @@ export default function MarketActivity({ data, loading }) {
                 &nbsp;
                 {market.item.hero}&apos;s&nbsp;
                 <Link href={`/${market.item.slug}`} color="secondary">
-                  {`${amount(market.price, market.currency)} ${market.item.name}`}
+                  {/* {`${amount(market.price, market.currency)} ${market.item.name}`} */}
+                  {market.item.name}
                 </Link>
                 &nbsp;
                 {moment(market.updated_at).fromNow()}
