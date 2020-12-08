@@ -24,13 +24,13 @@ func handleMarketList(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
-		shouldRedact := !isReqAuthorized(r)
+		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
 		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
-				if shouldRedact {
+				if shouldRedactUser {
 					respondOK(w, redactBuyersFromCache(hit))
 					return
 				}
@@ -61,16 +61,16 @@ func handleMarketList(
 			list = []core.Market{}
 		}
 
-		if shouldRedact {
-			list = redactBuyers(list)
-		}
-
 		data := newDataWithMeta(list, md)
-		go func() {
-			if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
-				logger.Errorf("could save cache on market list: %s", err)
-			}
-		}()
+		//go func(d dataWithMeta) {
+		if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
+			logger.Errorf("could not save cache on market list: %s", err)
+		}
+		//}(data)
+
+		if shouldRedactUser {
+			data.Data = redactBuyers(list)
+		}
 
 		respondOK(w, data)
 	}
@@ -79,13 +79,13 @@ func handleMarketList(
 func handleMarketDetail(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
-		shouldRedact := !isReqAuthorized(r)
+		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
 		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
-				if shouldRedact {
+				if shouldRedactUser {
 					respondOK(w, redactBuyerFromCache(hit))
 					return
 				}
@@ -101,13 +101,13 @@ func handleMarketDetail(svc core.MarketService, cache core.Cache, logger *logrus
 			return
 		}
 
-		go func() {
-			if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
-				logger.Errorf("could save cache on market list: %s", err)
-			}
-		}()
+		//go func() {
+		if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
+			logger.Errorf("could not save cache on market list: %s", err)
+		}
+		//}()
 
-		if shouldRedact {
+		if shouldRedactUser {
 			m = redactBuyer(m)
 		}
 
@@ -226,7 +226,7 @@ func handleMarketCatalogList(
 		data := newDataWithMeta(list, md)
 		go func() {
 			if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
-				logger.Errorf("could save cache on catalog list: %s", err)
+				logger.Errorf("could not save cache on catalog list: %s", err)
 			}
 		}()
 
@@ -253,7 +253,7 @@ func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger 
 
 		go func() {
 			if err := cache.Set(cacheKey, c, marketCacheExpr); err != nil {
-				logger.Errorf("could save cache on catalog details: %s", err)
+				logger.Errorf("could not save cache on catalog details: %s", err)
 			}
 		}()
 
@@ -294,7 +294,7 @@ func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logg
 		data := newDataWithMeta(list, md)
 		go func() {
 			if err := cache.Set(cacheKey, data, catalogTrendCacheExpr); err != nil {
-				logger.Errorf("could save cache on catalog trend list: %s", err)
+				logger.Errorf("could not save cache on catalog trend list: %s", err)
 			}
 		}()
 
@@ -314,19 +314,20 @@ func isReqAuthorized(r *http.Request) bool {
 const redactChar = "█"
 
 func redactBuyers(list []core.Market) []core.Market {
-	for i, market := range list {
-		if market.Type != core.MarketTypeBid {
+	rl := make([]core.Market, len(list))
+	copy(rl, list)
+	for _, r := range rl {
+		if r.Type != core.MarketTypeBid {
 			continue
 		}
 
-		market.User.ID = ""
-		market.User.Name = strings.Repeat(redactChar, len(market.User.Name))
-		market.User.SteamID = strings.Repeat(redactChar, len(market.User.SteamID))
-		market.User.URL = strings.Repeat(redactChar, len(market.User.URL))
-		list[i] = market
+		r.User.ID = ""
+		r.User.Name = strings.Repeat(redactChar, len(r.User.Name))
+		r.User.SteamID = strings.Repeat(redactChar, len(r.User.SteamID))
+		r.User.URL = strings.Repeat(redactChar, len(r.User.URL))
 	}
 
-	return list
+	return rl
 }
 
 func redactBuyersFromCache(hit string) interface{} {
