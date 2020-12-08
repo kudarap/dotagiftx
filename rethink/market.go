@@ -18,6 +18,7 @@ const (
 	marketFieldNotes     = "notes"
 	marketFieldPrice     = "price"
 	marketFieldCreatedAt = "created_at"
+	marketFieldUpdatedAt = "updated_at"
 	// Hidden field for searching item details.
 	marketItemSearchTags = "item_tags"
 )
