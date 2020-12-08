@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from 'recharts'
 import Paper from '@material-ui/core/Paper'
 import primary from '@material-ui/core/colors/lightGreen'
@@ -65,8 +66,16 @@ export default function MarketChart() {
             tickFormatter={formatXAxis}
           />
           <YAxis />
+          <Legend />
           <Tooltip content={<CustomToolTip />} />
-          <Line type="linear" dataKey="avg" stroke={primary[800]} dot={false} strokeWidth={2} />
+          <Line
+            name="Average Sale Prices"
+            type="linear"
+            dataKey="avg"
+            stroke={primary[800]}
+            dot={false}
+            strokeWidth={2}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
