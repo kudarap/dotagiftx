@@ -17,11 +17,10 @@
     "lodash": "^4.17.15",
     "moment": "^2.27.0",
     "next": "^10.0.0",
-    "performance-now": "^2.1.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.0",
-    "react-charts": "^2.0.0-beta.7",
     "react-dom": "^17.0.0",
+    "recharts": "^1.8.5",
     "swr": "^0.3.0",
     "unfetch": "^4.1.0",
     "whatwg-fetch": "^3.0.0"

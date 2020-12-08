@@ -28,7 +28,7 @@ import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketActivity from '@/components/MarketActivity'
-import MarketChart from '@/components/MarketChart'
+import MarketChart2 from '@/components/MarketChart2'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -429,7 +429,7 @@ export default function ItemDetails({
               )}
 
               <br />
-              <MarketChart />
+              <MarketChart2 />
 
               <div id="reserved">
                 {!marketReservedError && marketReserved && (
