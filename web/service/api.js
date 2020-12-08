@@ -25,6 +25,7 @@ export const STATS = '/stats'
 export const STATS_TOP_ORIGINS = `${STATS}/top-origins`
 export const STATS_TOP_HEROES = `${STATS}/top-heroes`
 export const STATS_MARKET_SUMMARY = `${STATS}/market-summary`
+export const GRAPH_MARKET_SALES = `/graph/market_sales`
 const VERSION = '/'
 const TRACK = '/t'
 

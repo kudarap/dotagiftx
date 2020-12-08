@@ -13,7 +13,14 @@ import {
 } from '@/constants/market'
 import { itemRarityColorMap } from '@/constants/palette'
 import { APP_NAME } from '@/constants/strings'
-import { CDN_URL, fetcher, MARKETS, marketSearch, trackViewURL } from '@/service/api'
+import {
+  CDN_URL,
+  fetcher,
+  GRAPH_MARKET_SALES,
+  MARKETS,
+  marketSearch,
+  trackViewURL,
+} from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -28,7 +35,7 @@ import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketActivity from '@/components/MarketActivity'
-import MarketChart2 from '@/components/MarketChart2'
+import MarketSaslesChart from '@/components/MarketSalesChart'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -74,6 +81,10 @@ const marketBuyOrderFilter = {
   sort: 'price:desc',
 }
 
+const marketSalesGraphFilter = {
+  type: MARKET_TYPE_ASK,
+}
+
 const marketReservedFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_RESERVED,
@@ -85,6 +96,14 @@ const marketDeliveredFilter = {
   status: MARKET_STATUS_SOLD,
   sort: 'updated_at:desc',
 }
+
+const swrConfig = [
+  fetcher,
+  {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+  },
+]
 
 export default function ItemDetails({
   item,
@@ -153,6 +172,18 @@ export default function ItemDetails({
   React.useEffect(() => {
     getBuyOrders()
   }, [])
+
+  // Retrieve market sales graph.
+  const shouldLoadGraph = Boolean(markets.data) && Boolean(buyOrders.data)
+  marketSalesGraphFilter.item_id = item.id
+  const { data: marketGraph, error: marketGraphError, isValidating: marketGraphLoading } = useSWR(
+    shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: true,
+    }
+  )
 
   // Retrieve market history.
   const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
@@ -428,8 +459,12 @@ export default function ItemDetails({
                 </Typography>
               )}
 
-              <br />
-              <MarketChart2 />
+              {!marketGraphError && marketGraph && (
+                <>
+                  <br />
+                  <MarketSaslesChart data={marketGraph} />
+                </>
+              )}
 
               <div id="reserved">
                 {!marketReservedError && marketReserved && (
