@@ -218,7 +218,7 @@ export async function getServerSideProps({ params, query }) {
     filter.q = query.filter
   }
 
-  profile.stats = await statsMarketSummary({ user_id: profile.id })
+  profile.stats = await statsMarketSummary({ type: MARKET_TYPE_ASK, user_id: profile.id })
 
   let markets = {}
   let error = null

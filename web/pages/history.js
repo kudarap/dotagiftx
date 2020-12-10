@@ -15,6 +15,7 @@ import {
   MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_RESERVED,
   MARKET_STATUS_SOLD,
+  MARKET_TYPE_ASK,
 } from '@/constants/market'
 
 const useStyles = makeStyles(theme => ({
@@ -34,6 +35,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const filter = {
+  type: MARKET_TYPE_ASK,
   sort: 'updated_at:desc',
   limit: 50,
 }
