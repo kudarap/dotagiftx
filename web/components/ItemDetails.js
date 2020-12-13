@@ -35,7 +35,7 @@ import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketActivity from '@/components/MarketActivity'
-import MarketSaslesChart from '@/components/MarketSalesChart'
+import MarketSalesChart from '@/components/MarketSalesChart'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -109,7 +109,8 @@ export default function ItemDetails({
   item,
   error: initialError,
   filter,
-  markets: initialMarkets,
+  initialAsks,
+  initialBids,
   canonicalURL,
 }) {
   const classes = useStyles()
@@ -137,15 +138,16 @@ export default function ItemDetails({
     )
   }
 
-  const [markets, setMarkets] = React.useState({ data: item.asks, total_count: item.quantity })
-  const [buyOrders, setBuyOrders] = React.useState({ data: item.bids, total_count: item.bid_count })
+  const [markets, setMarkets] = React.useState(initialAsks)
+  const [buyOrders, setBuyOrders] = React.useState(initialBids)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
 
-  // Retrieve offers and handle page change.
+  // Handles offer update when page changes.
   React.useEffect(() => {
     if (filter.page === 1) {
+      setMarkets(initialAsks)
       return
     }
 
@@ -161,7 +163,7 @@ export default function ItemDetails({
     })()
   }, [filter.page])
 
-  // Retrieve buy orders.
+  // Handles update of buyer orders when changes.
   marketBuyOrderFilter.item_id = item.id
   const getBuyOrders = async () => {
     setLoading(true)
@@ -173,14 +175,11 @@ export default function ItemDetails({
     }
     setLoading(false)
   }
-  // React.useEffect(() => {
-  //   getBuyOrders()
-  // }, [])
 
   // Retrieve market sales graph.
   const shouldLoadGraph = Boolean(markets.data) && Boolean(buyOrders.data)
   marketSalesGraphFilter.item_id = item.id
-  const { data: marketGraph, error: marketGraphError, isValidating: marketGraphLoading } = useSWR(
+  const { data: marketGraph, error: marketGraphError } = useSWR(
     shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
     fetcher,
     {
@@ -466,7 +465,7 @@ export default function ItemDetails({
               {!marketGraphError && marketGraph && (
                 <>
                   <br />
-                  <MarketSaslesChart data={marketGraph} />
+                  <MarketSalesChart data={marketGraph} />
                 </>
               )}
 
@@ -502,12 +501,16 @@ ItemDetails.propTypes = {
   item: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
-  markets: PropTypes.object,
+  initialAsks: PropTypes.object,
+  initialBids: PropTypes.object,
   error: PropTypes.string,
 }
 ItemDetails.defaultProps = {
   filter: {},
-  markets: {
+  initialAsks: {
+    data: [],
+  },
+  initialBids: {
     data: [],
   },
   error: null,
