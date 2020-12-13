@@ -398,8 +398,8 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
 
       {tabIdx === 1 && buyOrders.total_count > 10 && (
         <Typography color="textSecondary" align="right" variant="body2" style={{ margin: 8 }}>
-          `${buyOrders.total_count - 10} more hidden buy orders at $
-          {amount(buyOrders.data[9].price, 'USD')} or less`
+          {buyOrders.total_count - 10} more hidden buy orders at &nbsp;
+          {amount(buyOrders.data[9].price, 'USD')} or less
         </Typography>
       )}
 
