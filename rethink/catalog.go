@@ -211,7 +211,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	}
 
 	// Get market buy orders summary.
-	cat.BidCount, cat.HighestBid, err = s.getBuyOrdersSummary(itemID)
+	cat.BidCount, cat.HighestBid, cat.RecentBid, err = s.getBuyOrdersSummary(itemID)
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
@@ -275,7 +275,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 		return
 	}
 
-	// Get recent_ask on the market by item ID.
+	// Get recent ask on the market by item ID.
 	q = offer.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
 	t := &time.Time{}
 	if err = s.db.one(q, t); err != nil {
@@ -287,7 +287,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 }
 
 // getBuyOrdersSummary returns market buy orders from BID type and LIVE status.
-func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max float64, err error) {
+func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max float64, recent *time.Time, err error) {
 	buyOrder := r.Table(tableMarket).Filter(core.Market{
 		ItemID: itemID,
 		Type:   core.MarketTypeBid,
@@ -309,6 +309,15 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 		err = fmt.Errorf("could not get highest bid price: %s", err)
 		return
 	}
+
+	// Get recent bid on the market by item ID.
+	q = buyOrder.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
+	t := &time.Time{}
+	if err = s.db.one(q, t); err != nil {
+		err = fmt.Errorf("could not get recent bid date: %s", err)
+		return
+	}
+	recent = t
 	return
 }
 
