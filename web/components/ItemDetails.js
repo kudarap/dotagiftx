@@ -181,33 +181,23 @@ export default function ItemDetails({
   marketSalesGraphFilter.item_id = item.id
   const { data: marketGraph, error: marketGraphError } = useSWR(
     shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-    }
+    ...swrConfig
   )
 
-  // Retrieve market history.
+  // Retrieve market sale activity.
   const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
   marketReservedFilter.item_id = item.id
   const {
     data: marketReserved,
     error: marketReservedError,
     isValidating: marketReservedLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, ...swrConfig)
   marketDeliveredFilter.item_id = item.id
   const {
     data: marketDelivered,
     error: marketDeliveredError,
     isValidating: marketDeliveredLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
 
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
