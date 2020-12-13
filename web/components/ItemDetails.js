@@ -37,6 +37,7 @@ import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketActivity from '@/components/MarketActivity'
 import MarketSalesChart from '@/components/MarketSalesChart'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -109,7 +110,7 @@ const swrConfig = [
 export default function ItemDetails({
   item,
   error: initialError,
-  filter,
+  filter: initialFilter,
   initialAsks,
   initialBids,
   canonicalURL,
@@ -138,6 +139,11 @@ export default function ItemDetails({
       </>
     )
   }
+
+  const router = useRouter()
+  const { query } = router
+  const filter = initialFilter
+  filter.page = query.page || 1
 
   const [markets, setMarkets] = React.useState(initialAsks)
   const [buyOrders, setBuyOrders] = React.useState(initialBids)
