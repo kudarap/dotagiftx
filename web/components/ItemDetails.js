@@ -137,14 +137,18 @@ export default function ItemDetails({
     )
   }
 
-  const [markets, setMarkets] = React.useState(initialMarkets)
-  const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
+  const [markets, setMarkets] = React.useState({ data: item.asks, total_count: item.quantity })
+  const [buyOrders, setBuyOrders] = React.useState({ data: item.bids, total_count: item.bid_count })
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
 
   // Retrieve offers and handle page change.
   React.useEffect(() => {
+    if (filter.page === 1) {
+      return
+    }
+
     ;(async () => {
       setLoading(true)
       try {
@@ -169,9 +173,9 @@ export default function ItemDetails({
     }
     setLoading(false)
   }
-  React.useEffect(() => {
-    getBuyOrders()
-  }, [])
+  // React.useEffect(() => {
+  //   getBuyOrders()
+  // }, [])
 
   // Retrieve market sales graph.
   const shouldLoadGraph = Boolean(markets.data) && Boolean(buyOrders.data)
