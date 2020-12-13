@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { schemaOrgProduct } from '@/lib/richdata'
 import {
   MARKET_STATUS_LIVE,
   MARKET_STATUS_RESERVED,
@@ -181,33 +182,23 @@ export default function ItemDetails({
   marketSalesGraphFilter.item_id = item.id
   const { data: marketGraph, error: marketGraphError } = useSWR(
     shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-    }
+    ...swrConfig
   )
 
-  // Retrieve market history.
+  // Retrieve market sale activity.
   const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
   marketReservedFilter.item_id = item.id
   const {
     data: marketReserved,
     error: marketReservedError,
     isValidating: marketReservedLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, ...swrConfig)
   marketDeliveredFilter.item_id = item.id
   const {
     data: marketDelivered,
     error: marketDeliveredError,
     isValidating: marketDeliveredLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
 
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
@@ -220,28 +211,13 @@ export default function ItemDetails({
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
   let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
-  const schemaOrgProd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    productID: item.id,
-    name: item.name,
-    image: `${CDN_URL}/${item.image}`,
-    description: metaDesc,
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'USD',
-      url: canonicalURL,
-    },
-  }
+  const jsonLD = schemaOrgProduct(canonicalURL, item, { description: metaDesc })
   if (item.lowest_ask) {
     const startingPrice = item.lowest_ask.toFixed(2)
     metaDesc += ` Price starting at $${startingPrice}`
-    schemaOrgProd.offers.availability = 'https://schema.org/InStock'
-    schemaOrgProd.offers.price = startingPrice
-  } else {
-    schemaOrgProd.offers.availability = 'https://schema.org/OutOfStock'
-    schemaOrgProd.offers.price = '0'
   }
+
+  console.log(jsonLD)
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
   const linkProps = { href: `/${item.slug}` }
@@ -277,7 +253,7 @@ export default function ItemDetails({
         {/* Rich Results */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgProd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
       </Head>
 
