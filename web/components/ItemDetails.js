@@ -217,8 +217,6 @@ export default function ItemDetails({
     metaDesc += ` Price starting at $${startingPrice}`
   }
 
-  console.log(jsonLD)
-
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
   const linkProps = { href: `/${item.slug}` }
 
