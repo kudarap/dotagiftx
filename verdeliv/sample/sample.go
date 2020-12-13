@@ -6,12 +6,39 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/verdeliv"
 )
 
 func main() {
+	delivered, _ := getDelivered()
+
+	for _, mkt := range delivered {
+		res, err := verdeliv.Verify(mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+		if err != nil {
+			fmt.Println("could not verify!", err)
+			time.Sleep(time.Minute)
+			continue
+		}
+
+		fmt.Println(strings.Repeat("-", 70))
+		fmt.Println(fmt.Sprintf("%s -> %s (%s)", mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name))
+		fmt.Println(strings.Repeat("-", 70))
+		fmt.Println("Found:", len(res))
+		if len(res) != 0 {
+			r := res[0]
+			fmt.Println("GiftFrom:", r.GiftFrom)
+			fmt.Println("DateReceived:", r.DateReceived)
+			fmt.Println("Dedication:", r.Dedication)
+		}
+
+		fmt.Println("")
+	}
+}
+
+func main2() {
 	fmt.Println("TESTING VARDELIV")
 
 	params := []struct {
@@ -26,18 +53,18 @@ func main() {
 		{"kudarap", "76561198203634725", "Adornments of the Jade Emissary"},
 		{"gippeum", "76561198088587178", "Elements of the Endless Plane"},
 
-		{"Berserk", "76561198355627060", "Shattered Greatsword"},
-		{"Berserk", "76561198042690669", "Ancient Inheritance"},
-		{"Berserk", "76561198042690669", "Poacher's Bane"},
-		{"Berserk", "76561198042690669", "Allure of the Faeshade Flower"},
-		{"Berserk", "76561198256569879", "Endless Night"},
-		{"Berserk", "76561198139657329", "Glimmer of the Sacred Hunt"},
-
-		{"karosu!", "76561198088587178", "Ravenous Abyss"},
-		{"Araragi-", "76561198809365008", "Master of the Searing Path"},
-		{"Accel", "76561198042690669", "Forsworn Legacy"},
-		{"Dark Knight", "76561198116319576", "Legends of Darkheart Pursuit"},
-		{"ZAAALLGO", "76561198203634725", "Cunning Corsair"},
+		//{"Berserk", "76561198355627060", "Shattered Greatsword"},
+		//{"Berserk", "76561198042690669", "Ancient Inheritance"},
+		//{"Berserk", "76561198042690669", "Poacher's Bane"},
+		//{"Berserk", "76561198042690669", "Allure of the Faeshade Flower"},
+		//{"Berserk", "76561198256569879", "Endless Night"},
+		//{"Berserk", "76561198139657329", "Glimmer of the Sacred Hunt"},
+		//
+		//{"karosu!", "76561198088587178", "Ravenous Abyss"},
+		//{"Araragi-", "76561198809365008", "Master of the Searing Path"},
+		//{"Accel", "76561198042690669", "Forsworn Legacy"},
+		//{"Dark Knight", "76561198116319576", "Legends of Darkheart Pursuit"},
+		//{"ZAAALLGO", "76561198203634725", "Cunning Corsair"},
 		//{"ZAAALLGO", "76561197970672021", "Souls Tyrant"},
 		//{"ZAAALLGO", "76561197970672021", "Glimmer of the Sacred Hunt"},
 	}

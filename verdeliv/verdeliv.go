@@ -39,7 +39,7 @@ process:
 */
 
 const (
-	inventEndpoint  = "https://steamcommunity.com/profiles/%s/inventory/json/570/2"
+	inventEndpoint  = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?count=5000"
 	inventEndpoint2 = "https://steamcommunity.com/inventory/%s/570/2"
 
 	//steamInventoryAPI = "https://steamcommunity.com/profiles/%s/inventory/json/570/2?start=963"
