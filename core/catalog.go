@@ -46,6 +46,9 @@ type (
 		RecentSale *time.Time `json:"recent_sale" db:"recent_sale,omitempty"`
 		CreatedAt  *time.Time `json:"created_at"  db:"created_at,omitempty,indexed"`
 		UpdatedAt  *time.Time `json:"updated_at"  db:"updated_at,omitempty,indexed"`
+		// Include related fields.
+		Asks []Market `json:"asks" db:"-"`
+		Bids []Market `json:"bids" db:"-"`
 	}
 
 	// CatalogStorage defines operation for market indexed items.

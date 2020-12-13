@@ -304,5 +304,28 @@ func (s *marketService) CatalogDetails(slug string) (*core.Catalog, error) {
 		return nil, err
 	}
 
+	// Retrieve 10 live asks entries.
+	mf := core.Market{Type: core.MarketTypeAsk, ItemID: c.ID, Status: core.MarketStatusLive}
+	fo := core.FindOpts{
+		Filter: mf,
+		Limit:  10,
+		Sort:   "price",
+	}
+	res, _, err := s.Markets(context.Background(), fo)
+	if err != nil {
+		return nil, err
+	}
+	c.Asks = res
+	// Retrieve 10 live bids entries.
+	mf.Type = core.MarketTypeBid
+	fo.Filter = mf
+	fo.Sort = "price"
+	fo.Desc = true
+	res, _, err = s.Markets(context.Background(), fo)
+	if err != nil {
+		return nil, err
+	}
+	c.Bids = res
+
 	return c, err
 }
