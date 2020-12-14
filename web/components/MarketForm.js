@@ -230,7 +230,7 @@ export default function MarketForm() {
             </Typography>
             <Typography variant="body2" color="textSecondary">
               Request to buy at:{' '}
-              <Link href={`/${item.slug}`}>
+              <Link href={`/${item.slug}?buyorder`}>
                 {item.highest_bid ? format.amount(item.highest_bid, 'USD') : 'no orders yet'}
               </Link>
             </Typography>
