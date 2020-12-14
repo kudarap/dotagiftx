@@ -126,6 +126,15 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 }
 
 func (s *marketService) checkAskType(ask *core.Market) error {
+	// Check ask price should higher than highest bid price.
+	bid, err := s.catalogStg.Index(ask.ItemID)
+	if err != nil {
+		return err
+	}
+	if bid.Quantity != 0 && bid.HighestBid >= ask.Price {
+		return core.MarketErrInvalidAskPrice
+	}
+
 	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(core.FindOpts{
 		Filter: core.Market{
@@ -146,7 +155,7 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 }
 
 func (s *marketService) checkBidType(bid *core.Market) error {
-	// Check if bid price is lower than lowest ask price.
+	// Check bid price should lower than lowest ask price.
 	ask, err := s.catalogStg.Index(bid.ItemID)
 	if err != nil {
 		return err

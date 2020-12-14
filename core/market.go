@@ -18,6 +18,7 @@ const (
 	MarketErrQtyLimitPerUser
 	MarketErrRequiredPartnerURL
 	MarketErrInvalidBidPrice
+	MarketErrInvalidAskPrice
 )
 
 // sets error text definition.
@@ -31,6 +32,7 @@ func init() {
 	appErrorText[MarketErrQtyLimitPerUser] = "market quantity limit(5) per item reached"
 	appErrorText[MarketErrRequiredPartnerURL] = "market partner steam url is required"
 	appErrorText[MarketErrInvalidBidPrice] = "market bid should be lower than lowest ask price"
+	appErrorText[MarketErrInvalidAskPrice] = "market ask should be higher than highest bid price"
 }
 
 const (
