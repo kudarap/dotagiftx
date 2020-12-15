@@ -11,7 +11,7 @@ import { APP_FOOTER_HEIGHT } from '@/constants/app'
 const dotaHeroImage =
   'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1605830961'
 
-const heroImage = '/assets/bg_hero.png'
+// const heroImage = '/assets/bg_hero.png'
 
 const mobileHeightCompensator = 31
 
@@ -43,7 +43,8 @@ const useStyles = makeStyles(theme => ({
     '& li': {
       [theme.breakpoints.down('xs')]: {
         float: 'none',
-        marginRight: 0,
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
       },
@@ -61,6 +62,21 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(4),
   },
 }))
+
+function SteamAwardIcon(props) {
+  return (
+    <svg viewBox="0 0 13 21" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" {...props}>
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M5.8.2l-.6.42c-.24.15-.5.23-.81.2L3.93.73c-.5-.04-.97.19-1.2.65l-.3.65c-.16.27-.35.47-.62.58l-.42.2c-.46.19-.73.65-.7 1.15l.05.73c.03.3-.04.54-.24.77l-.26.39c-.31.38-.31.92-.04 1.34l.42.62c.15.23.2.5.2.8l-.08.47c-.04.5.19.96.65 1.2l.65.3c.27.15.46.35.58.62l.15.42c.23.46.66.73 1.2.7l.72-.05c.27-.04.54.04.77.23l.39.27c.38.31.92.31 1.34.04l.62-.42c.23-.16.5-.2.77-.2l.46.08c.5.04 1-.19 1.19-.65l.34-.66c.12-.27.31-.46.58-.57l.42-.16c.46-.23.77-.65.73-1.19l-.04-.73a.97.97 0 01.24-.77l.26-.39c.31-.38.31-.92.04-1.34l-.42-.62a1.1 1.1 0 01-.2-.77l.08-.46c.04-.5-.19-1-.65-1.2l-.65-.34c-.27-.12-.46-.3-.58-.58l-.2-.42C10 .97 9.55.66 9.05.7L8.3.74A.93.93 0 017.54.5L7.15.24C6.77-.07 6.23-.07 5.81.2zm.7 2.5a3.82 3.82 0 10-.04 7.65A3.82 3.82 0 006.5 2.7z"></path>
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M3.04 12.78v7.32l3.46-2.47 3.46 2.47v-7.32c-.3.12-.65.2-1 .16l-.42-.08a.65.65 0 00-.39.12l-.61.38c-.66.42-1.46.42-2.12-.04l-.34-.3c-.12-.08-.23-.08-.35-.08l-.73.04c-.34 0-.69-.04-.96-.2z"></path>
+    </svg>
+  )
+}
 
 export default function Footer() {
   const classes = useStyles()
@@ -108,7 +124,7 @@ export default function Footer() {
             {/*  by kudarap */}
             {/* </MuiLink> */}
             <Link href="/about" color="textSecondary">
-              <Typography component="span" color="secondary">
+              <Typography variant="body2" component="span" color="secondary">
                 {APP_NAME}
               </Typography>{' '}
               by kudarap
@@ -119,6 +135,19 @@ export default function Footer() {
           {/*    A chiliGarlic project */}
           {/*  </MuiLink> */}
           {/* </li> */}
+          <li style={{ float: 'right' }}>
+            <Link
+              href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224"
+              style={{ color: '#ffc83d' }}>
+              <SteamAwardIcon
+                style={{ margin: '0 2px -8px 0' }}
+                fill="#ffc83d"
+                width="24"
+                height="24"
+              />
+              Give a Steam Award
+            </Link>
+          </li>
         </ul>
         <br />
         <Typography
