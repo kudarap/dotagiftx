@@ -145,7 +145,7 @@ export default function Footer() {
                 width="24"
                 height="24"
               />
-              Give a Steam Award
+              <strong>Give a Steam Award</strong>
             </Link>
           </li>
         </ul>
