@@ -89,7 +89,11 @@ export default function Faq() {
 
           <Question>How do I report scammers?</Question>
           <Answer>
-            You can use{' '}
+            Please{' '}
+            <Link href="/about" color="secondary">
+              contact kudarap
+            </Link>{' '}
+            to ban the account on this site and you can submit a report on{' '}
             <Link
               href="https://steamrep.com/"
               target="_blank"
