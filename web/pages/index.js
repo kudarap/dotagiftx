@@ -208,7 +208,7 @@ export default function Index({ marketSummary, trendingItems }) {
           {/* Market stats */}
           <Divider className={classes.divider} light variant="middle" />
           <Grid container spacing={2} style={{ textAlign: 'center' }}>
-            <Grid item sm={4} xs={12} component={Link} href="/search" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/search" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.live}
               </Typography>
@@ -217,7 +217,22 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>Available Offers</em>
               </Typography>
             </Grid>
-            <Grid item sm={4} xs={6} component={Link} href="/history?reserved" disableUnderline>
+            <Grid
+              item
+              sm={3}
+              xs={6}
+              component={Link}
+              href="/search?sort=recent-bid"
+              disableUnderline>
+              <Typography variant="h4" component="span">
+                {marketSummary.bids.live}
+              </Typography>
+              <br />
+              <Typography color="textSecondary" variant="body2">
+                <em>Buy Orders</em>
+              </Typography>
+            </Grid>
+            <Grid item sm={3} xs={6} component={Link} href="/history?reserved" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
@@ -226,7 +241,7 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>On Reserved</em>
               </Typography>
             </Grid>
-            <Grid item sm={4} xs={6} component={Link} href="/history?delivered" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/history?delivered" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>
@@ -304,12 +319,11 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const marketSummary = await statsMarketSummary({
-    type: MARKET_TYPE_ASK,
-  })
+  const marketSummary = await statsMarketSummary()
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)
+  marketSummary.bids.live = format.numberWithCommas(marketSummary.bids.live)
 
   let trendingItems = { error: null }
   try {

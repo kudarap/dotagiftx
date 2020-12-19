@@ -24,11 +24,23 @@ func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.Hand
 			return
 		}
 
-		res, err := svc.CountMarketStatus(core.FindOpts{Filter: f})
+		f.Type = core.MarketTypeAsk
+		asks, err := svc.CountMarketStatus(core.FindOpts{Filter: f})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
+		f.Type = core.MarketTypeBid
+		bids, err := svc.CountMarketStatus(core.FindOpts{Filter: f})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		res := struct {
+			*core.MarketStatusCount
+			Bids *core.MarketStatusCount `json:"bids"`
+		}{asks, bids}
 
 		go cache.Set(cacheKey, res, marketCacheExpr)
 		respondOK(w, res)
