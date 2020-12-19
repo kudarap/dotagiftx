@@ -53,11 +53,12 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
           <TableRow>
             <TableHeadCell>Item</TableHeadCell>
             {!isMobile && (
-              <TableHeadCell align="right">{isRecentMode ? 'Listed' : 'Qty'}</TableHeadCell>
+              <TableHeadCell align="right">
+                {/* eslint-disable-next-line no-nested-ternary */}
+                {isRecentMode ? (bidType ? 'Requested' : 'Listed') : 'Qty'}
+              </TableHeadCell>
             )}
-            <TableHeadCell align="right" width={bidType ? 146 : null}>
-              {bidType ? 'Buy Price' : 'Price'}
-            </TableHeadCell>
+            <TableHeadCell align="right">{bidType ? 'Buy Price' : 'Price'}</TableHeadCell>
           </TableRow>
         </TableHead>
         <TableBody style={loading ? { opacity: 0.5 } : null}>
@@ -112,8 +113,12 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
               {!isMobile && (
                 <TableCell align="right">
                   <Typography variant="body2" color="textSecondary">
-                    {isRecentMode && moment(bidType ? item.recent_bid : item.recent_ask).fromNow()}
-                    {!isRecentMode && bidType ? item.bid_count : item.quantity}
+                    {/* eslint-disable-next-line no-nested-ternary */}
+                    {isRecentMode
+                      ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
+                      : bidType
+                      ? item.bid_count
+                      : item.quantity}
                   </Typography>
                 </TableCell>
               )}
