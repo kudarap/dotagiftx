@@ -10,6 +10,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import * as format from '@/lib/format'
 import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
@@ -37,11 +38,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function CatalogList({ items = [], loading, error, variant }) {
+export default function CatalogList({ items = [], loading, error, variant, bidType }) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const isRecentMode = variant === 'recent'
+
+  const itemURLSuffix = bidType ? '?buyorder' : ''
 
   return (
     <TableContainer component={Paper}>
@@ -52,7 +55,9 @@ export default function CatalogList({ items = [], loading, error, variant }) {
             {!isMobile && (
               <TableHeadCell align="right">{isRecentMode ? 'Listed' : 'Qty'}</TableHeadCell>
             )}
-            <TableHeadCell align="right">Price</TableHeadCell>
+            <TableHeadCell align="right" width={bidType ? 146 : null}>
+              {bidType ? 'Buy Price' : 'Price'}
+            </TableHeadCell>
           </TableRow>
         </TableHead>
         <TableBody style={loading ? { opacity: 0.5 } : null}>
@@ -79,7 +84,11 @@ export default function CatalogList({ items = [], loading, error, variant }) {
           {items.map(item => (
             <TableRow key={item.id} hover>
               <TableCell className={classes.th} component="th" scope="row" padding="none">
-                <Link className={classes.link} href="/[slug]" as={`/${item.slug}`} disableUnderline>
+                <Link
+                  className={classes.link}
+                  href={`/[slug]${itemURLSuffix}`}
+                  as={`/${item.slug}${itemURLSuffix}`}
+                  disableUnderline>
                   <ItemImage
                     className={classes.image}
                     image={item.image}
@@ -103,13 +112,17 @@ export default function CatalogList({ items = [], loading, error, variant }) {
               {!isMobile && (
                 <TableCell align="right">
                   <Typography variant="body2" color="textSecondary">
-                    {isRecentMode ? moment(item.recent_ask).fromNow() : item.quantity}
+                    {isRecentMode
+                      ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
+                      : item.quantity}
                   </Typography>
                 </TableCell>
               )}
 
               <TableCell align="right">
-                <Typography variant="body2">${item.lowest_ask.toFixed(2)}</Typography>
+                <Typography variant="body2">
+                  {format.amount(bidType ? item.highest_bid : item.lowest_ask, 'USD')}
+                </Typography>
               </TableCell>
             </TableRow>
           ))}
@@ -123,9 +136,11 @@ CatalogList.propTypes = {
   variant: PropTypes.string,
   loading: PropTypes.bool,
   error: PropTypes.string,
+  bidType: PropTypes.bool,
 }
 CatalogList.defaultProps = {
   variant: '',
   loading: false,
   error: null,
+  bidType: false,
 }

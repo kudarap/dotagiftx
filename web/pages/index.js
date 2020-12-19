@@ -71,12 +71,12 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const popularItemsFilter = {
-  sort: 'popular',
-  limit: 5,
-}
 const recentItemsFilter = {
   sort: 'recent',
+  limit: 5,
+}
+const recentBidItemsFilter = {
+  sort: 'recent-bid',
   limit: 5,
 }
 const topSellerItemsFilter = {
@@ -87,10 +87,16 @@ export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
-  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
-  const { data: topSellers } = useSWR([CATALOGS, topSellerItemsFilter], fetcher)
-  const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
-  const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
+  const { data: recentBidItems, recentBidError } = useSWR(
+    recentItems ? [CATALOGS, recentBidItemsFilter] : null,
+    fetcher
+  )
+  const { data: topSellers } = useSWR(
+    recentBidItems ? [CATALOGS, topSellerItemsFilter] : null,
+    fetcher
+  )
+  const { data: topOrigins } = useSWR(topSellers ? STATS_TOP_ORIGINS : null, fetcher)
+  const { data: topHeroes } = useSWR(topOrigins ? STATS_TOP_HEROES : null, fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
@@ -163,7 +169,7 @@ export default function Index({ marketSummary, trendingItems }) {
 
           {/* Trending Items */}
           <Typography>Trending Items</Typography>
-          {trendingItems.error && <div>failed to load popular items: {trendingItems.error}</div>}
+          {trendingItems.error && <div>failed to load trending items: {trendingItems.error}</div>}
           {!trendingItems.error && <CatalogList items={trendingItems.data} />}
           <br />
 
@@ -182,19 +188,21 @@ export default function Index({ marketSummary, trendingItems }) {
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
 
-          {/* Popular Market items */}
+          {/* Recent Buy Orders */}
           <Typography>
-            Most Popular
+            Recent Buy Orders
             <Link
-              href={`/search?sort=${popularItemsFilter.sort}`}
+              href={`/search?sort=${recentBidItemsFilter.sort}`}
               color="secondary"
               style={{ float: 'right' }}>
               See All
             </Link>
           </Typography>
-          {popularError && <div>failed to load popular items</div>}
-          {!popularItems && <LinearProgress color="secondary" />}
-          {!popularError && popularItems && <CatalogList items={popularItems.data} />}
+          {recentBidError && <div>failed to load recent buy orders items</div>}
+          {!recentBidItems && <LinearProgress color="secondary" />}
+          {!recentBidError && recentBidItems && (
+            <CatalogList items={recentBidItems.data} variant="recent" bidType />
+          )}
           <br />
 
           {/* Market stats */}

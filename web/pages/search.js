@@ -53,6 +53,8 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
 
   const linkProps = { href: '/search', query: filter }
 
+  const isBidType = filter.sort === 'recent-bid'
+
   return (
     <>
       <Head>
@@ -76,7 +78,12 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
           {!catalogs && <LinearProgress color="secondary" />}
           {catalogs && (
             <div>
-              <CatalogList items={catalogs.data} loading={loading} error={error} />
+              <CatalogList
+                items={catalogs.data}
+                loading={loading}
+                error={error}
+                bidType={isBidType}
+              />
               {!error && (
                 <TablePaginationRouter
                   linkProps={linkProps}
