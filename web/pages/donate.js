@@ -44,7 +44,7 @@ export default function Faq() {
             How can I donate?
             <Typography color="textSecondary">
               Thanks for your interest supporting DotagiftX! Since its not monetizing on views and I
-              do not run ads on this site(<em>fuck ads</em>). Giving a{' '}
+              do not run ads on this site. Giving a{' '}
               <Link href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224">
                 thumbs up on Steam
               </Link>{' '}
