@@ -128,22 +128,22 @@ func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 func (s *catalogStorage) Find(o core.FindOpts) ([]core.Catalog, error) {
 	var res []core.Catalog
 	o.KeywordFields = s.keywordFields
-	o.IndexSorting = true
+	//o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
 	//q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
-
 	return res, nil
 }
 
 func (s *catalogStorage) Count(o core.FindOpts) (num int, err error) {
 	o = core.FindOpts{
-		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
-		Filter:        o.Filter,
-		IndexSorting:  true,
+		//IndexSorting:  true,
+		Keyword: o.Keyword,
+		Filter:  o.Filter,
+		Sort:    o.Sort,
 	}
 	q := newFindOptsQuery(s.table(), o)
 	//q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
