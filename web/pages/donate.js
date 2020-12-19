@@ -63,7 +63,7 @@ export default function Faq() {
                 href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224">
                 Steam Award
               </Link>{' '}
-              will be very much appreciated.
+              or Like is very much appreciated.
             </Typography>
           </div>
           <br />
