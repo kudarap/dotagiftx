@@ -168,14 +168,14 @@ export default function Index({ marketSummary, trendingItems }) {
           <br />
 
           {/* Trending Items */}
-          <Typography>Trending Items</Typography>
+          <Typography>Trending</Typography>
           {trendingItems.error && <div>failed to load trending items: {trendingItems.error}</div>}
           {!trendingItems.error && <CatalogList items={trendingItems.data} />}
           <br />
 
           {/* Recent Market items */}
           <Typography>
-            Recently Posted
+            New Offers
             <Link
               href={`/search?sort=${recentItemsFilter.sort}`}
               color="secondary"
@@ -190,7 +190,7 @@ export default function Index({ marketSummary, trendingItems }) {
 
           {/* Recent Buy Orders */}
           <Typography>
-            Recent Buy Orders
+            New Buy Orders
             <Link
               href={`/search?sort=${recentBidItemsFilter.sort}`}
               color="secondary"

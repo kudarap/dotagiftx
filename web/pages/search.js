@@ -27,8 +27,8 @@ const useStyles = makeStyles(theme => ({
 
 const sortOpts = [
   ['popular', 'Most Popular'],
-  ['recent', 'Recently Posted'],
-  ['recent-bid', 'Recent Buy Orders'],
+  ['recent', 'New Offers'],
+  ['recent-bid', 'New Buy Orders'],
 ].map(([value, label]) => ({ value, label }))
 
 function SelectSort(props) {
