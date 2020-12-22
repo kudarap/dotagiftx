@@ -44,11 +44,12 @@ export default function Faq() {
             How can I donate?
             <Typography color="textSecondary">
               Thanks for your interest supporting DotagiftX! Since its not monetizing on views and I
-              do not run ads on this site. Giving a{' '}
+              do not run ads on this site, giving a{' '}
               <Link href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224">
                 thumbs up on Steam
               </Link>{' '}
-              is good enough to help the site atm, but if you really want to give support you can:
+              or giving feedback is good enough to help the site for the time being. You can check
+              below how you can help in other ways.
               {/* Currently this site is running on someone else&apos;s server that is why you don&apos;t see ads */}
             </Typography>
           </Typography>
@@ -63,7 +64,7 @@ export default function Faq() {
                 href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224">
                 Steam Award
               </Link>{' '}
-              or Like is very much appreciated.
+              or a Like is very much appreciated.
             </Typography>
           </div>
           <br />
