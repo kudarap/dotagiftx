@@ -231,7 +231,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 }
 
 // AutoCompleteBid detects if there's matching reservation on buy order and automatically
-// resolve it by setting a complete-bid status.
+// resolve it by setting complete-bid status.
 func (s *marketService) AutoCompleteBid(ctx context.Context, itemID, partnerSteamID string) error {
 	if itemID == "" || partnerSteamID == "" {
 		return fmt.Errorf("market item id and partner steam id are required")
