@@ -15,7 +15,12 @@ export const isOk = () => {
 }
 
 export const set = data => {
-  Cookies.set(AUTH_KEY, data, { expires: 30, secure: true, sameSite: 'strict' })
+  let opts = null
+  if (navigator.userAgent.indexOf('Safari') === -1) {
+    opts = { expires: 30, secure: true, sameSite: 'strict' }
+  }
+
+  Cookies.set(AUTH_KEY, data, opts)
 }
 
 export const clear = () => {

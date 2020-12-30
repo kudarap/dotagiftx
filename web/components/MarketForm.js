@@ -130,7 +130,13 @@ export default function MarketForm() {
           // }, 3000)
         }
       } catch (e) {
-        setError(`Error: ${e.message}`)
+        // special case reword error
+        let m = e.message
+        if (e.message === 'market ask should be higher than highest bid price') {
+          m = 'sell price should be higher than current buy order price'
+        }
+
+        setError(`Error: ${m}`)
       }
 
       setLoading(false)
@@ -220,6 +226,12 @@ export default function MarketForm() {
               Starting at:{' '}
               <Link href={`/${item.slug}`}>
                 {item.lowest_ask ? format.amount(item.lowest_ask, 'USD') : 'no offers yet'}
+              </Link>
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Request to buy at:{' '}
+              <Link href={`/${item.slug}?buyorder`}>
+                {item.highest_bid ? format.amount(item.highest_bid, 'USD') : 'no orders yet'}
               </Link>
             </Typography>
             <br />

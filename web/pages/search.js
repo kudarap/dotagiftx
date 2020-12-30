@@ -1,9 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import Select from '@material-ui/core/Select'
+import MenuItem from '@material-ui/core/MenuItem'
 import { catalogSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -22,12 +25,29 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const sortOpts = [
+  ['popular', 'Most Popular'],
+  ['recent', 'New Offers'],
+  ['recent-bid', 'New Buy Orders'],
+].map(([value, label]) => ({ value, label }))
+
+function SelectSort(props) {
+  return (
+    <Select id="select-sort" {...props}>
+      {sortOpts.map(opt => (
+        <MenuItem value={opt.value}>{opt.label}</MenuItem>
+      ))}
+    </Select>
+  )
+}
+
 export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
   const classes = useStyles()
 
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
+  const [sort, setSort] = React.useState(filter.sort)
 
   // Handle catalog request on page change.
   React.useEffect(() => {
@@ -53,6 +73,15 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
 
   const linkProps = { href: '/search', query: filter }
 
+  const router = useRouter()
+  const handleSelectSortChange = e => {
+    setSort(e.target.value)
+    linkProps.query.sort = e.target.value
+    router.push(linkProps)
+  }
+
+  const isBidType = filter.sort === 'recent-bid'
+
   return (
     <>
       <Head>
@@ -69,14 +98,19 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
               <Typography component="h1" variant="h6">
                 {catalogs && catalogs.total_count} results for &quot;{searchTerm}&quot;
               </Typography>
-              <br />
             </>
           )}
 
+          <SelectSort style={{ float: 'right' }} value={sort} onChange={handleSelectSortChange} />
           {!catalogs && <LinearProgress color="secondary" />}
           {catalogs && (
             <div>
-              <CatalogList items={catalogs.data} loading={loading} error={error} />
+              <CatalogList
+                items={catalogs.data}
+                loading={loading}
+                error={error}
+                bidType={isBidType}
+              />
               {!error && (
                 <TablePaginationRouter
                   linkProps={linkProps}

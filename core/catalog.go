@@ -34,8 +34,9 @@ type (
 		Quantity      int        `json:"quantity"       db:"quantity,omitempty"`
 		LowestAsk     float64    `json:"lowest_ask"     db:"lowest_ask,omitempty"`
 		MedianAsk     float64    `json:"median_ask"     db:"median_ask,omitempty"`
-		RecentAsk     *time.Time `json:"recent_ask"     db:"recent_ask,omitempty"`
+		RecentAsk     *time.Time `json:"recent_ask"     db:"recent_ask,omitempty,indexed"`
 		HighestBid    float64    `json:"highest_bid"    db:"highest_bid,omitempty"`
+		RecentBid     *time.Time `json:"recent_bid"     db:"recent_bid,omitempty,indexed"`
 		BidCount      int        `json:"bid_count"      db:"bid_count,omitempty"`
 		ReservedCount int        `json:"reserved_count" db:"reserved_count,omitempty"`
 		SoldCount     int        `json:"sold_count"     db:"sold_count,omitempty"`
@@ -45,6 +46,9 @@ type (
 		RecentSale *time.Time `json:"recent_sale" db:"recent_sale,omitempty"`
 		CreatedAt  *time.Time `json:"created_at"  db:"created_at,omitempty,indexed"`
 		UpdatedAt  *time.Time `json:"updated_at"  db:"updated_at,omitempty,indexed"`
+		// Include related fields.
+		Asks []Market `json:"asks" db:"-"`
+		Bids []Market `json:"bids" db:"-"`
 	}
 
 	// CatalogStorage defines operation for market indexed items.

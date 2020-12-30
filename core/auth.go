@@ -25,7 +25,7 @@ func init() {
 	appErrorText[AuthErrRequiredFields] = "auth fields are required"
 	appErrorText[AuthErrNoAccess] = "auth has no access"
 	appErrorText[AuthErrLogin] = "invalid login credentials"
-	appErrorText[AuthErrRefreshToken] = "non-existent or revoked refresh token"
+	appErrorText[AuthErrRefreshToken] = "invalid or revoked refresh token"
 }
 
 type (

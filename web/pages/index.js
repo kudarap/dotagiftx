@@ -71,12 +71,12 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const popularItemsFilter = {
-  sort: 'popular',
-  limit: 5,
-}
 const recentItemsFilter = {
   sort: 'recent',
+  limit: 5,
+}
+const recentBidItemsFilter = {
+  sort: 'recent-bid',
   limit: 5,
 }
 const topSellerItemsFilter = {
@@ -87,10 +87,16 @@ export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
   const { data: recentItems, recentError } = useSWR([CATALOGS, recentItemsFilter], fetcher)
-  const { data: popularItems, popularError } = useSWR([CATALOGS, popularItemsFilter], fetcher)
-  const { data: topSellers } = useSWR([CATALOGS, topSellerItemsFilter], fetcher)
-  const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
-  const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
+  const { data: recentBidItems, recentBidError } = useSWR(
+    recentItems ? [CATALOGS, recentBidItemsFilter] : null,
+    fetcher
+  )
+  const { data: topSellers } = useSWR(
+    recentBidItems ? [CATALOGS, topSellerItemsFilter] : null,
+    fetcher
+  )
+  const { data: topOrigins } = useSWR(topSellers ? STATS_TOP_ORIGINS : null, fetcher)
+  const { data: topHeroes } = useSWR(topOrigins ? STATS_TOP_HEROES : null, fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
@@ -162,14 +168,14 @@ export default function Index({ marketSummary, trendingItems }) {
           <br />
 
           {/* Trending Items */}
-          <Typography>Trending Items</Typography>
-          {trendingItems.error && <div>failed to load popular items: {trendingItems.error}</div>}
+          <Typography>Trending</Typography>
+          {trendingItems.error && <div>failed to load trending items: {trendingItems.error}</div>}
           {!trendingItems.error && <CatalogList items={trendingItems.data} />}
           <br />
 
           {/* Recent Market items */}
           <Typography>
-            Recently Posted
+            New Offers
             <Link
               href={`/search?sort=${recentItemsFilter.sort}`}
               color="secondary"
@@ -182,25 +188,27 @@ export default function Index({ marketSummary, trendingItems }) {
           {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
 
-          {/* Popular Market items */}
+          {/* Recent Buy Orders */}
           <Typography>
-            Most Popular
+            New Buy Orders
             <Link
-              href={`/search?sort=${popularItemsFilter.sort}`}
+              href={`/search?sort=${recentBidItemsFilter.sort}`}
               color="secondary"
               style={{ float: 'right' }}>
               See All
             </Link>
           </Typography>
-          {popularError && <div>failed to load popular items</div>}
-          {!popularItems && <LinearProgress color="secondary" />}
-          {!popularError && popularItems && <CatalogList items={popularItems.data} />}
+          {recentBidError && <div>failed to load recent buy orders items</div>}
+          {!recentBidItems && <LinearProgress color="secondary" />}
+          {!recentBidError && recentBidItems && (
+            <CatalogList items={recentBidItems.data} variant="recent" bidType />
+          )}
           <br />
 
           {/* Market stats */}
           <Divider className={classes.divider} light variant="middle" />
           <Grid container spacing={2} style={{ textAlign: 'center' }}>
-            <Grid item sm={4} xs={12} component={Link} href="/search" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/search" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.live}
               </Typography>
@@ -209,7 +217,22 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>Available Offers</em>
               </Typography>
             </Grid>
-            <Grid item sm={4} xs={6} component={Link} href="/history?reserved" disableUnderline>
+            <Grid
+              item
+              sm={3}
+              xs={6}
+              component={Link}
+              href="/search?sort=recent-bid"
+              disableUnderline>
+              <Typography variant="h4" component="span">
+                {marketSummary.bids.live}
+              </Typography>
+              <br />
+              <Typography color="textSecondary" variant="body2">
+                <em>Buy Orders</em>
+              </Typography>
+            </Grid>
+            <Grid item sm={3} xs={6} component={Link} href="/history?reserved" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
@@ -218,7 +241,7 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>On Reserved</em>
               </Typography>
             </Grid>
-            <Grid item sm={4} xs={6} component={Link} href="/history?delivered" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/history?delivered" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>
@@ -296,12 +319,11 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const marketSummary = await statsMarketSummary({
-    type: MARKET_TYPE_ASK,
-  })
+  const marketSummary = await statsMarketSummary()
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)
+  marketSummary.bids.live = format.numberWithCommas(marketSummary.bids.live)
 
   let trendingItems = { error: null }
   try {

@@ -18,6 +18,7 @@ const (
 	MarketErrQtyLimitPerUser
 	MarketErrRequiredPartnerURL
 	MarketErrInvalidBidPrice
+	MarketErrInvalidAskPrice
 )
 
 // sets error text definition.
@@ -31,6 +32,7 @@ func init() {
 	appErrorText[MarketErrQtyLimitPerUser] = "market quantity limit(5) per item reached"
 	appErrorText[MarketErrRequiredPartnerURL] = "market partner steam url is required"
 	appErrorText[MarketErrInvalidBidPrice] = "market bid should be lower than lowest ask price"
+	appErrorText[MarketErrInvalidAskPrice] = "market ask should be higher than highest bid price"
 }
 
 const (
@@ -101,6 +103,10 @@ type (
 
 		// Update saves market details changes.
 		Update(context.Context, *Market) error
+
+		// AutoCompleteBid detects if there's matching reservation on buy order and automatically
+		// resolve it by setting complete-bid status.
+		AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error
 
 		// Catalog returns a list of catalogs.
 		Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)

@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -55,14 +54,14 @@ func handleAuthRenew(svc core.AuthService) http.HandlerFunc {
 
 		au, err := svc.RenewToken(form.RefreshToken)
 		if err != nil {
-			respondError(w, err)
+			respond(w, http.StatusUnauthorized, newError(err))
 			return
 		}
 
 		// Refresh JWT.
 		a, err := refreshJWT(au)
 		if err != nil {
-			respondError(w, err)
+			respond(w, http.StatusInternalServerError, newError(err))
 			return
 		}
 
@@ -112,7 +111,6 @@ func refreshJWT(au *core.Auth) (*authResp, error) {
 
 	t, err := jwt.New(au.UserID, noLevel, a.ExpiresAt)
 	if err != nil {
-		fmt.Println("FUCKED", err)
 		return nil, err
 	}
 	a.Token = t

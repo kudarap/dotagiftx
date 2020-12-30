@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { schemaOrgProduct } from '@/lib/richdata'
 import {
   MARKET_STATUS_LIVE,
   MARKET_STATUS_RESERVED,
@@ -35,7 +36,7 @@ import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketActivity from '@/components/MarketActivity'
-import MarketSaslesChart from '@/components/MarketSalesChart'
+import MarketSalesChart from '@/components/MarketSalesChart'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -109,7 +110,8 @@ export default function ItemDetails({
   item,
   error: initialError,
   filter,
-  markets: initialMarkets,
+  initialAsks,
+  initialBids,
   canonicalURL,
 }) {
   const classes = useStyles()
@@ -137,14 +139,19 @@ export default function ItemDetails({
     )
   }
 
-  const [markets, setMarkets] = React.useState(initialMarkets)
-  const [buyOrders, setBuyOrders] = React.useState(initialMarkets)
+  const [markets, setMarkets] = React.useState(initialAsks)
+  const [buyOrders, setBuyOrders] = React.useState(initialBids)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
 
-  // Retrieve offers and handle page change.
+  // Handles offer update when page changes.
   React.useEffect(() => {
+    if (filter.page === 1) {
+      setMarkets(initialAsks)
+      return
+    }
+
     ;(async () => {
       setLoading(true)
       try {
@@ -157,7 +164,7 @@ export default function ItemDetails({
     })()
   }, [filter.page])
 
-  // Retrieve buy orders.
+  // Handles update of buyer orders when changes.
   marketBuyOrderFilter.item_id = item.id
   const getBuyOrders = async () => {
     setLoading(true)
@@ -169,42 +176,29 @@ export default function ItemDetails({
     }
     setLoading(false)
   }
-  React.useEffect(() => {
-    getBuyOrders()
-  }, [])
 
   // Retrieve market sales graph.
   const shouldLoadGraph = Boolean(markets.data) && Boolean(buyOrders.data)
   marketSalesGraphFilter.item_id = item.id
-  const { data: marketGraph, error: marketGraphError, isValidating: marketGraphLoading } = useSWR(
+  const { data: marketGraph, error: marketGraphError } = useSWR(
     shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-    }
+    ...swrConfig
   )
 
-  // Retrieve market history.
+  // Retrieve market sale activity.
   const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
   marketReservedFilter.item_id = item.id
   const {
     data: marketReserved,
     error: marketReservedError,
     isValidating: marketReservedLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, ...swrConfig)
   marketDeliveredFilter.item_id = item.id
   const {
     data: marketDelivered,
     error: marketDeliveredError,
     isValidating: marketDeliveredLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  })
+  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
 
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
@@ -217,27 +211,10 @@ export default function ItemDetails({
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
   let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
-  const schemaOrgProd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    productID: item.id,
-    name: item.name,
-    image: `${CDN_URL}/${item.image}`,
-    description: metaDesc,
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'USD',
-      url: canonicalURL,
-    },
-  }
+  const jsonLD = schemaOrgProduct(canonicalURL, item, { description: metaDesc })
   if (item.lowest_ask) {
     const startingPrice = item.lowest_ask.toFixed(2)
     metaDesc += ` Price starting at $${startingPrice}`
-    schemaOrgProd.offers.availability = 'https://schema.org/InStock'
-    schemaOrgProd.offers.price = startingPrice
-  } else {
-    schemaOrgProd.offers.availability = 'https://schema.org/OutOfStock'
-    schemaOrgProd.offers.price = '0'
   }
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
@@ -274,7 +251,7 @@ export default function ItemDetails({
         {/* Rich Results */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgProd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
       </Head>
 
@@ -462,7 +439,7 @@ export default function ItemDetails({
               {!marketGraphError && marketGraph && (
                 <>
                   <br />
-                  <MarketSaslesChart data={marketGraph} />
+                  <MarketSalesChart data={marketGraph} />
                 </>
               )}
 
@@ -498,12 +475,16 @@ ItemDetails.propTypes = {
   item: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
-  markets: PropTypes.object,
+  initialAsks: PropTypes.object,
+  initialBids: PropTypes.object,
   error: PropTypes.string,
 }
 ItemDetails.defaultProps = {
   filter: {},
-  markets: {
+  initialAsks: {
+    data: [],
+  },
+  initialBids: {
     data: [],
   },
   error: null,

@@ -22,7 +22,6 @@ import {
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_REMOVED,
-  MARKET_STATUS_RESERVED,
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ItemImageDialog from '@/components/ItemImageDialog'

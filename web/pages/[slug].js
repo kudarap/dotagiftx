@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
-import { catalog, marketSearch } from '@/service/api'
+import { catalog as getCatalog } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import ItemDetails from '@/components/ItemDetails'
 import ErrorPage from './404'
@@ -34,47 +34,53 @@ export async function getServerSideProps(props) {
   const { params, query } = props
   const { slug } = params
 
-  let item = {}
+  let catalog = {}
   let error = null
 
   // Handles no market entry on item
   try {
-    item = await catalog(slug)
+    catalog = await getCatalog(slug)
   } catch (e) {
     error = `catalog get error: ${e.message}`
   }
 
-  if (!item.id) {
+  if (!catalog.id) {
     return {
       props: {
-        item,
+        item: catalog,
         filter: {},
         error: 'catalog not found',
       },
     }
   }
 
-  const filter = { ...marketSearchFilter, item_id: item.id }
+  const filter = { ...marketSearchFilter, item_id: catalog.id }
   if (query.page) {
     filter.page = Number(query.page)
   }
 
-  const markets = {}
-  // try {
-  //   markets = await marketSearch(filter)
-  // } catch (e) {
-  //   console.log(`market search error: ${e.message}`)
-  //   error = e.message
-  // }
+  const askData = catalog.asks || []
+  const initialAsks = {
+    data: askData,
+    result_count: askData.length || 0,
+    total_count: catalog.quantity,
+  }
+  const bidData = catalog.bids || []
+  const initialBids = {
+    data: bidData || [],
+    result_count: bidData.length || 0,
+    total_count: catalog.bid_count,
+  }
 
   const canonicalURL = `${APP_URL}/${slug}`
 
   return {
     props: {
-      item,
+      item: catalog,
       canonicalURL,
       filter,
-      markets,
+      initialAsks,
+      initialBids,
       error,
     },
   }

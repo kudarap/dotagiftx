@@ -60,7 +60,7 @@ func handleItemList(
 		o := newDataWithMeta(list, md)
 		go func() {
 			if err := cache.Set(cacheKey, o, itemCacheExpr); err != nil {
-				logger.Errorf("could save cache on catalog details: %s", err)
+				logger.Errorf("could not save cache on catalog details: %s", err)
 			}
 		}()
 		respondOK(w, o)
@@ -86,7 +86,7 @@ func handleItemDetail(svc core.ItemService, cache core.Cache, logger *logrus.Log
 
 		go func() {
 			if err := cache.Set(cacheKey, i, itemCacheExpr); err != nil {
-				logger.Errorf("could save cache on catalog details: %s", err)
+				logger.Errorf("could not save cache on catalog details: %s", err)
 			}
 		}()
 		respondOK(w, i)
