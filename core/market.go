@@ -104,6 +104,10 @@ type (
 		// Update saves market details changes.
 		Update(context.Context, *Market) error
 
+		// AutoCompleteBid detects if there's matching reservation on buy order and automatically
+		// resolve it by setting complete-bid status.
+		AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error
+
 		// Catalog returns a list of catalogs.
 		Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
 
