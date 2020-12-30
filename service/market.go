@@ -203,7 +203,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 			return err
 		}
 
-		if err = s.AutoCompleteBid(ctx, cur.ItemID, mkt.PartnerSteamID); err != nil {
+		if err = s.AutoCompleteBid(ctx, *cur, mkt.PartnerSteamID); err != nil {
 			return err
 		}
 	}
@@ -232,9 +232,9 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 
 // AutoCompleteBid detects if there's matching reservation on buy order and automatically
 // resolve it by setting complete-bid status.
-func (s *marketService) AutoCompleteBid(ctx context.Context, itemID, partnerSteamID string) error {
-	if itemID == "" || partnerSteamID == "" {
-		return fmt.Errorf("market item id and partner steam id are required")
+func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, partnerSteamID string) error {
+	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
+		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
 	}
 
 	// Use buyer ID to get the matching market.
@@ -243,12 +243,12 @@ func (s *marketService) AutoCompleteBid(ctx context.Context, itemID, partnerStea
 		return err
 	}
 
-	// Find matching bid market and update its status.
+	// Find matching bid market to update status.
 	fo := core.FindOpts{
 		Filter: core.Market{
 			Type:   core.MarketTypeBid,
 			Status: core.MarketStatusLive,
-			ItemID: itemID,
+			ItemID: ask.ItemID,
 			UserID: buyer.ID,
 		},
 	}
@@ -260,10 +260,14 @@ func (s *marketService) AutoCompleteBid(ctx context.Context, itemID, partnerStea
 		return nil
 	}
 
-	// Set complete status on matching bid.
+	// Set complete status and seller steam id on matching bid.
+	seller, err := s.userStg.Get(ask.UserID)
+	if err != nil {
+		return err
+	}
 	b := bids[0]
 	b.Status = core.MarketStatusBidCompleted
-	b.PartnerSteamID = partnerSteamID
+	b.PartnerSteamID = seller.SteamID
 	return s.marketStg.Update(&b)
 }
 

@@ -21,7 +21,7 @@ func AutoCompleteBid(marketSvc core.MarketService) {
 	}
 
 	for _, m := range res {
-		if err = marketSvc.AutoCompleteBid(ctx, m.ItemID, m.PartnerSteamID); err != nil {
+		if err = marketSvc.AutoCompleteBid(ctx, m, m.PartnerSteamID); err != nil {
 			log.Println("could not complete bid", err)
 			continue
 		}
