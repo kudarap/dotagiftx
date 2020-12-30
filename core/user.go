@@ -26,6 +26,7 @@ func init() {
 type (
 	// User represents user information.
 	User struct {
+		userRepo  UserStorage
 		ID        string     `json:"id"         db:"id,omitempty"`
 		SteamID   string     `json:"steam_id"   db:"steam_id,omitempty"    valid:"required"`
 		Name      string     `json:"name"       db:"name,omitempty"        valid:"required"`
