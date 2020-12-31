@@ -240,7 +240,7 @@ func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, pa
 	// Use buyer ID to get the matching market.
 	buyer, err := s.userStg.Get(partnerSteamID)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	// Find matching bid market to update status.
@@ -252,11 +252,8 @@ func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, pa
 			UserID: buyer.ID,
 		},
 	}
-	bids, err := s.marketStg.Find(fo)
-	if err != nil {
-		return err
-	}
-	if len(bids) == 0 {
+	bids, _ := s.marketStg.Find(fo)
+	if bids == nil || len(bids) == 0 {
 		return nil
 	}
 
