@@ -108,6 +108,8 @@ export default function UserDetails({
   const metaTitle = `${APP_NAME} :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
 
+  const reported = profile.status && profile.status === 300
+
   return (
     <>
       <Head>
@@ -133,12 +135,23 @@ export default function UserDetails({
 
       <main className={classes.main}>
         <Container>
-          <div className={classes.details}>
+          <div
+            className={classes.details}
+            style={reported && { backgroundColor: '#2d0000', padding: 10, width: '100%' }}>
             <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
-              <Typography className={classes.profileName} component="p" variant="h4">
+              <Typography
+                className={classes.profileName}
+                component="p"
+                variant="h4"
+                color={reported ? 'error' : ''}>
                 {profile.name}
               </Typography>
+              {reported && (
+                <Typography color="error">
+                  This user was reported over scam report and under investigation.
+                </Typography>
+              )}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}

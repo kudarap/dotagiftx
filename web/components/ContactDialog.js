@@ -79,6 +79,8 @@ export default function ContactDialog(props) {
   const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
   const dota2Inventory = `${steamProfileURL}/inventory#570`
 
+  const reported = market.user.status && market.user.status === 300
+
   return (
     <div>
       <Dialog
@@ -93,14 +95,25 @@ export default function ContactDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <div className={classes.details}>
+          <div
+            className={classes.details}
+            style={reported && { backgroundColor: '#2d0000', padding: 10, width: '100%' }}>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
               <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
             </a>
             <Typography component="h1">
-              <Typography className={classes.profileName} component="p" variant="h4">
+              <Typography
+                className={classes.profileName}
+                component="p"
+                variant="h4"
+                color={reported ? 'error' : ''}>
                 {market.user.name}
               </Typography>
+              {reported && (
+                <Typography color="error">
+                  This user was reported over scam report and under investigation.
+                </Typography>
+              )}
               <Typography variant="body2" component="span">
                 <Link href={`/profiles/${market.user.steam_id}/reserved`}>
                   {!loading && marketSummary ? marketSummary.live : '--'} Items

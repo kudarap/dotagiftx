@@ -23,7 +23,15 @@ func init() {
 	appErrorText[UserErrSteamSync] = "user profile steam sync error"
 }
 
+// User statuses.
+const (
+	UserStatusReported UserStatus = 300
+	UserStatusBanned   UserStatus = 400
+)
+
 type (
+	UserStatus uint
+
 	// User represents user information.
 	User struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
@@ -31,6 +39,7 @@ type (
 		Name      string     `json:"name"       db:"name,omitempty"        valid:"required"`
 		URL       string     `json:"url"        db:"url,omitempty"         valid:"required"`
 		Avatar    string     `json:"avatar"     db:"avatar,omitempty"      valid:"required"`
+		Status    UserStatus `json:"status"     db:"status,omitempty"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 	}
