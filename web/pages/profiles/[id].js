@@ -147,11 +147,11 @@ export default function UserDetails({
                 color={reported ? 'error' : ''}>
                 {profile.name}
               </Typography>
-              {reported && (
+              {reported ? (
                 <Typography color="error">
                   This user was reported over scam report and under investigation.
                 </Typography>
-              )}
+              ) : null}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}

@@ -109,11 +109,11 @@ export default function ContactDialog(props) {
                 color={reported ? 'error' : ''}>
                 {market.user.name}
               </Typography>
-              {reported && (
+              {reported ? (
                 <Typography color="error">
                   This user was reported over scam report and under investigation.
                 </Typography>
-              )}
+              ) : null}
               <Typography variant="body2" component="span">
                 <Link href={`/profiles/${market.user.steam_id}/reserved`}>
                   {!loading && marketSummary ? marketSummary.live : '--'} Items
