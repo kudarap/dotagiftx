@@ -97,7 +97,7 @@ export default function ContactDialog(props) {
         <DialogContent>
           <div
             className={classes.details}
-            style={reported && { backgroundColor: '#2d0000', padding: 10, width: '100%' }}>
+            style={reported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
               <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
             </a>

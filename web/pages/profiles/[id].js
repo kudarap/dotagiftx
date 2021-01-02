@@ -137,7 +137,7 @@ export default function UserDetails({
         <Container>
           <div
             className={classes.details}
-            style={reported && { backgroundColor: '#2d0000', padding: 10, width: '100%' }}>
+            style={reported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
             <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
               <Typography
