@@ -115,7 +115,7 @@ export default function ContactDialog(props) {
                 </Typography>
               ) : null}
               <Typography variant="body2" component="span">
-                <Link href={`/profiles/${market.user.steam_id}/reserved`}>
+                <Link href={`/profiles/${market.user.steam_id}`}>
                   {!loading && marketSummary ? marketSummary.live : '--'} Items
                 </Link>{' '}
                 &middot;{' '}
