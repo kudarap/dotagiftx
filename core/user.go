@@ -12,6 +12,7 @@ const (
 	UserErrRequiredFields
 	UserErrProfileImageDL
 	UserErrSteamSync
+	UserErrReported
 )
 
 // sets error text definition.
@@ -21,6 +22,7 @@ func init() {
 	appErrorText[UserErrRequiredFields] = "user fields are required"
 	appErrorText[UserErrProfileImageDL] = "user profile image could not download"
 	appErrorText[UserErrSteamSync] = "user profile steam sync error"
+	appErrorText[UserErrReported] = "user has been reported for scam incident"
 }
 
 // User statuses.
@@ -90,6 +92,14 @@ func (u User) CheckCreate() error {
 func (u User) CheckUpdate() error {
 	if u.ID == "" {
 		return UserErrRequiredID
+	}
+
+	return nil
+}
+
+func (u User) CheckStatus() error {
+	if u.Status >= UserStatusReported {
+		return UserErrReported
 	}
 
 	return nil

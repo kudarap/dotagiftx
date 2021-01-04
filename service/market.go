@@ -87,6 +87,14 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		return core.AuthErrNoAccess
 	}
 	mkt.UserID = au.UserID
+	// Checks for reported/banned users.
+	u, err := s.userStg.Get(au.UserID)
+	if err != nil {
+		return err
+	}
+	if err = u.CheckStatus(); err != nil {
+		return err
+	}
 
 	mkt.SetDefaults()
 	if err := mkt.CheckCreate(); err != nil {
