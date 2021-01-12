@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -60,6 +59,12 @@ func (d Metadata) hasError() error {
 	return nil
 }
 
+const freshCacheDur = time.Hour * 24 // 1 day freshness
+
+func (d Metadata) isCacheFresh() bool {
+	return time.Now().Before(d.LastUpdated.Add(freshCacheDur))
+}
+
 // https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
 func GetMeta(steamID string) (*Metadata, error) {
 	url := fmt.Sprintf("https://db.steaminventory.org/SteamInventory/%s", steamID)
@@ -69,6 +74,9 @@ func GetMeta(steamID string) (*Metadata, error) {
 	}
 
 	m := raw.format()
+	if m == nil {
+		return nil, nil
+	}
 	if err := m.hasError(); err != nil {
 		return nil, err
 	}
@@ -113,8 +121,12 @@ type rawMetadata struct {
 }
 
 func (d *rawMetadata) format() *Metadata {
+	m := &Metadata{}
+	if len(d.Items) == 0 {
+		return nil
+	}
+
 	mdi := d.Items[0]
-	var m Metadata
 	m.Status = mdi.Status.S
 	m.AllDescriptionLength, _ = strconv.Atoi(mdi.AllDescriptionLength.N)
 	m.AllInventoryLength, _ = strconv.Atoi(mdi.AllInventoryLength.N)
@@ -123,7 +135,7 @@ func (d *rawMetadata) format() *Metadata {
 	m.LastUpdated = parseStrTime(mdi.IndexTimestamp.N)
 	m.Count = d.Count
 	m.ScannedCount = d.ScannedCount
-	return &m
+	return m
 }
 
 // https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
@@ -142,17 +154,33 @@ const (
 	retrySleepDur = time.Second * 2
 )
 
-func GetNWait(steamID string) (*inventory2, error) {
+func SWR(steamID string) (*inventory2, error) {
+	// check for freshly cached inventory
+	//log.Println(steamID, "checking for fresh cache...")
+	m, err := GetMeta(steamID)
+	if err != nil {
+		return nil, err
+	}
+	if m != nil && m.isCacheFresh() {
+		//log.Println(steamID, "cache is still fresh!")
+		//go func() {
+		//	if _, err = Crawl(steamID); err != nil {
+		//		log.Println("error invalidating", err)
+		//	}
+		//}()
+		return Get(steamID)
+	}
+
 	// crawl request
-	log.Println(steamID, "sending crawl request...")
-	if _, err := Crawl(steamID); err != nil {
+	//log.Println(steamID, "sending crawl request...")
+	if _, err = Crawl(steamID); err != nil {
 		return nil, err
 	}
 
 	// check for meta until processed with 5 reties
 	for i := 1; i <= maxGetRetries; i++ {
-		log.Println(steamID, "checking metadata. retry ", i, "...")
-		m, err := GetMeta(steamID)
+		//log.Println(steamID, "checking metadata. retry", i, "...")
+		m, err = GetMeta(steamID)
 		if err != nil {
 			return nil, err
 		}
@@ -163,7 +191,7 @@ func GetNWait(steamID string) (*inventory2, error) {
 	}
 
 	// get inventory
-	log.Println(steamID, "getting inventory...")
+	//log.Println(steamID, "getting inventory...")
 	return Get(steamID)
 }
 
@@ -190,6 +218,6 @@ func getRequest(url string, data interface{}) error {
 
 func parseStrTime(ts string) *time.Time {
 	sec, _ := strconv.ParseInt(ts, 10, 64)
-	t := time.Unix(sec, 0)
+	t := time.Unix(sec/1000, 0)
 	return &t
 }

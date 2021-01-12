@@ -6,7 +6,7 @@ import (
 )
 
 func VerifyDelivery(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, error) {
-	inv, err := GetNWait(buyerSteamID)
+	inv, err := SWR(buyerSteamID)
 	if err != nil {
 		return nil, fmt.Errorf("could not get inventory: %s", err)
 	}
