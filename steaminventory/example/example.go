@@ -8,30 +8,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kudarap/dotagiftx/steaminventory"
-
 	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/steaminventory"
 )
 
-func main0() {
+func main() {
+	inv, err := steaminventory.SWR("76561198088587178")
+	fmt.Println(inv, err)
+
 	//status, err := steaminventory.Crawl("76561198088587178")
 	//fmt.Println(status, err)
 
-	//meta, err := steaminventory.GetMeta("76561198849220681")
+	//meta, err := steaminventory.GetMeta("76561198088587178")
 	//fmt.Println(meta, err)
 
 	//inv, err := steaminventory.Get("76561198088587178")
 	//fmt.Println(inv, err)
 
-	//inv, err := steaminventory.GetNWait("76561198088587178")
-	//fmt.Println(inv, err)
-
-	//flat, err := steaminventory.NewFlatInventoryFromV2(*inv)
-	//fmt.Println(flat, err)
-
 }
 
-func main() {
+func verifiedDelivery() {
 	//flat, err := steaminventory.VerifyDelivery("karosu!", "76561198088587178", "Ravenous Abyss")
 	//fmt.Println(flat, err)
 
