@@ -2,7 +2,6 @@ package steaminventory
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
@@ -21,6 +20,12 @@ const (
 )
 
 type (
+	// allInventory represents aggregated steam inventory.
+	allInventory struct {
+		Assets       []asset                `json:"allInventory"`
+		Descriptions map[string]description `json:"allDescriptions"`
+	}
+
 	// inventory represents steam's raw inventory data model.
 	inventory struct {
 		Success      bool                   `json:"success"`
@@ -29,11 +34,6 @@ type (
 		Assets       map[string]asset       `json:"rgInventory"`
 		Descriptions map[string]description `json:"rgDescriptions"`
 		Error        string                 `json:"Error"`
-	}
-
-	inventory2 struct {
-		Assets       []asset                `json:"allInventory"`
-		Descriptions map[string]description `json:"allDescriptions"`
 	}
 
 	// asset represents steam's raw asset inventory data model.
@@ -74,59 +74,24 @@ type (
 		NotTradable  bool     `json:"not_tradable"`
 		Descriptions []string `json:"descriptions"`
 	}
+
+	inventorySource interface {
+		Get(steamID string)
+	}
 )
 
-// parses json file into struct.
-func newInventoryFromFile(path string) (*inventory, error) {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("could not read file(%s): %s", path, err)
-	}
-
-	inv := &inventory{}
-	if err := fastjson.Unmarshal(data, inv); err != nil {
-		return nil, fmt.Errorf("could not parse json: %s", err)
-	}
-
-	return inv, nil
-}
-
-// transform original data struct to flat format.
-func newFlatInventoryFromFile(path string) ([]flatInventory, error) {
-	inv, err := newInventoryFromFile(path)
-	if err != nil {
-		return nil, err
-	}
-
+func ToFlatFormat(inv allInventory) ([]flatInventory, error) {
 	// Collate asset map ids for fast inventory asset id look up.
-	assetMapIDs := map[string]string{}
+	assetIDs := map[string]string{}
 	for _, aa := range inv.Assets {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+		assetIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
 	}
 
 	// Composes and collect inventory on flat format.
 	var flat []flatInventory
 	for ci, ii := range inv.Descriptions {
 		fi := ii.toFlatInventory()
-		fi.AssetID = assetMapIDs[ci]
-		flat = append(flat, fi)
-	}
-
-	return flat, nil
-}
-
-func NewFlatInventoryFromV2(inv inventory2) ([]flatInventory, error) {
-	// Collate asset map ids for fast inventory asset id look up.
-	assetMapIDs := map[string]string{}
-	for _, aa := range inv.Assets {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
-	}
-
-	// Composes and collect inventory on flat format.
-	var flat []flatInventory
-	for ci, ii := range inv.Descriptions {
-		fi := ii.toFlatInventory()
-		fi.AssetID = assetMapIDs[ci]
+		fi.AssetID = assetIDs[ci]
 		flat = append(flat, fi)
 	}
 

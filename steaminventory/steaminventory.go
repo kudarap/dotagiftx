@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-type crawlResp struct {
-	Status string `json:"profile"`
-}
-
 // POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198854433104
 func Crawl(steamID string) (status string, err error) {
 	url := fmt.Sprintf("https://job.steaminventory.org/ScheduleInventoryCrawl?profile=%s", steamID)
@@ -64,24 +60,6 @@ const freshCacheDur = time.Hour * 24 // 1 day freshness
 
 func (d Metadata) isCacheFresh() bool {
 	return time.Now().Before(d.LastUpdated.Add(freshCacheDur))
-}
-
-// https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
-func GetMeta(steamID string) (*Metadata, error) {
-	url := fmt.Sprintf("https://db.steaminventory.org/SteamInventory/%s", steamID)
-	raw := &rawMetadata{}
-	if err := getRequest(url, raw); err != nil {
-		return nil, err
-	}
-
-	m := raw.format()
-	if m == nil {
-		return nil, nil
-	}
-	if err := m.hasError(); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 type rawMetadata struct {
@@ -139,10 +117,28 @@ func (d *rawMetadata) format() *Metadata {
 	return m
 }
 
+// https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
+func GetMeta(steamID string) (*Metadata, error) {
+	url := fmt.Sprintf("https://db.steaminventory.org/SteamInventory/%s", steamID)
+	raw := &rawMetadata{}
+	if err := getRequest(url, raw); err != nil {
+		return nil, err
+	}
+
+	m := raw.format()
+	if m == nil {
+		return nil, nil
+	}
+	if err := m.hasError(); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
-func Get(steamID string) (*inventory2, error) {
+func Get(steamID string) (*allInventory, error) {
 	url := fmt.Sprintf("https://data.steaminventory.org/SteamInventory/%s", steamID)
-	raw := &inventory2{}
+	raw := &allInventory{}
 	if err := getRequest(url, raw); err != nil {
 		return nil, err
 	}
@@ -155,7 +151,7 @@ const (
 	retrySleepDur = time.Second * 2
 )
 
-func SWR(steamID string) (*inventory2, error) {
+func SWR(steamID string) (*allInventory, error) {
 	// check for freshly cached inventory
 	//log.Println(steamID, "checking for fresh cache...")
 	m, err := GetMeta(steamID)

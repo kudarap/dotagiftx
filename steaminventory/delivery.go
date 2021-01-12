@@ -11,7 +11,7 @@ func VerifyDelivery(sellerPersona, buyerSteamID, itemName string) ([]flatInvento
 		return nil, fmt.Errorf("could not get inventory: %s", err)
 	}
 
-	res, err := NewFlatInventoryFromV2(*inv)
+	res, err := ToFlatFormat(*inv)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse file: %s", err)
 	}
