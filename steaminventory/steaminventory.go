@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -43,13 +44,23 @@ type Metadata struct {
 	ScannedCount         int
 	AllDescriptionLength int
 	AllInventoryLength   int
-	Timestamp            *time.Time
-	Queued               *time.Time
+	QueuedAt             *time.Time
+	CrawledAt            *time.Time
 	LastUpdated          *time.Time
 }
 
+func (d Metadata) hasError() error {
+	switch d.Status {
+	case "error:403":
+		return fmt.Errorf("inventory is private")
+	case "error:404":
+		return fmt.Errorf("inventory not found")
+	}
+
+	return nil
+}
+
 // https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
-// https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
 func GetMeta(steamID string) (*Metadata, error) {
 	url := fmt.Sprintf("https://db.steaminventory.org/SteamInventory/%s", steamID)
 	raw := &rawMetadata{}
@@ -57,7 +68,11 @@ func GetMeta(steamID string) (*Metadata, error) {
 		return nil, err
 	}
 
-	return raw.format(), nil
+	m := raw.format()
+	if err := m.hasError(); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 type rawMetadata struct {
@@ -103,14 +118,15 @@ func (d *rawMetadata) format() *Metadata {
 	m.Status = mdi.Status.S
 	m.AllDescriptionLength, _ = strconv.Atoi(mdi.AllDescriptionLength.N)
 	m.AllInventoryLength, _ = strconv.Atoi(mdi.AllInventoryLength.N)
-	m.Timestamp = parseStrTime(mdi.Timestamp.N)
-	m.Queued = parseStrTime(mdi.QueuedTimestamp.N)
+	m.QueuedAt = parseStrTime(mdi.QueuedTimestamp.N)
+	m.CrawledAt = parseStrTime(mdi.Timestamp.N)
 	m.LastUpdated = parseStrTime(mdi.IndexTimestamp.N)
 	m.Count = d.Count
 	m.ScannedCount = d.ScannedCount
 	return &m
 }
 
+// https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
 func Get(steamID string) (*inventory2, error) {
 	url := fmt.Sprintf("https://data.steaminventory.org/SteamInventory/%s", steamID)
 	raw := &inventory2{}
@@ -119,6 +135,36 @@ func Get(steamID string) (*inventory2, error) {
 	}
 
 	return raw, nil
+}
+
+const (
+	maxGetRetries = 5
+	retrySleepDur = time.Second * 2
+)
+
+func GetNWait(steamID string) (*inventory2, error) {
+	// crawl request
+	log.Println(steamID, "sending crawl request...")
+	if _, err := Crawl(steamID); err != nil {
+		return nil, err
+	}
+
+	// check for meta until processed with 5 reties
+	for i := 1; i <= maxGetRetries; i++ {
+		log.Println(steamID, "checking metadata. retry ", i, "...")
+		m, err := GetMeta(steamID)
+		if err != nil {
+			return nil, err
+		}
+		if m.Status == "success" {
+			break
+		}
+		time.Sleep(retrySleepDur)
+	}
+
+	// get inventory
+	log.Println(steamID, "getting inventory...")
+	return Get(steamID)
 }
 
 func getRequest(url string, data interface{}) error {
