@@ -21,14 +21,29 @@ export function numberWithCommas(n) {
 export function dateFromNow(date) {
   const d = moment(date)
   const dc = d.clone()
+  const now = moment()
 
-  if (moment() < dc.add(1, 'day')) {
+  if (now < dc.add(1, 'day')) {
     return d.fromNow()
   }
-  if (moment() < dc.add(1, 'year')) {
+  if (now < dc.add(1, 'month')) {
+    // return `${((now.unix() - d.unix()) / 86400).toFixed()} days ago`
+  }
+  if (now < dc.add(1, 'year')) {
     return d.format('MMM DD')
   }
   return d.format('MMM DD, YYYY')
+}
+
+export function daysFromNow(date) {
+  const d = moment(date)
+  const dc = d.clone()
+  const now = moment()
+
+  if (now < dc.add(2, 'month') || now > dc.add(3, 'month')) {
+    return `${((now.unix() - d.unix()) / 86400).toFixed()} days ago`
+  }
+  return d.fromNow()
 }
 
 export function dateCalendar(date) {
