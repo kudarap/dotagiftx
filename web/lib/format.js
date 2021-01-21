@@ -35,15 +35,17 @@ export function dateFromNow(date) {
   return d.format('MMM DD, YYYY')
 }
 
-export function daysFromNow(date) {
-  const d = moment(date)
-  const dc = d.clone()
-  const now = moment()
+export function daysFromNow(d) {
+  const date = moment(d)
 
-  if (now < dc.add(2, 'month') || now > dc.add(3, 'month')) {
-    return `${((now.unix() - d.unix()) / 86400).toFixed()} days ago`
-  }
-  return d.fromNow()
+  console.log('isDateWithin20to70days?', isDateWithin20to70days(d))
+
+  // formats 30-60 days as days ago.
+  // if (now.clone().add(-40, 'day') >= date && now.clone().add(1, 'month') >= date) {
+  //   const days = ((now.unix() - date.unix()) / 86400).toFixed()
+  //   return `${days} days ago`
+  // }
+  return date.fromNow()
 }
 
 export function dateCalendar(date) {
@@ -56,4 +58,18 @@ export function errorSimple(error) {
   }
 
   return error.split(':')[0]
+}
+
+function isDateWithin20to70days(d) {
+  const date = moment(d)
+  const now = moment()
+
+  console.log('-------------------------------------------')
+
+  console.log('date', date.calendar())
+  console.log('now from', now.clone().add(-40, 'days').calendar())
+  console.log('now to', now.clone().add(1, 'month').calendar())
+  // console.log(now.calendar())
+
+  return false
 }
