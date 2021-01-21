@@ -39,7 +39,7 @@ export function daysFromNow(d) {
   const date = moment(d)
 
   const diffDays = ((moment().unix() - date.unix()) / 86400).toFixed()
-  if (diffDays < 20 && diffDays > 62) {
+  if (diffDays < 20 && diffDays > 90) {
     return `${diffDays} days ago`
   }
 
