@@ -205,12 +205,14 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	}
 
 	// Resolves steam profile URL input as partner steam id.
-	if cur.Type == core.MarketTypeAsk && mkt.Status == core.MarketStatusReserved {
+	if strings.TrimSpace(mkt.PartnerSteamID) != "" {
 		mkt.PartnerSteamID, err = s.steam.ResolveVanityURL(mkt.PartnerSteamID)
 		if err != nil {
 			return err
 		}
-
+	}
+	// Try to find a matching bid and set its status to complete.
+	if cur.Type == core.MarketTypeAsk && mkt.Status == core.MarketStatusReserved {
 		if err = s.AutoCompleteBid(ctx, *cur, mkt.PartnerSteamID); err != nil {
 			return err
 		}
