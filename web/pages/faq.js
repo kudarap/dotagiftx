@@ -83,8 +83,8 @@ export default function Faq() {
 
           <Question>Why do I need to wait 30 days to send the item?</Question>
           <Answer>
-            Valve&apos;s rule that you need to have 30-day cooldown as friend to send giftable
-            items.
+            Valve&apos;s gift restriction that you need to have 30 days as friend to send and
+            receive giftable items.
           </Answer>
           <br />
 
