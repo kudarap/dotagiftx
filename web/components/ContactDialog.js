@@ -19,6 +19,7 @@ import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import MarketNotes from '@/components/MarketNotes'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -149,15 +150,7 @@ export default function ContactDialog(props) {
                 />
                 &nbsp;
                 <ChipLink label="Steam Inventory" href={dota2Inventory} />
-                {market.notes && (
-                  <>
-                    <br />
-                    <Typography color="textSecondary" component="span">
-                      {`Notes: `}
-                    </Typography>
-                    {market.notes}
-                  </>
-                )}
+                {market.notes && <MarketNotes text={market.notes} />}
               </Typography>
             </Typography>
           </div>

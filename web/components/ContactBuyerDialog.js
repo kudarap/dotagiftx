@@ -8,13 +8,18 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
 import ChipLink from '@/components/ChipLink'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import {
+  DOTABUFF_PROFILE_BASE_URL,
+  STEAM_PROFILE_BASE_URL,
+  STEAMREP_PROFILE_BASE_URL,
+} from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
+import MarketNotes from '@/components/MarketNotes'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -82,16 +87,13 @@ export default function ContactBuyerDialog(props) {
                   href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                 />
                 &nbsp;
+                <ChipLink
+                  label="Dotabuff"
+                  href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
+                />
+                &nbsp;
                 <ChipLink label="Steam Inventory" href={dota2Inventory} />
-                {market.notes && (
-                  <>
-                    <br />
-                    <Typography color="textSecondary" component="span">
-                      {`Notes: `}
-                    </Typography>
-                    {market.notes}
-                  </>
-                )}
+                {market.notes && <MarketNotes text={market.notes} />}
               </Typography>
             </Typography>
           </div>
