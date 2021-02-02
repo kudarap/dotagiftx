@@ -65,10 +65,10 @@ export async function getServerSideProps(props) {
     result_count: askData.length || 0,
     total_count: catalog.quantity,
   }
-  const bidData = catalog.bids || []
+
   const initialBids = {
-    data: bidData || [],
-    result_count: bidData.length || 0,
+    data: [],
+    result_count: 0,
     total_count: catalog.bid_count,
   }
 

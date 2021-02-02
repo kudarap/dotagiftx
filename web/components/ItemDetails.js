@@ -176,6 +176,10 @@ export default function ItemDetails({
     }
     setLoading(false)
   }
+  // Get 10 buy orders on page load.
+  React.useEffect(() => {
+    getBuyOrders()
+  }, [])
 
   // Retrieve market sales graph.
   const shouldLoadGraph = Boolean(markets.data) && Boolean(buyOrders.data)
