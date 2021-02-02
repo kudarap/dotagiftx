@@ -75,8 +75,9 @@ export default function Faq() {
 
           <Question>Can I trust the users on this website?</Question>
           <Answer>
-            Not really, but there are quick links like SteamRep and Steam on their profile to help
-            you check them.
+            Not really, its open for anyone so please be vigilant to scammers. There are also
+            transaction history and quick links to their SteamRep and Steam to you help you check
+            them.
           </Answer>
           <br />
 
@@ -115,7 +116,9 @@ export default function Faq() {
 
           <Question>Why do this?</Question>
           <Answer>
-            Wanted to make tool that can be easily search and post these giftable items.
+            Wanted to sell giftable items using a website so it can be googled, and might be useful
+            to others.
+            {/* Wanted to make tool that can be easily search and post these giftable items. */}
           </Answer>
           <br />
         </Container>
