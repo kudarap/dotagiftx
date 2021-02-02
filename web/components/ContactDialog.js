@@ -9,7 +9,11 @@ import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
 import { statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import {
+  DOTABUFF_PROFILE_BASE_URL,
+  STEAM_PROFILE_BASE_URL,
+  STEAMREP_PROFILE_BASE_URL,
+} from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
@@ -139,6 +143,11 @@ export default function ContactDialog(props) {
                   href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                 />
                 &nbsp;
+                <ChipLink
+                  label="Dotabuff"
+                  href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
+                />
+                &nbsp;
                 <ChipLink label="Steam Inventory" href={dota2Inventory} />
                 {market.notes && (
                   <>
@@ -207,6 +216,7 @@ export default function ContactDialog(props) {
             color="secondary"
             variant="outlined"
             component={Link}
+            disableUnderline
             target="_blank"
             rel="noreferrer noopener"
             href={steamProfileURL}>
