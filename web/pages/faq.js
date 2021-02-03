@@ -85,7 +85,7 @@ export default function Faq() {
           <Answer>
             You probably do, specially on high-value items where scammers fuck around. DotagiftX
             ONLY suggest that you get the{' '}
-            <Link href="/middleman" color="secondary">
+            <Link href="/middlemen" color="secondary">
               Middleman here
             </Link>
             &nbsp; and read around.

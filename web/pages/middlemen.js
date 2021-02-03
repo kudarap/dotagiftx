@@ -30,13 +30,13 @@ function User({ name, id }) {
   )
 }
 
-export default function Middleman() {
+export default function Middlemen() {
   const classes = useStyles()
 
   return (
     <>
       <Head>
-        <title>{APP_NAME} :: Middleman</title>
+        <title>{APP_NAME} :: Middlemen</title>
       </Head>
 
       <Header />
@@ -44,7 +44,7 @@ export default function Middleman() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            SteamRep&apos;s Active Middleman
+            SteamRep&apos;s Official Middlemen
             <br />
             <Typography variant="caption" color="textSecondary">
               updated Feb 03 2021
@@ -91,7 +91,7 @@ export default function Middleman() {
                 target="_blank"
                 color="secondary"
                 rel="noreferrer noopener">
-                steamrep.com
+                SteamRep.com
               </Link>
               <br />
               <br />

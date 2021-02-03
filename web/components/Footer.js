@@ -103,8 +103,8 @@ export default function Footer() {
             </Link>
           </li>
           <li>
-            <Link href="/middleman" color="textSecondary">
-              Middleman
+            <Link href="/middlemen" color="textSecondary">
+              Middlemen
             </Link>
           </li>
           <li>
