@@ -87,12 +87,8 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		return core.AuthErrNoAccess
 	}
 	mkt.UserID = au.UserID
-	// Checks for reported/banned users.
-	u, err := s.userStg.Get(au.UserID)
-	if err != nil {
-		return err
-	}
-	if err = u.CheckStatus(); err != nil {
+	// Prevents access to create new market when account is flagged.
+	if err := s.checkFlaggedUser(au.UserID); err != nil {
 		return err
 	}
 
@@ -199,6 +195,10 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	if err != nil {
 		return err
 	}
+	// Prevents access to update existing market when account is flagged.
+	if err = s.checkFlaggedUser(cur.UserID); err != nil {
+		return err
+	}
 
 	if err = mkt.CheckUpdate(); err != nil {
 		return err
@@ -237,6 +237,18 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	}()
 
 	s.getRelatedFields(mkt)
+	return nil
+}
+
+func (s *marketService) checkFlaggedUser(userID string) error {
+	u, err := s.userStg.Get(userID)
+	if err != nil {
+		return err
+	}
+	if err = u.CheckStatus(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
