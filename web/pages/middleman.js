@@ -95,7 +95,9 @@ export default function Middleman() {
               </Link>
               <br />
               <br />
-              This website is not responsible for scammed items and cannot help you recover them.
+              <strong>
+                This website is not responsible for scammed items and cannot help you recover them.
+              </strong>
             </Typography>
           </Typography>
         </Container>
