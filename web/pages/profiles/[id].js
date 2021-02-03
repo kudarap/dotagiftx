@@ -22,9 +22,8 @@ import {
 } from '@/constants/strings'
 import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
-import MarketActivity from '@/components/MarketActivity'
-import ErrorPage from '../404'
 import Button from '@/components/Button'
+import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -154,9 +153,9 @@ export default function UserDetails({
                 color={isProfileReported ? 'error' : ''}>
                 {profile.name}
               </Typography>
-              {isProfileReported ? (
+              {isProfileReported && (
                 <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>
-              ) : null}
+              )}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}

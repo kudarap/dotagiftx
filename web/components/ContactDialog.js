@@ -14,6 +14,7 @@ import {
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
+import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
@@ -84,7 +85,7 @@ export default function ContactDialog(props) {
   const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
   const dota2Inventory = `${steamProfileURL}/inventory#570`
 
-  const reported = market.user.status && market.user.status === 300
+  const isProfileReported = Boolean(market.user.status)
 
   return (
     <div>
@@ -102,7 +103,9 @@ export default function ContactDialog(props) {
         <DialogContent>
           <div
             className={classes.details}
-            style={reported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
+            style={
+              isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
+            }>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
               <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
             </a>
@@ -111,14 +114,12 @@ export default function ContactDialog(props) {
                 className={classes.profileName}
                 component="p"
                 variant="h4"
-                color={reported ? 'error' : ''}>
+                color={isProfileReported ? 'error' : ''}>
                 {market.user.name}
               </Typography>
-              {reported ? (
-                <Typography color="error">
-                  This user was reported over scam report and under investigation.
-                </Typography>
-              ) : null}
+              {isProfileReported && (
+                <Typography color="error">{USER_STATUS_MAP_TEXT[market.user.status]}</Typography>
+              )}
               <Typography variant="body2" component="span">
                 <Link href={`/profiles/${market.user.steam_id}`}>
                   {!loading && marketSummary ? marketSummary.live : '--'} Items
