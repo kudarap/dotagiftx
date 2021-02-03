@@ -12,7 +12,8 @@ const (
 	UserErrRequiredFields
 	UserErrProfileImageDL
 	UserErrSteamSync
-	UserErrReported
+	UserErrSuspended
+	UserErrBanned
 )
 
 // sets error text definition.
@@ -22,13 +23,14 @@ func init() {
 	appErrorText[UserErrRequiredFields] = "user fields are required"
 	appErrorText[UserErrProfileImageDL] = "user profile image could not download"
 	appErrorText[UserErrSteamSync] = "user profile steam sync error"
-	appErrorText[UserErrReported] = "user has been reported for scam incident"
+	appErrorText[UserErrSuspended] = "account has been suspended due to scam report"
+	appErrorText[UserErrBanned] = "account has been banned due to scam incident"
 }
 
 // User statuses.
 const (
-	UserStatusReported UserStatus = 300
-	UserStatusBanned   UserStatus = 400
+	UserStatusSuspended UserStatus = 300
+	UserStatusBanned    UserStatus = 400
 )
 
 type (
@@ -97,9 +99,13 @@ func (u User) CheckUpdate() error {
 	return nil
 }
 
+// CheckStatus checks for reported and banned status.
 func (u User) CheckStatus() error {
-	if u.Status >= UserStatusReported {
-		return UserErrReported
+	switch u.Status {
+	case UserStatusSuspended:
+		return UserErrSuspended
+	case UserStatusBanned:
+		return UserErrBanned
 	}
 
 	return nil
