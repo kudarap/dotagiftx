@@ -22,6 +22,8 @@ func buildSitemap(items []core.Item, users []core.User) *stm.Sitemap {
 	sitemap.Add(stm.URL{{"loc", "/faq"}})
 	sitemap.Add(stm.URL{{"loc", "/privacy"}})
 	sitemap.Add(stm.URL{{"loc", "/login"}})
+	sitemap.Add(stm.URL{{"loc", "/donate"}})
+	sitemap.Add(stm.URL{{"loc", "/middleman"}})
 
 	// Add item slug locations.
 	origins := map[string]struct{}{}
