@@ -102,7 +102,7 @@ export default function Index({ marketSummary, trendingItems }) {
     Router.push(`/search?q=${keyword}`)
   }
 
-  const description = `Search on ${marketSummary.live} giftable items`
+  const description = `Search on ${marketSummary.live} Giftable items`
 
   const metaTitle = `${APP_NAME} :: Dota 2 Giftables Community Market`
   const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for 
@@ -143,7 +143,7 @@ export default function Index({ marketSummary, trendingItems }) {
               <Typography color="secondary" component="span">
                 {APP_NAME}
               </Typography>{' '}
-              was made to provide better search and pricing for Dota 2 giftable items like
+              was made to provide better search and pricing for Dota 2 Giftable items like
               Collector&apos;s Caches which are not available on{' '}
               <Link href="https://steamcommunity.com" rel="noreferrer noopener" target="_blank">
                 Steam Community Market

@@ -171,11 +171,11 @@ export default function ContactDialog(props) {
                 .
               </li>
               <li>
-                Dota 2 giftables transaction only viable if the two steam user parties have been
+                Dota 2 Giftables transaction only viable if the two steam user parties have been
                 friends for 30 days.
               </li>
               <li>
-                As giftables involves a party having to go first, please always check seller&apos;s
+                As Giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
                 <Link
                   style={{ textDecoration: 'underline' }}

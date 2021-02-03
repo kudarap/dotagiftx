@@ -296,7 +296,7 @@ export default function BuyOrderDialog(props) {
                 to signed in website users.
               </li>
               <li>
-                As giftables involves a party having to go first, please always check seller&apos;s
+                As Giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
                 <Link
                   style={{ textDecoration: 'underline' }}

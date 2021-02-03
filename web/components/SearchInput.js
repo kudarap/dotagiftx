@@ -114,7 +114,7 @@ SearchInput.propTypes = {
 }
 SearchInput.defaultProps = {
   value: '',
-  label: 'Search giftable items',
+  label: 'Search Giftable items',
   onChange: () => {},
   onSubmit: () => {},
   onClear: () => {},

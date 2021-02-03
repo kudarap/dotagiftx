@@ -108,7 +108,7 @@ export default function UserDetails({
   const dotabuffURL = `${DOTABUFF_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `${APP_NAME} :: ${profile.name}`
-  const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
+  const metaDesc = `${profile.name}'s Dota 2 Giftable item listings`
 
   const reported = profile.status && profile.status === 300
 

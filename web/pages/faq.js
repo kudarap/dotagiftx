@@ -95,7 +95,7 @@ export default function Faq() {
           <Question>Why do I need to wait 30 days to send the item?</Question>
           <Answer>
             Valve&apos;s gift restriction that you need to have 30 days as friend to send and
-            receive giftable items.
+            receive Giftable items.
           </Answer>
           <br />
 
@@ -127,9 +127,9 @@ export default function Faq() {
 
           <Question>Why do this?</Question>
           <Answer>
-            Wanted to sell giftable items using a website so it can be googled, and might be useful
+            Wanted to sell Giftable items using a website so it can be googled, and might be useful
             to others.
-            {/* Wanted to make tool that can be easily search and post these giftable items. */}
+            {/* Wanted to make tool that can be easily search and post these Giftable items. */}
           </Answer>
           <br />
         </Container>

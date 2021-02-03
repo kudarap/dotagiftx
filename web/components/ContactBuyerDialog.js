@@ -105,7 +105,7 @@ export default function ContactBuyerDialog(props) {
               <li>Please be respectful on the price stated by the buyer.</li>
               <li>Make sure your item exist in your inventory.</li>
               <li>
-                Dota 2 giftables transaction only viable if the two steam user parties have been
+                Dota 2 Giftables transaction only viable if the two steam user parties have been
                 friends for 30 days.
               </li>
               <li>
