@@ -20,8 +20,11 @@ import {
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
+import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
+import MarketActivity from '@/components/MarketActivity'
 import ErrorPage from '../404'
+import Button from '@/components/Button'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -110,7 +113,7 @@ export default function UserDetails({
   const metaTitle = `${APP_NAME} :: ${profile.name}`
   const metaDesc = `${profile.name}'s Dota 2 Giftable item listings`
 
-  const reported = profile.status && profile.status === 300
+  const isProfileReported = Boolean(profile.status)
 
   return (
     <>
@@ -139,20 +142,20 @@ export default function UserDetails({
         <Container>
           <div
             className={classes.details}
-            style={reported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
+            style={
+              isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
+            }>
             <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
               <Typography
                 className={classes.profileName}
                 component="p"
                 variant="h4"
-                color={reported ? 'error' : ''}>
+                color={isProfileReported ? 'error' : ''}>
                 {profile.name}
               </Typography>
-              {reported ? (
-                <Typography color="error">
-                  This user was reported over scam report and under investigation.
-                </Typography>
+              {isProfileReported ? (
+                <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>
               ) : null}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
@@ -173,19 +176,29 @@ export default function UserDetails({
             </Typography>
           </div>
 
-          <UserMarketList
-            onSearchInput={handleSearchInput}
-            data={markets}
-            loading={loading}
-            error={error}
-          />
-          {!error && (
-            <TablePaginationRouter
-              linkProps={linkProps}
-              style={{ textAlign: 'right' }}
-              count={markets.total_count}
-              page={filter.page}
-            />
+          {isProfileReported ? (
+            <p align="center">
+              <Button component={Link} href={`${linkProps.href}/activity`}>
+                Show All Activity
+              </Button>
+            </p>
+          ) : (
+            <>
+              <UserMarketList
+                onSearchInput={handleSearchInput}
+                data={markets}
+                loading={loading}
+                error={error}
+              />
+              {!error && (
+                <TablePaginationRouter
+                  linkProps={linkProps}
+                  style={{ textAlign: 'right' }}
+                  count={markets.total_count}
+                  page={filter.page}
+                />
+              )}
+            </>
           )}
         </Container>
       </main>

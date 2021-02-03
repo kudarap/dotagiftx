@@ -40,7 +40,9 @@ export default function UserReserved({ profile, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
-  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
+  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
+    revalidateOnFocus: false,
+  })
 
   return (
     <>

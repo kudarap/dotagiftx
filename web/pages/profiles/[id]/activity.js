@@ -11,7 +11,6 @@ import Container from '@/components/Container'
 import { Link } from '@material-ui/core'
 import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
 import { APP_NAME, APP_URL } from '@/constants/strings'
-import { MARKET_STATUS_SOLD } from '@/constants/market'
 import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
@@ -31,9 +30,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const filter = {
-  status: MARKET_STATUS_SOLD,
+  // status: MARKET_STATUS_SOLD,
   sort: 'updated_at:desc',
-  limit: 50,
+  limit: 100,
 }
 
 export default function UserDelivered({ profile, canonicalURL }) {
@@ -71,7 +70,7 @@ export default function UserDelivered({ profile, canonicalURL }) {
               {profile.name}
             </Typography>
             <Typography color="textSecondary">
-              {data && data.total_count} Delivered Items
+              {data && data.total_count} Market Activity
             </Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
