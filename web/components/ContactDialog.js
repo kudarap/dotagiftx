@@ -161,7 +161,7 @@ export default function ContactDialog(props) {
             Guides for buying Giftables
             <ul>
               <li>
-                Always check the item/set availability on seller&apos;s Dota 2 {` `}
+                Always check the item or set availability on seller&apos;s Dota 2 {` `}
                 <Link
                   style={{ textDecoration: 'underline' }}
                   href={dota2Inventory}
@@ -185,20 +185,34 @@ export default function ContactDialog(props) {
                   rel="noreferrer noopener">
                   SteamRep
                 </Link>
+                &nbsp;and{' '}
+                <Link
+                  style={{ textDecoration: 'underline' }}
+                  href={`/profiles/${market.user.steam_id}/delivered`}>
+                  transaction history
+                </Link>
                 .
               </li>
 
               <li>
-                Official SteamRep middleman may assist in middle manning for the trade, or{' '}
-                <Link
-                  style={{ textDecoration: 'underline' }}
-                  href="https://www.reddit.com/r/dota2trade/"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  r/Dota2Trade
-                </Link>{' '}
-                mod may assist as well in this.
+                If you need a middleman, I only suggest you get{' '}
+                <Link href="/middlemen" target="_blank" color="secondary">
+                  Middleman here
+                </Link>
+                .
               </li>
+
+              {/*<li>*/}
+              {/*  Official SteamRep middleman may assist in middle manning for the trade, or{' '}*/}
+              {/*  <Link*/}
+              {/*    style={{ textDecoration: 'underline' }}*/}
+              {/*    href="https://www.reddit.com/r/dota2trade/"*/}
+              {/*    target="_blank"*/}
+              {/*    rel="noreferrer noopener">*/}
+              {/*    r/Dota2Trade*/}
+              {/*  </Link>{' '}*/}
+              {/*  mod may assist as well in this.*/}
+              {/*</li>*/}
             </ul>
           </Typography>
         </DialogContent>
