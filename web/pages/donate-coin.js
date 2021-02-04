@@ -92,7 +92,7 @@ export default function Faq() {
 
           <Typography color="textSecondary">
             <img src="/assets/midas.png" style={{ float: 'right' }} alt="tango" />I had this idea
-            once to create a community market for Dota 2 giftables items and now here we are,
+            once to create a community market for Dota 2 Giftables items and now here we are,
             although the idea is free(had fun writing it) and server isn&apos;t. BUT! thanks to
             someone else&apos;s server running this website. <br />
             <br />

@@ -103,6 +103,11 @@ export default function Footer() {
             </Link>
           </li>
           <li>
+            <Link href="/middlemen" color="textSecondary">
+              Middlemen
+            </Link>
+          </li>
+          <li>
             <Link href="/privacy" color="textSecondary">
               Privacy
             </Link>

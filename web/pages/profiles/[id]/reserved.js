@@ -40,7 +40,9 @@ export default function UserReserved({ profile, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
-  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher)
+  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
+    revalidateOnFocus: false,
+  })
 
   return (
     <>
@@ -48,7 +50,7 @@ export default function UserReserved({ profile, canonicalURL }) {
 
       <Head>
         <title>{`${APP_NAME} :: ${profile.name} reserved items`}</title>
-        <meta name="description" content={`${profile.name}'s on-reserved giftable items`} />
+        <meta name="description" content={`${profile.name}'s on-reserved Giftable items`} />
         <link rel="canonical" href={canonicalURL} />
       </Head>
 

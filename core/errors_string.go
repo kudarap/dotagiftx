@@ -43,12 +43,14 @@ func _() {
 	_ = x[UserErrRequiredFields-1102]
 	_ = x[UserErrProfileImageDL-1103]
 	_ = x[UserErrSteamSync-1104]
+	_ = x[UserErrSuspended-1105]
+	_ = x[UserErrBanned-1106]
 }
 
 const (
 	_Errors_name_0 = "StorageUncaughtErrStorageMergeErr"
 	_Errors_name_1 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrLoginAuthErrRefreshToken"
-	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDLUserErrSteamSync"
+	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDLUserErrSteamSyncUserErrSuspendedUserErrBanned"
 	_Errors_name_3 = "ItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExistsItemErrImport"
 	_Errors_name_4 = "MarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimitMarketErrInvalidPriceMarketErrQtyLimitPerUserMarketErrRequiredPartnerURLMarketErrInvalidBidPriceMarketErrInvalidAskPrice"
 	_Errors_name_5 = "CatalogErrNotFoundCatalogErrRequiredIDCatalogErrIndexing"
@@ -59,7 +61,7 @@ const (
 var (
 	_Errors_index_0 = [...]uint8{0, 18, 33}
 	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 68, 80, 99}
-	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74, 90}
+	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74, 90, 106, 119}
 	_Errors_index_3 = [...]uint8{0, 15, 32, 53, 76, 89}
 	_Errors_index_4 = [...]uint8{0, 17, 36, 59, 81, 100, 121, 145, 172, 196, 220}
 	_Errors_index_5 = [...]uint8{0, 18, 38, 56}
@@ -74,7 +76,7 @@ func (i Errors) String() string {
 	case 1000 <= i && i <= 1005:
 		i -= 1000
 		return _Errors_name_1[_Errors_index_1[i]:_Errors_index_1[i+1]]
-	case 1100 <= i && i <= 1104:
+	case 1100 <= i && i <= 1106:
 		i -= 1100
 		return _Errors_name_2[_Errors_index_2[i]:_Errors_index_2[i+1]]
 	case 2000 <= i && i <= 2004:

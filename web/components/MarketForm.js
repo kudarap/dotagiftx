@@ -131,9 +131,16 @@ export default function MarketForm() {
         }
       } catch (e) {
         // special case reword error
-        let m = e.message
-        if (e.message === 'market ask should be higher than highest bid price') {
-          m = 'sell price should be higher than current buy order price'
+        let m
+        switch (e.message) {
+          case 'market ask should be higher than highest bid price':
+            m = 'sell price should be higher than current buy order price'
+            break
+          case 'user has been reported for scam incident':
+            m = 'your account has been disabled due to scam report. please contact site admin'
+            break
+          default:
+            m = e.message
         }
 
         setError(`Error: ${m}`)
@@ -331,7 +338,7 @@ export default function MarketForm() {
           <ul>
             <li>Please make sure your item exist in your inventory.</li>
             <li>
-              Dota 2 giftables transaction only viable if the two steam user parties have been
+              Dota 2 Giftables transaction only viable if the two steam user parties have been
               friends for 30 days.
             </li>
             <li>

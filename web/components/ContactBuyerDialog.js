@@ -8,13 +8,19 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
 import ChipLink from '@/components/ChipLink'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import {
+  DOTABUFF_PROFILE_BASE_URL,
+  STEAM_PROFILE_BASE_URL,
+  STEAMREP_PROFILE_BASE_URL,
+} from '@/constants/strings'
+import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
+import MarketNotes from '@/components/MarketNotes'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -54,6 +60,8 @@ export default function ContactBuyerDialog(props) {
   const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
   const dota2Inventory = `${steamProfileURL}/inventory#570`
 
+  const isProfileReported = Boolean(market.user.status)
+
   return (
     <div>
       <Dialog
@@ -68,30 +76,38 @@ export default function ContactBuyerDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <div className={classes.details}>
+          <div
+            className={classes.details}
+            style={
+              isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
+            }>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
               <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
             </a>
             <Typography component="h1">
-              <Typography className={classes.profileName} component="p" variant="h4">
+              <Typography
+                className={classes.profileName}
+                component="p"
+                variant="h4"
+                color={isProfileReported ? 'error' : ''}>
                 {market.user.name}
               </Typography>
+              {isProfileReported && (
+                <Typography color="error">{USER_STATUS_MAP_TEXT[market.user.status]}</Typography>
+              )}
               <Typography gutterBottom>
                 <ChipLink
                   label="SteamRep"
                   href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                 />
                 &nbsp;
+                <ChipLink
+                  label="Dotabuff"
+                  href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
+                />
+                &nbsp;
                 <ChipLink label="Steam Inventory" href={dota2Inventory} />
-                {market.notes && (
-                  <>
-                    <br />
-                    <Typography color="textSecondary" component="span">
-                      {`Notes: `}
-                    </Typography>
-                    {market.notes}
-                  </>
-                )}
+                {market.notes && <MarketNotes text={market.notes} />}
               </Typography>
             </Typography>
           </div>
@@ -103,7 +119,7 @@ export default function ContactBuyerDialog(props) {
               <li>Please be respectful on the price stated by the buyer.</li>
               <li>Make sure your item exist in your inventory.</li>
               <li>
-                Dota 2 giftables transaction only viable if the two steam user parties have been
+                Dota 2 Giftables transaction only viable if the two steam user parties have been
                 friends for 30 days.
               </li>
               <li>

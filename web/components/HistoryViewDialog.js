@@ -8,7 +8,11 @@ import Typography from '@material-ui/core/Typography'
 import { amount, dateCalendar } from '@/lib/format'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import DialogCloseButton from '@/components/DialogCloseButton'
-import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
+import {
+  MARKET_STATUS_MAP_COLOR,
+  MARKET_STATUS_MAP_TEXT,
+  MARKET_TYPE_BID,
+} from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import { TextField } from '@material-ui/core'
 import ItemImageDialog from '@/components/ItemImageDialog'
@@ -105,7 +109,7 @@ export default function HistoryViewDialog(props) {
             fullWidth
             color="secondary"
             variant="outlined"
-            label="Buyer's Steam profile URL"
+            label={`${market.type === MARKET_TYPE_BID ? 'Seller' : 'Buyer'}'s Steam profile URL`}
             value={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
           />
         </div>

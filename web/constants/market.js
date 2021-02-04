@@ -26,6 +26,13 @@ export const MARKET_STATUS_MAP_TEXT = {
   [MARKET_STATUS_CANCELLED]: 'Cancelled',
 }
 
+export const MARKET_BID_STATUS_MAP_TEXT = {
+  [MARKET_STATUS_LIVE]: 'Ordered',
+  [MARKET_STATUS_BID_COMPLETED]: 'Order Completed',
+  [MARKET_STATUS_REMOVED]: 'Order Removed',
+  [MARKET_STATUS_CANCELLED]: 'Order Cancelled',
+}
+
 export const MARKET_STATUS_MAP_COLOR = {
   [MARKET_STATUS_PENDING]: 'yellow',
   [MARKET_STATUS_LIVE]: 'lightgreen',

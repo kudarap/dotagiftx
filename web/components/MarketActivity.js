@@ -1,13 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Divider from '@material-ui/core/Divider'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
-import { MARKET_STATUS_MAP_COLOR, MARKET_STATUS_MAP_TEXT } from '@/constants/market'
-import { amount } from '@/lib/format'
+import {
+  MARKET_TYPE_BID,
+  MARKET_STATUS_MAP_COLOR,
+  MARKET_STATUS_MAP_TEXT,
+  MARKET_BID_STATUS_MAP_TEXT,
+} from '@/constants/market'
+import { daysFromNow } from '@/lib/format'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 
@@ -46,7 +50,9 @@ export default function MarketActivity({ data, loading }) {
                 </Link>
                 &nbsp;
                 <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
-                  {MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
+                  {market.type === MARKET_TYPE_BID
+                    ? MARKET_BID_STATUS_MAP_TEXT[market.status].toLowerCase()
+                    : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
                 </span>
                 &nbsp;
                 {market.item.hero}&apos;s&nbsp;
@@ -55,7 +61,7 @@ export default function MarketActivity({ data, loading }) {
                   {market.item.name}
                 </Link>
                 &nbsp;
-                {moment(market.updated_at).fromNow()}
+                {daysFromNow(market.updated_at)}
               </Typography>
 
               <Typography

@@ -16,10 +16,13 @@ import TablePaginationRouter from '@/components/TablePaginationRouter'
 import {
   APP_NAME,
   APP_URL,
+  DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
+import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
+import Button from '@/components/Button'
 import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
@@ -104,9 +107,12 @@ export default function UserDetails({
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
   const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
+  const dotabuffURL = `${DOTABUFF_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `${APP_NAME} :: ${profile.name}`
-  const metaDesc = `${profile.name}'s Dota 2 giftable item listings`
+  const metaDesc = `${profile.name}'s Dota 2 Giftable item listings`
+
+  const isProfileReported = Boolean(profile.status)
 
   return (
     <>
@@ -133,12 +139,23 @@ export default function UserDetails({
 
       <main className={classes.main}>
         <Container>
-          <div className={classes.details}>
+          <div
+            className={classes.details}
+            style={
+              isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
+            }>
             <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
             <Typography component="h1">
-              <Typography className={classes.profileName} component="p" variant="h4">
+              <Typography
+                className={classes.profileName}
+                component="p"
+                variant="h4"
+                color={isProfileReported ? 'error' : ''}>
                 {profile.name}
               </Typography>
+              {isProfileReported && (
+                <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>
+              )}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
@@ -152,23 +169,35 @@ export default function UserDetails({
                 {/* <ChipLink label="Steam Inventory" href={`${profileURL}/inventory`} /> */}
                 {/* &nbsp; */}
                 <ChipLink label="SteamRep" href={steamRepURL} />
+                &nbsp;
+                <ChipLink label="Dotabuff" href={dotabuffURL} />
               </Typography>
             </Typography>
           </div>
 
-          <UserMarketList
-            onSearchInput={handleSearchInput}
-            data={markets}
-            loading={loading}
-            error={error}
-          />
-          {!error && (
-            <TablePaginationRouter
-              linkProps={linkProps}
-              style={{ textAlign: 'right' }}
-              count={markets.total_count}
-              page={filter.page}
-            />
+          {isProfileReported ? (
+            <p align="center">
+              <Button component={Link} href={`${linkProps.href}/activity`}>
+                Show All Activity
+              </Button>
+            </p>
+          ) : (
+            <>
+              <UserMarketList
+                onSearchInput={handleSearchInput}
+                data={markets}
+                loading={loading}
+                error={error}
+              />
+              {!error && (
+                <TablePaginationRouter
+                  linkProps={linkProps}
+                  style={{ textAlign: 'right' }}
+                  count={markets.total_count}
+                  page={filter.page}
+                />
+              )}
+            </>
           )}
         </Container>
       </main>

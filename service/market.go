@@ -87,6 +87,10 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		return core.AuthErrNoAccess
 	}
 	mkt.UserID = au.UserID
+	// Prevents access to create new market when account is flagged.
+	if err := s.checkFlaggedUser(au.UserID); err != nil {
+		return err
+	}
 
 	mkt.SetDefaults()
 	if err := mkt.CheckCreate(); err != nil {
@@ -131,7 +135,7 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 	if err != nil {
 		return err
 	}
-	if bid.Quantity != 0 && bid.HighestBid >= ask.Price {
+	if bid.Quantity != 0 && bid.HighestBid > ask.Price {
 		return core.MarketErrInvalidAskPrice
 	}
 
@@ -160,7 +164,7 @@ func (s *marketService) checkBidType(bid *core.Market) error {
 	if err != nil {
 		return err
 	}
-	if ask.Quantity != 0 && ask.LowestAsk <= bid.Price {
+	if ask.Quantity != 0 && ask.LowestAsk < bid.Price {
 		return core.MarketErrInvalidBidPrice
 	}
 
@@ -191,18 +195,24 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	if err != nil {
 		return err
 	}
+	// Prevents access to update existing market when account is flagged.
+	if err = s.checkFlaggedUser(cur.UserID); err != nil {
+		return err
+	}
 
 	if err = mkt.CheckUpdate(); err != nil {
 		return err
 	}
 
 	// Resolves steam profile URL input as partner steam id.
-	if cur.Type == core.MarketTypeAsk && mkt.Status == core.MarketStatusReserved {
+	if strings.TrimSpace(mkt.PartnerSteamID) != "" {
 		mkt.PartnerSteamID, err = s.steam.ResolveVanityURL(mkt.PartnerSteamID)
 		if err != nil {
 			return err
 		}
-
+	}
+	// Try to find a matching bid and set its status to complete.
+	if cur.Type == core.MarketTypeAsk && mkt.Status == core.MarketStatusReserved {
 		if err = s.AutoCompleteBid(ctx, *cur, mkt.PartnerSteamID); err != nil {
 			return err
 		}
@@ -230,6 +240,18 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	return nil
 }
 
+func (s *marketService) checkFlaggedUser(userID string) error {
+	u, err := s.userStg.Get(userID)
+	if err != nil {
+		return err
+	}
+	if err = u.CheckStatus(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // AutoCompleteBid detects if there's matching reservation on buy order and automatically
 // resolve it by setting complete-bid status.
 func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, partnerSteamID string) error {
@@ -240,7 +262,7 @@ func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, pa
 	// Use buyer ID to get the matching market.
 	buyer, err := s.userStg.Get(partnerSteamID)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	// Find matching bid market to update status.
@@ -252,11 +274,8 @@ func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, pa
 			UserID: buyer.ID,
 		},
 	}
-	bids, err := s.marketStg.Find(fo)
-	if err != nil {
-		return err
-	}
-	if len(bids) == 0 {
+	bids, _ := s.marketStg.Find(fo)
+	if bids == nil || len(bids) == 0 {
 		return nil
 	}
 
@@ -371,15 +390,15 @@ func (s *marketService) CatalogDetails(slug string) (*core.Catalog, error) {
 	}
 	c.Asks = res
 	// Retrieve 10 live bids entries.
-	mf.Type = core.MarketTypeBid
-	fo.Filter = mf
-	fo.Sort = "price"
-	fo.Desc = true
-	res, _, err = s.Markets(context.Background(), fo)
-	if err != nil {
-		return nil, err
-	}
-	c.Bids = res
+	//mf.Type = core.MarketTypeBid
+	//fo.Filter = mf
+	//fo.Sort = "price"
+	//fo.Desc = true
+	//res, _, err = s.Markets(context.Background(), fo)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//c.Bids = res
 
 	return c, err
 }

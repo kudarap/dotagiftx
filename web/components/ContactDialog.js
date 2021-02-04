@@ -9,12 +9,18 @@ import Typography from '@material-ui/core/Typography'
 import { Avatar } from '@material-ui/core'
 import { statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import {
+  DOTABUFF_PROFILE_BASE_URL,
+  STEAM_PROFILE_BASE_URL,
+  STEAMREP_PROFILE_BASE_URL,
+} from '@/constants/strings'
+import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import MarketNotes from '@/components/MarketNotes'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -79,6 +85,8 @@ export default function ContactDialog(props) {
   const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
   const dota2Inventory = `${steamProfileURL}/inventory#570`
 
+  const isProfileReported = Boolean(market.user.status)
+
   return (
     <div>
       <Dialog
@@ -93,16 +101,27 @@ export default function ContactDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <div className={classes.details}>
+          <div
+            className={classes.details}
+            style={
+              isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
+            }>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
               <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
             </a>
             <Typography component="h1">
-              <Typography className={classes.profileName} component="p" variant="h4">
+              <Typography
+                className={classes.profileName}
+                component="p"
+                variant="h4"
+                color={isProfileReported ? 'error' : ''}>
                 {market.user.name}
               </Typography>
+              {isProfileReported && (
+                <Typography color="error">{USER_STATUS_MAP_TEXT[market.user.status]}</Typography>
+              )}
               <Typography variant="body2" component="span">
-                <Link href={`/profiles/${market.user.steam_id}/reserved`}>
+                <Link href={`/profiles/${market.user.steam_id}`}>
                   {!loading && marketSummary ? marketSummary.live : '--'} Items
                 </Link>{' '}
                 &middot;{' '}
@@ -126,16 +145,13 @@ export default function ContactDialog(props) {
                   href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
                 />
                 &nbsp;
+                <ChipLink
+                  label="Dotabuff"
+                  href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
+                />
+                &nbsp;
                 <ChipLink label="Steam Inventory" href={dota2Inventory} />
-                {market.notes && (
-                  <>
-                    <br />
-                    <Typography color="textSecondary" component="span">
-                      {`Notes: `}
-                    </Typography>
-                    {market.notes}
-                  </>
-                )}
+                {market.notes && <MarketNotes text={market.notes} />}
               </Typography>
             </Typography>
           </div>
@@ -145,7 +161,7 @@ export default function ContactDialog(props) {
             Guides for buying Giftables
             <ul>
               <li>
-                Always check the item/set availability on seller&apos;s Dota 2 {` `}
+                Always check the item or set availability on seller&apos;s Dota 2 {` `}
                 <Link
                   style={{ textDecoration: 'underline' }}
                   href={dota2Inventory}
@@ -156,11 +172,11 @@ export default function ContactDialog(props) {
                 .
               </li>
               <li>
-                Dota 2 giftables transaction only viable if the two steam user parties have been
+                Dota 2 Giftables transaction only viable if the two steam user parties have been
                 friends for 30 days.
               </li>
               <li>
-                As giftables involves a party having to go first, please always check seller&apos;s
+                As Giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
                 <Link
                   style={{ textDecoration: 'underline' }}
@@ -169,20 +185,34 @@ export default function ContactDialog(props) {
                   rel="noreferrer noopener">
                   SteamRep
                 </Link>
+                &nbsp;and{' '}
+                <Link
+                  style={{ textDecoration: 'underline' }}
+                  href={`/profiles/${market.user.steam_id}/delivered`}>
+                  transaction history
+                </Link>
                 .
               </li>
 
               <li>
-                Official SteamRep middleman may assist in middle manning for the trade, or{' '}
-                <Link
-                  style={{ textDecoration: 'underline' }}
-                  href="https://www.reddit.com/r/dota2trade/"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  r/Dota2Trade
-                </Link>{' '}
-                mod may assist as well in this.
+                If you need a middleman, I only suggest you get{' '}
+                <Link href="/middlemen" target="_blank" color="secondary">
+                  Middleman here
+                </Link>
+                .
               </li>
+
+              {/*<li>*/}
+              {/*  Official SteamRep middleman may assist in middle manning for the trade, or{' '}*/}
+              {/*  <Link*/}
+              {/*    style={{ textDecoration: 'underline' }}*/}
+              {/*    href="https://www.reddit.com/r/dota2trade/"*/}
+              {/*    target="_blank"*/}
+              {/*    rel="noreferrer noopener">*/}
+              {/*    r/Dota2Trade*/}
+              {/*  </Link>{' '}*/}
+              {/*  mod may assist as well in this.*/}
+              {/*</li>*/}
             </ul>
           </Typography>
         </DialogContent>
@@ -194,6 +224,7 @@ export default function ContactDialog(props) {
             color="secondary"
             variant="outlined"
             component={Link}
+            disableUnderline
             target="_blank"
             rel="noreferrer noopener"
             href={steamProfileURL}>

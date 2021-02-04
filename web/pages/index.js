@@ -102,7 +102,7 @@ export default function Index({ marketSummary, trendingItems }) {
     Router.push(`/search?q=${keyword}`)
   }
 
-  const description = `Search on ${marketSummary.live} giftable items`
+  const description = `Search on ${marketSummary.live} Giftable items`
 
   const metaTitle = `${APP_NAME} :: Dota 2 Giftables Community Market`
   const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for 
@@ -143,7 +143,7 @@ export default function Index({ marketSummary, trendingItems }) {
               <Typography color="secondary" component="span">
                 {APP_NAME}
               </Typography>{' '}
-              was made to provide better search and pricing for Dota 2 giftable items like
+              was made to provide better search and pricing for Dota 2 Giftable items like
               Collector&apos;s Caches which are not available on{' '}
               <Link href="https://steamcommunity.com" rel="noreferrer noopener" target="_blank">
                 Steam Community Market
@@ -173,21 +173,6 @@ export default function Index({ marketSummary, trendingItems }) {
           {!trendingItems.error && <CatalogList items={trendingItems.data} />}
           <br />
 
-          {/* Recent Market items */}
-          <Typography>
-            New Offers
-            <Link
-              href={`/search?sort=${recentItemsFilter.sort}`}
-              color="secondary"
-              style={{ float: 'right' }}>
-              See All
-            </Link>
-          </Typography>
-          {recentError && <div>failed to load recent items</div>}
-          {!recentItems && <LinearProgress color="secondary" />}
-          {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
-          <br />
-
           {/* Recent Buy Orders */}
           <Typography>
             New Buy Orders
@@ -203,6 +188,21 @@ export default function Index({ marketSummary, trendingItems }) {
           {!recentBidError && recentBidItems && (
             <CatalogList items={recentBidItems.data} variant="recent" bidType />
           )}
+          <br />
+
+          {/* Recent Market items */}
+          <Typography>
+            New Offers
+            <Link
+              href={`/search?sort=${recentItemsFilter.sort}`}
+              color="secondary"
+              style={{ float: 'right' }}>
+              See All
+            </Link>
+          </Typography>
+          {recentError && <div>failed to load recent items</div>}
+          {!recentItems && <LinearProgress color="secondary" />}
+          {!recentError && recentItems && <CatalogList items={recentItems.data} variant="recent" />}
           <br />
 
           {/* Market stats */}
