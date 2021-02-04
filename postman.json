@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftx v0.12.0",
+    "name": "dotagiftx v0.12.2",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -28,10 +28,7 @@
             "header": [],
             "body": {
               "mode": "formdata",
-              "formdata": [],
-              "options": {
-                "formdata": {}
-              }
+              "formdata": []
             },
             "url": {
               "raw": "{{host}}/my/profile",
@@ -64,10 +61,7 @@
                   "type": "file",
                   "src": "/home/kudarap/Downloads/spray_5.png"
                 }
-              ],
-              "options": {
-                "formdata": {}
-              }
+              ]
             },
             "url": {
               "raw": "{{host}}/images",
@@ -135,10 +129,7 @@
             "header": [],
             "body": {
               "mode": "formdata",
-              "formdata": [],
-              "options": {
-                "formdata": {}
-              }
+              "formdata": []
             },
             "url": {
               "raw": "{{host}}/my/markets",
@@ -168,10 +159,7 @@
             "header": [],
             "body": {
               "mode": "formdata",
-              "formdata": [],
-              "options": {
-                "formdata": {}
-              }
+              "formdata": []
             },
             "url": {
               "raw": "{{host}}/my/markets/2fbe75ee-6518-4d8f-a319-1f33796594ad",
@@ -300,10 +288,7 @@
                   "type": "file",
                   "src": "/home/kudarap/Dropbox/DotagiftX/imports/cache 2018 1.yml"
                 }
-              ],
-              "options": {
-                "formdata": {}
-              }
+              ]
             },
             "url": {
               "raw": "{{host}}/items_import?key={{item_key}}",
@@ -319,8 +304,7 @@
           },
           "response": []
         }
-      ],
-      "protocolProfileBehavior": {}
+      ]
     },
     {
       "name": "auth steam redirect",
@@ -338,10 +322,7 @@
               "type": "file",
               "src": "/home/kudarap/Downloads/_W694lbI_400x400.jpg"
             }
-          ],
-          "options": {
-            "formdata": {}
-          }
+          ]
         },
         "url": {
           "raw": "{{host}}/auth/steam",
@@ -367,10 +348,7 @@
               "type": "file",
               "src": "/home/kudarap/Downloads/_W694lbI_400x400.jpg"
             }
-          ],
-          "options": {
-            "formdata": {}
-          }
+          ]
         },
         "url": {
           "raw": "{{host}}/auth/steam?oauth_token=geURoAAAAAAA6roiAAABcWXULJo&oauth_verifier=SDjr1rS5PVO1bmiTbyldYIacEY4Y2gLd",
@@ -447,10 +425,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/users/76561198088587178",
@@ -473,10 +448,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/items?q=phantom",
@@ -505,10 +477,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/images/6ee6f981904a63cda296b68f6245fbd7f746e377.png",
@@ -538,10 +507,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/items/gothic-whisper-phantom-assassin",
@@ -564,10 +530,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/markets",
@@ -607,10 +570,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/markets?type=20&status=200",
@@ -648,10 +608,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/markets/e8d05ae1-a049-4e4b-adef-433e12db364b",
@@ -681,10 +638,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/catalogs?limit=500&sort=popular",
@@ -737,10 +691,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/catalogs?sort=popular",
@@ -789,10 +740,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/catalogs?sort=recent",
@@ -841,10 +789,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/catalogs/vespidun-hunter-killer-gyrocopter",
@@ -884,15 +829,12 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
-          "raw": "{{host}}/catalogs-trend?nocache=1",
+          "raw": "{{host}}/catalogs_trend?nocache=1",
           "host": ["{{host}}"],
-          "path": ["catalogs-trend"],
+          "path": ["catalogs_trend"],
           "query": [
             {
               "key": "nocache",
@@ -916,10 +858,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}",
@@ -948,10 +887,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/t?t=v&i=20bab823-2796-4948-879e-518783bb8cff",
@@ -989,15 +925,12 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
-          "raw": "{{host}}/stats/top-origins",
+          "raw": "{{host}}/stats/top_origins",
           "host": ["{{host}}"],
-          "path": ["stats", "top-origins"],
+          "path": ["stats", "top_origins"],
           "query": [
             {
               "key": "nocache",
@@ -1022,15 +955,12 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
-          "raw": "{{host}}/stats/top-heroes",
+          "raw": "{{host}}/stats/top_heroes",
           "host": ["{{host}}"],
-          "path": ["stats", "top-heroes"],
+          "path": ["stats", "top_heroes"],
           "query": [
             {
               "key": "nocache",
@@ -1055,15 +985,12 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
-          "raw": "{{host}}/stats/market-summary",
+          "raw": "{{host}}/stats/market_summary",
           "host": ["{{host}}"],
-          "path": ["stats", "market-summary"],
+          "path": ["stats", "market_summary"],
           "query": [
             {
               "key": "nocache",
@@ -1093,10 +1020,7 @@
         "header": [],
         "body": {
           "mode": "formdata",
-          "formdata": [],
-          "options": {
-            "formdata": {}
-          }
+          "formdata": []
         },
         "url": {
           "raw": "{{host}}/graph/market_sales?item_id=68e8ab94-4f71-4be8-bcb5-d8016afd38e1",
@@ -1117,6 +1041,5 @@
       },
       "response": []
     }
-  ],
-  "protocolProfileBehavior": {}
+  ]
 }
