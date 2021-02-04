@@ -45,9 +45,8 @@ export default function Middlemen() {
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
             SteamRep&apos;s Official Middlemen
-            <br />
-            <Typography variant="caption" color="textSecondary">
-              updated Feb 03 2021
+            <Typography variant="caption" color="textSecondary" component="sup">
+              &nbsp;updated Feb 03 2021
             </Typography>
           </Typography>
 
