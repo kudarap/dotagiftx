@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import Alert from '@material-ui/lab/Alert'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -18,10 +19,20 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function User({ name, id }) {
+function User({ name, id, internal = false }) {
   return (
     <>
       <strong>{name}</strong>
+      {internal && (
+        <>
+          &nbsp;
+          <ChipLink
+            href={`https://dotagiftx.com/profiles/${id}`}
+            label="DotagiftX"
+            color="secondary"
+          />
+        </>
+      )}
       &nbsp;
       <ChipLink href={`https://steamrep.com/profiles/${id}`} label="SteamRep" />
       &nbsp;
@@ -43,13 +54,20 @@ export default function Middlemen() {
 
       <main className={classes.main}>
         <Container>
+          <Alert severity="warning">
+            This website is not responsible for scammed items and cannot help you recover them or
+            help you scam the scammers.
+          </Alert>
+          <br />
+          <br />
+
+          {/* SteamRep middleman */}
           <Typography variant="h5" component="h1" gutterBottom>
             SteamRep&apos;s Official Middlemen
             <Typography variant="caption" color="textSecondary" component="sup">
-              &nbsp;updated Feb 03 2021
+              &nbsp;updated Feb 07 2021
             </Typography>
           </Typography>
-
           <Typography>
             <ul>
               <li>
@@ -92,12 +110,29 @@ export default function Middlemen() {
                 rel="noreferrer noopener">
                 SteamRep.com
               </Link>
-              <br />
-              <br />
-              <strong>
-                This website is not responsible for scammed items and cannot help you recover them.
-              </strong>
             </Typography>
+          </Typography>
+          <br />
+          <br />
+
+          {/* DotagiftX middleman */}
+          <Typography variant="h5" component="h2" gutterBottom>
+            DotagiftX&apos;s Middleman
+          </Typography>
+          <Typography color="textSecondary">
+            I strongly recommended to get your middleman from Official SteamRep but if you trust me(
+            <Link href="/profiles/76561198088587178" color="textPrimary">
+              kudarap
+            </Link>
+            ) enough to middle your transaction, you can message a request on{' '}
+            <Link
+              href="https://discord.gg/UFt9Ny42kM"
+              target="_blank"
+              color="secondary"
+              rel="noreferrer noopener">
+              Discord
+            </Link>{' '}
+            and give me a heads up.
           </Typography>
         </Container>
       </main>
