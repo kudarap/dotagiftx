@@ -7,8 +7,8 @@ import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { MARKET_STATUS_RESERVED } from '@/constants/market'
-import ReservationList from '@/components/ReservationList'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
+import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
 import Link from '@/components/Link'
 
@@ -22,8 +22,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const marketFilter = {
-  status: MARKET_STATUS_RESERVED,
-  sort: 'updated_at:desc',
+  type: MARKET_TYPE_ASK,
+  status: MARKET_STATUS_LIVE,
+  sort: 'created_at:desc',
   page: 1,
 }
 
@@ -35,7 +36,7 @@ const initialDatatable = {
   error: null,
 }
 
-export default function MyReservations() {
+export default function MyListings() {
   const classes = useStyles()
 
   const [data, setData] = React.useState(initialDatatable)
@@ -80,17 +81,19 @@ export default function MyReservations() {
         <Container>
           <Typography component="h1" gutterBottom>
             <Breadcrumbs aria-label="breadcrumb" separator="-">
-              <Link href="/my-dashboard" color="textSecondary">
+              <Link href="/my-dashboard">
                 Sell Listing {total !== 0 && `(${format.numberWithCommas(total)})`}
               </Link>
-              <Link href="/my-reservations">Reserved Items (12)</Link>
+              <Link href="/my-reservations" color="textSecondary">
+                Reserved Items (12)
+              </Link>
               <Link href="/my-dashboard" color="textSecondary">
                 History
               </Link>
             </Breadcrumbs>
           </Typography>
 
-          <ReservationList
+          <MyMarketList
             datatable={data}
             loading={data.loading}
             error={data.error}
