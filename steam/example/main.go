@@ -10,7 +10,7 @@ import (
 var client *steam.Client
 
 func main() {
-	c, err := steam.New(steam.Config{Key: "STEAM_WEB_API_KEY"})
+	c, err := steam.New(steam.Config{Key: "STEAM_WEB_API_KEY"}, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -19,6 +19,7 @@ func main() {
 	http.HandleFunc("/login", loginHandler)
 	http.ListenAndServe(":9000", nil)
 }
+
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := client.AuthorizeURL(r)
