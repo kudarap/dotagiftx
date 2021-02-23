@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function User({ name, id, internal = false }) {
+function Middleman({ name, id, internal = false }) {
   return (
     <>
       <strong>{name}</strong>
@@ -71,16 +71,16 @@ export default function Middlemen() {
           <Typography>
             <ul>
               <li>
-                <User name="kyuronite" id="76561198050680230" />
+                <Middleman name="kyuronite" id="76561198050680230" />
               </li>
               <li>
-                <User name="Hammy" id="76561197975564454" />
+                <Middleman name="Hammy" id="76561197975564454" />
               </li>
               <li>
-                <User name="Eternal Mr Bones" id="76561198071974469" />
+                <Middleman name="Eternal Mr Bones" id="76561198071974469" />
               </li>
               <li>
-                <User name="Alias" id="76561197982522773" />
+                <Middleman name="Alias" id="76561197982522773" />
               </li>
             </ul>
 
@@ -119,12 +119,18 @@ export default function Middlemen() {
           <Typography variant="h5" component="h2" gutterBottom>
             DotagiftX&apos;s Middleman
           </Typography>
+          <ul>
+            <li>
+              <Middleman name="kudarap" id="76561198088587178" internal />
+            </li>
+          </ul>
           <Typography color="textSecondary">
-            I strongly recommended to get your middleman from Official SteamRep but if you trust me(
+            It&apos;s strongly recommended to get your middleman from Official SteamRep but if you
+            trust
             <Link href="/profiles/76561198088587178" color="textPrimary">
-              kudarap
+              &nbsp;kudarap&nbsp;
             </Link>
-            ) enough to middle your transaction, you can message a request on{' '}
+            enough to middle your transaction, you can message a request on{' '}
             <Link
               href="https://discord.gg/UFt9Ny42kM"
               target="_blank"
@@ -132,7 +138,7 @@ export default function Middlemen() {
               rel="noreferrer noopener">
               Discord
             </Link>{' '}
-            and give me a heads up.
+            to give a heads up.
           </Typography>
         </Container>
       </main>
