@@ -20,7 +20,7 @@ import {
   GRAPH_MARKET_SALES,
   MARKETS,
   marketSearch,
-  trackViewURL,
+  trackItemViewURL,
 } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -468,7 +468,7 @@ export default function ItemDetails({
           }}
           onChange={handleBuyerChange}
         />
-        <img src={trackViewURL(item.id)} alt="" />
+        <img src={trackItemViewURL(item.id)} alt="" />
       </main>
 
       <Footer />
