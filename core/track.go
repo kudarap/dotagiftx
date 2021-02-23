@@ -21,7 +21,7 @@ func init() {
 const (
 	TrackTypeView        = "v"
 	TrackTypeSearch      = "s"
-	TrackTypeProfileView = "pv"
+	TrackTypeProfileView = "p"
 	//TrackTypeItemView           = 300
 	//TrackTypeCatalogSearch      = 310
 	//TrackTypeProfileClick       = 110
