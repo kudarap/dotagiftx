@@ -25,6 +25,7 @@ func main() {
 	//inv, err := steaminventory.Get("76561198088587178")
 	//fmt.Println(inv, err)
 
+	//verifiedDelivery()
 }
 
 func verifiedDelivery() {
