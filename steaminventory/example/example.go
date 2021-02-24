@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	inv, err := steaminventory.SWR("76561198088587178")
-	fmt.Println(inv, err)
+	//inv, err := steaminventory.SWR("76561198088587178")
+	//fmt.Println(inv, err)
 
 	//status, err := steaminventory.Crawl("76561198088587178")
 	//fmt.Println(status, err)
@@ -25,7 +25,7 @@ func main() {
 	//inv, err := steaminventory.Get("76561198088587178")
 	//fmt.Println(inv, err)
 
-	//verifiedDelivery()
+	verifiedDelivery()
 }
 
 func verifiedDelivery() {

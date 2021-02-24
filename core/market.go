@@ -85,6 +85,10 @@ type (
 		Notes          string       `json:"notes"            db:"notes,omitempty"`
 		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
+
+		InvVerifiedAt *time.Time `json:"inv_verified_at" db:"inv_verified_at,omitempty"`
+		//InvDeliveredAt *time.Time `json:"inv_delivered_at" db:"inv_delivered_at,omitempty"`
+
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 		Item *Item `json:"item,omitempty" db:"item,omitempty"`

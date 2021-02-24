@@ -22,7 +22,7 @@ func VerifyDelivery(sellerPersona, buyerSteamID, itemName string) ([]flatInvento
 		// buyer can clear gift information that's why it need to snapshot buyer
 		// inventory immediately.
 		if inv.GiftFrom != sellerPersona {
-			continue
+			//continue
 		}
 
 		// Checks target item name from description and name field.
