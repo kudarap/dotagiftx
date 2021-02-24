@@ -120,7 +120,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                   <Tab
                     value={1}
                     label={`${buyOrders.total_count || ''} Buy Orders`}
-                    style={{ textTransform: 'none', color: bidColor[300] }}
+                    style={{ textTransform: 'none' }}
                   />
                 </Tabs>
               </TableHeadCell>
