@@ -396,10 +396,10 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
       {/* Only display pagination on offers */}
       {tabIdx === 0 && pagination}
 
-      {tabIdx === 1 && buyOrders.total_count > 10 && (
+      {tabIdx === 1 && buyOrders.data.length !== 0 && buyOrders.total_count > 10 && (
         <Typography color="textSecondary" align="right" variant="body2" style={{ margin: 8 }}>
           {buyOrders.total_count - 10} more hidden buy orders at &nbsp;
-          {amount(buyOrders.data[9].price, 'USD')} or less
+          {amount(buyOrders.data[9].price || 0, 'USD')} or less
         </Typography>
       )}
 
