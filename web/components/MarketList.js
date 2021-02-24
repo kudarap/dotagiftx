@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import has from 'lodash/has'
 import { useRouter } from 'next/router'
+import bidColor from '@material-ui/core/colors/teal'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
@@ -119,7 +120,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                   <Tab
                     value={1}
                     label={`${buyOrders.total_count || ''} Buy Orders`}
-                    style={{ textTransform: 'none' }}
+                    style={{ textTransform: 'none', color: bidColor[300] }}
                   />
                 </Tabs>
               </TableHeadCell>
@@ -331,7 +332,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                     {!isMobile ? (
                       <>
                         <TableCell align="right">
-                          <Typography variant="body2">
+                          <Typography variant="body2" style={{ color: bidColor[300] }}>
                             {amount(market.price, market.currency)}
                           </Typography>
                         </TableCell>

@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
+import bidColor from '@material-ui/core/colors/teal'
 import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -124,7 +125,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
               )}
 
               <TableCell align="right">
-                <Typography variant="body2">
+                <Typography variant="body2" style={bidType ? { color: bidColor[300] } : null}>
                   {format.amount(bidType ? item.highest_bid : item.lowest_ask, 'USD')}
                 </Typography>
               </TableCell>
