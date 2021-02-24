@@ -97,6 +97,8 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
     })()
   }
 
+  const offerListLoading = !offers && loading
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -125,7 +127,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
           </TableHead>
 
           {tabIdx === 0 ? (
-            <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
+            <TableBody style={{ opacity: offerListLoading ? 0.5 : 1 }}>
               <TableRow>
                 <TableHeadCell size="small">
                   <Typography color="textSecondary" variant="body2">
