@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import has from 'lodash/has'
 import { useRouter } from 'next/router'
+import bidColor from '@material-ui/core/colors/teal'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
@@ -97,6 +98,8 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
     })()
   }
 
+  const offerListLoading = !offers && loading
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -125,7 +128,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
           </TableHead>
 
           {tabIdx === 0 ? (
-            <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
+            <TableBody style={{ opacity: offerListLoading ? 0.5 : 1 }}>
               <TableRow>
                 <TableHeadCell size="small">
                   <Typography color="textSecondary" variant="body2">
@@ -329,7 +332,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                     {!isMobile ? (
                       <>
                         <TableCell align="right">
-                          <Typography variant="body2">
+                          <Typography variant="body2" style={{ color: bidColor[300] }}>
                             {amount(market.price, market.currency)}
                           </Typography>
                         </TableCell>
