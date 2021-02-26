@@ -332,7 +332,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                     {!isMobile ? (
                       <>
                         <TableCell align="right">
-                          <Typography variant="body2" style={{ color: bidColor[300] }}>
+                          <Typography variant="body2" style={{ color: bidColor.A200 }}>
                             {amount(market.price, market.currency)}
                           </Typography>
                         </TableCell>
