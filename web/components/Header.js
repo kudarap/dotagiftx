@@ -20,6 +20,7 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import { APP_CACHE_PROFILE } from '@/constants/app'
+import MenuItems from '@/components/MenuItems'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -193,6 +194,7 @@ export default function Header({ disableSearch }) {
                     className={classes.avatar}
                     {...retinaSrcSet(profile.avatar, 36, 36)}
                   />
+
                   <Menu
                     className={classes.avatarMenu}
                     id="avatar-menu"
@@ -200,43 +202,12 @@ export default function Header({ disableSearch }) {
                     keepMounted
                     open={Boolean(anchorEl)}
                     onClose={handleClose}>
-                    <MenuItem
-                      onClick={handleClose}
-                      component={Link}
-                      href="/profiles/[id]"
-                      as={`/profiles/${profile.steam_id}`}
-                      disableUnderline>
-                      View Profile
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleClose}
-                      component={Link}
-                      href="/my-listings"
-                      disableUnderline>
-                      Listings
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleClose}
-                      component={Link}
-                      href="/my-reservations"
-                      disableUnderline>
-                      Reservations
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/my-buyorders"
-                      disableUnderline>
-                      Buy Orders
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleClose}
-                      component={Link}
-                      href="/my-history"
-                      disableUnderline>
-                      History
-                    </MenuItem>
-                    <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+                    <MenuItems
+                      profile={profile}
+                      onClose={handleClose}
+                      onLogout={handleLogout}
+                      isMobile={isMobile}
+                    />
                   </Menu>
                 </>
               ) : (
@@ -275,45 +246,12 @@ export default function Header({ disableSearch }) {
                 </MenuItem>
 
                 {isLoggedIn ? (
-                  [
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/profiles/[id]"
-                      as={`/profiles/${profile.steam_id}`}
-                      disableUnderline>
-                      View Profile
-                    </MenuItem>,
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/my-listings"
-                      disableUnderline>
-                      Listings
-                    </MenuItem>,
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/my-reservations"
-                      disableUnderline>
-                      Reservations
-                    </MenuItem>,
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/my-buyorders"
-                      disableUnderline>
-                      Buy Orders
-                    </MenuItem>,
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/my-history"
-                      disableUnderline>
-                      History
-                    </MenuItem>,
-                    <MenuItem onClick={handleLogout}>Sign out</MenuItem>,
-                  ]
+                  <MenuItems
+                    profile={profile}
+                    onClose={handleClose}
+                    onLogout={handleLogout}
+                    isMobile={isMobile}
+                  />
                 ) : (
                   <MenuItem
                     onClick={handleMoreClose}
