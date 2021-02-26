@@ -17,6 +17,14 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(4),
   },
+  list: {
+    listStyle: 'none',
+    '& li:before': {
+      content: `'🛡️ '`,
+    },
+    paddingLeft: theme.spacing(3),
+    marginTop: 0,
+  },
 }))
 
 function Middleman({ name, id, internal = false }) {
@@ -54,22 +62,15 @@ export default function Middlemen() {
 
       <main className={classes.main}>
         <Container>
-          <Alert severity="warning">
-            This website is not responsible for scammed items and cannot help you recover them or
-            help you scam the scammers.
-          </Alert>
-          <br />
-          <br />
-
           {/* SteamRep middleman */}
           <Typography variant="h5" component="h1" gutterBottom>
-            SteamRep&apos;s Official Middlemen
+            SteamRep&apos;s Active Middlemen
             <Typography variant="caption" color="textSecondary" component="sup">
-              &nbsp;updated Feb 07 2021
+              &nbsp;updated Feb 26 2021
             </Typography>
           </Typography>
           <Typography>
-            <ul>
+            <ul className={classes.list}>
               <li>
                 <Middleman name="kyuronite" id="76561198050680230" />
               </li>
@@ -113,33 +114,41 @@ export default function Middlemen() {
             </Typography>
           </Typography>
           <br />
-          <br />
 
           {/* DotagiftX middleman */}
           <Typography variant="h5" component="h2" gutterBottom>
-            DotagiftX&apos;s Middleman
+            DotagiftX&apos;s Middleman{' '}
+            <sup style={{ color: 'yellowgreen', fontSize: '12px' }}>New!</sup>
           </Typography>
-          <ul>
-            <li>
-              <Middleman name="kudarap" id="76561198088587178" internal />
-            </li>
-          </ul>
-          <Typography color="textSecondary">
-            It&apos;s strongly recommended to get your middleman from Official SteamRep but if you
-            trust
-            <Link href="/profiles/76561198088587178" color="textPrimary">
-              &nbsp;kudarap&nbsp;
-            </Link>
-            enough to middle your transaction, you can message a request on{' '}
-            <Link
-              href="https://discord.gg/UFt9Ny42kM"
-              target="_blank"
-              color="secondary"
-              rel="noreferrer noopener">
-              Discord
-            </Link>{' '}
-            to give a heads up.
+          <Typography>
+            <ul>
+              <li>
+                <Middleman name="kudarap" id="76561198088587178" internal />
+              </li>
+            </ul>
+            <Typography color="textSecondary">
+              It&apos;s strongly recommended to get your middleman from Official SteamRep but if you
+              trust
+              <Link href="/profiles/76561198088587178" color="textPrimary">
+                &nbsp;kudarap&nbsp;
+              </Link>
+              enough to middle your transaction, you can message a request on{' '}
+              <Link
+                href="https://discord.gg/UFt9Ny42kM"
+                target="_blank"
+                color="secondary"
+                rel="noreferrer noopener">
+                Discord
+              </Link>{' '}
+              to give a heads up.
+            </Typography>
           </Typography>
+          <br />
+
+          <Alert severity="warning">
+            This website is not responsible for scammed items and cannot help you recover them or
+            help you scam the scammers.
+          </Alert>
         </Container>
       </main>
 
