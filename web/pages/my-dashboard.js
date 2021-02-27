@@ -1,8 +1,5 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-import * as format from '@/lib/format'
 import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -10,14 +7,15 @@ import Container from '@/components/Container'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
-import Link from '@/components/Link'
+import DashTabs from '@/components/DashTabs'
+import DashTab from '@/components/DashTab'
 
 const useStyles = makeStyles(theme => ({
   main: {
     [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0),
     },
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2),
   },
 }))
 
@@ -43,6 +41,12 @@ export default function MyListings() {
   const [total, setTotal] = React.useState(0)
   const [filter, setFilter] = React.useState(marketFilter)
   const [reloadFlag, setReloadFlag] = React.useState(false)
+
+  const [tabValue, setTabValue] = React.useState(0)
+
+  const handleChange = (e, v) => {
+    setTabValue(v)
+  }
 
   React.useEffect(() => {
     ;(async () => {
@@ -79,19 +83,11 @@ export default function MyListings() {
 
       <main className={classes.main}>
         <Container>
-          <Typography component="h1" gutterBottom>
-            <Breadcrumbs aria-label="breadcrumb" separator="-">
-              <Link href="/my-dashboard">
-                Sell Listing {total !== 0 && `(${format.numberWithCommas(total)})`}
-              </Link>
-              <Link href="/my-reservations" color="textSecondary">
-                Reserved Items (12)
-              </Link>
-              <Link href="/my-dashboard" color="textSecondary">
-                History
-              </Link>
-            </Breadcrumbs>
-          </Typography>
+          <DashTabs value={tabValue} onChange={handleChange}>
+            <DashTab label="Active Listings" badgeContent={total} />
+            <DashTab label="To Deliver" badgeContent={12} />
+            <DashTab label="History" />
+          </DashTabs>
 
           <MyMarketList
             datatable={data}

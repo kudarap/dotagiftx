@@ -81,9 +81,9 @@ export default function MyReservations() {
           <Typography component="h1" gutterBottom>
             <Breadcrumbs aria-label="breadcrumb" separator="-">
               <Link href="/my-dashboard" color="textSecondary">
-                Sell Listing {total !== 0 && `(${format.numberWithCommas(total)})`}
+                Active Listing {total !== 0 && `(${format.numberWithCommas(total)})`}
               </Link>
-              <Link href="/my-reservations">Reserved Items (12)</Link>
+              <Link href="/my-reservations">To Send (12)</Link>
               <Link href="/my-dashboard" color="textSecondary">
                 History
               </Link>
