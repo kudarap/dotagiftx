@@ -14,6 +14,7 @@ const StyledTab = withStyles(theme => ({
     '&:focus': {
       opacity: 1,
     },
+    minWidth: 120,
   },
 }))(props => <Tab disableRipple {...props} />)
 

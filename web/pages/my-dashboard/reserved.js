@@ -1,4 +1,5 @@
 import React from 'react'
+import useRouter from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
@@ -42,9 +43,11 @@ export default function MyListings() {
   const [filter, setFilter] = React.useState(marketFilter)
   const [reloadFlag, setReloadFlag] = React.useState(false)
 
-  const [tabValue, setTabValue] = React.useState(0)
+  const [tabValue, setTabValue] = React.useState('/reserved')
 
+  const router = useRouter()
   const handleChange = (e, v) => {
+    router.push(`${router.query.slug}${v}`)
     setTabValue(v)
   }
 
@@ -84,9 +87,9 @@ export default function MyListings() {
       <main className={classes.main}>
         <Container>
           <DashTabs value={tabValue} onChange={handleChange}>
-            <DashTab label="Active Listings" badgeContent={total} />
-            <DashTab label="To Deliver" badgeContent={12} />
-            <DashTab label="History" />
+            <DashTab value="/" label="Active Listings" badgeContent={total} />
+            <DashTab value="/reserved" label="Reserved" badgeContent={12} />
+            <DashTab value="/history" label="History" />
           </DashTabs>
 
           <MyMarketList
