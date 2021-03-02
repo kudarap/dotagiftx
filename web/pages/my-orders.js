@@ -42,7 +42,6 @@ export default function MyOrders() {
   const classes = useStyles()
 
   const { currentAuth } = React.useContext(AppContext)
-  console.log(currentAuth.steam_id)
 
   // fetch market stats data
   const [marketStats, setMarketStats] = React.useState(initialMarketStats)
