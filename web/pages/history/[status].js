@@ -9,7 +9,7 @@ import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { fetcher, MARKETS, statsMarketSummary } from '@/service/api'
+import { fetcher, MARKETS, marketSearch, statsMarketSummary } from '@/service/api'
 import MarketActivity from '@/components/MarketActivityV2'
 import {
   MARKET_STATUS_MAP_TEXT,
@@ -35,19 +35,14 @@ const useStyles = makeStyles(theme => ({
   itemImage: { width: 60, height: 40, marginRight: 8, float: 'left' },
 }))
 
-const filter = {
+const defaultFilter = {
   type: MARKET_TYPE_ASK,
   sort: 'updated_at:desc',
   limit: 100,
 }
 
-export default function History({ status, summary }) {
+export default function History({ status, summary, datatable, error }) {
   const classes = useStyles()
-
-  filter.status = status
-  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
-    revalidateOnFocus: false,
-  })
 
   return (
     <>
@@ -67,17 +62,17 @@ export default function History({ status, summary }) {
           </Typography>
 
           <Typography style={{ display: 'flex' }}>
-            <Typography component={Link} href="/history?reserved">
+            <Typography component={Link} href="/history/reserved">
               {summary.reserved} Reserved
             </Typography>
             &nbsp;&middot;&nbsp;
-            <Typography component={Link} href="/history?delivered">
+            <Typography component={Link} href="/history/delivered">
               {summary.sold} Delivered
             </Typography>
           </Typography>
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={data || {}} loading={isValidating} disablePrice />
+          <MarketActivity datatable={datatable || {}} disablePrice={status !== null} />
         </Container>
       </main>
 
@@ -87,20 +82,37 @@ export default function History({ status, summary }) {
 }
 History.propTypes = {
   status: PropTypes.number.isRequired,
+  datatable: PropTypes.object.isRequired,
+  error: PropTypes.string,
   summary: PropTypes.object.isRequired,
+}
+History.defaultProps = {
+  error: null,
 }
 
 export async function getServerSideProps({ query }) {
   let status = null
-  if (has(query, 'reserved')) {
-    status = MARKET_STATUS_RESERVED
-  } else if (has(query, 'delivered')) {
-    status = MARKET_STATUS_SOLD
+  // eslint-disable-next-line default-case
+  switch (query.status) {
+    case 'reserved':
+      status = MARKET_STATUS_RESERVED
+      break
+    case 'delivered':
+      status = MARKET_STATUS_SOLD
+      break
   }
 
   const summary = await statsMarketSummary()
 
+  let datatable = {}
+  let error = null
+  try {
+    datatable = await marketSearch({ ...defaultFilter, status })
+  } catch (e) {
+    error = e.message
+  }
+
   return {
-    props: { status, summary },
+    props: { status, summary, datatable, error },
   }
 }

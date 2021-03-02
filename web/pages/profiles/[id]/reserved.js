@@ -89,7 +89,7 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
           <br />
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={data || {}} loading={isValidating} />
+          <MarketActivity datatable={data || {}} loading={isValidating} disablePrice />
         </Container>
       </main>
 
