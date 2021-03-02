@@ -120,7 +120,11 @@ function TabPanel(props) {
   }
   tabPanelIndex[index] = true
 
-  return <div {...other}>{children}</div>
+  return (
+    <div hidden={value !== index} {...other}>
+      {children}
+    </div>
+  )
 }
 TabPanel.propTypes = {
   children: PropTypes.node.isRequired,
