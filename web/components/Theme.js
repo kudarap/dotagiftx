@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+import teal from '@material-ui/core/colors/teal'
 
 export const muiTheme = createMuiTheme({
   typography: {
@@ -14,6 +15,9 @@ export const muiTheme = createMuiTheme({
     },
     secondary: {
       main: '#C79123',
+    },
+    accent: {
+      main: teal.A200,
     },
     background: {
       default: '#263238',
