@@ -18,7 +18,7 @@ import Link from '@/components/Link'
 
 const priceTagStyle = {
   padding: '2px 6px',
-  background: teal[900],
+  color: 'white',
   // borderRadius: 6,
   // float: 'right',
 }
@@ -71,21 +71,23 @@ export default function MyMarketActivity({ datatable, loading, error }) {
               title={market.item.name}
               rarity={market.item.rarity}
             />
-            <Typography variant="body2">
+            <Typography variant="body2" color="textSecondary">
               <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
                 {market.type === MARKET_TYPE_BID
                   ? MARKET_BID_STATUS_MAP_TEXT[market.status]
                   : MARKET_STATUS_MAP_TEXT[market.status]}
               </span>
               &nbsp;
-              {market.item.hero}&apos;s&nbsp;
-              <Link href={`/${market.item.slug}`} color="secondary">
-                {/* {`${amount(market.price, market.currency)} ${market.item.name}`} */}
-                {market.item.name}
+              <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">
+                {`${market.item.hero}'s`}
+              </Link>
+              &nbsp;
+              <Link href={`/${market.item.slug}`} color="textPrimary">
+                {`${market.item.name}`}
               </Link>
               &nbsp;
               {daysFromNow(market.updated_at)}
-              &nbsp;
+              &nbsp;for&nbsp;
               <span
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag

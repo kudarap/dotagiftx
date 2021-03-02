@@ -19,7 +19,7 @@ import Avatar from '@material-ui/core/Avatar'
 
 const priceTagStyle = {
   padding: '2px 6px',
-  background: teal[900],
+  color: 'white',
   // borderRadius: 6,
   // float: 'right',
 }
@@ -93,9 +93,12 @@ export default function MyOrderActivity({ datatable, loading, error }) {
                   : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
               </span>
               &nbsp;
+              <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">
+                {`${market.item.hero}'s`}
+              </Link>
+              &nbsp;
               <Link href={`/${market.item.slug}`} color="textPrimary">
-                {/* {`${amount(market.price, market.currency)} ${market.item.name}`} */}
-                {`${market.item.hero}'s ${market.item.name}`}
+                {`${market.item.name}`}
               </Link>
               &nbsp;from&nbsp;
               <Link href={`/profiles/${market.user.steam_id}`} color="textPrimary">
@@ -103,13 +106,8 @@ export default function MyOrderActivity({ datatable, loading, error }) {
               </Link>
               &nbsp;
               {daysFromNow(market.updated_at)}
-              &nbsp;
-              <span
-                className={
-                  market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
-                }>
-                {amount(market.price, market.currency)}
-              </span>
+              &nbsp;for&nbsp;
+              <span className={classes.bidPriceTag}>{amount(market.price, market.currency)}</span>
             </Typography>
 
             <Typography
