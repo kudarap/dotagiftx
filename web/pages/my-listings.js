@@ -20,6 +20,7 @@ import { useRouter } from 'next/router'
 import AppContext from '@/components/AppContext'
 import ReservationList from '@/components/ReservationList'
 import HistoryList from '@/components/HistoryList'
+import MyMarketActivity from '@/components/MyMarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -146,9 +147,9 @@ const datatableBaseFilter = {
   page: 1,
 }
 
-const withDataFetch = (Component, initialFilter) => props => {
+const withDataFetch = (Component, initFilter) => props => {
   const [data, setData] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState({ ...datatableBaseFilter, ...initialFilter })
+  const [filter, setFilter] = React.useState({ ...datatableBaseFilter, ...initFilter })
   const [tick, setTick] = React.useState(false)
 
   React.useEffect(() => {
@@ -187,6 +188,7 @@ const withDataFetch = (Component, initialFilter) => props => {
         style={{ textAlign: 'right' }}
         count={data.total_count || 0}
         page={filter.page}
+        rowsPerPage={filter.limit}
         onChangePage={handlePageChange}
       />
     </>
@@ -196,4 +198,4 @@ const withDataFetch = (Component, initialFilter) => props => {
 const LiveTable = withDataFetch(MyMarketList, { status: MARKET_STATUS_LIVE })
 const ReservedTable = withDataFetch(ReservationList, { status: MARKET_STATUS_RESERVED })
 const DeliveredTable = withDataFetch(HistoryList, { status: MARKET_STATUS_SOLD })
-const HistoryTable = withDataFetch(HistoryList, {})
+const HistoryTable = withDataFetch(MyMarketActivity, { limit: 20 })

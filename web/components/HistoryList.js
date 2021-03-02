@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function HistoryList({ datatable, error }) {
+export default function HistoryList({ datatable, loading, error }) {
   const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
@@ -45,10 +45,10 @@ export default function HistoryList({ datatable, error }) {
   }
 
   if (error) {
-    return <p>Error</p>
+    return <p>Error {error}</p>
   }
 
-  if (!datatable) {
+  if (loading || !datatable.data) {
     return <p>Loading...</p>
   }
 
@@ -143,8 +143,10 @@ export default function HistoryList({ datatable, error }) {
 }
 HistoryList.propTypes = {
   datatable: PropTypes.object.isRequired,
+  loading: PropTypes.bool,
   error: PropTypes.string,
 }
 HistoryList.defaultProps = {
+  loading: false,
   error: null,
 }
