@@ -8,8 +8,11 @@ all: install build
 install:
 	go get ./...
 
-run: build
+run: generate build
 	./$(PROJECTNAME)
+
+generate:
+	go generate ./core
 
 build:
 	go build -v -ldflags=" \
