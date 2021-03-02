@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import MenuItem from '@material-ui/core/MenuItem'
 import Link from '@/components/Link'
 
+let key = 100
+
 export default function MenuItems({ profile, onClose, onLogout }) {
   const handleClose = () => {
     onClose()
@@ -14,26 +16,33 @@ export default function MenuItems({ profile, onClose, onLogout }) {
 
   return [
     <MenuItem
+      key={key++}
       onClick={handleClose}
       component={Link}
-      href="/profiles/[id]"
-      as={`/profiles/${profile.steam_id}`}
+      href={`/profiles/${profile.steam_id}`}
       disableUnderline>
       View Profile
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/my-listings" disableUnderline>
+    <MenuItem
+      key={key++}
+      onClick={handleClose}
+      component={Link}
+      href="/my-listings"
+      disableUnderline>
       Listings
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/my-orders" disableUnderline>
+    <MenuItem key={key++} onClick={handleClose} component={Link} href="/my-orders" disableUnderline>
       Orders
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/feedback" disableUnderline>
+    <MenuItem key={key++} onClick={handleClose} component={Link} href="/feedback" disableUnderline>
       Feedback
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/updates" disableUnderline>
+    <MenuItem key={key++} onClick={handleClose} component={Link} href="/updates" disableUnderline>
       Updates
     </MenuItem>,
-    <MenuItem onClick={handleLogout}>Sign out</MenuItem>,
+    <MenuItem key={key++} onClick={handleLogout}>
+      Sign out
+    </MenuItem>,
   ]
 }
 MenuItems.propTypes = {
