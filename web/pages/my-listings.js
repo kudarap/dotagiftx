@@ -197,5 +197,5 @@ const withDataFetch = (Component, initFilter) => props => {
 
 const LiveTable = withDataFetch(MyMarketList, { status: MARKET_STATUS_LIVE })
 const ReservedTable = withDataFetch(ReservationList, { status: MARKET_STATUS_RESERVED })
-const DeliveredTable = withDataFetch(HistoryList, { status: MARKET_STATUS_SOLD })
+const DeliveredTable = withDataFetch(MyMarketActivity, { status: MARKET_STATUS_SOLD })
 const HistoryTable = withDataFetch(MyMarketActivity, { limit: 20 })

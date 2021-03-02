@@ -18,10 +18,10 @@ import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 
 const priceTagStyle = {
-  background: teal[900],
-  borderRadius: 6,
   padding: '2px 6px',
-  float: 'right',
+  background: teal[900],
+  // borderRadius: 6,
+  // float: 'right',
 }
 
 const useStyles = makeStyles(theme => ({
@@ -70,8 +70,8 @@ export default function MyMarketActivity({ datatable, loading, error }) {
             <Typography variant="body2">
               <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
                 {market.type === MARKET_TYPE_BID
-                  ? MARKET_BID_STATUS_MAP_TEXT[market.status].toLowerCase()
-                  : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
+                  ? MARKET_BID_STATUS_MAP_TEXT[market.status]
+                  : MARKET_STATUS_MAP_TEXT[market.status]}
               </span>
               &nbsp;
               {market.item.hero}&apos;s&nbsp;
