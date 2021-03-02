@@ -1,7 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import * as format from '@/lib/format'
 import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
@@ -10,7 +9,6 @@ import Container from '@/components/Container'
 import { MARKET_STATUS_RESERVED } from '@/constants/market'
 import ReservationList from '@/components/ReservationList'
 import TablePagination from '@/components/TablePagination'
-import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -79,15 +77,7 @@ export default function MyReservations() {
       <main className={classes.main}>
         <Container>
           <Typography component="h1" gutterBottom>
-            <Breadcrumbs aria-label="breadcrumb" separator="-">
-              <Link href="/my-dashboard" color="textSecondary">
-                Active Listing {total !== 0 && `(${format.numberWithCommas(total)})`}
-              </Link>
-              <Link href="/my-reservations">To Send (12)</Link>
-              <Link href="/my-dashboard" color="textSecondary">
-                History
-              </Link>
-            </Breadcrumbs>
+            Buyer Reservations {total !== 0 && `(${format.numberWithCommas(total)})`}
           </Typography>
 
           <ReservationList
