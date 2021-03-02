@@ -11,6 +11,7 @@ function Root({ children }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
   const currentAuth = get()
   const isLoggedIn = isOk()
+  console.log('root', currentAuth)
   return (
     <AppContext.Provider value={{ isMobile, currentAuth, isLoggedIn }}>
       <Theme>{children}</Theme>

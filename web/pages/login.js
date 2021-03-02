@@ -85,6 +85,10 @@ export default function Login() {
         const profile = await myProfile.GET()
         Storage.save(APP_CACHE_PROFILE, profile)
 
+        // Store steam id for later use.
+        auth.steam_id = profile.steam_id
+        setAuth(auth)
+
         // eslint-disable-next-line no-undef
         window.location = '/'
       } catch (e) {

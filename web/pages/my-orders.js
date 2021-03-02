@@ -20,8 +20,7 @@ import { useRouter } from 'next/router'
 import ReservationList from '@/components/ReservationList'
 import MyMarketActivity from '@/components/MyMarketActivity'
 import withDatatableFetch from '@/components/withDatatableFetch'
-import { get as getCached } from '@/service/storage'
-import { APP_CACHE_PROFILE } from '@/constants/app'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -31,11 +30,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
   },
 }))
-
-const initialProfile = {
-  id: '',
-  steam_id: '',
-}
 
 const initialMarketStats = {
   pending: 0,
@@ -47,20 +41,19 @@ const initialMarketStats = {
 export default function MyListings() {
   const classes = useStyles()
 
-  const [user, setUser] = React.useState(initialProfile)
+  const { currentAuth } = React.useContext(AppContext)
+  console.log(currentAuth.steam_id)
 
   // fetch market stats data
   const router = useRouter()
   const [marketStats, setMarketStats] = React.useState(initialMarketStats)
   const [tabValue, setTabValue] = React.useState(false)
   React.useEffect(() => {
-    const userHit = getCached(APP_CACHE_PROFILE)
-    setUser(userHit)
     ;(async () => {
-      const res = await statsMarketSummary({ user_id: userHit.id })
+      const res = await statsMarketSummary({ user_id: currentAuth.user_id })
       // Fetches count of linked markets.
       const linkedMarket = await statsMarketSummary({
-        partner_steam_id: userHit.steam_id,
+        partner_steam_id: currentAuth.steam_id,
       })
       res.bids.reserved = linkedMarket.reserved
       setMarketStats(res.bids)
@@ -90,7 +83,7 @@ export default function MyListings() {
             <BuyOrdersTable />
           </TabPanel>
           <TabPanel value={tabValue} index="#toreceive">
-            <ToReceiveTable filter={{ partner_steam_id: user.steam_id }} />
+            <ToReceiveTable filter={{ partner_steam_id: currentAuth.steam_id }} />
           </TabPanel>
           <TabPanel value={tabValue} index="#completed">
             <CompletedTable />
@@ -153,11 +146,14 @@ const BuyOrdersTable = withDatatableFetch(MyMarketList, {
   ...datatableBaseFilter,
   status: MARKET_STATUS_LIVE,
 })
-const ToReceiveTable = withDatatableFetch(ReservationList, {
-  type: MARKET_TYPE_ASK,
-  status: MARKET_STATUS_RESERVED,
-  marketSearch,
-})
+const ToReceiveTable = withDatatableFetch(
+  ReservationList,
+  {
+    type: MARKET_TYPE_ASK,
+    status: MARKET_STATUS_RESERVED,
+  },
+  marketSearch
+)
 const CompletedTable = withDatatableFetch(MyMarketActivity, {
   ...datatableBaseFilter,
   status: MARKET_STATUS_BID_COMPLETED,
