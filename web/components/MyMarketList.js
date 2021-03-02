@@ -68,7 +68,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                   loading={loading}
                   onInput={onSearchInput}
                   color="secondary"
-                  placeholder="Filter sell listings"
+                  placeholder="Filter active listings"
                 />
               </TableHeadCell>
               {!isMobile && (
