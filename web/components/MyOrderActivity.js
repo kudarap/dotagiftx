@@ -16,6 +16,7 @@ import { amount, daysFromNow } from '@/lib/format'
 import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import Link from '@/components/Link'
 import Avatar from '@material-ui/core/Avatar'
+import AppContext from '@/components/AppContext'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -55,6 +56,8 @@ const useStyles = makeStyles(theme => ({
 export default function MyOrderActivity({ datatable, loading, error }) {
   const classes = useStyles()
 
+  const { isMobile } = React.useContext(AppContext)
+
   if (error) {
     return <p>Error {error}</p>
   }
@@ -68,12 +71,15 @@ export default function MyOrderActivity({ datatable, loading, error }) {
       <ul style={{ paddingLeft: 0, listStyle: 'none', opacity: loading ? 0.5 : 1 }}>
         {datatable.data.map(market => (
           <li className={classes.activity} key={market.id}>
-            <Avatar
-              className={classes.avatar}
-              {...retinaSrcSet(market.user.avatar, 40, 40)}
-              component={Link}
-              href={`/profiles/${market.user.steam_id}`}
-            />
+            {!isMobile && (
+              <Avatar
+                hidden={isMobile}
+                className={classes.avatar}
+                {...retinaSrcSet(market.user.avatar, 40, 40)}
+                component={Link}
+                href={`/profiles/${market.user.steam_id}`}
+              />
+            )}
             <Link href={`/${market.item.slug}`}>
               <ItemImage
                 className={classes.itemImage}

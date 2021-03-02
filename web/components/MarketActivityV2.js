@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import lightGreen from '@material-ui/core/colors/lightGreen'
 import teal from '@material-ui/core/colors/teal'
+import Avatar from '@material-ui/core/Avatar'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
   MARKET_TYPE_ASK,
@@ -13,8 +14,9 @@ import {
   MARKET_BID_STATUS_MAP_TEXT,
 } from '@/constants/market'
 import { amount, daysFromNow } from '@/lib/format'
-import ItemImage from '@/components/ItemImage'
+import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import Link from '@/components/Link'
+import AppContext from '@/components/AppContext'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -39,6 +41,10 @@ const useStyles = makeStyles(theme => ({
     ...priceTagStyle,
     background: teal[900],
   },
+  avatar: {
+    float: 'left',
+    marginRight: theme.spacing(1),
+  },
   activity: {
     display: 'flow-root',
     borderBottom: `1px ${theme.palette.divider} solid`,
@@ -47,8 +53,10 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function MyMarketActivityV2({ datatable, loading, error }) {
+export default function MyMarketActivityV2({ datatable, loading, error, disablePrice }) {
   const classes = useStyles()
+
+  const { isMobile } = React.useContext(AppContext)
 
   if (error) {
     return <p>Error {error}</p>
@@ -63,14 +71,25 @@ export default function MyMarketActivityV2({ datatable, loading, error }) {
       <ul style={{ paddingLeft: 0, listStyle: 'none', opacity: loading ? 0.5 : 1 }}>
         {datatable.data.map(market => (
           <li className={classes.activity} key={market.id}>
-            <ItemImage
-              className={classes.itemImage}
-              image={market.item.image}
-              width={60}
-              height={40}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
+            {!isMobile && (
+              <Avatar
+                hidden={isMobile}
+                className={classes.avatar}
+                {...retinaSrcSet(market.user.avatar, 40, 40)}
+                component={Link}
+                href={`/profiles/${market.user.steam_id}`}
+              />
+            )}
+            <Link href={`/${market.item.slug}`}>
+              <ItemImage
+                className={classes.itemImage}
+                image={market.item.image}
+                width={60}
+                height={40}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+            </Link>
             <Typography variant="body2" color="textSecondary">
               <Link href={`/profiles/${market.user.steam_id}`} color="textPrimary">
                 {market.user.name}
@@ -93,6 +112,7 @@ export default function MyMarketActivityV2({ datatable, loading, error }) {
               {daysFromNow(market.updated_at)}
               &nbsp;
               <span
+                hidden={disablePrice}
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
                 }>
@@ -125,8 +145,10 @@ MyMarketActivityV2.propTypes = {
   datatable: PropTypes.object.isRequired,
   loading: PropTypes.bool,
   error: PropTypes.string,
+  disablePrice: PropTypes.bool,
 }
 MyMarketActivityV2.defaultProps = {
   loading: false,
   error: null,
+  disablePrice: false,
 }

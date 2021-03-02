@@ -63,14 +63,16 @@ export default function MyMarketActivity({ datatable, loading, error }) {
       <ul style={{ paddingLeft: 0, listStyle: 'none', opacity: loading ? 0.5 : 1 }}>
         {datatable.data.map(market => (
           <li className={classes.activity} key={market.id}>
-            <ItemImage
-              className={classes.itemImage}
-              image={market.item.image}
-              width={60}
-              height={40}
-              title={market.item.name}
-              rarity={market.item.rarity}
-            />
+            <Link href={`/${market.item.slug}`}>
+              <ItemImage
+                className={classes.itemImage}
+                image={market.item.image}
+                width={60}
+                height={40}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+            </Link>
             <Typography variant="body2" color="textSecondary">
               <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
                 {market.type === MARKET_TYPE_BID
