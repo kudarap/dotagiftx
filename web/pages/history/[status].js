@@ -9,14 +9,15 @@ import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { fetcher, MARKETS } from '@/service/api'
-import MarketActivity from '@/components/MarketActivity'
+import { fetcher, MARKETS, statsMarketSummary } from '@/service/api'
+import MarketActivity from '@/components/MarketActivityV2'
 import {
   MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_RESERVED,
   MARKET_STATUS_SOLD,
   MARKET_TYPE_ASK,
 } from '@/constants/market'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -40,7 +41,7 @@ const filter = {
   limit: 100,
 }
 
-export default function History({ status }) {
+export default function History({ status, summary }) {
   const classes = useStyles()
 
   filter.status = status
@@ -61,12 +62,22 @@ export default function History({ status }) {
 
       <main className={classes.main}>
         <Container>
-          <Typography component="h1">
-            {MARKET_STATUS_MAP_TEXT[status]} Items {data && `(${data && data.total_count})`}
-            {/* <CircularProgress color="secondary" size={15} /> */}
+          <Typography variant="h5" component="h1">
+            Market History
           </Typography>
+
+          <Typography style={{ display: 'flex' }}>
+            <Typography component={Link} href="/history?reserved">
+              {summary.reserved} Reserved
+            </Typography>
+            &nbsp;&middot;&nbsp;
+            <Typography component={Link} href="/history?delivered">
+              {summary.sold} Delivered
+            </Typography>
+          </Typography>
+
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity data={data ? data.data : null} loading={isValidating} />
+          <MarketActivity datatable={data || {}} loading={isValidating} disablePrice />
         </Container>
       </main>
 
@@ -76,6 +87,7 @@ export default function History({ status }) {
 }
 History.propTypes = {
   status: PropTypes.number.isRequired,
+  summary: PropTypes.object.isRequired,
 }
 
 export async function getServerSideProps({ query }) {
@@ -86,7 +98,9 @@ export async function getServerSideProps({ query }) {
     status = MARKET_STATUS_SOLD
   }
 
+  const summary = await statsMarketSummary()
+
   return {
-    props: { status },
+    props: { status, summary },
   }
 }

@@ -69,19 +69,21 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
               {profile.name}
             </Typography>
             <div style={{ display: 'flex' }}>
-              <Typography component={Link} href={profileURL} color="textSecondary">
+              <Typography component={Link} href={profileURL}>
                 {stats.live} Items
               </Typography>
               &nbsp;&middot;&nbsp;
-              <Typography component={Link} href={`${profileURL}/reserved`} color="textSecondary">
+              <Typography component={Link} href={`${profileURL}/reserved`}>
                 {stats.reserved} Reserved
               </Typography>
               &nbsp;&middot;&nbsp;
-              <Typography component={Link} href={`${profileURL}/delivered`} color="textSecondary">
+              <Typography component={Link} href={`${profileURL}/delivered`}>
                 {stats.sold} Delivered
               </Typography>
             </div>
           </div>
+          <br />
+
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <MarketActivity datatable={data || {}} loading={isValidating} />
         </Container>
