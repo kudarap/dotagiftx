@@ -192,7 +192,7 @@ export default function Index({ marketSummary, trendingItems }) {
 
           {/* Recent Market items */}
           <Typography>
-            New Offers
+            New Sell Listings
             <Link
               href={`/search?sort=${recentItemsFilter.sort}`}
               color="secondary"
