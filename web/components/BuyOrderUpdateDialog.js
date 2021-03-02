@@ -208,14 +208,14 @@ export default function BuyOrderUpdateDialog(props) {
             startIcon={<RemoveIcon />}
             onClick={handleRemoveClick}
             variant="outlined">
-            Remove Order
+            {isMobile ? 'Remove' : 'Remove order'}
           </Button>
           <Button
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
             variant="outlined"
             color="secondary"
             type="submit">
-            Complete
+            {isMobile ? 'Complete' : 'Mark as complete'}
           </Button>
         </DialogActions>
       </form>

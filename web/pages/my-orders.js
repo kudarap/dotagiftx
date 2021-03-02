@@ -15,12 +15,12 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
-import ReservationList from '@/components/ReservationList'
 import MyMarketActivity from '@/components/MyMarketActivity'
 import withDatatableFetch from '@/components/withDatatableFetch'
 import AppContext from '@/components/AppContext'
 import MyBuyOrderList from '@/components/MyBuyOrderList'
 import TabPanel from '@/components/TabPanel'
+import MyOrderActivity from '@/components/MyOrderActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -123,7 +123,7 @@ const BuyOrdersTable = withDatatableFetch(MyBuyOrderList, {
   status: MARKET_STATUS_LIVE,
 })
 const ToReceiveTable = withDatatableFetch(
-  ReservationList,
+  MyOrderActivity,
   {
     type: MARKET_TYPE_ASK,
     status: MARKET_STATUS_RESERVED,
