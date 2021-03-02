@@ -1,11 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
 import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
-import { marketSearch, statsMarketSummary } from '@/service/api'
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import Container from '@/components/Container'
 import {
   MARKET_STATUS_BID_COMPLETED,
   MARKET_STATUS_LIVE,
@@ -13,14 +10,17 @@ import {
   MARKET_TYPE_ASK,
   MARKET_TYPE_BID,
 } from '@/constants/market'
-import MyMarketList from '@/components/MyMarketList'
+import { marketSearch, statsMarketSummary } from '@/service/api'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import Container from '@/components/Container'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
-import { useRouter } from 'next/router'
 import ReservationList from '@/components/ReservationList'
 import MyMarketActivity from '@/components/MyMarketActivity'
 import withDatatableFetch from '@/components/withDatatableFetch'
 import AppContext from '@/components/AppContext'
+import MyBuyOrderList from '@/components/MyBuyOrderList'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -142,7 +142,7 @@ const datatableBaseFilter = {
   type: MARKET_TYPE_BID,
 }
 
-const BuyOrdersTable = withDatatableFetch(MyMarketList, {
+const BuyOrdersTable = withDatatableFetch(MyBuyOrderList, {
   ...datatableBaseFilter,
   status: MARKET_STATUS_LIVE,
 })

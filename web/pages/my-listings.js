@@ -1,21 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
 import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
-import { statsMarketSummary } from '@/service/api'
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import Container from '@/components/Container'
 import {
   MARKET_STATUS_LIVE,
   MARKET_STATUS_RESERVED,
   MARKET_STATUS_SOLD,
   MARKET_TYPE_ASK,
 } from '@/constants/market'
+import { statsMarketSummary } from '@/service/api'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import Container from '@/components/Container'
 import MyMarketList from '@/components/MyMarketList'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
-import { useRouter } from 'next/router'
 import AppContext from '@/components/AppContext'
 import ReservationList from '@/components/ReservationList'
 import MyMarketActivity from '@/components/MyMarketActivity'
