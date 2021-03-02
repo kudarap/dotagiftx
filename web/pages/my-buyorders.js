@@ -1,13 +1,11 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import * as format from '@/lib/format'
 import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import Link from '@/components/Link'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
 import MyBuyOrderList from '@/components/MyBuyOrderList'
 import TablePagination from '@/components/TablePagination'
@@ -80,17 +78,7 @@ export default function MyListings() {
       <main className={classes.main}>
         <Container>
           <Typography component="h1" gutterBottom>
-            <Breadcrumbs aria-label="breadcrumb" separator="-">
-              <Link href="/my-dashboard">
-                Buy Orders {total !== 0 && `(${format.numberWithCommas(total)})`}
-              </Link>
-              <Link href="/my-reservations" color="textSecondary">
-                To Received
-              </Link>
-              <Link href="/my-dashboard" color="textSecondary">
-                History
-              </Link>
-            </Breadcrumbs>
+            My buy orders {total !== 0 && `(${format.numberWithCommas(total)})`}
           </Typography>
 
           <MyBuyOrderList
