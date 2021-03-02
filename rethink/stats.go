@@ -29,12 +29,13 @@ func (s *statsStorage) CountMarketStatus(o core.FindOpts) (*core.MarketStatusCou
 	}
 
 	msc := &core.MarketStatusCount{
-		Pending:   mapRes[core.MarketStatusPending],
-		Live:      mapRes[core.MarketStatusLive],
-		Sold:      mapRes[core.MarketStatusSold],
-		Reserved:  mapRes[core.MarketStatusReserved],
-		Removed:   mapRes[core.MarketStatusRemoved],
-		Cancelled: mapRes[core.MarketStatusCancelled],
+		Pending:      mapRes[core.MarketStatusPending],
+		Live:         mapRes[core.MarketStatusLive],
+		Sold:         mapRes[core.MarketStatusSold],
+		Reserved:     mapRes[core.MarketStatusReserved],
+		Removed:      mapRes[core.MarketStatusRemoved],
+		Cancelled:    mapRes[core.MarketStatusCancelled],
+		BidCompleted: mapRes[core.MarketStatusBidCompleted],
 	}
 
 	return msc, nil
