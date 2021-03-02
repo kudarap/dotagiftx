@@ -15,16 +15,22 @@ const datatableBaseFilter = {
   page: 1,
 }
 
-const withDataFetch = (Component, initFilter) => props => {
+const withDataFetch = (Component, initFilter, searchFn = myMarketSearch) => props => {
+  const propFilter = props.filter || {}
+
   const [data, setData] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState({ ...datatableBaseFilter, ...initFilter })
+  const [filter, setFilter] = React.useState({
+    ...datatableBaseFilter,
+    ...initFilter,
+    ...propFilter,
+  })
   const [tick, setTick] = React.useState(false)
 
   React.useEffect(() => {
     ;(async () => {
       setData({ ...data, loading: true, error: null })
       try {
-        const res = await myMarketSearch(filter)
+        const res = await searchFn(filter)
         setData({ ...data, loading: false, ...res })
       } catch (e) {
         setData({ ...data, loading: false, error: e.message })

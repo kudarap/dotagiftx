@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
-import { statsMarketSummary } from '@/service/api'
+import { marketSearch, statsMarketSummary } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -10,16 +10,18 @@ import {
   MARKET_STATUS_BID_COMPLETED,
   MARKET_STATUS_LIVE,
   MARKET_STATUS_RESERVED,
+  MARKET_TYPE_ASK,
   MARKET_TYPE_BID,
 } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
 import { useRouter } from 'next/router'
-import AppContext from '@/components/AppContext'
 import ReservationList from '@/components/ReservationList'
 import MyMarketActivity from '@/components/MyMarketActivity'
 import withDatatableFetch from '@/components/withDatatableFetch'
+import { get as getCached } from '@/service/storage'
+import { APP_CACHE_PROFILE } from '@/constants/app'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -29,6 +31,11 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
   },
 }))
+
+const initialProfile = {
+  id: '',
+  steam_id: '',
+}
 
 const initialMarketStats = {
   pending: 0,
@@ -40,15 +47,22 @@ const initialMarketStats = {
 export default function MyListings() {
   const classes = useStyles()
 
+  const [user, setUser] = React.useState(initialProfile)
+
   // fetch market stats data
   const router = useRouter()
-  const { currentAuth } = React.useContext(AppContext)
   const [marketStats, setMarketStats] = React.useState(initialMarketStats)
   const [tabValue, setTabValue] = React.useState(false)
-
   React.useEffect(() => {
+    const userHit = getCached(APP_CACHE_PROFILE)
+    setUser(userHit)
     ;(async () => {
-      const res = await statsMarketSummary({ user_id: currentAuth.user_id })
+      const res = await statsMarketSummary({ user_id: userHit.id })
+      // Fetches count of linked markets.
+      const linkedMarket = await statsMarketSummary({
+        partner_steam_id: userHit.steam_id,
+      })
+      res.bids.reserved = linkedMarket.reserved
       setMarketStats(res.bids)
     })()
   }, [])
@@ -76,7 +90,7 @@ export default function MyListings() {
             <BuyOrdersTable />
           </TabPanel>
           <TabPanel value={tabValue} index="#toreceive">
-            <ToReceiveTable />
+            <ToReceiveTable filter={{ partner_steam_id: user.steam_id }} />
           </TabPanel>
           <TabPanel value={tabValue} index="#completed">
             <CompletedTable />
@@ -140,11 +154,15 @@ const BuyOrdersTable = withDatatableFetch(MyMarketList, {
   status: MARKET_STATUS_LIVE,
 })
 const ToReceiveTable = withDatatableFetch(ReservationList, {
-  ...datatableBaseFilter,
+  type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_RESERVED,
+  marketSearch,
 })
 const CompletedTable = withDatatableFetch(MyMarketActivity, {
   ...datatableBaseFilter,
   status: MARKET_STATUS_BID_COMPLETED,
 })
-const HistoryTable = withDatatableFetch(MyMarketActivity, { ...datatableBaseFilter, limit: 20 })
+const HistoryTable = withDatatableFetch(MyMarketActivity, {
+  ...datatableBaseFilter,
+  limit: 20,
+})

@@ -30,7 +30,7 @@ export default function MenuItems({ profile, onClose, onLogout }) {
     <MenuItem onClick={handleClose} component={Link} href="/feedback" disableUnderline>
       Feedback
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/history" disableUnderline>
+    <MenuItem onClick={handleClose} component={Link} href="/updates" disableUnderline>
       Updates
     </MenuItem>,
     <MenuItem onClick={handleLogout}>Sign out</MenuItem>,
