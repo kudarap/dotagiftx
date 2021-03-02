@@ -4,7 +4,12 @@ import { myMarketSearch, statsMarketSummary } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { MARKET_STATUS_LIVE, MARKET_STATUS_SOLD, MARKET_TYPE_ASK } from '@/constants/market'
+import {
+  MARKET_STATUS_LIVE,
+  MARKET_STATUS_RESERVED,
+  MARKET_STATUS_SOLD,
+  MARKET_TYPE_ASK,
+} from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
 import DashTabs from '@/components/DashTabs'
@@ -22,21 +27,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
   },
 }))
-
-const marketFilter = {
-  type: MARKET_TYPE_ASK,
-  status: MARKET_STATUS_LIVE,
-  sort: 'created_at:desc',
-  page: 1,
-}
-
-const initialDatatable = {
-  data: [],
-  result_count: 0,
-  total_count: 0,
-  loading: false,
-  error: null,
-}
 
 const initialMarketStats = {
   pending: 0,
@@ -71,12 +61,12 @@ export default function MyListings() {
     router.push(v)
   }
 
-  const tabContents = {
-    '': <LiveTable />,
-    '#reserved': <ReservedTable />,
-    '#delivered': <DeliveredTable />,
-    '#history': <HistoryTable />,
-  }
+  // const tabContents = {
+  //   '': <LiveTable />,
+  //   '#reserved': <ReservedTable />,
+  //   '#delivered': <DeliveredTable />,
+  //   '#history': <HistoryTable />,
+  // }
 
   return (
     <>
@@ -85,7 +75,7 @@ export default function MyListings() {
       <main className={classes.main}>
         <Container>
           <Tabs value={tabValue} onChange={handleTabChange} stats={marketStats} />
-          {tabContents[tabValue]}
+          <LiveTable />
         </Container>
       </main>
 
@@ -107,10 +97,24 @@ function Tabs(props) {
   )
 }
 
-function LiveTable() {
+const initialDatatable = {
+  data: [],
+  result_count: 0,
+  total_count: 0,
+  loading: false,
+  error: null,
+}
+
+const datatableBaseFilter = {
+  type: MARKET_TYPE_ASK,
+  sort: 'created_at:desc',
+  page: 1,
+}
+
+const withDataFetch = (Component, initialFilter) => props => {
   const [data, setData] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState(marketFilter)
-  const [reloadFlag, setReloadFlag] = React.useState(false)
+  const [filter, setFilter] = React.useState({ ...datatableBaseFilter, ...initialFilter })
+  const [tick, setTick] = React.useState(false)
 
   React.useEffect(() => {
     ;(async () => {
@@ -122,7 +126,7 @@ function LiveTable() {
         setData({ ...data, loading: false, error: e.message })
       }
     })()
-  }, [filter, reloadFlag])
+  }, [filter, tick])
 
   const handleSearchInput = value => {
     setFilter({ ...filter, loading: true, page: 1, q: value })
@@ -131,17 +135,18 @@ function LiveTable() {
     setFilter({ ...filter, page })
   }
   const handleReloadToggle = () => {
-    setReloadFlag(!reloadFlag)
+    setTick(!tick)
   }
 
   return (
     <>
-      <MyMarketList
+      <Component
         datatable={data}
         loading={data.loading}
         error={data.error}
         onSearchInput={handleSearchInput}
         onReload={handleReloadToggle}
+        {...props}
       />
       <TablePagination
         style={{ textAlign: 'right' }}
@@ -153,117 +158,7 @@ function LiveTable() {
   )
 }
 
-const reservedFilter = { ...marketFilter, status: 300 }
-function ReservedTable() {
-  const [data, setData] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState(reservedFilter)
-  const [reloadFlag, setReloadFlag] = React.useState(false)
-
-  React.useEffect(() => {
-    ;(async () => {
-      setData({ ...data, loading: true, error: null })
-      try {
-        const res = await myMarketSearch(filter)
-        setData({ ...data, loading: false, ...res })
-      } catch (e) {
-        setData({ ...data, loading: false, error: e.message })
-      }
-    })()
-  }, [filter, reloadFlag])
-
-  const handleSearchInput = value => {
-    setFilter({ ...filter, loading: true, page: 1, q: value })
-  }
-  const handlePageChange = (e, page) => {
-    setFilter({ ...filter, page })
-  }
-  const handleReloadToggle = () => {
-    setReloadFlag(!reloadFlag)
-  }
-
-  return (
-    <>
-      <ReservationList
-        datatable={data}
-        loading={data.loading}
-        error={data.error}
-        onSearchInput={handleSearchInput}
-        onReload={handleReloadToggle}
-      />
-      <TablePagination
-        style={{ textAlign: 'right' }}
-        count={data.total_count || 0}
-        page={filter.page}
-        onChangePage={handlePageChange}
-      />
-    </>
-  )
-}
-
-const deliveredFilter = { ...marketFilter, status: MARKET_STATUS_SOLD }
-function DeliveredTable() {
-  const [data, setData] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState(deliveredFilter)
-
-  React.useEffect(() => {
-    ;(async () => {
-      setData({ ...data, loading: true, error: null })
-      try {
-        const res = await myMarketSearch(filter)
-        setData({ ...data, loading: false, ...res })
-      } catch (e) {
-        setData({ ...data, loading: false, error: e.message })
-      }
-    })()
-  }, [filter])
-
-  const handlePageChange = (e, page) => {
-    setFilter({ ...filter, page })
-  }
-
-  return (
-    <>
-      <HistoryList datatable={data} loading={data.loading} error={data.error} />
-      <TablePagination
-        style={{ textAlign: 'right' }}
-        count={data.total_count || 0}
-        page={filter.page}
-        onChangePage={handlePageChange}
-      />
-    </>
-  )
-}
-
-const historyFilter = { sort: 'updated_at:desc', page: 1 }
-function HistoryTable() {
-  const [data, setData] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState(historyFilter)
-
-  React.useEffect(() => {
-    ;(async () => {
-      setData({ ...data, loading: true, error: null })
-      try {
-        const res = await myMarketSearch(filter)
-        setData({ ...data, loading: false, ...res })
-      } catch (e) {
-        setData({ ...data, loading: false, error: e.message })
-      }
-    })()
-  }, [filter])
-
-  const handlePageChange = (e, page) => {
-    setFilter({ ...filter, page })
-  }
-
-  return (
-    <>
-      <HistoryList datatable={data} loading={data.loading} error={data.error} />
-      <TablePagination
-        style={{ textAlign: 'right' }}
-        count={data.total_count || 0}
-        page={filter.page}
-        onChangePage={handlePageChange}
-      />
-    </>
-  )
-}
+const LiveTable = withDataFetch(MyMarketList, { status: MARKET_STATUS_LIVE })
+const ReservedTable = withDataFetch(ReservationList, { status: MARKET_STATUS_RESERVED })
+const DeliveredTable = withDataFetch(HistoryList, { status: MARKET_STATUS_SOLD })
+const HistoryTable = withDataFetch(HistoryList, {})
