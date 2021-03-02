@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Divider from '@material-ui/core/Divider'
 import lightGreen from '@material-ui/core/colors/lightGreen'
 import teal from '@material-ui/core/colors/teal'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
@@ -45,6 +44,12 @@ const useStyles = makeStyles(theme => ({
     float: 'left',
     marginRight: theme.spacing(1),
   },
+  activity: {
+    display: 'flow-root',
+    borderBottom: `1px ${theme.palette.divider} solid`,
+    marginBottom: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
 }))
 
 export default function MyOrderActivity({ datatable, loading, error }) {
@@ -62,8 +67,7 @@ export default function MyOrderActivity({ datatable, loading, error }) {
     <>
       <ul style={{ paddingLeft: 0, listStyle: 'none', opacity: loading ? 0.5 : 1 }}>
         {datatable.data.map(market => (
-          <li style={{ display: 'flow-root' }} key={market.id}>
-            <Divider style={{ margin: '8px 0 8px' }} light />
+          <li className={classes.activity} key={market.id}>
             <Avatar
               className={classes.avatar}
               {...retinaSrcSet(market.user.avatar, 40, 40)}
