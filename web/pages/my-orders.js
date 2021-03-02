@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   MARKET_STATUS_BID_COMPLETED,
@@ -21,6 +20,7 @@ import MyMarketActivity from '@/components/MyMarketActivity'
 import withDatatableFetch from '@/components/withDatatableFetch'
 import AppContext from '@/components/AppContext'
 import MyBuyOrderList from '@/components/MyBuyOrderList'
+import TabPanel from '@/components/TabPanel'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -38,14 +38,13 @@ const initialMarketStats = {
   sold: 0,
 }
 
-export default function MyListings() {
+export default function MyOrders() {
   const classes = useStyles()
 
   const { currentAuth } = React.useContext(AppContext)
   console.log(currentAuth.steam_id)
 
   // fetch market stats data
-  const router = useRouter()
   const [marketStats, setMarketStats] = React.useState(initialMarketStats)
   const [tabValue, setTabValue] = React.useState(false)
   React.useEffect(() => {
@@ -61,6 +60,7 @@ export default function MyListings() {
   }, [])
 
   // handling tab changes
+  const router = useRouter()
   React.useEffect(() => {
     const hash = router.asPath.replace(router.pathname, '')
     setTabValue(hash)
@@ -113,29 +113,6 @@ function Tabs(props) {
 }
 Tabs.propTypes = {
   stats: PropTypes.object.isRequired,
-}
-
-const tabPanelIndex = {}
-function TabPanel(props) {
-  const { children, value, index, ...other } = props
-
-  // Check for indexed component, it will prevent render from
-  // loading everything on mount.
-  if (value !== index && !has(tabPanelIndex, index)) {
-    return null
-  }
-  tabPanelIndex[index] = true
-
-  return (
-    <div hidden={value !== index} {...other}>
-      {children}
-    </div>
-  )
-}
-TabPanel.propTypes = {
-  children: PropTypes.node.isRequired,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
 }
 
 const datatableBaseFilter = {
