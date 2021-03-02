@@ -45,7 +45,7 @@ export default function MyListings() {
   const router = useRouter()
   const { currentAuth } = React.useContext(AppContext)
   const [marketStats, setMarketStats] = React.useState(initialMarketStats)
-  const [tabValue, setTabValue] = React.useState('')
+  const [tabValue, setTabValue] = React.useState(false)
 
   React.useEffect(() => {
     ;(async () => {
