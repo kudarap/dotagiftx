@@ -56,7 +56,6 @@ export default function MyListings() {
   // handling tab changes
   React.useEffect(() => {
     const hash = router.asPath.replace(router.pathname, '')
-    console.log(hash)
     setTabValue(hash)
   }, [router.asPath])
 
