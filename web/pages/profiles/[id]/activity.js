@@ -8,10 +8,10 @@ import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { Link } from '@material-ui/core'
+import Link from '@/components/Link'
 import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
 import { APP_NAME, APP_URL } from '@/constants/strings'
-import MarketActivity from '@/components/MarketActivity'
+import MarketActivity from '@/components/MyMarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -74,7 +74,7 @@ export default function UserDelivered({ profile, canonicalURL }) {
             </Typography>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity data={data ? data.data : null} loading={isValidating} />
+          <MarketActivity datatable={data || {}} loading={isValidating} />
         </Container>
       </main>
 

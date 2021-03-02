@@ -8,11 +8,11 @@ import Typography from '@material-ui/core/Typography'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { Link } from '@material-ui/core'
-import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
+import Link from '@/components/Link'
+import { CDN_URL, fetcher, MARKETS, statsMarketSummary, user } from '@/service/api'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_RESERVED } from '@/constants/market'
-import MarketActivity from '@/components/MarketActivity'
+import MarketActivity from '@/components/MarketActivityV2'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -36,13 +36,15 @@ const filter = {
   limit: 50,
 }
 
-export default function UserReserved({ profile, canonicalURL }) {
+export default function UserReserved({ profile, stats, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
   const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
     revalidateOnFocus: false,
   })
+
+  const profileURL = `/profiles/${profile.steam_id}`
 
   return (
     <>
@@ -70,10 +72,22 @@ export default function UserReserved({ profile, canonicalURL }) {
               href={`/profiles/${profile.steam_id}`}>
               {profile.name}
             </Typography>
-            <Typography color="textSecondary">{data && data.total_count} Reserved Items</Typography>
+            <div style={{ display: 'flex' }}>
+              <Typography component={Link} href={profileURL} color="textSecondary">
+                {stats.live} Items
+              </Typography>
+              &nbsp;&middot;&nbsp;
+              <Typography component={Link} href={`${profileURL}/reserved`} color="textSecondary">
+                {stats.reserved} Reserved
+              </Typography>
+              &nbsp;&middot;&nbsp;
+              <Typography component={Link} href={`${profileURL}/delivered`} color="textSecondary">
+                {stats.sold} Delivered
+              </Typography>
+            </div>
           </div>
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity data={data ? data.data : null} loading={isValidating} />
+          <MarketActivity datatable={data || {}} loading={isValidating} />
         </Container>
       </main>
 
@@ -83,6 +97,7 @@ export default function UserReserved({ profile, canonicalURL }) {
 }
 UserReserved.propTypes = {
   profile: PropTypes.object.isRequired,
+  stats: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
 }
 
@@ -90,10 +105,13 @@ export async function getServerSideProps({ params }) {
   const profile = await user(String(params.id))
   const canonicalURL = `${APP_URL}/profiles/${params.id}/reserve`
 
+  const stats = await statsMarketSummary({ user_id: profile.id })
+
   return {
     props: {
       profile,
       canonicalURL,
+      stats,
     },
   }
 }
