@@ -1,23 +1,21 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { myMarketSearch, statsMarketSummary } from '@/service/api'
+import Typography from '@material-ui/core/Typography'
+import * as format from '@/lib/format'
+import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
-import DashTabs from '@/components/DashTabs'
-import DashTab from '@/components/DashTab'
-import { useRouter } from 'next/router'
-import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   main: {
     [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(1),
     },
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(4),
   },
 }))
 
@@ -36,25 +34,13 @@ const initialDatatable = {
   error: null,
 }
 
-const initialMarketStats = {
-  pending: 0,
-  live: 0,
-  reserved: 0,
-  sold: 0,
-}
-
 export default function MyListings() {
   const classes = useStyles()
-  const router = useRouter()
-
-  const { currentAuth } = React.useContext(AppContext)
 
   const [data, setData] = React.useState(initialDatatable)
+  const [total, setTotal] = React.useState(0)
   const [filter, setFilter] = React.useState(marketFilter)
   const [reloadFlag, setReloadFlag] = React.useState(false)
-
-  const [marketStats, setMarketStats] = React.useState(initialMarketStats)
-  const [tabValue, setTabValue] = React.useState('')
 
   React.useEffect(() => {
     ;(async () => {
@@ -70,10 +56,10 @@ export default function MyListings() {
 
   React.useEffect(() => {
     ;(async () => {
-      const res = await statsMarketSummary({ user_id: currentAuth.user_id })
-      setMarketStats(res)
+      const res = await myMarketSearch(filter)
+      setTotal(res.total_count)
     })()
-  }, [currentAuth])
+  }, [])
 
   const handleSearchInput = value => {
     setFilter({ ...filter, loading: true, page: 1, q: value })
@@ -85,18 +71,15 @@ export default function MyListings() {
     setReloadFlag(!reloadFlag)
   }
 
-  const handleTabChange = (e, v) => {
-    setTabValue(v)
-    router.push(v)
-  }
-
   return (
     <>
       <Header />
 
       <main className={classes.main}>
         <Container>
-          <Tabs value={tabValue} onChange={handleTabChange} stats={marketStats} />
+          <Typography component="h1" gutterBottom>
+            Active Listings {total !== 0 && `(${format.numberWithCommas(total)})`}
+          </Typography>
 
           <MyMarketList
             datatable={data}
@@ -116,18 +99,5 @@ export default function MyListings() {
 
       <Footer />
     </>
-  )
-}
-
-function Tabs(props) {
-  const { stats, ...other } = props
-
-  return (
-    <DashTabs {...other}>
-      <DashTab value="" label="Active Listings" badgeContent={stats.live} />
-      <DashTab value="#reserved" label="Reserved" badgeContent={stats.reserved} />
-      <DashTab value="#delivered" label="Delivered" badgeContent={stats.sold} />
-      <DashTab value="#history" label="History" />
-    </DashTabs>
   )
 }

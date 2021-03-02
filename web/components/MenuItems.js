@@ -21,16 +21,16 @@ export default function MenuItems({ profile, onClose, onLogout }) {
       disableUnderline>
       View Profile
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/my-dashboard" disableUnderline>
+    <MenuItem onClick={handleClose} component={Link} href="/my-listings" disableUnderline>
       Listings
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/my-buyorders" disableUnderline>
-      Buying
+    <MenuItem onClick={handleClose} component={Link} href="/my-orders" disableUnderline>
+      Orders
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/my-history" disableUnderline>
+    <MenuItem onClick={handleClose} component={Link} href="/feedback" disableUnderline>
       Feedback
     </MenuItem>,
-    <MenuItem onClick={handleClose} component={Link} href="/my-history" disableUnderline>
+    <MenuItem onClick={handleClose} component={Link} href="/history" disableUnderline>
       Updates
     </MenuItem>,
     <MenuItem onClick={handleLogout}>Sign out</MenuItem>,

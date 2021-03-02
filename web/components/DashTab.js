@@ -34,7 +34,7 @@ export default function DashTab(props) {
       {...other}
       label={
         badgeContent ? (
-          <StyledBadge badgeContent={badgeContent} max={99}>
+          <StyledBadge badgeContent={badgeContent} max={999}>
             <Typography>{label}</Typography>
           </StyledBadge>
         ) : (
