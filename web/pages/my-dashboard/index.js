@@ -9,6 +9,7 @@ import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -84,9 +85,37 @@ export default function MyListings() {
       <main className={classes.main}>
         <Container>
           <DashTabs value={tabValue} onChange={handleChange}>
-            <DashTab value="/" label="Active Listings" badgeContent={total} />
-            <DashTab value="/reserved" label="Reserved" badgeContent={12} />
-            <DashTab value="/history" label="History" />
+            <DashTab
+              component={Link}
+              href="/my-dashboard"
+              disableUnderline
+              value="/"
+              label="Active Listings"
+              badgeContent={total}
+            />
+            <DashTab
+              component={Link}
+              href="/my-dashboard#reserved"
+              disableUnderline
+              value="/reserved"
+              label="Reserved"
+              badgeContent={12}
+            />
+            <DashTab
+              component={Link}
+              href="/my-dashboard#delivered"
+              disableUnderline
+              value="/delivered"
+              label="Delivered"
+              badgeContent={1}
+            />
+            <DashTab
+              component={Link}
+              href="/my-dashboard#history"
+              disableUnderline
+              value="/history"
+              label="History"
+            />
           </DashTabs>
 
           <MyMarketList

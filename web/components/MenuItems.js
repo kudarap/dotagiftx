@@ -25,7 +25,7 @@ export default function MenuItems({ profile, onClose, onLogout }) {
       Listings
     </MenuItem>,
     <MenuItem onClick={handleClose} component={Link} href="/my-buyorders" disableUnderline>
-      Orders
+      Buying
     </MenuItem>,
     <MenuItem onClick={handleClose} component={Link} href="/my-history" disableUnderline>
       Feedback
