@@ -44,6 +44,8 @@ func respondError(w http.ResponseWriter, err error) {
 			status = http.StatusInternalServerError
 		} else if cErr.IsEqual(core.AuthErrNoAccess) {
 			status = http.StatusUnauthorized
+		} else if cErr.IsEqual(core.AuthErrForbidden) {
+			status = http.StatusForbidden
 		}
 
 		body = httpMsg{true, cErr.Type.String(), err.Error()}

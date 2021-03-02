@@ -14,6 +14,7 @@ const (
 	AuthErrRequiredID
 	AuthErrRequiredFields
 	AuthErrNoAccess
+	AuthErrForbidden
 	AuthErrLogin
 	AuthErrRefreshToken
 )
@@ -23,7 +24,8 @@ func init() {
 	appErrorText[AuthErrNotFound] = "auth not found"
 	appErrorText[AuthErrRequiredID] = "auth id is required"
 	appErrorText[AuthErrRequiredFields] = "auth fields are required"
-	appErrorText[AuthErrNoAccess] = "auth has no access"
+	appErrorText[AuthErrNoAccess] = "user has no access"
+	appErrorText[AuthErrForbidden] = "user has no access rights"
 	appErrorText[AuthErrLogin] = "invalid login credentials"
 	appErrorText[AuthErrRefreshToken] = "invalid or revoked refresh token"
 }
