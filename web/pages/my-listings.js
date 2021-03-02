@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import { myMarketSearch, statsMarketSummary } from '@/service/api'
 import Footer from '@/components/Footer'
@@ -49,24 +51,19 @@ export default function MyListings() {
       const res = await statsMarketSummary({ user_id: currentAuth.user_id })
       setMarketStats(res)
     })()
-  }, [currentAuth])
+  }, [])
 
   // handling tab changes
   React.useEffect(() => {
-    setTabValue(router.asPath.replace(router.pathname, ''))
+    const hash = router.asPath.replace(router.pathname, '')
+    console.log(hash)
+    setTabValue(hash)
   }, [router.asPath])
 
   const handleTabChange = (e, v) => {
     setTabValue(v)
     router.push(v)
   }
-
-  // const tabContents = {
-  //   '': <LiveTable />,
-  //   '#reserved': <ReservedTable />,
-  //   '#delivered': <DeliveredTable />,
-  //   '#history': <HistoryTable />,
-  // }
 
   return (
     <>
@@ -75,7 +72,19 @@ export default function MyListings() {
       <main className={classes.main}>
         <Container>
           <Tabs value={tabValue} onChange={handleTabChange} stats={marketStats} />
-          <LiveTable />
+
+          <TabPanel value={tabValue} index="">
+            <LiveTable />
+          </TabPanel>
+          <TabPanel value={tabValue} index="#reserved">
+            <ReservedTable />
+          </TabPanel>
+          <TabPanel value={tabValue} index="#delivered">
+            <DeliveredTable />
+          </TabPanel>
+          <TabPanel value={tabValue} index="#history">
+            <HistoryTable />
+          </TabPanel>
         </Container>
       </main>
 
@@ -95,6 +104,28 @@ function Tabs(props) {
       <DashTab value="#history" label="History" />
     </DashTabs>
   )
+}
+Tabs.propTypes = {
+  stats: PropTypes.object.isRequired,
+}
+
+const tabPanelIndex = {}
+function TabPanel(props) {
+  const { children, value, index, ...other } = props
+
+  // Check for indexed component, it will prevent render from
+  // loading everything on mount.
+  if (value !== index && !has(tabPanelIndex, index)) {
+    return null
+  }
+  tabPanelIndex[index] = true
+
+  return <div {...other}>{children}</div>
+}
+TabPanel.propTypes = {
+  children: PropTypes.node.isRequired,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
 }
 
 const initialDatatable = {
