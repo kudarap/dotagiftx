@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { myMarketSearch } from '@/service/api'
 import TablePagination from '@/components/TablePagination'
 
@@ -15,58 +16,75 @@ const datatableBaseFilter = {
   page: 1,
 }
 
-const withDataFetch = (Component, initFilter, searchFn = myMarketSearch) => props => {
-  const propFilter = props.filter || {}
+const withDataFetch = (Component, initFilter, searchFn = myMarketSearch) => {
+  const wrapped = props => {
+    const { filter: propFilter, onReload } = props
 
-  const [data, setData] = React.useState(initialDatatable)
-  const [filter, setFilter] = React.useState({
-    ...datatableBaseFilter,
-    ...initFilter,
-    ...propFilter,
-  })
-  const [tick, setTick] = React.useState(false)
+    const [data, setData] = React.useState(initialDatatable)
+    const [filter, setFilter] = React.useState({
+      ...datatableBaseFilter,
+      ...initFilter,
+      ...propFilter,
+    })
+    const [tick, setTick] = React.useState(false)
 
-  React.useEffect(() => {
-    ;(async () => {
-      setData({ ...data, loading: true, error: null })
-      try {
-        const res = await searchFn(filter)
-        setData({ ...data, loading: false, ...res })
-      } catch (e) {
-        setData({ ...data, loading: false, error: e.message })
-      }
-    })()
-  }, [filter, tick])
+    React.useEffect(() => {
+      ;(async () => {
+        setData({ ...data, loading: true, error: null })
+        try {
+          const res = await searchFn(filter)
+          setData({ ...data, loading: false, ...res })
+        } catch (e) {
+          setData({ ...data, loading: false, error: e.message })
+        }
+      })()
+    }, [filter, tick])
 
-  const handleSearchInput = value => {
-    setFilter({ ...filter, loading: true, page: 1, q: value })
+    const handleSearchInput = value => {
+      setFilter({ ...filter, loading: true, page: 1, q: value })
+    }
+    const handlePageChange = (e, page) => {
+      setFilter({ ...filter, page })
+    }
+    const handleReloadToggle = () => {
+      setTick(!tick)
+      onReload()
+    }
+
+    return (
+      <>
+        <Component
+          {...props}
+          datatable={data}
+          loading={data.loading}
+          error={data.error}
+          onSearchInput={handleSearchInput}
+          onReload={handleReloadToggle}
+        />
+        <TablePagination
+          style={{ textAlign: 'right' }}
+          count={data.total_count || 0}
+          page={filter.page}
+          rowsPerPage={filter.limit}
+          onChangePage={handlePageChange}
+        />
+      </>
+    )
   }
-  const handlePageChange = (e, page) => {
-    setFilter({ ...filter, page })
+  wrapped.prototype = {
+    filter: PropTypes.object,
+    onReload: PropTypes.func,
   }
-  const handleReloadToggle = () => {
-    setTick(!tick)
+  wrapped.defaultProps = {
+    filter: {},
+    onReload: () => {},
   }
 
-  return (
-    <>
-      <Component
-        datatable={data}
-        loading={data.loading}
-        error={data.error}
-        onSearchInput={handleSearchInput}
-        onReload={handleReloadToggle}
-        {...props}
-      />
-      <TablePagination
-        style={{ textAlign: 'right' }}
-        count={data.total_count || 0}
-        page={filter.page}
-        rowsPerPage={filter.limit}
-        onChangePage={handlePageChange}
-      />
-    </>
-  )
+  return wrapped
+}
+
+withDataFetch.propTypes = {
+  Component: PropTypes.element,
 }
 
 export default withDataFetch
