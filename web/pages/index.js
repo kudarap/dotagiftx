@@ -232,7 +232,7 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>Buy Orders</em>
               </Typography>
             </Grid>
-            <Grid item sm={3} xs={6} component={Link} href="/history?reserved" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/history/reserved" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
@@ -241,7 +241,7 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>On Reserved</em>
               </Typography>
             </Grid>
-            <Grid item sm={3} xs={6} component={Link} href="/history?delivered" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/history/delivered" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>
