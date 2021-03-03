@@ -45,6 +45,7 @@ export default function MyListings() {
   // fetch market stats data
   const [marketStats, setMarketStats] = React.useState(initialMarketStats)
   const [tabValue, setTabValue] = React.useState(false)
+
   // tick indicates when to get new stats
   const [tick, setTick] = React.useState(false)
 
@@ -67,8 +68,7 @@ export default function MyListings() {
     router.push(v)
   }
 
-  const handleTickle = () => {
-    console.log('listng  tick', !tick)
+  const handleTableChange = () => {
     setTick(!tick)
   }
 
@@ -81,10 +81,10 @@ export default function MyListings() {
           <Tabs value={tabValue} onChange={handleTabChange} stats={marketStats} />
 
           <TabPanel value={tabValue} index="">
-            <LiveTable onReload={handleTickle} />
+            <LiveTable onReload={handleTableChange} />
           </TabPanel>
           <TabPanel value={tabValue} index="#reserved">
-            <ReservedTable onReload={handleTickle} />
+            <ReservedTable onReload={handleTableChange} />
           </TabPanel>
           <TabPanel value={tabValue} index="#delivered">
             <DeliveredTable />

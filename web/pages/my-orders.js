@@ -46,6 +46,10 @@ export default function MyOrders() {
   // fetch market stats data
   const [marketStats, setMarketStats] = React.useState(initialMarketStats)
   const [tabValue, setTabValue] = React.useState(false)
+
+  // tick indicates when to get new stats
+  const [tick, setTick] = React.useState(false)
+
   React.useEffect(() => {
     ;(async () => {
       const res = await statsMarketSummary({ user_id: currentAuth.user_id })
@@ -56,7 +60,7 @@ export default function MyOrders() {
       res.bids.reserved = linkedMarket.reserved
       setMarketStats(res.bids)
     })()
-  }, [])
+  }, [tick])
 
   // handling tab changes
   const router = useRouter()
@@ -70,6 +74,10 @@ export default function MyOrders() {
     router.push(v)
   }
 
+  const handleTableChange = () => {
+    setTick(!tick)
+  }
+
   return (
     <>
       <Header />
@@ -79,7 +87,7 @@ export default function MyOrders() {
           <Tabs value={tabValue} onChange={handleTabChange} stats={marketStats} />
 
           <TabPanel value={tabValue} index="">
-            <BuyOrdersTable />
+            <BuyOrdersTable onReload={handleTableChange} />
           </TabPanel>
           <TabPanel value={tabValue} index="#toreceive">
             <ToReceiveTable filter={{ partner_steam_id: currentAuth.steam_id }} />

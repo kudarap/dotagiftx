@@ -12,7 +12,7 @@ const initialDatatable = {
 }
 
 const datatableBaseFilter = {
-  sort: 'created_at:desc',
+  sort: 'updated_at:desc',
   page: 1,
 }
 
