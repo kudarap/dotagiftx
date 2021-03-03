@@ -175,7 +175,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
       <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
         <Alert onClose={handleNotifClose} variant="filled" severity="success">
           Item updated successfully! Check your{' '}
-          <Link style={{ textDecoration: 'underline' }} href="/my-history">
+          <Link style={{ textDecoration: 'underline' }} href="/my-listings#delivered">
             History Items
           </Link>
         </Alert>

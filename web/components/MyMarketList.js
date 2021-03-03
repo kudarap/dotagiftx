@@ -173,7 +173,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
       <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
         <Alert onClose={handleNotifClose} variant="filled" severity="success">
           Item updated successfully! Check your{' '}
-          <Link style={{ textDecoration: 'underline' }} href="/my-reservations">
+          <Link style={{ textDecoration: 'underline' }} href="/my-listings#reserved">
             Reserved Items
           </Link>
         </Alert>

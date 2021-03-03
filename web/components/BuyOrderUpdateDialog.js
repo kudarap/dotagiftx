@@ -126,7 +126,7 @@ export default function BuyOrderUpdateDialog(props) {
       aria-describedby="alert-dialog-description">
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
-          Update Order
+          Update Buy Order
           <DialogCloseButton onClick={handleClose} />
         </DialogTitle>
         <DialogContent>
