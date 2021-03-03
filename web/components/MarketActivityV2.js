@@ -42,8 +42,14 @@ const useStyles = makeStyles(theme => ({
     background: teal[900],
   },
   avatar: {
+    display: 'flex',
+    alignItems: 'center',
     float: 'left',
     marginRight: theme.spacing(1),
+    '& span': {
+      color: theme.palette.text.secondary,
+      marginLeft: theme.spacing(1),
+    },
   },
   activity: {
     display: 'flow-root',
@@ -72,13 +78,15 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
         {datatable.data.map(market => (
           <li className={classes.activity} key={market.id}>
             {!isMobile && (
-              <Avatar
-                hidden={isMobile}
-                className={classes.avatar}
-                {...retinaSrcSet(market.user.avatar, 40, 40)}
-                component={Link}
-                href={`/profiles/${market.user.steam_id}`}
-              />
+              <div className={classes.avatar}>
+                <Avatar
+                  hidden={isMobile}
+                  {...retinaSrcSet(market.user.avatar, 40, 40)}
+                  component={Link}
+                  href={`/profiles/${market.user.steam_id}`}
+                />
+                <span>x</span>
+              </div>
             )}
             <Link href={`/${market.item.slug}`}>
               <ItemImage
