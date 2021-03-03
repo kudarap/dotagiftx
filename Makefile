@@ -8,13 +8,10 @@ all: install build
 install:
 	go get ./...
 
-run: generate build
+run: build
 	./$(PROJECTNAME)
 
-generate:
-	go generate ./core
-
-build:
+build: generate
 	go build -v -ldflags=" \
 		-X main.tag=`git describe --tag --abbrev=0` \
 		-X main.commit=`git rev-parse HEAD` \
@@ -27,10 +24,13 @@ build-linux:
 		-X main.built=`date -u +%s`" \
 		-o ./$(PROJECTNAME)_amd64 ./cmd/$(PROJECTNAME)
 
+generate:
+	go generate ./core
+
 docker-build:
 	docker build -t $(PROJECTNAME) .
 docker-run:
 	docker run -it --rm -p 8000:8000 $(PROJECTNAME)
 
 web-build:
-	cd ./web && ./build.sh .env.prod && cd ..
+	cd ./web && yarn dev && cd ..

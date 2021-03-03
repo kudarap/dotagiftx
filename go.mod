@@ -17,6 +17,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/sirupsen/logrus v1.7.0
 	github.com/speps/go-hashids v2.0.0+incompatible
+	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/rethinkdb/rethinkdb-go.v6 v6.2.1
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
