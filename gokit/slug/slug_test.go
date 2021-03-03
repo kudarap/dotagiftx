@@ -11,7 +11,7 @@ func TestMake(t *testing.T) {
 		{"Hello World", "hello-world"},
 		{"chicken & beer", "chicken-beer"},
 		{"float 64", "float-64"},
-		{"go kit slug", "gokit-slug"},
+		{"go kit slug", "go-kit-slug"},
 		{"gokit-slug", "gokit-slug"},
 	}
 	for _, tt := range tests {
