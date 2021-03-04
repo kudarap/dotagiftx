@@ -42,6 +42,7 @@ export default function Survey({ userID, label }) {
 
   const handleClose = () => {
     setOpen(false)
+    setVoted(true)
   }
 
   if (voted) {
@@ -49,7 +50,7 @@ export default function Survey({ userID, label }) {
   }
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} hidden={voted}>
       <VoteDialog open={open} onClose={handleClose} />
       <Fab
         variant="extended"

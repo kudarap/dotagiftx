@@ -70,7 +70,7 @@ export default function VoteDialog(props) {
     ;(async () => {
       try {
         await reportCreate(payload)
-        setMessage('Thanks for participating!')
+        setMessage('Thank you for participating!')
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -116,12 +116,12 @@ export default function VoteDialog(props) {
         )}
         <Typography>
           Thank you for reaching our latest community goal of <strong>1,000+</strong> items,{' '}
-          <strong>500+</strong> users, and <strong>100+</strong> delivered items. Now I will ask
-          what is next feature to add or improve.
+          <strong>500+</strong> users, and <strong>100+</strong> delivered items. Please pick what
+          feature we should add next.
         </Typography>
         <br />
         <FormControl component="fieldset">
-          <FormLabel component="legend">Here are some suggestion:</FormLabel>
+          <FormLabel component="legend">Here are some suggestions:</FormLabel>
           <RadioGroup aria-label="options" value={value} onChange={handleChange}>
             {voteOptions.map(opts => (
               <FormControlLabel {...opts} control={<Radio />} disabled={message} />
