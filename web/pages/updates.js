@@ -41,7 +41,6 @@ export default function Updates() {
           <br />
           <Divider />
           <br />
-          <br />
 
           <Typography variant="h5" component="h1" gutterBottom>
             Febuary 26, 2021 Update
@@ -53,7 +52,6 @@ export default function Updates() {
           </Typography>
           <br />
           <Divider />
-          <br />
           <br />
 
           <Typography variant="h5" component="h1" gutterBottom>

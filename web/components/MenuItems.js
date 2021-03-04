@@ -37,9 +37,9 @@ export default function MenuItems({ profile, onClose, onLogout }) {
     <MenuItem key={key++} onClick={handleClose} component={Link} href="/feedback" disableUnderline>
       Feedback
     </MenuItem>,
-    <MenuItem key={key++} onClick={handleClose} component={Link} href="/updates" disableUnderline>
-      Updates
-    </MenuItem>,
+    // <MenuItem key={key++} onClick={handleClose} component={Link} href="/updates" disableUnderline>
+    //   Updates
+    // </MenuItem>,
     <MenuItem key={key++} onClick={handleLogout}>
       Sign out
     </MenuItem>,
