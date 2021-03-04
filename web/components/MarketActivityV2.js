@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
   list: {
     padding: theme.spacing(1, 0, 0, 0),
     marginTop: 0,
-    borderTop: `1px ${theme.palette.divider} solid`,
+    // borderTop: `1px ${theme.palette.divider} solid`,
     listStyle: 'none',
   },
   text: {

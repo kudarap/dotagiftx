@@ -460,12 +460,12 @@ export default function ItemDetails({
               )}
 
               <div id="reserved">
-                {!marketReservedError && marketReserved && (
+                {marketReserved && marketReserved.result_count !== 0 && (
                   <MyMarketActivityV2 datatable={marketReserved} disablePrice />
                 )}
               </div>
               <div id="delivered">
-                {!marketDeliveredError && marketDelivered && (
+                {marketDelivered && marketDelivered.result_count !== 0 && (
                   <MyMarketActivityV2 datatable={marketDelivered} disablePrice />
                 )}
               </div>

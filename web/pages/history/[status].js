@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
     '& active[]': {
       color: 'white',
     },
+    marginBottom: theme.spacing(2),
   },
 }))
 
