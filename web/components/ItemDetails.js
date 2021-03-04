@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import MuiLink from '@material-ui/core/Link'
 import { schemaOrgProduct } from '@/lib/richdata'
 import {
   MARKET_STATUS_LIVE,
@@ -317,11 +318,19 @@ export default function ItemDetails({
                   <br />
                   <ChipLink label="Dota 2 Wiki" href={wikiLink} />
                   &nbsp;&middot;&nbsp;
-                  <Typography variant="body2" component={Link} href={`${item.slug}/#reserved`}>
+                  <Typography
+                    variant="body2"
+                    component={MuiLink}
+                    color="textPrimary"
+                    href="#reserved">
                     {item.reserved_count} Reserved
                   </Typography>
                   &nbsp;&middot;&nbsp;
-                  <Typography variant="body2" component={Link} href={`${item.slug}/#delivered`}>
+                  <Typography
+                    variant="body2"
+                    component={MuiLink}
+                    color="textPrimary"
+                    href="#delivered">
                     {item.sold_count} Delivered
                   </Typography>
                   {/* <br /> */}
