@@ -49,4 +49,4 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: SSH Binary Upload
-        run: scp BIN_FILE $HOST:$WORKDIR/$BIN_NAME
+        run: scp $BIN_FILE $HOST:$WORKDIR/$BIN_NAME
