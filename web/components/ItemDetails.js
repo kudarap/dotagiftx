@@ -170,6 +170,7 @@ export default function ItemDetails({
     setLoading(true)
     try {
       const res = await marketSearch(marketBuyOrderFilter)
+      res.loaded = true
       setBuyOrders(res)
     } catch (e) {
       setError(e.message)
@@ -182,7 +183,7 @@ export default function ItemDetails({
   }, [])
 
   // Retrieve market sales graph.
-  const shouldLoadGraph = Boolean(markets.data) && Boolean(buyOrders.data)
+  const shouldLoadGraph = Boolean(buyOrders.loaded)
   marketSalesGraphFilter.item_id = item.id
   const { data: marketGraph, error: marketGraphError } = useSWR(
     shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
@@ -190,19 +191,20 @@ export default function ItemDetails({
   )
 
   // Retrieve market sale activity.
-  const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
+  const shouldLoadHistory = Boolean(marketGraph)
   marketReservedFilter.item_id = item.id
   const {
     data: marketReserved,
     error: marketReservedError,
     isValidating: marketReservedLoading,
   } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, ...swrConfig)
+
   marketDeliveredFilter.item_id = item.id
   const {
     data: marketDelivered,
     error: marketDeliveredError,
     isValidating: marketDeliveredLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
+  } = useSWR(marketReserved ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
 
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
