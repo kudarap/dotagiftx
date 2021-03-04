@@ -2,9 +2,9 @@ name: Building and Testing
 
 on:
   push:
-    branches-ignore: [master]
+    branches-ignore: [master, dev]
   pull_request:
-    branches-ignore: [master]
+    branches-ignore: [master, dev]
 
 jobs:
   test:
