@@ -5,6 +5,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import * as Auth from '@/service/auth'
 import Theme from '@/components/Theme'
 import AppContext from '@/components/AppContext'
+import Survey from '@/components/Survey'
 
 function Root({ children }) {
   const theme = useTheme()
@@ -15,6 +16,9 @@ function Root({ children }) {
   return (
     <AppContext.Provider value={{ isMobile, currentAuth, isLoggedIn }}>
       <Theme>{children}</Theme>
+      <Theme>
+        <Survey />
+      </Theme>
     </AppContext.Provider>
   )
 }
