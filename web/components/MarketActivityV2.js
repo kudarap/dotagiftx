@@ -57,6 +57,15 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
     paddingBottom: theme.spacing(1),
   },
+  list: {
+    padding: theme.spacing(1, 0, 0, 0),
+    marginTop: 0,
+    borderTop: `1px ${theme.palette.divider} solid`,
+    listStyle: 'none',
+  },
+  text: {
+    marginTop: theme.spacing(1),
+  },
 }))
 
 export default function MyMarketActivityV2({ datatable, loading, error, disablePrice }) {
@@ -65,88 +74,98 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
   const { isMobile } = React.useContext(AppContext)
 
   if (error) {
-    return <p>Error {error}</p>
+    return (
+      <Typography className={classes.text} color="error">
+        Error {error}
+      </Typography>
+    )
   }
 
   if (loading || !datatable.data) {
-    return <p>Loading...</p>
+    return (
+      <Typography className={classes.text} color="textSecondary">
+        Loading...
+      </Typography>
+    )
+  }
+
+  if (datatable.data.length === 0) {
+    return <Typography className={classes.text}>No Result</Typography>
   }
 
   return (
-    <>
-      <ul style={{ paddingLeft: 0, listStyle: 'none', opacity: loading ? 0.5 : 1 }}>
-        {datatable.data.map(market => (
-          <li className={classes.activity} key={market.id}>
-            {!isMobile && (
-              <div className={classes.avatar}>
-                <Avatar
-                  hidden={isMobile}
-                  {...retinaSrcSet(market.user.avatar, 40, 40)}
-                  component={Link}
-                  href={`/profiles/${market.user.steam_id}`}
-                />
-                <span>x</span>
-              </div>
-            )}
-            <Link href={`/${market.item.slug}`}>
-              <ItemImage
-                className={classes.itemImage}
-                image={market.item.image}
-                width={60}
-                height={40}
-                title={market.item.name}
-                rarity={market.item.rarity}
+    <ul className={classes.list}>
+      {datatable.data.map(market => (
+        <li className={classes.activity} key={market.id}>
+          {!isMobile && (
+            <div className={classes.avatar}>
+              <Avatar
+                hidden={isMobile}
+                {...retinaSrcSet(market.user.avatar, 40, 40)}
+                component={Link}
+                href={`/profiles/${market.user.steam_id}`}
               />
+              <span>x</span>
+            </div>
+          )}
+          <Link href={`/${market.item.slug}`}>
+            <ItemImage
+              className={classes.itemImage}
+              image={market.item.image}
+              width={60}
+              height={40}
+              title={market.item.name}
+              rarity={market.item.rarity}
+            />
+          </Link>
+          <Typography variant="body2" color="textSecondary">
+            <Link href={`/profiles/${market.user.steam_id}`} color="textPrimary">
+              {market.user.name}
             </Link>
-            <Typography variant="body2" color="textSecondary">
-              <Link href={`/profiles/${market.user.steam_id}`} color="textPrimary">
-                {market.user.name}
-              </Link>
-              &nbsp;
-              <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
-                {market.type === MARKET_TYPE_BID
-                  ? MARKET_BID_STATUS_MAP_TEXT[market.status].toLowerCase()
-                  : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
-              </span>
-              &nbsp;
-              <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">
-                {`${market.item.hero}'s`}
-              </Link>
-              &nbsp;
-              <Link href={`/${market.item.slug}`} color="textPrimary">
-                {`${market.item.name}`}
-              </Link>
-              &nbsp;
-              {daysFromNow(market.updated_at)}
-              &nbsp;
-              <span
-                hidden={disablePrice}
-                className={
-                  market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
-                }>
-                {amount(market.price, market.currency)}
-              </span>
-            </Typography>
+            &nbsp;
+            <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
+              {market.type === MARKET_TYPE_BID
+                ? MARKET_BID_STATUS_MAP_TEXT[market.status].toLowerCase()
+                : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
+            </span>
+            &nbsp;
+            <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">
+              {`${market.item.hero}'s`}
+            </Link>
+            &nbsp;
+            <Link href={`/${market.item.slug}`} color="textPrimary">
+              {`${market.item.name}`}
+            </Link>
+            &nbsp;
+            {daysFromNow(market.updated_at)}
+            &nbsp;
+            <span
+              hidden={disablePrice}
+              className={
+                market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
+              }>
+              {amount(market.price, market.currency)}
+            </span>
+          </Typography>
 
-            <Typography
-              component="pre"
-              color="textSecondary"
-              variant="caption"
-              style={{ whiteSpace: 'pre-wrap', display: 'inline-block' }}>
-              {market.partner_steam_id && (
-                <Link
-                  color="textSecondary"
-                  href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
-                  {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
-                  {market.notes && '\n'}
-                </Link>
-              )}
-              {market.notes}
-            </Typography>
-          </li>
-        ))}
-      </ul>
-    </>
+          <Typography
+            component="pre"
+            color="textSecondary"
+            variant="caption"
+            style={{ whiteSpace: 'pre-wrap', display: 'inline-block' }}>
+            {market.partner_steam_id && (
+              <Link
+                color="textSecondary"
+                href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
+                {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+                {market.notes && '\n'}
+              </Link>
+            )}
+            {market.notes}
+          </Typography>
+        </li>
+      ))}
+    </ul>
   )
 }
 MyMarketActivityV2.propTypes = {
