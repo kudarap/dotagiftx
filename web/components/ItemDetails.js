@@ -38,6 +38,7 @@ import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketActivity from '@/components/MarketActivity'
 import MarketSalesChart from '@/components/MarketSalesChart'
+import MyMarketActivityV2 from '@/components/MarketActivityV2'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -460,12 +461,12 @@ export default function ItemDetails({
 
               <div id="reserved">
                 {!marketReservedError && marketReserved && (
-                  <MarketActivity data={marketReserved.data} />
+                  <MyMarketActivityV2 datatable={marketReserved} disablePrice />
                 )}
               </div>
               <div id="delivered">
                 {!marketDeliveredError && marketDelivered && (
-                  <MarketActivity data={marketDelivered.data} />
+                  <MyMarketActivityV2 datatable={marketDelivered} disablePrice />
                 )}
               </div>
             </div>
