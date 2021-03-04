@@ -5,6 +5,20 @@ import (
 	"time"
 )
 
+// Report error types.
+const (
+	ReportErrNotFound Errors = iota + 5000
+	ReportErrRequiredID
+	ReportErrRequiredFields
+)
+
+// sets error text definition.
+func init() {
+	appErrorText[ReportErrNotFound] = "report not found"
+	appErrorText[ReportErrRequiredID] = "report id is required"
+	appErrorText[ReportErrRequiredFields] = "report fields are required"
+}
+
 // Report types.
 const (
 	ReportTypeFeedback ReportType = 10
@@ -27,9 +41,9 @@ type (
 	Report struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
 		UserID    string     `json:"user_id"    db:"user_id,omitempty"`
-		Type      ReportType `json:"type"       db:"type,omitempty"       valid:"required"`
-		Label     string     `json:"label"      db:"label,omitempty"`
-		Text      string     `json:"text"       db:"text,omitempty"       valid:"required"`
+		Type      ReportType `json:"type"       db:"type,omitempty,indexed"   valid:"required"`
+		Label     string     `json:"label"      db:"label,omitempty,indexed"`
+		Text      string     `json:"text"       db:"text,omitempty"           valid:"required"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 	}
@@ -58,6 +72,6 @@ type (
 		Get(id string) (*Report, error)
 
 		// Create persists a new report to data store.
-		Create(*Item) error
+		Create(*Report) error
 	}
 )
