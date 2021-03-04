@@ -133,13 +133,7 @@ export default function Header({ disableSearch }) {
 
   return (
     <AppBar position="static" variant="outlined" className={classes.appBar}>
-      {/*<div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>*/}
-      {/*  You are viewing a development version of this site.&nbsp;*/}
-      {/*  <Link href="https://dotagiftx.com">*/}
-      {/*    <strong>Take me to live site</strong>*/}
-      {/*  </Link>*/}
-      {/*  <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>*/}
-      {/*</div>*/}
+      {/*<NoticeMe />*/}
       <Container disableMinHeight>
         <Toolbar variant="dense" disableGutters>
           {/* Branding button */}
@@ -274,4 +268,16 @@ Header.propTypes = {
 }
 Header.defaultProps = {
   disableSearch: false,
+}
+
+function NoticeMe() {
+  return (
+    <div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>
+      You are viewing a development version of this site.&nbsp;
+      <Link href="https://dotagiftx.com">
+        <strong>Take me to live site</strong>
+      </Link>
+      <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
+    </div>
+  )
 }
