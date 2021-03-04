@@ -9,13 +9,12 @@ import (
 )
 
 // NewReport returns new Report service.
-func NewReport(is core.ReportStorage, fm core.FileManager) core.ReportService {
-	return &reportService{is, fm}
+func NewReport(rs core.ReportStorage) core.ReportService {
+	return &reportService{rs}
 }
 
 type reportService struct {
 	reportStg core.ReportStorage
-	fileMgr   core.FileManager
 }
 
 func (s *reportService) Reports(opts core.FindOpts) ([]core.Report, *core.FindMetadata, error) {
@@ -45,7 +44,8 @@ func (s *reportService) Report(id string) (*core.Report, error) {
 }
 
 func (s *reportService) CreateSurvey(ctx context.Context, rep *core.Report) error {
-
+	rep.Type = core.ReportTypeSurvey
+	return s.Create(ctx, rep)
 }
 
 func (s *reportService) Create(ctx context.Context, rep *core.Report) error {

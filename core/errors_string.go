@@ -36,6 +36,9 @@ func _() {
 	_ = x[MarketErrRequiredPartnerURL-2107]
 	_ = x[MarketErrInvalidBidPrice-2108]
 	_ = x[MarketErrInvalidAskPrice-2109]
+	_ = x[ReportErrNotFound-5000]
+	_ = x[ReportErrRequiredID-5001]
+	_ = x[ReportErrRequiredFields-5002]
 	_ = x[StorageUncaughtErr-100]
 	_ = x[StorageMergeErr-101]
 	_ = x[TrackErrNotFound-4000]
@@ -57,6 +60,7 @@ const (
 	_Errors_name_5 = "CatalogErrNotFoundCatalogErrRequiredIDCatalogErrIndexing"
 	_Errors_name_6 = "ImageErrNotFoundImageErrUploadImageErrThumbnail"
 	_Errors_name_7 = "TrackErrNotFound"
+	_Errors_name_8 = "ReportErrNotFoundReportErrRequiredIDReportErrRequiredFields"
 )
 
 var (
@@ -67,6 +71,7 @@ var (
 	_Errors_index_4 = [...]uint8{0, 17, 36, 59, 81, 100, 121, 145, 172, 196, 220}
 	_Errors_index_5 = [...]uint8{0, 18, 38, 56}
 	_Errors_index_6 = [...]uint8{0, 16, 30, 47}
+	_Errors_index_8 = [...]uint8{0, 17, 36, 59}
 )
 
 func (i Errors) String() string {
@@ -94,6 +99,9 @@ func (i Errors) String() string {
 		return _Errors_name_6[_Errors_index_6[i]:_Errors_index_6[i+1]]
 	case i == 4000:
 		return _Errors_name_7
+	case 5000 <= i && i <= 5002:
+		i -= 5000
+		return _Errors_name_8[_Errors_index_8[i]:_Errors_index_8[i+1]]
 	default:
 		return "Errors(" + strconv.FormatInt(int64(i), 10) + ")"
 	}

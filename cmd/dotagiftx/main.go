@@ -89,6 +89,7 @@ func (a *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 	statsStg := rethink.NewStats(rethinkClient)
+	reportStg := rethink.NewReport(rethinkClient)
 
 	// Service inits.
 	log.Println("setting up services...")
@@ -108,6 +109,7 @@ func (a *application) setup() error {
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	statsSvc := service.NewStats(statsStg)
+	reportSvc := service.NewReport(reportStg)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
@@ -126,6 +128,7 @@ func (a *application) setup() error {
 		marketSvc,
 		trackSvc,
 		statsSvc,
+		reportSvc,
 		redisClient,
 		initVer(a.config),
 		log,
