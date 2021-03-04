@@ -77,7 +77,10 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
                 {stats.reserved} Reserved
               </Typography>
               &nbsp;&middot;&nbsp;
-              <Typography component={Link} href={`${profileURL}/delivered`}>
+              <Typography
+                component={Link}
+                href={`${profileURL}/delivered`}
+                style={{ textDecoration: 'underline' }}>
                 {stats.sold} Delivered
               </Typography>
             </div>

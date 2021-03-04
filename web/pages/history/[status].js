@@ -32,7 +32,18 @@ const useStyles = makeStyles(theme => ({
     width: 60,
     height: 60,
   },
-  itemImage: { width: 60, height: 40, marginRight: 8, float: 'left' },
+  itemImage: {
+    width: 60,
+    height: 40,
+    marginRight: 8,
+    float: 'left',
+  },
+  nav: {
+    display: 'flex',
+    '& active[]': {
+      color: 'white',
+    },
+  },
 }))
 
 const defaultFilter = {
@@ -61,12 +72,18 @@ export default function History({ status, summary, datatable, error }) {
             Market History
           </Typography>
 
-          <Typography style={{ display: 'flex' }}>
-            <Typography component={Link} href="/history/reserved">
+          <Typography className={classes.nav}>
+            <Typography
+              component={Link}
+              href="/history/reserved"
+              style={status === MARKET_STATUS_RESERVED ? { textDecoration: 'underline' } : null}>
               {summary.reserved} Reserved
             </Typography>
             &nbsp;&middot;&nbsp;
-            <Typography component={Link} href="/history/delivered">
+            <Typography
+              component={Link}
+              href="/history/delivered"
+              style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : null}>
               {summary.sold} Delivered
             </Typography>
           </Typography>

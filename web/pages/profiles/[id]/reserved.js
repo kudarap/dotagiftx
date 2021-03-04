@@ -77,7 +77,10 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
                 {stats.live} Items
               </Typography>
               &nbsp;&middot;&nbsp;
-              <Typography component={Link} href={`${profileURL}/reserved`}>
+              <Typography
+                component={Link}
+                href={`${profileURL}/reserved`}
+                style={{ textDecoration: 'underline' }}>
                 {stats.reserved} Reserved
               </Typography>
               &nbsp;&middot;&nbsp;
