@@ -8,10 +8,10 @@ all: install build
 install:
 	go get ./...
 
-run: build
+run: generate build
 	./$(PROJECTNAME)
 
-build: generate
+build:
 	go build -v -ldflags=" \
 		-X main.tag=`git describe --tag --abbrev=0` \
 		-X main.commit=`git rev-parse HEAD` \
