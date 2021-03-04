@@ -86,8 +86,11 @@ const topSellerItemsFilter = {
 export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
-  const { data: recentBidItems, recentBidError } = useSWR([CATALOGS, recentBidItemsFilter], fetcher)
-  const { data: recentItems, recentError } = useSWR(
+  const { data: recentBidItems, error: recentBidError } = useSWR(
+    [CATALOGS, recentBidItemsFilter],
+    fetcher
+  )
+  const { data: recentItems, error: recentError } = useSWR(
     recentBidItems ? [CATALOGS, recentItemsFilter] : null,
     fetcher
   )

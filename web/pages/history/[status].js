@@ -9,7 +9,7 @@ import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { fetcher, MARKETS, marketSearch, statsMarketSummary } from '@/service/api'
+import { marketSearch, statsMarketSummary } from '@/service/api'
 import MarketActivity from '@/components/MarketActivityV2'
 import {
   MARKET_STATUS_MAP_TEXT,
