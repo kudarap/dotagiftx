@@ -158,7 +158,7 @@ export default function VoteDialog(props) {
           startIcon={<RemoveIcon />}
           onClick={handleClose}
           variant="outlined">
-          Cancel
+          Close
         </Button>
         <Button
           startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <VoteIcon />}
