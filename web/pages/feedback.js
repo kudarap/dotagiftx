@@ -1,21 +1,15 @@
 import React from 'react'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import Link from '@material-ui/core/Link'
 import Alert from '@material-ui/lab/Alert'
-import RedditIcon from '@material-ui/icons/Reddit'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
-import SteamIcon from '@/components/SteamIcon'
-import DiscordIcon from '@/components/DiscordIcon'
 import { FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@material-ui/core'
 import {
-  REPORT_LABEL_USER_SCAM_ALERT,
   REPORT_TYPE_BUG,
   REPORT_TYPE_FEEDBACK,
   REPORT_TYPE_SCAM_ALERT,

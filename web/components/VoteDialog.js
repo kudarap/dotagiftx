@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -20,15 +19,7 @@ import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
 import { REPORT_LABEL_SURVEY_NEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
 import { TextField } from '@material-ui/core'
-
-const useStyles = makeStyles(theme => ({
-  details: {
-    [theme.breakpoints.down('xs')]: {
-      display: 'block',
-    },
-    display: 'inline-flex',
-  },
-}))
+import { Alert } from '@material-ui/lab'
 
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
@@ -47,11 +38,12 @@ const voteOptions = shuffle([
 ]).map(v => ({ value: v, label: v }))
 
 export default function VoteDialog(props) {
-  const classes = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const [notes, setNotes] = React.useState('')
   const [value, setValue] = React.useState('')
+
+  const [message, setMessage] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
@@ -63,7 +55,6 @@ export default function VoteDialog(props) {
     onClose()
   }
 
-  const { onSuccess } = props
   const handleSubmit = () => {
     const payload = {
       type: REPORT_TYPE_SURVEY,
@@ -79,8 +70,7 @@ export default function VoteDialog(props) {
     ;(async () => {
       try {
         await reportCreate(payload)
-        handleClose()
-        onSuccess()
+        setMessage('Thanks for participating!')
       } catch (e) {
         setError(`Error: ${e.message}`)
       }
@@ -97,6 +87,8 @@ export default function VoteDialog(props) {
   return (
     <Dialog
       fullWidth
+      disableEscapeKeyDown
+      disableBackdropClick
       fullScreen={isMobile}
       open={open}
       onClose={handleClose}
@@ -107,18 +99,39 @@ export default function VoteDialog(props) {
         <DialogCloseButton onClick={handleClose} />
       </DialogTitle>
       <DialogContent>
-        <Typography gutterBottom>
+        {message && (
+          <>
+            <Alert
+              severity="success"
+              variant="filled"
+              action={
+                <Button size="small" onClick={handleClose}>
+                  Close
+                </Button>
+              }>
+              {message}
+            </Alert>
+            <br />
+          </>
+        )}
+        <Typography>
           Thank you for reaching our latest community goal of <strong>1,000+</strong> items,{' '}
           <strong>500+</strong> users, and <strong>100+</strong> delivered items. Now I will ask
           what is next feature to add or improve.
         </Typography>
+        <br />
         <FormControl component="fieldset">
           <FormLabel component="legend">Here are some suggestion:</FormLabel>
           <RadioGroup aria-label="options" value={value} onChange={handleChange}>
             {voteOptions.map(opts => (
-              <FormControlLabel {...opts} control={<Radio />} />
+              <FormControlLabel {...opts} control={<Radio />} disabled={message} />
             ))}
-            <FormControlLabel label="Not listed" value="NOA" control={<Radio />} />
+            <FormControlLabel
+              label="Not listed"
+              value="NOA"
+              control={<Radio />}
+              disabled={message}
+            />
           </RadioGroup>
         </FormControl>
         {value === 'NOA' && (
@@ -151,6 +164,7 @@ export default function VoteDialog(props) {
           startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <VoteIcon />}
           variant="outlined"
           color="secondary"
+          disabled={message}
           onClick={handleSubmit}>
           Submit
         </Button>
@@ -161,10 +175,8 @@ export default function VoteDialog(props) {
 VoteDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  onSuccess: PropTypes.func,
 }
 VoteDialog.defaultProps = {
   open: false,
   onClose: () => {},
-  onSuccess: () => {},
 }

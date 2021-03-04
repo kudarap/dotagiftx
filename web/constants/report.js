@@ -7,5 +7,3 @@ export const REPORT_TYPE_SCAM_ALERT = 40
 export const REPORT_TYPE_SCAM_INCIDENT = 50
 
 export const REPORT_LABEL_SURVEY_NEXT = 'community-whats-nex'
-export const REPORT_LABEL_USER_SCAM_ALERT = 'scammer-alert'
-export const REPORT_LABEL_USER_SCAM_INCIDENT = 'scam-incident'
