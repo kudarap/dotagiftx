@@ -23,7 +23,7 @@ const filter = {
   sort: 'created_at:desc',
 }
 
-export default function About() {
+export default function Feedback() {
   const classes = useStyles()
 
   const { data: reports, error } = useSWR([REPORTS, filter], fetcher)
@@ -35,7 +35,7 @@ export default function About() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            Survey Result
+            Feedback Results
           </Typography>
 
           {error && <Typography color="error">{error}</Typography>}

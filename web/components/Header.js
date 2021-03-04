@@ -180,7 +180,7 @@ export default function Header({ disableSearch }) {
                 component={Link}
                 href="/post-item"
                 disableUnderline>
-                Post Item
+                Post item
               </Button>
               <span className={classes.spacer} />
 
@@ -242,7 +242,7 @@ export default function Header({ disableSearch }) {
                   component={Link}
                   href="/post-item"
                   disableUnderline>
-                  Post Item
+                  Post item
                 </MenuItem>
 
                 {isLoggedIn ? (

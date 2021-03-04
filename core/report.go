@@ -21,10 +21,11 @@ func init() {
 
 // Report types.
 const (
-	ReportTypeFeedback ReportType = 10
-	ReportTypeSurvey   ReportType = 20
-	ReportTypeBug      ReportType = 30
-	ReportTypeError    ReportType = 40
+	ReportTypeFeedback     ReportType = 10
+	ReportTypeSurvey       ReportType = 20
+	ReportTypeBug          ReportType = 30
+	ReportTypeScamAlert    ReportType = 40
+	ReportTypeScamIncident ReportType = 50
 )
 
 // Report pre-defined labels.
