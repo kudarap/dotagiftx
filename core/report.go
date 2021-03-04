@@ -75,3 +75,13 @@ type (
 		Create(*Report) error
 	}
 )
+
+// CheckCreate validates field on creating new report.
+func (r Report) CheckCreate() error {
+	// Check required fields.
+	if err := validator.Struct(r); err != nil {
+		return err
+	}
+
+	return nil
+}
