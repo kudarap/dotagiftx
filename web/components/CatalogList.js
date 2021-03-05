@@ -125,7 +125,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
               )}
 
               <TableCell align="right">
-                <Typography variant="body2" style={bidType ? { color: bidColor[300] } : null}>
+                <Typography variant="body2" style={bidType ? { color: bidColor.A200 } : null}>
                   {format.amount(bidType ? item.highest_bid : item.lowest_ask, 'USD')}
                 </Typography>
               </TableCell>

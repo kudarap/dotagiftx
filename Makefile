@@ -8,7 +8,7 @@ all: install build
 install:
 	go get ./...
 
-run: build
+run: generate build
 	./$(PROJECTNAME)
 
 build:
@@ -24,10 +24,13 @@ build-linux:
 		-X main.built=`date -u +%s`" \
 		-o ./$(PROJECTNAME)_amd64 ./cmd/$(PROJECTNAME)
 
+generate:
+	go generate ./core
+
 docker-build:
 	docker build -t $(PROJECTNAME) .
 docker-run:
 	docker run -it --rm -p 8000:8000 $(PROJECTNAME)
 
 web-build:
-	cd ./web && ./build.sh .env.prod && cd ..
+	cd ./web && yarn dev && cd ..

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dotagiftx/fixes"
-
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/logger"
@@ -91,6 +89,7 @@ func (a *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 	statsStg := rethink.NewStats(rethinkClient)
+	reportStg := rethink.NewReport(rethinkClient)
 
 	// Service inits.
 	log.Println("setting up services...")
@@ -110,11 +109,12 @@ func (a *application) setup() error {
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	statsSvc := service.NewStats(statsStg)
+	reportSvc := service.NewReport(reportStg)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
-	fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
+	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
 	redisClient.BulkDel("")
 
 	// Server setup.
@@ -128,6 +128,7 @@ func (a *application) setup() error {
 		marketSvc,
 		trackSvc,
 		statsSvc,
+		reportSvc,
 		redisClient,
 		initVer(a.config),
 		log,

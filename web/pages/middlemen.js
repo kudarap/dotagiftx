@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import Alert from '@material-ui/lab/Alert'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -16,12 +17,30 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(4),
   },
+  list: {
+    listStyle: 'none',
+    '& li:before': {
+      content: `'🛡️ '`,
+    },
+    paddingLeft: theme.spacing(3),
+    marginTop: 0,
+  },
 }))
 
-function User({ name, id }) {
+function Middleman({ name, id, internal = false }) {
   return (
     <>
       <strong>{name}</strong>
+      {internal && (
+        <>
+          &nbsp;
+          <ChipLink
+            href={`https://dotagiftx.com/profiles/${id}`}
+            label="DotagiftX"
+            color="secondary"
+          />
+        </>
+      )}
       &nbsp;
       <ChipLink href={`https://steamrep.com/profiles/${id}`} label="SteamRep" />
       &nbsp;
@@ -43,26 +62,26 @@ export default function Middlemen() {
 
       <main className={classes.main}>
         <Container>
+          {/* SteamRep middleman */}
           <Typography variant="h5" component="h1" gutterBottom>
-            SteamRep&apos;s Official Middlemen
+            SteamRep&apos;s Active Middlemen
             <Typography variant="caption" color="textSecondary" component="sup">
-              &nbsp;updated Feb 03 2021
+              &nbsp;updated Feb 26 2021
             </Typography>
           </Typography>
-
           <Typography>
-            <ul>
+            <ul className={classes.list}>
               <li>
-                <User name="kyuronite" id="76561198050680230" />
+                <Middleman name="kyuronite" id="76561198050680230" />
               </li>
               <li>
-                <User name="Hammy" id="76561197975564454" />
+                <Middleman name="Hammy" id="76561197975564454" />
               </li>
               <li>
-                <User name="Eternal Mr Bones" id="76561198071974469" />
+                <Middleman name="Eternal Mr Bones" id="76561198071974469" />
               </li>
               <li>
-                <User name="Alias" id="76561197982522773" />
+                <Middleman name="Alias" id="76561197982522773" />
               </li>
             </ul>
 
@@ -92,13 +111,44 @@ export default function Middlemen() {
                 rel="noreferrer noopener">
                 SteamRep.com
               </Link>
-              <br />
-              <br />
-              <strong>
-                This website is not responsible for scammed items and cannot help you recover them.
-              </strong>
             </Typography>
           </Typography>
+          <br />
+
+          {/* DotagiftX middleman */}
+          <Typography variant="h5" component="h2" gutterBottom>
+            DotagiftX&apos;s Middleman{' '}
+            <sup style={{ color: 'yellowgreen', fontSize: '12px' }}>New!</sup>
+          </Typography>
+          <Typography>
+            <ul>
+              <li>
+                <Middleman name="kudarap" id="76561198088587178" internal />
+              </li>
+            </ul>
+            <Typography color="textSecondary">
+              It&apos;s strongly recommended to get your middleman from Official SteamRep but if you
+              trust
+              <Link href="/profiles/76561198088587178" color="textPrimary">
+                &nbsp;kudarap&nbsp;
+              </Link>
+              enough to middle your transaction, you can message a request on{' '}
+              <Link
+                href="https://discord.gg/UFt9Ny42kM"
+                target="_blank"
+                color="secondary"
+                rel="noreferrer noopener">
+                Discord
+              </Link>{' '}
+              to give a heads up.
+            </Typography>
+          </Typography>
+          <br />
+
+          <Alert severity="warning">
+            This website is not responsible for scammed items and cannot help you recover them or
+            help you scam the scammers.
+          </Alert>
         </Container>
       </main>
 

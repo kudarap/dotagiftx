@@ -1,74 +1,75 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import * as format from '@/lib/format'
-import { myMarketSearch } from '@/service/api'
+import {
+  MARKET_STATUS_LIVE,
+  MARKET_STATUS_RESERVED,
+  MARKET_STATUS_SOLD,
+  MARKET_TYPE_ASK,
+} from '@/constants/market'
+import { statsMarketSummary } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
-import TablePagination from '@/components/TablePagination'
+import DashTabs from '@/components/DashTabs'
+import DashTab from '@/components/DashTab'
+import AppContext from '@/components/AppContext'
+import ReservationList from '@/components/ReservationList'
+import MyMarketActivity from '@/components/MyMarketActivity'
+import withDatatableFetch from '@/components/withDatatableFetch'
+import TabPanel from '@/components/TabPanel'
 
 const useStyles = makeStyles(theme => ({
   main: {
     [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(1),
     },
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2),
   },
 }))
 
-const marketFilter = {
-  type: MARKET_TYPE_ASK,
-  status: MARKET_STATUS_LIVE,
-  sort: 'created_at:desc',
-  page: 1,
-}
-
-const initialDatatable = {
-  data: [],
-  result_count: 0,
-  total_count: 0,
-  loading: false,
-  error: null,
+const initialMarketStats = {
+  pending: 0,
+  live: 0,
+  reserved: 0,
+  sold: 0,
 }
 
 export default function MyListings() {
   const classes = useStyles()
 
-  const [data, setData] = React.useState(initialDatatable)
-  const [total, setTotal] = React.useState(0)
-  const [filter, setFilter] = React.useState(marketFilter)
-  const [reloadFlag, setReloadFlag] = React.useState(false)
+  const { currentAuth } = React.useContext(AppContext)
+
+  // fetch market stats data
+  const [marketStats, setMarketStats] = React.useState(initialMarketStats)
+  const [tabValue, setTabValue] = React.useState(false)
+
+  // tick indicates when to get new stats
+  const [tick, setTick] = React.useState(false)
 
   React.useEffect(() => {
     ;(async () => {
-      setData({ ...data, loading: true, error: null })
-      try {
-        const res = await myMarketSearch(filter)
-        setData({ ...data, loading: false, ...res })
-      } catch (e) {
-        setData({ ...data, loading: false, error: e.message })
-      }
+      const res = await statsMarketSummary({ user_id: currentAuth.user_id })
+      setMarketStats(res)
     })()
-  }, [filter, reloadFlag])
+  }, [tick])
 
+  // handling tab changes
+  const router = useRouter()
   React.useEffect(() => {
-    ;(async () => {
-      const res = await myMarketSearch(filter)
-      setTotal(res.total_count)
-    })()
-  }, [])
+    const hash = router.asPath.replace(router.pathname, '')
+    setTabValue(hash)
+  }, [router.asPath])
 
-  const handleSearchInput = value => {
-    setFilter({ ...filter, loading: true, page: 1, q: value })
+  const handleTabChange = (e, v) => {
+    setTabValue(v)
+    router.push(v)
   }
-  const handlePageChange = (e, page) => {
-    setFilter({ ...filter, page })
-  }
-  const handleReloadToggle = () => {
-    setReloadFlag(!reloadFlag)
+
+  const handleTableChange = () => {
+    setTick(!tick)
   }
 
   return (
@@ -77,23 +78,20 @@ export default function MyListings() {
 
       <main className={classes.main}>
         <Container>
-          <Typography component="h1" gutterBottom>
-            Active Listings {total !== 0 && `(${format.numberWithCommas(total)})`}
-          </Typography>
+          <Tabs value={tabValue} onChange={handleTabChange} stats={marketStats} />
 
-          <MyMarketList
-            datatable={data}
-            loading={data.loading}
-            error={data.error}
-            onSearchInput={handleSearchInput}
-            onReload={handleReloadToggle}
-          />
-          <TablePagination
-            style={{ textAlign: 'right' }}
-            count={data.total_count || 0}
-            page={filter.page}
-            onChangePage={handlePageChange}
-          />
+          <TabPanel value={tabValue} index="">
+            <LiveTable onReload={handleTableChange} />
+          </TabPanel>
+          <TabPanel value={tabValue} index="#reserved">
+            <ReservedTable onReload={handleTableChange} />
+          </TabPanel>
+          <TabPanel value={tabValue} index="#delivered">
+            <DeliveredTable />
+          </TabPanel>
+          <TabPanel value={tabValue} index="#history">
+            <HistoryTable />
+          </TabPanel>
         </Container>
       </main>
 
@@ -101,3 +99,37 @@ export default function MyListings() {
     </>
   )
 }
+
+function Tabs(props) {
+  const { stats, ...other } = props
+
+  return (
+    <DashTabs {...other}>
+      <DashTab value="" label="Active Listings" badgeContent={stats.live} />
+      <DashTab value="#reserved" label="Reserved" badgeContent={stats.reserved} />
+      <DashTab value="#delivered" label="Delivered" badgeContent={stats.sold} />
+      <DashTab value="#history" label="History" />
+    </DashTabs>
+  )
+}
+Tabs.propTypes = {
+  stats: PropTypes.object.isRequired,
+}
+
+const datatableBaseFilter = {
+  type: MARKET_TYPE_ASK,
+}
+
+const LiveTable = withDatatableFetch(MyMarketList, {
+  ...datatableBaseFilter,
+  status: MARKET_STATUS_LIVE,
+})
+const ReservedTable = withDatatableFetch(ReservationList, {
+  ...datatableBaseFilter,
+  status: MARKET_STATUS_RESERVED,
+})
+const DeliveredTable = withDatatableFetch(MyMarketActivity, {
+  ...datatableBaseFilter,
+  status: MARKET_STATUS_SOLD,
+})
+const HistoryTable = withDatatableFetch(MyMarketActivity, { ...datatableBaseFilter, limit: 20 })

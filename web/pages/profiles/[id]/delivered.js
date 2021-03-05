@@ -5,14 +5,14 @@ import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
+import { APP_NAME, APP_URL } from '@/constants/strings'
+import { MARKET_STATUS_SOLD } from '@/constants/market'
+import { CDN_URL, fetcher, MARKETS, statsMarketSummary, user } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { Link } from '@material-ui/core'
-import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
-import { APP_NAME, APP_URL } from '@/constants/strings'
-import { MARKET_STATUS_SOLD } from '@/constants/market'
-import MarketActivity from '@/components/MarketActivity'
+import Link from '@/components/Link'
+import MarketActivity from '@/components/MarketActivityV2'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -36,13 +36,15 @@ const filter = {
   limit: 50,
 }
 
-export default function UserDelivered({ profile, canonicalURL }) {
+export default function UserDelivered({ profile, stats, canonicalURL }) {
   const classes = useStyles()
 
   filter.user_id = profile.id
   const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
     revalidateOnFocus: false,
   })
+
+  const profileURL = `/profiles/${profile.steam_id}`
 
   return (
     <>
@@ -61,21 +63,32 @@ export default function UserDelivered({ profile, canonicalURL }) {
               className={classes.profile}
               src={`${CDN_URL}/${profile.avatar}`}
               component={Link}
-              href={`/profiles/${profile.steam_id}`}
+              href={profileURL}
             />
-            <Typography
-              variant="h6"
-              color="textPrimary"
-              component={Link}
-              href={`/profiles/${profile.steam_id}`}>
+            <Typography variant="h6" color="textPrimary" component={Link} href={profileURL}>
               {profile.name}
             </Typography>
-            <Typography color="textSecondary">
-              {data && data.total_count} Delivered Items
-            </Typography>
+            <div style={{ display: 'flex' }}>
+              <Typography component={Link} href={profileURL}>
+                {stats.live} Items
+              </Typography>
+              &nbsp;&middot;&nbsp;
+              <Typography component={Link} href={`${profileURL}/reserved`}>
+                {stats.reserved} Reserved
+              </Typography>
+              &nbsp;&middot;&nbsp;
+              <Typography
+                component={Link}
+                href={`${profileURL}/delivered`}
+                style={{ textDecoration: 'underline' }}>
+                {stats.sold} Delivered
+              </Typography>
+            </div>
           </div>
+          <br />
+
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity data={data ? data.data : null} loading={isValidating} />
+          <MarketActivity datatable={data || {}} loading={isValidating} />
         </Container>
       </main>
 
@@ -85,17 +98,21 @@ export default function UserDelivered({ profile, canonicalURL }) {
 }
 UserDelivered.propTypes = {
   profile: PropTypes.object.isRequired,
+  stats: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
 }
 
 export async function getServerSideProps({ params }) {
   const profile = await user(String(params.id))
-  const canonicalURL = `${APP_URL}/profiles/${params.id}/reserve`
+  const canonicalURL = `${APP_URL}/profiles/${params.id}/delivered`
+
+  const stats = await statsMarketSummary({ user_id: profile.id })
 
   return {
     props: {
       profile,
       canonicalURL,
+      stats,
     },
   }
 }

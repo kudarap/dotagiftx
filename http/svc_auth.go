@@ -12,6 +12,7 @@ const defaultTokenExpiration = time.Minute * 5
 
 type authResp struct {
 	UserID       string    `json:"user_id,omitempty"`
+	SteamID      string    `json:"steam_id,omitempty"`
 	RefreshToken string    `json:"refresh_token,omitempty"`
 	Token        string    `json:"token,omitempty"`
 	ExpiresAt    time.Time `json:"expires_at,omitempty"`
@@ -99,6 +100,7 @@ func newAuth(au *core.Auth) (*authResp, error) {
 	}
 
 	a.UserID = au.UserID
+	a.SteamID = au.Username
 	a.RefreshToken = au.RefreshToken
 	return a, nil
 }

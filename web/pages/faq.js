@@ -75,16 +75,16 @@ export default function Faq() {
 
           <Question>Can I trust the users on this website?</Question>
           <Answer>
-            Not really, its open for anyone so please be vigilant to scammers. There are also
-            transaction history and quick links to their SteamRep and Steam to you help you check
-            them.
+            Not really, its open for anyone so please be vigilant to scammers. User&apos;s
+            transaction history are open and links to their SteamRep, Steam, and Dotabuff are listed
+            for you to checkout.
           </Answer>
           <br />
 
           <Question>Do I need a Middleman?</Question>
           <Answer>
-            You probably do, specially on high-value items where scammers fuck around. DotagiftX
-            ONLY suggest that you get the{' '}
+            If you asked, you probably do, specially on high-value items where scammers fuck around.
+            DotagiftX ONLY suggest that you get the{' '}
             <Link href="/middlemen" color="secondary">
               Middleman here
             </Link>

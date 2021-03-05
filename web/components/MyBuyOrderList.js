@@ -171,7 +171,7 @@ export default function MyBuyOrderList({ datatable, loading, error, onSearchInpu
       />
       <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
         <Alert onClose={handleNotifClose} variant="filled" severity="success">
-          Item updated successfully!
+          Order successfully!
         </Alert>
       </Snackbar>
     </>

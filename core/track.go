@@ -19,8 +19,20 @@ func init() {
 
 // Track types.
 const (
-	TrackTypeView   = "v"
-	TrackTypeSearch = "s"
+	TrackTypeView        = "v"
+	TrackTypeSearch      = "s"
+	TrackTypeProfileView = "p"
+	//TrackTypeItemView           = 300
+	//TrackTypeCatalogSearch      = 310
+	//TrackTypeProfileClick       = 110
+	//TrackTypeProfileView        = 100
+	//TrackTypeMarketListed       = 220
+	//TrackTypeMarketReserved     = 230
+	//TrackTypeMarketSold         = 240
+	//TrackTypeMarketBidCompleted = 241
+	//TrackTypeMarketRemoved      = 250
+	//TrackTypeMarketCancelled    = 260
+	//TrackTypeMarketExpired      = 270
 )
 
 type (
@@ -29,6 +41,7 @@ type (
 		ID        string     `json:"id"         db:"id,omitempty"`
 		Type      string     `json:"type"       db:"type,omitempty,indexed"`
 		ItemID    string     `json:"item_id"    db:"item_id,omitempty,indexed"`
+		UserID    string     `json:"user_id"    db:"user_id,omitempty,indexed"`
 		Keyword   string     `json:"keyword"    db:"keyword,omitempty"`
 		ClientIP  string     `json:"client_ip"  db:"client_ip,omitempty"`
 		UserAgent string     `json:"user_agent" db:"user_agent,omitempty"`
@@ -72,6 +85,7 @@ type (
 const (
 	trackTypeKey    = "t"
 	trackItemIDKey  = "i"
+	trackUserIDKey  = "u"
 	trackKeywordKey = "k"
 )
 
@@ -80,6 +94,7 @@ func (t *Track) SetDefaults(r *http.Request) {
 	q := r.URL.Query()
 	t.Type = q.Get(trackTypeKey)
 	t.ItemID = q.Get(trackItemIDKey)
+	t.UserID = q.Get(trackUserIDKey)
 	t.Keyword = q.Get(trackKeywordKey)
 	t.Referer = r.Referer()
 	t.UserAgent = r.UserAgent()

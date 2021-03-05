@@ -31,6 +31,7 @@ func NewServer(
 	ms core.MarketService,
 	ts core.TrackService,
 	ss core.StatsService,
+	rs core.ReportService,
 	c core.Cache,
 	v *version.Version,
 	l *logrus.Logger,
@@ -44,6 +45,7 @@ func NewServer(
 		marketSvc: ms,
 		trackSvc:  ts,
 		statsSvc:  ss,
+		reportSvc: rs,
 		cache:     c,
 		logger:    l,
 		version:   v,
@@ -63,6 +65,7 @@ type Server struct {
 	marketSvc core.MarketService
 	trackSvc  core.TrackService
 	statsSvc  core.StatsService
+	reportSvc core.ReportService
 
 	cache   core.Cache
 	logger  *logrus.Logger

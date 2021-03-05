@@ -26,6 +26,7 @@ export const STATS_TOP_ORIGINS = `${STATS}/top_origins`
 export const STATS_TOP_HEROES = `${STATS}/top_heroes`
 export const STATS_MARKET_SUMMARY = `${STATS}/market_summary`
 export const GRAPH_MARKET_SALES = `/graph/market_sales`
+export const REPORTS = '/reports'
 const VERSION = '/'
 const TRACK = '/t'
 
@@ -51,11 +52,14 @@ export const myProfile = {
   GET: () => http.authnRequest(http.GET, MY_PROFILE),
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
+export const reportCreate = payload => http.authnRequest(http.POST, REPORTS, payload)
 
 export const itemSearch = http.baseSearchRequest(ITEMS)
 export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)
 export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
+export const reportSearch = http.baseSearchRequest(REPORTS)
 
-export const trackViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
+export const trackItemViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
+export const trackProfileViewURL = userID => `${API_URL}${TRACK}?t=p&u=${userID}`
 export const getLoginURL = `${API_URL}${AUTH_STEAM}`

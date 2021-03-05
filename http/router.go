@@ -32,6 +32,10 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/stats/top_origins", handleStatsTopOrigins(s.itemSvc, s.cache))
 		r.Get("/stats/top_heroes", handleStatsTopHeroes(s.itemSvc, s.cache))
 		r.Get("/graph/market_sales", handleGraphMarketSales(s.statsSvc, s.cache))
+		r.Route("/reports", func(r chi.Router) {
+			r.Get("/", handleReportList(s.reportSvc))
+			r.Get("/{id}", handleReportDetail(s.reportSvc))
+		})
 	})
 }
 
@@ -50,5 +54,6 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Post("/items", handleItemCreate(s.itemSvc, s.cache))
 		r.Post("/items_import", handleItemImport(s.itemSvc, s.cache))
 		r.Post("/images", handleImageUpload(s.imageSvc))
+		r.Post("/reports", handleReportCreate(s.reportSvc))
 	})
 }

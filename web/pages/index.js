@@ -86,13 +86,16 @@ const topSellerItemsFilter = {
 export default function Index({ marketSummary, trendingItems }) {
   const classes = useStyles()
 
-  const { data: recentBidItems, recentBidError } = useSWR([CATALOGS, recentBidItemsFilter], fetcher)
-  const { data: recentItems, recentError } = useSWR(
+  const { data: recentBidItems, error: recentBidError } = useSWR(
+    [CATALOGS, recentBidItemsFilter],
+    fetcher
+  )
+  const { data: recentItems, error: recentError } = useSWR(
     recentBidItems ? [CATALOGS, recentItemsFilter] : null,
     fetcher
   )
   const { data: topSellers } = useSWR(
-    recentBidItems ? [CATALOGS, topSellerItemsFilter] : null,
+    recentItems ? [CATALOGS, topSellerItemsFilter] : null,
     fetcher
   )
   const { data: topOrigins } = useSWR(topSellers ? STATS_TOP_ORIGINS : null, fetcher)
@@ -192,7 +195,7 @@ export default function Index({ marketSummary, trendingItems }) {
 
           {/* Recent Market items */}
           <Typography>
-            New Offers
+            New Sell Listings
             <Link
               href={`/search?sort=${recentItemsFilter.sort}`}
               color="secondary"
@@ -232,7 +235,7 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>Buy Orders</em>
               </Typography>
             </Grid>
-            <Grid item sm={3} xs={6} component={Link} href="/history?reserved" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/history/reserved" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
@@ -241,7 +244,7 @@ export default function Index({ marketSummary, trendingItems }) {
                 <em>On Reserved</em>
               </Typography>
             </Grid>
-            <Grid item sm={3} xs={6} component={Link} href="/history?delivered" disableUnderline>
+            <Grid item sm={3} xs={6} component={Link} href="/history/delivered" disableUnderline>
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>

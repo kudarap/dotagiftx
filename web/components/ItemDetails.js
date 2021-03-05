@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import MuiLink from '@material-ui/core/Link'
 import { schemaOrgProduct } from '@/lib/richdata'
 import {
   MARKET_STATUS_LIVE,
@@ -20,7 +21,7 @@ import {
   GRAPH_MARKET_SALES,
   MARKETS,
   marketSearch,
-  trackViewURL,
+  trackItemViewURL,
 } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -37,6 +38,7 @@ import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketActivity from '@/components/MarketActivity'
 import MarketSalesChart from '@/components/MarketSalesChart'
+import MyMarketActivityV2 from '@/components/MarketActivityV2'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -170,6 +172,7 @@ export default function ItemDetails({
     setLoading(true)
     try {
       const res = await marketSearch(marketBuyOrderFilter)
+      res.loaded = true
       setBuyOrders(res)
     } catch (e) {
       setError(e.message)
@@ -182,7 +185,7 @@ export default function ItemDetails({
   }, [])
 
   // Retrieve market sales graph.
-  const shouldLoadGraph = Boolean(markets.data) && Boolean(buyOrders.data)
+  const shouldLoadGraph = Boolean(buyOrders.loaded)
   marketSalesGraphFilter.item_id = item.id
   const { data: marketGraph, error: marketGraphError } = useSWR(
     shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
@@ -190,19 +193,20 @@ export default function ItemDetails({
   )
 
   // Retrieve market sale activity.
-  const shouldLoadHistory = Boolean(markets.data) && Boolean(buyOrders.data)
+  const shouldLoadHistory = Boolean(marketGraph)
   marketReservedFilter.item_id = item.id
   const {
     data: marketReserved,
     error: marketReservedError,
     isValidating: marketReservedLoading,
   } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, ...swrConfig)
+
   marketDeliveredFilter.item_id = item.id
   const {
     data: marketDelivered,
     error: marketDeliveredError,
     isValidating: marketDeliveredLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
+  } = useSWR(marketReserved ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
 
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
@@ -315,11 +319,19 @@ export default function ItemDetails({
                   <br />
                   <ChipLink label="Dota 2 Wiki" href={wikiLink} />
                   &nbsp;&middot;&nbsp;
-                  <Typography variant="body2" component={Link} href={`${item.slug}/#reserved`}>
+                  <Typography
+                    variant="body2"
+                    component={MuiLink}
+                    color="textPrimary"
+                    href="#reserved">
                     {item.reserved_count} Reserved
                   </Typography>
                   &nbsp;&middot;&nbsp;
-                  <Typography variant="body2" component={Link} href={`${item.slug}/#delivered`}>
+                  <Typography
+                    variant="body2"
+                    component={MuiLink}
+                    color="textPrimary"
+                    href="#delivered">
                     {item.sold_count} Delivered
                   </Typography>
                   {/* <br /> */}
@@ -448,13 +460,13 @@ export default function ItemDetails({
               )}
 
               <div id="reserved">
-                {!marketReservedError && marketReserved && (
-                  <MarketActivity data={marketReserved.data} />
+                {marketReserved && marketReserved.result_count !== 0 && (
+                  <MyMarketActivityV2 datatable={marketReserved} disablePrice />
                 )}
               </div>
               <div id="delivered">
-                {!marketDeliveredError && marketDelivered && (
-                  <MarketActivity data={marketDelivered.data} />
+                {marketDelivered && marketDelivered.result_count !== 0 && (
+                  <MyMarketActivityV2 datatable={marketDelivered} disablePrice />
                 )}
               </div>
             </div>
@@ -468,7 +480,7 @@ export default function ItemDetails({
           }}
           onChange={handleBuyerChange}
         />
-        <img src={trackViewURL(item.id)} alt="" />
+        <img src={trackItemViewURL(item.id)} alt="" />
       </main>
 
       <Footer />

@@ -34,7 +34,7 @@ export default function MarketActivity({ data, loading }) {
       <ul style={{ paddingLeft: 0, listStyle: 'none', opacity: loading ? 0.5 : 1 }}>
         {data &&
           data.map(market => (
-            <li style={{ display: 'flow-root' }}>
+            <li style={{ display: 'flow-root' }} key={market.id}>
               <Divider style={{ margin: '8px 0 8px' }} light />
               <ItemImage
                 className={classes.itemImage}

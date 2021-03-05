@@ -5,12 +5,13 @@ import "time"
 type (
 	// MarketStatusCount represents total number of records per status.
 	MarketStatusCount struct {
-		Pending   int `json:"pending"   db:"pending"`
-		Live      int `json:"live"      db:"live"`
-		Reserved  int `json:"reserved"  db:"reserved"`
-		Sold      int `json:"sold"      db:"sold"`
-		Removed   int `json:"removed"   db:"removed"`
-		Cancelled int `json:"cancelled" db:"cancelled"`
+		Pending      int `json:"pending"       db:"pending"`
+		Live         int `json:"live"          db:"live"`
+		Reserved     int `json:"reserved"      db:"reserved"`
+		Sold         int `json:"sold"          db:"sold"`
+		Removed      int `json:"removed"       db:"removed"`
+		Cancelled    int `json:"cancelled"     db:"cancelled"`
+		BidCompleted int `json:"bid_completed" db:"bid_completed"`
 	}
 
 	MarketSaleSummary struct {

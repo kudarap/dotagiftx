@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
-import { CDN_URL, marketSearch, statsMarketSummary, user } from '@/service/api'
+import { CDN_URL, marketSearch, statsMarketSummary, trackProfileViewURL, user } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -200,6 +200,8 @@ export default function UserDetails({
             </>
           )}
         </Container>
+
+        <img src={trackProfileViewURL(profile.id)} alt="" />
       </main>
 
       <Footer />

@@ -11,6 +11,8 @@ import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import Tab from '@material-ui/core/Tab'
+import Tabs from '@material-ui/core/Tabs'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import { myMarket } from '@/service/api'
@@ -24,7 +26,6 @@ import ContactBuyerDialog from '@/components/ContactBuyerDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
-import { Tab, Tabs } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -332,7 +333,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                     {!isMobile ? (
                       <>
                         <TableCell align="right">
-                          <Typography variant="body2" style={{ color: bidColor[300] }}>
+                          <Typography variant="body2" style={{ color: bidColor.A200 }}>
                             {amount(market.price, market.currency)}
                           </Typography>
                         </TableCell>

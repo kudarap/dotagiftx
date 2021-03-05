@@ -9,7 +9,6 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
-import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -104,7 +103,7 @@ export default function Faq() {
           <PaypalButton
             startIcon={<PaypalIcon />}
             size="large"
-            href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=LBY7VY8PQ9D3Y&item_name=Support+DotagiftX.com&currency_code=USD">
+            href="https://www.paypal.com/donate?hosted_button_id=KZW994N5WDH2Q">
             Donate with PayPal
           </PaypalButton>
 

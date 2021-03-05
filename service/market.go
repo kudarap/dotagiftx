@@ -298,11 +298,11 @@ func (s *marketService) checkOwnership(ctx context.Context, id string) (*core.Ma
 
 	mkt, err := s.userMarket(au.UserID, id)
 	if err != nil {
-		return nil, errors.New(core.AuthErrNoAccess, err)
+		return nil, errors.New(core.AuthErrForbidden, err)
 	}
 
 	if mkt == nil {
-		return nil, errors.New(core.AuthErrNoAccess, core.MarketErrNotFound)
+		return nil, errors.New(core.AuthErrForbidden, core.MarketErrNotFound)
 	}
 
 	return mkt, nil
