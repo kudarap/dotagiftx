@@ -25,10 +25,14 @@ func main() {
 	//inv, err := steaminventory.Get("76561198088587178")
 	//fmt.Println(inv, err)
 
-	verifiedDelivery()
+	delivered, _ := getDelivered()
+	verifiedDelivery(delivered)
+
+	//reserved, _ := getReserved()
+	//verifiedDelivery(reserved)
 }
 
-func verifiedDelivery() {
+func verifiedDelivery(markets []core.Market) {
 	//flat, err := steaminventory.VerifyDelivery("karosu!", "76561198088587178", "Ravenous Abyss")
 	//fmt.Println(flat, err)
 
@@ -40,8 +44,7 @@ func verifiedDelivery() {
 		fmt.Println(time.Now().Sub(ts))
 	}()
 
-	delivered, _ := getDelivered()
-	for _, mkt := range delivered {
+	for _, mkt := range markets {
 		processed++
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name))
@@ -67,11 +70,29 @@ func verifiedDelivery() {
 		fmt.Println("")
 	}
 
-	fmt.Println(fmt.Sprintf("%d/%d total | %d error | %d/%d verified", processed, len(delivered), failed, processed-verified, verified))
+	fmt.Println(fmt.Sprintf("%d/%d total | %d error | %d/%d verified", processed, len(markets), failed, processed-verified, verified))
 }
 
 func getDelivered() ([]core.Market, error) {
-	resp, err := http.Get("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=100&status=400")
+	resp, err := http.Get("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=1000&status=400")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	data := struct {
+		Data []core.Market
+	}{}
+	b, err := ioutil.ReadAll(resp.Body)
+	if err := json.Unmarshal(b, &data); err != nil {
+		return nil, err
+	}
+
+	return data.Data, nil
+}
+
+func getReserved() ([]core.Market, error) {
+	resp, err := http.Get("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=1000&status=300")
 	if err != nil {
 		return nil, err
 	}
