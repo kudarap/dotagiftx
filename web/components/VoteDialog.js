@@ -31,11 +31,13 @@ function shuffle(a) {
 
 const voteOptions = shuffle([
   'Inventory import from Steam',
-  'Delivery date field on reservation listings',
-  'Commend system',
+  'User commend & report system',
+  'Buyer delivery confirmation',
   'Internal messaging',
   'None! everything good',
-]).map(v => ({ value: v, label: v }))
+]).map(v => ({ key: v, value: v, label: v }))
+
+const NONE_OF_THE_ABOVE_OPT = 'NOA'
 
 export default function VoteDialog(props) {
   const { isMobile } = useContext(AppContext)
@@ -61,7 +63,7 @@ export default function VoteDialog(props) {
       label: REPORT_LABEL_SURVEY_NEXT,
       text: value,
     }
-    if (value === 'NOA') {
+    if (value === NONE_OF_THE_ABOVE_OPT) {
       payload.text = notes
     }
 
@@ -124,17 +126,17 @@ export default function VoteDialog(props) {
           <FormLabel component="legend">Here are some suggestions:</FormLabel>
           <RadioGroup aria-label="options" value={value} onChange={handleChange}>
             {voteOptions.map(opts => (
-              <FormControlLabel {...opts} control={<Radio />} disabled={message} />
+              <FormControlLabel {...opts} control={<Radio />} disabled={Boolean(message)} />
             ))}
             <FormControlLabel
               label="Not listed"
-              value="NOA"
+              value={NONE_OF_THE_ABOVE_OPT}
               control={<Radio />}
-              disabled={message}
+              disabled={Boolean(message)}
             />
           </RadioGroup>
         </FormControl>
-        {value === 'NOA' && (
+        {value === NONE_OF_THE_ABOVE_OPT && (
           <TextField
             fullWidth
             label="What is next then?"
@@ -164,7 +166,7 @@ export default function VoteDialog(props) {
           startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <VoteIcon />}
           variant="outlined"
           color="secondary"
-          disabled={message}
+          disabled={Boolean(message)}
           onClick={handleSubmit}>
           Submit
         </Button>

@@ -6,6 +6,8 @@ import VoteIcon from '@material-ui/icons/HowToVote'
 import VoteDialog from '@/components/VoteDialog'
 import { reportSearch } from '@/service/api'
 import { REPORT_TYPE_SURVEY } from '@/constants/report'
+import teal from '@material-ui/core/colors/teal'
+import { Grow, Slide } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -13,10 +15,14 @@ const useStyles = makeStyles(theme => ({
     position: 'fixed',
     right: theme.spacing(2),
     bottom: theme.spacing(2),
+    backgroundColor: teal.A200,
+    '&:hover': {
+      backgroundColor: teal.A400,
+    },
   },
 }))
 
-export default function Survey({ userID, label }) {
+export default function SurveyFab({ userID, label }) {
   const classes = useStyles()
 
   const [open, setOpen] = React.useState(false)
@@ -35,7 +41,9 @@ export default function Survey({ userID, label }) {
         label,
       })
       if (res && res.result_count === 0) {
-        setVoted(false)
+        setTimeout(() => {
+          setVoted(false)
+        }, 2310) // average time on page base on GA
       }
     })()
   }, [userID])
@@ -45,25 +53,23 @@ export default function Survey({ userID, label }) {
     setVoted(true)
   }
 
-  if (voted) {
-    return null
-  }
+  // if (voted) {
+  //   return null
+  // }
 
   return (
-    <div className={classes.root} hidden={voted}>
+    <div className={classes.root}>
       <VoteDialog open={open} onClose={handleClose} />
-      <Fab
-        variant="extended"
-        color="secondary"
-        className={classes.fab}
-        onClick={() => setOpen(true)}>
-        <VoteIcon className={classes.extendedIcon} />
-        Vote what&apos;s next
-      </Fab>
+      <Slide direction="up" in={!voted} mountOnEnter unmountOnExit>
+        <Fab variant="extended" className={classes.fab} onClick={() => setOpen(true)}>
+          <VoteIcon className={classes.extendedIcon} />
+          Vote what&apos;s next
+        </Fab>
+      </Slide>
     </div>
   )
 }
-Survey.propTypes = {
+SurveyFab.propTypes = {
   userID: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
 }
