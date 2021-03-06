@@ -26,6 +26,7 @@ import ContactBuyerDialog from '@/components/ContactBuyerDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
+import SellButton from '@/components/SellButton'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -46,6 +47,8 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const buyOrderKeyQuery = 'buyorder'
+
 export default function MarketList({ offers, buyOrders, error, loading, pagination }) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
@@ -55,7 +58,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
 
   const router = useRouter()
   useEffect(() => {
-    if (has(router.query, 'buyorder')) {
+    if (has(router.query, buyOrderKeyQuery)) {
       setTabIdx(1)
     } else {
       setTabIdx(0)
@@ -66,7 +69,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
     setTabIdx(value)
     let p = `/${router.query.slug}`
     if (value === 1) {
-      p += '?buyorder'
+      p += `?${buyOrderKeyQuery}`
     }
 
     router.push(p)
@@ -81,7 +84,6 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
 
     setCurrentMarket(src.data[marketIdx])
   }
-
   const handleRemoveClick = marketIdx => {
     let src = offers
     if (tabIdx === 1) {
@@ -129,119 +131,15 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
           </TableHead>
 
           {tabIdx === 0 ? (
-            <TableBody style={{ opacity: offerListLoading ? 0.5 : 1 }}>
-              <TableRow>
-                <TableHeadCell size="small">
-                  <Typography color="textSecondary" variant="body2">
-                    Seller
-                  </Typography>
-                </TableHeadCell>
-                <TableHeadCell size="small" align="right">
-                  <Typography color="textSecondary" variant="body2">
-                    Price
-                  </Typography>
-                </TableHeadCell>
-                {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
-              </TableRow>
-
-              {error && (
-                <TableRow>
-                  <TableCell align="center" colSpan={3}>
-                    Error retrieving data
-                    <br />
-                    <Typography variant="caption" color="textSecondary">
-                      {error}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {!offers.data && (
-                <TableRow>
-                  <TableCell align="center" colSpan={3}>
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {!error && offers.total_count === 0 && (
-                <TableRow>
-                  <TableCell align="center" colSpan={3}>
-                    No offers available
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {offers.data &&
-                offers.data.map((market, idx) => (
-                  <TableRow key={market.id} hover>
-                    <TableCell component="th" scope="row" padding="none">
-                      <Link
-                        href="/profiles/[id]"
-                        as={`/profiles/${market.user.steam_id}`}
-                        disableUnderline>
-                        <div className={classes.seller}>
-                          <Avatar
-                            className={classes.avatar}
-                            alt={market.user.name}
-                            {...retinaSrcSet(market.user.avatar, 40, 40)}
-                          />
-                          <div>
-                            <strong>{market.user.name}</strong>
-                            <br />
-                            <Typography variant="caption" color="textSecondary">
-                              {/* {market.user.steam_id} */}
-                              Posted {dateFromNow(market.created_at)}
-                            </Typography>
-                          </div>
-                        </div>
-                      </Link>
-                    </TableCell>
-                    {!isMobile ? (
-                      <>
-                        <TableCell align="right">
-                          <Typography variant="body2">
-                            {amount(market.price, market.currency)}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          {currentUserID === market.user.id ? (
-                            // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
-                            <div>
-                              <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
-                                Remove
-                              </Button>
-                            </div>
-                          ) : (
-                            <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
-                              Contact Seller
-                            </BuyButton>
-                          )}
-                        </TableCell>
-                      </>
-                    ) : (
-                      <TableCell
-                        align="right"
-                        onClick={() =>
-                          currentUserID === market.user.id
-                            ? handleRemoveClick(idx)
-                            : handleContactClick(idx)
-                        }
-                        style={{ cursor: 'pointer' }}>
-                        <Typography variant="body2">${market.price.toFixed(2)}</Typography>
-                        <Typography
-                          variant="caption"
-                          color="textSecondary"
-                          style={{
-                            color: currentUserID === market.user.id ? 'tomato' : '',
-                          }}>
-                          <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
-                        </Typography>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-            </TableBody>
+            <OfferList
+              datatable={offers}
+              loading={offerListLoading}
+              error={error}
+              currentUserID={currentUserID}
+              isMobile={isMobile}
+              onContact={handleContactClick}
+              onRemove={handleRemoveClick}
+            />
           ) : (
             <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
               <TableRow>
@@ -252,7 +150,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                 </TableHeadCell>
                 <TableHeadCell size="small" align="right">
                   <Typography color="textSecondary" variant="body2">
-                    Price
+                    Buy price
                   </Typography>
                 </TableHeadCell>
                 {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
@@ -307,7 +205,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                               <br />
                               <Typography variant="caption" color="textSecondary">
                                 {/* {market.user.steam_id} */}
-                                Posted {dateFromNow(market.created_at)}
+                                Ordered {dateFromNow(market.created_at)}
                               </Typography>
                             </div>
                           </div>
@@ -324,7 +222,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                             <br />
                             <Typography variant="caption" color="textSecondary">
                               {/* {market.user.steam_id} */}
-                              Posted {dateFromNow(market.created_at)}
+                              Ordered {dateFromNow(market.created_at)}
                             </Typography>
                           </div>
                         </div>
@@ -333,7 +231,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                     {!isMobile ? (
                       <>
                         <TableCell align="right">
-                          <Typography variant="body2" style={{ color: bidColor.A200 }}>
+                          <Typography variant="body2">
                             {amount(market.price, market.currency)}
                           </Typography>
                         </TableCell>
@@ -346,10 +244,9 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                               </Button>
                             </div>
                           ) : (
-                            <BuyButton
-                              // Check for redacted user and disabled them for opening the dialog.
+                            <SellButton
+                              // Check for redacted user and disable them for opening the dialog.
                               disabled={!market.user.id}
-                              color="primary"
                               variant="contained"
                               onClick={() => handleContactClick(idx)}>
                               {market.user.id ? (
@@ -359,7 +256,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                                   Sign in to view
                                 </Typography>
                               )}
-                            </BuyButton>
+                            </SellButton>
                           )}
                         </TableCell>
                       </>
@@ -379,7 +276,9 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
                           handleContactClick(idx)
                         }}
                         style={{ cursor: 'pointer' }}>
-                        <Typography variant="body2">${market.price.toFixed(2)}</Typography>
+                        <Typography variant="body2">
+                          {amount(market.price, market.currency)}
+                        </Typography>
                         <Typography
                           variant="caption"
                           color="textSecondary"
@@ -397,7 +296,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
         </Table>
       </TableContainer>
 
-      {/* Only display pagination on offers */}
+      {/* Only display pagination on offer list */}
       {tabIdx === 0 && pagination}
 
       {tabIdx === 1 && buyOrders.data.length !== 0 && buyOrders.total_count > 10 && (
@@ -437,3 +336,147 @@ MarketList.defaultProps = {
   error: null,
   loading: false,
 }
+
+function OfferList(props) {
+  const classes = useStyles()
+
+  const { currentUserID, isMobile } = props
+
+  const { onContact, onRemove } = props
+  const handleContactClick = marketIdx => {
+    onContact(marketIdx)
+  }
+  const handleRemoveClick = marketIdx => {
+    onRemove(marketIdx)
+  }
+
+  const { datatable, loading, error } = props
+
+  return (
+    <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
+      <TableRow>
+        <TableHeadCell size="small">
+          <Typography color="textSecondary" variant="body2">
+            Seller
+          </Typography>
+        </TableHeadCell>
+        <TableHeadCell size="small" align="right">
+          <Typography color="textSecondary" variant="body2">
+            Price
+          </Typography>
+        </TableHeadCell>
+        {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
+      </TableRow>
+
+      {error && (
+        <TableRow>
+          <TableCell align="center" colSpan={3}>
+            Error retrieving data
+            <br />
+            <Typography variant="caption" color="textSecondary">
+              {error}
+            </Typography>
+          </TableCell>
+        </TableRow>
+      )}
+
+      {loading && (
+        <TableRow>
+          <TableCell align="center" colSpan={3}>
+            Loading...
+          </TableCell>
+        </TableRow>
+      )}
+
+      {!error && datatable.total_count === 0 && (
+        <TableRow>
+          <TableCell align="center" colSpan={3}>
+            No available offers
+          </TableCell>
+        </TableRow>
+      )}
+
+      {datatable.data.map((market, idx) => (
+        <TableRow key={market.id} hover>
+          <TableCell component="th" scope="row" padding="none">
+            <Link href="/profiles/[id]" as={`/profiles/${market.user.steam_id}`} disableUnderline>
+              <div className={classes.seller}>
+                <Avatar
+                  className={classes.avatar}
+                  alt={market.user.name}
+                  {...retinaSrcSet(market.user.avatar, 40, 40)}
+                />
+                <div>
+                  <strong>{market.user.name}</strong>
+                  <br />
+                  <Typography variant="caption" color="textSecondary">
+                    Posted {dateFromNow(market.created_at)}
+                  </Typography>
+                </div>
+              </div>
+            </Link>
+          </TableCell>
+          {!isMobile ? (
+            // Desktop screen display
+            <>
+              <TableCell align="right">
+                <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
+              </TableCell>
+              <TableCell align="center">
+                {currentUserID === market.user.id ? (
+                  // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+                  <div>
+                    <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
+                    Contact Seller
+                  </BuyButton>
+                )}
+              </TableCell>
+            </>
+          ) : (
+            // Small screen display
+            <TableCell
+              align="right"
+              onClick={() =>
+                currentUserID === market.user.id ? handleRemoveClick(idx) : handleContactClick(idx)
+              }
+              style={{ cursor: 'pointer' }}>
+              <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
+              <Typography
+                variant="caption"
+                color="textSecondary"
+                style={{
+                  color: currentUserID === market.user.id ? 'tomato' : '',
+                }}>
+                <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
+              </Typography>
+            </TableCell>
+          )}
+        </TableRow>
+      ))}
+    </TableBody>
+  )
+}
+OfferList.propTypes = {
+  datatable: PropTypes.object.isRequired,
+  error: PropTypes.string,
+  loading: PropTypes.bool,
+  currentUserID: PropTypes.string,
+  isMobile: PropTypes.bool,
+  onContact: PropTypes.func,
+  onRemove: PropTypes.func,
+}
+OfferList.defaultProps = {
+  error: null,
+  loading: false,
+  currentUserID: null,
+  isMobile: false,
+  onContact: () => {},
+  onRemove: () => {},
+}
+
+function OrderList() {}
