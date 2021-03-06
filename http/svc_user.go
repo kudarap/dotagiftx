@@ -63,7 +63,7 @@ type vanityUserResp struct {
 	core.User
 
 	IsRegistered  bool      `json:"is_registered"`
-	SteamImage    string    `json:"steam_image"`
+	SteamAvatar   string    `json:"steam_avatar"`
 	LastUpdatedAt time.Time `json:"last_updated_at"`
 }
 
@@ -104,7 +104,7 @@ func handleVanityProfile(svc core.UserService, steam core.SteamClient, cache cor
 			}
 			vUser.Name = sp.Name
 			vUser.URL = sp.URL
-			vUser.SteamImage = sp.Avatar
+			vUser.SteamAvatar = sp.Avatar
 		}
 
 		vUser.LastUpdatedAt = time.Now()
