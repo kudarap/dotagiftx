@@ -417,7 +417,9 @@ const OrderListMini = baseTable(({ market, currentUserID, onRemove, onContact })
       onContact()
     }}
     style={{ cursor: 'pointer' }}>
-    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
+    <Typography variant="body2" style={{ color: bidColor.A200 }}>
+      {amount(market.price, market.currency)}
+    </Typography>
 
     {currentUserID === market.user.id ? (
       <Typography variant="caption" color="textSecondary" style={{ color: 'tomato' }}>
