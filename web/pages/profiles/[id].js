@@ -68,8 +68,13 @@ export default function UserDetails({
   const [error, setError] = React.useState(initialError)
 
   if (error) {
-    console.error(error)
-    return <ErrorPage>{error}</ErrorPage>
+    return (
+      <ErrorPage>
+        <Typography variant="h5" align="center">
+          Profile not found or exists
+        </Typography>
+      </ErrorPage>
+    )
   }
 
   // Handle market request on page change.
