@@ -54,6 +54,11 @@ func GetPlayerSummaries(steamId, apiKey string) (*PlayerSummaries, error) {
 	if err := json.Unmarshal(body, &data); err != nil {
 		return nil, err
 	}
+
+	if len(data.Response.Players) == 0 {
+		return nil, fmt.Errorf("no result")
+	}
+
 	return &data.Response.Players[0], err
 }
 
