@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
+import shuffle from 'lodash/shuffle'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -20,14 +21,6 @@ import AppContext from '@/components/AppContext'
 import { REPORT_LABEL_SURVEY_NEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
 import { TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
 
 const voteOptions = shuffle([
   'Inventory import from Steam',

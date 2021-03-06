@@ -2,11 +2,19 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
-import { CDN_URL, marketSearch, statsMarketSummary, trackProfileViewURL, user } from '@/service/api'
+import {
+  CDN_URL,
+  marketSearch,
+  statsMarketSummary,
+  trackProfileViewURL,
+  user,
+  vanity,
+} from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -23,6 +31,7 @@ import {
 import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
+import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
@@ -68,8 +77,18 @@ export default function UserDetails({
   const [error, setError] = React.useState(initialError)
 
   if (error) {
-    console.error(error)
-    return <ErrorPage>{error}</ErrorPage>
+    return (
+      <ErrorPage>
+        <Typography variant="h5" align="center">
+          Profile not found
+        </Typography>
+      </ErrorPage>
+    )
+  }
+
+  // This user is not registered
+  if (has(profile, 'is_registered') && !profile.is_registered) {
+    return <NotRegisteredProfile profile={profile} canonicalURL={canonicalURL} />
   }
 
   // Handle market request on page change.
@@ -150,7 +169,7 @@ export default function UserDetails({
                 className={classes.profileName}
                 component="p"
                 variant="h4"
-                color={isProfileReported ? 'error' : ''}>
+                color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
               </Typography>
               {isProfileReported && (
@@ -232,14 +251,44 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps({ params, query }) {
+  const vanityMode = Boolean(query.vanity)
+
   let profile
-  try {
-    profile = await user(String(params.id))
-  } catch (e) {
-    return {
-      props: {
-        error: e.message,
-      },
+
+  // Check for vanity request.
+  if (vanityMode) {
+    try {
+      profile = await vanity(String(query.vanity))
+    } catch (e) {
+      return {
+        props: {
+          error: e.message,
+        },
+      }
+    }
+
+    // Since not registered user will render differently, should return now.
+    if (!profile.is_registered) {
+      const canonicalURL = `${APP_URL}/id/${query.vanity}`
+      return {
+        props: {
+          profile,
+          canonicalURL,
+        },
+      }
+    }
+
+    // When vanity exists use the profile from resolving it.
+    // Otherwise try to get from users endpoint
+  } else {
+    try {
+      profile = await user(String(params.id))
+    } catch (e) {
+      return {
+        props: {
+          error: e.message,
+        },
+      }
     }
   }
 

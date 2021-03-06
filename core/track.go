@@ -1,9 +1,12 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -38,16 +41,18 @@ const (
 type (
 	// Track represents tracking data.
 	Track struct {
-		ID        string     `json:"id"         db:"id,omitempty"`
-		Type      string     `json:"type"       db:"type,omitempty,indexed"`
-		ItemID    string     `json:"item_id"    db:"item_id,omitempty,indexed"`
-		UserID    string     `json:"user_id"    db:"user_id,omitempty,indexed"`
-		Keyword   string     `json:"keyword"    db:"keyword,omitempty"`
-		ClientIP  string     `json:"client_ip"  db:"client_ip,omitempty"`
-		UserAgent string     `json:"user_agent" db:"user_agent,omitempty"`
-		Referer   string     `json:"referer"    db:"referer,omitempty"`
-		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty,indexed"`
-		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
+		ID         string     `json:"id"           db:"id,omitempty"`
+		Type       string     `json:"type"         db:"type,omitempty,indexed"`
+		ItemID     string     `json:"item_id"      db:"item_id,omitempty,indexed"`
+		UserID     string     `json:"user_id"      db:"user_id,omitempty,indexed"`
+		Keyword    string     `json:"keyword"      db:"keyword,omitempty"`
+		ClientIP   string     `json:"client_ip"    db:"client_ip,omitempty"`
+		UserAgent  string     `json:"user_agent"   db:"user_agent,omitempty"`
+		Referer    string     `json:"referer"      db:"referer,omitempty"`
+		Cookies    []string   `json:"cookies"      db:"cookies,omitempty"`
+		SessUserID string     `json:"sess_user_id" db:"sess_user_id,omitempty"`
+		CreatedAt  *time.Time `json:"created_at"   db:"created_at,omitempty,indexed"`
+		UpdatedAt  *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
 	}
 
 	// TrackService provides access to track service.
@@ -89,6 +94,8 @@ const (
 	trackKeywordKey = "k"
 )
 
+const authCookieName = "dgAu"
+
 // SetDefaults sets default values from http.Request.
 func (t *Track) SetDefaults(r *http.Request) {
 	q := r.URL.Query()
@@ -105,6 +112,22 @@ func (t *Track) SetDefaults(r *http.Request) {
 	} else {
 		t.ClientIP = ip.String()
 	}
+
+	var sessCookie string
+	for _, cookie := range r.Cookies() {
+		s, _ := url.PathUnescape(cookie.String())
+		t.Cookies = append(t.Cookies, s)
+
+		if cookie.Name == authCookieName {
+			sessCookie = s
+		}
+	}
+
+	// Extract session user id from cookie.
+	var au Auth
+	sessCookie = strings.TrimPrefix(sessCookie, authCookieName+"=")
+	_ = json.Unmarshal([]byte(sessCookie), &au)
+	t.SessUserID = au.UserID
 }
 
 func userIPFromRequest(req *http.Request) (net.IP, error) {

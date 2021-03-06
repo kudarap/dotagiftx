@@ -129,6 +129,7 @@ func (a *application) setup() error {
 		trackSvc,
 		statsSvc,
 		reportSvc,
+		steamClient,
 		redisClient,
 		initVer(a.config),
 		log,
