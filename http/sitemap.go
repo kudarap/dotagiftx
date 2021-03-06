@@ -64,10 +64,11 @@ func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam cor
 
 		var vanities []string
 		for _, u := range users {
-			sp, _ := steam.Player(u.SteamID)
-			if sp == nil || sp.URL == "" {
-				continue
-			}
+			//sp, _ := steam.Player(u.SteamID)
+			//if sp == nil || sp.URL == "" {
+			//	continue
+			//}
+			sp := u
 
 			// Not a custom url.
 			if !strings.HasPrefix(sp.URL, vanityPrefix) {
