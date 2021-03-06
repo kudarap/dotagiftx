@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
@@ -30,8 +31,8 @@ import {
 import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
-import ErrorPage from '../404'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
+import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -79,13 +80,14 @@ export default function UserDetails({
     return (
       <ErrorPage>
         <Typography variant="h5" align="center">
-          Profile not found or exists
+          Profile not found
         </Typography>
       </ErrorPage>
     )
   }
 
-  if (!profile.is_registered) {
+  // This user is not registered
+  if (has(profile, 'is_registered') && !profile.is_registered) {
     return <NotRegisteredProfile profile={profile} canonicalURL={canonicalURL} />
   }
 
@@ -167,7 +169,7 @@ export default function UserDetails({
                 className={classes.profileName}
                 component="p"
                 variant="h4"
-                color={isProfileReported ? 'error' : ''}>
+                color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
               </Typography>
               {isProfileReported && (

@@ -89,8 +89,8 @@ export default function NotRegisteredProfile({ profile, canonicalURL }) {
                 {profile.name}
               </Typography>
               <Typography gutterBottom>
-                <Link href={profileURL} variant="body2">
-                  {profileURL}
+                <Link href={profile.url} variant="body2">
+                  {profile.url}
                 </Link>
                 <br />
                 <ChipLink label="Steam Profile" href={profileURL} />
