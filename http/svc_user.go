@@ -95,17 +95,18 @@ func handleVanityProfile(svc core.UserService, steam core.SteamClient, cache cor
 		if u != nil {
 			vUser.User = *u
 			vUser.IsRegistered = true
+		} else {
+			// Otherwise, get it from steam API.
+			sp, err := steam.Player(steamID)
+			if err != nil {
+				respondError(w, err)
+				return
+			}
+			vUser.Name = sp.Name
+			vUser.URL = sp.URL
+			vUser.SteamImage = sp.Avatar
 		}
 
-		// Otherwise, get it from steam API.
-		sp, err := steam.Player(steamID)
-		if err != nil {
-			respondError(w, err)
-			return
-		}
-		vUser.Name = sp.Name
-		vUser.URL = sp.URL
-		vUser.SteamImage = sp.Avatar
 		vUser.LastUpdatedAt = time.Now()
 
 		go cache.Set(cacheKey, vUser, userVanityCacheExpr)
