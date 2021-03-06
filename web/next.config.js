@@ -1,4 +1,12 @@
 module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/id/:slug',
+        destination: '/profiles/:slug?vanity=:slug',
+      },
+    ]
+  },
   async redirects() {
     return [
       {

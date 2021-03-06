@@ -17,6 +17,7 @@ const AUTH_REVOKE = '/auth/revoke'
 export const MY_PROFILE = '/my/profile'
 export const MY_MARKETS = '/my/markets'
 export const USERS = '/users'
+export const VANITY = '/vanity'
 export const ITEMS = '/items'
 export const MARKETS = '/markets'
 export const CATALOGS = '/catalogs'
@@ -40,6 +41,7 @@ export const version = () => http.request(http.GET, VERSION)
 export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
 export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
+export const vanity = vid => http.request(http.GET, `${VANITY}/${vid}`)
 export const statsMarketSummary = (filter = {}) =>
   http.request(http.GET, parseParams(STATS_MARKET_SUMMARY, filter))
 

@@ -32,6 +32,7 @@ func NewServer(
 	ts core.TrackService,
 	ss core.StatsService,
 	rs core.ReportService,
+	sc core.SteamClient,
 	c core.Cache,
 	v *version.Version,
 	l *logrus.Logger,
@@ -46,6 +47,7 @@ func NewServer(
 		trackSvc:  ts,
 		statsSvc:  ss,
 		reportSvc: rs,
+		steam:     sc,
 		cache:     c,
 		logger:    l,
 		version:   v,
@@ -66,6 +68,7 @@ type Server struct {
 	trackSvc  core.TrackService
 	statsSvc  core.StatsService
 	reportSvc core.ReportService
+	steam     core.SteamClient
 
 	cache   core.Cache
 	logger  *logrus.Logger

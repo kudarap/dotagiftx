@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Custom404() {
+export default function Custom404({ children }) {
   const classes = useStyles()
 
   return (
@@ -29,9 +29,11 @@ export default function Custom404() {
 
       <main className={classes.main}>
         <Container>
-          <Typography variant="h5" component="h1" gutterBottom align="center">
-            404 - Page Not Found
-          </Typography>
+          {children || (
+            <Typography variant="h5" component="h1" gutterBottom align="center">
+              404 - Page Not Found
+            </Typography>
+          )}
         </Container>
       </main>
 
