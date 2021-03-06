@@ -337,146 +337,159 @@ MarketList.defaultProps = {
   loading: false,
 }
 
-function OfferList(props) {
-  const classes = useStyles()
-
-  const { currentUserID, isMobile } = props
-
-  const { onContact, onRemove } = props
-  const handleContactClick = marketIdx => {
-    onContact(marketIdx)
-  }
-  const handleRemoveClick = marketIdx => {
-    onRemove(marketIdx)
+const OfferList = props => {
+  if (props.isMobile) {
+    return <OfferListMini {...props} />
   }
 
-  const { datatable, loading, error } = props
+  return <OfferListDesktop {...props} />
+}
 
-  return (
-    <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
-      <TableRow>
-        <TableHeadCell size="small">
-          <Typography color="textSecondary" variant="body2">
-            Seller
-          </Typography>
-        </TableHeadCell>
-        <TableHeadCell size="small" align="right">
-          <Typography color="textSecondary" variant="body2">
-            Price
-          </Typography>
-        </TableHeadCell>
-        {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
-      </TableRow>
+const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
+  <>
+    <TableCell align="right">
+      <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
+    </TableCell>
+    <TableCell align="center">
+      {currentUserID === market.user.id ? (
+        // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+        <div>
+          <Button variant="outlined" onClick={onRemove}>
+            Remove
+          </Button>
+        </div>
+      ) : (
+        <BuyButton variant="contained" onClick={onContact}>
+          Contact Seller
+        </BuyButton>
+      )}
+    </TableCell>
+  </>
+))
 
-      {error && (
+const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact }) => (
+  <TableCell
+    align="right"
+    style={{ cursor: 'pointer' }}
+    onClick={currentUserID === market.user.id ? onRemove : onContact}>
+    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
+    <Typography
+      variant="caption"
+      color="textSecondary"
+      style={{ color: currentUserID === market.user.id ? 'tomato' : '' }}>
+      <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
+    </Typography>
+  </TableCell>
+))
+
+function baseTable(Component) {
+  const wrapped = props => {
+    const classes = useStyles()
+
+    const { currentUserID, isMobile } = props
+
+    const { onContact, onRemove } = props
+    const handleContactClick = marketIdx => {
+      onContact(marketIdx)
+    }
+    const handleRemoveClick = marketIdx => {
+      onRemove(marketIdx)
+    }
+
+    const { datatable, loading, error } = props
+
+    return (
+      <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
         <TableRow>
-          <TableCell align="center" colSpan={3}>
-            Error retrieving data
-            <br />
-            <Typography variant="caption" color="textSecondary">
-              {error}
+          <TableHeadCell size="small">
+            <Typography color="textSecondary" variant="body2">
+              Seller
             </Typography>
-          </TableCell>
+          </TableHeadCell>
+          <TableHeadCell size="small" align="right">
+            <Typography color="textSecondary" variant="body2">
+              Price
+            </Typography>
+          </TableHeadCell>
+          {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
         </TableRow>
-      )}
 
-      {loading && (
-        <TableRow>
-          <TableCell align="center" colSpan={3}>
-            Loading...
-          </TableCell>
-        </TableRow>
-      )}
-
-      {!error && datatable.total_count === 0 && (
-        <TableRow>
-          <TableCell align="center" colSpan={3}>
-            No available offers
-          </TableCell>
-        </TableRow>
-      )}
-
-      {datatable.data.map((market, idx) => (
-        <TableRow key={market.id} hover>
-          <TableCell component="th" scope="row" padding="none">
-            <Link href="/profiles/[id]" as={`/profiles/${market.user.steam_id}`} disableUnderline>
-              <div className={classes.seller}>
-                <Avatar
-                  className={classes.avatar}
-                  alt={market.user.name}
-                  {...retinaSrcSet(market.user.avatar, 40, 40)}
-                />
-                <div>
-                  <strong>{market.user.name}</strong>
-                  <br />
-                  <Typography variant="caption" color="textSecondary">
-                    Posted {dateFromNow(market.created_at)}
-                  </Typography>
-                </div>
-              </div>
-            </Link>
-          </TableCell>
-          {!isMobile ? (
-            // Desktop screen display
-            <>
-              <TableCell align="right">
-                <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-              </TableCell>
-              <TableCell align="center">
-                {currentUserID === market.user.id ? (
-                  // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
-                  <div>
-                    <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
-                      Remove
-                    </Button>
-                  </div>
-                ) : (
-                  <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
-                    Contact Seller
-                  </BuyButton>
-                )}
-              </TableCell>
-            </>
-          ) : (
-            // Small screen display
-            <TableCell
-              align="right"
-              onClick={() =>
-                currentUserID === market.user.id ? handleRemoveClick(idx) : handleContactClick(idx)
-              }
-              style={{ cursor: 'pointer' }}>
-              <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-              <Typography
-                variant="caption"
-                color="textSecondary"
-                style={{
-                  color: currentUserID === market.user.id ? 'tomato' : '',
-                }}>
-                <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
+        {error && (
+          <TableRow>
+            <TableCell align="center" colSpan={3}>
+              Error retrieving data
+              <br />
+              <Typography variant="caption" color="textSecondary">
+                {error}
               </Typography>
             </TableCell>
-          )}
-        </TableRow>
-      ))}
-    </TableBody>
-  )
-}
-OfferList.propTypes = {
-  datatable: PropTypes.object.isRequired,
-  error: PropTypes.string,
-  loading: PropTypes.bool,
-  currentUserID: PropTypes.string,
-  isMobile: PropTypes.bool,
-  onContact: PropTypes.func,
-  onRemove: PropTypes.func,
-}
-OfferList.defaultProps = {
-  error: null,
-  loading: false,
-  currentUserID: null,
-  isMobile: false,
-  onContact: () => {},
-  onRemove: () => {},
-}
+          </TableRow>
+        )}
 
-function OrderList() {}
+        {loading && (
+          <TableRow>
+            <TableCell align="center" colSpan={3}>
+              Loading...
+            </TableCell>
+          </TableRow>
+        )}
+
+        {!error && datatable.total_count === 0 && (
+          <TableRow>
+            <TableCell align="center" colSpan={3}>
+              No available offers
+            </TableCell>
+          </TableRow>
+        )}
+
+        {datatable.data.map((market, idx) => (
+          <TableRow key={market.id} hover>
+            <TableCell component="th" scope="row" padding="none">
+              <Link href="/profiles/[id]" as={`/profiles/${market.user.steam_id}`} disableUnderline>
+                <div className={classes.seller}>
+                  <Avatar
+                    className={classes.avatar}
+                    alt={market.user.name}
+                    {...retinaSrcSet(market.user.avatar, 40, 40)}
+                  />
+                  <div>
+                    <strong>{market.user.name}</strong>
+                    <br />
+                    <Typography variant="caption" color="textSecondary">
+                      Posted {dateFromNow(market.created_at)}
+                    </Typography>
+                  </div>
+                </div>
+              </Link>
+            </TableCell>
+            <Component
+              currentUserID={currentUserID}
+              market={market}
+              onRemove={() => handleRemoveClick(idx)}
+              onContact={() => handleContactClick(idx)}
+            />
+          </TableRow>
+        ))}
+      </TableBody>
+    )
+  }
+  wrapped.propTypes = {
+    datatable: PropTypes.object.isRequired,
+    error: PropTypes.string,
+    loading: PropTypes.bool,
+    currentUserID: PropTypes.string,
+    isMobile: PropTypes.bool,
+    onContact: PropTypes.func,
+    onRemove: PropTypes.func,
+  }
+  wrapped.defaultProps = {
+    error: null,
+    loading: false,
+    currentUserID: null,
+    isMobile: false,
+    onContact: () => {},
+    onRemove: () => {},
+  }
+
+  return wrapped
+}
