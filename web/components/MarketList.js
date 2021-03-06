@@ -102,6 +102,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
   }
 
   const offerListLoading = !offers && loading
+  const buyOrderLoading = !buyOrders.data
 
   return (
     <>
@@ -135,163 +136,21 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
               datatable={offers}
               loading={offerListLoading}
               error={error}
-              currentUserID={currentUserID}
-              isMobile={isMobile}
               onContact={handleContactClick}
               onRemove={handleRemoveClick}
+              currentUserID={currentUserID}
+              isMobile={isMobile}
             />
           ) : (
-            <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
-              <TableRow>
-                <TableHeadCell size="small">
-                  <Typography color="textSecondary" variant="body2">
-                    Buyer
-                  </Typography>
-                </TableHeadCell>
-                <TableHeadCell size="small" align="right">
-                  <Typography color="textSecondary" variant="body2">
-                    Buy price
-                  </Typography>
-                </TableHeadCell>
-                {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
-              </TableRow>
-
-              {error && (
-                <TableRow>
-                  <TableCell align="center" colSpan={3}>
-                    Error retrieving data
-                    <br />
-                    <Typography variant="caption" color="textSecondary">
-                      {error}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {!buyOrders.data && (
-                <TableRow>
-                  <TableCell align="center" colSpan={3}>
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {!error && buyOrders.total_count === 0 && (
-                <TableRow>
-                  <TableCell align="center" colSpan={3}>
-                    No buy orders
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {buyOrders.data &&
-                buyOrders.data.map((market, idx) => (
-                  <TableRow key={market.id} hover>
-                    <TableCell component="th" scope="row" padding="none">
-                      {/* Check for redacted display */}
-                      {market.user.id ? (
-                        <Link
-                          href="/profiles/[id]"
-                          as={`/profiles/${market.user.steam_id}`}
-                          disableUnderline>
-                          <div className={classes.seller}>
-                            <Avatar
-                              className={classes.avatar}
-                              alt={market.user.name}
-                              {...retinaSrcSet(market.user.avatar, 40, 40)}
-                            />
-                            <div>
-                              <strong>{market.user.name}</strong>
-                              <br />
-                              <Typography variant="caption" color="textSecondary">
-                                {/* {market.user.steam_id} */}
-                                Ordered {dateFromNow(market.created_at)}
-                              </Typography>
-                            </div>
-                          </div>
-                        </Link>
-                      ) : (
-                        <div className={classes.seller}>
-                          <Avatar
-                            className={classes.avatar}
-                            alt={market.user.name}
-                            {...retinaSrcSet(market.user.avatar, 40, 40)}
-                          />
-                          <div>
-                            <strong>{market.user.name}</strong>
-                            <br />
-                            <Typography variant="caption" color="textSecondary">
-                              {/* {market.user.steam_id} */}
-                              Ordered {dateFromNow(market.created_at)}
-                            </Typography>
-                          </div>
-                        </div>
-                      )}
-                    </TableCell>
-                    {!isMobile ? (
-                      <>
-                        <TableCell align="right">
-                          <Typography variant="body2">
-                            {amount(market.price, market.currency)}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          {currentUserID === market.user.id ? (
-                            // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
-                            <div>
-                              <Button variant="outlined" onClick={() => handleRemoveClick(idx)}>
-                                Remove
-                              </Button>
-                            </div>
-                          ) : (
-                            <SellButton
-                              // Check for redacted user and disable them for opening the dialog.
-                              disabled={!market.user.id}
-                              variant="contained"
-                              onClick={() => handleContactClick(idx)}>
-                              {market.user.id ? (
-                                'Contact Buyer'
-                              ) : (
-                                <Typography variant="caption" color="textSecondary">
-                                  Sign in to view
-                                </Typography>
-                              )}
-                            </SellButton>
-                          )}
-                        </TableCell>
-                      </>
-                    ) : (
-                      <TableCell
-                        align="right"
-                        onClick={() => {
-                          if (!market.user.id) {
-                            return
-                          }
-
-                          if (currentUserID === market.user.id) {
-                            handleRemoveClick(idx)
-                            return
-                          }
-
-                          handleContactClick(idx)
-                        }}
-                        style={{ cursor: 'pointer' }}>
-                        <Typography variant="body2">
-                          {amount(market.price, market.currency)}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          color="textSecondary"
-                          style={{
-                            color: currentUserID === market.user.id ? 'tomato' : '',
-                          }}>
-                          <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
-                        </Typography>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-            </TableBody>
+            <OrderList
+              datatable={buyOrders}
+              loading={buyOrderLoading}
+              error={error}
+              onContact={handleContactClick}
+              onRemove={handleRemoveClick}
+              currentUserID={currentUserID}
+              isMobile={isMobile}
+            />
           )}
         </Table>
       </TableContainer>
@@ -338,11 +197,143 @@ MarketList.defaultProps = {
 }
 
 const OfferList = props => {
-  if (props.isMobile) {
+  const { isMobile } = props
+  if (isMobile) {
     return <OfferListMini {...props} />
   }
 
   return <OfferListDesktop {...props} />
+}
+OfferList.propTypes = {
+  isMobile: PropTypes.bool,
+}
+OfferList.defaultProps = {
+  isMobile: false,
+}
+
+const OrderList = props => {
+  const { isMobile } = props
+  if (isMobile) {
+    return <OrderListMini bidMode {...props} />
+  }
+
+  return <OrderListDesktop bidMode {...props} />
+}
+OrderList.propTypes = OfferList.propTypes
+OrderList.defaultProps = OfferList.defaultProps
+
+function baseTable(Component) {
+  const wrapped = props => {
+    const classes = useStyles()
+
+    const { currentUserID, isMobile } = props
+
+    const { onContact, onRemove } = props
+    const handleContactClick = marketIdx => {
+      onContact(marketIdx)
+    }
+    const handleRemoveClick = marketIdx => {
+      onRemove(marketIdx)
+    }
+
+    const { datatable, loading, error, bidMode } = props
+
+    return (
+      <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
+        <TableRow>
+          <TableHeadCell size="small">
+            <Typography color="textSecondary" variant="body2">
+              {bidMode ? 'Buyer' : 'Seller'}
+            </Typography>
+          </TableHeadCell>
+          <TableHeadCell size="small" align="right">
+            <Typography color="textSecondary" variant="body2">
+              {bidMode ? 'Buy Price' : 'Price'}
+            </Typography>
+          </TableHeadCell>
+          {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
+        </TableRow>
+
+        {error && (
+          <TableRow>
+            <TableCell align="center" colSpan={3}>
+              Error retrieving data
+              <br />
+              <Typography variant="caption" color="textSecondary">
+                {error}
+              </Typography>
+            </TableCell>
+          </TableRow>
+        )}
+
+        {loading && (
+          <TableRow>
+            <TableCell align="center" colSpan={3}>
+              Loading...
+            </TableCell>
+          </TableRow>
+        )}
+
+        {!error && datatable.total_count === 0 && (
+          <TableRow>
+            <TableCell align="center" colSpan={3}>
+              No available {bidMode ? 'orders' : 'offers'}
+            </TableCell>
+          </TableRow>
+        )}
+
+        {datatable.data.map((market, idx) => (
+          <TableRow key={market.id} hover>
+            <TableCell component="th" scope="row" padding="none">
+              <Link href="/profiles/[id]" as={`/profiles/${market.user.steam_id}`} disableUnderline>
+                <div className={classes.seller}>
+                  <Avatar
+                    className={classes.avatar}
+                    alt={market.user.name}
+                    {...retinaSrcSet(market.user.avatar, 40, 40)}
+                  />
+                  <div>
+                    <strong>{market.user.name}</strong>
+                    <br />
+                    <Typography variant="caption" color="textSecondary">
+                      {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
+                    </Typography>
+                  </div>
+                </div>
+              </Link>
+            </TableCell>
+            <Component
+              currentUserID={currentUserID}
+              market={market}
+              onRemove={() => handleRemoveClick(idx)}
+              onContact={() => handleContactClick(idx)}
+            />
+          </TableRow>
+        ))}
+      </TableBody>
+    )
+  }
+  wrapped.propTypes = {
+    datatable: PropTypes.object.isRequired,
+    error: PropTypes.string,
+    loading: PropTypes.bool,
+    currentUserID: PropTypes.string,
+    isMobile: PropTypes.bool,
+    onContact: PropTypes.func,
+    onRemove: PropTypes.func,
+    bidMode: PropTypes.bool,
+  }
+  wrapped.defaultProps = {
+    error: null,
+    loading: false,
+    currentUserID: null,
+    isMobile: false,
+    onContact: () => {},
+    onRemove: () => {},
+    bidMode: false,
+  }
+
+  return wrapped
 }
 
 const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
@@ -382,114 +373,60 @@ const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact })
   </TableCell>
 ))
 
-function baseTable(Component) {
-  const wrapped = props => {
-    const classes = useStyles()
+const OrderListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
+  <>
+    <TableCell align="right">
+      <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
+    </TableCell>
+    <TableCell align="center">
+      {currentUserID === market.user.id ? (
+        // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+        <div>
+          <Button variant="outlined" onClick={onRemove}>
+            Remove
+          </Button>
+        </div>
+      ) : (
+        <SellButton
+          // Check for redacted user and disable them for opening the dialog.
+          disabled={!market.user.id}
+          variant="contained"
+          onClick={onContact}>
+          {market.user.id ? `Contact Buyer` : `Sign in to view`}
+        </SellButton>
+      )}
+    </TableCell>
+  </>
+))
 
-    const { currentUserID, isMobile } = props
+const OrderListMini = baseTable(({ market, currentUserID, onRemove, onContact }) => (
+  <TableCell
+    align="right"
+    onClick={() => {
+      // Data was redacted, so we can do nothing about it.
+      if (!market.user.id) {
+        return
+      }
 
-    const { onContact, onRemove } = props
-    const handleContactClick = marketIdx => {
-      onContact(marketIdx)
-    }
-    const handleRemoveClick = marketIdx => {
-      onRemove(marketIdx)
-    }
+      // Logged in user matched th data id, we can invoke remove callback.
+      if (currentUserID === market.user.id) {
+        onRemove()
+        return
+      }
 
-    const { datatable, loading, error } = props
+      onContact()
+    }}
+    style={{ cursor: 'pointer' }}>
+    <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
 
-    return (
-      <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
-        <TableRow>
-          <TableHeadCell size="small">
-            <Typography color="textSecondary" variant="body2">
-              Seller
-            </Typography>
-          </TableHeadCell>
-          <TableHeadCell size="small" align="right">
-            <Typography color="textSecondary" variant="body2">
-              Price
-            </Typography>
-          </TableHeadCell>
-          {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
-        </TableRow>
-
-        {error && (
-          <TableRow>
-            <TableCell align="center" colSpan={3}>
-              Error retrieving data
-              <br />
-              <Typography variant="caption" color="textSecondary">
-                {error}
-              </Typography>
-            </TableCell>
-          </TableRow>
-        )}
-
-        {loading && (
-          <TableRow>
-            <TableCell align="center" colSpan={3}>
-              Loading...
-            </TableCell>
-          </TableRow>
-        )}
-
-        {!error && datatable.total_count === 0 && (
-          <TableRow>
-            <TableCell align="center" colSpan={3}>
-              No available offers
-            </TableCell>
-          </TableRow>
-        )}
-
-        {datatable.data.map((market, idx) => (
-          <TableRow key={market.id} hover>
-            <TableCell component="th" scope="row" padding="none">
-              <Link href="/profiles/[id]" as={`/profiles/${market.user.steam_id}`} disableUnderline>
-                <div className={classes.seller}>
-                  <Avatar
-                    className={classes.avatar}
-                    alt={market.user.name}
-                    {...retinaSrcSet(market.user.avatar, 40, 40)}
-                  />
-                  <div>
-                    <strong>{market.user.name}</strong>
-                    <br />
-                    <Typography variant="caption" color="textSecondary">
-                      Posted {dateFromNow(market.created_at)}
-                    </Typography>
-                  </div>
-                </div>
-              </Link>
-            </TableCell>
-            <Component
-              currentUserID={currentUserID}
-              market={market}
-              onRemove={() => handleRemoveClick(idx)}
-              onContact={() => handleContactClick(idx)}
-            />
-          </TableRow>
-        ))}
-      </TableBody>
-    )
-  }
-  wrapped.propTypes = {
-    datatable: PropTypes.object.isRequired,
-    error: PropTypes.string,
-    loading: PropTypes.bool,
-    currentUserID: PropTypes.string,
-    isMobile: PropTypes.bool,
-    onContact: PropTypes.func,
-    onRemove: PropTypes.func,
-  }
-  wrapped.defaultProps = {
-    error: null,
-    loading: false,
-    currentUserID: null,
-    isMobile: false,
-    onContact: () => {},
-    onRemove: () => {},
-  }
-
-  return wrapped
-}
+    {currentUserID === market.user.id ? (
+      <Typography variant="caption" color="textSecondary" style={{ color: 'tomato' }}>
+        <u>Remove</u>
+      </Typography>
+    ) : (
+      <Typography variant="caption" color="textSecondary">
+        <u>{market.user.id ? 'View' : 'Sign in to view'}</u>
+      </Typography>
+    )}
+  </TableCell>
+))
