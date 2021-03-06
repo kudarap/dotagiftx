@@ -2,12 +2,13 @@ package http
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
 	"github.com/kudarap/dotagiftx/core"
 )
 
-func buildSitemap(items []core.Item, users []core.User) *stm.Sitemap {
+func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.Sitemap {
 	sitemap := stm.NewSitemap(1)
 	//sitemap.SetVerbose(false)
 	sitemap.SetDefaultHost("https://dotagiftx.com")
@@ -46,16 +47,34 @@ func buildSitemap(items []core.Item, users []core.User) *stm.Sitemap {
 		sitemap.Add(stm.URL{{"loc", "/profiles/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.6}})
 	}
 
+	// Add user vanity urls locations.
+	for _, v := range vanities {
+		sitemap.Add(stm.URL{{"loc", "/id/" + v}, {"changefreq", "daily"}, {"priority", 0.6}})
+	}
+
 	return sitemap
 }
 
-func handleSitemap(itemSvc core.ItemService, userSvc core.UserService) http.HandlerFunc {
+func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam core.SteamClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(core.FindOpts{})
 		users, _ := userSvc.Users(core.FindOpts{})
 
+		var vanities []string
+		for _, u := range users {
+			sp, _ := steam.Player(u.SteamID)
+			if sp == nil {
+				continue
+			}
+
+			v := strings.TrimPrefix(sp.URL, "https://steamcommunity.com/id/")
+			if sp.URL != "" {
+				vanities = append(vanities, v)
+			}
+		}
+
 		w.Header().Set("content-type", "text/xml")
-		w.Write(buildSitemap(items, users).XMLContent())
+		w.Write(buildSitemap(items, users, vanities).XMLContent())
 		return
 	}
 }
