@@ -30,8 +30,8 @@ import {
 import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
-import ErrorPage from '../404'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
+import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
   main: {
