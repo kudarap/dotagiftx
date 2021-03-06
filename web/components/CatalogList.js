@@ -56,7 +56,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
             {!isMobile && (
               <TableHeadCell align="right">
                 {/* eslint-disable-next-line no-nested-ternary */}
-                {isRecentMode ? (bidType ? 'Requested' : 'Listed') : 'Qty'}
+                {isRecentMode ? (bidType ? 'Ordered' : 'Listed') : 'Qty'}
               </TableHeadCell>
             )}
             <TableHeadCell align="right">{bidType ? 'Buy Price' : 'Price'}</TableHeadCell>
