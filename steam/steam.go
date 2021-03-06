@@ -70,21 +70,22 @@ func (c *Client) Player(steamID string) (*core.SteamPlayer, error) {
 const (
 	VanityPrefixID      = "https://steamcommunity.com/id/"
 	VanityPrefixProfile = "https://steamcommunity.com/profiles/"
+	vanityCacheExpr     = time.Hour * 24
 )
 
 func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 	rawURL = strings.TrimRight(rawURL, "/")
 
-	// SteamID might be present on the URL already.
+	// SteamID might be present on the URL provided.
 	if strings.HasPrefix(rawURL, VanityPrefixProfile) {
 		return strings.TrimPrefix(rawURL, VanityPrefixProfile), nil
 	}
 
 	// Its probably steam ID.
-	if !strings.HasPrefix(rawURL, VanityPrefixID) {
-		err = fmt.Errorf("could not parse URL (%s)", rawURL)
-		return
-	}
+	//if !strings.HasPrefix(rawURL, VanityPrefixID) {
+	//	err = fmt.Errorf("could not parse URL (%s)", rawURL)
+	//	return
+	//}
 
 	vanity := strings.TrimPrefix(rawURL, VanityPrefixID)
 	cacheKey := fmt.Sprintf("steam/resolvedvanity:%s", vanity)
@@ -97,6 +98,6 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 		return
 	}
 
-	c.cache.Set(cacheKey, steamID, time.Hour*24)
+	c.cache.Set(cacheKey, steamID, vanityCacheExpr)
 	return
 }
