@@ -8,7 +8,10 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-const tableReport = "report"
+const (
+	tableReport       = "report"
+	reportFieldUserID = "user_id"
+)
 
 var reportSearchFields = []string{"label", "text"}
 
@@ -33,7 +36,7 @@ type reportStorage struct {
 func (s *reportStorage) Find(o core.FindOpts) ([]core.Report, error) {
 	var res []core.Report
 	o.KeywordFields = s.keywordFields
-	q := newFindOptsQuery(s.table(), o)
+	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -48,9 +51,20 @@ func (s *reportStorage) Count(o core.FindOpts) (num int, err error) {
 		Filter:        o.Filter,
 		UserID:        o.UserID,
 	}
-	q := newFindOptsQuery(s.table(), o)
+	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	err = s.db.one(q.Count(), &num)
 	return
+}
+
+// includeRelatedFields injects user details base on market foreign keys.
+func (s *reportStorage) includeRelatedFields(q r.Term) r.Term {
+	return q.
+		EqJoin(reportFieldUserID, r.Table(tableUser)).
+		Map(func(t r.Term) r.Term {
+			return t.Field("left").Merge(map[string]interface{}{
+				tableUser: t.Field("right"),
+			})
+		})
 }
 
 func (s *reportStorage) Get(id string) (*core.Report, error) {

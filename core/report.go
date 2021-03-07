@@ -47,6 +47,8 @@ type (
 		Text      string     `json:"text"       db:"text,omitempty"           valid:"required"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
+		// Include related fields.
+		User *User `json:"user,omitempty" db:"user,omitempty"`
 	}
 
 	// ReportService provides access to report service.
