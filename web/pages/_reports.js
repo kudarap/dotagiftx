@@ -83,9 +83,8 @@ export default function Feedback() {
                     </Typography>
                     {` ${report.text} `}
                     from <Link href={`/profiles/${report.user.steam_id}`}>{report.user.name}</Link>
-                    <em>
-                      <small>{dateFromNow(report.created_at)}</small>
-                    </em>
+                    &nbsp;
+                    {dateFromNow(report.created_at)}
                   </Typography>
                 </li>
               ))}
