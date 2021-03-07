@@ -130,13 +130,8 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 }
 
 func (s *marketService) checkAskType(ask *core.Market) error {
-	// Check ask price should higher than highest bid price.
-	bid, err := s.catalogStg.Index(ask.ItemID)
-	if err != nil {
+	if err := s.restrictMatchingPriceValue(ask); err != nil {
 		return err
-	}
-	if bid.Quantity != 0 && bid.HighestBid > ask.Price {
-		return core.MarketErrInvalidAskPrice
 	}
 
 	// Check Item max offer limit.
@@ -159,13 +154,8 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 }
 
 func (s *marketService) checkBidType(bid *core.Market) error {
-	// Check bid price should lower than lowest ask price.
-	ask, err := s.catalogStg.Index(bid.ItemID)
-	if err != nil {
+	if err := s.restrictMatchingPriceValue(bid); err != nil {
 		return err
-	}
-	if ask.Quantity != 0 && ask.LowestAsk < bid.Price {
-		return core.MarketErrInvalidBidPrice
 	}
 
 	// Remove existing buy order if exists.
@@ -184,6 +174,36 @@ func (s *marketService) checkBidType(bid *core.Market) error {
 		m.Status = core.MarketStatusRemoved
 		if err := s.marketStg.Update(&m); err != nil {
 			return err
+		}
+	}
+
+	return nil
+}
+
+// restrictMatchingPriceValue restricts market price against its counter-part entry.
+// 1. market bid price should lower than lowest ask price.
+// 2. market ask price should higher than highest bid price.
+// This was design to enforced the user to check available offers or orders
+// with desired price value.
+// Update 2021/03/08: It turns out some of the user are picky on which user they
+// want to get the item from, which is very reasonable, and will disable this restriction for now.
+func (s *marketService) restrictMatchingPriceValue(mkt *core.Market) error {
+	switch mkt.Type {
+	case core.MarketTypeAsk:
+		bid, err := s.catalogStg.Index(mkt.ItemID)
+		if err != nil {
+			return err
+		}
+		if bid.Quantity != 0 && bid.HighestBid > mkt.Price {
+			return core.MarketErrInvalidAskPrice
+		}
+	case core.MarketTypeBid:
+		ask, err := s.catalogStg.Index(mkt.ItemID)
+		if err != nil {
+			return err
+		}
+		if ask.Quantity != 0 && ask.LowestAsk < mkt.Price {
+			return core.MarketErrInvalidBidPrice
 		}
 	}
 
