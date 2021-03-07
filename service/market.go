@@ -130,9 +130,9 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 }
 
 func (s *marketService) checkAskType(ask *core.Market) error {
-	if err := s.restrictMatchingPriceValue(ask); err != nil {
-		return err
-	}
+	//if err := s.restrictMatchingPriceValue(ask); err != nil {
+	//	return err
+	//}
 
 	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(core.FindOpts{
@@ -154,9 +154,9 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 }
 
 func (s *marketService) checkBidType(bid *core.Market) error {
-	if err := s.restrictMatchingPriceValue(bid); err != nil {
-		return err
-	}
+	//if err := s.restrictMatchingPriceValue(bid); err != nil {
+	//	return err
+	//}
 
 	// Remove existing buy order if exists.
 	res, err := s.marketStg.Find(core.FindOpts{
