@@ -115,7 +115,7 @@ func (a *application) setup() error {
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	redisClient.BulkDel("")
+	//redisClient.BulkDel("")
 
 	// Server setup.
 	log.Println("setting up http server...")
