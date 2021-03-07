@@ -254,11 +254,13 @@ export async function getServerSideProps({ params, query }) {
   const vanityMode = Boolean(query.vanity)
 
   let profile
+  let canonicalURL
 
   // Check for vanity request.
   if (vanityMode) {
     try {
       profile = await vanity(String(query.vanity))
+      canonicalURL = `${APP_URL}/id/${query.vanity}`
     } catch (e) {
       return {
         props: {
@@ -269,7 +271,6 @@ export async function getServerSideProps({ params, query }) {
 
     // Since not registered user will render differently, should return now.
     if (!profile.is_registered) {
-      const canonicalURL = `${APP_URL}/id/${query.vanity}`
       return {
         props: {
           profile,
@@ -292,23 +293,27 @@ export async function getServerSideProps({ params, query }) {
     }
   }
 
+  // Retrieve initial user market summary.
+  profile.stats = await statsMarketSummary({ type: MARKET_TYPE_ASK, user_id: profile.id })
+
+  // Retrieve initial user market data.
+  let markets = {}
+  let error = null
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
   if (query.filter) {
     filter.q = query.filter
   }
 
-  profile.stats = await statsMarketSummary({ type: MARKET_TYPE_ASK, user_id: profile.id })
-
-  let markets = {}
-  let error = null
   try {
     markets = await marketSearch(filter)
   } catch (e) {
     error = e.message
   }
 
-  const canonicalURL = `${APP_URL}/profiles/${params.id}`
+  // Compose profile page canonical URL.
+
+  canonicalURL = `${APP_URL}/${vanityMode ? 'id' : 'profiles'}/${params.id}`
 
   return {
     props: {
