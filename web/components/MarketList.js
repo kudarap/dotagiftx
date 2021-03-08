@@ -285,7 +285,7 @@ function baseTable(Component) {
         {datatable.data.map((market, idx) => (
           <TableRow key={market.id} hover>
             <TableCell component="th" scope="row" padding="none">
-              <Link href="/profiles/[id]" as={`/profiles/${market.user.steam_id}`} disableUnderline>
+              <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
                 <div className={classes.seller}>
                   <Avatar
                     className={classes.avatar}
