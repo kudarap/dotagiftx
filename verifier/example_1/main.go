@@ -9,20 +9,14 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
-	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/verifier"
 )
 
 func main() {
-	//inv, err := steaminv.SWR("76561198088587178")
-	//fmt.Println(inv, err)
+	assetSrc := steaminv.InventoryAsset
 
-	delivered, _ := getDelivered()
-	verifiedDelivery(delivered)
-}
-
-func verifiedDelivery(markets []core.Market) {
-	var processed, failed, verified int
+	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
 
 	// Benchmark things up.
 	ts := time.Now()
@@ -30,33 +24,49 @@ func verifiedDelivery(markets []core.Market) {
 		fmt.Println(time.Now().Sub(ts))
 	}()
 
-	for _, mkt := range markets {
-		processed++
-		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println(fmt.Sprintf("%s -> %s (%s)", mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name))
-		fmt.Println(strings.Repeat("-", 70))
+	items, _ := getDelivered()
 
-		res, err := verify(mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+	for _, item := range items {
+		status, snaps, err := verifier.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
+
+		fmt.Println(strings.Repeat("-", 70))
+		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))
+		fmt.Println(strings.Repeat("-", 70))
+		fmt.Println("Status:", status)
 		if err != nil {
-			fmt.Println("Error:", err)
-			fmt.Println("")
-			failed++
+			errorCtr++
+			fmt.Printf("Errored: %s \n\n", err)
 			continue
 		}
 
-		fmt.Println("Found:", len(res))
-		if len(res) != 0 {
-			r := res[0]
+		okCtr++
+
+		fmt.Println("Items:", len(snaps))
+		if len(snaps) != 0 {
+			r := snaps[0]
 			fmt.Println("GiftFrom:", r.GiftFrom)
 			fmt.Println("DateReceived:", r.DateReceived)
 			fmt.Println("Dedication:", r.Dedication)
-			verified++
+		}
+
+		switch status {
+		case verifier.VerifyStatusPrivate:
+			privateCtr++
+		case verifier.VerifyStatusNoHit:
+			noHitCtr++
+		case verifier.VerifyStatusItem:
+			itemCtr++
+		case verifier.VerifyStatusSeller:
+			sellerCtr++
 		}
 
 		fmt.Println("")
 	}
 
-	fmt.Println(fmt.Sprintf("%d/%d total | %d error | %d/%d verified", processed, len(markets), failed, processed-verified, verified))
+	fmt.Println(fmt.Sprintf("%d/%d total | %d error", okCtr, len(items), errorCtr))
+	fmt.Println(fmt.Sprintf("%d private | %d nohit | %d item | %d seller",
+		privateCtr, noHitCtr, itemCtr, sellerCtr))
+
 }
 
 func getDelivered() ([]core.Market, error) {
@@ -70,39 +80,13 @@ func getDelivered() ([]core.Market, error) {
 		Data []core.Market
 	}{}
 	b, err := ioutil.ReadAll(resp.Body)
-	if err := json.Unmarshal(b, &data); err != nil {
+	if err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(b, &data); err != nil {
 		return nil, err
 	}
 
 	return data.Data, nil
-}
-
-func verify(sellerPersona, buyerSteamID, itemName string) ([]steam.Asset, error) {
-	inv, err := steaminv.SWR(buyerSteamID)
-	if err != nil {
-		return nil, fmt.Errorf("could not get inventory: %s", err)
-	}
-	if inv == nil {
-		return nil, fmt.Errorf("inventory empty result")
-	}
-
-	var fi []steam.Asset
-	for _, inv := range inv.ToAssets() {
-		// Checking against seller persona name might not be accurate since
-		// buyer can clear gift information that's why it need to snapshot buyer
-		// inventory immediately.
-		if inv.GiftFrom != sellerPersona {
-			//continue
-		}
-
-		// Checks target item name from description and name field.
-		if !strings.Contains(strings.Join(inv.Descriptions, "|"), itemName) &&
-			!strings.Contains(inv.Name, itemName) {
-			continue
-		}
-
-		fi = append(fi, inv)
-	}
-
-	return fi, nil
 }
