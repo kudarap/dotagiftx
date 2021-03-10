@@ -59,21 +59,7 @@ func assetParser(r io.Reader) ([]Asset, error) {
 		return nil, fmt.Errorf(raw.Error)
 	}
 
-	// Collate asset map ids for fast inventory asset id look up.
-	assetMapIDs := map[string]string{}
-	for _, aa := range raw.Assets {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
-	}
-
-	// Composes and collect inventory on flat format.
-	var assets []Asset
-	for ci, ii := range raw.Descriptions {
-		a := ii.toAsset()
-		a.AssetID = assetMapIDs[ci]
-		assets = append(assets, a)
-	}
-
-	return assets, nil
+	return raw.ToAssets(), nil
 }
 
 // RawInventory represents steam's raw inventory data model.
@@ -88,6 +74,24 @@ type RawInventory struct {
 
 func (i RawInventory) IsPrivate() bool {
 	return strings.ToUpper(i.Error) == "THIS PROFILE IS PRIVATE."
+}
+
+func (i *RawInventory) ToAssets() []Asset {
+	// Collate asset map ids for fast inventory asset id look up.
+	assetMapIDs := map[string]string{}
+	for _, aa := range i.Assets {
+		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+	}
+
+	// Composes and collect inventory on flat format.
+	var assets []Asset
+	for ci, ii := range i.Descriptions {
+		a := ii.toAsset()
+		a.AssetID = assetMapIDs[ci]
+		assets = append(assets, a)
+	}
+
+	return assets
 }
 
 // Inventory retrieve data from API and parse into RawInventory.

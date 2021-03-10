@@ -5,7 +5,7 @@ import (
 )
 
 func TestVerifyDelivery(t *testing.T) {
-	t.SkipNow()
+	//t.SkipNow()
 
 	type args struct {
 		sellerPersona string
