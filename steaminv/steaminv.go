@@ -18,6 +18,17 @@ const (
 	freshCacheDur = time.Hour * 24
 )
 
+// InventoryAsset returns a compact format from all inventory data.
+func InventoryAsset(steamID string) ([]steam.Asset, error) {
+	inv, err := SWR(steamID)
+	if err != nil {
+		return nil, err
+	}
+
+	return inv.ToAssets(), nil
+}
+
+// SWR stale-while-re-invalidating crawled data.
 func SWR(steamID string) (*steam.AllInventory, error) {
 	// check for freshly cached inventory
 	//log.Println(steamID, "checking for fresh cache...")
@@ -109,7 +120,7 @@ type Metadata struct {
 func (d Metadata) hasError() error {
 	switch d.Status {
 	case "error:403":
-		return fmt.Errorf("inventory is private")
+		return steam.ErrInventoryPrivate
 	case "error:404":
 		return fmt.Errorf("inventory not found")
 	}
