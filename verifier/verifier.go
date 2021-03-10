@@ -1,12 +1,12 @@
 package verifier
 
-type VerifyStatus uint
+type VerifyStatus string
 
 const (
-	VerifyStatusError = iota
-	VerifyStatusPrivate
-	VerifyStatusItem
-	VerifyStatusSeller
+	VerifyStatusError   VerifyStatus = "error"
+	VerifyStatusPrivate VerifyStatus = "private"
+	VerifyStatusItem    VerifyStatus = "item"
+	VerifyStatusSeller  VerifyStatus = "seller"
 )
 
 type Asset struct {

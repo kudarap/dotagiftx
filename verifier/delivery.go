@@ -30,22 +30,21 @@ process:
 
 */
 
-// VerifyDelivery checks item existence on buyer's inventory.
+// Delivery checks item existence on buyer's inventory.
 //
 // Returns an error when request has status error or body malformed.
-func VerifyDelivery(sellerPersona, buyerSteamID, itemName string) (VerifyStatus, []steam.Asset, error) {
+func Delivery(sellerPersona, buyerSteamID, itemName string) (VerifyStatus, []steam.Asset, error) {
 	if sellerPersona == "" || buyerSteamID == "" || itemName == "" {
-		return 0, nil, fmt.Errorf("all params are required")
+		return VerifyStatusError, nil, fmt.Errorf("all params are required")
 	}
-
-	var status VerifyStatus
 
 	// Pull inventory data using buyerSteamID.
 	assets, err := steam.InventoryAsset(buyerSteamID)
 	if err != nil {
-		status = VerifyStatusError
-		return 0, nil, err
+		return VerifyStatusError, nil, err
 	}
+
+	var status VerifyStatus
 
 	// Check asset existence base on item name.
 	var snapshots []steam.Asset

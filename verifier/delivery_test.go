@@ -26,7 +26,7 @@ func TestVerifyDelivery(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, assets, err := VerifyDelivery(tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
+			got, assets, err := Delivery(tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("VerifyDelivery() error = %v, wantErr %v", err, tt.wantErr)
 				return

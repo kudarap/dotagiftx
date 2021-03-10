@@ -1,6 +1,7 @@
 package steam
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -44,10 +45,18 @@ func InventoryAsset(steamID string) ([]Asset, error) {
 	return assetParser(r.Body)
 }
 
+var ErrInventoryPrivate = errors.New("profile inventory is private")
+
 func assetParser(r io.Reader) ([]Asset, error) {
 	raw, err := inventoryParser(r)
 	if err != nil {
 		return nil, err
+	}
+	if raw.IsPrivate() {
+		return nil, ErrInventoryPrivate
+	}
+	if raw.Error != "" {
+		return nil, fmt.Errorf(raw.Error)
 	}
 
 	// Collate asset map ids for fast inventory asset id look up.
@@ -75,6 +84,10 @@ type RawInventory struct {
 	Assets       map[string]RawInventoryAsset `json:"rgInventory"`
 	Descriptions map[string]RawInventoryDesc  `json:"rgDescriptions"`
 	Error        string                       `json:"Error"`
+}
+
+func (i RawInventory) IsPrivate() bool {
+	return strings.ToUpper(i.Error) == "THIS PROFILE IS PRIVATE."
 }
 
 // Inventory retrieve data from API and parse into RawInventory.
