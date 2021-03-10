@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/kudarap/dotagiftx/steam"
 )
 
 // POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198854433104
@@ -135,16 +137,39 @@ func GetMeta(steamID string) (*Metadata, error) {
 	return m, nil
 }
 
+type AllInventory struct {
+	Assets       []steam.RawInventoryAsset         `json:"allInventory"`
+	Descriptions map[string]steam.RawInventoryDesc `json:"allDescriptions"`
+}
+
+func (i *AllInventory) ToAssets() []steam.Asset {
+	// Collate asset map ids for fast inventory asset id look up.
+	assetMapIDs := map[string]string{}
+	for _, aa := range i.Assets {
+		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+	}
+
+	// Composes and collect inventory on flat format.
+	var assets []steam.Asset
+	for ci, ii := range i.Descriptions {
+		a := ii.ToAsset()
+		a.AssetID = assetMapIDs[ci]
+		assets = append(assets, a)
+	}
+
+	return assets
+}
+
 // https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
 // https://data-gz.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory gzipped
-func Get(steamID string) (*allInventory, error) {
+func Get(steamID string) (*AllInventory, error) {
 	url := fmt.Sprintf("https://data-gz.steaminventory.org/SteamInventory/%s", steamID)
-	raw := &allInventory{}
-	if err := getRequest(url, raw); err != nil {
+	all := &AllInventory{}
+	if err := getRequest(url, all); err != nil {
 		return nil, err
 	}
 
-	return raw, nil
+	return all, nil
 }
 
 const (
@@ -152,7 +177,7 @@ const (
 	retrySleepDur = time.Second * 2
 )
 
-func SWR(steamID string) (*allInventory, error) {
+func SWR(steamID string) (*AllInventory, error) {
 	// check for freshly cached inventory
 	//log.Println(steamID, "checking for fresh cache...")
 	m, err := GetMeta(steamID)

@@ -86,7 +86,7 @@ func (i *RawInventory) ToAssets() []Asset {
 	// Composes and collect inventory on flat format.
 	var assets []Asset
 	for ci, ii := range i.Descriptions {
-		a := ii.toAsset()
+		a := ii.ToAsset()
 		a.AssetID = assetMapIDs[ci]
 		assets = append(assets, a)
 	}
@@ -143,7 +143,7 @@ type RawInventoryDesc struct {
 	Descriptions RawInventoryItemDetails `json:"descriptions"`
 }
 
-func (d RawInventoryDesc) toAsset() Asset {
+func (d RawInventoryDesc) ToAsset() Asset {
 	fi := Asset{
 		Name:  d.Name,
 		Image: d.Image,

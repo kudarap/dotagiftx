@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	inv, err := steaminv.SWR("76561198088587178")
-	fmt.Println(inv, err)
+	//inv, err := steaminv.SWR("76561198088587178")
+	//fmt.Println(inv, err)
 
 	delivered, _ := getDelivered()
 	verifiedDelivery(delivered)
