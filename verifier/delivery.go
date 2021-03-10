@@ -30,19 +30,21 @@ process:
 
 */
 
+type AssetSource func(steamID string) ([]steam.Asset, error)
+
 // Delivery checks item existence on buyer's inventory.
 //
 // Returns an error when request has status error or body malformed.
-func Delivery(sellerPersona, buyerSteamID, itemName string) (VerifyStatus, []steam.Asset, error) {
+func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) (VerifyStatus, []steam.Asset, error) {
 	if sellerPersona == "" || buyerSteamID == "" || itemName == "" {
 		return VerifyStatusError, nil, fmt.Errorf("all params are required")
 	}
 
 	// Pull inventory data using buyerSteamID.
-	assets, err := steam.InventoryAsset(buyerSteamID)
+	assets, err := source(buyerSteamID)
 	if err != nil {
 		if err == steam.ErrInventoryPrivate {
-			return VerifyStatusPrivate, nil, err
+			return VerifyStatusPrivate, nil, nil
 		}
 
 		return VerifyStatusError, nil, err
