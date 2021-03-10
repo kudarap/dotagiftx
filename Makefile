@@ -11,7 +11,7 @@ install:
 run: generate build
 	./$(PROJECTNAME)
 
-build: test
+build:
 	go build -v -ldflags=" \
 		-X main.tag=`git describe --tag --abbrev=0` \
 		-X main.commit=`git rev-parse HEAD` \
@@ -23,10 +23,6 @@ build-linux:
 		-X main.commit=`git rev-parse HEAD` \
 		-X main.built=`date -u +%s`" \
 		-o ./$(PROJECTNAME)_amd64 ./cmd/$(PROJECTNAME)
-test:
-	go test ./verdeliv
-test-cov:
-	go test -v -cover ./verdeliv
 
 generate:
 	go generate ./core

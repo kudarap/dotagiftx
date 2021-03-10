@@ -5,6 +5,8 @@ import (
 )
 
 func TestVerifyDelivery(t *testing.T) {
+	t.SkipNow()
+
 	type args struct {
 		sellerPersona string
 		buyerSteamID  string
@@ -24,6 +26,7 @@ func TestVerifyDelivery(t *testing.T) {
 			"Riddle of the Hierophant",
 		}, VerifyStatusSeller, 5, false},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, assets, err := Delivery(tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
