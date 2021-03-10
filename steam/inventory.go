@@ -12,6 +12,14 @@ import (
 
 var fastjson = jsoniter.ConfigFastest
 
+const Dota2AppID = 570
+const inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json/%d/2"
+
+func reqDota2Inventory(steamID string) (*http.Response, error) {
+	url := fmt.Sprintf(inventoryEndpoint, steamID, Dota2AppID)
+	return http.Get(url)
+}
+
 // Asset represents compact inventory base of RawInventory model.
 type Asset struct {
 	AssetID      string   `json:"asset_id"`
@@ -27,8 +35,13 @@ type Asset struct {
 	Descriptions []string `json:"descriptions"`
 }
 
-func InventoryAsset(steamID string) (*Asset, error) {
-	return nil, nil
+func InventoryAsset(steamID string) ([]Asset, error) {
+	r, err := reqDota2Inventory(steamID)
+	if err != nil {
+		return nil, fmt.Errorf("could send request: %s", err)
+	}
+	defer r.Body.Close()
+	return assetParser(r.Body)
 }
 
 func assetParser(r io.Reader) ([]Asset, error) {
@@ -64,21 +77,14 @@ type RawInventory struct {
 	Error        string                       `json:"Error"`
 }
 
-const (
-	dota2ID           = 570
-	inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json/%d/2"
-)
-
 // Inventory retrieve data from API and parse into RawInventory.
 func Inventory(steamID string) (*RawInventory, error) {
-	url := fmt.Sprintf(inventoryEndpoint, steamID, dota2ID)
-	resp, err := http.Get(url)
+	r, err := reqDota2Inventory(steamID)
 	if err != nil {
 		return nil, fmt.Errorf("could send request: %s", err)
 	}
-	defer resp.Body.Close()
-
-	return inventoryParser(resp.Body)
+	defer r.Body.Close()
+	return inventoryParser(r.Body)
 }
 
 func inventoryParser(r io.Reader) (*RawInventory, error) {
