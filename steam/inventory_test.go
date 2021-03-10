@@ -1,31 +1,32 @@
-package inventory
+package steam
 
 import (
+	"os"
 	"reflect"
 	"testing"
 )
 
-var testAssetData = map[string]asset{
+var testAssetData = map[string]RawInventoryAsset{
 	"100000000": {
 		ID:         "100000000",
 		ClassID:    "3305750400",
 		InstanceID: "3307872803",
 	},
 }
-var descGothicWhisper = description{
+var descGothicWhisper = RawInventoryDesc{
 	ClassID:    "3305750400",
 	InstanceID: "3307872803",
 	Name:       "Gothic Whisper",
 	Image:      "TESTDATA_LARGE_IMAGE",
 	Type:       "Mythical Bundle",
-	Descriptions: itemDetails{
+	Descriptions: RawInventoryItemDetails{
 		{"Used By: Phantom Assassin"},
 		{"The International 2019"},
 		{"Gift From: gippeum"},
 		{"Date Received: Aug 24, 2020 (23:15:11)"},
 	},
 }
-var descEmptyDetails = description{
+var descEmptyDetails = RawInventoryDesc{
 	ClassID:      "3305750400",
 	InstanceID:   "3307872803",
 	Name:         "Gothic Whisper",
@@ -33,19 +34,19 @@ var descEmptyDetails = description{
 	Type:         "Mythical Bundle",
 	Descriptions: nil,
 }
-var descGothicWhisperUnWrapped = description{
+var descGothicWhisperUnWrapped = RawInventoryDesc{
 	ClassID:    "3305750400",
 	InstanceID: "3307872803",
 	Name:       "Gothic Whisper",
 	Image:      "TESTDATA_LARGE_IMAGE",
 	Type:       "Mythical Mysterious Item",
-	Descriptions: itemDetails{
+	Descriptions: RawInventoryItemDetails{
 		{"Contains: Gothic Whisper"},
 		{"Gift From: gippeum"},
 	},
 }
 
-var flatGothicWhisper = flatInventory{
+var flatGothicWhisper = Asset{
 	AssetID:      "100000000",
 	Name:         "Gothic Whisper",
 	Image:        "TESTDATA_LARGE_IMAGE",
@@ -61,25 +62,25 @@ var flatGothicWhisper = flatInventory{
 	},
 }
 
-func Test_newInventoryFromFile(t *testing.T) {
+func Test_inventoryParser(t *testing.T) {
 	type args struct {
 		path string
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    *inventory
+		want    *RawInventory
 		wantErr bool
 	}{
 		{
 			"good base model",
 			args{"./testdata/base_model.json"},
-			&inventory{
+			&RawInventory{
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
 				Assets:    testAssetData,
-				Descriptions: map[string]description{
+				Descriptions: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descGothicWhisper,
 				},
 			},
@@ -88,12 +89,12 @@ func Test_newInventoryFromFile(t *testing.T) {
 		{
 			"paginated",
 			args{"./testdata/paginated.json"},
-			&inventory{
+			&RawInventory{
 				Success:   true,
 				More:      false,
 				MoreStart: 1,
 				Assets:    testAssetData,
-				Descriptions: map[string]description{
+				Descriptions: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descGothicWhisper,
 				},
 			},
@@ -102,12 +103,12 @@ func Test_newInventoryFromFile(t *testing.T) {
 		{
 			"empty item description",
 			args{"./testdata/empty_desc.json"},
-			&inventory{
+			&RawInventory{
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
 				Assets:    testAssetData,
-				Descriptions: map[string]description{
+				Descriptions: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descEmptyDetails,
 				},
 			},
@@ -116,12 +117,12 @@ func Test_newInventoryFromFile(t *testing.T) {
 		{
 			"unwrapped gift",
 			args{"./testdata/unwrapped_gift.json"},
-			&inventory{
+			&RawInventory{
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
 				Assets:    testAssetData,
-				Descriptions: map[string]description{
+				Descriptions: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descGothicWhisperUnWrapped,
 				},
 			},
@@ -130,7 +131,7 @@ func Test_newInventoryFromFile(t *testing.T) {
 		{
 			"success false",
 			args{"./testdata/success_false.json"},
-			&inventory{
+			&RawInventory{
 				Success: false,
 			},
 			false,
@@ -138,7 +139,7 @@ func Test_newInventoryFromFile(t *testing.T) {
 		{
 			"private inventory",
 			args{"./testdata/private.json"},
-			&inventory{
+			&RawInventory{
 				Success: false,
 				Error:   "This profile is private.",
 			},
@@ -159,7 +160,8 @@ func Test_newInventoryFromFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newInventoryFromFile(tt.args.path)
+			r, _ := os.Open(tt.args.path)
+			got, err := inventoryParser(r)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("newInventoryFromFile() \nerror = %v, \nwantErr %v", err, tt.wantErr)
 				return
@@ -171,20 +173,20 @@ func Test_newInventoryFromFile(t *testing.T) {
 	}
 }
 
-func Test_newFlatInventoryFromFile(t *testing.T) {
+func Test_assetParser(t *testing.T) {
 	type args struct {
 		path string
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    []flatInventory
+		want    []Asset
 		wantErr bool
 	}{
 		{
 			"base model",
 			args{"./testdata/base_model.json"},
-			[]flatInventory{
+			[]Asset{
 				flatGothicWhisper,
 			},
 			false,
@@ -192,7 +194,7 @@ func Test_newFlatInventoryFromFile(t *testing.T) {
 		{
 			"empty item description",
 			args{"./testdata/empty_desc.json"},
-			[]flatInventory{
+			[]Asset{
 				{
 					AssetID: "100000000",
 					Name:    "Gothic Whisper",
@@ -218,7 +220,8 @@ func Test_newFlatInventoryFromFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newFlatInventoryFromFile(tt.args.path)
+			r, _ := os.Open(tt.args.path)
+			got, err := assetParser(r)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("newFlatInventoryFromFile() \nerror = %v, \nwantErr %v", err, tt.wantErr)
 				return

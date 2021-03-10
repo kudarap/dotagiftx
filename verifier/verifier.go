@@ -10,7 +10,3 @@ const (
 
 type Asset struct {
 }
-
-func inventory() {
-
-}
