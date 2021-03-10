@@ -53,7 +53,7 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 	}
 
 	// Read file cache if exist, else download.
-	fp := getSource(buyerSteamID)
+	fp := sourcepath(buyerSteamID)
 	var sleep time.Duration
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
 		sleep = time.Minute * 2 // last 4
@@ -90,7 +90,7 @@ func Verify(sellerPersona, buyerSteamID, itemName string) ([]flatInventory, erro
 	return fi, nil
 }
 
-func getSource(steamID string) string {
+func sourcepath(steamID string) string {
 	return filepath.Join(os.TempDir(), fmt.Sprintf(filenameFmt, steamID))
 }
 
@@ -116,7 +116,7 @@ func dlInventory(steamID string) error {
 		return fmt.Errorf("please try again later: %s", data)
 	}
 
-	out, err := os.Create(getSource(steamID))
+	out, err := os.Create(sourcepath(steamID))
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func dlInventory2(steamID string) error {
 	}
 	defer resp.Body.Close()
 
-	out, err := os.Create(getSource(steamID))
+	out, err := os.Create(sourcepath(steamID))
 	if err != nil {
 		return err
 	}
@@ -167,7 +167,7 @@ func dlInventorySurf(steamID string) error {
 	}
 	respStr := html.UnescapeString(bow.Body())
 
-	f, err := os.Create(getSource(steamID))
+	f, err := os.Create(sourcepath(steamID))
 	if err != nil {
 		return err
 	}
