@@ -3,7 +3,8 @@ package verifier
 type VerifyStatus uint
 
 const (
-	VerifyStatusPrivate = iota
+	VerifyStatusError = iota
+	VerifyStatusPrivate
 	VerifyStatusItem
 	VerifyStatusSeller
 )
