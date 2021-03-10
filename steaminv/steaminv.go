@@ -12,6 +12,65 @@ import (
 	"github.com/kudarap/dotagiftx/steam"
 )
 
+const (
+	maxGetRetries = 5
+	retrySleepDur = time.Second * 2
+	freshCacheDur = time.Hour * 24
+)
+
+func SWR(steamID string) (*steam.AllInventory, error) {
+	// check for freshly cached inventory
+	//log.Println(steamID, "checking for fresh cache...")
+	m, err := GetMeta(steamID)
+	if err != nil {
+		return nil, err
+	}
+	if m != nil && m.isCacheFresh() {
+		//log.Println(steamID, "cache is still fresh!")
+		defer func() {
+			if _, err = Crawl(steamID); err != nil {
+				log.Println("error invalidating", err)
+			}
+		}()
+		return Get(steamID)
+	}
+
+	// crawl request
+	//log.Println(steamID, "sending crawl request...")
+	if _, err = Crawl(steamID); err != nil {
+		return nil, err
+	}
+
+	// check for meta until processed with 5 reties
+	for i := 1; i <= maxGetRetries; i++ {
+		//log.Println(steamID, "checking metadata. retry", i, "...")
+		m, err = GetMeta(steamID)
+		if err != nil {
+			return nil, err
+		}
+		if m.Status == "success" {
+			break
+		}
+		time.Sleep(retrySleepDur)
+	}
+
+	// get inventory
+	//log.Println(steamID, "getting inventory...")
+	return Get(steamID)
+}
+
+// https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
+// https://data-gz.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory gzipped
+func Get(steamID string) (*steam.AllInventory, error) {
+	url := fmt.Sprintf("https://data-gz.steaminventory.org/SteamInventory/%s", steamID)
+	all := &steam.AllInventory{}
+	if err := getRequest(url, all); err != nil {
+		return nil, err
+	}
+
+	return all, nil
+}
+
 // POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198854433104
 func Crawl(steamID string) (status string, err error) {
 	url := fmt.Sprintf("https://job.steaminventory.org/ScheduleInventoryCrawl?profile=%s", steamID)
@@ -35,7 +94,7 @@ func Crawl(steamID string) (status string, err error) {
 	return crawlRes.Status, nil
 }
 
-// Metadata represents inventory metadata.
+// Metadata represents reposnse inventory metadata.
 type Metadata struct {
 	Status               string
 	Count                int
@@ -57,8 +116,6 @@ func (d Metadata) hasError() error {
 
 	return nil
 }
-
-const freshCacheDur = time.Hour * 24 // 1 day freshness
 
 func (d Metadata) isCacheFresh() bool {
 	return time.Now().Before(d.LastUpdated.Add(freshCacheDur))
@@ -135,88 +192,6 @@ func GetMeta(steamID string) (*Metadata, error) {
 		return nil, err
 	}
 	return m, nil
-}
-
-// AllInventory represents raw and aggregated inventory.
-type AllInventory struct {
-	Assets       []steam.RawInventoryAsset         `json:"allInventory"`
-	Descriptions map[string]steam.RawInventoryDesc `json:"allDescriptions"`
-}
-
-func (i *AllInventory) ToAssets() []steam.Asset {
-	// Collate asset map ids for fast inventory asset id look up.
-	assetMapIDs := map[string]string{}
-	for _, aa := range i.Assets {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
-	}
-
-	// Composes and collect inventory on flat format.
-	var assets []steam.Asset
-	for ci, ii := range i.Descriptions {
-		a := ii.ToAsset()
-		a.AssetID = assetMapIDs[ci]
-		assets = append(assets, a)
-	}
-
-	return assets
-}
-
-// https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
-// https://data-gz.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory gzipped
-func Get(steamID string) (*AllInventory, error) {
-	url := fmt.Sprintf("https://data-gz.steaminventory.org/SteamInventory/%s", steamID)
-	all := &AllInventory{}
-	if err := getRequest(url, all); err != nil {
-		return nil, err
-	}
-
-	return all, nil
-}
-
-const (
-	maxGetRetries = 5
-	retrySleepDur = time.Second * 2
-)
-
-func SWR(steamID string) (*AllInventory, error) {
-	// check for freshly cached inventory
-	//log.Println(steamID, "checking for fresh cache...")
-	m, err := GetMeta(steamID)
-	if err != nil {
-		return nil, err
-	}
-	if m != nil && m.isCacheFresh() {
-		//log.Println(steamID, "cache is still fresh!")
-		defer func() {
-			if _, err = Crawl(steamID); err != nil {
-				log.Println("error invalidating", err)
-			}
-		}()
-		return Get(steamID)
-	}
-
-	// crawl request
-	//log.Println(steamID, "sending crawl request...")
-	if _, err = Crawl(steamID); err != nil {
-		return nil, err
-	}
-
-	// check for meta until processed with 5 reties
-	for i := 1; i <= maxGetRetries; i++ {
-		//log.Println(steamID, "checking metadata. retry", i, "...")
-		m, err = GetMeta(steamID)
-		if err != nil {
-			return nil, err
-		}
-		if m.Status == "success" {
-			break
-		}
-		time.Sleep(retrySleepDur)
-	}
-
-	// get inventory
-	//log.Println(steamID, "getting inventory...")
-	return Get(steamID)
 }
 
 func getRequest(url string, data interface{}) error {

@@ -13,13 +13,7 @@ import (
 
 var fastjson = jsoniter.ConfigFastest
 
-const Dota2AppID = 570
-const inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json/%d/2"
-
-func reqDota2Inventory(steamID string) (*http.Response, error) {
-	url := fmt.Sprintf(inventoryEndpoint, steamID, Dota2AppID)
-	return http.Get(url)
-}
+var ErrInventoryPrivate = errors.New("profile inventory is private")
 
 // Asset represents compact inventory base of RawInventory model.
 type Asset struct {
@@ -36,6 +30,7 @@ type Asset struct {
 	Descriptions []string `json:"descriptions"`
 }
 
+// InventoryAsset returns a compact format from raw inventory data.
 func InventoryAsset(steamID string) ([]Asset, error) {
 	r, err := reqDota2Inventory(steamID)
 	if err != nil {
@@ -44,8 +39,6 @@ func InventoryAsset(steamID string) ([]Asset, error) {
 	defer r.Body.Close()
 	return assetParser(r.Body)
 }
-
-var ErrInventoryPrivate = errors.New("profile inventory is private")
 
 func assetParser(r io.Reader) ([]Asset, error) {
 	raw, err := inventoryParser(r)
@@ -62,14 +55,38 @@ func assetParser(r io.Reader) ([]Asset, error) {
 	return raw.ToAssets(), nil
 }
 
+// AllInventory represents raw and collated inventory.
+type AllInventory struct {
+	AllInvs  []RawInventoryAsset         `json:"allInventory"`
+	AllDescs map[string]RawInventoryDesc `json:"allDescriptions"`
+}
+
+func (i *AllInventory) ToAssets() []Asset {
+	// Collate asset map ids for fast inventory asset id look up.
+	assetMapIDs := map[string]string{}
+	for _, aa := range i.AllInvs {
+		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+	}
+
+	// Composes and collect inventory on flat format.
+	var assets []Asset
+	for ci, ii := range i.AllDescs {
+		a := ii.ToAsset()
+		a.AssetID = assetMapIDs[ci]
+		assets = append(assets, a)
+	}
+
+	return assets
+}
+
 // RawInventory represents steam's raw inventory data model.
 type RawInventory struct {
-	Success      bool                         `json:"success"`
-	More         bool                         `json:"more"`
-	MoreStart    RawInventoryPageOffset       `json:"more_start"`
-	Assets       map[string]RawInventoryAsset `json:"rgInventory"`
-	Descriptions map[string]RawInventoryDesc  `json:"rgDescriptions"`
-	Error        string                       `json:"Error"`
+	Success   bool                         `json:"success"`
+	More      bool                         `json:"more"`
+	MoreStart RawInventoryPageOffset       `json:"more_start"`
+	RgInvs    map[string]RawInventoryAsset `json:"rgInventory"`
+	RgDescs   map[string]RawInventoryDesc  `json:"rgDescriptions"`
+	Error     string                       `json:"Error"`
 }
 
 func (i RawInventory) IsPrivate() bool {
@@ -79,13 +96,13 @@ func (i RawInventory) IsPrivate() bool {
 func (i *RawInventory) ToAssets() []Asset {
 	// Collate asset map ids for fast inventory asset id look up.
 	assetMapIDs := map[string]string{}
-	for _, aa := range i.Assets {
+	for _, aa := range i.RgInvs {
 		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
 	}
 
 	// Composes and collect inventory on flat format.
 	var assets []Asset
-	for ci, ii := range i.Descriptions {
+	for ci, ii := range i.RgDescs {
 		a := ii.ToAsset()
 		a.AssetID = assetMapIDs[ci]
 		assets = append(assets, a)
@@ -215,6 +232,14 @@ func (po *RawInventoryPageOffset) UnmarshalJSON(data []byte) error {
 	}
 	*po = RawInventoryPageOffset(o)
 	return nil
+}
+
+const Dota2AppID = 570
+const inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json/%d/2"
+
+func reqDota2Inventory(steamID string) (*http.Response, error) {
+	url := fmt.Sprintf(inventoryEndpoint, steamID, Dota2AppID)
+	return http.Get(url)
 }
 
 func extractValueFromPrefix(s, prefix string) (value string, ok bool) {
