@@ -65,7 +65,7 @@ func (i *AllInventory) ToAssets() []Asset {
 	// Collate asset map ids for fast inventory asset id look up.
 	assetMapIDs := map[string]string{}
 	for _, aa := range i.AllInvs {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.AssetID
 	}
 
 	// Composes and collect inventory on flat format.
@@ -136,6 +136,7 @@ func inventoryParser(r io.Reader) (*RawInventory, error) {
 // RawInventoryAsset represents steam's raw asset inventory data model.
 type RawInventoryAsset struct {
 	ID         string `json:"id"`
+	AssetID    string `json:"assetid"` // asset id field for AllInventory
 	ClassID    string `json:"classid"`
 	InstanceID string `json:"instanceid"`
 }
