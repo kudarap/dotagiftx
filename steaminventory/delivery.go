@@ -10,6 +10,9 @@ func VerifyDelivery(sellerPersona, buyerSteamID, itemName string) ([]flatInvento
 	if err != nil {
 		return nil, fmt.Errorf("could not get inventory: %s", err)
 	}
+	if inv == nil {
+		return nil, fmt.Errorf("inventory empty result")
+	}
 
 	res, err := ToFlatFormat(*inv)
 	if err != nil {
