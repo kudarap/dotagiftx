@@ -41,10 +41,14 @@ func Delivery(sellerPersona, buyerSteamID, itemName string) (VerifyStatus, []ste
 	// Pull inventory data using buyerSteamID.
 	assets, err := steam.InventoryAsset(buyerSteamID)
 	if err != nil {
+		if err == steam.ErrInventoryPrivate {
+			return VerifyStatusPrivate, nil, err
+		}
+
 		return VerifyStatusError, nil, err
 	}
 
-	var status VerifyStatus
+	status := VerifyStatusNoHit
 
 	// Check asset existence base on item name.
 	var snapshots []steam.Asset
