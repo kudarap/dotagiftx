@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+var testAssetData = map[string]asset{
+	"100000000": {
+		ID:         "100000000",
+		ClassID:    "3305750400",
+		InstanceID: "3307872803",
+	},
+}
 var descGothicWhisper = description{
 	ClassID:    "3305750400",
 	InstanceID: "3307872803",
@@ -25,6 +32,17 @@ var descEmptyDetails = description{
 	Image:        "TESTDATA_LARGE_IMAGE",
 	Type:         "Mythical Bundle",
 	Descriptions: nil,
+}
+var descGothicWhisperUnWrapped = description{
+	ClassID:    "3305750400",
+	InstanceID: "3307872803",
+	Name:       "Gothic Whisper",
+	Image:      "TESTDATA_LARGE_IMAGE",
+	Type:       "Mythical Mysterious Item",
+	Descriptions: itemDetails{
+		{"Contains: Gothic Whisper"},
+		{"Gift From: gippeum"},
+	},
 }
 
 var flatGothicWhisper = flatInventory{
@@ -60,13 +78,7 @@ func Test_newInventoryFromFile(t *testing.T) {
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
-				Assets: map[string]asset{
-					"100000000": {
-						ID:         "100000000",
-						ClassID:    "3305750400",
-						InstanceID: "3307872803",
-					},
-				},
+				Assets:    testAssetData,
 				Descriptions: map[string]description{
 					"3305750400_3307872803": descGothicWhisper,
 				},
@@ -80,13 +92,7 @@ func Test_newInventoryFromFile(t *testing.T) {
 				Success:   true,
 				More:      false,
 				MoreStart: 1,
-				Assets: map[string]asset{
-					"100000000": {
-						ID:         "100000000",
-						ClassID:    "3305750400",
-						InstanceID: "3307872803",
-					},
-				},
+				Assets:    testAssetData,
 				Descriptions: map[string]description{
 					"3305750400_3307872803": descGothicWhisper,
 				},
@@ -100,15 +106,23 @@ func Test_newInventoryFromFile(t *testing.T) {
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
-				Assets: map[string]asset{
-					"100000000": {
-						ID:         "100000000",
-						ClassID:    "3305750400",
-						InstanceID: "3307872803",
-					},
-				},
+				Assets:    testAssetData,
 				Descriptions: map[string]description{
 					"3305750400_3307872803": descEmptyDetails,
+				},
+			},
+			false,
+		},
+		{
+			"unwrapped gift",
+			args{"./testdata/unwrapped_gift.json"},
+			&inventory{
+				Success:   true,
+				More:      false,
+				MoreStart: 0,
+				Assets:    testAssetData,
+				Descriptions: map[string]description{
+					"3305750400_3307872803": descGothicWhisperUnWrapped,
 				},
 			},
 			false,
