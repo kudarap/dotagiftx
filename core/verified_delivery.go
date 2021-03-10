@@ -28,7 +28,7 @@ const (
 type (
 	VerifiedDeliveryStatus uint
 
-	VerifiedDelivery struct {
+	VerifiedDeliveryX struct {
 		ID           string                 `json:"id"             db:"id,omitempty"`
 		UserID       string                 `json:"user_id"        db:"user_id,omitempty,indexed"    valid:"required"`
 		ItemID       string                 `json:"item_id"        db:"item_id,omitempty,indexed"    valid:"required"`
@@ -44,8 +44,8 @@ type (
 	}
 
 	VerifiedService interface {
-		VerifiedDeliveries(ctx context.Context, opts FindOpts) ([]VerifiedDelivery, *FindMetadata, error)
-		VerifiedDelivery(ctx context.Context, id string) (VerifiedDelivery, error)
+		VerifiedDeliveries(ctx context.Context, opts FindOpts) ([]VerifiedDeliveryX, *FindMetadata, error)
+		VerifiedDelivery(ctx context.Context, id string) (VerifiedDeliveryX, error)
 		Verify(ctx context.Context, marketID, buyerSteamID string) error
 	}
 
@@ -53,21 +53,21 @@ type (
 	}
 )
 
-func NewVerifiedDelivery(userID, itemID, buyerSteamID string) VerifiedDelivery {
-	return VerifiedDelivery{}
+func NewVerifiedDelivery(userID, itemID, buyerSteamID string) VerifiedDeliveryX {
+	return VerifiedDeliveryX{}
 }
 
-func (d VerifiedDelivery) ReduceRawData() string {
+func (d VerifiedDeliveryX) ReduceRawData() string {
 	panic("implement me")
 }
 
-func (d VerifiedDelivery) ParseRawData() string {
+func (d VerifiedDeliveryX) ParseRawData() string {
 	panic("implement me")
 }
 
 // Challenge validates delivery
 // 1. check for gift from the seller
 // 2. check item name
-func (d VerifiedDelivery) Challenge() (passed bool) {
+func (d VerifiedDeliveryX) Challenge() (passed bool) {
 	panic("implement me")
 }
