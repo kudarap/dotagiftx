@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/steaminv"
 )
 
@@ -35,7 +36,7 @@ func verifiedDelivery(markets []core.Market) {
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name))
 		fmt.Println(strings.Repeat("-", 70))
 
-		res, err := steaminv.VerifyDelivery(mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+		res, err := verify(mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 		if err != nil {
 			fmt.Println("Error:", err)
 			fmt.Println("")
@@ -74,4 +75,34 @@ func getDelivered() ([]core.Market, error) {
 	}
 
 	return data.Data, nil
+}
+
+func verify(sellerPersona, buyerSteamID, itemName string) ([]steam.Asset, error) {
+	inv, err := steaminv.SWR(buyerSteamID)
+	if err != nil {
+		return nil, fmt.Errorf("could not get inventory: %s", err)
+	}
+	if inv == nil {
+		return nil, fmt.Errorf("inventory empty result")
+	}
+
+	var fi []steam.Asset
+	for _, inv := range inv.ToAssets() {
+		// Checking against seller persona name might not be accurate since
+		// buyer can clear gift information that's why it need to snapshot buyer
+		// inventory immediately.
+		if inv.GiftFrom != sellerPersona {
+			//continue
+		}
+
+		// Checks target item name from description and name field.
+		if !strings.Contains(strings.Join(inv.Descriptions, "|"), itemName) &&
+			!strings.Contains(inv.Name, itemName) {
+			continue
+		}
+
+		fi = append(fi, inv)
+	}
+
+	return fi, nil
 }

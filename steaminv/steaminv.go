@@ -137,6 +137,7 @@ func GetMeta(steamID string) (*Metadata, error) {
 	return m, nil
 }
 
+// AllInventory represents raw and aggregated inventory.
 type AllInventory struct {
 	Assets       []steam.RawInventoryAsset         `json:"allInventory"`
 	Descriptions map[string]steam.RawInventoryDesc `json:"allDescriptions"`
