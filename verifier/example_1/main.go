@@ -36,8 +36,7 @@ func main() {
 		if err != nil {
 			errorCtr++
 			fmt.Printf("Errored: %s \n\n", err)
-			return
-			//continue
+			continue
 		}
 
 		okCtr++
