@@ -1,4 +1,4 @@
-package verifier
+package verified
 
 type VerifyStatus string
 
@@ -9,6 +9,3 @@ const (
 	VerifyStatusItem    VerifyStatus = "item"
 	VerifyStatusSeller  VerifyStatus = "seller"
 )
-
-type Asset struct {
-}

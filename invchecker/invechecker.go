@@ -13,5 +13,4 @@ func ItemExist(steamID, itemName string) ([]AssetIDs, error) {
 
 func ImportItems() ([]core.Item, error) {
 	panic("implemeneme")
-
 }

@@ -10,7 +10,7 @@ import (
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/steaminv"
-	"github.com/kudarap/dotagiftx/verifier"
+	"github.com/kudarap/dotagiftx/verified"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	items, _ := getDelivered()
 
 	for _, item := range items {
-		status, snaps, err := verifier.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
+		status, snaps, err := verified.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))
@@ -50,13 +50,13 @@ func main() {
 		}
 
 		switch status {
-		case verifier.VerifyStatusPrivate:
+		case verified.VerifyStatusPrivate:
 			privateCtr++
-		case verifier.VerifyStatusNoHit:
+		case verified.VerifyStatusNoHit:
 			noHitCtr++
-		case verifier.VerifyStatusItem:
+		case verified.VerifyStatusItem:
 			itemCtr++
-		case verifier.VerifyStatusSeller:
+		case verified.VerifyStatusSeller:
 			sellerCtr++
 		}
 
