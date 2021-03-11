@@ -17,7 +17,7 @@ func TestVerifyDelivery(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    VerifyStatus
+		want    DeliveryStatus
 		count   int
 		wantErr bool
 	}{
@@ -25,27 +25,27 @@ func TestVerifyDelivery(t *testing.T) {
 			"kudarap",
 			"76561198287849998",
 			"Sylvan Vedette",
-		}, VerifyStatusSeller, 1, false},
+		}, DeliveryStatusSenderVerified, 1, false},
 		{"ok item", args{
 			"Berserk",
 			"76561198355627060",
 			"Shattered Greatsword",
-		}, VerifyStatusItem, 1, false},
+		}, DeliveryStatusNameVerified, 1, false},
 		{"no hit", args{
 			"kudarap",
 			"76561198042690669",
 			"Baby Demon",
-		}, VerifyStatusNoHit, 0, false},
+		}, DeliveryStatusNoHit, 0, false},
 		{"private data", args{
 			"kudarap",
 			"76561198011477544",
 			"Baby Demon",
-		}, VerifyStatusPrivate, 0, false},
+		}, DeliveryStatusPrivate, 0, false},
 		{"bad steam id", args{
 			"kudarap",
 			"76561198011477544_",
 			"Bad Demon",
-		}, VerifyStatusError, 0, true},
+		}, DeliveryStatusError, 0, true},
 	}
 
 	for _, tt := range tests {

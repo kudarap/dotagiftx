@@ -29,30 +29,41 @@ process:
 
 */
 
+// DeliveryStatus represents inventory status.
+type DeliveryStatus uint
+
+const (
+	DeliveryStatusNoHit          DeliveryStatus = 10
+	DeliveryStatusNameVerified   DeliveryStatus = 20
+	DeliveryStatusSenderVerified DeliveryStatus = 30
+	DeliveryStatusPrivate        DeliveryStatus = 40
+	DeliveryStatusError          DeliveryStatus = 50
+)
+
 // Delivery checks item existence on buyer's inventory.
 //
 // Returns an error when request has status error or body malformed.
-func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) (VerifyStatus, []steam.Asset, error) {
+func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) (DeliveryStatus, []steam.Asset, error) {
 	if sellerPersona == "" || buyerSteamID == "" || itemName == "" {
-		return VerifyStatusError, nil, fmt.Errorf("all params are required")
+		return DeliveryStatusError, nil, fmt.Errorf("all params are required")
 	}
 
 	// Pull inventory data using buyerSteamID.
 	assets, err := source(buyerSteamID)
 	if err != nil {
 		if err == steam.ErrInventoryPrivate {
-			return VerifyStatusPrivate, nil, nil
+			return DeliveryStatusPrivate, nil, nil
 		}
 
-		return VerifyStatusError, nil, err
+		return DeliveryStatusError, nil, err
 	}
 
 	assets = filterByName(assets, itemName)
 	if len(assets) == 0 {
-		return VerifyStatusNoHit, assets, nil
+		return DeliveryStatusNoHit, assets, nil
 	}
 
-	status := VerifyStatusItem
+	status := DeliveryStatusNameVerified
 	// Check asset gifter matches the seller persona name.
 	//
 	// NOTE! checking against seller persona name might not be accurate since
@@ -62,7 +73,7 @@ func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) 
 		if ss.GiftFrom != sellerPersona {
 			continue
 		}
-		status = VerifyStatusSeller
+		status = DeliveryStatusSenderVerified
 	}
 
 	return status, assets, nil

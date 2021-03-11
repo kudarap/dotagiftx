@@ -12,8 +12,8 @@ type InventoryStatus uint
 const (
 	InventoryStatusNoHit    InventoryStatus = 10
 	InventoryStatusVerified InventoryStatus = 20
-	InventoryStatusPrivate  InventoryStatus = 30
-	InventoryStatusError    InventoryStatus = 40
+	InventoryStatusPrivate  InventoryStatus = 40
+	InventoryStatusError    InventoryStatus = 50
 )
 
 // Inventory checks item existence on inventory.
