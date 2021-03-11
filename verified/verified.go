@@ -1,5 +1,7 @@
 package verified
 
+import "github.com/kudarap/dotagiftx/steam"
+
 type VerifyStatus string
 
 const (
@@ -9,3 +11,6 @@ const (
 	VerifyStatusItem    VerifyStatus = "item"
 	VerifyStatusSeller  VerifyStatus = "seller"
 )
+
+// AssetSource represents inventory asset source provider.
+type AssetSource func(steamID string) ([]steam.Asset, error)

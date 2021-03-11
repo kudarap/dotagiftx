@@ -30,8 +30,6 @@ process:
 
 */
 
-type AssetSource func(steamID string) ([]steam.Asset, error)
-
 // Delivery checks item existence on buyer's inventory.
 //
 // Returns an error when request has status error or body malformed.
