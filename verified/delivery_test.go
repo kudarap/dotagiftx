@@ -23,9 +23,9 @@ func TestVerifyDelivery(t *testing.T) {
 	}{
 		{"ok seller", args{
 			"kudarap",
-			"76561198042690669",
-			"Riddle of the Hierophant",
-		}, VerifyStatusSeller, 5, false},
+			"76561198287849998",
+			"Sylvan Vedette",
+		}, VerifyStatusSeller, 1, false},
 		{"ok item", args{
 			"Berserk",
 			"76561198355627060",
@@ -77,8 +77,8 @@ func TestVerifyDeliveryMultiSources(t *testing.T) {
 	}{
 		{"ok seller", args{
 			"kudarap",
-			"76561198073410102",
-			"Aspect of Oscilla",
+			"76561198287849998",
+			"Sylvan Vedette",
 		}},
 	}
 
