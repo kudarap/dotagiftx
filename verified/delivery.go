@@ -2,7 +2,6 @@ package verified
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/kudarap/dotagiftx/steam"
 )
@@ -48,30 +47,23 @@ func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) 
 		return VerifyStatusError, nil, err
 	}
 
-	status := VerifyStatusNoHit
-
-	// Check asset existence base on item name.
-	var snapshots []steam.Asset
-	for _, asset := range assets {
-		if !strings.Contains(strings.Join(asset.Descriptions, "|"), itemName) &&
-			!strings.Contains(asset.Name, itemName) {
-			continue
-		}
-		snapshots = append(snapshots, asset)
-		status = VerifyStatusItem
+	assets = filterByName(assets, itemName)
+	if len(assets) == 0 {
+		return VerifyStatusNoHit, assets, nil
 	}
 
-	for _, ss := range snapshots {
-		// Check asset matches the seller persona name.
-		//
-		// Checking against seller persona name might not be accurate since
-		// buyer can clear gift information that's why it need to snapshot
-		// buyer inventory immediately.
+	status := VerifyStatusItem
+	// Check asset gifter matches the seller persona name.
+	//
+	// NOTE! checking against seller persona name might not be accurate since
+	// buyer can clear gift information that's why it need to snapshot
+	// buyer inventory immediately.
+	for _, ss := range assets {
 		if ss.GiftFrom != sellerPersona {
 			continue
 		}
 		status = VerifyStatusSeller
 	}
 
-	return status, snapshots, nil
+	return status, assets, nil
 }

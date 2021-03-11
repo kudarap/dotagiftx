@@ -14,26 +14,26 @@ func TestVerifyInventory(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    VerifyStatus
+		want    InventoryStatus
 		count   int
 		wantErr bool
 	}{
 		{"ok item", args{
 			"76561198355627060",
 			"Shattered Greatsword",
-		}, VerifyStatusItem, 1, false},
+		}, InventoryStatusVerified, 1, false},
 		{"no hit", args{
 			"76561198042690669",
 			"Baby Demon",
-		}, VerifyStatusNoHit, 0, false},
+		}, InventoryStatusNoHit, 0, false},
 		{"private data", args{
 			"76561198011477544",
 			"Baby Demon",
-		}, VerifyStatusPrivate, 0, false},
+		}, InventoryStatusPrivate, 0, false},
 		{"bad steam id", args{
 			"76561_____477544",
 			"Bad Demon",
-		}, VerifyStatusError, 0, true},
+		}, InventoryStatusError, 0, true},
 	}
 
 	for _, tt := range tests {

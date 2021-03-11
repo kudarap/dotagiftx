@@ -2,38 +2,41 @@ package verified
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/kudarap/dotagiftx/steam"
 )
 
-func Inventory(source AssetSource, steamID, itemName string) (VerifyStatus, []steam.Asset, error) {
+// InventoryStatus represents inventory status.
+type InventoryStatus uint
+
+const (
+	InventoryStatusNoHit    InventoryStatus = 10
+	InventoryStatusVerified InventoryStatus = 20
+	InventoryStatusPrivate  InventoryStatus = 30
+	InventoryStatusError    InventoryStatus = 40
+)
+
+// Inventory checks item existence on inventory.
+//
+// Returns an error when request has status error or response body malformed.
+func Inventory(source AssetSource, steamID, itemName string) (InventoryStatus, []steam.Asset, error) {
 	if steamID == "" || itemName == "" {
-		return VerifyStatusError, nil, fmt.Errorf("all params are required")
+		return InventoryStatusError, nil, fmt.Errorf("all params are required")
 	}
 
-	// Pull inventory data using buyerSteamID.
 	assets, err := source(steamID)
 	if err != nil {
 		if err == steam.ErrInventoryPrivate {
-			return VerifyStatusPrivate, nil, nil
+			return InventoryStatusPrivate, nil, nil
 		}
 
-		return VerifyStatusError, nil, err
+		return InventoryStatusError, nil, err
 	}
 
-	status := VerifyStatusNoHit
-
-	// Check asset existence base on item name.
-	var snapshots []steam.Asset
-	for _, asset := range assets {
-		if !strings.Contains(strings.Join(asset.Descriptions, "|"), itemName) &&
-			!strings.Contains(asset.Name, itemName) {
-			continue
-		}
-		snapshots = append(snapshots, asset)
-		status = VerifyStatusItem
+	assets = filterByName(assets, itemName)
+	if len(assets) == 0 {
+		return InventoryStatusNoHit, assets, nil
 	}
 
-	return status, snapshots, nil
+	return InventoryStatusVerified, assets, nil
 }
