@@ -11,12 +11,13 @@ func main() {
 
 	w := worker.New(
 		worker.NewTraineeJob("KARLINGKOMORO"),
-		worker.NewTraineeJob("KUDARAP"),
-		worker.NewTraineeJob("MOMO"),
+		//worker.NewTraineeJob("KUDARAP"),
+		//worker.NewTraineeJob("MOMO"),
 	)
 	go w.Start()
 
 	time.Sleep(time.Second * 9)
+	w.AddJob(worker.NewTraineeJob("IM ON THE FLY JOB"))
 	w.AddJob(worker.NewTraineeRunOnceJob("IM A RUN ONCE JOB"))
 
 	// Initiates early termination will finish the remaining jobs

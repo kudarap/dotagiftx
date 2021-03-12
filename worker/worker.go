@@ -100,6 +100,7 @@ func (w *Worker) runner(ctx context.Context, task Job) {
 	}
 	// Job that has non-zero interval value means its a recurring job
 	// and will be re-queued after its rest duration.
+	w.logger(fmt.Sprintf("REST job:%s will re-queue in %s", task, rest))
 	time.Sleep(rest)
 	w.queueJob(task)
 }

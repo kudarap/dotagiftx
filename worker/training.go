@@ -12,7 +12,7 @@ type Trainee struct {
 }
 
 func NewTraineeJob(name string) *Trainee {
-	return &Trainee{0, name, time.Second / 5}
+	return &Trainee{0, name, time.Second * 5}
 }
 
 func NewTraineeRunOnceJob(name string) *Trainee {
