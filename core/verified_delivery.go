@@ -5,6 +5,20 @@ import (
 	"time"
 )
 
+// Delivery error types.
+const (
+	DeliveryErrNotFound Errors = iota + 6000
+	DeliveryErrRequiredID
+	DeliveryErrRequiredFields
+)
+
+// sets error text definition.
+func init() {
+	appErrorText[DeliveryErrNotFound] = "report not found"
+	appErrorText[DeliveryErrRequiredID] = "report id is required"
+	appErrorText[DeliveryErrRequiredFields] = "report fields are required"
+}
+
 // Delivery statuses.
 const (
 	// DeliveryStatusNoHit buyer's inventory successfully parsed
