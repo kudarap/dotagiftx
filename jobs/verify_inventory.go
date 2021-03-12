@@ -6,7 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/steam"
+	"github.com/kudarap/dotagiftx/steaminv"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
@@ -30,13 +30,13 @@ func (j *VerifyInventory) Run(ctx context.Context) error {
 	opts.Limit = 10
 	opts.Page = 1
 
+	src := steaminv.InventoryAsset
 	for {
 		res, _, err := j.marketSvc.Markets(ctx, opts)
 		if err != nil {
 			return err
 		}
 
-		src := steam.InventoryAsset
 		for _, mkt := range res {
 			status, items, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
 			if err != nil {
