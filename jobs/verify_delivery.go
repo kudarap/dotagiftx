@@ -12,13 +12,13 @@ import (
 
 // VerifyDelivery represents a delivery verification job.
 type VerifyDelivery struct {
-	marketSvc   core.MarketService
 	deliverySvc core.DeliveryService
+	marketSvc   core.MarketService
 	logger      log.Logger
 }
 
-func NewVerifyDelivery(ms core.MarketService, ds core.DeliveryService, lg log.Logger) *VerifyDelivery {
-	return &VerifyDelivery{ms, ds, lg}
+func NewVerifyDelivery(ds core.DeliveryService, ms core.MarketService, lg log.Logger) *VerifyDelivery {
+	return &VerifyDelivery{ds, ms, lg}
 }
 
 func (j *VerifyDelivery) String() string { return "verify_delivery" }

@@ -12,12 +12,13 @@ import (
 
 // VerifyInventory represents a inventory verification job.
 type VerifyInventory struct {
-	marketSvc core.MarketService
-	logger    log.Logger
+	inventorySvc core.InventoryService
+	marketSvc    core.MarketService
+	logger       log.Logger
 }
 
-func NewVerifyInventory(ms core.MarketService, lg log.Logger) *VerifyInventory {
-	return &VerifyInventory{ms, lg}
+func NewVerifyInventory(is core.InventoryService, ms core.MarketService, lg log.Logger) *VerifyInventory {
+	return &VerifyInventory{is, ms, lg}
 }
 
 func (j *VerifyInventory) String() string { return "verify_inventory" }
@@ -38,12 +39,25 @@ func (j *VerifyInventory) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
-			status, items, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
-			if err != nil {
+			// Skip verified statuses.
+			if mkt.InventoryStatus == core.InventoryStatusVerified {
 				continue
 			}
 
-			j.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status, len(items))
+			status, assets, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
+			if err != nil {
+				continue
+			}
+			j.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
+
+			err = j.inventorySvc.Set(ctx, &core.Inventory{
+				MarketID: mkt.ID,
+				Status:   status,
+				Assets:   assets,
+			})
+			if err != nil {
+				j.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+			}
 		}
 
 		// should continue batching?

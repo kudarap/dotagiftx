@@ -3,6 +3,7 @@ package verified
 import (
 	"testing"
 
+	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/steaminv"
 )
 
@@ -14,26 +15,26 @@ func TestVerifyInventory(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    InventoryStatus
+		want    core.InventoryStatus
 		count   int
 		wantErr bool
 	}{
 		{"ok item", args{
 			"76561198355627060",
 			"Shattered Greatsword",
-		}, InventoryStatusVerified, 1, false},
+		}, core.InventoryStatusVerified, 1, false},
 		{"no hit", args{
 			"76561198042690669",
 			"Baby Demon",
-		}, InventoryStatusNoHit, 0, false},
+		}, core.InventoryStatusNoHit, 0, false},
 		{"private data", args{
 			"76561198011477544",
 			"Baby Demon",
-		}, InventoryStatusPrivate, 0, false},
+		}, core.InventoryStatusPrivate, 0, false},
 		{"bad steam id", args{
 			"76561_____477544",
 			"Bad Demon",
-		}, InventoryStatusError, 0, true},
+		}, core.InventoryStatusError, 0, true},
 	}
 
 	for _, tt := range tests {

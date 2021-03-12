@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"strconv"
 	"time"
 )
 
@@ -25,20 +26,9 @@ const (
 	// but the item did not find any in match.
 	InventoryStatusNoHit InventoryStatus = 100
 
-	// InventoryStatusNameVerified item exists on buyer's inventory
-	// base on the item name challenge.
-	//
-	// No-gift info might mean:
-	// 1. Buyer cleared the gift information
-	// 2. Buyer is the original owner of the item
-	// 3. Item might come from another source
-	InventoryStatusNameVerified InventoryStatus = 200
-
-	// InventoryStatusSenderVerified both item existence and gift
-	// information matched the seller's avatar name. We could
-	// also use the date received to check against delivery data
-	// to strengthen its validity.
-	InventoryStatusSenderVerified InventoryStatus = 300
+	// InventoryStatusVerified item exists on inventory base on
+	// the item name challenge.
+	InventoryStatusVerified InventoryStatus = 200
 
 	// InventoryStatusPrivate buyer's inventory is not visible to
 	// public and we can do nothing about it.
@@ -49,18 +39,25 @@ const (
 	InventoryStatusError InventoryStatus = 500
 )
 
+var inventoryStatusTexts = map[InventoryStatus]string{
+	InventoryStatusNoHit:    "no hit",
+	InventoryStatusVerified: "verified",
+	InventoryStatusPrivate:  "private",
+	InventoryStatusError:    "error",
+}
+
 type (
 
-	// InventoryStatus represents delivery status.
+	// InventoryStatus represents inventory status.
 	InventoryStatus uint
 
-	/// Inventory represents steam inventory delivery.
+	/// Inventory represents steam inventory inventory.
 	Inventory struct {
 		ID               string          `json:"id"                 db:"id,omitempty,omitempty"`
-		MarketID         string          `json:"market_id"          db:"market_id,omitempty"`
+		MarketID         string          `json:"market_id"          db:"market_id,omitempty" valid:"required"`
 		BuyerConfirmed   *bool           `json:"buyer_confirmed"    db:"buyer_confirmed,omitempty"`
 		BuyerConfirmedAt *time.Time      `json:"buyer_confirmed_at" db:"buyer_confirmed_at,omitempty"`
-		Status           InventoryStatus `json:"status"             db:"status,omitempty"`
+		Status           InventoryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
 		Assets           []SteamAsset    `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries          int             `json:"retries"            db:"retries,omitempty"`
 		CreatedAt        *time.Time      `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
@@ -69,8 +66,8 @@ type (
 
 	// InventoryService provides access to Inventory service.
 	InventoryService interface {
-		// Deliveries returns a list of inventories.
-		Deliveries(opts FindOpts) ([]Inventory, *FindMetadata, error)
+		// Inventories returns a list of deliveries.
+		Inventories(opts FindOpts) ([]Inventory, *FindMetadata, error)
 
 		// Inventory returns Inventory details by id.
 		Inventory(id string) (*Inventory, error)
@@ -81,10 +78,10 @@ type (
 
 	// InventoryStorage defines operation for Inventory records.
 	InventoryStorage interface {
-		// Find returns a list of inventories from data store.
+		// Find returns a list of deliveries from data store.
 		Find(opts FindOpts) ([]Inventory, error)
 
-		// Count returns number of inventories from data store.
+		// Count returns number of deliveries from data store.
 		Count(FindOpts) (int, error)
 
 		// Get returns Inventory details by id from data store.
@@ -97,3 +94,23 @@ type (
 		Update(*Inventory) error
 	}
 )
+
+// CheckCreate validates field on creating new inventory.
+func (r Inventory) CheckCreate() error {
+	// Check required fields.
+	if err := validator.Struct(r); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// String returns text value of a inventory status.
+func (s InventoryStatus) String() string {
+	t, ok := inventoryStatusTexts[s]
+	if !ok {
+		return strconv.Itoa(int(s))
+	}
+
+	return t
+}

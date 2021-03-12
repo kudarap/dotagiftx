@@ -74,6 +74,7 @@ func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 	cur, _ := s.DeliveryByMarketID(del.MarketID)
 	if cur != nil {
 		del.ID = cur.ID
+		del.Retries = cur.Retries + 1
 		return s.deliveryStg.Update(del)
 	}
 

@@ -99,6 +99,7 @@ func (app *application) setup() error {
 	statsStg := rethink.NewStats(rethinkClient)
 	reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
+	inventoryStg := rethink.NewInventory(rethinkClient)
 
 	// Service inits.
 	logSvc.Println("setting up services...")
@@ -120,6 +121,7 @@ func (app *application) setup() error {
 	statsSvc := service.NewStats(statsStg)
 	reportSvc := service.NewReport(reportStg)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
+	inventorySvc := service.NewInventory(inventoryStg, marketStg)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
@@ -149,8 +151,8 @@ func (app *application) setup() error {
 
 	// Worker setup.
 	wrk := worker.New(
-		jobs.NewVerifyDelivery(marketSvc, deliverySvc, app.contextLog("job_verify_delivery")),
-		jobs.NewVerifyInventory(marketSvc, app.contextLog("job_verify_inventory")),
+		jobs.NewVerifyDelivery(deliverySvc, marketSvc, app.contextLog("job_verify_delivery")),
+		jobs.NewVerifyInventory(inventorySvc, marketSvc, app.contextLog("job_verify_inventory")),
 	)
 	wrk.SetLogger(app.contextLog("worker"))
 	app.worker = wrk

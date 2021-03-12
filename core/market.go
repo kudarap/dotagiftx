@@ -86,7 +86,8 @@ type (
 		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
 
-		DeliveryStatus DeliveryStatus `json:"delivery_status" db:"delivery_status,omitempty"`
+		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty"`
+		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
 
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"user,omitempty"`
