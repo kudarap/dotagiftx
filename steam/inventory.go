@@ -136,8 +136,8 @@ const (
 	inventPrefixGiftFrom     = "Gift From: "
 	inventPrefixDateReceived = "Date Received: "
 	inventPrefixDedication   = "Dedication: "
-	inventFlagGiftOnce       = "( Not Tradable )"
-	inventFlagNotTradable    = "( This item may be gifted once )"
+	inventFlagNotTradable    = "( Not Tradable )"
+	inventFlagGiftOnce       = "( This item may be gifted once )"
 )
 
 // RawInventoryDesc represents steam's raw description inventory data model.
