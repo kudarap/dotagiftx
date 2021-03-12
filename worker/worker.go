@@ -8,26 +8,6 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
-// JobID represents identification for a Job.
-type JobID string
-
-// Job provides process and information for the job.
-type Job interface {
-	// String returns job reference or name.
-	String() string
-
-	// Interval returns sleep duration before re-queueing.
-	//
-	// Returning a zero value will consider run-once job
-	// and will NOT be re-queued.
-	Interval() time.Duration
-
-	// Run process the task of the job.
-	//
-	// Recurring Job will not stop when an error occurred.
-	Run(context.Context) error
-}
-
 // Worker represents worker handling and running tasks.
 type Worker struct {
 	wg    sync.WaitGroup
@@ -49,6 +29,7 @@ func New(jobs ...Job) *Worker {
 	return w
 }
 
+// SetLogger overrides default logger.
 func (w *Worker) SetLogger(l log.Logger) {
 	w.logger = l
 }
