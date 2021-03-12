@@ -79,8 +79,8 @@ func Test_inventoryParser(t *testing.T) {
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
-				Assets:    testAssetData,
-				Descriptions: map[string]RawInventoryDesc{
+				RgInvs:    testAssetData,
+				RgDescs: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descGothicWhisper,
 				},
 			},
@@ -93,8 +93,8 @@ func Test_inventoryParser(t *testing.T) {
 				Success:   true,
 				More:      false,
 				MoreStart: 1,
-				Assets:    testAssetData,
-				Descriptions: map[string]RawInventoryDesc{
+				RgInvs:    testAssetData,
+				RgDescs: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descGothicWhisper,
 				},
 			},
@@ -107,8 +107,8 @@ func Test_inventoryParser(t *testing.T) {
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
-				Assets:    testAssetData,
-				Descriptions: map[string]RawInventoryDesc{
+				RgInvs:    testAssetData,
+				RgDescs: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descEmptyDetails,
 				},
 			},
@@ -121,8 +121,8 @@ func Test_inventoryParser(t *testing.T) {
 				Success:   true,
 				More:      false,
 				MoreStart: 0,
-				Assets:    testAssetData,
-				Descriptions: map[string]RawInventoryDesc{
+				RgInvs:    testAssetData,
+				RgDescs: map[string]RawInventoryDesc{
 					"3305750400_3307872803": descGothicWhisperUnWrapped,
 				},
 			},

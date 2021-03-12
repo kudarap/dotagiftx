@@ -50,13 +50,13 @@ func main() {
 		}
 
 		switch status {
-		case verified.VerifyStatusPrivate:
+		case core.DeliveryStatusPrivate:
 			privateCtr++
-		case verified.VerifyStatusNoHit:
+		case core.DeliveryStatusNoHit:
 			noHitCtr++
-		case verified.VerifyStatusItem:
+		case core.DeliveryStatusNameVerified:
 			itemCtr++
-		case verified.VerifyStatusSeller:
+		case core.DeliveryStatusSenderVerified:
 			sellerCtr++
 		}
 

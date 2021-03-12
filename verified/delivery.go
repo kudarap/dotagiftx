@@ -3,6 +3,7 @@ package verified
 import (
 	"fmt"
 
+	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
@@ -29,41 +30,30 @@ process:
 
 */
 
-// DeliveryStatus represents inventory status.
-type DeliveryStatus uint
-
-const (
-	DeliveryStatusNoHit          DeliveryStatus = 10
-	DeliveryStatusNameVerified   DeliveryStatus = 20
-	DeliveryStatusSenderVerified DeliveryStatus = 30
-	DeliveryStatusPrivate        DeliveryStatus = 40
-	DeliveryStatusError          DeliveryStatus = 50
-)
-
 // Delivery checks item existence on buyer's inventory.
 //
 // Returns an error when request has status error or body malformed.
-func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) (DeliveryStatus, []steam.Asset, error) {
+func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) (core.DeliveryStatus, []steam.Asset, error) {
 	if sellerPersona == "" || buyerSteamID == "" || itemName == "" {
-		return DeliveryStatusError, nil, fmt.Errorf("all params are required")
+		return core.DeliveryStatusError, nil, fmt.Errorf("all params are required")
 	}
 
 	// Pull inventory data using buyerSteamID.
 	assets, err := source(buyerSteamID)
 	if err != nil {
 		if err == steam.ErrInventoryPrivate {
-			return DeliveryStatusPrivate, nil, nil
+			return core.DeliveryStatusPrivate, nil, nil
 		}
 
-		return DeliveryStatusError, nil, err
+		return core.DeliveryStatusError, nil, err
 	}
 
 	assets = filterByName(assets, itemName)
 	if len(assets) == 0 {
-		return DeliveryStatusNoHit, assets, nil
+		return core.DeliveryStatusNoHit, assets, nil
 	}
 
-	status := DeliveryStatusNameVerified
+	status := core.DeliveryStatusNameVerified
 	// Check asset gifter matches the seller persona name.
 	//
 	// NOTE! checking against seller persona name might not be accurate since
@@ -73,7 +63,7 @@ func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) 
 		if ss.GiftFrom != sellerPersona {
 			continue
 		}
-		status = DeliveryStatusSenderVerified
+		status = core.DeliveryStatusSenderVerified
 	}
 
 	return status, assets, nil

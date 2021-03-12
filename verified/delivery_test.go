@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/steaminv"
 )
@@ -17,7 +18,7 @@ func TestVerifyDelivery(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    DeliveryStatus
+		want    core.DeliveryStatus
 		count   int
 		wantErr bool
 	}{
@@ -25,27 +26,27 @@ func TestVerifyDelivery(t *testing.T) {
 			"kudarap",
 			"76561198287849998",
 			"Sylvan Vedette",
-		}, DeliveryStatusSenderVerified, 1, false},
+		}, core.DeliveryStatusSenderVerified, 1, false},
 		{"ok item", args{
 			"Berserk",
 			"76561198355627060",
 			"Shattered Greatsword",
-		}, DeliveryStatusNameVerified, 1, false},
+		}, core.DeliveryStatusNameVerified, 1, false},
 		{"no hit", args{
 			"kudarap",
 			"76561198042690669",
 			"Baby Demon",
-		}, DeliveryStatusNoHit, 0, false},
+		}, core.DeliveryStatusNoHit, 0, false},
 		{"private data", args{
 			"kudarap",
 			"76561198011477544",
 			"Baby Demon",
-		}, DeliveryStatusPrivate, 0, false},
+		}, core.DeliveryStatusPrivate, 0, false},
 		{"bad steam id", args{
 			"kudarap",
 			"76561198011477544_",
 			"Bad Demon",
-		}, DeliveryStatusError, 0, true},
+		}, core.DeliveryStatusError, 0, true},
 	}
 
 	for _, tt := range tests {

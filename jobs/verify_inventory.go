@@ -24,7 +24,6 @@ func (j *VerifyInventory) String() string { return "verify_inventory" }
 
 func (j *VerifyInventory) Interval() time.Duration { return time.Hour }
 
-// TODO batch pulling
 func (j *VerifyInventory) Run(ctx context.Context) error {
 	opts := core.FindOpts{Filter: core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}}
 	opts.Sort = "updated_at:desc"
@@ -32,7 +31,6 @@ func (j *VerifyInventory) Run(ctx context.Context) error {
 	opts.Page = 1
 
 	for {
-		j.logger.Printf("batch #%d", opts.Page)
 		res, _, err := j.marketSvc.Markets(ctx, opts)
 		if err != nil {
 			return err
@@ -45,7 +43,7 @@ func (j *VerifyInventory) Run(ctx context.Context) error {
 				continue
 			}
 
-			j.logger.Println(mkt.User.SteamID, mkt.Item.Name, status, len(items))
+			j.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status, len(items))
 		}
 
 		// should continue batching?
