@@ -44,18 +44,25 @@ func New(jobs ...Job) *Worker {
 //
 // All assigned jobs will be run concurrently.
 func (w *Worker) Start() error {
-	w.logger("running", len(w.jobs), "jobs...")
+	w.logger("running", len(w.jobs), "jobs gracefully...")
 
+	ctx := context.Background()
+
+	// Run registered jobs gracefully on start to
+	// prevents initial burst of server load.
 	go func() {
 		for _, jj := range w.jobs {
-			w.queueJob(jj)
+			w.runner(ctx, jj)
 		}
 	}()
 
-	ctx := context.Background()
+	// Handles job queueing and termination.
 	for {
 		select {
+		// Job queue is now closed and will not run jobs anymore.
+		// Queued jobs will be terminated.
 		case <-w.quit:
+			w.logger(fmt.Sprintf("TERM job:%s", <-w.queue))
 			return nil
 		case job := <-w.queue:
 			go w.runner(ctx, job)
@@ -71,11 +78,11 @@ func (w *Worker) RunOnce() {
 func (w *Worker) runner(ctx context.Context, task Job) {
 	w.wg.Add(1)
 
-	w.logger(fmt.Sprintf("job:%s recv", task))
+	w.logger(fmt.Sprintf("RUNN job:%s", task))
 	if err := task.Run(ctx); err != nil {
-		w.logger(fmt.Sprintf("job:%s error! %s", task, err))
+		w.logger(fmt.Sprintf("ERRO job:%s - %s", task, err))
 	}
-	w.logger(fmt.Sprintf("job:%s done!", task))
+	w.logger(fmt.Sprintf("DONE job:%s", task))
 	w.wg.Done()
 
 	// Determines if the job is run-once by interval value is zero.
@@ -91,7 +98,7 @@ func (w *Worker) runner(ctx context.Context, task Job) {
 
 func (w *Worker) queueJob(j Job) {
 	w.queue <- j
-	w.logger(fmt.Sprintf("job:%s queued", j))
+	w.logger(fmt.Sprintf("QUED job:%s", j))
 }
 
 // Stop will stop accepting job and wait for processing job to finish.

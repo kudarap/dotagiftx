@@ -9,7 +9,7 @@ import (
 func main() {
 
 	w := worker.New(
-		worker.NewTraineeJob("KOKO"),
+		worker.NewTraineeJob("KARLINGKOMORO"),
 		worker.NewTraineeJob("KUDARAP"),
 		worker.NewTraineeJob("MOMO"),
 	)
