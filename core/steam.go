@@ -28,7 +28,7 @@ type (
 
 	// SteamAsset represents a simplified version of inventory item.
 	SteamAsset struct {
-		ID           string   `json:"asset_id"      db:"asset_id,omitempty"`
+		AssetID      string   `json:"asset_id"      db:"asset_id,omitempty"`
 		Name         string   `json:"name"          db:"name,omitempty"`
 		Image        string   `json:"image"         db:"image,omitempty"`
 		Type         string   `json:"type"          db:"type,omitempty"`

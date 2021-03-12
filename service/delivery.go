@@ -8,12 +8,13 @@ import (
 )
 
 // NewDelivery returns new Delivery service.
-func NewDelivery(rs core.DeliveryStorage) core.DeliveryService {
-	return &deliveryService{rs}
+func NewDelivery(rs core.DeliveryStorage, ms core.MarketStorage) core.DeliveryService {
+	return &deliveryService{rs, ms}
 }
 
 type deliveryService struct {
 	deliveryStg core.DeliveryStorage
+	marketStg   core.MarketStorage
 }
 
 func (s *deliveryService) Deliveries(opts core.FindOpts) ([]core.Delivery, *core.FindMetadata, error) {
@@ -43,7 +44,7 @@ func (s *deliveryService) Delivery(id string) (*core.Delivery, error) {
 }
 
 func (s *deliveryService) DeliveryByMarketID(marketID string) (*core.Delivery, error) {
-	res, err := s.deliveryStg.Find(core.FindOpts{Filter: core.Delivery{
+	res, err := s.deliveryStg.Find(core.FindOpts{Filter: &core.Delivery{
 		MarketID: marketID,
 	}})
 	if err != nil {
@@ -61,11 +62,16 @@ func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 		return errors.New(core.DeliveryErrRequiredFields, err)
 	}
 
-	// Just update existing record.
-	cur, err := s.DeliveryByMarketID(del.MarketID)
-	if err != nil {
+	// Update market delivery status.
+	if err := s.marketStg.Update(&core.Market{
+		ID:             del.MarketID,
+		DeliveryStatus: del.Status,
+	}); err != nil {
 		return err
 	}
+
+	// Just update existing record.
+	cur, _ := s.DeliveryByMarketID(del.MarketID)
 	if cur != nil {
 		del.ID = cur.ID
 		return s.deliveryStg.Update(del)

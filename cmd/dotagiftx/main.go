@@ -119,7 +119,7 @@ func (app *application) setup() error {
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	statsSvc := service.NewStats(statsStg)
 	reportSvc := service.NewReport(reportStg)
-	deliverySvc := service.NewDelivery(deliveryStg)
+	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)

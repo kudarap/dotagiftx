@@ -33,7 +33,12 @@ process:
 // Delivery checks item existence on buyer's inventory.
 //
 // Returns an error when request has status error or body malformed.
-func Delivery(source AssetSource, sellerPersona, buyerSteamID, itemName string) (core.DeliveryStatus, []steam.Asset, error) {
+func Delivery(
+	source AssetSource,
+	sellerPersona,
+	buyerSteamID,
+	itemName string,
+) (core.DeliveryStatus, []core.SteamAsset, error) {
 	if sellerPersona == "" || buyerSteamID == "" || itemName == "" {
 		return core.DeliveryStatusError, nil, fmt.Errorf("all params are required")
 	}

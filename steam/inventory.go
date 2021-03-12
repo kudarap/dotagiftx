@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/kudarap/dotagiftx/core"
 )
 
 var fastjson = jsoniter.ConfigFastest
@@ -16,19 +17,7 @@ var fastjson = jsoniter.ConfigFastest
 var ErrInventoryPrivate = errors.New("profile inventory is private")
 
 // Asset represents compact inventory base of RawInventory model.
-type Asset struct {
-	AssetID      string   `json:"asset_id"`
-	Name         string   `json:"name"`
-	Image        string   `json:"image"`
-	Type         string   `json:"type"`
-	Hero         string   `json:"hero"`
-	GiftFrom     string   `json:"gift_from"`
-	DateReceived string   `json:"date_received"`
-	Dedication   string   `json:"dedication"`
-	GiftOnce     bool     `json:"gift_once"`
-	NotTradable  bool     `json:"not_tradable"`
-	Descriptions []string `json:"descriptions"`
-}
+type Asset = core.SteamAsset
 
 // InventoryAsset returns a compact format from raw inventory data.
 func InventoryAsset(steamID string) ([]Asset, error) {

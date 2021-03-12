@@ -45,12 +45,20 @@ func (j *VerifyDelivery) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, items, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+			status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}
+			j.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
-			j.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status, len(items))
+			err = j.deliverySvc.Set(ctx, &core.Delivery{
+				MarketID: mkt.ID,
+				Status:   status,
+				Assets:   assets,
+			})
+			if err != nil {
+				j.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+			}
 		}
 
 		// should continue batching?

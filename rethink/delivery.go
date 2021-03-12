@@ -4,18 +4,17 @@ import (
 	"log"
 
 	"github.com/imdario/mergo"
-
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 const (
-	tableDelivery       = "delivery"
-	deliveryFieldUserID = "user_id"
+	tableDelivery         = "delivery"
+	deliveryFieldMarketID = "market_id"
 )
 
-var deliverySearchFields = []string{"label", "text"}
+var deliverySearchFields = []string{"id", "market_id"}
 
 // NewDelivery creates new instance of delivery data store.
 func NewDelivery(c *Client) core.DeliveryStorage {
@@ -60,13 +59,14 @@ func (s *deliveryStorage) Count(o core.FindOpts) (num int, err error) {
 
 // includeRelatedFields injects user details base on market foreign keys.
 func (s *deliveryStorage) includeRelatedFields(q r.Term) r.Term {
-	return q.
-		EqJoin(deliveryFieldUserID, r.Table(tableUser)).
-		Map(func(t r.Term) r.Term {
-			return t.Field("left").Merge(map[string]interface{}{
-				tableUser: t.Field("right"),
-			})
-		})
+	return q
+	//return q.
+	//	EqJoin(deliveryFieldMarketID, r.Table(tableMarket)).
+	//	Map(func(t r.Term) r.Term {
+	//		return t.Field("left").Merge(map[string]interface{}{
+	//			tableMarket: t.Field("right"),
+	//		})
+	//	})
 }
 
 func (s *deliveryStorage) Get(id string) (*core.Delivery, error) {
