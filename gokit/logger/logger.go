@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
+	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -19,6 +20,15 @@ func Default() *logrus.Logger {
 		FullTimestamp: true,
 	})
 	return l
+}
+
+func WithPrefix(prefix string) *logrus.Entry {
+	formatter := new(prefixed.TextFormatter)
+	formatter.FullTimestamp = true
+
+	l := Default()
+	l.Formatter = formatter
+	return l.WithField("prefix", prefix)
 }
 
 // New returns logger with config.

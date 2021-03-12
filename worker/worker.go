@@ -2,10 +2,12 @@ package worker
 
 import (
 	"context"
-	"fmt"
-	"log"
+	"io"
 	"sync"
 	"time"
+
+	"github.com/kudarap/dotagiftx/gokit/logger"
+	"github.com/sirupsen/logrus"
 )
 
 // JobID represents identification for a Job.
@@ -34,6 +36,8 @@ type Worker struct {
 	quit  chan struct{}
 	queue chan Job
 	jobs  []Job
+
+	logger *logrus.Entry
 }
 
 // New create new instance of a worker with a given jobs.
@@ -43,14 +47,19 @@ func New(jobs ...Job) *Worker {
 	w.quit = make(chan struct{})
 	w.jobs = jobs
 
+	w.logger = logger.WithPrefix("worker")
 	return w
+}
+
+func (w *Worker) SetLogger(out io.Writer) {
+	//w.logger.SetOutput(out)
 }
 
 // Start initiates worker to start running the jobs.
 //
 // All assigned jobs will be run concurrently.
 func (w *Worker) Start() {
-	w.logger("running", len(w.jobs), "jobs gracefully...")
+	w.logger.Infof("running %d jobs gracefully...", len(w.jobs))
 
 	ctx := context.Background()
 
@@ -68,7 +77,7 @@ func (w *Worker) Start() {
 		// Job queue is now closed and will not run jobs anymore.
 		// Queued jobs will be terminated.
 		case <-w.quit:
-			w.logger(fmt.Sprintf("IGNO job:%s", <-w.queue))
+			w.logger.Warnf("IGNO job:%s", <-w.queue)
 			return
 		case job := <-w.queue:
 			go w.runner(ctx, job)
@@ -84,13 +93,13 @@ func (w *Worker) AddJob(j Job) {
 
 // runner process the job and will re-queue them when recurring job.
 func (w *Worker) runner(ctx context.Context, task Job) {
-	w.logger(fmt.Sprintf("RUNN job:%s", task))
+	w.logger.Infof("RUNN job:%s", task)
 	w.wg.Add(1)
 
 	if err := task.Run(ctx); err != nil {
-		w.logger(fmt.Sprintf("ERRO job:%s - %s", task, err))
+		w.logger.Errorf("ERRO job:%s - %s", task, err)
 	}
-	w.logger(fmt.Sprintf("DONE job:%s", task))
+	w.logger.Infof("DONE job:%s", task)
 	w.wg.Done()
 
 	// Determines if the job is run-once by interval value is zero.
@@ -100,28 +109,23 @@ func (w *Worker) runner(ctx context.Context, task Job) {
 	}
 	// Job that has non-zero interval value means its a recurring job
 	// and will be re-queued after its rest duration.
-	w.logger(fmt.Sprintf("REST job:%s will re-queue in %s", task, rest))
+	w.logger.Infof("REST job:%s will re-queue in %s", task, rest)
 	time.Sleep(rest)
 	w.queueJob(task)
 }
 
 func (w *Worker) queueJob(j Job) {
-	w.logger(fmt.Sprintf("QUED job:%s", j))
+	w.logger.Printf("QUED job:%s", j)
 	w.queue <- j
 }
 
 // Stop will stop accepting job and wait for processing job to finish.
 func (w *Worker) Stop() error {
-	w.logger("stopping and waiting for jobs finish...")
+	w.logger.Infof("stopping and waiting for jobs finish...")
 	w.quit <- struct{}{}
 	w.wg.Wait()
-	w.logger("all jobs done!")
+	w.logger.Infof("all jobs done!")
 	return nil
-}
-
-func (w *Worker) logger(v ...interface{}) {
-	v = append([]interface{}{"[worker]"}, v...)
-	log.Println(v...)
 }
 
 // RunOnce will queue the job but it will not register to worker's jobs,
