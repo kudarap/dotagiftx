@@ -23,9 +23,12 @@ type Config struct {
 // Default returns pre-configured logger.
 func Default() *logrus.Logger {
 	l := logrus.New()
-	l.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
-	})
+	//l.SetFormatter(&logrus.TextFormatter{
+	//	FullTimestamp: true,
+	//})
+	formatter := new(prefixed.TextFormatter)
+	formatter.FullTimestamp = true
+	l.Formatter = formatter
 	return l
 }
 
@@ -35,9 +38,6 @@ func DefaultWithPrefix(prefix string) *logrus.Entry {
 }
 
 func WithPrefix(lg *logrus.Logger, prefix string) *logrus.Entry {
-	formatter := new(prefixed.TextFormatter)
-	formatter.FullTimestamp = true
-	lg.Formatter = formatter
 	return lg.WithField("prefix", prefix)
 }
 

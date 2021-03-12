@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/log"
@@ -45,41 +47,43 @@ type application struct {
 	config Config
 	server *http.Server
 	worker *worker.Worker
+	logger *logrus.Logger
 
 	closerFn func()
 }
 
-func (a *application) loadConfig() error {
+func (app *application) loadConfig() error {
 	envconf.EnvPrefix = configPrefix
-	if err := envconf.Load(&a.config); err != nil {
+	if err := envconf.Load(&app.config); err != nil {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
 	return nil
 }
 
-func (a *application) setup() error {
+func (app *application) setup() error {
 	// Logs setup.
 	logger.Println("setting up persistent logs...")
-	logSvc, err := log.New(a.config.Log)
+	logSvc, err := log.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
+	app.logger = logSvc
 
 	// Database setup.
 	logSvc.Println("setting up database...")
-	redisClient, err := setupRedis(a.config.Redis)
+	redisClient, err := setupRedis(app.config.Redis)
 	if err != nil {
 		return err
 	}
-	rethinkClient, err := setupRethink(a.config.Rethink)
+	rethinkClient, err := setupRethink(app.config.Rethink)
 	if err != nil {
 		return err
 	}
 
 	// External services setup.
 	logSvc.Println("setting up external services...")
-	steamClient, err := setupSteam(a.config.Steam, redisClient)
+	steamClient, err := setupSteam(app.config.Steam, redisClient)
 	if err != nil {
 		return err
 	}
@@ -88,7 +92,7 @@ func (a *application) setup() error {
 	logSvc.Println("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
-	catalogStg := rethink.NewCatalog(rethinkClient, logSvc)
+	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
@@ -97,7 +101,7 @@ func (a *application) setup() error {
 
 	// Service inits.
 	logSvc.Println("setting up services...")
-	fileMgr := setupFileManager(a.config)
+	fileMgr := setupFileManager(app.config)
 	userSvc := service.NewUser(userStg, fileMgr)
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
@@ -109,7 +113,7 @@ func (a *application) setup() error {
 		trackStg,
 		catalogStg,
 		steamClient,
-		logSvc,
+		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	statsSvc := service.NewStats(statsStg)
@@ -124,7 +128,7 @@ func (a *application) setup() error {
 	// Server setup.
 	logSvc.Println("setting up http server...")
 	srv := http.NewServer(
-		a.config.SigKey,
+		app.config.SigKey,
 		userSvc,
 		authSvc,
 		imageSvc,
@@ -135,22 +139,22 @@ func (a *application) setup() error {
 		reportSvc,
 		steamClient,
 		redisClient,
-		initVer(a.config),
+		initVer(app.config),
 		logSvc,
 	)
-	srv.Addr = a.config.Addr
-	a.server = srv
+	srv.Addr = app.config.Addr
+	app.server = srv
 
 	// Worker setup.
 	worker := worker.New(
-		jobs.NewVerifyInventory(marketSvc),
+		jobs.NewVerifyInventory(marketSvc, app.contextLog("job_verify_inventory")),
 	)
-	worker.SetLogger(log.WithPrefix(logSvc, "worker"))
-	a.worker = worker
+	worker.SetLogger(app.contextLog("worker"))
+	app.worker = worker
 
-	a.closerFn = func() {
+	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
-		if err = a.worker.Stop(); err != nil {
+		if err = app.worker.Stop(); err != nil {
 			logSvc.Fatal("could not stop worker", err)
 		}
 		if err = redisClient.Close(); err != nil {
@@ -164,12 +168,16 @@ func (a *application) setup() error {
 	return nil
 }
 
-func (a *application) run() error {
-	defer a.closerFn()
+func (app *application) run() error {
+	defer app.closerFn()
 
-	go a.worker.Start()
+	go app.worker.Start()
 
-	return a.server.Run()
+	return app.server.Run()
+}
+
+func (app *application) contextLog(name string) log.Logger {
+	return log.WithPrefix(app.logger, name)
 }
 
 func newApp() *application {
