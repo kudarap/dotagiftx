@@ -2,16 +2,13 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sync"
 	"time"
 )
 
-const (
-	defaultJobInterval = time.Second * 5
-
-	workerLogName = "worker"
-)
+const defaultJobInterval = time.Second * 5
 
 type JobID string
 
@@ -42,7 +39,13 @@ func New(jobs ...Job) *Worker {
 }
 
 func (w *Worker) Start() error {
-	log.Println(workerLogName, "running...")
+	w.logger("running...")
+
+	go func() {
+		for id, _ := range w.jobs {
+			w.queueJob(id)
+		}
+	}()
 
 	ctx := context.Background()
 
@@ -51,20 +54,21 @@ func (w *Worker) Start() error {
 		case <-w.quit:
 			return nil
 		case id := <-w.queue:
-			w.wg.Add(1)
 			go w.runner(ctx, id)
 		}
 	}
 }
 
 func (w *Worker) runner(ctx context.Context, id JobID) {
-	log.Printf("[%s] job[%s] recv", workerLogName, id)
+	w.wg.Add(1)
+
+	w.logger(fmt.Sprintf("job:%s recv", id))
 	job := w.jobs[id]
 	if err := job.Run(ctx); err != nil {
-		log.Printf("[%s] job[%s] error! %s", workerLogName, id, err)
+		w.logger(fmt.Sprintf("job:%s error! %s", id, err))
 	}
 
-	log.Printf("[%s] job[%s] done!", workerLogName, id)
+	w.logger(fmt.Sprintf("job:%s done!", id))
 	w.wg.Done()
 
 	// Rest before next iteration.
@@ -79,12 +83,18 @@ func (w *Worker) runner(ctx context.Context, id JobID) {
 
 func (w *Worker) queueJob(id JobID) {
 	w.queue <- id
+	w.logger(fmt.Sprintf("job:%s queued", id))
 }
 
 func (w *Worker) Stop() error {
-	log.Println(workerLogName, "stopping and waiting for jobs finish...")
+	w.logger("stopping and waiting for jobs finish...")
 	w.quit <- struct{}{}
 	w.wg.Wait()
-	log.Println(workerLogName, "all jobs done!")
+	w.logger("all jobs done!")
 	return nil
+}
+
+func (w *Worker) logger(v ...interface{}) {
+	v = append([]interface{}{"[worker]"}, v...)
+	log.Println(v...)
 }
