@@ -31,10 +31,8 @@ func (hook *Hook) Levels() []log.Level {
 	return hook.LogLevels
 }
 
-const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
-
-var re = regexp.MustCompile(ansi)
+var cleaner = regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
 
 func stripColor(str string) string {
-	return re.ReplaceAllString(str, "")
+	return cleaner.ReplaceAllString(str, "")
 }

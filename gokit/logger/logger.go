@@ -8,6 +8,13 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+const (
+	fileMaxBackups = 10
+	fileMaxSize    = 100 // mega-bytes
+	fileMaxAge     = 90  // days
+)
+
+// Config represents logger settings.
 type Config struct {
 	FileOut string `split_words:"true"`
 	FileErr string `split_words:"true"`
@@ -36,7 +43,7 @@ func New(cfg Config) (*logrus.Logger, error) {
 	l := Default()
 
 	if cfg.FileOut != "" {
-		outF, err := openLogfileWithRotate(cfg.FileOut)
+		outF, err := openLogfileWithRotator(cfg.FileOut)
 		if err != nil {
 			return nil, err
 		}
@@ -45,12 +52,13 @@ func New(cfg Config) (*logrus.Logger, error) {
 			LogLevels: []logrus.Level{
 				logrus.InfoLevel,
 				logrus.DebugLevel,
+				logrus.WarnLevel,
 			},
 		})
 	}
 
 	if cfg.FileErr != "" {
-		errF, err := openLogfileWithRotate(cfg.FileErr)
+		errF, err := openLogfileWithRotator(cfg.FileErr)
 		if err != nil {
 			return nil, err
 		}
@@ -60,7 +68,6 @@ func New(cfg Config) (*logrus.Logger, error) {
 				logrus.PanicLevel,
 				logrus.FatalLevel,
 				logrus.ErrorLevel,
-				logrus.WarnLevel,
 			},
 		})
 	}
@@ -68,13 +75,13 @@ func New(cfg Config) (*logrus.Logger, error) {
 	return l, nil
 }
 
-func openLogfileWithRotate(path string) (*lumberjack.Logger, error) {
+func openLogfileWithRotator(path string) (*lumberjack.Logger, error) {
 	return &lumberjack.Logger{
 		Filename:   path,
-		MaxSize:    500, // megabytes
-		MaxBackups: 3,
-		MaxAge:     28,   // days
-		Compress:   true, // disabled by default
+		MaxSize:    fileMaxSize, // megabytes
+		MaxBackups: fileMaxBackups,
+		MaxAge:     fileMaxAge, // days
+		Compress:   true,       // disabled by default
 	}, nil
 }
 
