@@ -2,12 +2,10 @@ package worker
 
 import (
 	"context"
-	"io"
 	"sync"
 	"time"
 
 	"github.com/kudarap/dotagiftx/gokit/logger"
-	"github.com/sirupsen/logrus"
 )
 
 // JobID represents identification for a Job.
@@ -37,7 +35,7 @@ type Worker struct {
 	queue chan Job
 	jobs  []Job
 
-	logger *logrus.Entry
+	logger logger.Logger
 }
 
 // New create new instance of a worker with a given jobs.
@@ -47,12 +45,12 @@ func New(jobs ...Job) *Worker {
 	w.quit = make(chan struct{})
 	w.jobs = jobs
 
-	w.logger = logger.WithPrefix("worker")
+	w.logger = logger.Default()
 	return w
 }
 
-func (w *Worker) SetLogger(out io.Writer) {
-	//w.logger.SetOutput(out)
+func (w *Worker) SetLogger(l logger.Logger) {
+	w.logger = l
 }
 
 // Start initiates worker to start running the jobs.
