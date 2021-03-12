@@ -139,10 +139,10 @@ func (a *application) setup() error {
 
 	a.closerFn = func() {
 		logSvc.Println("closing connection and shutting server...")
-		if err := redisClient.Close(); err != nil {
+		if err = redisClient.Close(); err != nil {
 			logSvc.Fatal("could not close redis client", err)
 		}
-		if err := rethinkClient.Close(); err != nil {
+		if err = rethinkClient.Close(); err != nil {
 			logSvc.Fatal("could not close rethink client", err)
 		}
 	}
