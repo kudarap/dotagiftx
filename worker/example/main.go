@@ -16,6 +16,9 @@ func main() {
 	)
 	go w.Start()
 
+	time.Sleep(time.Second * 9)
+	w.AddJob(worker.NewTraineeRunOnceJob("IM A RUN ONCE JOB"))
+
 	// Initiates early termination will finish the remaining jobs
 	time.Sleep(time.Minute)
 	if err := w.Stop(); err != nil {

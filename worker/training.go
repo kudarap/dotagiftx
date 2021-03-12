@@ -15,6 +15,10 @@ func NewTraineeJob(name string) *Trainee {
 	return &Trainee{0, name, time.Second / 5}
 }
 
+func NewTraineeRunOnceJob(name string) *Trainee {
+	return &Trainee{0, name, 0}
+}
+
 func (t *Trainee) String() string { return t.name }
 
 func (t *Trainee) Interval() time.Duration { return t.interval }

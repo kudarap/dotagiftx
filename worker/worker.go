@@ -76,8 +76,10 @@ func (w *Worker) Start() {
 	}
 }
 
-func (w *Worker) RunOnce(j Job) {
-
+// AddJob registers a new job while the worker is running.
+func (w *Worker) AddJob(j Job) {
+	w.jobs = append(w.jobs, j)
+	w.queueJob(j)
 }
 
 // runner process the job and will re-queue them when recurring job.
@@ -119,4 +121,16 @@ func (w *Worker) Stop() error {
 func (w *Worker) logger(v ...interface{}) {
 	v = append([]interface{}{"[worker]"}, v...)
 	log.Println(v...)
+}
+
+// RunOnce will queue the job but it will not register to worker's jobs,
+// since its one-time job it will ignore the Interval() value.
+//
+// If you want a recurring Job, you must register it worker constructor.
+// This method is design for on-the-fly indexing or on demand delivery
+// verification.
+//
+// DEPRECATED
+func (w *Worker) RunOnce(j Job) {
+	w.queueJob(j)
 }
