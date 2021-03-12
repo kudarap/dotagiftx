@@ -2,27 +2,28 @@ package worker
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"time"
 )
 
 type Trainee struct {
-	ctr int
+	ctr  int
+	name string
 }
 
-func NewTraineeJob() *Trainee {
-	return &Trainee{}
+func NewTraineeJob(name string) *Trainee {
+	return &Trainee{0, name}
 }
 
 func (t *Trainee) ID() string {
-	return "trainee"
+	return "trainee_" + t.name
 }
 
 func (t *Trainee) Run(ctx context.Context) error {
-	fmt.Println("WORKER IS NOW TRAINING! started", t.ctr)
-	time.Sleep(time.Second * 10)
-	fmt.Println("WORKER IS NOW TRAINING! ended", t.ctr)
 	t.ctr++
+	log.Println(t.name, "started working on #", t.ctr)
+	time.Sleep(time.Second * time.Duration(len(t.name)))
+	log.Println(t.name, "finished working on #", t.ctr)
 	return nil
 }
 

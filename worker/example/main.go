@@ -8,8 +8,14 @@ import (
 
 func main() {
 
-	w := worker.New(worker.NewTraineeJob())
+	w := worker.New(
+		worker.NewTraineeJob("KOKO"),
+		worker.NewTraineeJob("KUDARAP"),
+		worker.NewTraineeJob("MOMO"),
+	)
 	go w.Start()
-	time.Sleep(time.Second / 5)
+
+	// Initiates early termination will finish the remaining jobs
+	time.Sleep(time.Minute)
 	w.Stop()
 }
