@@ -16,8 +16,8 @@ type VerifyInventory struct {
 	marketSvc core.MarketService
 }
 
-func NewVerifyInventory() *VerifyInventory {
-	return &VerifyInventory{}
+func NewVerifyInventory(marketSvc core.MarketService) *VerifyInventory {
+	return &VerifyInventory{marketSvc}
 }
 
 func (v *VerifyInventory) String() string { return "verify_inventory" }

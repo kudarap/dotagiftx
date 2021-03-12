@@ -9,10 +9,12 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/http"
+	"github.com/kudarap/dotagiftx/jobs"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
+	"github.com/kudarap/dotagiftx/worker"
 )
 
 const configPrefix = "DG"
@@ -40,8 +42,10 @@ func main() {
 }
 
 type application struct {
-	config   Config
-	server   *http.Server
+	config Config
+	server *http.Server
+	worker *worker.Worker
+
 	closerFn func()
 }
 
@@ -137,8 +141,18 @@ func (a *application) setup() error {
 	srv.Addr = a.config.Addr
 	a.server = srv
 
+	// Worker setup.
+	worker := worker.New(
+		jobs.NewVerifyInventory(marketSvc),
+	)
+	worker.SetLogger(log.WithPrefix(logSvc, "worker"))
+	a.worker = worker
+
 	a.closerFn = func() {
-		logSvc.Println("closing connection and shutting server...")
+		logSvc.Println("closing and stopping app...")
+		if err = a.worker.Stop(); err != nil {
+			logSvc.Fatal("could not stop worker", err)
+		}
 		if err = redisClient.Close(); err != nil {
 			logSvc.Fatal("could not close redis client", err)
 		}
@@ -152,6 +166,9 @@ func (a *application) setup() error {
 
 func (a *application) run() error {
 	defer a.closerFn()
+
+	go a.worker.Start()
+
 	return a.server.Run()
 }
 

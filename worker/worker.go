@@ -10,10 +10,11 @@ import (
 
 // Worker represents worker handling and running tasks.
 type Worker struct {
-	wg    sync.WaitGroup
-	quit  chan struct{}
-	queue chan Job
-	jobs  []Job
+	wg     sync.WaitGroup
+	quit   chan struct{}
+	queue  chan Job
+	jobs   []Job
+	closed bool
 
 	logger log.Logger
 }
@@ -81,9 +82,10 @@ func (w *Worker) runner(ctx context.Context, task Job) {
 	w.logger.Infof("DONE job:%s", task)
 	w.wg.Done()
 
-	// Determines if the job is run-once by interval value is zero.
+	// Determines if the job is run-once by interval value is zero,
+	// or the worker queue is now closed.
 	rest := task.Interval()
-	if rest == 0 {
+	if rest == 0 || w.closed {
 		return
 	}
 	// Job that has non-zero interval value means its a recurring job
@@ -100,8 +102,9 @@ func (w *Worker) queueJob(j Job) {
 
 // Stop will stop accepting job and wait for processing job to finish.
 func (w *Worker) Stop() error {
-	w.logger.Infof("stopping and waiting for jobs finish...")
+	w.logger.Infof("stopping and waiting for jobs to finish...")
 	w.quit <- struct{}{}
+	w.closed = true
 	w.wg.Wait()
 	w.logger.Infof("all jobs done!")
 	return nil
