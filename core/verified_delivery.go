@@ -57,10 +57,10 @@ type (
 	/// Delivery represents steam inventory delivery.
 	Delivery struct {
 		ID               string         `json:"id"                 db:"id,omitempty,omitempty"`
-		MarketID         string         `json:"market_id"          db:"market_id,omitempty"`
+		MarketID         string         `json:"market_id"          db:"market_id,omitempty" valid:"required"`
 		BuyerConfirmed   *bool          `json:"buyer_confirmed"    db:"buyer_confirmed,omitempty"`
 		BuyerConfirmedAt *time.Time     `json:"buyer_confirmed_at" db:"buyer_confirmed_at,omitempty"`
-		Status           DeliveryStatus `json:"status"             db:"status,omitempty"`
+		Status           DeliveryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
 		Assets           []SteamAsset   `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries          int            `json:"retries"            db:"retries,omitempty"`
 		CreatedAt        *time.Time     `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
@@ -97,3 +97,13 @@ type (
 		Update(*Delivery) error
 	}
 )
+
+// CheckCreate validates field on creating new delivery.
+func (r Delivery) CheckCreate() error {
+	// Check required fields.
+	if err := validator.Struct(r); err != nil {
+		return err
+	}
+
+	return nil
+}
