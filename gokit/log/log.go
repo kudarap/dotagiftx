@@ -29,13 +29,16 @@ func Default() *logrus.Logger {
 	return l
 }
 
-func WithPrefix(prefix string) *logrus.Entry {
+// DefaultWithPrefix returns a default instance of logger with prefix.
+func DefaultWithPrefix(prefix string) *logrus.Entry {
+	return WithPrefix(Default(), prefix)
+}
+
+func WithPrefix(lg *logrus.Logger, prefix string) *logrus.Entry {
 	formatter := new(prefixed.TextFormatter)
 	formatter.FullTimestamp = true
-
-	l := Default()
-	l.Formatter = formatter
-	return l.WithField("prefix", prefix)
+	lg.Formatter = formatter
+	return lg.WithField("prefix", prefix)
 }
 
 // New returns logger with config.
