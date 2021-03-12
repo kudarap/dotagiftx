@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"time"
 
 	"github.com/kudarap/dotagiftx/worker"
@@ -17,5 +18,7 @@ func main() {
 
 	// Initiates early termination will finish the remaining jobs
 	time.Sleep(time.Minute)
-	w.Stop()
+	if err := w.Stop(); err != nil {
+		log.Println("could not stop worker:", err)
+	}
 }

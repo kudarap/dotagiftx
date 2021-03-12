@@ -13,13 +13,19 @@ type JobID string
 
 // Job provides process and information for the job.
 type Job interface {
-	ID() string
-	Task
-}
+	// String returns job reference or name.
+	String() string
 
-type Task interface {
-	Run(context.Context) error
+	// Interval returns sleep duration before re-queueing.
+	//
+	// Returning a zero value will consider run-once job
+	// and will NOT be re-queued.
 	Interval() time.Duration
+
+	// Run process the task of the job.
+	//
+	// Recurring Job will not stop when an error occurred.
+	Run(context.Context) error
 }
 
 // Worker represents worker handling and running tasks.
@@ -43,7 +49,7 @@ func New(jobs ...Job) *Worker {
 // Start initiates worker to start running the jobs.
 //
 // All assigned jobs will be run concurrently.
-func (w *Worker) Start() error {
+func (w *Worker) Start() {
 	w.logger("running", len(w.jobs), "jobs gracefully...")
 
 	ctx := context.Background()
@@ -62,23 +68,23 @@ func (w *Worker) Start() error {
 		// Job queue is now closed and will not run jobs anymore.
 		// Queued jobs will be terminated.
 		case <-w.quit:
-			w.logger(fmt.Sprintf("TERM job:%s", <-w.queue))
-			return nil
+			w.logger(fmt.Sprintf("IGNO job:%s", <-w.queue))
+			return
 		case job := <-w.queue:
 			go w.runner(ctx, job)
 		}
 	}
 }
 
-func (w *Worker) RunOnce() {
+func (w *Worker) RunOnce(j Job) {
 
 }
 
 // runner process the job and will re-queue them when recurring job.
 func (w *Worker) runner(ctx context.Context, task Job) {
+	w.logger(fmt.Sprintf("RUNN job:%s", task))
 	w.wg.Add(1)
 
-	w.logger(fmt.Sprintf("RUNN job:%s", task))
 	if err := task.Run(ctx); err != nil {
 		w.logger(fmt.Sprintf("ERRO job:%s - %s", task, err))
 	}
@@ -97,8 +103,8 @@ func (w *Worker) runner(ctx context.Context, task Job) {
 }
 
 func (w *Worker) queueJob(j Job) {
-	w.queue <- j
 	w.logger(fmt.Sprintf("QUED job:%s", j))
+	w.queue <- j
 }
 
 // Stop will stop accepting job and wait for processing job to finish.

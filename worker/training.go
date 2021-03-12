@@ -15,9 +15,7 @@ func NewTraineeJob(name string) *Trainee {
 	return &Trainee{0, name, time.Second / 5}
 }
 
-func (t *Trainee) ID() string { return t.name }
-
-func (t *Trainee) String() string { return t.ID() }
+func (t *Trainee) String() string { return t.name }
 
 func (t *Trainee) Interval() time.Duration { return t.interval }
 
