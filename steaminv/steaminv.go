@@ -14,8 +14,8 @@ import (
 
 const (
 	maxGetRetries = 5
-	retrySleepDur = time.Second * 2
-	freshCacheDur = time.Hour * 24
+	retrySleepDur = time.Second * 5
+	freshCacheDur = time.Hour
 )
 
 // InventoryAsset returns a compact format from all inventory data.
@@ -82,7 +82,7 @@ func Get(steamID string) (*steam.AllInventory, error) {
 	return all, nil
 }
 
-// POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198854433104
+// POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198088587178
 func Crawl(steamID string) (status string, err error) {
 	url := fmt.Sprintf("https://job.steaminventory.org/ScheduleInventoryCrawl?profile=%s", steamID)
 	res, err := http.Post(url, "", nil)
