@@ -7,7 +7,7 @@ import (
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/sirupsen/logrus"
+	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
 // NewMarket returns new Market service.
@@ -18,7 +18,7 @@ func NewMarket(
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
 	sc core.SteamClient,
-	lg *logrus.Logger,
+	lg log.Logger,
 ) core.MarketService {
 	return &marketService{ss, us, is, ts, cs, sc, lg}
 }
@@ -30,7 +30,7 @@ type marketService struct {
 	trackStg   core.TrackStorage
 	catalogStg core.CatalogStorage
 	steam      core.SteamClient
-	logger     *logrus.Logger
+	logger     log.Logger
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {

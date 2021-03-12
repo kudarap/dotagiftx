@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kudarap/dotagiftx/gokit/logger"
+	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
 // JobID represents identification for a Job.
@@ -35,7 +35,7 @@ type Worker struct {
 	queue chan Job
 	jobs  []Job
 
-	logger logger.Logger
+	logger log.Logger
 }
 
 // New create new instance of a worker with a given jobs.
@@ -45,11 +45,11 @@ func New(jobs ...Job) *Worker {
 	w.quit = make(chan struct{})
 	w.jobs = jobs
 
-	w.logger = logger.Default()
+	w.logger = log.Default()
 	return w
 }
 
-func (w *Worker) SetLogger(l logger.Logger) {
+func (w *Worker) SetLogger(l log.Logger) {
 	w.logger = l
 }
 

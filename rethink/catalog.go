@@ -2,7 +2,6 @@ package rethink
 
 import (
 	"fmt"
-	"log"
 	"math"
 	"time"
 
@@ -10,29 +9,29 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/sirupsen/logrus"
+	"github.com/kudarap/dotagiftx/gokit/log"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
-func NewCatalog(c *Client, logger *logrus.Logger) core.CatalogStorage {
+func NewCatalog(c *Client, lg log.Logger) core.CatalogStorage {
 	if err := c.autoMigrate(tableCatalog); err != nil {
-		log.Fatalf("could not create %s table: %s", tableCatalog, err)
+		lg.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
 
 	if err := c.autoIndex(tableCatalog, core.Catalog{}); err != nil {
-		log.Fatalf("could not create index on %s table: %s", tableCatalog, err)
+		lg.Fatalf("could not create index on %s table: %s", tableCatalog, err)
 	}
 
-	return &catalogStorage{c, itemSearchFields, logger}
+	return &catalogStorage{c, itemSearchFields, lg}
 }
 
 type catalogStorage struct {
 	db            *Client
 	keywordFields []string
-	logger        *logrus.Logger
+	logger        log.Logger
 }
 
 func (s *catalogStorage) Trending() ([]core.Catalog, error) {

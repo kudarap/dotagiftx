@@ -6,7 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
-	"github.com/kudarap/dotagiftx/gokit/logger"
+	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/redis"
@@ -17,26 +17,26 @@ import (
 
 const configPrefix = "DG"
 
-var log = logger.Default()
+var logger = log.Default()
 
 func main() {
 	app := newApp()
 
-	log.Println("loading config...")
+	logger.Println("loading config...")
 	if err := app.loadConfig(); err != nil {
-		log.Fatalln("could not load config:", err)
+		logger.Fatalln("could not load config:", err)
 	}
 
-	log.Println("setting up...")
+	logger.Println("setting up...")
 	if err := app.setup(); err != nil {
-		log.Fatalln("could not setup:", err)
+		logger.Fatalln("could not setup:", err)
 	}
 
-	log.Println("running app...")
+	logger.Println("running app...")
 	if err := app.run(); err != nil {
-		log.Fatalln("could not run:", err)
+		logger.Fatalln("could not run:", err)
 	}
-	log.Println("stopped!")
+	logger.Println("stopped!")
 }
 
 type application struct {
@@ -56,14 +56,14 @@ func (a *application) loadConfig() error {
 
 func (a *application) setup() error {
 	// Logs setup.
-	log.Println("setting up persistent logs...")
-	log, err := logger.New(a.config.Log)
+	logger.Println("setting up persistent logs...")
+	logSvc, err := log.New(a.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
 
 	// Database setup.
-	log.Println("setting up database...")
+	logSvc.Println("setting up database...")
 	redisClient, err := setupRedis(a.config.Redis)
 	if err != nil {
 		return err
@@ -74,17 +74,17 @@ func (a *application) setup() error {
 	}
 
 	// External services setup.
-	log.Println("setting up external services...")
+	logSvc.Println("setting up external services...")
 	steamClient, err := setupSteam(a.config.Steam, redisClient)
 	if err != nil {
 		return err
 	}
 
 	// Storage inits.
-	log.Println("setting up data stores...")
+	logSvc.Println("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
-	catalogStg := rethink.NewCatalog(rethinkClient, log)
+	catalogStg := rethink.NewCatalog(rethinkClient, logSvc)
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
@@ -92,7 +92,7 @@ func (a *application) setup() error {
 	reportStg := rethink.NewReport(rethinkClient)
 
 	// Service inits.
-	log.Println("setting up services...")
+	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(a.config)
 	userSvc := service.NewUser(userStg, fileMgr)
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
@@ -105,7 +105,7 @@ func (a *application) setup() error {
 		trackStg,
 		catalogStg,
 		steamClient,
-		log,
+		logSvc,
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	statsSvc := service.NewStats(statsStg)
@@ -118,7 +118,7 @@ func (a *application) setup() error {
 	//redisClient.BulkDel("")
 
 	// Server setup.
-	log.Println("setting up http server...")
+	logSvc.Println("setting up http server...")
 	srv := http.NewServer(
 		a.config.SigKey,
 		userSvc,
@@ -132,18 +132,18 @@ func (a *application) setup() error {
 		steamClient,
 		redisClient,
 		initVer(a.config),
-		log,
+		logSvc,
 	)
 	srv.Addr = a.config.Addr
 	a.server = srv
 
 	a.closerFn = func() {
-		log.Println("closing connection and shutting server...")
+		logSvc.Println("closing connection and shutting server...")
 		if err := redisClient.Close(); err != nil {
-			log.Fatal("could not close redis client", err)
+			logSvc.Fatal("could not close redis client", err)
 		}
 		if err := rethinkClient.Close(); err != nil {
-			log.Fatal("could not close rethink client", err)
+			logSvc.Fatal("could not close rethink client", err)
 		}
 	}
 
@@ -211,7 +211,7 @@ func connRetry(name string, fn func() error) error {
 	// Catches a panic to retry.
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
+			logger.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
 			time.Sleep(delay)
 			err = connRetry(name, fn)
 		}
