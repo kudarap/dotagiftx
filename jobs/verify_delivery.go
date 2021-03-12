@@ -39,6 +39,12 @@ func (j *VerifyDelivery) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
+			// Skip verified statuses.
+			if mkt.DeliveryStatus == core.DeliveryStatusNameVerified ||
+				mkt.DeliveryStatus == core.DeliveryStatusSenderVerified {
+				continue
+			}
+
 			status, items, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue

@@ -42,9 +42,33 @@ func (s *deliveryService) Delivery(id string) (*core.Delivery, error) {
 	return s.deliveryStg.Get(id)
 }
 
+func (s *deliveryService) DeliveryByMarketID(marketID string) (*core.Delivery, error) {
+	res, err := s.deliveryStg.Find(core.FindOpts{Filter: core.Delivery{
+		MarketID: marketID,
+	}})
+	if err != nil {
+		return nil, err
+	}
+	if len(res) == 0 {
+		return nil, core.DeliveryErrNotFound
+	}
+
+	return &res[0], nil
+}
+
 func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 	if err := del.CheckCreate(); err != nil {
 		return errors.New(core.DeliveryErrRequiredFields, err)
+	}
+
+	// Just update existing record.
+	cur, err := s.DeliveryByMarketID(del.MarketID)
+	if err != nil {
+		return err
+	}
+	if cur != nil {
+		del.ID = cur.ID
+		return s.deliveryStg.Update(del)
 	}
 
 	return s.deliveryStg.Create(del)

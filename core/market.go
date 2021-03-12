@@ -201,7 +201,7 @@ func (m *Market) SetDefaults() {
 	}
 }
 
-// String returns text value of a post status.
+// String returns text value of a market status.
 func (s MarketStatus) String() string {
 	t, ok := MarketStatusTexts[s]
 	if !ok {

@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"strconv"
 	"time"
 )
 
@@ -48,6 +49,14 @@ const (
 	// parsing inventory error.
 	DeliveryStatusError DeliveryStatus = 500
 )
+
+var deliveryStatusTexts = map[DeliveryStatus]string{
+	DeliveryStatusNoHit:          "no hit",
+	DeliveryStatusNameVerified:   "name verified",
+	DeliveryStatusSenderVerified: "sender verified",
+	DeliveryStatusPrivate:        "private",
+	DeliveryStatusError:          "error",
+}
 
 type (
 
@@ -106,4 +115,14 @@ func (r Delivery) CheckCreate() error {
 	}
 
 	return nil
+}
+
+// String returns text value of a delivery status.
+func (s DeliveryStatus) String() string {
+	t, ok := deliveryStatusTexts[s]
+	if !ok {
+		return strconv.Itoa(int(s))
+	}
+
+	return t
 }

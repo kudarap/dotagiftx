@@ -47,7 +47,7 @@ func (w *Worker) Start() {
 	// prevents initial burst of server load.
 	go func() {
 		for _, jj := range w.jobs {
-			w.runner(ctx, jj)
+			w.runner(ctx, jj, true)
 		}
 	}()
 
@@ -57,10 +57,10 @@ func (w *Worker) Start() {
 		// Job queue is now closed and will not run jobs anymore.
 		// Queued jobs will be terminated.
 		case <-w.quit:
-			w.logger.Warnf("IGNO job:%s", <-w.queue)
+			w.logger.Warnf("SKIP job:%s", <-w.queue)
 			return
 		case job := <-w.queue:
-			go w.runner(ctx, job)
+			go w.runner(ctx, job, false)
 		}
 	}
 }
@@ -72,7 +72,7 @@ func (w *Worker) AddJob(j Job) {
 }
 
 // runner process the job and will re-queue them when recurring job.
-func (w *Worker) runner(ctx context.Context, task Job) {
+func (w *Worker) runner(ctx context.Context, task Job, skipSleep bool) {
 	w.logger.Infof("RUNN job:%s", task)
 	w.wg.Add(1)
 
@@ -88,10 +88,13 @@ func (w *Worker) runner(ctx context.Context, task Job) {
 	if rest == 0 || w.closed {
 		return
 	}
+
 	// Job that has non-zero interval value means its a recurring job
 	// and will be re-queued after its rest duration.
-	w.logger.Infof("REST job:%s will re-queue in %s", task, rest)
-	time.Sleep(rest)
+	if !skipSleep {
+		w.logger.Infof("REST job:%s will re-queue in %s", task, rest)
+		time.Sleep(rest)
+	}
 	w.queueJob(task)
 }
 
