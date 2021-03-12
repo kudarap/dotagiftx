@@ -22,24 +22,36 @@ func NewVerifyInventory(ms core.MarketService, lg log.Logger) *VerifyInventory {
 
 func (j *VerifyInventory) String() string { return "verify_inventory" }
 
-func (j *VerifyInventory) Interval() time.Duration { return time.Minute * 2 }
+func (j *VerifyInventory) Interval() time.Duration { return time.Hour }
 
+// TODO batch pulling
 func (j *VerifyInventory) Run(ctx context.Context) error {
-	o := core.FindOpts{Filter: core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}}
-	res, _, err := j.marketSvc.Markets(ctx, o)
-	if err != nil {
-		return err
-	}
+	opts := core.FindOpts{Filter: core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}}
+	opts.Sort = "updated_at:desc"
+	opts.Limit = 10
+	opts.Page = 1
 
-	src := steam.InventoryAsset
-	for _, mkt := range res {
-		status, items, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
+	for {
+		j.logger.Printf("batch #%d", opts.Page)
+		res, _, err := j.marketSvc.Markets(ctx, opts)
 		if err != nil {
-			continue
+			return err
 		}
 
-		j.logger.Println(mkt.User.SteamID, mkt.Item.Name, status, len(items))
-	}
+		src := steam.InventoryAsset
+		for _, mkt := range res {
+			status, items, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
+			if err != nil {
+				continue
+			}
 
-	return nil
+			j.logger.Println(mkt.User.SteamID, mkt.Item.Name, status, len(items))
+		}
+
+		// should continue batching?
+		if len(res) == 0 {
+			return nil
+		}
+		opts.Page++
+	}
 }
