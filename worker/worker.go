@@ -104,7 +104,7 @@ func (w *Worker) runner(ctx context.Context, job Job, once bool) {
 
 	w.logger.Infof("REST job:%s will re-queue in %s", job, rest)
 	time.Sleep(rest)
-	w.queueJob(job)
+	go w.queueJob(job)
 }
 
 func (w *Worker) queueJob(j Job) {

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/kudarap/dotagiftx/worker"
@@ -16,12 +18,20 @@ func main() {
 	)
 	go w.Start()
 
-	//w.AddJob(NewTraineeJob("make it fly"))
 	time.Sleep(time.Second * 5)
-	//w.AddJob(NewTraineeRunOnceJob("drink once"))
+	w.AddJob(NewTraineeJob("make it fly"))
+	w.AddJob(NewTraineeRunOnceJob("drink once"))
+	w.AddJob(NewTraineeRunOnceJob("drink once more"))
+	w.AddJob(NewTraineeRunOnceJob("drink once more 3x"))
+	w.AddJob(NewTraineeRunOnceJob("drink once more than you know"))
 
 	// Initiates early termination will finish the remaining jobs
 	//time.Sleep(time.Minute)
+
+	// Handle quit on SIGINT (CTRL-C).
+	q := make(chan os.Signal, 1)
+	signal.Notify(q, os.Interrupt)
+	<-q
 	if err := w.Stop(); err != nil {
 		log.Println("could not stop worker:", err)
 	}
