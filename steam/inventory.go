@@ -151,10 +151,12 @@ type RawInventoryDesc struct {
 }
 
 func (d RawInventoryDesc) ToAsset() Asset {
-	fi := Asset{
-		Name:  d.Name,
-		Image: d.Image,
-		Type:  d.Type,
+	asset := Asset{
+		ClassID:    d.ClassID,
+		InstanceID: d.InstanceID,
+		Name:       d.Name,
+		Image:      d.Image,
+		Type:       d.Type,
 	}
 
 	var desc []string
@@ -162,27 +164,27 @@ func (d RawInventoryDesc) ToAsset() Asset {
 		v := dd.Value
 		desc = append(desc, v)
 		if pv, ok := extractValueFromPrefix(v, inventPrefixHero); ok {
-			fi.Hero = pv
+			asset.Hero = pv
 		}
 		if pv, ok := extractValueFromPrefix(v, inventPrefixGiftFrom); ok {
-			fi.GiftFrom = pv
+			asset.GiftFrom = pv
 		}
 		if pv, ok := extractValueFromPrefix(v, inventPrefixDateReceived); ok {
-			fi.DateReceived = pv
+			asset.DateReceived = pv
 		}
 		if pv, ok := extractValueFromPrefix(v, inventPrefixDedication); ok {
-			fi.Dedication = pv
+			asset.Dedication = pv
 		}
 		if isFlagExists(v, inventFlagGiftOnce) {
-			fi.GiftOnce = true
+			asset.GiftOnce = true
 		}
 		if isFlagExists(v, inventFlagNotTradable) {
-			fi.NotTradable = true
+			asset.NotTradable = true
 		}
 	}
-	fi.Descriptions = desc
+	asset.Descriptions = desc
 
-	return fi
+	return asset
 }
 
 // RawInventoryItemDetails represents steam's raw description detail values data model.
