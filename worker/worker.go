@@ -22,7 +22,7 @@ type Worker struct {
 // New create new instance of a worker with a given jobs.
 func New(jobs ...Job) *Worker {
 	w := &Worker{}
-	w.queue = make(chan Job, 1)
+	w.queue = make(chan Job, len(jobs))
 	w.quit = make(chan struct{})
 	w.jobs = jobs
 
@@ -45,11 +45,18 @@ func (w *Worker) Start() {
 
 	// Run registered jobs gracefully on start to
 	// prevents initial burst of server load.
-	go func() {
-		for _, jj := range w.jobs {
-			w.runner(ctx, jj, true)
-		}
-	}()
+	for _, jj := range w.jobs {
+		//var delay time.Duration
+		//go func(j Job) {
+		//w.runner(ctx, j, false)
+		//delay += j.Interval()
+		//time.Sleep(delay)
+		//}(jj)
+
+		//w.runner(ctx, jj, true)
+
+		go w.queueJob(jj)
+	}
 
 	// Handles job queueing and termination.
 	for {
@@ -57,49 +64,66 @@ func (w *Worker) Start() {
 		// Job queue is now closed and will not run jobs anymore.
 		// Queued jobs will be terminated.
 		case <-w.quit:
-			w.logger.Warnf("SKIP job:%s", <-w.queue)
 			return
-		case job := <-w.queue:
-			go w.runner(ctx, job, false)
+		case job, ok := <-w.queue:
+			if !ok {
+				return
+			}
+
+			w.runner(ctx, job, false)
+			// Enable this of you want multi-tasking worker.
+			//go w.runner(ctx, job, false)
 		}
 	}
 }
 
 // AddJob registers a new job while the worker is running.
 func (w *Worker) AddJob(j Job) {
-	w.jobs = append(w.jobs, j)
+	//w.jobs = append(w.jobs, j)
 	w.queueJob(j)
 }
 
 // runner process the job and will re-queue them when recurring job.
-func (w *Worker) runner(ctx context.Context, task Job, skipSleep bool) {
-	w.logger.Infof("RUNN job:%s", task)
+func (w *Worker) runner(ctx context.Context, job Job, once bool) {
+	w.logger.Infof("RUNN job:%s", job)
 	w.wg.Add(1)
 
-	if err := task.Run(ctx); err != nil {
-		w.logger.Errorf("ERRO job:%s - %s", task, err)
+	if err := job.Run(ctx); err != nil {
+		w.logger.Errorf("ERRO job:%s - %s", job, err)
 	}
-	w.logger.Infof("DONE job:%s", task)
+	w.logger.Infof("DONE job:%s", job)
 	w.wg.Done()
 
-	// Determines if the job is run-once by interval value is zero,
-	// or the worker queue is now closed.
-	rest := task.Interval()
-	if rest == 0 || w.closed {
+	// Worker queue is now closed.
+	if w.closed {
+		w.logger.Warnf("SKIP job:%s queue is closed", job)
 		return
 	}
 
 	// Job that has non-zero interval value means its a recurring job
 	// and will be re-queued after its rest duration.
-	if !skipSleep {
-		w.logger.Infof("REST job:%s will re-queue in %s", task, rest)
-		time.Sleep(rest)
+	if once {
+		return
 	}
-	w.queueJob(task)
+
+	// Determines if the job is run-once by interval value is zero,
+	rest := job.Interval()
+	if rest == 0 {
+		return
+	}
+
+	w.logger.Infof("REST job:%s will re-queue in %s", job, rest)
+	time.Sleep(rest)
+	w.queueJob(job)
 }
 
 func (w *Worker) queueJob(j Job) {
-	w.logger.Printf("QUED job:%s", j)
+	if w.closed {
+		w.logger.Warnf("SKIP job:%s queue is closed", j)
+		return
+	}
+
+	w.logger.Printf("TODO job:%s", j)
 	w.queue <- j
 }
 
@@ -107,6 +131,7 @@ func (w *Worker) queueJob(j Job) {
 func (w *Worker) Stop() error {
 	w.logger.Infof("stopping and waiting for jobs to finish...")
 	w.quit <- struct{}{}
+	close(w.queue)
 	w.closed = true
 	w.wg.Wait()
 	w.logger.Infof("all jobs done!")

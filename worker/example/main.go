@@ -10,18 +10,18 @@ import (
 
 func main() {
 	w := worker.New(
-		NewTraineeJob("KARLINGKOMORO"),
-		NewTraineeJob("KUDARAP"),
-		NewTraineeJob("MOMO"),
+		NewTraineeJob("grind beans"),
+		NewTraineeJob("boil some good fucking watter"),
+		NewTraineeJob("get a cup"),
 	)
 	go w.Start()
 
-	time.Sleep(time.Second * 9)
-	w.AddJob(NewTraineeJob("IM ON THE FLY JOB"))
-	w.AddJob(NewTraineeRunOnceJob("IM A RUN ONCE JOB"))
+	//w.AddJob(NewTraineeJob("make it fly"))
+	time.Sleep(time.Second * 2)
+	//w.AddJob(NewTraineeRunOnceJob("drink once"))
 
 	// Initiates early termination will finish the remaining jobs
-	time.Sleep(time.Minute)
+	//time.Sleep(time.Minute)
 	if err := w.Stop(); err != nil {
 		log.Println("could not stop worker:", err)
 	}
