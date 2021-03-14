@@ -46,8 +46,11 @@ var descGothicWhisperUnWrapped = RawInventoryDesc{
 	},
 }
 
-var flatGothicWhisper = Asset{
+var assetGothicWhisper = Asset{
 	AssetID:      "100000000",
+	ClassID:      "3305750400",
+	InstanceIDs:  []string{"3307872803"},
+	Qty:          1,
 	Name:         "Gothic Whisper",
 	Image:        "TESTDATA_LARGE_IMAGE",
 	Type:         "Mythical Bundle",
@@ -163,11 +166,11 @@ func Test_inventoryParser(t *testing.T) {
 			r, _ := os.Open(tt.args.path)
 			got, err := inventoryParser(r)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("newInventoryFromFile() \nerror = %v, \nwantErr %v", err, tt.wantErr)
+				t.Errorf("inventoryParser() \nerror = %v, \nwantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("newInventoryFromFile() \n\ngot  %#v, \n\nwant %#v\n\n", got, tt.want)
+				t.Errorf("inventoryParser() \n\ngot  %#v, \n\nwant %#v\n\n", got, tt.want)
 			}
 		})
 	}
@@ -187,7 +190,7 @@ func Test_assetParser(t *testing.T) {
 			"base model",
 			args{"./testdata/base_model.json"},
 			[]Asset{
-				flatGothicWhisper,
+				assetGothicWhisper,
 			},
 			false,
 		},
@@ -196,10 +199,13 @@ func Test_assetParser(t *testing.T) {
 			args{"./testdata/empty_desc.json"},
 			[]Asset{
 				{
-					AssetID: "100000000",
-					Name:    "Gothic Whisper",
-					Image:   "TESTDATA_LARGE_IMAGE",
-					Type:    "Mythical Bundle",
+					AssetID:     "100000000",
+					ClassID:     "3305750400",
+					InstanceIDs: []string{"3307872803"},
+					Qty:         1,
+					Name:        "Gothic Whisper",
+					Image:       "TESTDATA_LARGE_IMAGE",
+					Type:        "Mythical Bundle",
 				},
 			},
 			false,
@@ -223,11 +229,12 @@ func Test_assetParser(t *testing.T) {
 			r, _ := os.Open(tt.args.path)
 			got, err := assetParser(r)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("newFlatInventoryFromFile() \nerror = %v, \nwantErr %v", err, tt.wantErr)
+				t.Errorf("assetParser() \nerror = %v, \nwantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("newFlatInventoryFromFile() \n\ngot  %v, \n\nwant %v", got, tt.want)
+				t.Errorf("assetParser() \n\ngot  %#v, \n\nwant %#v", got, tt.want)
 			}
 		})
 	}

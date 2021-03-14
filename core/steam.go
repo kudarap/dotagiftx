@@ -32,9 +32,9 @@ type (
 	// SteamAsset represents a simplified version of inventory item.
 	SteamAsset struct {
 		AssetID      string   `json:"asset_id"      db:"asset_id,omitempty"`
-		ClassID      string   `json:"class_id"      db:"class_id,omitempty"`
-		InstanceID   string   `json:"instance_id"   db:"instance_id,omitempty"`
-		Qty          string   `json:"qty"           db:"qty,omitempty"`
+		ClassID      string   `json:"class_id"      db:"class_id,omitempty"`     // unique id of an item
+		InstanceIDs  []string `json:"instance_ids"  db:"instance_ids,omitempty"` // unique id per item instance
+		Qty          int      `json:"qty"           db:"qty,omitempty"`
 		Name         string   `json:"name"          db:"name,omitempty"`
 		Image        string   `json:"image"         db:"image,omitempty"`
 		Type         string   `json:"type"          db:"type,omitempty"`

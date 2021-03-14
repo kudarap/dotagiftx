@@ -50,18 +50,36 @@ type AllInventory struct {
 	AllDescs map[string]RawInventoryDesc `json:"allDescriptions"`
 }
 
+type assetIDQty struct {
+	AssetID     string
+	InstanceIDs []string
+}
+
 func (i *AllInventory) ToAssets() []Asset {
-	// Collate asset map ids for fast inventory asset id look up.
-	assetMapIDs := map[string]string{}
+	// Collate asset and instance ids for qty reference later.
+	assetIDs := map[string]assetIDQty{}
 	for _, aa := range i.AllInvs {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.AssetID
+		row, ok := assetIDs[aa.ClassID]
+		if !ok {
+			assetIDs[aa.ClassID] = assetIDQty{
+				aa.AssetID, []string{aa.InstanceID},
+			}
+			continue
+		}
+
+		// add new instance id
+		row.InstanceIDs = append(row.InstanceIDs, aa.InstanceID)
+		assetIDs[aa.ClassID] = row
 	}
 
 	// Composes and collect inventory on flat format.
 	var assets []Asset
-	for ci, ii := range i.AllDescs {
-		a := ii.ToAsset()
-		a.AssetID = assetMapIDs[ci]
+	for _, dd := range i.AllDescs {
+		ids := assetIDs[dd.ClassID]
+		a := dd.ToAsset()
+		a.AssetID = ids.AssetID
+		a.InstanceIDs = ids.InstanceIDs
+		a.Qty = len(ids.InstanceIDs)
 		assets = append(assets, a)
 	}
 
@@ -83,17 +101,30 @@ func (i RawInventory) IsPrivate() bool {
 }
 
 func (i *RawInventory) ToAssets() []Asset {
-	// Collate asset map ids for fast inventory asset id look up.
-	assetMapIDs := map[string]string{}
+	// Collate asset and instance ids for qty reference later.
+	assetIDs := map[string]assetIDQty{}
 	for _, aa := range i.RgInvs {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+		row, ok := assetIDs[aa.ClassID]
+		if !ok {
+			assetIDs[aa.ClassID] = assetIDQty{
+				aa.ID, []string{aa.InstanceID},
+			}
+			continue
+		}
+
+		// add new instance id
+		row.InstanceIDs = append(row.InstanceIDs, aa.InstanceID)
+		assetIDs[aa.ClassID] = row
 	}
 
-	// Composes and collect inventory on flat format.
+	// Composes and collect inventory on simple format.
 	var assets []Asset
-	for ci, ii := range i.RgDescs {
-		a := ii.ToAsset()
-		a.AssetID = assetMapIDs[ci]
+	for _, dd := range i.RgDescs {
+		ids := assetIDs[dd.ClassID]
+		a := dd.ToAsset()
+		a.AssetID = ids.AssetID
+		a.InstanceIDs = ids.InstanceIDs
+		a.Qty = len(ids.InstanceIDs)
 		assets = append(assets, a)
 	}
 
@@ -130,14 +161,14 @@ type RawInventoryAsset struct {
 	InstanceID string `json:"instanceid"`
 }
 
-// Inventory description field prefix and flags.
+// asset description field prefix and flags.
 const (
-	inventPrefixHero         = "Used By: "
-	inventPrefixGiftFrom     = "Gift From: "
-	inventPrefixDateReceived = "Date Received: "
-	inventPrefixDedication   = "Dedication: "
-	inventFlagNotTradable    = "( Not Tradable )"
-	inventFlagGiftOnce       = "( This item may be gifted once )"
+	assetPrefixHero         = "Used By: "
+	assetPrefixGiftFrom     = "Gift From: "
+	assetPrefixDateReceived = "Date Received: "
+	assetPrefixDedication   = "Dedication: "
+	assetFlagNotTradable    = "( Not Tradable )"
+	assetFlagGiftOnce       = "( This item may be gifted once )"
 )
 
 // RawInventoryDesc represents steam's raw description inventory data model.
@@ -152,33 +183,32 @@ type RawInventoryDesc struct {
 
 func (d RawInventoryDesc) ToAsset() Asset {
 	asset := Asset{
-		ClassID:    d.ClassID,
-		InstanceID: d.InstanceID,
-		Name:       d.Name,
-		Image:      d.Image,
-		Type:       d.Type,
+		ClassID: d.ClassID,
+		Name:    d.Name,
+		Image:   d.Image,
+		Type:    d.Type,
 	}
 
 	var desc []string
 	for _, dd := range d.Descriptions {
 		v := dd.Value
 		desc = append(desc, v)
-		if pv, ok := extractValueFromPrefix(v, inventPrefixHero); ok {
+		if pv, ok := extractValueFromPrefix(v, assetPrefixHero); ok {
 			asset.Hero = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, inventPrefixGiftFrom); ok {
+		if pv, ok := extractValueFromPrefix(v, assetPrefixGiftFrom); ok {
 			asset.GiftFrom = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, inventPrefixDateReceived); ok {
+		if pv, ok := extractValueFromPrefix(v, assetPrefixDateReceived); ok {
 			asset.DateReceived = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, inventPrefixDedication); ok {
+		if pv, ok := extractValueFromPrefix(v, assetPrefixDedication); ok {
 			asset.Dedication = pv
 		}
-		if isFlagExists(v, inventFlagGiftOnce) {
+		if isFlagExists(v, assetFlagGiftOnce) {
 			asset.GiftOnce = true
 		}
-		if isFlagExists(v, inventFlagNotTradable) {
+		if isFlagExists(v, assetFlagNotTradable) {
 			asset.NotTradable = true
 		}
 	}
