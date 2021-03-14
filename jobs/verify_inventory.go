@@ -40,7 +40,8 @@ func (j *VerifyInventory) Run(ctx context.Context) error {
 
 		for _, mkt := range res {
 			// Skip verified statuses.
-			if mkt.InventoryStatus == core.InventoryStatusVerified {
+			if mkt.InventoryStatus == core.InventoryStatusVerified ||
+				mkt.InventoryStatus == core.InventoryStatusNoHit {
 				continue
 			}
 
