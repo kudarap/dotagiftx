@@ -8,12 +8,13 @@ import (
 	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/steaminv"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
 func main() {
-	assetSrc := steaminv.InventoryAsset
+	assetSrc := steam.InventoryAssetWithCache
 
 	params := []struct {
 		steamID, item string

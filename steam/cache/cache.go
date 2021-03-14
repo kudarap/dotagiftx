@@ -3,16 +3,16 @@ package cache
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
 )
 
-var cacheDir string
+const dirname = "dx.steam.cache"
 
 func init() {
-	cacheDir = os.TempDir()
+	// This will create cache dir.
+	_ = os.MkdirAll(filename(""), 0777)
 }
 
 type data struct {
@@ -32,10 +32,13 @@ func newData(val interface{}, d time.Duration) []byte {
 }
 
 func Get(key string) (val interface{}, err error) {
-	path := filepath.Join(cacheDir, key)
+	path := filename(key)
 	b, err := ioutil.ReadFile(path)
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return nil, err
+	}
+	if b == nil {
+		return nil, nil
 	}
 
 	d := new(data)
@@ -51,18 +54,20 @@ func Get(key string) (val interface{}, err error) {
 }
 
 func Set(key string, val interface{}, expr time.Duration) error {
-	path := filepath.Join(cacheDir, key)
+	path := filename(key)
 	err := ioutil.WriteFile(path, newData(val, expr), 0666)
 	if err != nil {
 		return err
 	}
 
-	log.Println("cache write", path)
-
 	return nil
 }
 
 func Del(key string) error {
-	path := filepath.Join(cacheDir, key)
+	path := filename(key)
 	return os.Remove(path)
+}
+
+func filename(key string) string {
+	return filepath.Join(os.TempDir(), dirname, key)
 }
