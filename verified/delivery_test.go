@@ -22,12 +22,12 @@ func TestVerifyDelivery(t *testing.T) {
 		count   int
 		wantErr bool
 	}{
-		{"ok seller", args{
+		{"seller verified", args{
 			"kudarap",
 			"76561198287849998",
 			"Sylvan Vedette",
 		}, core.DeliveryStatusSenderVerified, 1, false},
-		{"ok item", args{
+		{"item verified", args{
 			"Berserk",
 			"76561198355627060",
 			"Shattered Greatsword",

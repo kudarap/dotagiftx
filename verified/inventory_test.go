@@ -19,7 +19,7 @@ func TestVerifyInventory(t *testing.T) {
 		count   int
 		wantErr bool
 	}{
-		{"ok item", args{
+		{"item verified", args{
 			"76561198088587178",
 			"Echoes of the Everblack",
 		}, core.InventoryStatusVerified, 1, false},
