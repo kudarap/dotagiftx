@@ -15,7 +15,7 @@ import (
 const (
 	maxGetRetries = 5
 	retrySleepDur = time.Second * 5
-	freshCacheDur = time.Hour
+	freshCacheDur = time.Hour * 24
 )
 
 // InventoryAsset returns a compact format from all inventory data.
@@ -59,7 +59,7 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 		if err != nil {
 			return nil, err
 		}
-		if m.Status == "success" {
+		if m != nil && m.Status == "success" {
 			break
 		}
 		time.Sleep(retrySleepDur)
