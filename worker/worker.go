@@ -39,38 +39,27 @@ func (w *Worker) SetLogger(l log.Logger) {
 //
 // All assigned jobs will be run concurrently.
 func (w *Worker) Start() {
-	w.logger.Infof("running %d jobs gracefully...", len(w.jobs))
+	w.logger.Infof("running %d jobs...", len(w.jobs))
 
 	ctx := context.Background()
 
-	// Run registered jobs gracefully on start to
-	// prevents initial burst of server load.
+	// Queue initial registered jobs.
 	for _, jj := range w.jobs {
-		//var delay time.Duration
-		//go func(j Job) {
-		//w.runner(ctx, j, false)
-		//delay += j.Interval()
-		//time.Sleep(delay)
-		//}(jj)
-
-		//w.runner(ctx, jj, true)
-
 		go w.queueJob(jj)
 	}
 
 	// Handles job queueing and termination.
 	for {
 		select {
-		// Job queue is now closed and will not run jobs anymore.
-		// Queued jobs will be terminated.
+		// Waits the running job to finish and stops the
+		// worker and skip all queued jobs.
 		case <-w.quit:
 			return
-		case job, ok := <-w.queue:
-			if !ok {
-				return
-			}
-
+		case job := <-w.queue:
+			// Runner will block until its done making it
+			// a single tasking worker.
 			w.runner(ctx, job, false)
+
 			// Enable this of you want multi-tasking worker.
 			//go w.runner(ctx, job, false)
 		}
@@ -85,6 +74,12 @@ func (w *Worker) AddJob(j Job) {
 
 // runner process the job and will re-queue them when recurring job.
 func (w *Worker) runner(ctx context.Context, job Job, once bool) {
+	// Worker queue is now closed.
+	if w.closed {
+		w.logger.Warnf("SKIP job:%s queue is closed", job)
+		return
+	}
+
 	w.logger.Infof("RUNN job:%s", job)
 	w.wg.Add(1)
 
@@ -94,15 +89,10 @@ func (w *Worker) runner(ctx context.Context, job Job, once bool) {
 	w.logger.Infof("DONE job:%s", job)
 	w.wg.Done()
 
-	// Worker queue is now closed.
-	if w.closed {
-		w.logger.Warnf("SKIP job:%s queue is closed", job)
-		return
-	}
-
 	// Job that has non-zero interval value means its a recurring job
-	// and will be re-queued after its rest duration.
-	if once {
+	// and will be re-queued after its rest duration
+	// or worker queue is closed.
+	if once || w.closed {
 		return
 	}
 
@@ -130,9 +120,9 @@ func (w *Worker) queueJob(j Job) {
 // Stop will stop accepting job and wait for processing job to finish.
 func (w *Worker) Stop() error {
 	w.logger.Infof("stopping and waiting for jobs to finish...")
-	w.quit <- struct{}{}
-	close(w.queue)
 	w.closed = true
+	close(w.queue)
+	w.quit <- struct{}{}
 	w.wg.Wait()
 	w.logger.Infof("all jobs done!")
 	return nil

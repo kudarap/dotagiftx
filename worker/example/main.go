@@ -17,7 +17,7 @@ func main() {
 	go w.Start()
 
 	//w.AddJob(NewTraineeJob("make it fly"))
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 5)
 	//w.AddJob(NewTraineeRunOnceJob("drink once"))
 
 	// Initiates early termination will finish the remaining jobs
