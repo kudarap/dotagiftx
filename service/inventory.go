@@ -57,26 +57,29 @@ func (s *InventoryService) InventoryByMarketID(marketID string) (*core.Inventory
 	return &res[0], nil
 }
 
-func (s *InventoryService) Set(_ context.Context, del *core.Inventory) error {
-	if err := del.CheckCreate(); err != nil {
+func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {
+	if err := inv.CheckCreate(); err != nil {
 		return errors.New(core.InventoryErrRequiredFields, err)
 	}
 
 	// Update market Inventory status.
 	if err := s.marketStg.Update(&core.Market{
-		ID:              del.MarketID,
-		InventoryStatus: del.Status,
+		ID:              inv.MarketID,
+		InventoryStatus: inv.Status,
 	}); err != nil {
 		return err
 	}
 
+	// Process bundle count.
+	inv.BundleCount = inv.CountBundles()
+
 	// Just update existing record.
-	cur, _ := s.InventoryByMarketID(del.MarketID)
+	cur, _ := s.InventoryByMarketID(inv.MarketID)
 	if cur != nil {
-		del.ID = cur.ID
-		del.Retries = cur.Retries + 1
-		return s.InventoryStg.Update(del)
+		inv.ID = cur.ID
+		inv.Retries = cur.Retries + 1
+		return s.InventoryStg.Update(inv)
 	}
 
-	return s.InventoryStg.Create(del)
+	return s.InventoryStg.Create(inv)
 }
