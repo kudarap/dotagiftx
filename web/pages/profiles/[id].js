@@ -129,7 +129,10 @@ export default function UserDetails({
   const dotabuffURL = `${DOTABUFF_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `${APP_NAME} :: ${profile.name}`
-  const metaDesc = `${profile.name}'s Dota 2 Giftable item listings`
+  let metaDesc = `${profile.name}'s Dota 2 Giftable`
+  if (profile.stats) {
+    metaDesc += ` ${profile.stats.live} Items · ${profile.stats.reserved} Reserved · ${profile.stats.sold} Delivered`
+  }
 
   const isProfileReported = Boolean(profile.status)
 
