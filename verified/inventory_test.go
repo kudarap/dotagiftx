@@ -20,8 +20,8 @@ func TestVerifyInventory(t *testing.T) {
 		wantErr bool
 	}{
 		{"ok item", args{
-			"76561198355627060",
-			"Shattered Greatsword",
+			"76561198088587178",
+			"Echoes of the Everblack",
 		}, core.InventoryStatusVerified, 1, false},
 		{"no hit", args{
 			"76561198042690669",
