@@ -25,6 +25,7 @@ func Inventory(source AssetSource, steamID, itemName string) (core.InventoryStat
 	}
 
 	assets = filterByName(assets, itemName)
+	assets = filterByGiftable(assets)
 	if len(assets) == 0 {
 		return core.InventoryStatusNoHit, assets, nil
 	}

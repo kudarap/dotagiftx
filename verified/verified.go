@@ -20,3 +20,14 @@ func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 	}
 	return matches
 }
+
+func filterByGiftable(a []steam.Asset) []steam.Asset {
+	var matches []steam.Asset
+	for _, aa := range a {
+		if !aa.GiftOnce {
+			continue
+		}
+		matches = append(matches, aa)
+	}
+	return matches
+}
