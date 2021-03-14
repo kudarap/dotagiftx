@@ -1,6 +1,9 @@
 package core
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 type (
 	// SteamPlayer represents steam player information.
@@ -29,6 +32,9 @@ type (
 	// SteamAsset represents a simplified version of inventory item.
 	SteamAsset struct {
 		AssetID      string   `json:"asset_id"      db:"asset_id,omitempty"`
+		ClassID      string   `json:"class_id"      db:"class_id,omitempty"`
+		InstanceID   string   `json:"instance_id"   db:"instance_id,omitempty"`
+		Qty          string   `json:"qty"           db:"qty,omitempty"`
 		Name         string   `json:"name"          db:"name,omitempty"`
 		Image        string   `json:"image"         db:"image,omitempty"`
 		Type         string   `json:"type"          db:"type,omitempty"`
@@ -41,3 +47,7 @@ type (
 		Descriptions []string `json:"descriptions"  db:"descriptions,omitempty"`
 	}
 )
+
+func (s *SteamAsset) IsBundled() bool {
+	return strings.HasSuffix(s.Type, "Bundle")
+}

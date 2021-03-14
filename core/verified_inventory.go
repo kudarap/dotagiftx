@@ -60,6 +60,7 @@ type (
 		Status           InventoryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
 		Assets           []SteamAsset    `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries          int             `json:"retries"            db:"retries,omitempty"`
+		BundleCount      int             `json:"bundle_count"       db:"bundle_count,omitempty"`
 		CreatedAt        *time.Time      `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
 		UpdatedAt        *time.Time      `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
 	}
@@ -96,13 +97,26 @@ type (
 )
 
 // CheckCreate validates field on creating new inventory.
-func (r Inventory) CheckCreate() error {
+func (i Inventory) CheckCreate() error {
 	// Check required fields.
-	if err := validator.Struct(r); err != nil {
+	if err := validator.Struct(i); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (i Inventory) CountBundles() (total int) {
+	if i.Assets == nil {
+		return
+	}
+
+	for _, aa := range i.Assets {
+		if aa.IsBundled() {
+			total++
+		}
+	}
+	return total
 }
 
 // String returns text value of a inventory status.
