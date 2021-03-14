@@ -78,7 +78,6 @@ func (i *AllInventory) ToAssets() []Asset {
 		ids := assetIDs[dd.ClassID]
 		a := dd.ToAsset()
 		a.AssetID = ids.AssetID
-		a.InstanceIDs = ids.InstanceIDs
 		a.Qty = len(ids.InstanceIDs)
 		assets = append(assets, a)
 	}
@@ -123,7 +122,6 @@ func (i *RawInventory) ToAssets() []Asset {
 		ids := assetIDs[dd.ClassID]
 		a := dd.ToAsset()
 		a.AssetID = ids.AssetID
-		a.InstanceIDs = ids.InstanceIDs
 		a.Qty = len(ids.InstanceIDs)
 		assets = append(assets, a)
 	}
@@ -183,10 +181,11 @@ type RawInventoryDesc struct {
 
 func (d RawInventoryDesc) ToAsset() Asset {
 	asset := Asset{
-		ClassID: d.ClassID,
-		Name:    d.Name,
-		Image:   d.Image,
-		Type:    d.Type,
+		ClassID:    d.ClassID,
+		InstanceID: d.InstanceID,
+		Name:       d.Name,
+		Image:      d.Image,
+		Type:       d.Type,
 	}
 
 	var desc []string

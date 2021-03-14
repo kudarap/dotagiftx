@@ -44,7 +44,7 @@ func main() {
 		fmt.Println("Dedication:", r.Dedication)
 
 		for _, ss := range snaps {
-			fmt.Println(ss.Name, ss.InstanceIDs)
+			fmt.Println(ss.Name, ss.Qty)
 		}
 
 		fmt.Println("")
