@@ -105,17 +105,24 @@ func (w *Worker) runner(ctx context.Context, job Job) {
 	w.queueJob(job, false)
 }
 
+// queueJob handles job whether it should be queued immediately or
+// standby aside and sleep.
 func (w *Worker) queueJob(j Job, now bool) {
 	if w.closed {
 		w.logger.Warnf("SKIP job:%s queue is closed", j)
 		return
 	}
 
+	// This will make the job to wait in goroutine before
+	// adding itself to queue.
+	//
+	// This allows us to run another job from queue without
+	// waiting for the interval to finish and making it
+	// follow its own interval.
 	go func() {
 		if !now {
 			time.Sleep(j.Interval())
 		}
-
 		w.logger.Printf("TODO job:%s", j)
 		w.queue <- j
 	}()
