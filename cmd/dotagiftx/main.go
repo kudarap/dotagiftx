@@ -4,96 +4,106 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
-	"github.com/kudarap/dotagiftx/gokit/logger"
+	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/http"
+	"github.com/kudarap/dotagiftx/jobs"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
+	"github.com/kudarap/dotagiftx/worker"
 )
 
 const configPrefix = "DG"
 
-var log = logger.Default()
+var logger = log.Default()
 
 func main() {
 	app := newApp()
 
-	log.Println("loading config...")
+	logger.Println("loading config...")
 	if err := app.loadConfig(); err != nil {
-		log.Fatalln("could not load config:", err)
+		logger.Fatalln("could not load config:", err)
 	}
 
-	log.Println("setting up...")
+	logger.Println("setting up...")
 	if err := app.setup(); err != nil {
-		log.Fatalln("could not setup:", err)
+		logger.Fatalln("could not setup:", err)
 	}
 
-	log.Println("running app...")
+	logger.Println("running app...")
 	if err := app.run(); err != nil {
-		log.Fatalln("could not run:", err)
+		logger.Fatalln("could not run:", err)
 	}
-	log.Println("stopped!")
+	logger.Println("stopped!")
 }
 
 type application struct {
-	config   Config
-	server   *http.Server
+	config Config
+	server *http.Server
+	worker *worker.Worker
+	logger *logrus.Logger
+
 	closerFn func()
 }
 
-func (a *application) loadConfig() error {
+func (app *application) loadConfig() error {
 	envconf.EnvPrefix = configPrefix
-	if err := envconf.Load(&a.config); err != nil {
+	if err := envconf.Load(&app.config); err != nil {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
 	return nil
 }
 
-func (a *application) setup() error {
+func (app *application) setup() error {
 	// Logs setup.
-	log.Println("setting up persistent logs...")
-	log, err := logger.New(a.config.Log)
+	logger.Println("setting up persistent logs...")
+	logSvc, err := log.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
+	app.logger = logSvc
 
 	// Database setup.
-	log.Println("setting up database...")
-	redisClient, err := setupRedis(a.config.Redis)
+	logSvc.Println("setting up database...")
+	redisClient, err := setupRedis(app.config.Redis)
 	if err != nil {
 		return err
 	}
-	rethinkClient, err := setupRethink(a.config.Rethink)
+	rethinkClient, err := setupRethink(app.config.Rethink)
 	if err != nil {
 		return err
 	}
 
 	// External services setup.
-	log.Println("setting up external services...")
-	steamClient, err := setupSteam(a.config.Steam, redisClient)
+	logSvc.Println("setting up external services...")
+	steamClient, err := setupSteam(app.config.Steam, redisClient)
 	if err != nil {
 		return err
 	}
 
 	// Storage inits.
-	log.Println("setting up data stores...")
+	logSvc.Println("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
-	catalogStg := rethink.NewCatalog(rethinkClient, log)
+	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 	statsStg := rethink.NewStats(rethinkClient)
 	reportStg := rethink.NewReport(rethinkClient)
+	deliveryStg := rethink.NewDelivery(rethinkClient)
+	inventoryStg := rethink.NewInventory(rethinkClient)
 
 	// Service inits.
-	log.Println("setting up services...")
-	fileMgr := setupFileManager(a.config)
+	logSvc.Println("setting up services...")
+	fileMgr := setupFileManager(app.config)
 	userSvc := service.NewUser(userStg, fileMgr)
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
@@ -105,11 +115,13 @@ func (a *application) setup() error {
 		trackStg,
 		catalogStg,
 		steamClient,
-		log,
+		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	statsSvc := service.NewStats(statsStg)
 	reportSvc := service.NewReport(reportStg)
+	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
+	inventorySvc := service.NewInventory(inventoryStg, marketStg)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
@@ -118,9 +130,9 @@ func (a *application) setup() error {
 	//redisClient.BulkDel("")
 
 	// Server setup.
-	log.Println("setting up http server...")
+	logSvc.Println("setting up http server...")
 	srv := http.NewServer(
-		a.config.SigKey,
+		app.config.SigKey,
 		userSvc,
 		authSvc,
 		imageSvc,
@@ -131,28 +143,46 @@ func (a *application) setup() error {
 		reportSvc,
 		steamClient,
 		redisClient,
-		initVer(a.config),
-		log,
+		initVer(app.config),
+		logSvc,
 	)
-	srv.Addr = a.config.Addr
-	a.server = srv
+	srv.Addr = app.config.Addr
+	app.server = srv
 
-	a.closerFn = func() {
-		log.Println("closing connection and shutting server...")
-		if err := redisClient.Close(); err != nil {
-			log.Fatal("could not close redis client", err)
+	// Worker setup.
+	wrk := worker.New(
+		jobs.NewVerifyDelivery(deliverySvc, marketSvc, app.contextLog("job_verify_delivery")),
+		jobs.NewVerifyInventory(inventorySvc, marketSvc, app.contextLog("job_verify_inventory")),
+	)
+	wrk.SetLogger(app.contextLog("worker"))
+	app.worker = wrk
+
+	app.closerFn = func() {
+		logSvc.Println("closing and stopping app...")
+		if err = app.worker.Stop(); err != nil {
+			logSvc.Fatal("could not stop worker", err)
 		}
-		if err := rethinkClient.Close(); err != nil {
-			log.Fatal("could not close rethink client", err)
+		if err = redisClient.Close(); err != nil {
+			logSvc.Fatal("could not close redis client", err)
+		}
+		if err = rethinkClient.Close(); err != nil {
+			logSvc.Fatal("could not close rethink client", err)
 		}
 	}
 
 	return nil
 }
 
-func (a *application) run() error {
-	defer a.closerFn()
-	return a.server.Run()
+func (app *application) run() error {
+	defer app.closerFn()
+
+	go app.worker.Start()
+
+	return app.server.Run()
+}
+
+func (app *application) contextLog(name string) log.Logger {
+	return log.WithPrefix(app.logger, name)
 }
 
 func newApp() *application {
@@ -211,7 +241,7 @@ func connRetry(name string, fn func() error) error {
 	// Catches a panic to retry.
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
+			logger.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
 			time.Sleep(delay)
 			err = connRetry(name, fn)
 		}

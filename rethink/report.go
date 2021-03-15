@@ -21,8 +21,8 @@ func NewReport(c *Client) core.ReportStorage {
 		log.Fatalf("could not create %s table: %s", tableReport, err)
 	}
 
-	if err := c.autoIndex(tableCatalog, core.Report{}); err != nil {
-		log.Fatalf("could not create index on %s table: %s", tableCatalog, err)
+	if err := c.autoIndex(tableReport, core.Report{}); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableReport, err)
 	}
 
 	return &reportStorage{c, reportSearchFields}

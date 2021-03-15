@@ -7,35 +7,24 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/kudarap/dotagiftx/steam/cache"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/kudarap/dotagiftx/core"
 )
 
 var fastjson = jsoniter.ConfigFastest
 
-const Dota2AppID = 570
-const inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json/%d/2"
+var ErrInventoryPrivate = errors.New("profile inventory is private")
 
-func reqDota2Inventory(steamID string) (*http.Response, error) {
-	url := fmt.Sprintf(inventoryEndpoint, steamID, Dota2AppID)
-	return http.Get(url)
-}
+const inventoryCacheExpr = time.Hour * 24
 
 // Asset represents compact inventory base of RawInventory model.
-type Asset struct {
-	AssetID      string   `json:"asset_id"`
-	Name         string   `json:"name"`
-	Image        string   `json:"image"`
-	Type         string   `json:"type"`
-	Hero         string   `json:"hero"`
-	GiftFrom     string   `json:"gift_from"`
-	DateReceived string   `json:"date_received"`
-	Dedication   string   `json:"dedication"`
-	GiftOnce     bool     `json:"gift_once"`
-	NotTradable  bool     `json:"not_tradable"`
-	Descriptions []string `json:"descriptions"`
-}
+type Asset = core.SteamAsset
 
+// InventoryAsset returns a compact format from raw inventory data.
 func InventoryAsset(steamID string) ([]Asset, error) {
 	r, err := reqDota2Inventory(steamID)
 	if err != nil {
@@ -45,7 +34,29 @@ func InventoryAsset(steamID string) ([]Asset, error) {
 	return assetParser(r.Body)
 }
 
-var ErrInventoryPrivate = errors.New("profile inventory is private")
+func InventoryAssetWithCache(steamID string) ([]Asset, error) {
+	hit, err := cache.Get(steamID)
+	if err != nil {
+		return nil, err
+	}
+	if hit != nil {
+		b, _ := fastjson.Marshal(hit)
+		var asset []Asset
+		_ = fastjson.Unmarshal(b, &asset)
+		return asset, nil
+	}
+
+	asset, err := InventoryAsset(steamID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = cache.Set(steamID, asset, inventoryCacheExpr); err != nil {
+		return nil, err
+	}
+
+	return asset, nil
+}
 
 func assetParser(r io.Reader) ([]Asset, error) {
 	raw, err := inventoryParser(r)
@@ -59,35 +70,92 @@ func assetParser(r io.Reader) ([]Asset, error) {
 		return nil, fmt.Errorf(raw.Error)
 	}
 
-	// Collate asset map ids for fast inventory asset id look up.
-	assetMapIDs := map[string]string{}
-	for _, aa := range raw.Assets {
-		assetMapIDs[fmt.Sprintf("%s_%s", aa.ClassID, aa.InstanceID)] = aa.ID
+	return raw.ToAssets(), nil
+}
+
+// AllInventory represents raw and collated inventory.
+type AllInventory struct {
+	AllInvs  []RawInventoryAsset         `json:"allInventory"`
+	AllDescs map[string]RawInventoryDesc `json:"allDescriptions"`
+}
+
+type assetIDQty struct {
+	AssetID     string
+	InstanceIDs []string
+}
+
+func (i *AllInventory) ToAssets() []Asset {
+	// Collate asset and instance ids for qty reference later.
+	assetIDs := map[string]assetIDQty{}
+	for _, aa := range i.AllInvs {
+		row, ok := assetIDs[aa.ClassID]
+		if !ok {
+			assetIDs[aa.ClassID] = assetIDQty{
+				aa.AssetID, []string{aa.InstanceID},
+			}
+			continue
+		}
+
+		// add new instance id
+		row.InstanceIDs = append(row.InstanceIDs, aa.InstanceID)
+		assetIDs[aa.ClassID] = row
 	}
 
 	// Composes and collect inventory on flat format.
 	var assets []Asset
-	for ci, ii := range raw.Descriptions {
-		a := ii.toAsset()
-		a.AssetID = assetMapIDs[ci]
+	for _, dd := range i.AllDescs {
+		ids := assetIDs[dd.ClassID]
+		a := dd.ToAsset()
+		a.AssetID = ids.AssetID
+		a.Qty = len(ids.InstanceIDs)
 		assets = append(assets, a)
 	}
 
-	return assets, nil
+	return assets
 }
 
 // RawInventory represents steam's raw inventory data model.
 type RawInventory struct {
-	Success      bool                         `json:"success"`
-	More         bool                         `json:"more"`
-	MoreStart    RawInventoryPageOffset       `json:"more_start"`
-	Assets       map[string]RawInventoryAsset `json:"rgInventory"`
-	Descriptions map[string]RawInventoryDesc  `json:"rgDescriptions"`
-	Error        string                       `json:"Error"`
+	Success   bool                         `json:"success"`
+	More      bool                         `json:"more"`
+	MoreStart RawInventoryPageOffset       `json:"more_start"`
+	RgInvs    map[string]RawInventoryAsset `json:"rgInventory"`
+	RgDescs   map[string]RawInventoryDesc  `json:"rgDescriptions"`
+	Error     string                       `json:"Error"`
 }
 
 func (i RawInventory) IsPrivate() bool {
 	return strings.ToUpper(i.Error) == "THIS PROFILE IS PRIVATE."
+}
+
+func (i *RawInventory) ToAssets() []Asset {
+	// Collate asset and instance ids for qty reference later.
+	assetIDs := map[string]assetIDQty{}
+	for _, aa := range i.RgInvs {
+		row, ok := assetIDs[aa.ClassID]
+		if !ok {
+			assetIDs[aa.ClassID] = assetIDQty{
+				aa.ID, []string{aa.InstanceID},
+			}
+			continue
+		}
+
+		// add new instance id
+		row.InstanceIDs = append(row.InstanceIDs, aa.InstanceID)
+		assetIDs[aa.ClassID] = row
+	}
+
+	// Composes and collect inventory on simple format.
+	var assets []Asset
+	for _, dd := range i.RgDescs {
+		ids := assetIDs[dd.ClassID]
+		a := dd.ToAsset()
+		a.AssetID = ids.AssetID
+		a.Qty = len(ids.InstanceIDs)
+		assets = append(assets, a)
+	}
+
+	return assets
 }
 
 // Inventory retrieve data from API and parse into RawInventory.
@@ -115,18 +183,19 @@ func inventoryParser(r io.Reader) (*RawInventory, error) {
 // RawInventoryAsset represents steam's raw asset inventory data model.
 type RawInventoryAsset struct {
 	ID         string `json:"id"`
+	AssetID    string `json:"assetid"` // asset id field for AllInventory
 	ClassID    string `json:"classid"`
 	InstanceID string `json:"instanceid"`
 }
 
-// Inventory description field prefix and flags.
+// asset description field prefix and flags.
 const (
-	inventPrefixHero         = "Used By: "
-	inventPrefixGiftFrom     = "Gift From: "
-	inventPrefixDateReceived = "Date Received: "
-	inventPrefixDedication   = "Dedication: "
-	inventFlagGiftOnce       = "( Not Tradable )"
-	inventFlagNotTradable    = "( This item may be gifted once )"
+	assetPrefixHero         = "Used By: "
+	assetPrefixGiftFrom     = "Gift From: "
+	assetPrefixDateReceived = "Date Received: "
+	assetPrefixDedication   = "Dedication: "
+	assetFlagNotTradable    = "( Not Tradable )"
+	assetFlagGiftOnce       = "( This item may be gifted once )"
 )
 
 // RawInventoryDesc represents steam's raw description inventory data model.
@@ -139,39 +208,41 @@ type RawInventoryDesc struct {
 	Descriptions RawInventoryItemDetails `json:"descriptions"`
 }
 
-func (d RawInventoryDesc) toAsset() Asset {
-	fi := Asset{
-		Name:  d.Name,
-		Image: d.Image,
-		Type:  d.Type,
+func (d RawInventoryDesc) ToAsset() Asset {
+	asset := Asset{
+		ClassID:    d.ClassID,
+		InstanceID: d.InstanceID,
+		Name:       d.Name,
+		Image:      d.Image,
+		Type:       d.Type,
 	}
 
 	var desc []string
 	for _, dd := range d.Descriptions {
 		v := dd.Value
 		desc = append(desc, v)
-		if pv, ok := extractValueFromPrefix(v, inventPrefixHero); ok {
-			fi.Hero = pv
+		if pv, ok := extractValueFromPrefix(v, assetPrefixHero); ok {
+			asset.Hero = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, inventPrefixGiftFrom); ok {
-			fi.GiftFrom = pv
+		if pv, ok := extractValueFromPrefix(v, assetPrefixGiftFrom); ok {
+			asset.GiftFrom = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, inventPrefixDateReceived); ok {
-			fi.DateReceived = pv
+		if pv, ok := extractValueFromPrefix(v, assetPrefixDateReceived); ok {
+			asset.DateReceived = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, inventPrefixDedication); ok {
-			fi.Dedication = pv
+		if pv, ok := extractValueFromPrefix(v, assetPrefixDedication); ok {
+			asset.Dedication = pv
 		}
-		if isFlagExists(v, inventFlagGiftOnce) {
-			fi.GiftOnce = true
+		if isFlagExists(v, assetFlagGiftOnce) {
+			asset.GiftOnce = true
 		}
-		if isFlagExists(v, inventFlagNotTradable) {
-			fi.NotTradable = true
+		if isFlagExists(v, assetFlagNotTradable) {
+			asset.NotTradable = true
 		}
 	}
-	fi.Descriptions = desc
+	asset.Descriptions = desc
 
-	return fi
+	return asset
 }
 
 // RawInventoryItemDetails represents steam's raw description detail values data model.
@@ -211,6 +282,14 @@ func (po *RawInventoryPageOffset) UnmarshalJSON(data []byte) error {
 	}
 	*po = RawInventoryPageOffset(o)
 	return nil
+}
+
+const Dota2AppID = 570
+const inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json/%d/2"
+
+func reqDota2Inventory(steamID string) (*http.Response, error) {
+	url := fmt.Sprintf(inventoryEndpoint, steamID, Dota2AppID)
+	return http.Get(url)
 }
 
 func extractValueFromPrefix(s, prefix string) (value string, ok bool) {

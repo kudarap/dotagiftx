@@ -2,72 +2,127 @@ package core
 
 import (
 	"context"
+	"strconv"
 	"time"
 )
 
-// Verified Delivery statuses.
+// Delivery error types.
 const (
-	// VerifiedDeliveryStatusPending on-going or queued for parsing inventory.
-	VerifiedDeliveryStatusPending VerifiedDeliveryStatus = 100
-
-	// VerifiedDeliveryStatusPassed done parsing buyer inventory and pass the verification challenge.
-	VerifiedDeliveryStatusPassed VerifiedDeliveryStatus = 200
-
-	// VerifiedDeliveryStatusBuyerAck manually verified by buyer. Special used case for private
-	// inventories but requires login from buyer.
-	VerifiedDeliveryStatusBuyerAck VerifiedDeliveryStatus = 210
-
-	// VerifiedDeliveryStatusFailed done parsing buyer inventory but did not pass verification challenge.
-	VerifiedDeliveryStatusFailed VerifiedDeliveryStatus = 400
-
-	// VerifiedDeliveryStatusError inventory could not be parsed or an error occurred while requesting.
-	// This could mean steam api is reaching its request limit or the inventory is private.
-	VerifiedDeliveryStatusError VerifiedDeliveryStatus = 500
+	DeliveryErrNotFound Errors = iota + 6000
+	DeliveryErrRequiredID
+	DeliveryErrRequiredFields
 )
+
+// sets error text definition.
+func init() {
+	appErrorText[DeliveryErrNotFound] = "report not found"
+	appErrorText[DeliveryErrRequiredID] = "report id is required"
+	appErrorText[DeliveryErrRequiredFields] = "report fields are required"
+}
+
+// Delivery statuses.
+const (
+	// DeliveryStatusNoHit buyer's inventory successfully parsed
+	// but the item did not find any in match.
+	DeliveryStatusNoHit DeliveryStatus = 100
+
+	// DeliveryStatusNameVerified item exists on buyer's inventory
+	// base on the item name challenge.
+	//
+	// No-gift info might mean:
+	// 1. Buyer cleared the gift information
+	// 2. Buyer is the original owner of the item
+	// 3. Item might come from another source
+	DeliveryStatusNameVerified DeliveryStatus = 200
+
+	// DeliveryStatusSenderVerified both item existence and gift
+	// information matched the seller's avatar name. We could
+	// also use the date received to check against delivery data
+	// to strengthen its validity.
+	DeliveryStatusSenderVerified DeliveryStatus = 300
+
+	// DeliveryStatusPrivate buyer's inventory is not visible to
+	// public and we can do nothing about it.
+	DeliveryStatusPrivate DeliveryStatus = 400
+
+	// DeliveryStatusError error occurred during API request or
+	// parsing inventory error.
+	DeliveryStatusError DeliveryStatus = 500
+)
+
+var deliveryStatusTexts = map[DeliveryStatus]string{
+	DeliveryStatusNoHit:          "no hit",
+	DeliveryStatusNameVerified:   "name verified",
+	DeliveryStatusSenderVerified: "sender verified",
+	DeliveryStatusPrivate:        "private",
+	DeliveryStatusError:          "error",
+}
 
 type (
-	VerifiedDeliveryStatus uint
 
-	VerifiedDelivery struct {
-		ID           string                 `json:"id"             db:"id,omitempty"`
-		UserID       string                 `json:"user_id"        db:"user_id,omitempty,indexed"    valid:"required"`
-		ItemID       string                 `json:"item_id"        db:"item_id,omitempty,indexed"    valid:"required"`
-		BuyerSteamID string                 `json:"buyer_steam_id" db:"buyer_steam_id,omitempty"     valid:"required"`
-		Status       VerifiedDeliveryStatus `json:"status"         db:"status,indexed"`
-		RawData      string                 `json:"raw_data"       db:"raw_data"`
-		Retries      int                    `json:"retries"        db:"retries"`
-		CreatedAt    *time.Time             `json:"created_at"     db:"created_at,omitempty,indexed"`
-		UpdatedAt    *time.Time             `json:"updated_at"     db:"updated_at,omitempty,indexed"`
-		// Include related fields.
-		User *User `json:"user,omitempty" db:"user,omitempty"`
-		Item *Item `json:"item,omitempty" db:"item,omitempty"`
+	// DeliveryStatus represents delivery status.
+	DeliveryStatus uint
+
+	/// Delivery represents steam inventory delivery.
+	Delivery struct {
+		ID               string         `json:"id"                 db:"id,omitempty,omitempty"`
+		MarketID         string         `json:"market_id"          db:"market_id,omitempty" valid:"required"`
+		BuyerConfirmed   *bool          `json:"buyer_confirmed"    db:"buyer_confirmed,omitempty"`
+		BuyerConfirmedAt *time.Time     `json:"buyer_confirmed_at" db:"buyer_confirmed_at,omitempty"`
+		Status           DeliveryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
+		Assets           []SteamAsset   `json:"steam_assets"       db:"steam_assets,omitempty"`
+		Retries          int            `json:"retries"            db:"retries,omitempty"`
+		CreatedAt        *time.Time     `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
+		UpdatedAt        *time.Time     `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
-	VerifiedService interface {
-		VerifiedDeliveries(ctx context.Context, opts FindOpts) ([]VerifiedDelivery, *FindMetadata, error)
-		VerifiedDelivery(ctx context.Context, id string) (VerifiedDelivery, error)
-		Verify(ctx context.Context, marketID, buyerSteamID string) error
+	// DeliveryService provides access to Delivery service.
+	DeliveryService interface {
+		// Deliveries returns a list of deliveries.
+		Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, error)
+
+		// Delivery returns Delivery details by id.
+		Delivery(id string) (*Delivery, error)
+
+		// Create saves new Delivery details.
+		Set(context.Context, *Delivery) error
 	}
 
-	VerifiedStorage interface {
+	// DeliveryStorage defines operation for Delivery records.
+	DeliveryStorage interface {
+		// Find returns a list of deliveries from data store.
+		Find(opts FindOpts) ([]Delivery, error)
+
+		// Count returns number of deliveries from data store.
+		Count(FindOpts) (int, error)
+
+		// Get returns Delivery details by id from data store.
+		Get(id string) (*Delivery, error)
+
+		// Create persists a new Delivery to data store.
+		Create(*Delivery) error
+
+		// Update save changes of Delivery to data store.
+		Update(*Delivery) error
 	}
 )
 
-func NewVerifiedDelivery(userID, itemID, buyerSteamID string) VerifiedDelivery {
-	return VerifiedDelivery{}
+// CheckCreate validates field on creating new delivery.
+func (r Delivery) CheckCreate() error {
+	// Check required fields.
+	if err := validator.Struct(r); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (d VerifiedDelivery) ReduceRawData() string {
-	panic("implement me")
-}
+// String returns text value of a delivery status.
+func (s DeliveryStatus) String() string {
+	t, ok := deliveryStatusTexts[s]
+	if !ok {
+		return strconv.Itoa(int(s))
+	}
 
-func (d VerifiedDelivery) ParseRawData() string {
-	panic("implement me")
-}
-
-// Challenge validates delivery
-// 1. check for gift from the seller
-// 2. check item name
-func (d VerifiedDelivery) Challenge() (passed bool) {
-	panic("implement me")
+	return t
 }

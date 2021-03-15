@@ -85,6 +85,10 @@ type (
 		Notes          string       `json:"notes"            db:"notes,omitempty"`
 		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
+
+		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty"`
+		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
+
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 		Item *Item `json:"item,omitempty" db:"item,omitempty"`
@@ -198,7 +202,7 @@ func (m *Market) SetDefaults() {
 	}
 }
 
-// String returns text value of a post status.
+// String returns text value of a market status.
 func (s MarketStatus) String() string {
 	t, ok := MarketStatusTexts[s]
 	if !ok {
