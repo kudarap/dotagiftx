@@ -20,6 +20,11 @@ import MarketUpdateDialog from '@/components/MarketUpdateDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
+import {
+  VERIFIED_DELIVERY_MAP_TEXT,
+  VERIFIED_INVENTORY_MAP_ICON,
+  VERIFIED_INVENTORY_MAP_TEXT,
+} from '@/constants/verified'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -120,6 +125,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                     />
                     <div>
                       <strong>{market.item.name}</strong>
+                      <span>{VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}</span>
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {market.item.hero}
