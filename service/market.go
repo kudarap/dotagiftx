@@ -10,6 +10,10 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
+type Dispatcher interface {
+	VerifyDelivery(marketID string)
+}
+
 // NewMarket returns new Market service.
 func NewMarket(
 	ss core.MarketStorage,
@@ -18,9 +22,10 @@ func NewMarket(
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
 	sc core.SteamClient,
+	dp Dispatcher,
 	lg log.Logger,
 ) core.MarketService {
-	return &marketService{ss, us, is, ts, cs, sc, lg}
+	return &marketService{ss, us, is, ts, cs, sc, dp, lg}
 }
 
 type marketService struct {
@@ -30,6 +35,7 @@ type marketService struct {
 	trackStg   core.TrackStorage
 	catalogStg core.CatalogStorage
 	steam      core.SteamClient
+	dispatch   Dispatcher
 	logger     log.Logger
 }
 
@@ -255,6 +261,8 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 		}
 	}()
+
+	s.dispatch.VerifyDelivery(mkt.ID)
 
 	s.getRelatedFields(mkt)
 	return nil

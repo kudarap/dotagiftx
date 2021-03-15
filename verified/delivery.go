@@ -59,7 +59,7 @@ func Delivery(
 	}
 
 	status := core.DeliveryStatusNameVerified
-	// Check asset gifter matches the seller persona name.
+	// Check asset sender matches the seller persona name.
 	//
 	// NOTE! checking against seller persona name might not be accurate since
 	// buyer can clear gift information that's why it need to snapshot

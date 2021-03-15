@@ -88,6 +88,12 @@ func (app *application) setup() error {
 		return err
 	}
 
+	// Setup application worker
+	app.worker = worker.New()
+	app.worker.SetLogger(app.contextLog("worker"))
+	// NOTE! this is shade I don't like this one bit
+	dispatcher := new(jobs.Dispatcher)
+
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
@@ -115,6 +121,7 @@ func (app *application) setup() error {
 		trackStg,
 		catalogStg,
 		steamClient,
+		dispatcher,
 		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
@@ -122,6 +129,25 @@ func (app *application) setup() error {
 	reportSvc := service.NewReport(reportStg)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg)
+
+	// Register job on the worker.
+	dispatcher = jobs.NewDispatcher(
+		app.worker,
+		deliverySvc,
+		inventorySvc,
+		marketSvc,
+		logger,
+	)
+	app.worker.AddJob(jobs.NewVerifyDelivery(
+		deliverySvc,
+		marketSvc,
+		app.contextLog("job_verify_delivery"),
+	))
+	app.worker.AddJob(jobs.NewVerifyInventory(
+		inventorySvc,
+		marketSvc,
+		app.contextLog("job_verify_inventory"),
+	))
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
@@ -148,14 +174,6 @@ func (app *application) setup() error {
 	)
 	srv.Addr = app.config.Addr
 	app.server = srv
-
-	// Worker setup.
-	wrk := worker.New(
-		jobs.NewVerifyDelivery(deliverySvc, marketSvc, app.contextLog("job_verify_delivery")),
-		jobs.NewVerifyInventory(inventorySvc, marketSvc, app.contextLog("job_verify_inventory")),
-	)
-	wrk.SetLogger(app.contextLog("worker"))
-	app.worker = wrk
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
