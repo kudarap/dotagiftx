@@ -12,7 +12,12 @@ const iconStyle = {
     fontSize: '0.875rem',
     marginLeft: 4,
     marginBottom: -2,
+    color: 'lightgrey',
   },
+}
+
+const goodStyle = {
+  style: { ...iconStyle.style, color: 'lightgreen' },
 }
 
 function IconToolTip({ title, children }) {
@@ -43,7 +48,7 @@ export const VERIFIED_INVENTORY_MAP_ICON = {
   ),
   [VERIFIED_INVENTORY_VERIFIED]: (
     <IconToolTip title="Verified item from seller's inventory">
-      <CheckIcon {...iconStyle} />
+      <CheckIcon {...goodStyle} />
     </IconToolTip>
   ),
   [VERIFIED_INVENTORY_PRIVATE]: (
@@ -80,12 +85,12 @@ export const VERIFIED_DELIVERY_MAP_ICON = {
   ),
   [VERIFIED_DELIVERY_NAME_VERIFIED]: (
     <IconToolTip title="Item verified from buyer's inventory">
-      <CheckIcon {...iconStyle} />
+      <CheckIcon {...goodStyle} />
     </IconToolTip>
   ),
   [VERIFIED_DELIVERY_SENDER_VERIFIED]: (
     <IconToolTip title="Sender avatar name matched the item from buyer's inventory">
-      <DoubleCheckIcon {...iconStyle} />
+      <DoubleCheckIcon {...goodStyle} />
     </IconToolTip>
   ),
   [VERIFIED_DELIVERY_PRIVATE]: (
