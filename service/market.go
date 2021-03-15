@@ -12,6 +12,7 @@ import (
 
 type Dispatcher interface {
 	VerifyDelivery(marketID string)
+	VerifyInventory(userID string)
 }
 
 // NewMarket returns new Market service.
@@ -131,6 +132,9 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
 	//}()
+	if mkt.Type == core.MarketTypeAsk {
+		s.dispatch.VerifyInventory(mkt.UserID)
+	}
 
 	return nil
 }

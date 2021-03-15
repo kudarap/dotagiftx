@@ -15,27 +15,32 @@ type VerifyInventory struct {
 	inventorySvc core.InventoryService
 	marketSvc    core.MarketService
 	logger       log.Logger
-
+	// job settings
+	name     string
 	interval time.Duration
+	filter   core.Market
 }
 
 func NewVerifyInventory(is core.InventoryService, ms core.MarketService, lg log.Logger) *VerifyInventory {
-	return &VerifyInventory{is, ms, lg, defaultJobInterval}
+	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}
+	return &VerifyInventory{
+		is, ms, lg,
+		"verify_inventory", defaultJobInterval, f}
 }
 
-func (i *VerifyInventory) String() string { return "verify_inventory" }
+func (vi *VerifyInventory) String() string { return vi.name }
 
-func (i *VerifyInventory) Interval() time.Duration { return i.interval }
+func (vi *VerifyInventory) Interval() time.Duration { return vi.interval }
 
-func (i *VerifyInventory) Run(ctx context.Context) error {
-	opts := core.FindOpts{Filter: core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}}
+func (vi *VerifyInventory) Run(ctx context.Context) error {
+	opts := core.FindOpts{Filter: vi.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 1
 
 	src := steaminv.InventoryAsset
 	for {
-		res, _, err := i.marketSvc.Markets(ctx, opts)
+		res, _, err := vi.marketSvc.Markets(ctx, opts)
 		if err != nil {
 			return err
 		}
@@ -44,6 +49,9 @@ func (i *VerifyInventory) Run(ctx context.Context) error {
 			// Skip verified statuses.
 			if mkt.InventoryStatus == core.InventoryStatusVerified ||
 				mkt.InventoryStatus == core.InventoryStatusNoHit {
+
+				// TODO! might remove items
+
 				continue
 			}
 
@@ -51,15 +59,15 @@ func (i *VerifyInventory) Run(ctx context.Context) error {
 			if err != nil {
 				continue
 			}
-			i.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
+			vi.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
-			err = i.inventorySvc.Set(ctx, &core.Inventory{
+			err = vi.inventorySvc.Set(ctx, &core.Inventory{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,
 			})
 			if err != nil {
-				i.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 			}
 		}
 

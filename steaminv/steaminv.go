@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -37,12 +36,12 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 		return nil, err
 	}
 	if m != nil && m.isCacheFresh() {
-		//log.Println(steamID, "cache is still fresh!")
-		defer func() {
-			if _, err = Crawl(steamID); err != nil {
-				log.Println("error invalidating", err)
-			}
-		}()
+		//log.Println(steamID, "cache is still fresh!", m.LastUpdated)
+		//defer func() {
+		//	if _, err = Crawl(steamID); err != nil {
+		//		log.Println("error invalidating", err)
+		//	}
+		//}()
 		return Get(steamID)
 	}
 

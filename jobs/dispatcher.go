@@ -25,6 +25,10 @@ func NewDispatcher(worker *worker.Worker,
 	marketSvc core.MarketService,
 	logger log.Logger,
 ) *Dispatcher {
+	if worker == nil {
+		panic("worker is nul")
+	}
+
 	return &Dispatcher{
 		worker,
 		deliverySvc,
@@ -43,5 +47,17 @@ func (d *Dispatcher) VerifyDelivery(marketID string) {
 	job.name = fmt.Sprintf("%s_%s", job.name, marketID)
 	job.interval = 0 // makes the job run-once.
 	job.filter = core.Market{ID: marketID}
+	d.worker.AddJob(job)
+}
+
+// VerifyInventory creates a job to verify a inventory
+// and queue them to worker.
+//
+// Customized existing VerifyInventory job to make it run once job.
+func (d *Dispatcher) VerifyInventory(userID string) {
+	job := NewVerifyInventory(d.inventorySvc, d.marketSvc, d.logger)
+	job.name = fmt.Sprintf("%s_%s", job.name, userID)
+	job.interval = 0 // makes the job run-once.
+	job.filter.UserID = userID
 	d.worker.AddJob(job)
 }

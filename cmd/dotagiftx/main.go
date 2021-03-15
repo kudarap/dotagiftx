@@ -131,7 +131,7 @@ func (app *application) setup() error {
 	inventorySvc := service.NewInventory(inventoryStg, marketStg)
 
 	// Register job on the worker.
-	dispatcher = jobs.NewDispatcher(
+	*dispatcher = *jobs.NewDispatcher(
 		app.worker,
 		deliverySvc,
 		inventorySvc,
