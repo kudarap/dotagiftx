@@ -15,17 +15,19 @@ type VerifyDelivery struct {
 	deliverySvc core.DeliveryService
 	marketSvc   core.MarketService
 	logger      log.Logger
+
+	interval time.Duration
 }
 
 func NewVerifyDelivery(ds core.DeliveryService, ms core.MarketService, lg log.Logger) *VerifyDelivery {
-	return &VerifyDelivery{ds, ms, lg}
+	return &VerifyDelivery{ds, ms, lg, defaultJobInterval}
 }
 
-func (j *VerifyDelivery) String() string { return "verify_delivery" }
+func (i *VerifyDelivery) String() string { return "verify_delivery" }
 
-func (j *VerifyDelivery) Interval() time.Duration { return defaultJobInterval }
+func (i *VerifyDelivery) Interval() time.Duration { return i.interval }
 
-func (j *VerifyDelivery) Run(ctx context.Context) error {
+func (i *VerifyDelivery) Run(ctx context.Context) error {
 	opts := core.FindOpts{Filter: core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusSold}}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
@@ -33,7 +35,7 @@ func (j *VerifyDelivery) Run(ctx context.Context) error {
 
 	src := steaminv.InventoryAsset
 	for {
-		res, _, err := j.marketSvc.Markets(ctx, opts)
+		res, _, err := i.marketSvc.Markets(ctx, opts)
 		if err != nil {
 			return err
 		}
@@ -49,15 +51,15 @@ func (j *VerifyDelivery) Run(ctx context.Context) error {
 			if err != nil {
 				continue
 			}
-			j.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
+			i.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
-			err = j.deliverySvc.Set(ctx, &core.Delivery{
+			err = i.deliverySvc.Set(ctx, &core.Delivery{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,
 			})
 			if err != nil {
-				j.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				i.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 			}
 		}
 
