@@ -23,7 +23,7 @@ func NewVerifyInventory(is core.InventoryService, ms core.MarketService, lg log.
 
 func (j *VerifyInventory) String() string { return "verify_inventory" }
 
-func (j *VerifyInventory) Interval() time.Duration { return time.Hour }
+func (j *VerifyInventory) Interval() time.Duration { return defaultJobInterval }
 
 func (j *VerifyInventory) Run(ctx context.Context) error {
 	opts := core.FindOpts{Filter: core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}}
