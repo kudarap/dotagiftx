@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/log"
@@ -17,6 +15,7 @@ import (
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/worker"
+	"github.com/sirupsen/logrus"
 )
 
 const configPrefix = "DG"
@@ -138,16 +137,7 @@ func (app *application) setup() error {
 		marketSvc,
 		logger,
 	)
-	app.worker.AddJob(jobs.NewVerifyDelivery(
-		deliverySvc,
-		marketSvc,
-		app.contextLog("job_verify_delivery"),
-	))
-	app.worker.AddJob(jobs.NewVerifyInventory(
-		inventorySvc,
-		marketSvc,
-		app.contextLog("job_verify_inventory"),
-	))
+	dispatcher.RegisterJobs()
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)

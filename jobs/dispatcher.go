@@ -6,6 +6,7 @@ import (
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/worker"
+	"github.com/sirupsen/logrus"
 )
 
 // Dispatcher represents the handling of custom jobs.
@@ -15,7 +16,7 @@ type Dispatcher struct {
 	deliverySvc  core.DeliveryService
 	inventorySvc core.InventoryService
 	marketSvc    core.MarketService
-	logger       log.Logger
+	logSvc       *logrus.Logger
 }
 
 // NewDispatcher returns an instance dispatcher.
@@ -23,19 +24,29 @@ func NewDispatcher(worker *worker.Worker,
 	deliverySvc core.DeliveryService,
 	inventorySvc core.InventoryService,
 	marketSvc core.MarketService,
-	logger log.Logger,
+	logSvc *logrus.Logger,
 ) *Dispatcher {
-	if worker == nil {
-		panic("worker is nul")
-	}
-
 	return &Dispatcher{
 		worker,
 		deliverySvc,
 		inventorySvc,
 		marketSvc,
-		logger,
+		logSvc,
 	}
+}
+
+// RegisterJobs add pre-defined jobs, mostly recurring one's.
+func (d *Dispatcher) RegisterJobs() {
+	d.worker.AddJob(NewVerifyDelivery(
+		d.deliverySvc,
+		d.marketSvc,
+		log.WithPrefix(d.logSvc, "job_verify_delivery"),
+	))
+	d.worker.AddJob(NewVerifyInventory(
+		d.inventorySvc,
+		d.marketSvc,
+		log.WithPrefix(d.logSvc, "job_verify_inventory"),
+	))
 }
 
 // VerifyDelivery creates a job to verify a delivery
@@ -43,7 +54,8 @@ func NewDispatcher(worker *worker.Worker,
 //
 // Customized existing VerifyDelivery job to make it run once job.
 func (d *Dispatcher) VerifyDelivery(marketID string) {
-	job := NewVerifyDelivery(d.deliverySvc, d.marketSvc, d.logger)
+	ctxLog := log.WithPrefix(d.logSvc, "dispatch_verify_inventory")
+	job := NewVerifyDelivery(d.deliverySvc, d.marketSvc, ctxLog)
 	job.name = fmt.Sprintf("%s_%s", job.name, marketID)
 	job.interval = 0 // makes the job run-once.
 	job.filter = core.Market{ID: marketID}
@@ -55,7 +67,8 @@ func (d *Dispatcher) VerifyDelivery(marketID string) {
 //
 // Customized existing VerifyInventory job to make it run once job.
 func (d *Dispatcher) VerifyInventory(userID string) {
-	job := NewVerifyInventory(d.inventorySvc, d.marketSvc, d.logger)
+	ctxLog := log.WithPrefix(d.logSvc, "dispatch_verify_inventory")
+	job := NewVerifyInventory(d.inventorySvc, d.marketSvc, ctxLog)
 	job.name = fmt.Sprintf("%s_%s", job.name, userID)
 	job.interval = 0 // makes the job run-once.
 	job.filter.UserID = userID
