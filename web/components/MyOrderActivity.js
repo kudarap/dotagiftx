@@ -6,7 +6,6 @@ import lightGreen from '@material-ui/core/colors/lightGreen'
 import teal from '@material-ui/core/colors/teal'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
-  MARKET_TYPE_ASK,
   MARKET_TYPE_BID,
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
@@ -17,6 +16,7 @@ import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import Link from '@/components/Link'
 import Avatar from '@material-ui/core/Avatar'
 import AppContext from '@/components/AppContext'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -125,6 +125,8 @@ export default function MyOrderActivity({ datatable, loading, error }) {
               {market.type === MARKET_TYPE_BID
                 ? MARKET_BID_STATUS_MAP_TEXT[market.status].toLowerCase()
                 : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
+
+              {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
             </span>
             &nbsp;
             <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">

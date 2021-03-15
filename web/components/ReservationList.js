@@ -22,6 +22,7 @@ import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -122,6 +123,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                     />
                     <div>
                       <strong>{market.item.name}</strong>
+                      {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {market.item.hero}

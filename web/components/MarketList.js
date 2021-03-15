@@ -27,6 +27,7 @@ import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import SellButton from '@/components/SellButton'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -294,6 +295,7 @@ function baseTable(Component) {
                   />
                   <div>
                     <strong>{market.user.name}</strong>
+                    {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                     <br />
                     <Typography variant="caption" color="textSecondary">
                       {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}

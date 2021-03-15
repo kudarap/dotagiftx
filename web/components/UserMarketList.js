@@ -18,6 +18,7 @@ import ItemImage from '@/components/ItemImage'
 import ContactDialog from '@/components/ContactDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import AppContext from '@/components/AppContext'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -109,6 +110,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                       />
                       <div>
                         <strong>{market.item.name}</strong>
+                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                         <br />
                         <Typography variant="caption" color="textSecondary">
                           {market.item.hero}

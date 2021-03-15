@@ -11,11 +11,14 @@ import {
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
   MARKET_BID_STATUS_MAP_TEXT,
+  MARKET_STATUS_LIVE,
+  MARKET_STATUS_RESERVED,
+  MARKET_STATUS_SOLD,
 } from '@/constants/market'
 import { amount, daysFromNow } from '@/lib/format'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import Divider from '@material-ui/core/Divider'
+import { VERIFIED_DELIVERY_MAP_ICON, VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -99,6 +102,12 @@ export default function MyMarketActivity({ datatable, loading, error }) {
               {market.type === MARKET_TYPE_BID
                 ? MARKET_BID_STATUS_MAP_TEXT[market.status]
                 : MARKET_STATUS_MAP_TEXT[market.status]}
+
+              {(market.status === MARKET_STATUS_LIVE || market.status === MARKET_STATUS_RESERVED) &&
+                VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+
+              {market.status === MARKET_STATUS_SOLD &&
+                VERIFIED_DELIVERY_MAP_ICON[market.delivery_status]}
             </span>
             &nbsp;
             <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">
