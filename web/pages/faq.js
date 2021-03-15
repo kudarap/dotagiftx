@@ -81,6 +81,26 @@ export default function Faq() {
           </Answer>
           <br />
 
+          <Question>What is reservation / reservation fee / deposit?</Question>
+          <Answer>
+            Some sellers requires a small fee to lock the item to buyer and this varies depending on
+            the seller or the item. <strong>Reserved item</strong> status will not appear on search
+            and profile listings to stop offering to other buyers. If buyer signed up, they can
+            check their{' '}
+            <Link color="secondary" href="/my-orders#toreceive">
+              reservations here
+            </Link>
+            .
+          </Answer>
+          <br />
+
+          <Question>Why do I need to wait 30 days to send or receive an item?</Question>
+          <Answer>
+            Valve&apos;s gift restriction that you need to have 30 days as friend to send and
+            receive Giftable items.
+          </Answer>
+          <br />
+
           <Question>Do I need a Middleman?</Question>
           <Answer>
             If you asked, you probably do, specially on high-value items where scammers fuck around.
@@ -89,13 +109,6 @@ export default function Faq() {
               Middleman here
             </Link>
             &nbsp; and read around.
-          </Answer>
-          <br />
-
-          <Question>Why do I need to wait 30 days to send the item?</Question>
-          <Answer>
-            Valve&apos;s gift restriction that you need to have 30 days as friend to send and
-            receive Giftable items.
           </Answer>
           <br />
 
