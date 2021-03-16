@@ -142,6 +142,14 @@ type (
 		// BaseUpdate persists market changes to data store and
 		// will not update updated_at field.
 		BaseUpdate(*Market) error
+
+		// PendingInventoryStatus returns market entries that is pending for checking
+		// inventory status or needs re-processing of re-process error status.
+		PendingInventoryStatus(o FindOpts) ([]Market, error)
+
+		// PendingDeliveryStatus returns market entries that is pending for checking
+		// delivery status or needs re-processing of re-process error status.
+		PendingDeliveryStatus(o FindOpts) ([]Market, error)
 	}
 )
 

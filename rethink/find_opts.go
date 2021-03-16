@@ -12,10 +12,11 @@ import (
 type findOpts core.FindOpts
 
 func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
-	return findOpts(o).parseOpts(q, nil)
+	//return findOpts(o).parseOpts(q, nil)
+	return baseFindOptsQuery(q, o, nil)
 }
 
-func newCatalogFindOptsQuery(q r.Term, o core.FindOpts, hookFn func(r.Term) r.Term) r.Term {
+func baseFindOptsQuery(q r.Term, o core.FindOpts, hookFn func(r.Term) r.Term) r.Term {
 	return findOpts(o).parseOpts(q, hookFn)
 }
 
