@@ -15,7 +15,7 @@ const iconStyle = {
     fontSize: '0.875rem',
     marginLeft: 4,
     marginBottom: -2,
-    color: 'lightgrey',
+    color: 'grey',
   },
 }
 
