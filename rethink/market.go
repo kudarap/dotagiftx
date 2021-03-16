@@ -82,8 +82,9 @@ func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, e
 	q := r.Table(tableMarket).
 		Filter(func(t r.Term) r.Term {
 			return t.HasFields(marketFieldDeliveryStatus).Not().
-				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
-			//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusPrivate)))
+				//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
+				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError).
+					Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit)))
 		})
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
 
