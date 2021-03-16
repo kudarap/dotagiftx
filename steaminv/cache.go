@@ -27,6 +27,7 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 		return asset, nil
 	}
 
+	fmt.Println("STEAMINV NO LOCAL CACHE HIT", steamID)
 	asset, err := InventoryAsset(steamID)
 	if err != nil {
 		return nil, err
