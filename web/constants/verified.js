@@ -1,13 +1,14 @@
 // Verified delivery and inventory
 
 import Tooltip from '@material-ui/core/Tooltip'
-import NoHitIcon from '@material-ui/icons/RemoveCircleOutline'
+// import NoHitIcon from '@material-ui/icons/RemoveCircleOutline'
 // import NoHitIcon from '@material-ui/icons/HighlightOff'
+import NoHitIcon from '@material-ui/icons/Block'
 import CheckIcon from '@material-ui/icons/Done'
 import DoubleCheckIcon from '@material-ui/icons/DoneAll'
 import Private from '@material-ui/icons/VisibilityOff'
 // import Private from '@material-ui/icons/Block'
-import Error from '@material-ui/icons/Error'
+import Error from '@material-ui/icons/ErrorOutline'
 
 const iconStyle = {
   style: {
@@ -18,8 +19,12 @@ const iconStyle = {
   },
 }
 
-const goodStyle = {
+const rareStyle = {
   style: { ...iconStyle.style, color: 'lightgreen' },
+}
+
+const ultraStyle = {
+  style: { ...iconStyle.style, color: 'gold' },
 }
 
 function IconToolTip({ title, children }) {
@@ -50,7 +55,7 @@ export const VERIFIED_INVENTORY_MAP_ICON = {
   ),
   [VERIFIED_INVENTORY_VERIFIED]: (
     <IconToolTip title="Verified item from seller's inventory">
-      <CheckIcon {...goodStyle} />
+      <CheckIcon {...rareStyle} />
     </IconToolTip>
   ),
   [VERIFIED_INVENTORY_PRIVATE]: (
@@ -87,12 +92,12 @@ export const VERIFIED_DELIVERY_MAP_ICON = {
   ),
   [VERIFIED_DELIVERY_NAME_VERIFIED]: (
     <IconToolTip title="Item verified from buyer's inventory">
-      <CheckIcon {...goodStyle} />
+      <CheckIcon {...rareStyle} />
     </IconToolTip>
   ),
   [VERIFIED_DELIVERY_SENDER_VERIFIED]: (
     <IconToolTip title="Sender avatar name matched the item from buyer's inventory">
-      <DoubleCheckIcon {...goodStyle} />
+      <DoubleCheckIcon {...ultraStyle} />
     </IconToolTip>
   ),
   [VERIFIED_DELIVERY_PRIVATE]: (
