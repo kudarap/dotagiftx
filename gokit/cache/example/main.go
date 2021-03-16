@@ -5,20 +5,22 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
-	"github.com/kudarap/dotagiftx/steam/cache"
+	"github.com/kudarap/dotagiftx/gokit/cache"
 )
 
 func main() {
-	log.Println(cache.Get("123412415"))
+	const testkey = "testkey_123"
+
+	log.Println(cache.Get(testkey))
 	t := time.Now()
-	log.Println(cache.Set("123412415", core.Auth{
+	log.Println(cache.Set(testkey, core.Auth{
 		ID:        "100id",
 		UserID:    "userid299",
 		Username:  "akoko",
 		CreatedAt: &t,
 	}, time.Second*2))
-	log.Println(cache.Get("123412415"))
+	log.Println(cache.Get(testkey))
 	time.Sleep(time.Second * 3)
-	log.Println(cache.Get("123412415"))
+	log.Println(cache.Get(testkey))
 
 }

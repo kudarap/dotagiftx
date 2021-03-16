@@ -7,9 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"time"
-
-	"github.com/kudarap/dotagiftx/steam/cache"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx/core"
@@ -18,8 +15,6 @@ import (
 var fastjson = jsoniter.ConfigFastest
 
 var ErrInventoryPrivate = errors.New("profile inventory is private")
-
-const inventoryCacheExpr = time.Hour * 24
 
 // Asset represents compact inventory base of RawInventory model.
 type Asset = core.SteamAsset
@@ -32,30 +27,6 @@ func InventoryAsset(steamID string) ([]Asset, error) {
 	}
 	defer r.Body.Close()
 	return assetParser(r.Body)
-}
-
-func InventoryAssetWithCache(steamID string) ([]Asset, error) {
-	hit, err := cache.Get(steamID)
-	if err != nil {
-		return nil, err
-	}
-	if hit != nil {
-		b, _ := fastjson.Marshal(hit)
-		var asset []Asset
-		_ = fastjson.Unmarshal(b, &asset)
-		return asset, nil
-	}
-
-	asset, err := InventoryAsset(steamID)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = cache.Set(steamID, asset, inventoryCacheExpr); err != nil {
-		return nil, err
-	}
-
-	return asset, nil
 }
 
 func assetParser(r io.Reader) ([]Asset, error) {
