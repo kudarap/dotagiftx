@@ -52,6 +52,10 @@ func (s *SteamAsset) IsBundled() bool {
 	return strings.HasSuffix(s.Type, "Bundle")
 }
 
+func (s *SteamAsset) IsCollectorsCache() bool {
+	return strings.ToUpper(s.Type) == "MYTHICAL BUNDLE"
+}
+
 func (s *SteamAsset) IsImmortal() bool {
 	return strings.HasPrefix(s.Type, "Immortal")
 }

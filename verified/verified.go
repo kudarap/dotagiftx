@@ -32,7 +32,7 @@ func filterByGiftable(a []steam.Asset) []steam.Asset {
 		// Is the item immortal and does not say its giftable?
 		// This fixes the removed "Gift once" string on description
 		// recently by Valve.
-		if !aa.GiftOnce && (aa.IsBundled() || !aa.IsImmortal()) {
+		if !aa.GiftOnce && (aa.IsCollectorsCache() || !aa.IsImmortal()) {
 			continue
 		}
 

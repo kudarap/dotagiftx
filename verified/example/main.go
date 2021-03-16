@@ -12,13 +12,14 @@ import (
 	"github.com/kudarap/dotagiftx/verified"
 )
 
-func main1() {
+func main() {
 	assetSrc := steaminv.InventoryAssetWithCache
 
 	params := []struct {
 		steamID, item string
 	}{
-		{"76561198209729119", "Pyrexaec Forge"},
+		{"76561198309634734", "The Abscesserator Bundle"},
+		//{"76561198209729119", "Pyrexaec Forge"},
 	}
 
 	for _, param := range params {
@@ -51,7 +52,7 @@ func main1() {
 	}
 }
 
-func main() {
+func main1() {
 	assetSrc := steaminv.InventoryAsset
 
 	params := []struct {
