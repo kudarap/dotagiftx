@@ -18,7 +18,8 @@ func main() {
 	params := []struct {
 		steamID, item string
 	}{
-		{"76561198309634734", "The Abscesserator Bundle"},
+		//{"76561198309634734", "The Abscesserator Bundle"},
+		{"76561198255419442", "The Abscesserator Bundle"},
 		//{"76561198209729119", "Pyrexaec Forge"},
 	}
 
@@ -52,7 +53,7 @@ func main() {
 	}
 }
 
-func main1() {
+func main2() {
 	assetSrc := steaminv.InventoryAsset
 
 	params := []struct {
@@ -62,11 +63,13 @@ func main1() {
 		//{"kudarap", "76561198011477544", "PRIVATE"},
 		//{"kudarap", "76561198042690669", "NO HIT"},
 
-		{"L3G1ON", "76561198052842962", "Pattern of the Silken Queen"},
-		{"L3G1ON", "76561198052842962", "Evolution of the Infinite"},
-		{"L3G1ON", "76561198052842962", "Pyrexaec Forge"},
-		{"L3G1ON", "76561198052842962", "Secrets of the Celestial"},
-		{"L3G1ON", "76561198052842962", "Shimmer of the Anointed"},
+		{"no luck no win", "76561198046903060", "The Abscesserator Bundle"},
+
+		//{"L3G1ON", "76561198052842962", "Pattern of the Silken Queen"},
+		//{"L3G1ON", "76561198052842962", "Evolution of the Infinite"},
+		//{"L3G1ON", "76561198052842962", "Pyrexaec Forge"},
+		//{"L3G1ON", "76561198052842962", "Secrets of the Celestial"},
+		//{"L3G1ON", "76561198052842962", "Shimmer of the Anointed"},
 
 		//{"kudarap", "76561198042690669", "Riddle of the Hierophant"},
 		//{"kudarap", "76561198436826874", "Fowl Omen"},

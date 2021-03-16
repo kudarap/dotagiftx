@@ -14,6 +14,10 @@ type AssetSource func(steamID string) ([]steam.Asset, error)
 func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 	var matches []steam.Asset
 	for _, aa := range a {
+		// Strip "bundle" string to cover items that unbundled:
+		// - Dipper the Destroyer Bundle
+		// - The Abscesserator Bundle
+		itemName = strings.TrimSpace(strings.TrimSuffix(itemName, "Bundle"))
 		if !strings.Contains(strings.Join(aa.Descriptions, "|"), itemName) &&
 			!strings.Contains(aa.Name, itemName) {
 			continue
