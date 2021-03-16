@@ -266,7 +266,14 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		}
 	}()
 
-	s.dispatch.VerifyDelivery(mkt.ID)
+	if mkt.Type == core.MarketTypeAsk {
+		switch mkt.Status {
+		case core.MarketStatusReserved:
+			s.dispatch.VerifyInventory(mkt.ID)
+		case core.MarketStatusSold:
+			s.dispatch.VerifyDelivery(mkt.ID)
+		}
+	}
 
 	s.getRelatedFields(mkt)
 	return nil
