@@ -295,10 +295,10 @@ function baseTable(Component) {
                   />
                   <div>
                     <strong>{market.user.name}</strong>
-                    {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                     <br />
                     <Typography variant="caption" color="textSecondary">
                       {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
+                      {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                     </Typography>
                   </div>
                 </div>

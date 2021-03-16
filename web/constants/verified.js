@@ -1,10 +1,12 @@
 // Verified delivery and inventory
 
 import Tooltip from '@material-ui/core/Tooltip'
-import NoHitIcon from '@material-ui/icons/Block'
+import NoHitIcon from '@material-ui/icons/RemoveCircleOutline'
+// import NoHitIcon from '@material-ui/icons/HighlightOff'
 import CheckIcon from '@material-ui/icons/Done'
 import DoubleCheckIcon from '@material-ui/icons/DoneAll'
 import Private from '@material-ui/icons/VisibilityOff'
+// import Private from '@material-ui/icons/Block'
 import Error from '@material-ui/icons/Error'
 
 const iconStyle = {
