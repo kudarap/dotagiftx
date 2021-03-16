@@ -64,7 +64,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			if err != nil {
 				continue
 			}
-			vd.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
+			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
 			err = vd.deliverySvc.Set(ctx, &core.Delivery{
 				MarketID: mkt.ID,

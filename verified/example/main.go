@@ -57,12 +57,16 @@ func main() {
 	params := []struct {
 		persona, steamID, item string
 	}{
-		{"kudarap", "765611____1477544", "BAD ID"},
-		{"kudarap", "76561198011477544", "PRIVATE"},
-		{"kudarap", "76561198042690669", "NO HIT"},
+		//{"kudarap", "765611____1477544", "BAD ID"},
+		//{"kudarap", "76561198011477544", "PRIVATE"},
+		//{"kudarap", "76561198042690669", "NO HIT"},
 
-		{"L3G1ON", "76561198052842962", "Shimmer of the Anointed"},
+		{"L3G1ON", "76561198052842962", "Pattern of the Silken Queen"},
+		{"L3G1ON", "76561198052842962", "Evolution of the Infinite"},
+		{"L3G1ON", "76561198052842962", "Pyrexaec Forge"},
 		{"L3G1ON", "76561198052842962", "Secrets of the Celestial"},
+		{"L3G1ON", "76561198052842962", "Shimmer of the Anointed"},
+
 		//{"kudarap", "76561198042690669", "Riddle of the Hierophant"},
 		//{"kudarap", "76561198436826874", "Fowl Omen"},
 		//{"kudarap", "76561198170463425", "Cinder Sensei"},
