@@ -63,7 +63,7 @@ func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 	}
 
 	// Update market delivery status.
-	if err := s.marketStg.Update(&core.Market{
+	if err := s.marketStg.BaseUpdate(&core.Market{
 		ID:             del.MarketID,
 		DeliveryStatus: del.Status,
 	}); err != nil {

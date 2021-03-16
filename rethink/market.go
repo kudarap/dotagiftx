@@ -123,12 +123,16 @@ func (s *marketStorage) Create(in *core.Market) error {
 }
 
 func (s *marketStorage) Update(in *core.Market) error {
+	in.UpdatedAt = now()
+	return s.BaseUpdate(in)
+}
+
+func (s *marketStorage) BaseUpdate(in *core.Market) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
 	}
 
-	in.UpdatedAt = now()
 	in.User = nil
 	in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))

@@ -63,7 +63,7 @@ func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {
 	}
 
 	// Update market Inventory status.
-	if err := s.marketStg.Update(&core.Market{
+	if err := s.marketStg.BaseUpdate(&core.Market{
 		ID:              inv.MarketID,
 		InventoryStatus: inv.Status,
 	}); err != nil {

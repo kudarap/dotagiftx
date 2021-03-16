@@ -138,6 +138,10 @@ type (
 
 		// Update persists market changes to data store.
 		Update(*Market) error
+
+		// BaseUpdate persists market changes to data store and
+		// will not update updated_at field.
+		BaseUpdate(*Market) error
 	}
 )
 
