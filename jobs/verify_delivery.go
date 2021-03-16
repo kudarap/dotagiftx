@@ -80,6 +80,6 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 		if len(res) < opts.Limit {
 			return nil
 		}
-		opts.Page++
+		//opts.Page++
 	}
 }
