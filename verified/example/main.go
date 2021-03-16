@@ -8,18 +8,17 @@ import (
 	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
-	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/steaminv"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
 func main() {
-	assetSrc := steam.InventoryAssetWithCache
+	assetSrc := steaminv.InventoryAssetWithCache
 
 	params := []struct {
 		steamID, item string
 	}{
-		{"76561198088587178", "Tribal Pathways"},
+		{"76561198209729119", "Pyrexaec Forge"},
 	}
 
 	for _, param := range params {
