@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -33,12 +34,19 @@ func (vd *VerifyDelivery) String() string { return vd.name }
 func (vd *VerifyDelivery) Interval() time.Duration { return vd.interval }
 
 func (vd *VerifyDelivery) Run(ctx context.Context) error {
+	bs := time.Now()
+	defer func() {
+		fmt.Println("======== VERIFIED DELIVERY BENCHMARK TIME =========")
+		fmt.Println(time.Now().Sub(bs))
+		fmt.Println("====================================================")
+	}()
+
 	opts := core.FindOpts{Filter: vd.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 1
 
-	src := steaminv.InventoryAsset
+	src := steaminv.InventoryAssetWithCache
 	for {
 		res, _, err := vd.marketSvc.Markets(ctx, opts)
 		if err != nil {
