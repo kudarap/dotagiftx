@@ -134,7 +134,7 @@ func (app *application) setup() error {
 		app.worker,
 		deliverySvc,
 		inventorySvc,
-		marketSvc,
+		marketStg,
 		logger,
 	)
 	dispatcher.RegisterJobs()

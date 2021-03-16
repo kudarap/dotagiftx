@@ -15,7 +15,7 @@ type Dispatcher struct {
 	// Jobs service dependencies
 	deliverySvc  core.DeliveryService
 	inventorySvc core.InventoryService
-	marketSvc    core.MarketService
+	marketStg    core.MarketStorage
 	logSvc       *logrus.Logger
 }
 
@@ -23,14 +23,14 @@ type Dispatcher struct {
 func NewDispatcher(worker *worker.Worker,
 	deliverySvc core.DeliveryService,
 	inventorySvc core.InventoryService,
-	marketSvc core.MarketService,
+	marketStg core.MarketStorage,
 	logSvc *logrus.Logger,
 ) *Dispatcher {
 	return &Dispatcher{
 		worker,
 		deliverySvc,
 		inventorySvc,
-		marketSvc,
+		marketStg,
 		logSvc,
 	}
 }
@@ -39,12 +39,12 @@ func NewDispatcher(worker *worker.Worker,
 func (d *Dispatcher) RegisterJobs() {
 	d.worker.AddJob(NewVerifyDelivery(
 		d.deliverySvc,
-		d.marketSvc,
+		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_verify_delivery"),
 	))
 	d.worker.AddJob(NewVerifyInventory(
 		d.inventorySvc,
-		d.marketSvc,
+		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_verify_inventory"),
 	))
 }
@@ -55,7 +55,7 @@ func (d *Dispatcher) RegisterJobs() {
 // Customized existing VerifyDelivery job to make it run once job.
 func (d *Dispatcher) VerifyDelivery(marketID string) {
 	ctxLog := log.WithPrefix(d.logSvc, "dispatch_verify_inventory")
-	job := NewVerifyDelivery(d.deliverySvc, d.marketSvc, ctxLog)
+	job := NewVerifyDelivery(d.deliverySvc, d.marketStg, ctxLog)
 	job.name = fmt.Sprintf("%s_%s", job.name, marketID)
 	job.interval = 0 // makes the job run-once.
 	job.filter = core.Market{ID: marketID}
@@ -68,7 +68,7 @@ func (d *Dispatcher) VerifyDelivery(marketID string) {
 // Customized existing VerifyInventory job to make it run once job.
 func (d *Dispatcher) VerifyInventory(userID string) {
 	ctxLog := log.WithPrefix(d.logSvc, "dispatch_verify_inventory")
-	job := NewVerifyInventory(d.inventorySvc, d.marketSvc, ctxLog)
+	job := NewVerifyInventory(d.inventorySvc, d.marketStg, ctxLog)
 	job.name = fmt.Sprintf("%s_%s", job.name, userID)
 	job.interval = 0 // makes the job run-once.
 	job.filter.UserID = userID

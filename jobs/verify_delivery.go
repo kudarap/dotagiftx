@@ -14,7 +14,7 @@ import (
 // VerifyDelivery represents a delivery verification job.
 type VerifyDelivery struct {
 	deliverySvc core.DeliveryService
-	marketSvc   core.MarketService
+	marketStg   core.MarketStorage
 	logger      log.Logger
 	// job settings
 	name     string
@@ -22,7 +22,7 @@ type VerifyDelivery struct {
 	filter   core.Market
 }
 
-func NewVerifyDelivery(ds core.DeliveryService, ms core.MarketService, lg log.Logger) *VerifyDelivery {
+func NewVerifyDelivery(ds core.DeliveryService, ms core.MarketStorage, lg log.Logger) *VerifyDelivery {
 	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusSold}
 	return &VerifyDelivery{
 		ds, ms, lg,
@@ -44,11 +44,11 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts := core.FindOpts{Filter: vd.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
-	opts.Page = 1
+	opts.Page = 0
 
 	src := steaminv.InventoryAssetWithCache
 	for {
-		res, _, err := vd.marketSvc.Markets(ctx, opts)
+		res, err := vd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {
 			return err
 		}

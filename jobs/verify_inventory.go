@@ -14,7 +14,7 @@ import (
 // VerifyInventory represents a inventory verification job.
 type VerifyInventory struct {
 	inventorySvc core.InventoryService
-	marketSvc    core.MarketService
+	marketStg    core.MarketStorage
 	logger       log.Logger
 	// job settings
 	name     string
@@ -22,7 +22,7 @@ type VerifyInventory struct {
 	filter   core.Market
 }
 
-func NewVerifyInventory(is core.InventoryService, ms core.MarketService, lg log.Logger) *VerifyInventory {
+func NewVerifyInventory(is core.InventoryService, ms core.MarketStorage, lg log.Logger) *VerifyInventory {
 	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}
 	return &VerifyInventory{
 		is, ms, lg,
@@ -44,22 +44,24 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 	opts := core.FindOpts{Filter: vi.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
-	opts.Page = 1
+	opts.Page = 0
 
 	src := steaminv.InventoryAssetWithCache
 	for {
-		res, _, err := vi.marketSvc.Markets(ctx, opts)
+		res, err := vi.marketStg.PendingInventoryStatus(opts)
 		if err != nil {
 			return err
 		}
 
 		for _, mkt := range res {
+			//time.Sleep(time.Second * 2)
+
 			// Skip verified statuses.
 			if mkt.InventoryStatus == core.InventoryStatusVerified ||
 				mkt.InventoryStatus == core.InventoryStatusNoHit {
 
 				// TODO! might remove items
-
+				vi.logger.Warnln("batch no need check", opts.Page, mkt.User.SteamID, mkt.Item.Name)
 				continue
 			}
 
@@ -79,10 +81,11 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 			}
 		}
 
-		// should continue batching?
+		// Is there more?
 		if len(res) == 0 {
 			return nil
 		}
-		opts.Page++
+		//opts.Page++
+		//time.Sleep(time.Second * 2)
 	}
 }
