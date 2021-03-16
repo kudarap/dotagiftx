@@ -82,7 +82,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 		}
 
 		// Is there more?
-		if len(res) == 0 {
+		if len(res) < opts.Limit {
 			return nil
 		}
 		//opts.Page++

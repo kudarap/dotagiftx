@@ -76,8 +76,8 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			}
 		}
 
-		// should continue batching?
-		if len(res) == 0 {
+		// Is there more?
+		if len(res) < opts.Limit {
 			return nil
 		}
 		opts.Page++
