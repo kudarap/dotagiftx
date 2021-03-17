@@ -14,6 +14,7 @@ const iconStyle = {
   style: {
     fontSize: '0.875rem',
     marginLeft: 4,
+    marginRight: 2,
     marginBottom: -2,
     color: 'grey',
   },
@@ -82,12 +83,19 @@ const VERIFIED_DELIVERY_SENDER_VERIFIED = 300
 const VERIFIED_DELIVERY_PRIVATE = 400
 const VERIFIED_DELIVERY_ERROR = 500
 
-export const VERIFIED_DELIVERY_MAP_TEXT = {
+export const VERIFIED_DELIVERY_MAP_LABEL = {
   [VERIFIED_DELIVERY_NOHIT]: 'Not found',
   [VERIFIED_DELIVERY_NAME_VERIFIED]: 'Item verified',
   [VERIFIED_DELIVERY_SENDER_VERIFIED]: 'Sender verified',
   [VERIFIED_DELIVERY_PRIVATE]: 'Private inventory',
   [VERIFIED_DELIVERY_ERROR]: 'Error',
+}
+export const VERIFIED_DELIVERY_MAP_TEXT = {
+  [VERIFIED_DELIVERY_NOHIT]: "Item not found from buyer's inventory",
+  [VERIFIED_DELIVERY_NAME_VERIFIED]: "Item verified from buyer's inventory",
+  [VERIFIED_DELIVERY_SENDER_VERIFIED]: "Sender avatar name matched the item from buyer's inventory",
+  [VERIFIED_DELIVERY_PRIVATE]: "Buyer's inventory is private",
+  [VERIFIED_DELIVERY_ERROR]: 'Error processing verification',
 }
 
 export const VERIFIED_DELIVERY_MAP_ICON = {

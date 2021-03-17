@@ -11,7 +11,12 @@ import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import { LightTheme } from '@/components/Theme'
-import { VERIFIED_INVENTORY_MAP_LABEL, VERIFIED_INVENTORY_MAP_TEXT } from '@/constants/verified'
+import {
+  VERIFIED_DELIVERY_MAP_LABEL,
+  VERIFIED_DELIVERY_MAP_TEXT,
+  VERIFIED_INVENTORY_MAP_LABEL,
+  VERIFIED_INVENTORY_MAP_TEXT,
+} from '@/constants/verified'
 import { dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
 import { Popover } from '@material-ui/core'
@@ -33,8 +38,14 @@ export default function VerifiedStatusCard({ market }) {
 
   const { inventory, delivery } = market
   let source = inventory
+  let mapLabel = VERIFIED_INVENTORY_MAP_LABEL
+  let mapText = VERIFIED_INVENTORY_MAP_TEXT
+  let isDelivery = false
   if (delivery) {
+    isDelivery = true
     source = delivery
+    mapText = VERIFIED_DELIVERY_MAP_TEXT
+    mapLabel = VERIFIED_DELIVERY_MAP_LABEL
   }
   if (!source) {
     return null
@@ -46,23 +57,29 @@ export default function VerifiedStatusCard({ market }) {
     <CardX className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
-          {VERIFIED_INVENTORY_MAP_LABEL[source.status]}
+          {mapLabel[source.status]}
         </Typography>
         <Typography color="textSecondary" variant="body2" component="p">
           Last updated {dateFromNow(source.updated_at)}
         </Typography>
-        <Typography component="p">{VERIFIED_INVENTORY_MAP_TEXT[source.status]}</Typography>
+        <Typography component="p">{mapText[source.status]}</Typography>
 
         {source.steam_assets && (
           <>
-            <br />
-            <Typography variant="body2">Found {source.bundle_count} bundle/s</Typography>
+            {!isDelivery && (
+              <Typography variant="body2">
+                <br />
+                Found {source.bundle_count} bundle/s
+              </Typography>
+            )}
 
             <Table className={classes.table} size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  <TableCell>Giftable</TableCell>
+                  {!isDelivery && <TableCell>Giftable</TableCell>}
+                  {isDelivery && <TableCell>From</TableCell>}
+                  {isDelivery && <TableCell>Received</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -76,7 +93,11 @@ export default function VerifiedStatusCard({ market }) {
                         {asset.name}
                       </Link>
                     </TableCell>
-                    <TableCell align="center">{asset.gift_once ? 'Yes' : 'No'}</TableCell>
+                    {!isDelivery && (
+                      <TableCell align="center">{asset.gift_once ? 'Yes' : 'No'}</TableCell>
+                    )}
+                    {isDelivery && <TableCell>{asset.gift_from}</TableCell>}
+                    {isDelivery && <TableCell>{asset.date_received}</TableCell>}
                   </TableRow>
                 ))}
               </TableBody>
