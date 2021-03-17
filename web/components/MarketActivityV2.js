@@ -26,8 +26,6 @@ import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 const priceTagStyle = {
   padding: '2px 6px',
   color: 'white',
-  // borderRadius: 6,
-  // float: 'right',
 }
 
 const useStyles = makeStyles(theme => ({
@@ -141,16 +139,16 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
                 {market.user.name}
               </Link>
               &nbsp;
+              <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
+                {market.type === MARKET_TYPE_BID
+                  ? MARKET_BID_STATUS_MAP_TEXT[market.status].toLowerCase()
+                  : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
+              </span>
               <span
                 aria-owns={popoverElementID}
                 aria-haspopup="true"
                 data-index={idx}
-                onMouseEnter={handlePopoverOpen}
-                style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
-                {market.type === MARKET_TYPE_BID
-                  ? MARKET_BID_STATUS_MAP_TEXT[market.status].toLowerCase()
-                  : MARKET_STATUS_MAP_TEXT[market.status].toLowerCase()}
-
+                onMouseEnter={handlePopoverOpen}>
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
                   VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}

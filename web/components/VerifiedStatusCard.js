@@ -69,7 +69,7 @@ export default function VerifiedStatusCard({ market }) {
             {!isDelivery && (
               <Typography variant="body2">
                 <br />
-                Found {source.bundle_count} bundle/s
+                Found {source.bundle_count} bundle{source.bundle_count > 1 && 's'}
               </Typography>
             )}
 
