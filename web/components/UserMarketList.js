@@ -8,8 +8,10 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
+import Popover from '@material-ui/core/Popover'
 import Typography from '@material-ui/core/Typography'
 import green from '@material-ui/core/colors/lightGreen'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
@@ -18,7 +20,7 @@ import ItemImage from '@/components/ItemImage'
 import ContactDialog from '@/components/ContactDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import AppContext from '@/components/AppContext'
-import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
+import VerifiedStatusCard from '@/components/VerifiedStatusCard'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -46,6 +48,19 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
   const handleContactClick = marketIdx => {
     setCurrentMarket(data.data[marketIdx])
   }
+
+  const [anchorEl, setAnchorEl] = React.useState(null)
+
+  const handlePopoverOpen = event => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null)
+  }
+
+  const open = Boolean(anchorEl)
+  const popoverID = open ? 'verified-status-popover' : undefined
 
   return (
     <>
@@ -110,7 +125,12 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                       />
                       <div>
                         <strong>{market.item.name}</strong>
-                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                        <span
+                          aria-describedby={popoverID}
+                          onFocus={handlePopoverOpen}
+                          onMouseOver={handlePopoverOpen}>
+                          {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                        </span>
                         <br />
                         <Typography variant="caption" color="textSecondary">
                           {market.item.hero}
@@ -146,6 +166,23 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Popover
+        id={popoverID}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}>
+        <VerifiedStatusCard />
+      </Popover>
+
       <ContactDialog
         market={currentMarket}
         open={!!currentMarket}
