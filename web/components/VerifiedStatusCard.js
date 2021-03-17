@@ -5,22 +5,16 @@ import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
-
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
-import Button from '@/components/Button'
 import { LightTheme } from '@/components/Theme'
-import {
-  VERIFIED_INVENTORY_MAP_ICON,
-  VERIFIED_INVENTORY_MAP_LABEL,
-  VERIFIED_INVENTORY_MAP_TEXT,
-} from '@/constants/verified'
-import { dateCalendar, dateFromNow } from '@/lib/format'
+import { VERIFIED_INVENTORY_MAP_LABEL, VERIFIED_INVENTORY_MAP_TEXT } from '@/constants/verified'
+import { dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
+import { Popover } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +28,7 @@ export default function VerifiedStatusCard({ market }) {
   const classes = useStyles()
 
   if (market === null) {
-    return
+    return null
   }
 
   const { inventory } = market
@@ -44,16 +38,16 @@ export default function VerifiedStatusCard({ market }) {
   return (
     <CardX className={classes.root}>
       <CardContent>
-        {inventory && (
-          <>
-            <Typography variant="h5" component="h2">
-              {VERIFIED_INVENTORY_MAP_LABEL[inventory.status]}
-            </Typography>
-            <Typography color="textSecondary" variant="body2" component="p">
-              Last updated {dateFromNow(inventory.updated_at)}
-            </Typography>
-            <Typography component="p">{VERIFIED_INVENTORY_MAP_TEXT[inventory.status]}</Typography>
+        <Typography variant="h5" component="h2">
+          {VERIFIED_INVENTORY_MAP_LABEL[inventory.status]}
+        </Typography>
+        <Typography color="textSecondary" variant="body2" component="p">
+          Last updated {dateFromNow(inventory.updated_at)}
+        </Typography>
+        <Typography component="p">{VERIFIED_INVENTORY_MAP_TEXT[inventory.status]}</Typography>
 
+        {inventory.steam_assets && (
+          <>
             <br />
             <Typography variant="body2">Found {inventory.bundle_count} bundle/s</Typography>
 
@@ -97,8 +91,12 @@ export default function VerifiedStatusCard({ market }) {
   )
 }
 
-VerifiedStatusCard.propTypes = {}
-VerifiedStatusCard.defaultProps = {}
+VerifiedStatusCard.propTypes = {
+  market: PropTypes.object,
+}
+VerifiedStatusCard.defaultProps = {
+  market: null,
+}
 
 function CardX(props) {
   return (
@@ -107,3 +105,22 @@ function CardX(props) {
     </LightTheme>
   )
 }
+
+export function VerifiedStatusPopover({ market, ...other }) {
+  return (
+    <Popover
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      {...other}>
+      <VerifiedStatusCard market={market} />
+    </Popover>
+  )
+}
+VerifiedStatusPopover.propTypes = VerifiedStatusCard.propTypes
+VerifiedStatusPopover.defaultProps = VerifiedStatusCard.defaultProps

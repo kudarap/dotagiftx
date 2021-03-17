@@ -8,7 +8,6 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
-import Popover from '@material-ui/core/Popover'
 import Typography from '@material-ui/core/Typography'
 import green from '@material-ui/core/colors/lightGreen'
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
@@ -20,7 +19,7 @@ import ItemImage from '@/components/ItemImage'
 import ContactDialog from '@/components/ContactDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import AppContext from '@/components/AppContext'
-import VerifiedStatusCard from '@/components/VerifiedStatusCard'
+import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -168,21 +167,13 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
         </Table>
       </TableContainer>
 
-      <Popover
+      <VerifiedStatusPopover
         id={popoverElementID}
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}>
-        <VerifiedStatusCard market={data.data[currentIndex]} />
-      </Popover>
+        market={data.data[currentIndex]}
+      />
 
       <ContactDialog
         market={currentMarket}
