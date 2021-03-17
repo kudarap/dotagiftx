@@ -126,9 +126,9 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                       <div>
                         <strong>{market.item.name}</strong>
                         <span
-                          aria-describedby={popoverID}
-                          onFocus={handlePopoverOpen}
-                          onMouseOver={handlePopoverOpen}>
+                          aria-owns={popoverID}
+                          aria-haspopup="true"
+                          onMouseEnter={handlePopoverOpen}>
                           {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                         </span>
                         <br />
@@ -173,7 +173,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
         anchorOrigin={{
-          vertical: 'center',
+          vertical: 'top',
           horizontal: 'right',
         }}
         transformOrigin={{

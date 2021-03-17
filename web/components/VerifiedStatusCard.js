@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@/components/Button'
+import { LightTheme } from '@/components/Theme'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,7 +20,7 @@ export default function VerifiedStatusCard() {
   const classes = useStyles()
 
   return (
-    <Card className={classes.root}>
+    <CardX className={classes.root}>
       <CardContent>
         <Typography className={classes.title} color="textSecondary" gutterBottom>
           Word of the Day
@@ -38,9 +39,17 @@ export default function VerifiedStatusCard() {
       <CardActions>
         <Button size="small">Learn More</Button>
       </CardActions>
-    </Card>
+    </CardX>
   )
 }
 
 VerifiedStatusCard.propTypes = {}
 VerifiedStatusCard.defaultProps = {}
+
+function CardX(props) {
+  return (
+    <LightTheme>
+      <Card {...props} />
+    </LightTheme>
+  )
+}
