@@ -18,7 +18,6 @@ import {
 import { amount, daysFromNow } from '@/lib/format'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import { VERIFIED_DELIVERY_MAP_ICON, VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 
 const priceTagStyle = {
   padding: '2px 6px',
