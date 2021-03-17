@@ -49,18 +49,18 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
     setCurrentMarket(data.data[marketIdx])
   }
 
+  const [currentIndex, setIndex] = React.useState(null)
   const [anchorEl, setAnchorEl] = React.useState(null)
-
   const handlePopoverOpen = event => {
+    setIndex(Number(event.currentTarget.dataset.index))
     setAnchorEl(event.currentTarget)
   }
-
   const handlePopoverClose = () => {
     setAnchorEl(null)
   }
 
   const open = Boolean(anchorEl)
-  const popoverID = open ? 'verified-status-popover' : undefined
+  const popoverElementID = open ? 'verified-status-popover' : undefined
 
   return (
     <>
@@ -126,8 +126,9 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                       <div>
                         <strong>{market.item.name}</strong>
                         <span
-                          aria-owns={popoverID}
+                          aria-owns={popoverElementID}
                           aria-haspopup="true"
+                          data-index={idx}
                           onMouseEnter={handlePopoverOpen}>
                           {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                         </span>
@@ -168,7 +169,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
       </TableContainer>
 
       <Popover
-        id={popoverID}
+        id={popoverElementID}
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
@@ -180,7 +181,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
           vertical: 'top',
           horizontal: 'left',
         }}>
-        <VerifiedStatusCard />
+        <VerifiedStatusCard market={data.data[currentIndex]} />
       </Popover>
 
       <ContactDialog

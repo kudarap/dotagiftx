@@ -40,11 +40,17 @@ const VERIFIED_INVENTORY_VERIFIED = 200
 const VERIFIED_INVENTORY_PRIVATE = 400
 const VERIFIED_INVENTORY_ERROR = 500
 
-export const VERIFIED_INVENTORY_MAP_TEXT = {
+export const VERIFIED_INVENTORY_MAP_LABEL = {
   [VERIFIED_INVENTORY_NOHIT]: 'Not found',
-  [VERIFIED_INVENTORY_VERIFIED]: 'Verified',
+  [VERIFIED_INVENTORY_VERIFIED]: 'Item Verified',
   [VERIFIED_INVENTORY_PRIVATE]: 'Private inventory',
   [VERIFIED_INVENTORY_ERROR]: 'Error',
+}
+export const VERIFIED_INVENTORY_MAP_TEXT = {
+  [VERIFIED_INVENTORY_NOHIT]: "Item not found from seller's inventory",
+  [VERIFIED_INVENTORY_VERIFIED]: "Item detected from seller's inventory",
+  [VERIFIED_INVENTORY_PRIVATE]: "Seller's inventory is private",
+  [VERIFIED_INVENTORY_ERROR]: 'Error processing verification',
 }
 
 export const VERIFIED_INVENTORY_MAP_ICON = {

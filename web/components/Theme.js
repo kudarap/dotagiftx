@@ -60,7 +60,13 @@ const muiLightTheme = createMuiTheme({
       paper: blueGrey.A100,
     },
   },
-  overrides: {},
+  overrides: {
+    MuiTableCell: {
+      root: {
+        borderBottomColor: blueGrey[200],
+      },
+    },
+  },
 })
 
 export function LightTheme({ children }) {
