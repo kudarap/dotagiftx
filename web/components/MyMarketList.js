@@ -11,6 +11,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
@@ -20,7 +21,7 @@ import MarketUpdateDialog from '@/components/MarketUpdateDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
-import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
+import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -56,6 +57,18 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
   const handleNotifClose = () => {
     setNotifOpen(false)
   }
+
+  const [currentIndex, setIndex] = React.useState(null)
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const handlePopoverOpen = event => {
+    setIndex(Number(event.currentTarget.dataset.index))
+    setAnchorEl(event.currentTarget)
+  }
+  const handlePopoverClose = () => {
+    setAnchorEl(null)
+  }
+  const open = Boolean(anchorEl)
+  const popoverElementID = open ? 'verified-status-popover' : undefined
 
   return (
     <>
@@ -121,7 +134,14 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                     />
                     <div>
                       <strong>{market.item.name}</strong>
-                      {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                      <span
+                        aria-owns={popoverElementID}
+                        aria-haspopup="true"
+                        data-index={idx}
+                        onMouseEnter={handlePopoverOpen}>
+                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                      </span>
+
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {market.item.hero}
@@ -165,6 +185,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
           </TableBody>
         </Table>
       </TableContainer>
+
       <MarketUpdateDialog
         open={!!currentMarket}
         market={currentMarket}
@@ -172,6 +193,15 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
         onRemove={() => onReload()}
         onSuccess={handleUpdateSuccess}
       />
+
+      <VerifiedStatusPopover
+        id={popoverElementID}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        market={datatable.data[currentIndex]}
+      />
+
       <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
         <Alert onClose={handleNotifClose} variant="filled" severity="success">
           Item updated successfully! Check your{' '}
