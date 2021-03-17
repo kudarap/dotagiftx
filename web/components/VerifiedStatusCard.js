@@ -29,6 +29,8 @@ const useStyles = makeStyles(theme => ({
   image: {},
 }))
 
+const getInventoryURL = steamID => `https://steamcommunity.com/profiles/${steamID}/inventory/#570_2`
+
 export default function VerifiedStatusCard({ market }) {
   const classes = useStyles()
 
@@ -37,6 +39,7 @@ export default function VerifiedStatusCard({ market }) {
   }
 
   const { inventory, delivery } = market
+  let inventoryURL = getInventoryURL(market.user.steam_id)
   let source = inventory
   let mapLabel = VERIFIED_INVENTORY_MAP_LABEL
   let mapText = VERIFIED_INVENTORY_MAP_TEXT
@@ -46,12 +49,11 @@ export default function VerifiedStatusCard({ market }) {
     source = delivery
     mapText = VERIFIED_DELIVERY_MAP_TEXT
     mapLabel = VERIFIED_DELIVERY_MAP_LABEL
+    inventoryURL = getInventoryURL(market.partner_steam_id)
   }
   if (!source) {
     return null
   }
-
-  const inventoryURL = 'https://steamcommunity.com/id/kudarap/inventory/#570_2'
 
   return (
     <CardX className={classes.root}>
