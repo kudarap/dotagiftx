@@ -31,7 +31,14 @@ export default function VerifiedStatusCard({ market }) {
     return null
   }
 
-  const { inventory } = market
+  const { inventory, delivery } = market
+  let source = inventory
+  if (delivery) {
+    source = delivery
+  }
+  if (!source) {
+    return null
+  }
 
   const inventoryURL = 'https://steamcommunity.com/id/kudarap/inventory/#570_2'
 
@@ -39,17 +46,17 @@ export default function VerifiedStatusCard({ market }) {
     <CardX className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
-          {VERIFIED_INVENTORY_MAP_LABEL[inventory.status]}
+          {VERIFIED_INVENTORY_MAP_LABEL[source.status]}
         </Typography>
         <Typography color="textSecondary" variant="body2" component="p">
-          Last updated {dateFromNow(inventory.updated_at)}
+          Last updated {dateFromNow(source.updated_at)}
         </Typography>
-        <Typography component="p">{VERIFIED_INVENTORY_MAP_TEXT[inventory.status]}</Typography>
+        <Typography component="p">{VERIFIED_INVENTORY_MAP_TEXT[source.status]}</Typography>
 
-        {inventory.steam_assets && (
+        {source.steam_assets && (
           <>
             <br />
-            <Typography variant="body2">Found {inventory.bundle_count} bundle/s</Typography>
+            <Typography variant="body2">Found {source.bundle_count} bundle/s</Typography>
 
             <Table className={classes.table} size="small">
               <TableHead>
@@ -59,7 +66,7 @@ export default function VerifiedStatusCard({ market }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {inventory.steam_assets.map(asset => (
+                {source.steam_assets.map(asset => (
                   <TableRow key={asset.name}>
                     <TableCell component="th" scope="row">
                       <Link

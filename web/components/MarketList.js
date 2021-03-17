@@ -17,6 +17,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
@@ -27,7 +28,7 @@ import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import SellButton from '@/components/SellButton'
-import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
+import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -237,82 +238,110 @@ function baseTable(Component) {
       onRemove(marketIdx)
     }
 
+    const [currentIndex, setIndex] = React.useState(null)
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const handlePopoverOpen = event => {
+      setIndex(Number(event.currentTarget.dataset.index))
+      setAnchorEl(event.currentTarget)
+    }
+    const handlePopoverClose = () => {
+      setAnchorEl(null)
+    }
+    const open = Boolean(anchorEl)
+    const popoverElementID = open ? 'verified-status-popover' : undefined
+
     const { datatable, loading, error, bidMode } = props
 
     return (
-      <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
-        <TableRow>
-          <TableHeadCell size="small">
-            <Typography color="textSecondary" variant="body2">
-              {bidMode ? 'Buyer' : 'Seller'}
-            </Typography>
-          </TableHeadCell>
-          <TableHeadCell size="small" align="right">
-            <Typography color="textSecondary" variant="body2">
-              {bidMode ? 'Buy Price' : 'Price'}
-            </Typography>
-          </TableHeadCell>
-          {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
-        </TableRow>
-
-        {error && (
+      <>
+        <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
           <TableRow>
-            <TableCell align="center" colSpan={3}>
-              Error retrieving data
-              <br />
-              <Typography variant="caption" color="textSecondary">
-                {error}
+            <TableHeadCell size="small">
+              <Typography color="textSecondary" variant="body2">
+                {bidMode ? 'Buyer' : 'Seller'}
               </Typography>
-            </TableCell>
+            </TableHeadCell>
+            <TableHeadCell size="small" align="right">
+              <Typography color="textSecondary" variant="body2">
+                {bidMode ? 'Buy Price' : 'Price'}
+              </Typography>
+            </TableHeadCell>
+            {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
           </TableRow>
-        )}
 
-        {loading && (
-          <TableRow>
-            <TableCell align="center" colSpan={3}>
-              Loading...
-            </TableCell>
-          </TableRow>
-        )}
+          {error && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Error retrieving data
+                <br />
+                <Typography variant="caption" color="textSecondary">
+                  {error}
+                </Typography>
+              </TableCell>
+            </TableRow>
+          )}
 
-        {!error && datatable.total_count === 0 && (
-          <TableRow>
-            <TableCell align="center" colSpan={3}>
-              No available {bidMode ? 'orders' : 'offers'}
-            </TableCell>
-          </TableRow>
-        )}
+          {loading && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Loading...
+              </TableCell>
+            </TableRow>
+          )}
 
-        {datatable.data.map((market, idx) => (
-          <TableRow key={market.id} hover>
-            <TableCell component="th" scope="row" padding="none">
-              <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
-                <div className={classes.seller}>
-                  <Avatar
-                    className={classes.avatar}
-                    alt={market.user.name}
-                    {...retinaSrcSet(market.user.avatar, 40, 40)}
-                  />
-                  <div>
-                    <strong>{market.user.name}</strong>
-                    <br />
-                    <Typography variant="caption" color="textSecondary">
-                      {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
-                      {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
-                    </Typography>
+          {!error && datatable.total_count === 0 && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                No available {bidMode ? 'orders' : 'offers'}
+              </TableCell>
+            </TableRow>
+          )}
+
+          {datatable.data.map((market, idx) => (
+            <TableRow key={market.id} hover>
+              <TableCell component="th" scope="row" padding="none">
+                <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
+                  <div className={classes.seller}>
+                    <Avatar
+                      className={classes.avatar}
+                      alt={market.user.name}
+                      {...retinaSrcSet(market.user.avatar, 40, 40)}
+                    />
+                    <div>
+                      <strong>{market.user.name}</strong>
+                      <br />
+                      <Typography variant="caption" color="textSecondary">
+                        {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
+                      </Typography>
+                      <span
+                        aria-owns={popoverElementID}
+                        aria-haspopup="true"
+                        data-index={idx}
+                        onMouseEnter={handlePopoverOpen}>
+                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </TableCell>
-            <Component
-              currentUserID={currentUserID}
-              market={market}
-              onRemove={() => handleRemoveClick(idx)}
-              onContact={() => handleContactClick(idx)}
-            />
-          </TableRow>
-        ))}
-      </TableBody>
+                </Link>
+              </TableCell>
+              <Component
+                currentUserID={currentUserID}
+                market={market}
+                onRemove={() => handleRemoveClick(idx)}
+                onContact={() => handleContactClick(idx)}
+              />
+            </TableRow>
+          ))}
+        </TableBody>
+
+        <VerifiedStatusPopover
+          id={popoverElementID}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handlePopoverClose}
+          market={datatable.data[currentIndex]}
+        />
+      </>
     )
   }
   wrapped.propTypes = {
