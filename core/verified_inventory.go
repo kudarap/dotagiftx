@@ -79,10 +79,10 @@ type (
 
 	// InventoryStorage defines operation for Inventory records.
 	InventoryStorage interface {
-		// Find returns a list of deliveries from data store.
+		// Find returns a list of inventories from data store.
 		Find(opts FindOpts) ([]Inventory, error)
 
-		// Count returns number of deliveries from data store.
+		// Count returns number of inventories from data store.
 		Count(FindOpts) (int, error)
 
 		// Get returns Inventory details by id from data store.

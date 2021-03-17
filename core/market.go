@@ -90,8 +90,10 @@ type (
 		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
 
 		// Include related fields.
-		User *User `json:"user,omitempty" db:"user,omitempty"`
-		Item *Item `json:"item,omitempty" db:"item,omitempty"`
+		User      *User      `json:"user,omitempty"      db:"user,omitempty"`
+		Item      *Item      `json:"item,omitempty"      db:"item,omitempty"`
+		Delivery  *Delivery  `json:"delivery,omitempty"  db:"delivery,omitempty"`
+		Inventory *Inventory `json:"inventory,omitempty" db:"inventory,omitempty"`
 	}
 
 	// MarketService provides access to market service.

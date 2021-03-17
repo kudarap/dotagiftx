@@ -13,12 +13,12 @@ func NewInventory(rs core.InventoryStorage, ms core.MarketStorage) core.Inventor
 }
 
 type InventoryService struct {
-	InventoryStg core.InventoryStorage
+	inventoryStg core.InventoryStorage
 	marketStg    core.MarketStorage
 }
 
 func (s *InventoryService) Inventories(opts core.FindOpts) ([]core.Inventory, *core.FindMetadata, error) {
-	res, err := s.InventoryStg.Find(opts)
+	res, err := s.inventoryStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -28,7 +28,7 @@ func (s *InventoryService) Inventories(opts core.FindOpts) ([]core.Inventory, *c
 	}
 
 	// Get result and total count for metadata.
-	tc, err := s.InventoryStg.Count(opts)
+	tc, err := s.inventoryStg.Count(opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -40,11 +40,20 @@ func (s *InventoryService) Inventories(opts core.FindOpts) ([]core.Inventory, *c
 }
 
 func (s *InventoryService) Inventory(id string) (*core.Inventory, error) {
-	return s.InventoryStg.Get(id)
+	inv, err := s.inventoryStg.Get(id)
+	if err != nil && err != core.InventoryErrNotFound {
+		return nil, err
+	}
+	if inv != nil {
+		return inv, nil
+	}
+
+	// If we can't find using id. lets try market ID
+	return s.InventoryByMarketID(id)
 }
 
 func (s *InventoryService) InventoryByMarketID(marketID string) (*core.Inventory, error) {
-	res, err := s.InventoryStg.Find(core.FindOpts{Filter: &core.Inventory{
+	res, err := s.inventoryStg.Find(core.FindOpts{Filter: &core.Inventory{
 		MarketID: marketID,
 	}})
 	if err != nil {
@@ -78,8 +87,8 @@ func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {
 	if cur != nil {
 		inv.ID = cur.ID
 		inv.Retries = cur.Retries + 1
-		return s.InventoryStg.Update(inv)
+		return s.inventoryStg.Update(inv)
 	}
 
-	return s.InventoryStg.Create(inv)
+	return s.inventoryStg.Create(inv)
 }

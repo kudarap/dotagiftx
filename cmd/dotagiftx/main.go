@@ -113,12 +113,16 @@ func (app *application) setup() error {
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, fileMgr)
+	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
+	inventorySvc := service.NewInventory(inventoryStg, marketStg)
 	marketSvc := service.NewMarket(
 		marketStg,
 		userStg,
 		itemStg,
 		trackStg,
 		catalogStg,
+		deliverySvc,
+		inventorySvc,
 		steamClient,
 		dispatcher,
 		app.contextLog("service_market"),
@@ -126,8 +130,6 @@ func (app *application) setup() error {
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	statsSvc := service.NewStats(statsStg)
 	reportSvc := service.NewReport(reportStg)
-	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	inventorySvc := service.NewInventory(inventoryStg, marketStg)
 
 	// Register job on the worker.
 	*dispatcher = *jobs.NewDispatcher(

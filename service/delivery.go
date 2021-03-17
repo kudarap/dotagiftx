@@ -40,7 +40,15 @@ func (s *deliveryService) Deliveries(opts core.FindOpts) ([]core.Delivery, *core
 }
 
 func (s *deliveryService) Delivery(id string) (*core.Delivery, error) {
-	return s.deliveryStg.Get(id)
+	inv, err := s.deliveryStg.Get(id)
+	if err != nil && err != core.DeliveryErrNotFound {
+		return nil, err
+	}
+	if inv != nil {
+		return inv, nil
+	}
+
+	return s.DeliveryByMarketID(id)
 }
 
 func (s *deliveryService) DeliveryByMarketID(marketID string) (*core.Delivery, error) {

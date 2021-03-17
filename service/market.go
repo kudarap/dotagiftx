@@ -22,22 +22,36 @@ func NewMarket(
 	is core.ItemStorage,
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
+	vd core.DeliveryService,
+	vi core.InventoryService,
 	sc core.SteamClient,
 	dp Dispatcher,
 	lg log.Logger,
 ) core.MarketService {
-	return &marketService{ss, us, is, ts, cs, sc, dp, lg}
+	return &marketService{
+		ss, us,
+		is,
+		ts,
+		cs,
+		vd,
+		vi,
+		sc,
+		dp,
+		lg,
+	}
 }
 
 type marketService struct {
-	marketStg  core.MarketStorage
-	userStg    core.UserStorage
-	itemStg    core.ItemStorage
-	trackStg   core.TrackStorage
-	catalogStg core.CatalogStorage
-	steam      core.SteamClient
-	dispatch   Dispatcher
-	logger     log.Logger
+	marketStg    core.MarketStorage
+	userStg      core.UserStorage
+	itemStg      core.ItemStorage
+	trackStg     core.TrackStorage
+	catalogStg   core.CatalogStorage
+	deliverySvc  core.DeliveryService
+	inventorySvc core.InventoryService
+	steam        core.SteamClient
+	dispatch     Dispatcher
+	logger       log.Logger
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {
@@ -61,6 +75,12 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 		return nil, nil, err
 	}
 
+	// Assign inventory and delivery status.
+	for i, mkt := range res {
+		s.getRelatedVerifiedStatus(&mkt)
+		res[i] = mkt
+	}
+
 	return res, &core.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
@@ -79,12 +99,18 @@ func (s *marketService) Market(ctx context.Context, id string) (*core.Market, er
 	}
 
 	s.getRelatedFields(mkt)
+	s.getRelatedVerifiedStatus(mkt)
 	return mkt, nil
 }
 
 func (s *marketService) getRelatedFields(mkt *core.Market) {
 	mkt.User, _ = s.userStg.Get(mkt.UserID)
 	mkt.Item, _ = s.itemStg.Get(mkt.ItemID)
+}
+
+func (s *marketService) getRelatedVerifiedStatus(mkt *core.Market) {
+	mkt.Inventory, _ = s.inventorySvc.Inventory(mkt.ID)
+	mkt.Delivery, _ = s.deliverySvc.Delivery(mkt.ID)
 }
 
 func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
@@ -293,7 +319,7 @@ func (s *marketService) checkFlaggedUser(userID string) error {
 
 // AutoCompleteBid detects if there's matching reservation on buy order and automatically
 // resolve it by setting complete-bid status.
-func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, partnerSteamID string) error {
+func (s *marketService) AutoCompleteBid(_ context.Context, ask core.Market, partnerSteamID string) error {
 	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
 		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
 	}
