@@ -65,6 +65,12 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 		return nil, nil, err
 	}
 
+	// Assign inventory and delivery status.
+	for i, mkt := range res {
+		s.getRelatedVerifiedStatus(&mkt)
+		res[i] = mkt
+	}
+
 	if !opts.WithMeta {
 		return res, nil, err
 	}
@@ -73,12 +79,6 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 	tc, err := s.marketStg.Count(opts)
 	if err != nil {
 		return nil, nil, err
-	}
-
-	// Assign inventory and delivery status.
-	for i, mkt := range res {
-		s.getRelatedVerifiedStatus(&mkt)
-		res[i] = mkt
 	}
 
 	return res, &core.FindMetadata{
