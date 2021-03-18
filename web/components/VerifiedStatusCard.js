@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 const getInventoryURL = steamID => `https://steamcommunity.com/profiles/${steamID}/inventory/#570_2`
 
-export default function VerifiedStatusCard({ market }) {
+export default function VerifiedStatusCard({ market, ...other }) {
   const classes = useStyles()
 
   if (market === null) {
@@ -56,7 +56,7 @@ export default function VerifiedStatusCard({ market }) {
   }
 
   return (
-    <CardX className={classes.root}>
+    <CardX className={classes.root} {...other}>
       <CardContent>
         <Typography variant="h5" component="h2">
           {mapLabel[source.status]}
@@ -71,7 +71,7 @@ export default function VerifiedStatusCard({ market }) {
             {!isDelivery && (
               <Typography variant="body2">
                 <br />
-                Found {source.bundle_count} bundle{source.bundle_count > 1 && 's'}
+                Found <strong>{source.bundle_count}</strong> bundle{source.bundle_count > 1 && 's'}
               </Typography>
             )}
 
@@ -139,16 +139,17 @@ function CardX(props) {
 export function VerifiedStatusPopover({ market, ...other }) {
   return (
     <Popover
+      style={{ marginLeft: 4 }}
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'left',
       }}
       transformOrigin={{
         vertical: 'top',
         horizontal: 'left',
       }}
       {...other}>
-      <VerifiedStatusCard market={market} />
+      <VerifiedStatusCard market={market} onMouseLeave={other.onClose} />
     </Popover>
   )
 }
