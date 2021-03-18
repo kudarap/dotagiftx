@@ -66,6 +66,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
   }
   const handlePopoverClose = () => {
     setAnchorEl(null)
+    setIndex(null)
   }
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined

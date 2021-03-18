@@ -68,6 +68,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
   }
   const handlePopoverClose = () => {
     setAnchorEl(null)
+    setIndex(null)
   }
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined

@@ -56,6 +56,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
   }
   const handlePopoverClose = () => {
     setAnchorEl(null)
+    setIndex(null)
   }
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined

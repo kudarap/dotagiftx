@@ -84,6 +84,7 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
   }
   const handlePopoverClose = () => {
     setAnchorEl(null)
+    setIndex(null)
   }
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined
