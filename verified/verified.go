@@ -24,7 +24,6 @@ func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 		}
 
 		// Excluded golden variant of the item.
-
 		if asset.IsGoldenVariant(itemName) {
 			continue
 		}

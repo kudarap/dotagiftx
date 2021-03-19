@@ -18,10 +18,15 @@ func main() {
 	params := []struct {
 		steamID, item string
 	}{
-		{"76561198287849998", "Awaleb's Trundleweed"},
+		{"76561198011836301", "Dipper the Destroyer"},
+		{"76561198011836301", "Dipper the Destroyer Bundle"},
 
-		//{"76561198309634734", "The Abscesserator Bundle"},
-		//{"76561198255419442", "The Abscesserator Bundle"},
+		//{"76561198287849998", "Awaleb's Trundleweed"},
+		//{"76561198287849998", "Golden Awaleb's Trundleweed"},
+
+		{"76561198309634734", "The Abscesserator Bundle"},
+		{"76561198255419442", "The Abscesserator Bundle"},
+
 		//{"76561198209729119", "Pyrexaec Forge"},
 	}
 
