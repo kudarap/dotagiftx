@@ -2,6 +2,7 @@ package steaminv
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -33,7 +34,7 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 		return nil, err
 	}
 
-	if err = cache.Set(getCacheKey(steamID), asset, cacheExpr); err != nil {
+	if err = cache.Set(getCacheKey(steamID), asset, getCacheExpr()); err != nil {
 		return nil, err
 	}
 
@@ -42,4 +43,17 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 
 func getCacheKey(steamID string) string {
 	return fmt.Sprintf("%s_%s", cachePrefix, steamID)
+}
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
+
+func getCacheExpr() time.Duration {
+	n := 10
+	r := rand.Intn(n-(-n)) + (-n)
+	fmt.Println(r)
+	d := time.Minute * time.Duration(r)
+	fmt.Println(cacheExpr + d)
+	return cacheExpr + d
 }
