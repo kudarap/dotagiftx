@@ -74,6 +74,8 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			if err != nil {
 				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 			}
+
+			rest(5)
 		}
 
 		// Is there more?

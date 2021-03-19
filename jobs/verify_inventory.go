@@ -54,8 +54,6 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
-			//time.Sleep(time.Second * 2)
-
 			// Skip verified statuses.
 			if mkt.InventoryStatus == core.InventoryStatusVerified ||
 				mkt.InventoryStatus == core.InventoryStatusNoHit {
@@ -79,6 +77,8 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 			if err != nil {
 				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 			}
+
+			rest(10)
 		}
 
 		// Is there more?
