@@ -29,6 +29,15 @@ const useStyles = makeStyles(theme => ({
   image: {},
 }))
 
+const assetModifier = asset => {
+  let isGiftable = asset.gift_once ? 'Yes' : 'No'
+  if (asset.type.startsWith('Immortal')) {
+    isGiftable = '?'
+  }
+
+  return { ...asset, isGiftable }
+}
+
 const getInventoryURL = steamID => `https://steamcommunity.com/profiles/${steamID}/inventory/#570_2`
 
 export default function VerifiedStatusCard({ market, ...other }) {
@@ -79,13 +88,13 @@ export default function VerifiedStatusCard({ market, ...other }) {
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  {!isDelivery && <TableCell>Giftable</TableCell>}
+                  {!isDelivery && <TableCell align="center">Giftable</TableCell>}
                   {isDelivery && <TableCell>From</TableCell>}
                   {isDelivery && <TableCell>Received</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {source.steam_assets.map(asset => (
+                {source.steam_assets.map(assetModifier).map(asset => (
                   <TableRow key={asset.name}>
                     <TableCell component="th" scope="row">
                       <Link
@@ -95,9 +104,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
                         {asset.name}
                       </Link>
                     </TableCell>
-                    {!isDelivery && (
-                      <TableCell align="center">{asset.gift_once ? 'Yes' : 'No'}</TableCell>
-                    )}
+                    {!isDelivery && <TableCell align="center">{asset.isGiftable}</TableCell>}
                     {isDelivery && <TableCell>{asset.gift_from}</TableCell>}
                     {isDelivery && <TableCell>{asset.date_received}</TableCell>}
                   </TableRow>
