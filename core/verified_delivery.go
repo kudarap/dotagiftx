@@ -69,6 +69,7 @@ type (
 		MarketID         string         `json:"market_id"          db:"market_id,omitempty" valid:"required"`
 		BuyerConfirmed   *bool          `json:"buyer_confirmed"    db:"buyer_confirmed,omitempty"`
 		BuyerConfirmedAt *time.Time     `json:"buyer_confirmed_at" db:"buyer_confirmed_at,omitempty"`
+		GiftOpened       *bool          `json:"gift_opened"        db:"gift_opened,omitempty"`
 		Status           DeliveryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
 		Assets           []SteamAsset   `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries          int            `json:"retries"            db:"retries,omitempty"`
@@ -108,9 +109,9 @@ type (
 )
 
 // CheckCreate validates field on creating new delivery.
-func (r Delivery) CheckCreate() error {
+func (d Delivery) CheckCreate() error {
 	// Check required fields.
-	if err := validator.Struct(r); err != nil {
+	if err := validator.Struct(d); err != nil {
 		return err
 	}
 
@@ -125,4 +126,21 @@ func (s DeliveryStatus) String() string {
 	}
 
 	return t
+}
+
+func (d Delivery) IsGiftOpened() *Delivery {
+	if d.Assets == nil {
+		return &d
+	}
+
+	opened := true
+	for _, aa := range d.Assets {
+		if aa.StillWrapped() {
+			opened = false
+			break
+		}
+	}
+
+	d.GiftOpened = &opened
+	return &d
 }

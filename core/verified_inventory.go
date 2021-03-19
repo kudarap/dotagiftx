@@ -53,16 +53,14 @@ type (
 
 	/// Inventory represents steam inventory inventory.
 	Inventory struct {
-		ID               string          `json:"id"                 db:"id,omitempty,omitempty"`
-		MarketID         string          `json:"market_id"          db:"market_id,omitempty" valid:"required"`
-		BuyerConfirmed   *bool           `json:"buyer_confirmed"    db:"buyer_confirmed,omitempty"`
-		BuyerConfirmedAt *time.Time      `json:"buyer_confirmed_at" db:"buyer_confirmed_at,omitempty"`
-		Status           InventoryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
-		Assets           []SteamAsset    `json:"steam_assets"       db:"steam_assets,omitempty"`
-		Retries          int             `json:"retries"            db:"retries,omitempty"`
-		BundleCount      int             `json:"bundle_count"       db:"bundle_count,omitempty"`
-		CreatedAt        *time.Time      `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
-		UpdatedAt        *time.Time      `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
+		ID          string          `json:"id"                 db:"id,omitempty,omitempty"`
+		MarketID    string          `json:"market_id"          db:"market_id,omitempty" valid:"required"`
+		Status      InventoryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
+		Assets      []SteamAsset    `json:"steam_assets"       db:"steam_assets,omitempty"`
+		Retries     int             `json:"retries"            db:"retries,omitempty"`
+		BundleCount int             `json:"bundle_count"       db:"bundle_count,omitempty"`
+		CreatedAt   *time.Time      `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
+		UpdatedAt   *time.Time      `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
 	// InventoryService provides access to Inventory service.

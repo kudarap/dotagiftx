@@ -70,6 +70,9 @@ func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 		return errors.New(core.DeliveryErrRequiredFields, err)
 	}
 
+	// Detect if there are still un-opened gift.
+	del = del.IsGiftOpened()
+
 	// Update market delivery status.
 	if err := s.marketStg.BaseUpdate(&core.Market{
 		ID:             del.MarketID,
@@ -83,6 +86,7 @@ func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 	if cur != nil {
 		del.ID = cur.ID
 		del.Retries = cur.Retries + 1
+		del.Assets = append(del.Assets, cur.Assets...)
 		return s.deliveryStg.Update(del)
 	}
 

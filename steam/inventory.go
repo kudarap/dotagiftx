@@ -192,7 +192,6 @@ func (d RawInventoryDesc) ToAsset() Asset {
 	var desc []string
 	for _, dd := range d.Descriptions {
 		desc = append(desc, dd.Value)
-		fmt.Println("----", dd.Value)
 		if pv, ok := extractValueFromPrefix(dd.Value, assetPrefixHero); ok {
 			asset.Hero = pv
 		}
