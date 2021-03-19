@@ -86,7 +86,7 @@ func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 	if cur != nil {
 		del.ID = cur.ID
 		del.Retries = cur.Retries + 1
-		del.Assets = append(del.Assets, cur.Assets...)
+		del = del.AddAssets(cur.Assets)
 		return s.deliveryStg.Update(del)
 	}
 

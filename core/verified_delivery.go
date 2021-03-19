@@ -108,16 +108,6 @@ type (
 	}
 )
 
-// CheckCreate validates field on creating new delivery.
-func (d Delivery) CheckCreate() error {
-	// Check required fields.
-	if err := validator.Struct(d); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // String returns text value of a delivery status.
 func (s DeliveryStatus) String() string {
 	t, ok := deliveryStatusTexts[s]
@@ -126,6 +116,16 @@ func (s DeliveryStatus) String() string {
 	}
 
 	return t
+}
+
+// CheckCreate validates field on creating new delivery.
+func (d Delivery) CheckCreate() error {
+	// Check required fields.
+	if err := validator.Struct(d); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (d Delivery) IsGiftOpened() *Delivery {
@@ -143,4 +143,28 @@ func (d Delivery) IsGiftOpened() *Delivery {
 
 	d.GiftOpened = &opened
 	return &d
+}
+
+// AddAssets handles addition of assets and remove duplicates.
+func (d Delivery) AddAssets(sa []SteamAsset) *Delivery {
+	d.Assets = append(d.Assets, sa...)
+
+	keys := make(map[string]struct{})
+	var unique []SteamAsset
+	for _, aa := range d.Assets {
+		if _, ok := keys[aa.AssetID]; ok {
+			continue
+		}
+
+		keys[aa.AssetID] = struct{}{}
+		unique = append(unique, aa)
+	}
+
+	d.Assets = unique
+	return &d
+}
+
+// RetriesExceeded when it reached 5 reties.
+func (d Delivery) RetriesExceeded() bool {
+	return d.Retries > 5
 }

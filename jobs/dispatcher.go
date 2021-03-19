@@ -37,15 +37,20 @@ func NewDispatcher(worker *worker.Worker,
 
 // RegisterJobs add pre-defined jobs, mostly recurring one's.
 func (d *Dispatcher) RegisterJobs() {
+	d.worker.AddJob(NewVerifyInventory(
+		d.inventorySvc,
+		d.marketStg,
+		log.WithPrefix(d.logSvc, "job_verify_inventory"),
+	))
 	d.worker.AddJob(NewVerifyDelivery(
 		d.deliverySvc,
 		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_verify_delivery"),
 	))
-	d.worker.AddJob(NewVerifyInventory(
-		d.inventorySvc,
+	d.worker.AddJob(NewGiftWrappedUpdate(
+		d.deliverySvc,
 		d.marketStg,
-		log.WithPrefix(d.logSvc, "job_verify_inventory"),
+		log.WithPrefix(d.logSvc, "job_giftwrapped_update"),
 	))
 }
 
