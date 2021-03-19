@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 const assetModifier = asset => {
   let isGiftable = asset.gift_once ? 'Yes' : 'No'
-  if (asset.type.startsWith('Immortal')) {
+  if (asset.type.startsWith('Immortal') && !asset.gift_once) {
     isGiftable = '?'
   }
 
