@@ -78,7 +78,8 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 			}
 
-			rest(10)
+			//rest(5)
+			time.Sleep(time.Second * 2)
 		}
 
 		// Is there more?
