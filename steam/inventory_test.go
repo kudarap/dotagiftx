@@ -65,6 +65,22 @@ var assetGothicWhisper = Asset{
 	},
 }
 
+var assetImmortalUnWrapped = Asset{
+	AssetID:    "100000000",
+	ClassID:    "3305750400",
+	InstanceID: "3307872803",
+	Qty:        1,
+	Name:       "Wrapped Gift",
+	Image:      "TESTDATA_LARGE_IMAGE",
+	Type:       "Rare Mysterious Item",
+	GiftFrom:   "kudarap",
+	Contains:   "Blossom of the Merry Wanderer",
+	Descriptions: []string{
+		"Gift From: kudarap",
+		"Contains: Blossom of the Merry Wanderer",
+	},
+}
+
 func Test_inventoryParser(t *testing.T) {
 	type args struct {
 		path string
@@ -207,6 +223,14 @@ func Test_assetParser(t *testing.T) {
 					Image:      "TESTDATA_LARGE_IMAGE",
 					Type:       "Mythical Bundle",
 				},
+			},
+			false,
+		},
+		{
+			"unwrapped immortal",
+			args{"./testdata/unwrapped_gift_immortal.json"},
+			[]Asset{
+				assetImmortalUnWrapped,
 			},
 			false,
 		},

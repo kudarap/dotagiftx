@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "rgInventory": {
+    "100000000": {
+      "id": "100000000",
+      "classid": "3305750400",
+      "instanceid": "3307872803"
+    }
+  },
+  "rgDescriptions": {
+    "3305750400_3307872803": {
+      "appid": "570",
+      "classid": "3305750400",
+      "instanceid": "3307872803",
+      "icon_url_large": "TESTDATA_LARGE_IMAGE",
+      "name": "Wrapped Gift",
+      "type": "Rare Mysterious Item",
+      "descriptions": [
+        {
+          "value": "Gift From: kudarap",
+          "color": "99ccff"
+        },
+        {
+          "value": "\nContains: Blossom of the Merry Wanderer",
+          "color": "D2D2D2"
+        }
+      ],
+
+      "tradable": 0,
+      "name_color": "D2D2D2",
+      "market_name": "Wrapped Gift",
+      "market_hash_name": "Wrapped Gift",
+      "commodity": 0,
+      "market_tradable_restriction": 7,
+      "market_marketable_restriction": 0,
+      "marketable": 0
+    }
+  },
+  "more": false,
+  "more_start": false
+}

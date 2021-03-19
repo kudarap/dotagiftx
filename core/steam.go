@@ -41,6 +41,7 @@ type (
 		Type         string   `json:"type"          db:"type,omitempty"`
 		Hero         string   `json:"hero"          db:"hero,omitempty"`
 		GiftFrom     string   `json:"gift_from"     db:"gift_from,omitempty"`
+		Contains     string   `json:"contains"      db:"contains,omitempty"`
 		DateReceived string   `json:"date_received" db:"date_received,omitempty"`
 		Dedication   string   `json:"dedication"    db:"dedication,omitempty"`
 		GiftOnce     bool     `json:"gift_once"     db:"gift_once,omitempty"`
@@ -59,6 +60,10 @@ func (s *SteamAsset) IsCollectorsCache() bool {
 
 func (s *SteamAsset) IsImmortal() bool {
 	return strings.HasPrefix(s.Type, "Immortal")
+}
+
+func (s *SteamAsset) StillWrapped() bool {
+	return strings.ToUpper(s.Type) == "RARE MYSTERIOUS ITEM"
 }
 
 // Detects the asset if its a golden variant and its a

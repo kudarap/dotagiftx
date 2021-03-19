@@ -165,6 +165,7 @@ const (
 	assetPrefixGiftFrom     = "Gift From: "
 	assetPrefixDateReceived = "Date Received: "
 	assetPrefixDedication   = "Dedication: "
+	assetPrefixContains     = "Contains: "
 	assetFlagNotTradable    = "( Not Tradable )"
 	assetFlagGiftOnce       = "( This item may be gifted once )"
 )
@@ -190,24 +191,27 @@ func (d RawInventoryDesc) ToAsset() Asset {
 
 	var desc []string
 	for _, dd := range d.Descriptions {
-		v := dd.Value
-		desc = append(desc, v)
-		if pv, ok := extractValueFromPrefix(v, assetPrefixHero); ok {
+		desc = append(desc, dd.Value)
+		fmt.Println("----", dd.Value)
+		if pv, ok := extractValueFromPrefix(dd.Value, assetPrefixHero); ok {
 			asset.Hero = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, assetPrefixGiftFrom); ok {
+		if pv, ok := extractValueFromPrefix(dd.Value, assetPrefixGiftFrom); ok {
 			asset.GiftFrom = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, assetPrefixDateReceived); ok {
+		if pv, ok := extractValueFromPrefix(dd.Value, assetPrefixDateReceived); ok {
 			asset.DateReceived = pv
 		}
-		if pv, ok := extractValueFromPrefix(v, assetPrefixDedication); ok {
+		if pv, ok := extractValueFromPrefix(dd.Value, assetPrefixDedication); ok {
 			asset.Dedication = pv
 		}
-		if isFlagExists(v, assetFlagGiftOnce) {
+		if pv, ok := extractValueFromPrefix(dd.Value, assetPrefixContains); ok {
+			asset.Contains = pv
+		}
+		if isFlagExists(dd.Value, assetFlagGiftOnce) {
 			asset.GiftOnce = true
 		}
-		if isFlagExists(v, assetFlagNotTradable) {
+		if isFlagExists(dd.Value, assetFlagNotTradable) {
 			asset.NotTradable = true
 		}
 	}
@@ -234,6 +238,11 @@ func (d *RawInventoryItemDetails) UnmarshalJSON(data []byte) error {
 	if err := fastjson.Unmarshal(data, &details); err != nil {
 		return err
 	}
+
+	for i, dd := range details {
+		details[i].Value = strings.TrimSpace(dd.Value)
+	}
+
 	*d = details
 	return nil
 }
