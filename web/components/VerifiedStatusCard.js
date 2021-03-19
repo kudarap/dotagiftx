@@ -101,19 +101,22 @@ export default function VerifiedStatusCard({ market, ...other }) {
                   <TableRow key={asset.name}>
                     <TableCell component="th" scope="row">
                       <Link
+                        color="secondary"
                         target="_blank"
                         rel="noreferrer noopener"
                         href={`${inventoryURL}_${asset.asset_id}`}>
-                        {asset.name}
+                        <strong>{asset.name}</strong>
                       </Link>
                     </TableCell>
                     {isDelivery ? (
-                      <TableCell>{asset.gift_from}</TableCell>
+                      <TableCell>{asset.gift_from ? asset.gift_from : <ClearedGift />}</TableCell>
                     ) : (
                       <TableCell align="center">{asset.isGiftable}</TableCell>
                     )}
                     {isDelivery ? (
-                      <TableCell>{asset.date_received}</TableCell>
+                      <TableCell>
+                        {asset.date_received ? asset.date_received : <ClearedGift />}
+                      </TableCell>
                     ) : (
                       <TableCell align="center">{asset.qty}</TableCell>
                     )}
@@ -172,3 +175,11 @@ export function VerifiedStatusPopover({ market, ...other }) {
 }
 VerifiedStatusPopover.propTypes = VerifiedStatusCard.propTypes
 VerifiedStatusPopover.defaultProps = VerifiedStatusCard.defaultProps
+
+function ClearedGift() {
+  return (
+    <Typography color="textSecondary" variant="body2" component="em">
+      cleared
+    </Typography>
+  )
+}

@@ -55,6 +55,7 @@ Theme.propTypes = {
 const muiLightTheme = createMuiTheme({
   ...baseThemeOpts,
   palette: {
+    ...baseThemeOpts.palette,
     type: 'light',
     background: {
       paper: blueGrey.A100,
