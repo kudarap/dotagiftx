@@ -13,16 +13,23 @@ type AssetSource func(steamID string) ([]steam.Asset, error)
 // that supports un-bundled items.
 func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 	var matches []steam.Asset
-	for _, aa := range a {
+	for _, asset := range a {
 		// Strip "bundle" string to cover items that unbundled:
 		// - Dipper the Destroyer Bundle
 		// - The Abscesserator Bundle
 		itemName = strings.TrimSpace(strings.TrimSuffix(itemName, "Bundle"))
-		if !strings.Contains(strings.Join(aa.Descriptions, "|"), itemName) &&
-			!strings.Contains(aa.Name, itemName) {
+		if !strings.Contains(strings.Join(asset.Descriptions, "|"), itemName) &&
+			!strings.Contains(asset.Name, itemName) {
 			continue
 		}
-		matches = append(matches, aa)
+
+		// Excluded golden variant of the item.
+
+		if asset.IsGoldenVariant(itemName) {
+			continue
+		}
+
+		matches = append(matches, asset)
 	}
 	return matches
 }

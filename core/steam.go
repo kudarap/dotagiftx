@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -58,4 +59,9 @@ func (s *SteamAsset) IsCollectorsCache() bool {
 
 func (s *SteamAsset) IsImmortal() bool {
 	return strings.HasPrefix(s.Type, "Immortal")
+}
+
+func (s *SteamAsset) IsGoldenVariant(name string) bool {
+	return strings.ToUpper(s.Name) ==
+		strings.ToUpper(fmt.Sprintf("GOLDEN %s", strings.TrimSpace(name)))
 }
