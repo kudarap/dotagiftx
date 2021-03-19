@@ -10,6 +10,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import indigo from '@material-ui/core/colors/indigo'
 import { LightTheme } from '@/components/Theme'
 import {
   VERIFIED_DELIVERY_MAP_LABEL,
@@ -26,7 +27,9 @@ const useStyles = makeStyles(theme => ({
     minWidth: 300,
   },
   link: {},
-  image: {},
+  poweredBy: {
+    color: indigo[500],
+  },
 }))
 
 const assetModifier = asset => {
@@ -129,8 +132,8 @@ export default function VerifiedStatusCard({ market, ...other }) {
       </CardContent>
       <CardActions style={{ float: 'right' }}>
         <Link
+          className={classes.poweredBy}
           variant="caption"
-          color="primary"
           target="_blank"
           rel="noreferrer noopener"
           href="https://steaminventory.org">
