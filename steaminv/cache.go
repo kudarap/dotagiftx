@@ -52,8 +52,6 @@ func init() {
 func getCacheExpr() time.Duration {
 	n := 10
 	r := rand.Intn(n-(-n)) + (-n)
-	fmt.Println(r)
 	d := time.Minute * time.Duration(r)
-	fmt.Println(cacheExpr + d)
 	return cacheExpr + d
 }
