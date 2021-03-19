@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
   link: {},
   poweredBy: {
-    color: indigo[500],
+    color: indigo[400],
   },
 }))
 
