@@ -88,9 +88,12 @@ export default function VerifiedStatusCard({ market, ...other }) {
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  {!isDelivery && <TableCell align="center">Giftable</TableCell>}
-                  {isDelivery && <TableCell>From</TableCell>}
-                  {isDelivery && <TableCell>Received</TableCell>}
+                  {isDelivery ? (
+                    <TableCell>From</TableCell>
+                  ) : (
+                    <TableCell align="center">Giftable</TableCell>
+                  )}
+                  {isDelivery ? <TableCell>Received</TableCell> : <TableCell>Qty</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -104,9 +107,16 @@ export default function VerifiedStatusCard({ market, ...other }) {
                         {asset.name}
                       </Link>
                     </TableCell>
-                    {!isDelivery && <TableCell align="center">{asset.isGiftable}</TableCell>}
-                    {isDelivery && <TableCell>{asset.gift_from}</TableCell>}
-                    {isDelivery && <TableCell>{asset.date_received}</TableCell>}
+                    {isDelivery ? (
+                      <TableCell>{asset.gift_from}</TableCell>
+                    ) : (
+                      <TableCell align="center">{asset.isGiftable}</TableCell>
+                    )}
+                    {isDelivery ? (
+                      <TableCell>{asset.date_received}</TableCell>
+                    ) : (
+                      <TableCell align="center">{asset.qty}</TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
