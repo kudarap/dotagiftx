@@ -76,7 +76,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			}
 
 			//rest(5)
-			time.Sleep(time.Second * 2)
+			time.Sleep(time.Second)
 		}
 
 		// Is there more?
