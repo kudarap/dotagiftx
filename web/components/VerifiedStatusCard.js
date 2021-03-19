@@ -182,7 +182,8 @@ VerifiedStatusPopover.defaultProps = VerifiedStatusCard.defaultProps
 function ClearedGift() {
   return (
     <Typography color="textSecondary" variant="body2" component="em">
-      cleared
+      --
+      {/* cleared */}
     </Typography>
   )
 }
