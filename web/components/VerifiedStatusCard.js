@@ -38,7 +38,15 @@ const assetModifier = asset => {
     isGiftable = '?'
   }
 
-  return { ...asset, isGiftable }
+  // Shows gift containing items.
+  let displayName = asset.name
+  let received = asset.date_received
+  if (asset.name === 'Wrapped Gift') {
+    displayName = asset.contains
+    received = asset.name
+  }
+
+  return { ...asset, isGiftable, displayName, received }
 }
 
 const getInventoryURL = steamID => `https://steamcommunity.com/profiles/${steamID}/inventory/#570_2`
@@ -108,7 +116,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
                         target="_blank"
                         rel="noreferrer noopener"
                         href={`${inventoryURL}_${asset.asset_id}`}>
-                        <strong>{asset.name}</strong>
+                        <strong>{asset.displayName}</strong>
                       </Link>
                     </TableCell>
                     {isDelivery ? (
@@ -117,9 +125,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
                       <TableCell align="center">{asset.isGiftable}</TableCell>
                     )}
                     {isDelivery ? (
-                      <TableCell>
-                        {asset.date_received ? asset.date_received : <ClearedGift />}
-                      </TableCell>
+                      <TableCell>{asset.received ? asset.received : <ClearedGift />}</TableCell>
                     ) : (
                       <TableCell align="center">{asset.qty}</TableCell>
                     )}
