@@ -10,6 +10,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import Popper from '@material-ui/core/Popper'
 import indigo from '@material-ui/core/colors/indigo'
 import { LightTheme } from '@/components/Theme'
 import {
@@ -20,17 +21,15 @@ import {
 } from '@/constants/verified'
 import { dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
-import { Popover } from '@material-ui/core'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   root: {
     minWidth: 300,
   },
-  link: {},
   poweredBy: {
     color: indigo[400],
   },
-}))
+})
 
 const assetModifier = asset => {
   let isGiftable = asset.gift_once ? 'Yes' : 'No'
@@ -167,8 +166,8 @@ function CardX(props) {
 
 export function VerifiedStatusPopover({ market, ...other }) {
   return (
-    <Popover
-      style={{ marginLeft: 4 }}
+    <Popper
+      style={{ marginLeft: 2 }}
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'left',
@@ -177,9 +176,10 @@ export function VerifiedStatusPopover({ market, ...other }) {
         vertical: 'top',
         horizontal: 'left',
       }}
+      placement="right-start"
       {...other}>
       <VerifiedStatusCard market={market} onMouseLeave={other.onClose} />
-    </Popover>
+    </Popper>
   )
 }
 VerifiedStatusPopover.propTypes = VerifiedStatusCard.propTypes
