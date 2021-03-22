@@ -22,6 +22,7 @@ import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
+import { debounce } from '@material-ui/core'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -78,13 +79,20 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
 
   const [currentIndex, setIndex] = React.useState(null)
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const debounceClose = debounce(() => {
+    setAnchorEl(null)
+    setIndex(null)
+  }, 200)
   const handlePopoverOpen = event => {
+    debounceClose.clear()
     setIndex(Number(event.currentTarget.dataset.index))
     setAnchorEl(event.currentTarget)
   }
   const handlePopoverClose = () => {
-    setAnchorEl(null)
-    setIndex(null)
+    console.log('leaving')
+    debounceClose()
+    // setAnchorEl(null)
+    // setIndex(null)
   }
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined
@@ -149,6 +157,7 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
                 aria-owns={popoverElementID}
                 aria-haspopup="true"
                 data-index={idx}
+                onMouseLeave={handlePopoverClose}
                 onMouseEnter={handlePopoverOpen}>
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
@@ -201,6 +210,7 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
+        onMouseEnter={() => debounceClose.clear()}
         market={datatable.data[currentIndex]}
       />
     </>
