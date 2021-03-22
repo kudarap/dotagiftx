@@ -79,7 +79,7 @@ func (vi *RecheckInventory) Run(ctx context.Context) error {
 		}
 
 		//rest(5)
-		time.Sleep(time.Second)
+		time.Sleep(time.Second / 4)
 	}
 
 	return nil
