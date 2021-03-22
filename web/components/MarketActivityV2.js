@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
+import { debounce } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import lightGreen from '@material-ui/core/colors/lightGreen'
 import teal from '@material-ui/core/colors/teal'
@@ -22,7 +23,6 @@ import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
-import { debounce } from '@material-ui/core'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -79,20 +79,18 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
 
   const [currentIndex, setIndex] = React.useState(null)
   const [anchorEl, setAnchorEl] = React.useState(null)
-  const debounceClose = debounce(() => {
+  const debouncePopoverClose = debounce(() => {
     setAnchorEl(null)
     setIndex(null)
-  }, 200)
+  }, 150)
   const handlePopoverOpen = event => {
-    debounceClose.clear()
+    debouncePopoverClose.clear()
     setIndex(Number(event.currentTarget.dataset.index))
     setAnchorEl(event.currentTarget)
   }
   const handlePopoverClose = () => {
-    console.log('leaving')
-    debounceClose()
-    // setAnchorEl(null)
-    // setIndex(null)
+    setAnchorEl(null)
+    setIndex(null)
   }
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined
@@ -157,7 +155,7 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
                 aria-owns={popoverElementID}
                 aria-haspopup="true"
                 data-index={idx}
-                onMouseLeave={handlePopoverClose}
+                onMouseLeave={debouncePopoverClose}
                 onMouseEnter={handlePopoverOpen}>
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
@@ -210,7 +208,7 @@ export default function MyMarketActivityV2({ datatable, loading, error, disableP
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
-        onMouseEnter={() => debounceClose.clear()}
+        onMouseEnter={() => debouncePopoverClose.clear()}
         market={datatable.data[currentIndex]}
       />
     </>

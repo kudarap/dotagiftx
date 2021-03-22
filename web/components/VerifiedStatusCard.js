@@ -167,7 +167,9 @@ function CardX(props) {
 export function VerifiedStatusPopover({ market, ...other }) {
   return (
     <Popper
+      style={{ marginTop: 18 }}
       placement="right-start"
+      // placement="top"
       disablePortal={false}
       modifiers={{
         flip: {
