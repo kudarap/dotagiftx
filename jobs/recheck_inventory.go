@@ -20,15 +20,11 @@ type RecheckInventory struct {
 	// job settings
 	name     string
 	interval time.Duration
-	filter   core.Market
+	filter   core.Inventory
 }
 
 func NewRecheckInventory(is core.InventoryService, ms core.MarketStorage, lg log.Logger) *RecheckInventory {
-	f := core.Market{
-		Type:           core.MarketTypeAsk,
-		Status:         core.MarketStatusLive,
-		DeliveryStatus: core.DeliveryStatusNoHit,
-	}
+	f := core.Inventory{Status: core.InventoryStatusNoHit}
 	return &RecheckInventory{
 		is, ms, lg,
 		"recheck_inventory", time.Hour * 12, f}
@@ -52,12 +48,21 @@ func (vi *RecheckInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 
 	src := steaminv.InventoryAssetWithCache
-	res, err := vi.marketStg.Find(opts)
+	invs, _, err := vi.inventorySvc.Inventories(opts)
 	if err != nil {
 		return err
 	}
 
-	for _, mkt := range res {
+	for _, ii := range invs {
+		if ii.RetriesExceeded() {
+			continue
+		}
+
+		mkt, _ := vi.market(ii.MarketID)
+		if mkt == nil {
+			continue
+		}
+
 		status, assets, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
 		if err != nil {
 			continue
@@ -78,4 +83,17 @@ func (vi *RecheckInventory) Run(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (vd *RecheckInventory) market(id string) (*core.Market, error) {
+	f := core.FindOpts{Filter: core.Market{ID: id}}
+	markets, err := vd.marketStg.Find(f)
+	if err != nil {
+		return nil, err
+	}
+	if len(markets) == 0 {
+		return nil, nil
+	}
+	mkt := markets[0]
+	return &mkt, nil
 }

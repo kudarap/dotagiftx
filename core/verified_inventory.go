@@ -126,3 +126,8 @@ func (s InventoryStatus) String() string {
 
 	return t
 }
+
+// RetriesExceeded when it reached 5 reties.
+func (d Inventory) RetriesExceeded() bool {
+	return d.Retries > 5
+}
