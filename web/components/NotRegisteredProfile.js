@@ -55,7 +55,7 @@ export default function NotRegisteredProfile({ profile, canonicalURL }) {
   const dotabuffURL = `${DOTABUFF_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `${APP_NAME} :: ${profile.name}`
-  const metaDesc = `${profile.name}'s from Steam`
+  const metaDesc = `${profile.name}'s Steam profile`
 
   return (
     <>

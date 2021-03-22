@@ -7,8 +7,13 @@ import (
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/sirupsen/logrus"
+	"github.com/kudarap/dotagiftx/gokit/log"
 )
+
+type Dispatcher interface {
+	VerifyDelivery(marketID string)
+	VerifyInventory(userID string)
+}
 
 // NewMarket returns new Market service.
 func NewMarket(
@@ -17,20 +22,36 @@ func NewMarket(
 	is core.ItemStorage,
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
+	vd core.DeliveryService,
+	vi core.InventoryService,
 	sc core.SteamClient,
-	lg *logrus.Logger,
+	dp Dispatcher,
+	lg log.Logger,
 ) core.MarketService {
-	return &marketService{ss, us, is, ts, cs, sc, lg}
+	return &marketService{
+		ss, us,
+		is,
+		ts,
+		cs,
+		vd,
+		vi,
+		sc,
+		dp,
+		lg,
+	}
 }
 
 type marketService struct {
-	marketStg  core.MarketStorage
-	userStg    core.UserStorage
-	itemStg    core.ItemStorage
-	trackStg   core.TrackStorage
-	catalogStg core.CatalogStorage
-	steam      core.SteamClient
-	logger     *logrus.Logger
+	marketStg    core.MarketStorage
+	userStg      core.UserStorage
+	itemStg      core.ItemStorage
+	trackStg     core.TrackStorage
+	catalogStg   core.CatalogStorage
+	deliverySvc  core.DeliveryService
+	inventorySvc core.InventoryService
+	steam        core.SteamClient
+	dispatch     Dispatcher
+	logger       log.Logger
 }
 
 func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core.Market, *core.FindMetadata, error) {
@@ -42,6 +63,12 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 	res, err := s.marketStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
+	}
+
+	// Assign inventory and delivery status.
+	for i, mkt := range res {
+		s.getRelatedVerifiedStatus(&mkt)
+		res[i] = mkt
 	}
 
 	if !opts.WithMeta {
@@ -72,12 +99,18 @@ func (s *marketService) Market(ctx context.Context, id string) (*core.Market, er
 	}
 
 	s.getRelatedFields(mkt)
+	s.getRelatedVerifiedStatus(mkt)
 	return mkt, nil
 }
 
 func (s *marketService) getRelatedFields(mkt *core.Market) {
 	mkt.User, _ = s.userStg.Get(mkt.UserID)
 	mkt.Item, _ = s.itemStg.Get(mkt.ItemID)
+}
+
+func (s *marketService) getRelatedVerifiedStatus(mkt *core.Market) {
+	mkt.Inventory, _ = s.inventorySvc.Inventory(mkt.ID)
+	mkt.Delivery, _ = s.deliverySvc.Delivery(mkt.ID)
 }
 
 func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
@@ -125,19 +158,17 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
 	//}()
+	if mkt.Type == core.MarketTypeAsk {
+		s.dispatch.VerifyInventory(mkt.UserID)
+	}
 
 	return nil
 }
 
 func (s *marketService) checkAskType(ask *core.Market) error {
-	// Check ask price should higher than highest bid price.
-	bid, err := s.catalogStg.Index(ask.ItemID)
-	if err != nil {
-		return err
-	}
-	if bid.Quantity != 0 && bid.HighestBid > ask.Price {
-		return core.MarketErrInvalidAskPrice
-	}
+	//if err := s.restrictMatchingPriceValue(ask); err != nil {
+	//	return err
+	//}
 
 	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(core.FindOpts{
@@ -159,14 +190,9 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 }
 
 func (s *marketService) checkBidType(bid *core.Market) error {
-	// Check bid price should lower than lowest ask price.
-	ask, err := s.catalogStg.Index(bid.ItemID)
-	if err != nil {
-		return err
-	}
-	if ask.Quantity != 0 && ask.LowestAsk < bid.Price {
-		return core.MarketErrInvalidBidPrice
-	}
+	//if err := s.restrictMatchingPriceValue(bid); err != nil {
+	//	return err
+	//}
 
 	// Remove existing buy order if exists.
 	res, err := s.marketStg.Find(core.FindOpts{
@@ -184,6 +210,36 @@ func (s *marketService) checkBidType(bid *core.Market) error {
 		m.Status = core.MarketStatusRemoved
 		if err := s.marketStg.Update(&m); err != nil {
 			return err
+		}
+	}
+
+	return nil
+}
+
+// restrictMatchingPriceValue restricts market price against its counter-part entry.
+// 1. market bid price should lower than lowest ask price.
+// 2. market ask price should higher than highest bid price.
+// This was design to enforced the user to check available offers or orders
+// with desired price value.
+// Update 2021/03/08: It turns out some of the user are picky on which user they
+// want to get the item from, which is very reasonable, and will disable this restriction for now.
+func (s *marketService) restrictMatchingPriceValue(mkt *core.Market) error {
+	switch mkt.Type {
+	case core.MarketTypeAsk:
+		bid, err := s.catalogStg.Index(mkt.ItemID)
+		if err != nil {
+			return err
+		}
+		if bid.Quantity != 0 && bid.HighestBid > mkt.Price {
+			return core.MarketErrInvalidAskPrice
+		}
+	case core.MarketTypeBid:
+		ask, err := s.catalogStg.Index(mkt.ItemID)
+		if err != nil {
+			return err
+		}
+		if ask.Quantity != 0 && ask.LowestAsk < mkt.Price {
+			return core.MarketErrInvalidBidPrice
 		}
 	}
 
@@ -236,6 +292,15 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		}
 	}()
 
+	if mkt.Type == core.MarketTypeAsk {
+		switch mkt.Status {
+		case core.MarketStatusReserved:
+			s.dispatch.VerifyInventory(mkt.ID)
+		case core.MarketStatusSold:
+			s.dispatch.VerifyDelivery(mkt.ID)
+		}
+	}
+
 	s.getRelatedFields(mkt)
 	return nil
 }
@@ -254,7 +319,7 @@ func (s *marketService) checkFlaggedUser(userID string) error {
 
 // AutoCompleteBid detects if there's matching reservation on buy order and automatically
 // resolve it by setting complete-bid status.
-func (s *marketService) AutoCompleteBid(ctx context.Context, ask core.Market, partnerSteamID string) error {
+func (s *marketService) AutoCompleteBid(_ context.Context, ask core.Market, partnerSteamID string) error {
 	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
 		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
 	}

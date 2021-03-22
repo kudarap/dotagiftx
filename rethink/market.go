@@ -10,15 +10,17 @@ import (
 )
 
 const (
-	tableMarket          = "market"
-	marketFieldItemID    = "item_id"
-	marketFieldUserID    = "user_id"
-	marketFieldType      = "type"
-	marketFieldStatus    = "status"
-	marketFieldNotes     = "notes"
-	marketFieldPrice     = "price"
-	marketFieldCreatedAt = "created_at"
-	marketFieldUpdatedAt = "updated_at"
+	tableMarket                = "market"
+	marketFieldItemID          = "item_id"
+	marketFieldUserID          = "user_id"
+	marketFieldType            = "type"
+	marketFieldStatus          = "status"
+	marketFieldInventoryStatus = "inventory_status"
+	marketFieldDeliveryStatus  = "delivery_status"
+	marketFieldNotes           = "notes"
+	marketFieldPrice           = "price"
+	marketFieldCreatedAt       = "created_at"
+	marketFieldUpdatedAt       = "updated_at"
 	// Hidden field for searching item details.
 	marketItemSearchTags = "item_tags"
 )
@@ -46,6 +48,47 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	// IndexSorting was disable due to hook query includeRelatedFields
 	//o.IndexSorting = true
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return res, nil
+}
+
+// PendingInventoryStatus returns market entries that is pending for checking
+// inventory status or needs re-processing of re-process error status.
+func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, error) {
+	// Filters out already check or no need to check market
+	q := r.Table(tableMarket).
+		// .filter(r.row.hasFields('inventory_status').not().or(r.row('inventory_status').eq(500)))
+		Filter(func(t r.Term) r.Term {
+			return t.HasFields(marketFieldInventoryStatus).Not().Or(
+				t.Field(marketFieldInventoryStatus).Eq(core.InventoryStatusError),
+			)
+		})
+	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+
+	var res []core.Market
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return res, nil
+}
+
+// PendingDeliveryStatus returns market entries that is pending for checking
+// delivery status or needs re-processing of re-process error status.
+func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
+	q := r.Table(tableMarket).
+		Filter(func(t r.Term) r.Term {
+			return t.HasFields(marketFieldDeliveryStatus).Not().
+				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
+			//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError).
+			//	Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit)))
+		})
+	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+
+	var res []core.Market
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -123,12 +166,16 @@ func (s *marketStorage) Create(in *core.Market) error {
 }
 
 func (s *marketStorage) Update(in *core.Market) error {
+	in.UpdatedAt = now()
+	return s.BaseUpdate(in)
+}
+
+func (s *marketStorage) BaseUpdate(in *core.Market) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
 	}
 
-	in.UpdatedAt = now()
 	in.User = nil
 	in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))

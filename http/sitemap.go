@@ -55,6 +55,8 @@ func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.
 	return sitemap
 }
 
+const vanityPrefix = "https://steamcommunity.com/id/"
+
 func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam core.SteamClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(core.FindOpts{})
@@ -62,15 +64,18 @@ func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam cor
 
 		var vanities []string
 		for _, u := range users {
-			sp, _ := steam.Player(u.SteamID)
-			if sp == nil {
+			//sp, _ := steam.Player(u.SteamID)
+			//if sp == nil || sp.URL == "" {
+			//	continue
+			//}
+			sp := u
+
+			// Not a custom url.
+			if !strings.HasPrefix(sp.URL, vanityPrefix) {
 				continue
 			}
 
-			v := strings.TrimPrefix(sp.URL, "https://steamcommunity.com/id/")
-			if sp.URL != "" {
-				vanities = append(vanities, v)
-			}
+			vanities = append(vanities, strings.TrimPrefix(sp.URL, vanityPrefix))
 		}
 
 		w.Header().Set("content-type", "text/xml")

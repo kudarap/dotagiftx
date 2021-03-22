@@ -2,6 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import MuiLink from '@material-ui/core/Link'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -17,10 +18,20 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function Question({ children }) {
+function slugify(s) {
+  return String(s)
+    .toLowerCase()
+    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/\s+/g, '-')
+}
+
+function Question({ children, ...other }) {
+  const id = slugify(children)
   return (
-    <Typography component="h2" gutterBottom style={{ fontWeight: 'bold' }}>
-      {children}
+    <Typography component="h2" id={id} gutterBottom style={{ fontWeight: 'bold' }} {...other}>
+      <MuiLink href={`#${id}`} color="textPrimary">
+        {children}
+      </MuiLink>
     </Typography>
   )
 }
@@ -50,7 +61,7 @@ export default function Faq() {
           </Typography>
           <br />
 
-          <Question>What is {APP_NAME}?</Question>
+          <Question>What is DotagiftX?</Question>
           <Answer>
             Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
             belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
@@ -81,6 +92,25 @@ export default function Faq() {
           </Answer>
           <br />
 
+          <Question>What is reservation / reservation fee / deposit?</Question>
+          <Answer>
+            Some sellers requires a small fee to lock the item to buyer and this varies depending on
+            the seller or the item. <em>Reserved item</em> status will not appear on search and
+            profile listings to stop offering to other buyers. If you signed up, you can check your{' '}
+            <Link color="secondary" href="/my-orders#toreceive">
+              reservations here
+            </Link>
+            .
+          </Answer>
+          <br />
+
+          <Question>Why do I need to wait 30 days to send or receive an item?</Question>
+          <Answer>
+            Valve&apos;s gift restriction that you need to have 30 days as friend to send and
+            receive Giftable items.
+          </Answer>
+          <br />
+
           <Question>Do I need a Middleman?</Question>
           <Answer>
             If you asked, you probably do, specially on high-value items where scammers fuck around.
@@ -92,17 +122,14 @@ export default function Faq() {
           </Answer>
           <br />
 
-          <Question>Why do I need to wait 30 days to send the item?</Question>
-          <Answer>
-            Valve&apos;s gift restriction that you need to have 30 days as friend to send and
-            receive Giftable items.
-          </Answer>
-          <br />
-
           <Question>How do I report scammers?</Question>
           <Answer>
             Please{' '}
-            <Link href="/about" color="secondary">
+            <Link
+              href="https://discord.gg/UFt9Ny42kM"
+              target="_blank"
+              rel="noreferrer noopener"
+              color="secondary">
               contact kudarap
             </Link>{' '}
             to ban the account on this site and you can submit a report on{' '}

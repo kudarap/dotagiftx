@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kudarap/dotagiftx/gokit/logger"
+	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/steam"
@@ -22,6 +22,6 @@ type (
 		Rethink rethink.Config
 		Redis   redis.Config
 		Steam   steam.Config
-		Log     logger.Config
+		Log     log.Config
 	}
 )

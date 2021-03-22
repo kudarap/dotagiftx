@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import teal from '@material-ui/core/colors/teal'
+import { blueGrey } from '@material-ui/core/colors'
 
-export const muiTheme = createMuiTheme({
+const baseThemeOpts = {
   typography: {
     fontFamily: 'Ubuntu, sans-serif',
   },
@@ -35,9 +36,11 @@ export const muiTheme = createMuiTheme({
       },
     },
   },
-})
+}
 
-function Theme({ children }) {
+export const muiTheme = createMuiTheme(baseThemeOpts)
+
+export default function Theme({ children }) {
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
@@ -49,4 +52,27 @@ Theme.propTypes = {
   children: PropTypes.node.isRequired,
 }
 
-export default Theme
+const muiLightTheme = createMuiTheme({
+  ...baseThemeOpts,
+  palette: {
+    ...baseThemeOpts.palette,
+    type: 'light',
+    background: {
+      paper: blueGrey.A100,
+    },
+  },
+  overrides: {
+    MuiTableCell: {
+      root: {
+        borderBottomColor: blueGrey[200],
+      },
+    },
+  },
+})
+
+export function LightTheme({ children }) {
+  return <ThemeProvider theme={muiLightTheme}>{children}</ThemeProvider>
+}
+LightTheme.propTypes = {
+  children: PropTypes.node.isRequired,
+}

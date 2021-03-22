@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
+import { debounce } from '@material-ui/core'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -12,6 +13,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import * as format from '@/lib/format'
 import { amount } from '@/lib/format'
 import Button from '@/components/Button'
@@ -22,6 +24,7 @@ import ReserveUpdateDialog from '@/components/ReserveUpdateDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
+import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -57,6 +60,24 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
   const handleNotifClose = () => {
     setNotifOpen(false)
   }
+
+  const [currentIndex, setIndex] = React.useState(null)
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const debouncePopoverClose = debounce(() => {
+    setAnchorEl(null)
+    setIndex(null)
+  }, 150)
+  const handlePopoverOpen = event => {
+    debouncePopoverClose.clear()
+    setIndex(Number(event.currentTarget.dataset.index))
+    setAnchorEl(event.currentTarget)
+  }
+  const handlePopoverClose = () => {
+    setAnchorEl(null)
+    setIndex(null)
+  }
+  const open = Boolean(anchorEl)
+  const popoverElementID = open ? 'verified-status-popover' : undefined
 
   return (
     <>
@@ -122,6 +143,15 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                     />
                     <div>
                       <strong>{market.item.name}</strong>
+                      <span
+                        aria-owns={popoverElementID}
+                        aria-haspopup="true"
+                        data-index={idx}
+                        onMouseLeave={debouncePopoverClose}
+                        onMouseEnter={handlePopoverOpen}>
+                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                      </span>
+
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {market.item.hero}
@@ -165,6 +195,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
           </TableBody>
         </Table>
       </TableContainer>
+
       <ReserveUpdateDialog
         open={!!currentMarket}
         market={currentMarket}
@@ -172,6 +203,16 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
         onCancel={() => onReload()}
         onSuccess={handleUpdateSuccess}
       />
+
+      <VerifiedStatusPopover
+        id={popoverElementID}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        onMouseEnter={() => debouncePopoverClose.clear()}
+        market={datatable.data[currentIndex]}
+      />
+
       <Snackbar open={notifOpen} autoHideDuration={6000} onClose={handleNotifClose}>
         <Alert onClose={handleNotifClose} variant="filled" severity="success">
           Item updated successfully! Check your{' '}

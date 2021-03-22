@@ -85,9 +85,15 @@ type (
 		Notes          string       `json:"notes"            db:"notes,omitempty"`
 		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
+
+		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty"`
+		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
+
 		// Include related fields.
-		User *User `json:"user,omitempty" db:"user,omitempty"`
-		Item *Item `json:"item,omitempty" db:"item,omitempty"`
+		User      *User      `json:"user,omitempty"      db:"user,omitempty"`
+		Item      *Item      `json:"item,omitempty"      db:"item,omitempty"`
+		Delivery  *Delivery  `json:"delivery,omitempty"  db:"delivery,omitempty"`
+		Inventory *Inventory `json:"inventory,omitempty" db:"inventory,omitempty"`
 	}
 
 	// MarketService provides access to market service.
@@ -134,6 +140,18 @@ type (
 
 		// Update persists market changes to data store.
 		Update(*Market) error
+
+		// BaseUpdate persists market changes to data store and
+		// will not update updated_at field.
+		BaseUpdate(*Market) error
+
+		// PendingInventoryStatus returns market entries that is pending for checking
+		// inventory status or needs re-processing of re-process error status.
+		PendingInventoryStatus(o FindOpts) ([]Market, error)
+
+		// PendingDeliveryStatus returns market entries that is pending for checking
+		// delivery status or needs re-processing of re-process error status.
+		PendingDeliveryStatus(o FindOpts) ([]Market, error)
 	}
 )
 
@@ -198,7 +216,7 @@ func (m *Market) SetDefaults() {
 	}
 }
 
-// String returns text value of a post status.
+// String returns text value of a market status.
 func (s MarketStatus) String() string {
 	t, ok := MarketStatusTexts[s]
 	if !ok {

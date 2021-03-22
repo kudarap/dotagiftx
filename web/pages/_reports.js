@@ -5,10 +5,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { fetcher, REPORTS } from '@/service/api'
 import { dateFromNow } from '@/lib/format'
-import { REPORT_TYPE_MAP_TEXT } from '@/constants/report'
+import { REPORT_TYPE_MAP_TEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -36,6 +37,10 @@ export default function Feedback() {
   // tally report data base on text
   if (reports && reports.data) {
     reports.data.forEach(report => {
+      if (report.type !== REPORT_TYPE_SURVEY) {
+        return
+      }
+
       if (!tallyVotes[report.text]) {
         tallyVotes[report.text] = 1
         return
@@ -77,9 +82,9 @@ export default function Feedback() {
                       {REPORT_TYPE_MAP_TEXT[report.type].toUpperCase()}
                     </Typography>
                     {` ${report.text} `}
-                    <em>
-                      <small>{dateFromNow(report.created_at)}</small>
-                    </em>
+                    from <Link href={`/profiles/${report.user.steam_id}`}>{report.user.name}</Link>
+                    &nbsp;
+                    {dateFromNow(report.created_at)}
                   </Typography>
                 </li>
               ))}

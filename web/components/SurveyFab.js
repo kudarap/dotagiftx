@@ -7,18 +7,33 @@ import VoteDialog from '@/components/VoteDialog'
 import { reportSearch } from '@/service/api'
 import { REPORT_TYPE_SURVEY } from '@/constants/report'
 import teal from '@material-ui/core/colors/teal'
-import { Grow, Slide } from '@material-ui/core'
+import { Slide } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {},
   fab: {
     position: 'fixed',
-    right: theme.spacing(2),
-    bottom: theme.spacing(2),
+    left: 'calc(50% - 83px)',
+    bottom: theme.spacing(3),
     backgroundColor: teal.A200,
     '&:hover': {
       backgroundColor: teal.A400,
     },
+    textTransform: 'none',
+  },
+  fab2: {
+    position: 'fixed',
+    left: 'calc(50% - 83px)',
+    bottom: theme.spacing(3),
+
+    backgroundColor: teal.A200,
+    color: 'white',
+    border: `1px solid ${teal.A200}`,
+
+    '&:hover': {
+      // backgroundColor: theme.palette.grey['50'],
+    },
+    textTransform: 'none',
   },
 }))
 

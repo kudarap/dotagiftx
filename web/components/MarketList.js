@@ -2,8 +2,9 @@ import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import has from 'lodash/has'
 import { useRouter } from 'next/router'
-import bidColor from '@material-ui/core/colors/teal'
 import { makeStyles } from '@material-ui/core/styles'
+import { debounce } from '@material-ui/core'
+import bidColor from '@material-ui/core/colors/teal'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -15,6 +16,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
@@ -27,6 +29,7 @@ import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import SellButton from '@/components/SellButton'
+import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -236,81 +239,118 @@ function baseTable(Component) {
       onRemove(marketIdx)
     }
 
+    const [currentIndex, setIndex] = React.useState(null)
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const debouncePopoverClose = debounce(() => {
+      setAnchorEl(null)
+      setIndex(null)
+    }, 150)
+    const handlePopoverOpen = event => {
+      debouncePopoverClose.clear()
+      setIndex(Number(event.currentTarget.dataset.index))
+      setAnchorEl(event.currentTarget)
+    }
+    const handlePopoverClose = () => {
+      setAnchorEl(null)
+      setIndex(null)
+    }
+    const open = Boolean(anchorEl)
+    const popoverElementID = open ? 'verified-status-popover' : undefined
+
     const { datatable, loading, error, bidMode } = props
 
     return (
-      <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
-        <TableRow>
-          <TableHeadCell size="small">
-            <Typography color="textSecondary" variant="body2">
-              {bidMode ? 'Buyer' : 'Seller'}
-            </Typography>
-          </TableHeadCell>
-          <TableHeadCell size="small" align="right">
-            <Typography color="textSecondary" variant="body2">
-              {bidMode ? 'Buy Price' : 'Price'}
-            </Typography>
-          </TableHeadCell>
-          {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
-        </TableRow>
-
-        {error && (
+      <>
+        <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
           <TableRow>
-            <TableCell align="center" colSpan={3}>
-              Error retrieving data
-              <br />
-              <Typography variant="caption" color="textSecondary">
-                {error}
+            <TableHeadCell size="small">
+              <Typography color="textSecondary" variant="body2">
+                {bidMode ? 'Buyer' : 'Seller'}
               </Typography>
-            </TableCell>
+            </TableHeadCell>
+            <TableHeadCell size="small" align="right">
+              <Typography color="textSecondary" variant="body2">
+                {bidMode ? 'Buy Price' : 'Price'}
+              </Typography>
+            </TableHeadCell>
+            {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
           </TableRow>
-        )}
 
-        {loading && (
-          <TableRow>
-            <TableCell align="center" colSpan={3}>
-              Loading...
-            </TableCell>
-          </TableRow>
-        )}
+          {error && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Error retrieving data
+                <br />
+                <Typography variant="caption" color="textSecondary">
+                  {error}
+                </Typography>
+              </TableCell>
+            </TableRow>
+          )}
 
-        {!error && datatable.total_count === 0 && (
-          <TableRow>
-            <TableCell align="center" colSpan={3}>
-              No available {bidMode ? 'orders' : 'offers'}
-            </TableCell>
-          </TableRow>
-        )}
+          {loading && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Loading...
+              </TableCell>
+            </TableRow>
+          )}
 
-        {datatable.data.map((market, idx) => (
-          <TableRow key={market.id} hover>
-            <TableCell component="th" scope="row" padding="none">
-              <Link href="/profiles/[id]" as={`/profiles/${market.user.steam_id}`} disableUnderline>
-                <div className={classes.seller}>
-                  <Avatar
-                    className={classes.avatar}
-                    alt={market.user.name}
-                    {...retinaSrcSet(market.user.avatar, 40, 40)}
-                  />
-                  <div>
-                    <strong>{market.user.name}</strong>
-                    <br />
-                    <Typography variant="caption" color="textSecondary">
-                      {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
-                    </Typography>
+          {!error && datatable.total_count === 0 && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                No available {bidMode ? 'orders' : 'offers'}
+              </TableCell>
+            </TableRow>
+          )}
+
+          {datatable.data.map((market, idx) => (
+            <TableRow key={market.id} hover>
+              <TableCell component="th" scope="row" padding="none">
+                <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
+                  <div className={classes.seller}>
+                    <Avatar
+                      className={classes.avatar}
+                      alt={market.user.name}
+                      {...retinaSrcSet(market.user.avatar, 40, 40)}
+                    />
+                    <div>
+                      <strong>{market.user.name}</strong>
+                      <br />
+                      <Typography variant="caption" color="textSecondary">
+                        {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
+                      </Typography>
+                      <span
+                        aria-owns={popoverElementID}
+                        aria-haspopup="true"
+                        data-index={idx}
+                        onMouseLeave={debouncePopoverClose}
+                        onMouseEnter={handlePopoverOpen}>
+                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </TableCell>
-            <Component
-              currentUserID={currentUserID}
-              market={market}
-              onRemove={() => handleRemoveClick(idx)}
-              onContact={() => handleContactClick(idx)}
-            />
-          </TableRow>
-        ))}
-      </TableBody>
+                </Link>
+              </TableCell>
+              <Component
+                currentUserID={currentUserID}
+                market={market}
+                onRemove={() => handleRemoveClick(idx)}
+                onContact={() => handleContactClick(idx)}
+              />
+            </TableRow>
+          ))}
+        </TableBody>
+
+        <VerifiedStatusPopover
+          id={popoverElementID}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handlePopoverClose}
+          onMouseEnter={() => debouncePopoverClose.clear()}
+          market={datatable.data[currentIndex]}
+        />
+      </>
     )
   }
   wrapped.propTypes = {

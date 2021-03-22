@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "rgInventory": {
+    "100000000": {
+      "id": "100000000",
+      "classid": "3305750400",
+      "instanceid": "3307872803"
+    }
+  },
+  "rgDescriptions": {
+    "3305750400_3307872803": {
+      "appid": "570",
+      "classid": "3305750400",
+      "instanceid": "3307872803",
+      "icon_url_large": "TESTDATA_LARGE_IMAGE",
+      "name": "Gothic Whisper",
+      "type": "Mythical Mysterious Item",
+      "descriptions": [
+        { "type": "html", "value": "Contains: Gothic Whisper" },
+        { "value": "Gift From: gippeum", "color": "99ccff" }
+      ]
+    }
+  },
+  "more": false,
+  "more_start": false
+}

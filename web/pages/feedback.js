@@ -16,6 +16,7 @@ import {
   REPORT_TYPE_SCAM_INCIDENT,
 } from '@/constants/report'
 import { reportCreate } from '@/service/api'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -89,6 +90,17 @@ export default function About() {
           <Paper className={classes.paper}>
             <Typography variant="h5" component="h1" gutterBottom>
               Feedback and Report
+              <Typography color="textSecondary">
+                Feel free to join our{' '}
+                <Link
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  href="https://discord.gg/UFt9Ny42kM">
+                  Discord
+                </Link>{' '}
+                if you want to discuss more on your feedback.
+              </Typography>
             </Typography>
             {message && (
               <Alert severity="success" variant="filled">
