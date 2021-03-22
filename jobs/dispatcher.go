@@ -52,6 +52,11 @@ func (d *Dispatcher) RegisterJobs() {
 		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_giftwrapped_update"),
 	))
+	d.worker.AddJob(NewRecheckInventory(
+		d.inventorySvc,
+		d.marketStg,
+		log.WithPrefix(d.logSvc, "job_recheck_inventory"),
+	))
 }
 
 // VerifyDelivery creates a job to verify a delivery
