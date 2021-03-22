@@ -21,7 +21,7 @@ import {
 } from '@/constants/verified'
 import { dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
-import { MARKET_TYPE_ASK } from '@/constants/market'
+import { MARKET_STATUS_SOLD } from '@/constants/market'
 
 const useStyles = makeStyles({
   root: {
@@ -76,7 +76,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
   }
 
   const steamInvProfile =
-    market.type === MARKET_TYPE_ASK ? market.user.steam_id : market.partner_steam_id
+    market.status === MARKET_STATUS_SOLD ? market.partner_steam_id : market.user.steam_id
 
   return (
     <CardX className={classes.root} {...other}>
