@@ -2,8 +2,9 @@ import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import has from 'lodash/has'
 import { useRouter } from 'next/router'
-import bidColor from '@material-ui/core/colors/teal'
 import { makeStyles } from '@material-ui/core/styles'
+import { debounce } from '@material-ui/core'
+import bidColor from '@material-ui/core/colors/teal'
 import Avatar from '@material-ui/core/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -240,7 +241,12 @@ function baseTable(Component) {
 
     const [currentIndex, setIndex] = React.useState(null)
     const [anchorEl, setAnchorEl] = React.useState(null)
+    const debouncePopoverClose = debounce(() => {
+      setAnchorEl(null)
+      setIndex(null)
+    }, 150)
     const handlePopoverOpen = event => {
+      debouncePopoverClose.clear()
       setIndex(Number(event.currentTarget.dataset.index))
       setAnchorEl(event.currentTarget)
     }
@@ -318,6 +324,7 @@ function baseTable(Component) {
                         aria-owns={popoverElementID}
                         aria-haspopup="true"
                         data-index={idx}
+                        onMouseLeave={debouncePopoverClose}
                         onMouseEnter={handlePopoverOpen}>
                         {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       </span>
@@ -340,6 +347,7 @@ function baseTable(Component) {
           open={open}
           anchorEl={anchorEl}
           onClose={handlePopoverClose}
+          onMouseEnter={() => debouncePopoverClose.clear()}
           market={datatable.data[currentIndex]}
         />
       </>

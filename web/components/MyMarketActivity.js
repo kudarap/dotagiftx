@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
+import { debounce } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import lightGreen from '@material-ui/core/colors/lightGreen'
 import teal from '@material-ui/core/colors/teal'
@@ -64,7 +65,12 @@ export default function MyMarketActivity({ datatable, loading, error }) {
 
   const [currentIndex, setIndex] = React.useState(null)
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const debouncePopoverClose = debounce(() => {
+    setAnchorEl(null)
+    setIndex(null)
+  }, 150)
   const handlePopoverOpen = event => {
+    debouncePopoverClose.clear()
     setIndex(Number(event.currentTarget.dataset.index))
     setAnchorEl(event.currentTarget)
   }
@@ -120,6 +126,7 @@ export default function MyMarketActivity({ datatable, loading, error }) {
                 aria-owns={popoverElementID}
                 aria-haspopup="true"
                 data-index={idx}
+                onMouseLeave={debouncePopoverClose}
                 onMouseEnter={handlePopoverOpen}>
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
@@ -171,6 +178,7 @@ export default function MyMarketActivity({ datatable, loading, error }) {
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
+        onMouseEnter={() => debouncePopoverClose.clear()}
         market={datatable.data[currentIndex]}
       />
     </>

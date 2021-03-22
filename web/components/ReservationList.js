@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
+import { debounce } from '@material-ui/core'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -62,7 +63,12 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
 
   const [currentIndex, setIndex] = React.useState(null)
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const debouncePopoverClose = debounce(() => {
+    setAnchorEl(null)
+    setIndex(null)
+  }, 150)
   const handlePopoverOpen = event => {
+    debouncePopoverClose.clear()
     setIndex(Number(event.currentTarget.dataset.index))
     setAnchorEl(event.currentTarget)
   }
@@ -141,6 +147,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                         aria-owns={popoverElementID}
                         aria-haspopup="true"
                         data-index={idx}
+                        onMouseLeave={debouncePopoverClose}
                         onMouseEnter={handlePopoverOpen}>
                         {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       </span>
@@ -202,6 +209,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
+        onMouseEnter={() => debouncePopoverClose.clear()}
         market={datatable.data[currentIndex]}
       />
 
