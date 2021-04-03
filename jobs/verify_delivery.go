@@ -46,7 +46,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts.Limit = 10
 	opts.Page = 0
 
-	src := steaminv.InventoryAssetWithCache
+	src := steaminv.InventoryAsset
 	for {
 		res, err := vd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {
