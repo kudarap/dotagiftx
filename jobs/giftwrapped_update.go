@@ -31,7 +31,7 @@ func NewGiftWrappedUpdate(ds core.DeliveryService, ms core.MarketStorage, lg log
 	}
 	return &GiftWrappedUpdate{
 		ds, ms, lg,
-		"giftwrapped_update", time.Minute * 30, f}
+		"giftwrapped_update", time.Hour, f}
 }
 
 func (vd *GiftWrappedUpdate) String() string { return vd.name }

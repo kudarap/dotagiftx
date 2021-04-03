@@ -164,7 +164,7 @@ func (d Delivery) AddAssets(sa []SteamAsset) *Delivery {
 	return &d
 }
 
-// RetriesExceeded when it reached 5 reties.
+// RetriesExceeded when it reached 30 reties.
 func (d Delivery) RetriesExceeded() bool {
-	return d.Retries > 5
+	return d.Retries > 30
 }
