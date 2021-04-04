@@ -29,6 +29,9 @@ const useStyles = makeStyles(theme => ({
     float: 'left',
     marginRight: theme.spacing(1),
   },
+  bidText: {
+    color: theme.palette.accent.main,
+  },
 }))
 
 const defaultItem = {
@@ -237,7 +240,7 @@ export default function MarketForm() {
             </Typography>
             <Typography variant="body2" color="textSecondary">
               Request to buy at:{' '}
-              <Link href={`/${item.slug}?buyorder`}>
+              <Link href={`/${item.slug}?buyorder`} className={classes.bidText}>
                 {item.highest_bid ? format.amount(item.highest_bid, 'USD') : 'no orders yet'}
               </Link>
             </Typography>
