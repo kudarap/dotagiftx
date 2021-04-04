@@ -89,8 +89,9 @@ export default function Faq() {
 
           <Question>Why do I need to sign in with Steam?</Question>
           <Answer>
-            It verifies Steam account ownership and provides some helpful links to check your
-            profile and reputation.
+            You don&apos;t, if you are just looking for offers. But if you are listing your items or
+            placing a request we need to verify Steam account ownership and provides some helpful
+            links to check your profile and reputation.
           </Answer>
 
           <Question>Can I trust the users on this website?</Question>
