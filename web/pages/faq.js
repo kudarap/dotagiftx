@@ -16,6 +16,12 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(4),
   },
+  question: {
+    paddingTop: theme.spacing(2.5),
+    '&:target': {
+      borderBottom: `2px inset ${theme.palette.secondary.main}`,
+    },
+  },
 }))
 
 function slugify(s) {
@@ -26,9 +32,16 @@ function slugify(s) {
 }
 
 function Question({ children, ...other }) {
+  const classes = useStyles()
   const id = slugify(children)
   return (
-    <Typography component="h2" id={id} gutterBottom style={{ fontWeight: 'bold' }} {...other}>
+    <Typography
+      className={classes.question}
+      component="h2"
+      id={id}
+      gutterBottom
+      style={{ fontWeight: 'bold' }}
+      {...other}>
       <MuiLink href={`#${id}`} color="textPrimary">
         {children}
       </MuiLink>
@@ -59,7 +72,6 @@ export default function Faq() {
           <Typography variant="h5" component="h1" gutterBottom>
             Frequently Asked Questions
           </Typography>
-          <br />
 
           <Question>What is DotagiftX?</Question>
           <Answer>
@@ -67,7 +79,6 @@ export default function Faq() {
             belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
             with a kick.
           </Answer>
-          <br />
 
           <Question>What items I can find or post here?</Question>
           <Answer>
@@ -75,14 +86,12 @@ export default function Faq() {
             Collector&apos;s Cache, Immortal Treasure items, or rare in-game drops from Treasure of
             the Cryptic Beacon.
           </Answer>
-          <br />
 
           <Question>Why do I need to sign in with Steam?</Question>
           <Answer>
             It verifies Steam account ownership and provides some helpful links to check your
             profile and reputation.
           </Answer>
-          <br />
 
           <Question>Can I trust the users on this website?</Question>
           <Answer>
@@ -90,7 +99,6 @@ export default function Faq() {
             transaction history are open and links to their SteamRep, Steam, and Dotabuff are listed
             for you to checkout.
           </Answer>
-          <br />
 
           <Question>What is reservation / reservation fee / deposit?</Question>
           <Answer>
@@ -102,14 +110,12 @@ export default function Faq() {
             </Link>
             .
           </Answer>
-          <br />
 
           <Question>Why do I need to wait 30 days to send or receive an item?</Question>
           <Answer>
             Valve&apos;s gift restriction that you need to have 30 days as friend to send and
             receive Giftable items.
           </Answer>
-          <br />
 
           <Question>Do I need a Middleman?</Question>
           <Answer>
@@ -120,7 +126,6 @@ export default function Faq() {
             </Link>
             &nbsp; and read around.
           </Answer>
-          <br />
 
           <Question>How do I report scammers?</Question>
           <Answer>
@@ -150,7 +155,6 @@ export default function Faq() {
             </Link>
             .
           </Answer>
-          <br />
 
           <Question>Why do this?</Question>
           <Answer>
@@ -158,7 +162,6 @@ export default function Faq() {
             to others.
             {/* Wanted to make tool that can be easily search and post these Giftable items. */}
           </Answer>
-          <br />
         </Container>
       </main>
 
