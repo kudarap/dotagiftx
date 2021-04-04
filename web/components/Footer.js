@@ -13,7 +13,8 @@ const dotaHeroImage =
 
 // const heroImage = '/assets/bg_hero.png'
 
-const mobileHeightCompensator = 31
+// const mobileHeightCompensator = 31
+const mobileHeightCompensator = 100
 
 const useStyles = makeStyles(theme => ({
   root: {
