@@ -20,6 +20,9 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(2.5),
     '&:target': {
       borderBottom: `2px inset ${theme.palette.secondary.main}`,
+      '& .MuiLink-root:hover': {
+        textDecoration: 'none',
+      },
     },
   },
 }))
