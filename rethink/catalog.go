@@ -50,12 +50,14 @@ func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 		    let viewScore = doc('reduction').mul(0.5);
 		   	let entryScore = market.count().mul(0.1);
 		    let reserveScore = market.filter({ status: 300 }).count().mul(4);
-			let soldScore = market.filter({ status: 400 }).count().mul(4);
+		    let soldScore = market.filter({ status: 400 }).count().mul(4);
+		    let bidScore = market.filter({ type: 20 }).count().mul(2);
 		    let score = r.expr([
 		      viewScore,
 		      entryScore,
 		      reserveScore,
-			  soldScore,
+		      soldScore,
+		      bidScore,
 		    ]).sum();
 
 		    return {
@@ -63,8 +65,9 @@ func (s *catalogStorage) Trending() ([]core.Catalog, error) {
 		      score: score,
 		      score_vw: viewScore,
 		      score_ent: entryScore,
-			  score_rsv: reserveScore,
-		      score_sold: soldScore
+		      score_rsv: reserveScore,
+		      score_sold: soldScore,
+		      score_bid: bidScore
 		    }
 		  })
 		  .eqJoin('item_id', r.db('dotagiftables').table('catalog'))
