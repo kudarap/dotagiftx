@@ -1,4 +1,0 @@
-[2021-04-05T11:58:22Z]  INFO [md/CbueJVaLZx-040925] "GET http://api.dotagiftx.com/catalogs_trend? HTTP/1.1" from 54.151.84.95 - 200 6400B in 819.564µs
-[2021-04-05T11:58:24Z]  INFO [md/CbueJVaLZx-040934] "GET http://api.dotagiftx.com/catalogs_trend? HTTP/1.1" from 54.151.84.95 - 200 6400B in 424.835µs
-[2021-04-05T12:00:31Z]  INFO [md/CbueJVaLZx-040979] "GET http://api.dotagiftx.com/catalogs_trend? HTTP/1.1" from 54.151.84.95 - 200 6400B in 599.45µs
-[2021-04-05T12:00:50Z]  INFO [md/CbueJVaLZx-041021] "GET http://api.dotagiftx.com/markets HTTP/1.1" from 54.151.84.95 - 200 6400B in 456.155µs
