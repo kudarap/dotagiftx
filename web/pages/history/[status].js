@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 const defaultFilter = {
   type: MARKET_TYPE_ASK,
   sort: 'updated_at:desc',
-  limit: 100,
+  // limit: 100,
 }
 
 export default function History({ status, summary, datatable, error }) {
