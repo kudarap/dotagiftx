@@ -158,7 +158,7 @@ export default function MyMarketActivity({ datatable, loading, error }) {
               component="pre"
               color="textSecondary"
               variant="caption"
-              style={{ whiteSpace: 'pre-wrap', display: 'inline-block' }}>
+              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
               {market.partner_steam_id && (
                 <Link
                   color="textSecondary"
