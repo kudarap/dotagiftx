@@ -112,7 +112,27 @@ func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger 
 	}
 }
 
-const catalogTrendCacheExpr = time.Hour
+const catalogTrendCacheExpr = time.Hour * 2
+
+// TODO! this is hotfixed for slow query on trending catalog.
+const catalogTrendRehydrationDur = catalogTrendCacheExpr / 2
+
+var catalogTrendLastUpdated = time.Now().Add(catalogTrendRehydrationDur)
+
+func rehydrateCatalogTrend(cacheKey string, svc core.MarketService, cache core.Cache, logger *logrus.Logger) {
+	if time.Now().Before(catalogTrendLastUpdated) {
+		return
+	}
+	catalogTrendLastUpdated = time.Now().Add(catalogTrendRehydrationDur)
+
+	logger.Infoln("REHYDRATING...")
+	l, _, _ := svc.TrendingCatalog(core.FindOpts{})
+	d := newDataWithMeta(l, &core.FindMetadata{len(l), 10})
+	if err := cache.Set(cacheKey, d, catalogTrendCacheExpr); err != nil {
+		logger.Errorf("could not save cache on catalog trend list: %s", err)
+	}
+	logger.Infoln("REHYDRATED", d.ResultCount)
+}
 
 func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -126,6 +146,9 @@ func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logg
 		// Check for cache hit and render them.
 		cacheKey, noCache := core.CacheKeyFromRequest(r)
 		if !noCache {
+			// HOTFIXED! rehydrate before cache expiration.
+			go rehydrateCatalogTrend(cacheKey, svc, cache, logger)
+
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
 				return
@@ -147,6 +170,7 @@ func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logg
 			if err := cache.Set(cacheKey, data, catalogTrendCacheExpr); err != nil {
 				logger.Errorf("could not save cache on catalog trend list: %s", err)
 			}
+			catalogTrendLastUpdated = time.Now().Add(catalogTrendRehydrationDur)
 		}()
 
 		respondOK(w, data)
