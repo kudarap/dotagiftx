@@ -124,7 +124,7 @@ func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logg
 		}
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
