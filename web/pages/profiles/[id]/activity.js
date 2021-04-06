@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 const filter = {
   // status: MARKET_STATUS_SOLD,
   sort: 'updated_at:desc',
-  limit: 100,
+  // limit: 100,
 }
 
 export default function UserDelivered({ profile, canonicalURL }) {
