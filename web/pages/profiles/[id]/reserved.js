@@ -12,7 +12,7 @@ import Link from '@/components/Link'
 import { CDN_URL, fetcher, MARKETS, statsMarketSummary, user } from '@/service/api'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_RESERVED } from '@/constants/market'
-import MarketActivity from '@/components/MarketActivityV2'
+import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {

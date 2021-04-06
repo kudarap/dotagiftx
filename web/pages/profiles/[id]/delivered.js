@@ -12,7 +12,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
-import MarketActivity from '@/components/MarketActivityV2'
+import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {

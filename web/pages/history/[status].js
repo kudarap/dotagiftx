@@ -10,7 +10,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import { marketSearch, statsMarketSummary } from '@/service/api'
-import MarketActivity from '@/components/MarketActivityV2'
+import MarketActivity from '@/components/MarketActivity'
 import {
   MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_RESERVED,
