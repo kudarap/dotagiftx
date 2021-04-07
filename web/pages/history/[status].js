@@ -9,7 +9,7 @@ import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { marketSearch, statsMarketSummary } from '@/service/api'
+import { fetcher, MARKETS, marketSearch, statsMarketSummary } from '@/service/api'
 import MarketActivity from '@/components/MarketActivity'
 import {
   MARKET_STATUS_MAP_TEXT,
@@ -51,10 +51,66 @@ const defaultFilter = {
   type: MARKET_TYPE_ASK,
   sort: 'updated_at:desc',
   // limit: 100,
+  page: 1,
 }
 
-export default function History({ status, summary, datatable, error }) {
+const defaultData = {
+  data: [],
+  total_result: 0,
+  total_total: 0,
+}
+
+const scrollBias = 300
+
+export default function History({ status, summary, error }) {
   const classes = useStyles()
+
+  const [datatable, setDatatable] = React.useState(defaultData)
+  const [filter, setFilter] = React.useState({ ...defaultFilter, status })
+  const [loading, setLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    setDatatable(defaultData)
+    setFilter({ ...defaultFilter, status })
+  }, [status])
+
+  React.useEffect(() => {
+    if (loading) {
+      return
+    }
+
+    setLoading(true)
+    ;(async () => {
+      try {
+        const res = await marketSearch(filter)
+        if (datatable.data.length === 0) {
+          setDatatable(res)
+        } else {
+          const data = [...datatable.data, ...res.data]
+          setDatatable({ ...datatable, data })
+        }
+      } catch (e) {
+        console.log('error getting history', e.message)
+      }
+      setLoading(false)
+    })()
+  }, [filter])
+
+  React.useEffect(() => {
+    const listener = () => {
+      const isLast = datatable.data.length === datatable.total_count
+      if (loading || isLast || window.scrollY + scrollBias < window.scrollMaxY) {
+        return
+      }
+
+      setFilter({ ...filter, page: filter.page + 1 })
+    }
+
+    window.addEventListener('scroll', listener)
+    return () => {
+      window.removeEventListener('scroll', listener)
+    }
+  })
 
   return (
     <>
@@ -91,6 +147,8 @@ export default function History({ status, summary, datatable, error }) {
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <MarketActivity datatable={datatable || {}} disablePrice={status !== null} />
+
+          {loading && <Typography>Loading...</Typography>}
         </Container>
       </main>
 

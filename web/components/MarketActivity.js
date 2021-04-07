@@ -111,9 +111,9 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
     )
   }
 
-  if (datatable.data.length === 0) {
-    return <Typography className={classes.text}>No Result</Typography>
-  }
+  // if (datatable.data.length === 0) {
+  //   return <Typography className={classes.text}>No Result</Typography>
+  // }
 
   return (
     <>
