@@ -1,15 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import useSWR from 'swr'
-import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { fetcher, MARKETS, marketSearch, statsMarketSummary } from '@/service/api'
+import { marketSearch, statsMarketSummary } from '@/service/api'
 import MarketActivity from '@/components/MarketActivity'
 import {
   MARKET_STATUS_MAP_TEXT,
@@ -50,7 +48,6 @@ const useStyles = makeStyles(theme => ({
 const defaultFilter = {
   type: MARKET_TYPE_ASK,
   sort: 'updated_at:desc',
-  // limit: 100,
   page: 1,
 }
 
@@ -146,9 +143,11 @@ export default function History({ status, summary, error }) {
           </Typography>
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={datatable || {}} disablePrice={status !== null} />
-
-          {loading && <Typography>Loading...</Typography>}
+          <MarketActivity
+            datatable={datatable || {}}
+            loading={loading}
+            disablePrice={status !== null}
+          />
         </Container>
       </main>
 
@@ -158,7 +157,6 @@ export default function History({ status, summary, error }) {
 }
 History.propTypes = {
   status: PropTypes.number.isRequired,
-  datatable: PropTypes.object.isRequired,
   error: PropTypes.string,
   summary: PropTypes.object.isRequired,
 }
@@ -178,17 +176,15 @@ export async function getServerSideProps({ query }) {
       break
   }
 
-  const summary = await statsMarketSummary()
-
-  let datatable = {}
+  let summary = null
   let error = null
   try {
-    datatable = await marketSearch({ ...defaultFilter, status })
+    summary = await statsMarketSummary()
   } catch (e) {
     error = e.message
   }
 
   return {
-    props: { status, summary, datatable, error },
+    props: { status, summary, error },
   }
 }

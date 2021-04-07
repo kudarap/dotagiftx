@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_SOLD } from '@/constants/market'
-import { CDN_URL, fetcher, MARKETS, statsMarketSummary, user } from '@/service/api'
+import { CDN_URL, marketSearch, statsMarketSummary, user } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -30,18 +29,64 @@ const useStyles = makeStyles(theme => ({
   itemImage: { width: 60, height: 40, marginRight: 8, float: 'left' },
 }))
 
-const filter = {
+const defaultFilter = {
   status: MARKET_STATUS_SOLD,
   sort: 'updated_at:desc',
-  // limit: 50,
+  page: 1,
 }
+
+const defaultData = {
+  data: [],
+  total_result: 0,
+  total_total: 0,
+}
+
+const scrollBias = 300
 
 export default function UserDelivered({ profile, stats, canonicalURL }) {
   const classes = useStyles()
 
-  filter.user_id = profile.id
-  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
-    revalidateOnFocus: false,
+  const [datatable, setDatatable] = React.useState(defaultData)
+  const [filter, setFilter] = React.useState({ ...defaultFilter, user_id: profile.id })
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState(null)
+
+  React.useEffect(() => {
+    if (loading) {
+      return
+    }
+
+    setLoading(true)
+    ;(async () => {
+      try {
+        const res = await marketSearch(filter)
+        if (datatable.data.length === 0) {
+          setDatatable(res)
+        } else {
+          const data = [...datatable.data, ...res.data]
+          setDatatable({ ...datatable, data })
+        }
+      } catch (e) {
+        setError(e.message)
+      }
+      setLoading(false)
+    })()
+  }, [filter])
+
+  React.useEffect(() => {
+    const listener = () => {
+      const isLast = datatable.data.length === datatable.total_count
+      if (loading || isLast || window.scrollY + scrollBias < window.scrollMaxY) {
+        return
+      }
+
+      setFilter({ ...filter, page: filter.page + 1 })
+    }
+
+    window.addEventListener('scroll', listener)
+    return () => {
+      window.removeEventListener('scroll', listener)
+    }
   })
 
   const profileURL = `/profiles/${profile.steam_id}`
@@ -88,7 +133,7 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
           <br />
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={data || {}} loading={isValidating} />
+          <MarketActivity datatable={datatable || {}} loading={loading} />
         </Container>
       </main>
 

@@ -103,17 +103,9 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
     )
   }
 
-  if (loading || !datatable.data) {
-    return (
-      <Typography className={classes.text} color="textSecondary">
-        Loading...
-      </Typography>
-    )
+  if (!loading && datatable.data.length === 0) {
+    return <Typography className={classes.text}>No Activity</Typography>
   }
-
-  // if (datatable.data.length === 0) {
-  //   return <Typography className={classes.text}>No Result</Typography>
-  // }
 
   return (
     <>
@@ -202,6 +194,12 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
           </li>
         ))}
       </ul>
+
+      {(loading || !datatable.data) && (
+        <Typography className={classes.text} color="textSecondary">
+          Loading...
+        </Typography>
+      )}
 
       <VerifiedStatusPopover
         id={popoverElementID}
