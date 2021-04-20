@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import { Avatar } from '@material-ui/core'
+import Avatar from '@/components/Avatar'
 import { statsMarketSummary } from '@/service/api'
 import ChipLink from '@/components/ChipLink'
 import {
@@ -107,7 +107,11 @@ export default function ContactDialog(props) {
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
             }>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
-              <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
+              <Avatar
+                className={classes.avatar}
+                glow
+                {...retinaSrcSet(market.user.avatar, 100, 100)}
+              />
             </a>
             <Typography component="h1">
               <Typography

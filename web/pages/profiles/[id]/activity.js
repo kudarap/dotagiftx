@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { CDN_URL, marketSearch, user } from '@/service/api'
@@ -105,6 +105,7 @@ export default function UserActivity({ profile, canonicalURL }) {
             <Avatar
               className={classes.profile}
               src={`${CDN_URL}/${profile.avatar}`}
+              glow={Boolean(profile.donation)}
               component={Link}
               href={profileURL}
             />

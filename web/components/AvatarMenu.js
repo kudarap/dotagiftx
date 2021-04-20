@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -37,7 +37,13 @@ export default function AvatarMenu({ profile }) {
         aria-controls="avatar-menu"
         aria-haspopup="true"
         onClick={handleClick}
-        startIcon={<Avatar className={classes.avatar} {...retinaSrcSet(profile.avatar, 24, 24)} />}>
+        startIcon={
+          <Avatar
+            className={classes.avatar}
+            glow={Boolean(profile.donation)}
+            {...retinaSrcSet(profile.avatar, 24, 24)}
+          />
+        }>
         {profile && profile.name}
       </Button>
       <Menu

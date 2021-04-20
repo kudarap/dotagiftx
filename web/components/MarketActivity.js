@@ -5,7 +5,7 @@ import { debounce } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import lightGreen from '@material-ui/core/colors/lightGreen'
 import teal from '@material-ui/core/colors/teal'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
   MARKET_TYPE_ASK,
@@ -119,6 +119,7 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                   {...retinaSrcSet(market.user.avatar, 40, 40)}
                   component={Link}
                   href={`/profiles/${market.user.steam_id}`}
+                  glow={Boolean(market.user.donation)}
                 />
                 <span>x</span>
               </div>
