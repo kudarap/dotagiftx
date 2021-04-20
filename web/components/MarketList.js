@@ -16,6 +16,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import DonatorIcon from '@material-ui/icons/FavoriteBorder'
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
@@ -313,10 +314,17 @@ function baseTable(Component) {
                     <Avatar
                       className={classes.avatar}
                       alt={market.user.name}
-                      glow={Boolean(market.user.donation)}
+                      glow={market.user.donation}
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
                     <div>
+                      {market.user.donation && (
+                        <DonatorIcon
+                          fontSize="inherit"
+                          color="secondary"
+                          style={{ marginBottom: -2, marginRight: 2 }}
+                        />
+                      )}
                       <strong>{market.user.name}</strong>
                       <br />
                       <Typography variant="caption" color="textSecondary">

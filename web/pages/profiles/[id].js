@@ -6,6 +6,7 @@ import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
+import DonatorIcon from '@material-ui/icons/FavoriteBorder'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
@@ -178,6 +179,7 @@ export default function UserDetails({
                 component="p"
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
+                <DonatorIcon fontSize="inherit" />
                 {profile.name}
               </Typography>
               {isProfileReported && (

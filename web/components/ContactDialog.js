@@ -109,7 +109,7 @@ export default function ContactDialog(props) {
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
               <Avatar
                 className={classes.avatar}
-                glow
+                glow={Boolean(market.user.donation)}
                 {...retinaSrcSet(market.user.avatar, 100, 100)}
               />
             </a>
