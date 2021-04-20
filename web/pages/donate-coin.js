@@ -95,8 +95,8 @@ export default function Faq() {
             although the idea is free(had fun writing it) and server isn&apos;t. BUT! thanks to
             someone else&apos;s server running this website. <br />
             <br />
-            If this project helped you sell your items or got good discount and really want to
-            support it, you can toss a coin for our own server.
+            If this project helped you sold your items or struck a good deal and really want to
+            support it, you can toss a coin to help cost for the server.
           </Typography>
           <br />
 
