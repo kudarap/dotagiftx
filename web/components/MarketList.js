@@ -314,18 +314,17 @@ function baseTable(Component) {
                     <Avatar
                       className={classes.avatar}
                       alt={market.user.name}
-                      glow={market.user.donation}
+                      glow={Boolean(market.user.donation)}
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
                     <div>
-                      {market.user.donation && (
+                      <strong>{market.user.name}</strong>
+                      {Boolean(market.user.donation) && (
                         <DonatorIcon
                           fontSize="inherit"
-                          color="secondary"
-                          style={{ marginBottom: -2, marginRight: 2 }}
+                          style={{ marginBottom: -2, marginLeft: 2, color: '#D6B154' }}
                         />
                       )}
-                      <strong>{market.user.name}</strong>
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}

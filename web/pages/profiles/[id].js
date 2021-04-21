@@ -34,6 +34,7 @@ import Link from '@/components/Link'
 import Button from '@/components/Button'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import ErrorPage from '../404'
+import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -179,8 +180,14 @@ export default function UserDetails({
                 component="p"
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
-                <DonatorIcon fontSize="inherit" />
+                {/*<DonatorIcon*/}
+                {/*  fontSize="inherit"*/}
+                {/*  style={{ marginBottom: -6, marginRight: 2, color: '#D6B154' }}*/}
+                {/*/>*/}
                 {profile.name}
+                {Boolean(profile.donation) && (
+                  <DonatorBadge style={{ marginLeft: 4 }}>DONATOR</DonatorBadge>
+                )}
               </Typography>
               {isProfileReported && (
                 <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>
