@@ -1,23 +1,30 @@
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
-// border: 1px solid goldenrod,
-// padding: 0 5px,
-// border-radius: 4px,
-// color: white,
-// background: goldenrod,
-// font-weight: 500,
-
-export default withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    border: '1px solid goldenrod',
-    padding: '0 5px',
-    borderRadius: '4px',
     color: 'white',
+    padding: '0 4px',
+    fontSize: 10,
     background: 'goldenrod',
-    display: 'inline',
-    fontSize: '0.85rem',
-    fontWeight: theme.typography.fontWeightMedium,
-    verticalAlign: 'middle',
+    fontWeight: 500,
+    borderRadius: '2px',
+    display: 'inline-block',
   },
-}))(Typography)
+}))
+
+export default function DonatorBadge({ style: initialStyle, size, ...other }) {
+  const classes = useStyles()
+
+  const currentStyle = { ...initialStyle }
+  if (size === 'medium') {
+    currentStyle.fontSize = '0.875rem'
+  }
+
+  return <Typography className={classes.root} style={currentStyle} component="div" {...other} />
+}
+
+DonatorBadge.defaultProps = {
+  style: {},
+  size: false,
+}

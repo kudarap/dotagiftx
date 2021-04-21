@@ -180,13 +180,13 @@ export default function UserDetails({
                 component="p"
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
-                {/*<DonatorIcon*/}
-                {/*  fontSize="inherit"*/}
-                {/*  style={{ marginBottom: -6, marginRight: 2, color: '#D6B154' }}*/}
-                {/*/>*/}
                 {profile.name}
                 {Boolean(profile.donation) && (
-                  <DonatorBadge style={{ marginLeft: 4 }}>DONATOR</DonatorBadge>
+                  <DonatorBadge
+                    style={{ marginLeft: 4, marginTop: 10, position: 'absolute' }}
+                    size="medium">
+                    DONATOR
+                  </DonatorBadge>
                 )}
               </Typography>
               {isProfileReported && (

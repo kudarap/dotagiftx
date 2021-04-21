@@ -21,6 +21,7 @@ import DialogCloseButton from '@/components/DialogCloseButton'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import MarketNotes from '@/components/MarketNotes'
+import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -120,6 +121,13 @@ export default function ContactDialog(props) {
                 variant="h4"
                 color={isProfileReported ? 'error' : ''}>
                 {market.user.name}
+                {Boolean(market.user.donation) && (
+                  <DonatorBadge
+                    style={{ marginLeft: 4, marginTop: 10, position: 'absolute' }}
+                    size="medium">
+                    DONATOR
+                  </DonatorBadge>
+                )}
               </Typography>
               {isProfileReported && (
                 <Typography color="error">{USER_STATUS_MAP_TEXT[market.user.status]}</Typography>

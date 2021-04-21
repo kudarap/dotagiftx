@@ -16,7 +16,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import DonatorIcon from '@material-ui/icons/FavoriteBorder'
+import DonatorIcon from '@/components/DonatorIcon'
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
@@ -32,6 +32,7 @@ import AppContext from '@/components/AppContext'
 import SellButton from '@/components/SellButton'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import Avatar from '@/components/Avatar'
+import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -320,10 +321,7 @@ function baseTable(Component) {
                     <div>
                       <strong>{market.user.name}</strong>
                       {Boolean(market.user.donation) && (
-                        <DonatorIcon
-                          fontSize="inherit"
-                          style={{ marginBottom: -2, marginLeft: 2, color: '#D6B154' }}
-                        />
+                        <DonatorBadge style={{ marginLeft: 4 }}>DONATOR</DonatorBadge>
                       )}
                       <br />
                       <Typography variant="caption" color="textSecondary">
