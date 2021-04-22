@@ -67,7 +67,7 @@ export default function Faq() {
               <Typography color="textPrimary" component="span">
                 Steam Award
               </Typography>{' '}
-              or a Like is very much appreciated.
+              or thumbs up on Steam is very much appreciated.
               <Button
                 target="_blank"
                 rel="noreferrer noopener"
