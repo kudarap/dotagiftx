@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,7 +21,15 @@ export default function DonatorBadge({ style: initialStyle, size, ...other }) {
     currentStyle.fontSize = '0.875rem'
   }
 
-  return <span className={classes.root} style={currentStyle} component="div" {...other} />
+  return (
+    <Link
+      className={classes.root}
+      style={currentStyle}
+      {...other}
+      href="/donate"
+      underline="none"
+    />
+  )
 }
 
 DonatorBadge.defaultProps = {
