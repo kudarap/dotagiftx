@@ -7,7 +7,7 @@ import MuiAvatar from '@material-ui/core/Avatar'
 const useStyles = makeStyles({
   glow: {
     border: '1px solid goldenrod',
-    animation: 'donatorglow4 2s infinite',
+    animation: 'donatorglow4 12s infinite',
     animationFillMode: 'forwards',
     animationDelay: '3s',
     animationTimingFunction: 'ease-in-out',
