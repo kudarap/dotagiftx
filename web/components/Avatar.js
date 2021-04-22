@@ -1,34 +1,31 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import clsx from 'clsx'
-import { makeStyles } from '@material-ui/core/styles'
 import MuiAvatar from '@material-ui/core/Avatar'
 
-const useStyles = makeStyles({
-  glow: {
-    border: '1px solid goldenrod',
-    animation: 'donatorglow4 12s infinite',
-    animationFillMode: 'forwards',
-    animationDelay: '3s',
-    animationTimingFunction: 'ease-in-out',
-  },
-})
-
 export default function Avatar(props) {
-  const classes = useStyles()
+  const { glow, style: initStyle, ...other } = props
 
-  const { glow, className: classNameProps, ...other } = props
-  const className = clsx(classNameProps, glow ? classes.glow : null)
+  let style = initStyle
+  if (glow) {
+    style = {
+      ...style,
+      border: '1px solid goldenrod',
+      animation: 'donatorglow4 12s infinite',
+      animationFillMode: 'forwards',
+      animationDelay: '3s',
+      animationTimingFunction: 'ease-in-out',
+    }
+  }
 
-  return <MuiAvatar className={className} {...other} />
+  return <MuiAvatar style={style} {...other} />
 }
 
 Avatar.propTypes = {
-  className: PropTypes.object,
+  style: PropTypes.object,
   glow: PropTypes.bool,
 }
 
 Avatar.defaultProps = {
-  className: {},
+  style: {},
   glow: false,
 }

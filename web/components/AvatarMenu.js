@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
+// import Avatar from '@material-ui/core/Avatar'
 import Avatar from '@/components/Avatar'
 import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'

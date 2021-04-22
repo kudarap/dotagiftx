@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography'
 const useStyles = makeStyles(theme => ({
   root: {
     color: 'white',
-    padding: '0 4px',
+    padding: '2px 4px 0px',
     fontSize: 10,
     background: 'goldenrod',
     fontWeight: 500,
@@ -21,7 +21,7 @@ export default function DonatorBadge({ style: initialStyle, size, ...other }) {
     currentStyle.fontSize = '0.875rem'
   }
 
-  return <Typography className={classes.root} style={currentStyle} component="div" {...other} />
+  return <span className={classes.root} style={currentStyle} component="div" {...other} />
 }
 
 DonatorBadge.defaultProps = {
