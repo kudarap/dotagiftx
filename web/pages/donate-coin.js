@@ -106,6 +106,9 @@ export default function Faq() {
             href="https://www.paypal.com/donate?hosted_button_id=KZW994N5WDH2Q">
             Donate with PayPal
           </PaypalButton>
+          <Typography color="textSecondary" style={{ marginTop: 6 }}>
+            Please don&apos;t forget to put your profile link on the notes so I can award the badge
+          </Typography>
 
           <Grid container className={classes.grid} alignContent="center">
             <Grid item className={classes.crypto}>

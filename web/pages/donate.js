@@ -10,6 +10,11 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Link from '@/components/Link'
+import Button from '@/components/Button'
+import ProfileCard from '@/components/ProfileCard'
+import Table from '@material-ui/core/Table'
+import { Paper } from '@material-ui/core'
+import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -59,12 +64,18 @@ export default function Faq() {
             <AwardIcon className={classes.icon} color="inherit" fontSize="large" />
             <Typography color="textSecondary">
               Give the project a{' '}
-              <Link
-                color="secondary"
-                href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224">
+              <Typography color="textPrimary" component="span">
                 Steam Award
-              </Link>{' '}
+              </Typography>{' '}
               or a Like is very much appreciated.
+              <Button
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224"
+                color="secondary"
+                size="small">
+                Give Award
+              </Button>
             </Typography>
           </div>
           <br />
@@ -72,13 +83,23 @@ export default function Faq() {
           <div className={classes.item}>
             <KeyIcon className={classes.icon} color="inherit" fontSize="large" />
             <Typography color="textSecondary">
-              Donate{' '}
-              <Link
+              Donate tradable keys (
+              <Typography color="textPrimary" component="span">
+                TF2
+              </Typography>{' '}
+              or{' '}
+              <Typography color="textPrimary" component="span">
+                CS:GO case keys
+              </Typography>
+              ) and will give you a donation badge on your profile in return.
+              <Button
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW"
                 color="secondary"
-                href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW">
-                Tradable keys
-              </Link>{' '}
-              and will give you a donator badge on your profile in return.
+                size="small">
+                Send Trade offer
+              </Button>
             </Typography>
           </div>
           <br />
@@ -87,12 +108,50 @@ export default function Faq() {
             <MoneyIcon className={classes.icon} color="inherit" fontSize="large" />
             <Typography color="textSecondary">
               Toss a coin on{' '}
-              <Link color="secondary" href="/donate-coin">
-                Paypal or Crypto
-              </Link>{' '}
-              if you want to help future cost of server and domain.
+              <Typography color="textPrimary" component="span">
+                Paypal
+              </Typography>{' '}
+              or{' '}
+              <Typography color="textPrimary" component="span">
+                Crypto
+              </Typography>{' '}
+              if you want to help future cost of server and domain. Please don&apos;t forget to put
+              your profile link on the notes so I can award the donator badge.
+              <Button
+                component={Link}
+                href="/donate-coin"
+                color="secondary"
+                size="small"
+                underline="none">
+                Donate Coin
+              </Button>
             </Typography>
           </div>
+          <br />
+          {/*<br />*/}
+
+          {/*<Typography variant="h5">What the badge looks like?</Typography>*/}
+          {/*<Paper style={{ padding: 24, margin: '10px auto', width: 600 }}>*/}
+          {/*  <ProfileCard*/}
+          {/*    user={{*/}
+          {/*      id: 'f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17',*/}
+          {/*      steam_id: '76561198088587178',*/}
+          {/*      name: 'kudarap',*/}
+          {/*      url: 'https://steamcommunity.com/id/kudarap/',*/}
+          {/*      avatar: '6401d0c455e255525e605d328b66375099e46bb2.jpg',*/}
+          {/*      status: 0,*/}
+          {/*      donation: 1,*/}
+          {/*      donated_at: '2021-04-22T04:22:16.613Z',*/}
+          {/*      created_at: '2020-06-18T13:13:43.926+08:00',*/}
+          {/*      updated_at: '2021-03-16T14:23:59.871+08:00',*/}
+          {/*    }}*/}
+          {/*    marketSummary={{*/}
+          {/*      live: 92,*/}
+          {/*      reserved: 2,*/}
+          {/*      sold: 26,*/}
+          {/*    }}*/}
+          {/*  />*/}
+          {/*</Paper>*/}
         </Container>
       </main>
 
