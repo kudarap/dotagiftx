@@ -103,6 +103,8 @@ export default function Faq() {
           <PaypalButton
             startIcon={<PaypalIcon />}
             size="large"
+            target="_blank"
+            rel="noreferrer noopener"
             href="https://www.paypal.com/donate?hosted_button_id=KZW994N5WDH2Q">
             Donate with PayPal
           </PaypalButton>

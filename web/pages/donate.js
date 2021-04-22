@@ -128,6 +128,11 @@ export default function Faq() {
             </Typography>
           </div>
           <br />
+
+          <Typography color="textSecondary" component="em">
+            Donator badge will be on your profile forever and make your avatar glow for 30 days.
+          </Typography>
+
           {/*<br />*/}
 
           {/*<Typography variant="h5">What the badge looks like?</Typography>*/}
