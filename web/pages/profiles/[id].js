@@ -183,7 +183,7 @@ export default function UserDetails({
                 {profile.name}
                 {Boolean(profile.donation) && (
                   <DonatorBadge
-                    style={{ marginLeft: 4, marginTop: 10, position: 'absolute' }}
+                    style={{ marginLeft: 4, marginTop: 12, position: 'absolute' }}
                     size="medium">
                     DONATOR
                   </DonatorBadge>

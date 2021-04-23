@@ -4,7 +4,7 @@ import Link from '@/components/Link'
 const useStyles = makeStyles(theme => ({
   root: {
     color: 'white',
-    padding: '2px 4px 0px',
+    padding: '0 4px',
     fontSize: 10,
     background: 'goldenrod',
     fontWeight: 500,

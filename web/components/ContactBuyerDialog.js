@@ -98,7 +98,7 @@ export default function ContactBuyerDialog(props) {
                 {market.user.name}
                 {Boolean(market.user.donation) && (
                   <DonatorBadge
-                    style={{ marginLeft: 4, marginTop: 10, position: 'absolute' }}
+                    style={{ marginLeft: 4, marginTop: 12, position: 'absolute' }}
                     size="medium">
                     DONATOR
                   </DonatorBadge>
