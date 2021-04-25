@@ -43,7 +43,7 @@ func handleItemList(
 		}
 
 		go func() {
-			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+			if err = trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
 				logger.Errorf("search keyword tracking error: %s", err)
 			}
 		}()
@@ -59,7 +59,7 @@ func handleItemList(
 
 		o := newDataWithMeta(list, md)
 		go func() {
-			if err := cache.Set(cacheKey, o, itemCacheExpr); err != nil {
+			if err = cache.Set(cacheKey, o, itemCacheExpr); err != nil {
 				logger.Errorf("could not save cache on catalog details: %s", err)
 			}
 		}()

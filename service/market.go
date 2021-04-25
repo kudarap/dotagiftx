@@ -119,7 +119,7 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 
 	// Check Item existence.
 	i, _ := s.itemStg.Get(mkt.ItemID)
-	if i == nil {
+	if i == nil || !i.IsActive() {
 		return core.ItemErrNotFound
 	}
 	mkt.ItemID = i.ID

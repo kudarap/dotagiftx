@@ -116,8 +116,14 @@ func (i Item) CheckCreate() error {
 	return nil
 }
 
+// MakeSlug generates item slug.
 func (i Item) MakeSlug() string {
 	return slug.Make(i.Name + " " + i.Hero)
+}
+
+// IsActive determines item is giftable.
+func (i Item) IsActive() bool {
+	return *i.Active
 }
 
 const defaultItemRarity = "regular"
