@@ -46,7 +46,6 @@ type marketStorage struct {
 func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	var res []core.Market
 	o.KeywordFields = s.keywordFields
-	// IndexSorting was disable due to hook query includeRelatedFields
 	o.IndexSorting = true
 	q := findOpts(o).parseOpts(s.table(), nil)
 	if err := s.db.list(q, &res); err != nil {
@@ -103,8 +102,6 @@ func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
 		UserID:        o.UserID,
-		// IndexSorting was disable due to hook query includeRelatedFields
-		//IndexSorting:  true,
 	}
 	q := findOpts(o).parseOpts(s.table(), nil)
 	err = s.db.one(q.Count(), &num)

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dotagiftx/fixes"
-
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/log"
@@ -147,7 +145,7 @@ func (app *application) setup() error {
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	fixes.MarketIndexRebuild(marketStg)
+	//fixes.MarketIndexRebuild(marketStg)
 	//redisClient.BulkDel("")
 
 	// Server setup.
