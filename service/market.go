@@ -68,7 +68,7 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 	// Assign inventory and delivery status.
 	for i, mkt := range res {
 		s.getRelatedFields(&mkt)
-		s.getRelatedVerifiedStatus(&mkt)
+		//s.getRelatedVerifiedStatus(&mkt)
 		res[i] = mkt
 	}
 
@@ -100,13 +100,11 @@ func (s *marketService) Market(ctx context.Context, id string) (*core.Market, er
 	}
 
 	s.getRelatedFields(mkt)
-	s.getRelatedVerifiedStatus(mkt)
 	return mkt, nil
 }
 
 func (s *marketService) getRelatedFields(mkt *core.Market) {
 	mkt.User, _ = s.userStg.Get(mkt.UserID)
-	//mkt.Item, _ = s.itemStg.Get(mkt.ItemID)
 }
 
 func (s *marketService) getRelatedVerifiedStatus(mkt *core.Market) {
@@ -155,6 +153,9 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 
 	//go func() {
+	if _, err := s.marketStg.Index(mkt.ID); err != nil {
+		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+	}
 	if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
 		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
@@ -300,6 +301,10 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		case core.MarketStatusSold:
 			s.dispatch.VerifyDelivery(mkt.ID)
 		}
+	}
+
+	if _, err = s.marketStg.Index(mkt.ID); err != nil {
+		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 	}
 
 	s.getRelatedFields(mkt)

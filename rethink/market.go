@@ -2,6 +2,7 @@ package rethink
 
 import (
 	"log"
+	"strings"
 
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dotagiftx/core"
@@ -22,7 +23,7 @@ const (
 	marketFieldCreatedAt       = "created_at"
 	marketFieldUpdatedAt       = "updated_at"
 	// Hidden field for searching item details.
-	marketItemSearchTags = "item_tags"
+	marketItemSearchTags = "search_text"
 )
 
 // NewMarket creates new instance of market data store.
@@ -105,7 +106,7 @@ func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 		// IndexSorting was disable due to hook query includeRelatedFields
 		//IndexSorting:  true,
 	}
-	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
+	q := findOpts(o).parseOpts(s.table(), nil)
 	err = s.db.one(q.Count(), &num)
 	return
 }
@@ -154,6 +155,44 @@ func (s *marketStorage) Get(id string) (*core.Market, error) {
 	return row, nil
 }
 
+func (s *marketStorage) Index(id string) (*core.Market, error) {
+	mkt, err := s.Get(id)
+	if err != nil {
+		return nil, err
+	}
+
+	_ = s.db.one(r.Table(tableItem).Get(mkt.ItemID), mkt.Item)
+
+	var invs []core.Inventory
+	_ = s.db.list(r.Table(tableInventory).GetAllByIndex(inventoryFieldMarketID, mkt.ID), &invs)
+	if len(invs) != 0 {
+		mkt.Inventory = &invs[0]
+	}
+
+	var dels []core.Delivery
+	_ = s.db.list(r.Table(tableDelivery).GetAllByIndex(inventoryFieldMarketID, mkt.ID), &dels)
+	if len(dels) != 0 {
+		mkt.Delivery = &dels[0]
+	}
+
+	mkt.SearchText = mkt.Notes
+	if mkt.Item != nil {
+		mkt.SearchText += strings.Join([]string{
+			"",
+			mkt.Item.Name,
+			mkt.Item.Hero,
+			mkt.Item.Origin,
+			mkt.Item.Rarity,
+		}, " ")
+	}
+
+	if err = s.BaseUpdate(mkt); err != nil {
+		return nil, err
+	}
+
+	return mkt, nil
+}
+
 func (s *marketStorage) Create(in *core.Market) error {
 	t := now()
 	in.CreatedAt = t
@@ -188,7 +227,7 @@ func (s *marketStorage) BaseUpdate(in *core.Market) error {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
 
-	if err := mergo.Merge(in, cur); err != nil {
+	if err = mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
 	}
 

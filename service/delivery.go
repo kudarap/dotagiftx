@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
@@ -60,6 +61,12 @@ func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {
 	if err := del.CheckCreate(); err != nil {
 		return errors.New(core.DeliveryErrRequiredFields, err)
 	}
+
+	defer func() {
+		if _, err := s.marketStg.Index(del.MarketID); err != nil {
+			log.Printf("could not index market %s: %s", del.MarketID, err)
+		}
+	}()
 
 	// Detect if there are still un-opened gift.
 	del = del.IsGiftOpened()

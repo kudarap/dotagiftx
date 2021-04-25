@@ -145,6 +145,7 @@ func (app *application) setup() error {
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
+	//fixes.MarketIndexRebuild(marketStg)
 	//redisClient.BulkDel("")
 
 	// Server setup.
