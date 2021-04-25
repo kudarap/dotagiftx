@@ -10,6 +10,8 @@ env:
   HOST: root@chiligarlic.com
   BIN_FILE: dotagiftx
   BIN_NAME: gha_dev
+  IMAGE_NAME: dotagiftx/api
+  IMAGE_FILE: api.tar
   WORKDIR: ~/cg/d2g
 
 jobs:
@@ -50,5 +52,14 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: SSH Binary Upload
-        run: scp $BIN_FILE $HOST:$WORKDIR/$BIN_NAME
+      - name: Build Image
+        run: docker build -t $IMAGE_NAME .
+
+      - name: SSH Image Deploy
+        run: |
+          docker save -o $IMAGE_FILE $IMAGE_NAME
+          scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
+          ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE && ./restart.sh"
+
+#      - name: SSH Binary Upload
+#        run: scp $BIN_FILE $HOST:$WORKDIR/$BIN_NAME
