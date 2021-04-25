@@ -67,8 +67,6 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 
 	// Assign inventory and delivery status.
 	for i, mkt := range res {
-		s.getRelatedFields(&mkt)
-		//s.getRelatedVerifiedStatus(&mkt)
 		res[i] = mkt
 	}
 
@@ -99,17 +97,7 @@ func (s *marketService) Market(ctx context.Context, id string) (*core.Market, er
 		return nil, core.MarketErrNotFound
 	}
 
-	s.getRelatedFields(mkt)
 	return mkt, nil
-}
-
-func (s *marketService) getRelatedFields(mkt *core.Market) {
-	mkt.User, _ = s.userStg.Get(mkt.UserID)
-}
-
-func (s *marketService) getRelatedVerifiedStatus(mkt *core.Market) {
-	mkt.Inventory, _ = s.inventorySvc.Inventory(mkt.ID)
-	mkt.Delivery, _ = s.deliverySvc.Delivery(mkt.ID)
 }
 
 func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
@@ -307,7 +295,6 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 	}
 
-	s.getRelatedFields(mkt)
 	return nil
 }
 

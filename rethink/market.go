@@ -52,6 +52,10 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
 
+	for i, rr := range res {
+		res[i].User = s.includeUser(rr.UserID)
+	}
+
 	return res, nil
 }
 
@@ -144,7 +148,14 @@ func (s *marketStorage) Get(id string) (*core.Market, error) {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
 
+	row.User = s.includeUser(row.UserID)
 	return row, nil
+}
+
+func (s *marketStorage) includeUser(userID string) *core.User {
+	var user core.User
+	_ = s.db.one(r.Table(tableUser).Get(userID), &user)
+	return &user
 }
 
 func (s *marketStorage) Index(id string) (*core.Market, error) {
