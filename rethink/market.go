@@ -47,7 +47,7 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	var res []core.Market
 	o.KeywordFields = s.keywordFields
 	// IndexSorting was disable due to hook query includeRelatedFields
-	//o.IndexSorting = true
+	o.IndexSorting = true
 	q := findOpts(o).parseOpts(s.table(), nil)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
@@ -156,7 +156,9 @@ func (s *marketStorage) Index(id string) (*core.Market, error) {
 		return nil, err
 	}
 
-	_ = s.db.one(r.Table(tableItem).Get(mkt.ItemID), mkt.Item)
+	var item core.Item
+	_ = s.db.one(r.Table(tableItem).Get(mkt.ItemID), &item)
+	mkt.Item = &item
 
 	var invs []core.Inventory
 	_ = s.db.list(r.Table(tableInventory).GetAllByIndex(inventoryFieldMarketID, mkt.ID), &invs)
@@ -216,7 +218,7 @@ func (s *marketStorage) BaseUpdate(in *core.Market) error {
 	}
 
 	in.User = nil
-	in.Item = nil
+	//in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
