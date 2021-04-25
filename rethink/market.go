@@ -114,11 +114,6 @@ func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 // includeRelatedFields injects item and user details base on market foreign keys
 // and create a search tag
 func (s *marketStorage) includeRelatedFields(q r.Term) r.Term {
-	return q
-}
-
-// slowIncludeRelatedFields deprecated
-func (s *marketStorage) slowIncludeRelatedFields(q r.Term) r.Term {
 	return q.
 		EqJoin(marketFieldItemID, r.Table(tableItem)).
 		Map(func(t r.Term) r.Term {

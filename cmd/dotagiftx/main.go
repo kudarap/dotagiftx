@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dotagiftx/fixes"
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/log"
@@ -133,21 +132,21 @@ func (app *application) setup() error {
 	reportSvc := service.NewReport(reportStg)
 
 	// Register job on the worker.
-	//*dispatcher = *jobs.NewDispatcher(
-	//	app.worker,
-	//	deliverySvc,
-	//	inventorySvc,
-	//	marketStg,
-	//	logger,
-	//)
-	//dispatcher.RegisterJobs()
+	*dispatcher = *jobs.NewDispatcher(
+		app.worker,
+		deliverySvc,
+		inventorySvc,
+		marketStg,
+		logger,
+	)
+	dispatcher.RegisterJobs()
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	fixes.MarketIndexRebuild(marketStg)
-	redisClient.BulkDel("")
+	//fixes.MarketIndexRebuild(marketStg)
+	//redisClient.BulkDel("")
 
 	// Server setup.
 	logSvc.Println("setting up http server...")
