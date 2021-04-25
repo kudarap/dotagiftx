@@ -210,7 +210,7 @@ func (s *marketService) checkBidType(bid *core.Market) error {
 	}
 	for _, m := range res {
 		m.Status = core.MarketStatusRemoved
-		if err := s.marketStg.Update(&m); err != nil {
+		if err = s.marketStg.Update(&m); err != nil {
 			return err
 		}
 	}
