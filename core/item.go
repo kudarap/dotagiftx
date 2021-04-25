@@ -40,6 +40,7 @@ type (
 		Origin       string     `json:"origin"       db:"origin,omitempty"`
 		Rarity       string     `json:"rarity"       db:"rarity,omitempty"`
 		Contributors []string   `json:"-"            db:"contributors,omitempty"`
+		Active       *bool      `json:"active"       db:"active,omitempty"`
 		ViewCount    int        `json:"view_count"   db:"view_count,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
