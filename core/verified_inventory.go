@@ -54,7 +54,7 @@ type (
 	/// Inventory represents steam inventory inventory.
 	Inventory struct {
 		ID          string          `json:"id"                 db:"id,omitempty,omitempty"`
-		MarketID    string          `json:"market_id"          db:"market_id,omitempty" valid:"required"`
+		MarketID    string          `json:"market_id"          db:"market_id,omitempty,indexed" valid:"required"`
 		Status      InventoryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
 		Assets      []SteamAsset    `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries     int             `json:"retries"            db:"retries,omitempty"`
@@ -85,6 +85,9 @@ type (
 
 		// Get returns Inventory details by id from data store.
 		Get(id string) (*Inventory, error)
+
+		// GetByMarketID returns Inventory details by market id from data store.
+		GetByMarketID(marketID string) (*Inventory, error)
 
 		// Create persists a new Inventory to data store.
 		Create(*Inventory) error

@@ -49,21 +49,11 @@ func (s *InventoryService) Inventory(id string) (*core.Inventory, error) {
 	}
 
 	// If we can't find using id. lets try market ID
-	return s.InventoryByMarketID(id)
+	return s.inventoryStg.GetByMarketID(id)
 }
 
 func (s *InventoryService) InventoryByMarketID(marketID string) (*core.Inventory, error) {
-	res, err := s.inventoryStg.Find(core.FindOpts{Filter: &core.Inventory{
-		MarketID: marketID,
-	}})
-	if err != nil {
-		return nil, err
-	}
-	if len(res) == 0 {
-		return nil, core.InventoryErrNotFound
-	}
-
-	return &res[0], nil
+	return s.inventoryStg.GetByMarketID(marketID)
 }
 
 func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {

@@ -48,21 +48,12 @@ func (s *deliveryService) Delivery(id string) (*core.Delivery, error) {
 		return inv, nil
 	}
 
-	return s.DeliveryByMarketID(id)
+	// If we can't find using id. lets try market ID
+	return s.deliveryStg.GetByMarketID(id)
 }
 
 func (s *deliveryService) DeliveryByMarketID(marketID string) (*core.Delivery, error) {
-	res, err := s.deliveryStg.Find(core.FindOpts{Filter: &core.Delivery{
-		MarketID: marketID,
-	}})
-	if err != nil {
-		return nil, err
-	}
-	if len(res) == 0 {
-		return nil, core.DeliveryErrNotFound
-	}
-
-	return &res[0], nil
+	return s.deliveryStg.GetByMarketID(marketID)
 }
 
 func (s *deliveryService) Set(_ context.Context, del *core.Delivery) error {

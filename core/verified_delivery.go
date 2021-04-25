@@ -63,10 +63,10 @@ type (
 	// DeliveryStatus represents delivery status.
 	DeliveryStatus uint
 
-	/// Delivery represents steam inventory delivery.
+	// Delivery represents steam inventory delivery.
 	Delivery struct {
 		ID               string         `json:"id"                 db:"id,omitempty,omitempty"`
-		MarketID         string         `json:"market_id"          db:"market_id,omitempty" valid:"required"`
+		MarketID         string         `json:"market_id"          db:"market_id,omitempty,indexed" valid:"required"`
 		BuyerConfirmed   *bool          `json:"buyer_confirmed"    db:"buyer_confirmed,omitempty"`
 		BuyerConfirmedAt *time.Time     `json:"buyer_confirmed_at" db:"buyer_confirmed_at,omitempty"`
 		GiftOpened       *bool          `json:"gift_opened"        db:"gift_opened,omitempty"`
@@ -85,7 +85,7 @@ type (
 		// Delivery returns Delivery details by id.
 		Delivery(id string) (*Delivery, error)
 
-		// Create saves new Delivery details.
+		// Set saves new Delivery details.
 		Set(context.Context, *Delivery) error
 	}
 
@@ -99,6 +99,9 @@ type (
 
 		// Get returns Delivery details by id from data store.
 		Get(id string) (*Delivery, error)
+
+		// GetByMarketID returns Delivery details by market id from data store.
+		GetByMarketID(marketID string) (*Delivery, error)
 
 		// Create persists a new Delivery to data store.
 		Create(*Delivery) error
