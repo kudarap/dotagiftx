@@ -67,6 +67,7 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 
 	// Assign inventory and delivery status.
 	for i, mkt := range res {
+		s.getRelatedFields(&mkt)
 		s.getRelatedVerifiedStatus(&mkt)
 		res[i] = mkt
 	}
@@ -105,7 +106,7 @@ func (s *marketService) Market(ctx context.Context, id string) (*core.Market, er
 
 func (s *marketService) getRelatedFields(mkt *core.Market) {
 	mkt.User, _ = s.userStg.Get(mkt.UserID)
-	mkt.Item, _ = s.itemStg.Get(mkt.ItemID)
+	//mkt.Item, _ = s.itemStg.Get(mkt.ItemID)
 }
 
 func (s *marketService) getRelatedVerifiedStatus(mkt *core.Market) {

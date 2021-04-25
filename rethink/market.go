@@ -47,7 +47,7 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	o.KeywordFields = s.keywordFields
 	// IndexSorting was disable due to hook query includeRelatedFields
 	//o.IndexSorting = true
-	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
+	q := findOpts(o).parseOpts(s.table(), nil)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
@@ -113,6 +113,11 @@ func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 // includeRelatedFields injects item and user details base on market foreign keys
 // and create a search tag
 func (s *marketStorage) includeRelatedFields(q r.Term) r.Term {
+	return q
+}
+
+// slowIncludeRelatedFields deprecated
+func (s *marketStorage) slowIncludeRelatedFields(q r.Term) r.Term {
 	return q.
 		EqJoin(marketFieldItemID, r.Table(tableItem)).
 		Map(func(t r.Term) r.Term {

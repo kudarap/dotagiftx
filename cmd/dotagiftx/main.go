@@ -132,14 +132,14 @@ func (app *application) setup() error {
 	reportSvc := service.NewReport(reportStg)
 
 	// Register job on the worker.
-	*dispatcher = *jobs.NewDispatcher(
-		app.worker,
-		deliverySvc,
-		inventorySvc,
-		marketStg,
-		logger,
-	)
-	dispatcher.RegisterJobs()
+	//*dispatcher = *jobs.NewDispatcher(
+	//	app.worker,
+	//	deliverySvc,
+	//	inventorySvc,
+	//	marketStg,
+	//	logger,
+	//)
+	//dispatcher.RegisterJobs()
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
