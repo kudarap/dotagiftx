@@ -86,7 +86,7 @@ type (
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
 
 		// Will be use for full-text searching.
-		SearchText string `json:"search_text" db:"search_text,omitempty,indexed"`
+		SearchText string `json:"-" db:"search_text,omitempty,indexed"`
 
 		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty"`
 		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
