@@ -68,6 +68,11 @@ func (vd *GiftWrappedUpdate) Run(ctx context.Context) error {
 				continue
 			}
 
+			if mkt.User == nil || mkt.Item == nil {
+				vd.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				continue
+			}
+
 			status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue

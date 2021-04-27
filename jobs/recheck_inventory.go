@@ -63,6 +63,11 @@ func (vi *RecheckInventory) Run(ctx context.Context) error {
 			continue
 		}
 
+		if mkt.User == nil || mkt.Item == nil {
+			vi.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+			continue
+		}
+
 		status, assets, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
 		if err != nil {
 			continue

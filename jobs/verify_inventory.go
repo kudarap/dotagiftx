@@ -59,7 +59,12 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				mkt.InventoryStatus == core.InventoryStatusNoHit {
 
 				// TODO! might remove items
-				vi.logger.Warnln("batch no need check", opts.Page, mkt.User.SteamID, mkt.Item.Name)
+				//vi.logger.Warnln("batch no need check", opts.Page, mkt.User.SteamID, mkt.Item.Name)
+				continue
+			}
+
+			if mkt.User == nil || mkt.Item == nil {
+				vi.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
 			}
 
