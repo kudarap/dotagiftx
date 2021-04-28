@@ -12,7 +12,7 @@ RUN go mod download
 # then copy source code as the last step
 COPY . .
 
-RUN make build 
+RUN make build
 
 # final stage
 FROM alpine:latest

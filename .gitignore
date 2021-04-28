@@ -3,9 +3,9 @@
 # misc
 .DS_Store
 
-
 # editor
 .idea
+.vscode
 
 # executables
 /dotagiftx

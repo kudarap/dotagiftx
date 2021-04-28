@@ -1,6 +1,6 @@
 PROJECTNAME=dotagiftx
 
-LDFLAGS="-X main.tag=`<VERSION` \
+LDFLAGS="-X main.tag=`cat VERSION` \
 		-X main.commit=`git rev-parse HEAD` \
 		-X main.built=`date -u +%s`"
 

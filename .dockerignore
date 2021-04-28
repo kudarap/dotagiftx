@@ -1,0 +1,25 @@
+https://docs.docker.com/engine/reference/builder/#dockerignore-file
+
+Dockerfile*
+docker-compose*
+.dockerignore
+.gitignore
+.env
+*/bin
+*/obj
+README.md
+.DS_Store
+
+# editor
+.idea
+.vscode
+
+# executables
+/dotagiftx
+/dotagiftx_amd64
+
+# local data
+.localdata
+
+# ui files
+/web
