@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftx v0.14",
+    "name": "dotagiftx v0.15.1",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -19,7 +19,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token}}",
+                  "value": "{{jwt}}",
                   "type": "string"
                 }
               ]
@@ -286,7 +286,7 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "src": "/home/kudarap/Dropbox/DotagiftX/imports/cache 2018 1.yml"
+                  "src": "/Volumes/Xtension/Dropbox/DotagiftX/item imports/cache 2016.yml"
                 }
               ]
             },
