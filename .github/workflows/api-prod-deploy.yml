@@ -54,5 +54,6 @@ jobs:
         run: |
           docker save -o $IMAGE_FILE $IMAGE_NAME
           scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
+          ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE"
 
 #          ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE && ./restart.sh"
