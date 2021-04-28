@@ -2,7 +2,7 @@
 FROM golang:1.16-alpine AS builder
 WORKDIR /code
 
-RUN apk add --no-cache git make
+RUN apk add --no-cache make
 
 # download and cache go dependencies
 COPY go.mod .
