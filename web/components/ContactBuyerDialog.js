@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import { Avatar } from '@material-ui/core'
+import Avatar from '@/components/Avatar'
 import ChipLink from '@/components/ChipLink'
 import {
   DOTABUFF_PROFILE_BASE_URL,
@@ -21,6 +21,7 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import MarketNotes from '@/components/MarketNotes'
+import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -82,7 +83,11 @@ export default function ContactBuyerDialog(props) {
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
             }>
             <a href={storeProfile} target="_blank" rel="noreferrer noopener">
-              <Avatar className={classes.avatar} {...retinaSrcSet(market.user.avatar, 100, 100)} />
+              <Avatar
+                className={classes.avatar}
+                glow={Boolean(market.user.donation)}
+                {...retinaSrcSet(market.user.avatar, 100, 100)}
+              />
             </a>
             <Typography component="h1">
               <Typography
@@ -91,6 +96,13 @@ export default function ContactBuyerDialog(props) {
                 variant="h4"
                 color={isProfileReported ? 'error' : ''}>
                 {market.user.name}
+                {Boolean(market.user.donation) && (
+                  <DonatorBadge
+                    style={{ marginLeft: 4, marginTop: 12, position: 'absolute' }}
+                    size="medium">
+                    DONATOR
+                  </DonatorBadge>
+                )}
               </Typography>
               {isProfileReported && (
                 <Typography color="error">{USER_STATUS_MAP_TEXT[market.user.status]}</Typography>

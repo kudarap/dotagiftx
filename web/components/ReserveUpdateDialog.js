@@ -12,7 +12,7 @@ import DeliveredIcon from '@material-ui/icons/AssignmentTurnedIn'
 import CancelIcon from '@material-ui/icons/Cancel'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import { myMarket } from '@/service/api'
-import { amount, dateCalendar } from '@/lib/format'
+import { amount, dateTime } from '@/lib/format'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import {
@@ -133,7 +133,7 @@ export default function ReserveUpdateDialog(props) {
                 <Typography color="textSecondary" component="span">
                   {`Reserved: `}
                 </Typography>
-                {dateCalendar(market.updated_at)}
+                {dateTime(market.updated_at)}
                 {market.notes && (
                   <>
                     <br />

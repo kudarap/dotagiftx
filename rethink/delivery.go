@@ -82,6 +82,22 @@ func (s *deliveryStorage) Get(id string) (*core.Delivery, error) {
 	return row, nil
 }
 
+func (s *deliveryStorage) GetByMarketID(marketID string) (*core.Delivery, error) {
+	var res []core.Delivery
+	var err error
+
+	q := s.table().GetAllByIndex(deliveryFieldMarketID, marketID)
+	if err = s.db.list(q, &res); err != nil {
+		return nil, err
+	}
+
+	if len(res) == 0 {
+		return nil, core.DeliveryErrNotFound
+	}
+
+	return &res[0], nil
+}
+
 func (s *deliveryStorage) Create(in *core.Delivery) error {
 	t := now()
 	in.CreatedAt = t

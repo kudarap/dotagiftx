@@ -1,4 +1,4 @@
-name: API dev binary upload
+name: API development CD
 
 on:
   push:
@@ -8,9 +8,11 @@ on:
 
 env:
   HOST: root@chiligarlic.com
-  BIN_FILE: dotagiftx
-  BIN_NAME: gha_dev
+  IMAGE_NAME: dotagiftx/api:dev
+  IMAGE_FILE: api.tar
   WORKDIR: ~/cg/d2g
+#  BIN_FILE: dotagiftx
+#  BIN_NAME: gha_dev
 
 jobs:
   test:
@@ -44,11 +46,20 @@ jobs:
       - name: Compile
         run: make build
 
+      - name: Build Image
+        run: docker build -t $IMAGE_NAME .
+
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: SSH Binary Upload
-        run: scp $BIN_FILE $HOST:$WORKDIR/$BIN_NAME
+      - name: SSH Image Deploy
+        run: |
+          docker save -o $IMAGE_FILE $IMAGE_NAME
+          scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
+          ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE && ./restart.sh"
+
+#      - name: SSH Binary Upload
+#        run: scp $BIN_FILE $HOST:$WORKDIR/$BIN_NAME

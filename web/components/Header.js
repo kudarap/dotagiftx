@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
 import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
@@ -186,6 +186,7 @@ export default function Header({ disableSearch }) {
                     aria-haspopup="true"
                     onClick={handleClick}
                     className={classes.avatar}
+                    glow={Boolean(profile.donation)}
                     {...retinaSrcSet(profile.avatar, 36, 36)}
                   />
 

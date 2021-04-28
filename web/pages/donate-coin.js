@@ -95,17 +95,22 @@ export default function Faq() {
             although the idea is free(had fun writing it) and server isn&apos;t. BUT! thanks to
             someone else&apos;s server running this website. <br />
             <br />
-            If this project helped you sell your items or got good discount and really want to
-            support it, you can toss a coin for our own server.
+            If this project helped you sold your items or struck a good deal and really want to
+            support it, you can toss a coin to help cost for the server.
           </Typography>
           <br />
 
           <PaypalButton
             startIcon={<PaypalIcon />}
             size="large"
+            target="_blank"
+            rel="noreferrer noopener"
             href="https://www.paypal.com/donate?hosted_button_id=KZW994N5WDH2Q">
             Donate with PayPal
           </PaypalButton>
+          <Typography color="textSecondary" style={{ marginTop: 6 }}>
+            Please don&apos;t forget to put your profile link on the notes so I can award the badge
+          </Typography>
 
           <Grid container className={classes.grid} alignContent="center">
             <Grid item className={classes.crypto}>

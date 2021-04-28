@@ -13,7 +13,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import ReserveIcon from '@material-ui/icons/EventAvailable'
 import RemoveIcon from '@material-ui/icons/Delete'
 import * as url from '@/lib/url'
-import { amount, dateCalendar } from '@/lib/format'
+import { amount, dateTime } from '@/lib/format'
 import { myMarket } from '@/service/api'
 import Button from '@/components/Button'
 import Link from '@/components/Link'
@@ -157,7 +157,7 @@ export default function MarketUpdateDialog(props) {
                 <Typography color="textSecondary" component="span">
                   {`Listed: `}
                 </Typography>
-                {dateCalendar(market.updated_at)}
+                {dateTime(market.updated_at)}
                 {market.notes && (
                   <>
                     <br />

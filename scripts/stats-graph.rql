@@ -1,0 +1,6 @@
+r.db('d2g_production').table('user')
+  //.filter({ type: 'p' })
+  //.getAll('s', {index: 'type'})
+  //.group([r.row('created_at').month(), r.row('created_at').day()])
+  .group(r.row('created_at').month())
+  .count()

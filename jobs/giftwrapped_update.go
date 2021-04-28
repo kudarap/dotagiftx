@@ -31,7 +31,7 @@ func NewGiftWrappedUpdate(ds core.DeliveryService, ms core.MarketStorage, lg log
 	}
 	return &GiftWrappedUpdate{
 		ds, ms, lg,
-		"giftwrapped_update", time.Minute * 30, f}
+		"giftwrapped_update", time.Hour, f}
 }
 
 func (vd *GiftWrappedUpdate) String() string { return vd.name }
@@ -65,6 +65,11 @@ func (vd *GiftWrappedUpdate) Run(ctx context.Context) error {
 
 			mkt, _ := vd.market(dd.MarketID)
 			if mkt == nil {
+				continue
+			}
+
+			if mkt.User == nil || mkt.Item == nil {
+				vd.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
 			}
 

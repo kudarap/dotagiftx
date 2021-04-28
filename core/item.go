@@ -40,6 +40,7 @@ type (
 		Origin       string     `json:"origin"       db:"origin,omitempty"`
 		Rarity       string     `json:"rarity"       db:"rarity,omitempty"`
 		Contributors []string   `json:"-"            db:"contributors,omitempty"`
+		Active       *bool      `json:"active"       db:"active,omitempty"`
 		ViewCount    int        `json:"view_count"   db:"view_count,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"   db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
@@ -115,8 +116,14 @@ func (i Item) CheckCreate() error {
 	return nil
 }
 
+// MakeSlug generates item slug.
 func (i Item) MakeSlug() string {
 	return slug.Make(i.Name + " " + i.Hero)
+}
+
+// IsActive determines item is giftable.
+func (i Item) IsActive() bool {
+	return *i.Active
 }
 
 const defaultItemRarity = "regular"

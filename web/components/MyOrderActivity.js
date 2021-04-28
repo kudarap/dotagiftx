@@ -16,7 +16,7 @@ import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { amount, daysFromNow } from '@/lib/format'
 import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import Link from '@/components/Link'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import AppContext from '@/components/AppContext'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 
@@ -123,6 +123,7 @@ export default function MyOrderActivity({ datatable, loading, error }) {
                   {...retinaSrcSet(market.user.avatar, 40, 40)}
                   component={Link}
                   href={`/profiles/${market.user.steam_id}`}
+                  glow={Boolean(market.user.donation)}
                 />
                 <span>x</span>
               </div>
@@ -175,7 +176,7 @@ export default function MyOrderActivity({ datatable, loading, error }) {
               component="pre"
               color="textSecondary"
               variant="caption"
-              style={{ whiteSpace: 'pre-wrap', display: 'inline-block' }}>
+              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
               {market.user.steam_id && (
                 <Link
                   color="textSecondary"

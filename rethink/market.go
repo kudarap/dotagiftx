@@ -2,6 +2,7 @@ package rethink
 
 import (
 	"log"
+	"strings"
 
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dotagiftx/core"
@@ -22,7 +23,7 @@ const (
 	marketFieldCreatedAt       = "created_at"
 	marketFieldUpdatedAt       = "updated_at"
 	// Hidden field for searching item details.
-	marketItemSearchTags = "item_tags"
+	marketItemSearchTags = "search_text"
 )
 
 // NewMarket creates new instance of market data store.
@@ -45,11 +46,14 @@ type marketStorage struct {
 func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 	var res []core.Market
 	o.KeywordFields = s.keywordFields
-	// IndexSorting was disable due to hook query includeRelatedFields
-	//o.IndexSorting = true
-	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
+	o.IndexSorting = true
+	q := findOpts(o).parseOpts(s.table(), nil)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	for i, rr := range res {
+		res[i].User = s.includeUser(rr.UserID)
 	}
 
 	return res, nil
@@ -102,10 +106,8 @@ func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
 		UserID:        o.UserID,
-		// IndexSorting was disable due to hook query includeRelatedFields
-		//IndexSorting:  true,
 	}
-	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
+	q := findOpts(o).parseOpts(s.table(), nil)
 	err = s.db.one(q.Count(), &num)
 	return
 }
@@ -114,20 +116,20 @@ func (s *marketStorage) Count(o core.FindOpts) (num int, err error) {
 // and create a search tag
 func (s *marketStorage) includeRelatedFields(q r.Term) r.Term {
 	return q.
-		EqJoin(marketFieldItemID, r.Table(tableItem)).
-		Map(func(t r.Term) r.Term {
-			market := t.Field("left")
-			item := t.Field("right")
-			tags := market.Field(marketFieldNotes).Default("")
-			for _, ff := range itemSearchFields {
-				tags = tags.Add(" ", item.Field(ff))
-			}
-
-			return market.Merge(map[string]interface{}{
-				tableItem:            item,
-				marketItemSearchTags: tags,
-			})
-		}).
+		//EqJoin(marketFieldItemID, r.Table(tableItem)).
+		//Map(func(t r.Term) r.Term {
+		//	market := t.Field("left")
+		//	item := t.Field("right")
+		//	tags := market.Field(marketFieldNotes).Default("")
+		//	for _, ff := range itemSearchFields {
+		//		tags = tags.Add(" ", item.Field(ff))
+		//	}
+		//
+		//	return market.Merge(map[string]interface{}{
+		//		tableItem:            item,
+		//		marketItemSearchTags: tags,
+		//	})
+		//}).
 		EqJoin(marketFieldUserID, r.Table(tableUser)).
 		Map(func(t r.Term) r.Term {
 			return t.Field("left").Merge(map[string]interface{}{
@@ -146,7 +148,54 @@ func (s *marketStorage) Get(id string) (*core.Market, error) {
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
 
+	row.User = s.includeUser(row.UserID)
 	return row, nil
+}
+
+func (s *marketStorage) includeUser(userID string) *core.User {
+	var user core.User
+	_ = s.db.one(r.Table(tableUser).Get(userID), &user)
+	return &user
+}
+
+func (s *marketStorage) Index(id string) (*core.Market, error) {
+	mkt, err := s.Get(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var item core.Item
+	_ = s.db.one(r.Table(tableItem).Get(mkt.ItemID), &item)
+	mkt.Item = &item
+
+	var invs []core.Inventory
+	_ = s.db.list(r.Table(tableInventory).GetAllByIndex(inventoryFieldMarketID, mkt.ID), &invs)
+	if len(invs) != 0 {
+		mkt.Inventory = &invs[0]
+	}
+
+	var dels []core.Delivery
+	_ = s.db.list(r.Table(tableDelivery).GetAllByIndex(inventoryFieldMarketID, mkt.ID), &dels)
+	if len(dels) != 0 {
+		mkt.Delivery = &dels[0]
+	}
+
+	mkt.SearchText = mkt.Notes
+	if mkt.Item != nil {
+		mkt.SearchText += strings.Join([]string{
+			"",
+			mkt.Item.Name,
+			mkt.Item.Hero,
+			mkt.Item.Origin,
+			mkt.Item.Rarity,
+		}, " ")
+	}
+
+	if err = s.BaseUpdate(mkt); err != nil {
+		return nil, err
+	}
+
+	return mkt, nil
 }
 
 func (s *marketStorage) Create(in *core.Market) error {
@@ -177,13 +226,13 @@ func (s *marketStorage) BaseUpdate(in *core.Market) error {
 	}
 
 	in.User = nil
-	in.Item = nil
+	//in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
 
-	if err := mergo.Merge(in, cur); err != nil {
+	if err = mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
 	}
 

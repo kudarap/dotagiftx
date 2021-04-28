@@ -8,6 +8,21 @@ import (
 	"github.com/kudarap/dotagiftx/steam"
 )
 
+func MarketIndexRebuild(marketStg core.MarketStorage) {
+	res, _ := marketStg.Find(core.FindOpts{})
+
+	for _, rr := range res {
+		if _, err := marketStg.Index(rr.ID); err != nil {
+			fmt.Println("market index error:", err)
+			continue
+		}
+
+		fmt.Println("market index ok!:", rr.ID)
+	}
+
+	fmt.Println("market index done!")
+}
+
 // MarketExtractProfileURLFromNotes WARNING! only use these once and just keeping for reference.
 func MarketExtractProfileURLFromNotes(
 	marketStg core.MarketStorage,

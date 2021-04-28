@@ -25,6 +25,11 @@ var logger = log.Default()
 func main() {
 	app := newApp()
 
+	v := version.New(false, tag, commit, built)
+	logger.Println("version:", v.Tag)
+	logger.Println("hash:", v.Commit)
+	logger.Println("built:", v.Built)
+
 	logger.Println("loading config...")
 	if err := app.loadConfig(); err != nil {
 		logger.Fatalln("could not load config:", err)
@@ -43,10 +48,11 @@ func main() {
 }
 
 type application struct {
-	config Config
-	server *http.Server
-	worker *worker.Worker
-	logger *logrus.Logger
+	config  Config
+	server  *http.Server
+	worker  *worker.Worker
+	logger  *logrus.Logger
+	version *version.Version
 
 	closerFn func()
 }
@@ -145,6 +151,7 @@ func (app *application) setup() error {
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
 	//fixes.ReIndexAll(itemStg, catalogStg)
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
+	//fixes.MarketIndexRebuild(marketStg)
 	//redisClient.BulkDel("")
 
 	// Server setup.

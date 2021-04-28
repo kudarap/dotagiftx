@@ -82,6 +82,22 @@ func (s *inventoryStorage) Get(id string) (*core.Inventory, error) {
 	return row, nil
 }
 
+func (s *inventoryStorage) GetByMarketID(marketID string) (*core.Inventory, error) {
+	var res []core.Inventory
+	var err error
+
+	q := s.table().GetAllByIndex(inventoryFieldMarketID, marketID)
+	if err = s.db.list(q, &res); err != nil {
+		return nil, err
+	}
+
+	if len(res) == 0 {
+		return nil, core.InventoryErrNotFound
+	}
+
+	return &res[0], nil
+}
+
 func (s *inventoryStorage) Create(in *core.Inventory) error {
 	t := now()
 	in.CreatedAt = t
@@ -108,7 +124,7 @@ func (s *inventoryStorage) Update(in *core.Inventory) error {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
 
-	if err := mergo.Merge(in, cur); err != nil {
+	if err = mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
 	}
 

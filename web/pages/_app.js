@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import Root from '@/components/Root'
 import { APP_NAME } from '@/constants/strings'
+import Root from '@/components/Root'
+import '@/components/Avatar.css'
 
 export default function MyApp(props) {
   const { Component, pageProps } = props

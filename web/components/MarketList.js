@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import { debounce } from '@material-ui/core'
 import bidColor from '@material-ui/core/colors/teal'
-import Avatar from '@material-ui/core/Avatar'
+// import Avatar from '@/components/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -30,6 +30,8 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import SellButton from '@/components/SellButton'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
+import Avatar from '@/components/Avatar'
+import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -312,10 +314,14 @@ function baseTable(Component) {
                     <Avatar
                       className={classes.avatar}
                       alt={market.user.name}
+                      glow={Boolean(market.user.donation)}
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
                     <div>
                       <strong>{market.user.name}</strong>
+                      {Boolean(market.user.donation) && (
+                        <DonatorBadge style={{ marginLeft: 4 }}>DONATOR</DonatorBadge>
+                      )}
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}

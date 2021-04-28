@@ -46,7 +46,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts.Limit = 10
 	opts.Page = 0
 
-	src := steaminv.InventoryAssetWithCache
+	src := steaminv.InventoryAsset
 	for {
 		res, err := vd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {
@@ -57,6 +57,11 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			// Skip verified statuses.
 			if mkt.DeliveryStatus == core.DeliveryStatusNameVerified ||
 				mkt.DeliveryStatus == core.DeliveryStatusSenderVerified {
+				continue
+			}
+
+			if mkt.User == nil || mkt.Item == nil {
+				vd.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
 			}
 

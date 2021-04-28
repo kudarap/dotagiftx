@@ -67,7 +67,6 @@ func (s *marketService) Markets(ctx context.Context, opts core.FindOpts) ([]core
 
 	// Assign inventory and delivery status.
 	for i, mkt := range res {
-		s.getRelatedVerifiedStatus(&mkt)
 		res[i] = mkt
 	}
 
@@ -98,19 +97,7 @@ func (s *marketService) Market(ctx context.Context, id string) (*core.Market, er
 		return nil, core.MarketErrNotFound
 	}
 
-	s.getRelatedFields(mkt)
-	s.getRelatedVerifiedStatus(mkt)
 	return mkt, nil
-}
-
-func (s *marketService) getRelatedFields(mkt *core.Market) {
-	mkt.User, _ = s.userStg.Get(mkt.UserID)
-	mkt.Item, _ = s.itemStg.Get(mkt.ItemID)
-}
-
-func (s *marketService) getRelatedVerifiedStatus(mkt *core.Market) {
-	mkt.Inventory, _ = s.inventorySvc.Inventory(mkt.ID)
-	mkt.Delivery, _ = s.deliverySvc.Delivery(mkt.ID)
 }
 
 func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
@@ -132,7 +119,7 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 
 	// Check Item existence.
 	i, _ := s.itemStg.Get(mkt.ItemID)
-	if i == nil {
+	if i == nil || !i.IsActive() {
 		return core.ItemErrNotFound
 	}
 	mkt.ItemID = i.ID
@@ -154,6 +141,9 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 
 	//go func() {
+	if _, err := s.marketStg.Index(mkt.ID); err != nil {
+		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+	}
 	if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
 		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
@@ -208,7 +198,7 @@ func (s *marketService) checkBidType(bid *core.Market) error {
 	}
 	for _, m := range res {
 		m.Status = core.MarketStatusRemoved
-		if err := s.marketStg.Update(&m); err != nil {
+		if err = s.marketStg.Update(&m); err != nil {
 			return err
 		}
 	}
@@ -301,7 +291,10 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		}
 	}
 
-	s.getRelatedFields(mkt)
+	if _, err = s.marketStg.Index(mkt.ID); err != nil {
+		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+	}
+
 	return nil
 }
 

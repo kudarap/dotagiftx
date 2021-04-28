@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
@@ -49,27 +50,23 @@ func (s *InventoryService) Inventory(id string) (*core.Inventory, error) {
 	}
 
 	// If we can't find using id. lets try market ID
-	return s.InventoryByMarketID(id)
+	return s.inventoryStg.GetByMarketID(id)
 }
 
 func (s *InventoryService) InventoryByMarketID(marketID string) (*core.Inventory, error) {
-	res, err := s.inventoryStg.Find(core.FindOpts{Filter: &core.Inventory{
-		MarketID: marketID,
-	}})
-	if err != nil {
-		return nil, err
-	}
-	if len(res) == 0 {
-		return nil, core.InventoryErrNotFound
-	}
-
-	return &res[0], nil
+	return s.inventoryStg.GetByMarketID(marketID)
 }
 
 func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {
 	if err := inv.CheckCreate(); err != nil {
 		return errors.New(core.InventoryErrRequiredFields, err)
 	}
+
+	defer func() {
+		if _, err := s.marketStg.Index(inv.MarketID); err != nil {
+			log.Printf("could not index market %s: %s", inv.MarketID, err)
+		}
+	}()
 
 	// Update market Inventory status.
 	if err := s.marketStg.BaseUpdate(&core.Market{

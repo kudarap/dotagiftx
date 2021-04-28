@@ -4,8 +4,9 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
+import DonatorIcon from '@material-ui/icons/FavoriteBorder'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
@@ -33,6 +34,7 @@ import Link from '@/components/Link'
 import Button from '@/components/Button'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import ErrorPage from '../404'
+import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -60,6 +62,7 @@ const useStyles = makeStyles(theme => ({
     width: 100,
     height: 100,
     marginRight: theme.spacing(1.5),
+    marginBottom: theme.spacing(0.5),
   },
 }))
 
@@ -166,7 +169,11 @@ export default function UserDetails({
             style={
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
             }>
-            <Avatar className={classes.avatar} src={`${CDN_URL}/${profile.avatar}`} />
+            <Avatar
+              className={classes.avatar}
+              src={`${CDN_URL}/${profile.avatar}`}
+              glow={Boolean(profile.donation)}
+            />
             <Typography component="h1">
               <Typography
                 className={classes.profileName}
@@ -174,6 +181,13 @@ export default function UserDetails({
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
+                {Boolean(profile.donation) && (
+                  <DonatorBadge
+                    style={{ marginLeft: 4, marginTop: 12, position: 'absolute' }}
+                    size="medium">
+                    DONATOR
+                  </DonatorBadge>
+                )}
               </Typography>
               {isProfileReported && (
                 <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>

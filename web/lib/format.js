@@ -51,6 +51,10 @@ export function dateCalendar(date) {
   return moment(date).format('MMMM DD, YYYY')
 }
 
+export function dateTime(date) {
+  return moment(date).format('MMM DD, YYYY - h:mm A')
+}
+
 export function errorSimple(error) {
   if (!error) {
     return ''

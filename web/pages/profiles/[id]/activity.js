@@ -1,16 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import useSWR from 'swr'
 import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
+import { APP_NAME, APP_URL } from '@/constants/strings'
+import { CDN_URL, marketSearch, user } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
-import { CDN_URL, fetcher, MARKETS, user } from '@/service/api'
-import { APP_NAME, APP_URL } from '@/constants/strings'
 import MarketActivity from '@/components/MyMarketActivity'
 
 const useStyles = makeStyles(theme => ({
@@ -29,26 +28,73 @@ const useStyles = makeStyles(theme => ({
   itemImage: { width: 60, height: 40, marginRight: 8, float: 'left' },
 }))
 
-const filter = {
-  // status: MARKET_STATUS_SOLD,
+const defaultFilter = {
   sort: 'updated_at:desc',
-  limit: 100,
+  page: 1,
 }
 
-export default function UserDelivered({ profile, canonicalURL }) {
+const defaultData = {
+  data: [],
+  total_result: 0,
+  total_total: 0,
+}
+
+const scrollBias = 300
+
+export default function UserActivity({ profile, canonicalURL }) {
   const classes = useStyles()
 
-  filter.user_id = profile.id
-  const { data, error, isValidating } = useSWR([MARKETS, filter], fetcher, {
-    revalidateOnFocus: false,
+  const [datatable, setDatatable] = React.useState(defaultData)
+  const [filter, setFilter] = React.useState({ ...defaultFilter, user_id: profile.id })
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState(null)
+
+  React.useEffect(() => {
+    if (loading) {
+      return
+    }
+
+    setLoading(true)
+    ;(async () => {
+      try {
+        const res = await marketSearch(filter)
+        if (datatable.data.length === 0) {
+          setDatatable(res)
+        } else {
+          const data = [...datatable.data, ...res.data]
+          setDatatable({ ...datatable, data })
+        }
+      } catch (e) {
+        setError(e.message)
+      }
+      setLoading(false)
+    })()
+  }, [filter])
+
+  React.useEffect(() => {
+    const listener = () => {
+      const isLast = datatable.data.length === datatable.total_count
+      if (loading || isLast || window.scrollY + scrollBias < window.scrollMaxY) {
+        return
+      }
+
+      setFilter({ ...filter, page: filter.page + 1 })
+    }
+
+    window.addEventListener('scroll', listener)
+    return () => {
+      window.removeEventListener('scroll', listener)
+    }
   })
+
+  const profileURL = `/profiles/${profile.steam_id}`
 
   return (
     <>
       <Header />
 
       <Head>
-        <title>{`${APP_NAME} :: ${profile.name} delivered items`}</title>
+        <title>{`${APP_NAME} :: ${profile.name} items`}</title>
         <meta name="description" content={`${profile.name}'s delivered Giftable items`} />
         <link rel="canonical" href={canonicalURL} />
       </Head>
@@ -59,22 +105,21 @@ export default function UserDelivered({ profile, canonicalURL }) {
             <Avatar
               className={classes.profile}
               src={`${CDN_URL}/${profile.avatar}`}
+              glow={Boolean(profile.donation)}
               component={Link}
-              href={`/profiles/${profile.steam_id}`}
+              href={profileURL}
             />
-            <Typography
-              variant="h6"
-              color="textPrimary"
-              component={Link}
-              href={`/profiles/${profile.steam_id}`}>
+            <Typography variant="h6" color="textPrimary" component={Link} href={profileURL}>
               {profile.name}
             </Typography>
             <Typography color="textSecondary">
-              {data && data.total_count} Market Activity
+              {datatable && datatable.total_count} Market Activity
             </Typography>
           </div>
+          <br />
+
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={data || {}} loading={isValidating} />
+          <MarketActivity datatable={datatable || {}} loading={loading} />
         </Container>
       </main>
 
@@ -82,7 +127,7 @@ export default function UserDelivered({ profile, canonicalURL }) {
     </>
   )
 }
-UserDelivered.propTypes = {
+UserActivity.propTypes = {
   profile: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
 }

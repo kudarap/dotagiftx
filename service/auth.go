@@ -48,15 +48,20 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 			return nil, core.AuthErrLogin
 		}
 
-		if _, err := s.userSvc.SteamSync(steamPlayer); err != nil {
+		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
 			return nil, errors.New(core.UserErrSteamSync, err)
+		}
+
+		u, _ := s.userSvc.User(au.UserID)
+		if err = u.CheckStatus(); err != nil {
+			return nil, err
 		}
 
 		return au, nil
 	}
 
 	// Process account registration and save details.
-	au, err = s.createAccountFromTwitter(steamPlayer)
+	au, err = s.createAccountFromSteam(steamPlayer)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +105,7 @@ func (s *authService) Auth(id string) (*core.Auth, error) {
 	return u, nil
 }
 
-func (s *authService) createAccountFromTwitter(sp *core.SteamPlayer) (*core.Auth, error) {
+func (s *authService) createAccountFromSteam(sp *core.SteamPlayer) (*core.Auth, error) {
 	u := &core.User{
 		SteamID: sp.ID,
 		Name:    sp.Name,

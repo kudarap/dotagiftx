@@ -39,7 +39,6 @@ const (
 	maxMarketNotesLen        = 200
 	MaxMarketQtyLimitPerUser = 5
 
-	// Trend scoring rates use for trend ranking.
 	TrendScoreRateView        = 0.05
 	TrendScoreRateMarketEntry = 0.01
 	TrendScoreRateReserved    = 4
@@ -86,6 +85,9 @@ type (
 		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
 
+		// Will be use for full-text searching.
+		SearchText string `json:"-" db:"search_text,omitempty,indexed"`
+
 		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty"`
 		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
 
@@ -109,6 +111,9 @@ type (
 
 		// Update saves market details changes.
 		Update(context.Context, *Market) error
+
+		//// Index Index composes market data for faster search and retrieval.
+		//Index(ctx context.Context, id string) (*Market, error)
 
 		// AutoCompleteBid detects if there's matching reservation on buy order and automatically
 		// resolve it by setting complete-bid status.
@@ -152,6 +157,9 @@ type (
 		// PendingDeliveryStatus returns market entries that is pending for checking
 		// delivery status or needs re-processing of re-process error status.
 		PendingDeliveryStatus(o FindOpts) ([]Market, error)
+
+		// Index composes market data for faster search and retrieval.
+		Index(id string) (*Market, error)
 	}
 )
 

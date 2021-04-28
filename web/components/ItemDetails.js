@@ -36,9 +36,8 @@ import ChipLink from '@/components/ChipLink'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
-import MarketActivity from '@/components/MarketActivity'
 import MarketSalesChart from '@/components/MarketSalesChart'
-import MyMarketActivityV2 from '@/components/MarketActivityV2'
+import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -461,12 +460,12 @@ export default function ItemDetails({
 
               <div id="reserved">
                 {marketReserved && marketReserved.result_count !== 0 && (
-                  <MyMarketActivityV2 datatable={marketReserved} disablePrice />
+                  <MarketActivity datatable={marketReserved} disablePrice />
                 )}
               </div>
               <div id="delivered">
                 {marketDelivered && marketDelivered.result_count !== 0 && (
-                  <MyMarketActivityV2 datatable={marketDelivered} disablePrice />
+                  <MarketActivity datatable={marketDelivered} disablePrice />
                 )}
               </div>
             </div>

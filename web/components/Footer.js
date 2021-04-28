@@ -9,11 +9,12 @@ import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
 const dotaHeroImage =
-  'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1608240991'
+  'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1617996208'
 
 // const heroImage = '/assets/bg_hero.png'
 
-const mobileHeightCompensator = 31
+// const mobileHeightCompensator = 31
+const mobileHeightCompensator = 100
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
     // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
-    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -140px`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -80px`,
   },
   list: {
     [theme.breakpoints.down('xs')]: {

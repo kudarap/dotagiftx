@@ -12,12 +12,12 @@ RUN go mod download
 # then copy source code as the last step
 COPY . .
 
-RUN make build 
+RUN make build
 
 # final stage
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 COPY --from=builder /code/dotagiftx /api
 ENTRYPOINT ./api
-LABEL Name=dotagiftx Version=0.15.0
+LABEL Name=dotagiftx Version=0.15.1
 EXPOSE 80
