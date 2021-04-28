@@ -1,4 +1,4 @@
-name: API CI
+name: API production CD
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
   HOST: root@chiligarlic.com
   IMAGE_NAME: dotagiftx/api
   IMAGE_FILE: api.tar
-  WORKDIR: ~/cg/d2g
+  WORKDIR: ~/cg/d2g.prod
 
 jobs:
   test:
