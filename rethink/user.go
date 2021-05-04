@@ -57,7 +57,7 @@ func (s *userStorage) FindFlagged(o core.FindOpts) ([]core.User, error) {
 
 func (s *userStorage) flaggedFilter(q r.Term) r.Term {
 	return q.Filter(func(t r.Term) interface{} {
-		return t.Field("status").Gt(core.UserStatusSuspended)
+		return t.Field("status").Ge(core.UserStatusSuspended)
 	})
 }
 
