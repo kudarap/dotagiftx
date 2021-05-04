@@ -11,7 +11,7 @@ import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
+    // flexGrow: 1,
     padding: '4px 12px 2px',
     marginBottom: 3,
     display: 'flex',
@@ -21,6 +21,7 @@ const useStyles = makeStyles(theme => ({
     // '&:hover': {
     //   borderColor: theme.palette.grey[700],
     // },
+    width: 325,
   },
   input: {
     [theme.breakpoints.down('sm')]: {

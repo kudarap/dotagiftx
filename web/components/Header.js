@@ -63,6 +63,13 @@ const useStyles = makeStyles(theme => ({
   spacer: {
     width: theme.spacing(1),
   },
+  nav: {
+    fontWeight: theme.typography.fontWeightMedium,
+    '&:hover': {
+      color: '#f1e0ba',
+    },
+    margin: theme.spacing(0, 1),
+  },
 }))
 
 const defaultProfile = {
@@ -141,6 +148,7 @@ export default function Header({ disableSearch }) {
           <Link href="/" disableUnderline>
             {!isMobile ? (
               <img
+                width={134}
                 className={classes.brand}
                 src="/brand_1x.png"
                 srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
@@ -157,6 +165,21 @@ export default function Header({ disableSearch }) {
           </Link>
           <span className={classes.spacer} />
           {!disableSearch && <SearchInputMini />}
+
+          {/* Nav links */}
+          {!isMobile && (
+            <>
+              <Link className={classes.nav} href="/blacklist" underline="none">
+                Blacklist
+              </Link>
+              <Link className={classes.nav} href="/guides" underline="none">
+                Guides
+              </Link>
+              <Link className={classes.nav} href="/faq" underline="none">
+                FAQ
+              </Link>
+            </>
+          )}
 
           {/* Desktop nav buttons */}
           {!isMobile && (
