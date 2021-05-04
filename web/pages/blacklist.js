@@ -21,7 +21,7 @@ import Avatar from '@/components/Avatar'
 import useSWR from 'swr'
 import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
-import { USER_STATUS_MAP_LABEL } from '@/constants/user'
+import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
 import moment from 'moment'
 import Button from '@/components/Button'
 import { Alert } from '@material-ui/lab'
@@ -144,7 +144,7 @@ function UserCard({ data }) {
             style={{
               padding: '2px 6px',
               color: 'white',
-              background: '#a00',
+              background: USER_STATUS_MAP_COLOR[data.status],
               marginLeft: 4,
               fontSize: 10,
               fontWeight: 500,
