@@ -2,11 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import debounce from 'lodash/debounce'
+import startsWith from 'lodash/startsWith'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import {
   APP_NAME,
+  APP_URL,
   DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
@@ -21,6 +23,8 @@ import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
 import { USER_STATUS_MAP_LABEL } from '@/constants/user'
 import moment from 'moment'
+import Button from '@/components/Button'
+import { Alert } from '@material-ui/lab'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -36,6 +40,8 @@ const filter = {
   limit: 100,
 }
 
+const STEAMURL = 'https://steamcommunity.com'
+
 export default function Blacklist() {
   const classes = useStyles()
 
@@ -44,10 +50,15 @@ export default function Blacklist() {
   const url = parseParams(BLACKLIST, filter)
   const { data, error } = useSWR(url, fetcherBase)
 
+  let resolvedQuery = false
+  if (startsWith(query, STEAMURL, 0)) {
+    resolvedQuery = query.replaceAll(STEAMURL, APP_URL)
+  }
+
   return (
     <>
       <Head>
-        <title>{APP_NAME} :: Fraud</title>
+        <title>{APP_NAME} :: Blacklist</title>
       </Head>
 
       <Header />
@@ -57,19 +68,35 @@ export default function Blacklist() {
           <Typography variant="h5" component="h1" gutterBottom>
             Blacklist
           </Typography>
-          <Typography color="textSecondary">
-            These accounts were flagged as banned or suspended due to scam incident and/or
-            involvement to scam.
-          </Typography>
+          <Alert severity="warning">
+            These accounts were flagged as <strong>banned</strong> or <strong>suspended</strong> due
+            to scam incident or account involvement to a scam.
+          </Alert>
           <br />
 
-          <SearchBar placeholder="Search by Steam URL or ID..." onInput={v => setQuery(v)} />
+          <SearchBar
+            placeholder="Search by Steam ID or exact custom URL..."
+            onInput={v => setQuery(v)}
+          />
           <br />
           <br />
 
           {error && <Typography color="error">Could not load blacklisted users</Typography>}
           {!data && !error && <Typography>Loading...</Typography>}
           {!error && data && data.map(user => <UserCard data={user} />)}
+
+          {!error && data && data.length === 0 && resolvedQuery && (
+            <Typography>
+              User probably changed their custom URL&nbsp;
+              <Button
+                color="secondary"
+                component={Link}
+                href={resolvedQuery}
+                style={{ marginTop: -6 }}>
+                Continue to resolve custom URL
+              </Button>
+            </Typography>
+          )}
         </Container>
       </main>
 
@@ -93,7 +120,6 @@ function SearchBar({ onInput, ...other }) {
       fullWidth
       variant="outlined"
       color="secondary"
-      size="small"
       {...other}
       value={value}
       onInput={handleInput}
