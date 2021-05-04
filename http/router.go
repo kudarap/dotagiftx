@@ -37,6 +37,7 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/{id}", handleReportDetail(s.reportSvc))
 		})
 		r.Get("/vanity/{id}", handleVanityProfile(s.userSvc, s.steam, s.cache))
+		r.Get("/blacklists", handleBlacklisted(s.userSvc, s.cache))
 	})
 }
 

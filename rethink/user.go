@@ -11,8 +11,10 @@ import (
 
 const (
 	tableUser        = "user"
-	itemFieldSteamID = "steam_id"
+	userFieldSteamID = "steam_id"
 )
+
+var userSearchFields = []string{"name", "steam_id", "url"}
 
 // NewUser creates new instance of user data store.
 func NewUser(c *Client) core.UserStorage {
@@ -20,15 +22,16 @@ func NewUser(c *Client) core.UserStorage {
 		log.Fatalf("could not create %s table: %s", tableUser, err)
 	}
 
-	if err := c.createIndex(tableUser, itemFieldSteamID); err != nil {
+	if err := c.createIndex(tableUser, userFieldSteamID); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableUser, err)
 	}
 
-	return &userStorage{c}
+	return &userStorage{c, userSearchFields}
 }
 
 type userStorage struct {
-	db *Client
+	db            *Client
+	keywordFields []string
 }
 
 func (s *userStorage) Find(o core.FindOpts) ([]core.User, error) {
@@ -39,6 +42,23 @@ func (s *userStorage) Find(o core.FindOpts) ([]core.User, error) {
 	}
 
 	return res, nil
+}
+
+func (s *userStorage) FindFlagged(o core.FindOpts) ([]core.User, error) {
+	var res []core.User
+	o.KeywordFields = s.keywordFields
+	q := baseFindOptsQuery(s.table(), o, s.flaggedFilter)
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return res, nil
+}
+
+func (s *userStorage) flaggedFilter(q r.Term) r.Term {
+	return q.Filter(func(t r.Term) interface{} {
+		return t.Field("status").Gt(core.UserStatusSuspended)
+	})
 }
 
 func (s *userStorage) Count(o core.FindOpts) (num int, err error) {
@@ -70,7 +90,7 @@ func (s *userStorage) Get(id string) (*core.User, error) {
 
 func (s *userStorage) getBySteamID(steamID string) (*core.User, error) {
 	row := &core.User{}
-	q := s.table().GetAllByIndex(itemFieldSteamID, steamID)
+	q := s.table().GetAllByIndex(userFieldSteamID, steamID)
 	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
 			return nil, core.UserErrNotFound
