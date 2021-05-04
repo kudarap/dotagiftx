@@ -263,7 +263,22 @@ export default function Header({ disableSearch }) {
                   disableUnderline>
                   Post item
                 </MenuItem>
-
+                <MenuItem
+                  key={key++}
+                  onClick={handleClose}
+                  component={Link}
+                  href="/blacklist"
+                  disableUnderline>
+                  Blacklist
+                </MenuItem>
+                <MenuItem
+                  key={key++}
+                  onClick={handleClose}
+                  component={Link}
+                  href="/guides"
+                  disableUnderline>
+                  Guides
+                </MenuItem>
                 {isLoggedIn ? (
                   <MenuItems
                     profile={profile}
