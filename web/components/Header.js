@@ -138,6 +138,8 @@ export default function Header({ disableSearch }) {
     })()
   }
 
+  const brandStyle = disableSearch && isXsScreen ? { width: 30, overflow: 'hidden' } : {}
+
   return (
     <AppBar position="static" variant="outlined" className={classes.appBar}>
       {/*<NoticeMe />*/}
@@ -145,7 +147,7 @@ export default function Header({ disableSearch }) {
         <Toolbar variant="dense" disableGutters>
           {/* Branding button */}
           {/* Desktop nav branding */}
-          <Link href="/" disableUnderline>
+          <Link href="/" disableUnderline style={brandStyle}>
             {!isMobile ? (
               <img
                 width={134}
@@ -157,7 +159,6 @@ export default function Header({ disableSearch }) {
             ) : (
               <img
                 className={classes.brand}
-                src="/icon_1x.png"
                 srcSet="/icon_1x.png 1x, /icon_2x.png 2x"
                 alt={APP_NAME}
               />
