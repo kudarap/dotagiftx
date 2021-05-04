@@ -5,8 +5,9 @@ import * as http from './http'
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
 export const CDN_URL = trimEnd(process.env.NEXT_PUBLIC_CDN_URL, '/')
 
-const parseParams = (url, filter) => `${url}?${querystring.stringify(filter)}`
+export const parseParams = (url, filter) => `${url}?${querystring.stringify(filter)}`
 export const fetcher = (endpoint, filter) => http.request(http.GET, parseParams(endpoint, filter))
+export const fetcherBase = endpoint => http.request(http.GET, endpoint)
 export const fetcherWithToken = (endpoint, filter) =>
   http.authnRequest(http.GET, parseParams(endpoint, filter))
 
@@ -28,6 +29,7 @@ export const STATS_TOP_HEROES = `${STATS}/top_heroes`
 export const STATS_MARKET_SUMMARY = `${STATS}/market_summary`
 export const GRAPH_MARKET_SALES = `/graph/market_sales`
 export const REPORTS = '/reports'
+export const BLACKLIST = '/blacklists'
 const VERSION = '/'
 const TRACK = '/t'
 
