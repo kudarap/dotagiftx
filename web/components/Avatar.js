@@ -17,6 +17,10 @@ export default function Avatar(props) {
     }
   }
 
+  if (!glow) {
+    return <MuiAvatar style={style} {...other} />
+  }
+
   return (
     <MuiAvatar style={style} {...other}>
       <img src={src} alt="" style={{ width: '100%', height: '100%' }} />
@@ -27,24 +31,16 @@ export default function Avatar(props) {
       )}
     </MuiAvatar>
   )
-
-  // return (
-  //   <div style={style}>
-  //     <img alt="" {...other} />
-  //     <div style={{ position: 'absolute', margin: -12 }}>
-  //       <img style={{ width: '100%', height: '100%', display: 'block' }} alt="" src="/glow.png" />
-  //     </div>
-  //   </div>
-  // )
-  // return <MuiAvatar style={style} {...other} />
 }
 
 Avatar.propTypes = {
   style: PropTypes.object,
   glow: PropTypes.bool,
+  src: PropTypes.string,
 }
 
 Avatar.defaultProps = {
   style: {},
   glow: false,
+  src: null,
 }
