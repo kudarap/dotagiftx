@@ -137,7 +137,7 @@ export default function Header({ disableSearch }) {
     })()
   }
 
-  const brandStyle = !disableSearch && isMobile ? { width: 38, overflow: 'hidden' } : {}
+  const isBrandMini = !disableSearch && isMobile
 
   return (
     <AppBar position="static" variant="outlined" className={classes.appBar}>
@@ -146,14 +146,23 @@ export default function Header({ disableSearch }) {
         <Toolbar variant="dense" disableGutters>
           {/* Branding button */}
           {/* Desktop nav branding */}
-          <Link href="/" disableUnderline style={brandStyle}>
-            <img
-              width={134}
-              className={classes.brand}
-              src="/brand_1x.png"
-              srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
-              alt={APP_NAME}
-            />
+          <Link href="/" disableUnderline>
+            {!isBrandMini ? (
+              <img
+                width={134}
+                className={classes.brand}
+                src="/brand_1x.png"
+                srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
+                alt={APP_NAME}
+              />
+            ) : (
+              <img
+                className={classes.brand}
+                src="/icon_1x.png"
+                srcSet="/icon_1x.png 1x, /icon_2x.png 2x"
+                alt={APP_NAME}
+              />
+            )}
           </Link>
 
           <span className={classes.spacer} />
