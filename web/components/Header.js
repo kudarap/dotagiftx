@@ -84,7 +84,7 @@ export default function Header({ disableSearch }) {
   const classes = useStyles()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
-  const { isMobile, isLoggedIn, currentAuth } = useContext(AppContext)
+  const { isTablet: isMobile, isLoggedIn, currentAuth } = useContext(AppContext)
 
   const [profile, setProfile] = React.useState(defaultProfile)
 
@@ -166,7 +166,7 @@ export default function Header({ disableSearch }) {
           </Link>
 
           <span className={classes.spacer} />
-          {!disableSearch && <SearchInputMini />}
+          {!disableSearch && <SearchInputMini style={{ width: isMobile ? '100%' : 325 }} />}
 
           {/* Desktop nav buttons */}
           {!isMobile && (

@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput({ value, onChange, onSubmit, onClear, ...other }) {
+export default function SearchInput({ value, onChange, onSubmit, onClear, style, ...other }) {
   const classes = useStyles()
 
   const router = useRouter()
@@ -82,7 +82,12 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
   }
 
   return (
-    <Paper onSubmit={handleSubmit} className={classes.root} component="form" elevation={0}>
+    <Paper
+      onSubmit={handleSubmit}
+      className={classes.root}
+      component="form"
+      elevation={0}
+      style={style}>
       <InputBase
         onInput={handleChange}
         value={keyword}
@@ -108,10 +113,12 @@ SearchInput.propTypes = {
   onChange: PropTypes.func,
   onSubmit: PropTypes.func,
   onClear: PropTypes.func,
+  style: PropTypes.object,
 }
 SearchInput.defaultProps = {
   value: '',
   onChange: () => {},
   onSubmit: () => {},
   onClear: () => {},
+  style: {},
 }
