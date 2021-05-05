@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
@@ -35,6 +35,7 @@ import Button from '@/components/Button'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import ErrorPage from '../404'
 import DonatorBadge from '@/components/DonatorBadge'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -78,6 +79,7 @@ export default function UserDetails({
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(initialError)
+  const { isMobile } = React.useContext(AppContext)
 
   if (error) {
     return (
@@ -183,7 +185,11 @@ export default function UserDetails({
                 {profile.name}
                 {Boolean(profile.donation) && (
                   <DonatorBadge
-                    style={{ marginLeft: 4, marginTop: 12, position: 'absolute' }}
+                    style={
+                      isMobile
+                        ? { margin: '0 4px' }
+                        : { marginLeft: 4, marginTop: 12, position: 'absolute' }
+                    }
                     size="medium">
                     DONATOR
                   </DonatorBadge>
