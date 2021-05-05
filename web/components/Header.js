@@ -9,7 +9,7 @@ import Button from '@/components/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import IconButton from '@material-ui/core/IconButton'
-import MoreIcon from '@material-ui/icons/MoreVert'
+import MoreIcon from '@material-ui/icons/Menu'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
 import { authRevoke, myProfile } from '@/service/api'
@@ -20,7 +20,7 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import { APP_CACHE_PROFILE } from '@/constants/app'
-import MenuItems from '@/components/MenuItems'
+import NavItems from '@/components/NavItems'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -84,8 +84,7 @@ export default function Header({ disableSearch }) {
   const classes = useStyles()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
-  const { isMobile: isXsScreen, isLoggedIn, currentAuth } = useContext(AppContext)
-  const isMobile = isXsScreen && !disableSearch
+  const { isMobile, isLoggedIn, currentAuth } = useContext(AppContext)
 
   const [profile, setProfile] = React.useState(defaultProfile)
 
@@ -138,7 +137,7 @@ export default function Header({ disableSearch }) {
     })()
   }
 
-  const brandStyle = disableSearch && isXsScreen ? { width: 30, overflow: 'hidden' } : {}
+  const brandStyle = !disableSearch && isMobile ? { width: 38, overflow: 'hidden' } : {}
 
   return (
     <AppBar position="static" variant="outlined" className={classes.appBar}>
@@ -148,26 +147,19 @@ export default function Header({ disableSearch }) {
           {/* Branding button */}
           {/* Desktop nav branding */}
           <Link href="/" disableUnderline style={brandStyle}>
-            {!isMobile ? (
-              <img
-                width={134}
-                className={classes.brand}
-                src="/brand_1x.png"
-                srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
-                alt={APP_NAME}
-              />
-            ) : (
-              <img
-                className={classes.brand}
-                srcSet="/icon_1x.png 1x, /icon_2x.png 2x"
-                alt={APP_NAME}
-              />
-            )}
+            <img
+              width={134}
+              className={classes.brand}
+              src="/brand_1x.png"
+              srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
+              alt={APP_NAME}
+            />
           </Link>
+
           <span className={classes.spacer} />
           {!disableSearch && <SearchInputMini />}
 
-          {/* Nav links */}
+          {/* Desktop nav buttons */}
           {!isMobile && (
             <>
               <Link className={classes.nav} href="/blacklist" underline="none">
@@ -176,15 +168,7 @@ export default function Header({ disableSearch }) {
               <Link className={classes.nav} href="/guides" underline="none">
                 Guides
               </Link>
-              <Link className={classes.nav} href="/faq" underline="none">
-                FAQ
-              </Link>
-            </>
-          )}
 
-          {/* Desktop nav buttons */}
-          {!isMobile && (
-            <>
               <span style={{ flexGrow: 1 }} />
 
               {/* Post item button */}
@@ -221,7 +205,7 @@ export default function Header({ disableSearch }) {
                     keepMounted
                     open={Boolean(anchorEl)}
                     onClose={handleClose}>
-                    <MenuItems
+                    <NavItems
                       profile={profile}
                       onClose={handleClose}
                       onLogout={handleLogout}
@@ -237,16 +221,39 @@ export default function Header({ disableSearch }) {
             </>
           )}
 
-          {/* Mobile buttons */}
+          {/* Mobile nav buttons */}
           {isMobile && (
             <>
-              <span className={classes.spacer} />
+              <span className={classes.spacer} style={{ flexGrow: 1 }} />
+              {disableSearch && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  component={Link}
+                  href="/post-item"
+                  disableUnderline
+                  style={{ marginRight: 8 }}>
+                  Post item
+                </Button>
+              )}
               <IconButton
                 aria-controls="more-menu"
                 aria-haspopup="true"
                 size="small"
                 onClick={handleMoreClick}>
-                <MoreIcon />
+                {isLoggedIn ? (
+                  <Avatar
+                    aria-controls="avatar-menu"
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    className={classes.avatar}
+                    glow={Boolean(profile.donation)}
+                    style={{ width: 34, height: 34 }}
+                    {...retinaSrcSet(profile.avatar, 36, 36)}
+                  />
+                ) : (
+                  <MoreIcon />
+                )}
               </IconButton>
 
               <Menu
@@ -256,16 +263,18 @@ export default function Header({ disableSearch }) {
                 keepMounted
                 open={Boolean(moreEl)}
                 onClose={handleMoreClose}>
-                <MenuItem
-                  onClick={handleMoreClose}
-                  component={Link}
-                  href="/post-item"
-                  disableUnderline>
-                  Post item
-                </MenuItem>
+                {!disableSearch && (
+                  <MenuItem
+                    onClick={handleMoreClose}
+                    component={Link}
+                    href="/post-item"
+                    disableUnderline>
+                    Post item
+                  </MenuItem>
+                )}
 
                 {isLoggedIn ? (
-                  <MenuItems
+                  <NavItems
                     profile={profile}
                     onClose={handleClose}
                     onLogout={handleLogout}
