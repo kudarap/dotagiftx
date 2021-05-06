@@ -52,11 +52,11 @@ func (d *Dispatcher) RegisterJobs() {
 	//	d.marketStg,
 	//	log.WithPrefix(d.logSvc, "job_verify_delivery"),
 	//))
-	d.worker.AddJob(NewGiftWrappedUpdate(
-		d.deliverySvc,
-		d.marketStg,
-		log.WithPrefix(d.logSvc, "job_giftwrapped_update"),
-	))
+	//d.worker.AddJob(NewGiftWrappedUpdate(
+	//	d.deliverySvc,
+	//	d.marketStg,
+	//	log.WithPrefix(d.logSvc, "job_giftwrapped_update"),
+	//))
 }
 
 // VerifyDelivery creates a job to verify a delivery
