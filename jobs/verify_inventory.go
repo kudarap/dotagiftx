@@ -23,7 +23,7 @@ type VerifyInventory struct {
 }
 
 func NewVerifyInventory(is core.InventoryService, ms core.MarketStorage, lg log.Logger) *VerifyInventory {
-	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusLive}
+	f := core.Market{}
 	return &VerifyInventory{
 		is, ms, lg,
 		"verify_inventory", defaultJobInterval, f}
