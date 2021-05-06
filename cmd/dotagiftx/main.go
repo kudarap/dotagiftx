@@ -142,6 +142,7 @@ func (app *application) setup() error {
 		app.worker,
 		deliverySvc,
 		inventorySvc,
+		deliveryStg,
 		marketStg,
 		logger,
 	)
