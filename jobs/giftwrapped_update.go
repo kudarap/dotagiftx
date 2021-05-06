@@ -15,6 +15,7 @@ import (
 // items that still un-opened
 type GiftWrappedUpdate struct {
 	deliverySvc core.DeliveryService
+	deliveryStg core.DeliveryStorage
 	marketStg   core.MarketStorage
 	logger      log.Logger
 	// job settings
@@ -23,14 +24,14 @@ type GiftWrappedUpdate struct {
 	filter   core.Delivery
 }
 
-func NewGiftWrappedUpdate(ds core.DeliveryService, ms core.MarketStorage, lg log.Logger) *GiftWrappedUpdate {
+func NewGiftWrappedUpdate(ds core.DeliveryService, dstg core.DeliveryStorage, ms core.MarketStorage, lg log.Logger) *GiftWrappedUpdate {
 	falsePtr := false
 	f := core.Delivery{
 		GiftOpened: &falsePtr,
 		Status:     core.DeliveryStatusSenderVerified,
 	}
 	return &GiftWrappedUpdate{
-		ds, ms, lg,
+		ds, dstg, ms, lg,
 		"giftwrapped_update", time.Hour, f}
 }
 
@@ -53,18 +54,20 @@ func (vd *GiftWrappedUpdate) Run(ctx context.Context) error {
 
 	src := steaminv.InventoryAsset
 	for {
-		deliveries, _, err := vd.deliverySvc.Deliveries(opts)
+		deliveries, err := vd.deliveryStg.ToVerify(opts)
 		if err != nil {
 			return err
 		}
 
 		for _, dd := range deliveries {
+			vd.logger.Infoln("processing gift wrapped update", dd.ID, *dd.GiftOpened, dd.Retries)
 			if dd.RetriesExceeded() {
 				continue
 			}
 
 			mkt, _ := vd.market(dd.MarketID)
 			if mkt == nil {
+				vd.logger.Errorf("skipped process! market not found")
 				continue
 			}
 
@@ -75,6 +78,7 @@ func (vd *GiftWrappedUpdate) Run(ctx context.Context) error {
 
 			status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
+				vd.logger.Errorf("delivery verification error: %s", err)
 				continue
 			}
 			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)

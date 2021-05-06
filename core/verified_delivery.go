@@ -20,6 +20,9 @@ func init() {
 	appErrorText[DeliveryErrRequiredFields] = "report fields are required"
 }
 
+// DeliveryRetryLimit max retry to process verification.
+const DeliveryRetryLimit = 30
+
 // Delivery statuses.
 const (
 	// DeliveryStatusNoHit buyer's inventory successfully parsed
@@ -108,6 +111,9 @@ type (
 
 		// Update save changes of Delivery to data store.
 		Update(*Delivery) error
+
+		// ToVerify returns a list of deliveries to process from data store.
+		ToVerify(opts FindOpts) ([]Delivery, error)
 	}
 )
 
@@ -167,7 +173,7 @@ func (d Delivery) AddAssets(sa []SteamAsset) *Delivery {
 	return &d
 }
 
-// RetriesExceeded when it reached 30 reties.
+// RetriesExceeded when it reached DeliveryRetryLimit reties.
 func (d Delivery) RetriesExceeded() bool {
-	return d.Retries > 30
+	return d.Retries > DeliveryRetryLimit
 }
