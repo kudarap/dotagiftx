@@ -18,7 +18,7 @@ export default function Avatar(props) {
   }
 
   if (!glow) {
-    return <MuiAvatar style={style} {...other} />
+    return <MuiAvatar src={src} style={style} {...other} />
   }
 
   return (
