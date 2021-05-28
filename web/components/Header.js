@@ -171,7 +171,14 @@ export default function Header({ disableSearch }) {
           {/* Desktop nav buttons */}
           {!isMobile && (
             <>
-              <Link className={classes.nav} href="/blacklist" underline="none">
+              <Link
+                className={classes.nav}
+                href="/blacklist"
+                underline="none"
+                style={{
+                  borderBottom: '2px solid #dc3914',
+                  marginBottom: -2,
+                }}>
                 Blacklist
               </Link>
               <Link className={classes.nav} href="/guides" underline="none">
