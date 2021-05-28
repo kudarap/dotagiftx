@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       fontSize: theme.typography.h6.fontSize,
     },
-    fontSize: '2.125vw',
+    fontSize: '2vw',
   },
   avatar: {
     [theme.breakpoints.down('xs')]: {
