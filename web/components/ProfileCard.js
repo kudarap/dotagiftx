@@ -3,16 +3,9 @@ import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Avatar from '@/components/Avatar'
-import ChipLink from '@/components/ChipLink'
-import {
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
-} from '@/constants/strings'
 import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
-import MarketNotes from '@/components/MarketNotes'
 import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
@@ -27,6 +20,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       fontSize: theme.typography.h6.fontSize,
     },
+    fontSize: '2.125vw',
   },
   avatar: {
     [theme.breakpoints.down('xs')]: {
@@ -38,12 +32,10 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ProfileCard({ user, marketSummary, notes, loading }) {
+export default function ProfileCard({ user, marketSummary, loading, ...other }) {
   const classes = useStyles()
 
   const storeProfile = `/profiles/${user.steam_id}`
-  const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${user.steam_id}`
-  const dota2Inventory = `${steamProfileURL}/inventory#570`
 
   const isProfileReported = Boolean(user.status)
 
@@ -73,9 +65,11 @@ export default function ProfileCard({ user, marketSummary, notes, loading }) {
             </DonatorBadge>
           )}
         </Typography>
+
         {isProfileReported && (
           <Typography color="error">{USER_STATUS_MAP_TEXT[user.status]}</Typography>
         )}
+
         <Typography variant="body2" component="span">
           <Link href={`/profiles/${user.steam_id}`}>
             {!loading && marketSummary ? marketSummary.live : '--'} Items
@@ -89,15 +83,9 @@ export default function ProfileCard({ user, marketSummary, notes, loading }) {
             {!loading && marketSummary ? marketSummary.sold : '--'} Delivered
           </Link>
         </Typography>
+
         <br />
-        <Typography gutterBottom>
-          <ChipLink label="SteamRep" href={`${STEAMREP_PROFILE_BASE_URL}/${user.steam_id}`} />
-          &nbsp;
-          <ChipLink label="Dotabuff" href={`${DOTABUFF_PROFILE_BASE_URL}/${user.steam_id}`} />
-          &nbsp;
-          <ChipLink label="Steam Inventory" href={dota2Inventory} />
-          {notes && <MarketNotes text={notes} />}
-        </Typography>
+        <Typography gutterBottom>{other.children}</Typography>
       </Typography>
     </div>
   )
@@ -105,12 +93,10 @@ export default function ProfileCard({ user, marketSummary, notes, loading }) {
 ProfileCard.propTypes = {
   user: PropTypes.object,
   marketSummary: PropTypes.object,
-  notes: PropTypes.string,
   loading: PropTypes.bool,
 }
 ProfileCard.defaultProps = {
   user: {},
-  marketSummary: {},
-  notes: '',
+  marketSummary: null,
   loading: false,
 }
