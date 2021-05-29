@@ -179,7 +179,7 @@ func (s *marketStorage) Index(id string) (*core.Market, error) {
 	}
 
 	var dels []core.Delivery
-	_ = s.db.list(r.Table(tableDelivery).GetAllByIndex(inventoryFieldMarketID, mkt.ID), &dels)
+	_ = s.db.list(r.Table(tableDelivery).GetAllByIndex(deliveryFieldMarketID, mkt.ID), &dels)
 	if len(dels) != 0 {
 		mkt.Delivery = &dels[0]
 	}
