@@ -57,6 +57,37 @@ func handlePublicProfile(svc core.UserService, cache core.Cache) http.HandlerFun
 	}
 }
 
+func handleBlacklisted(svc core.UserService, cache core.Cache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
+		opts, err := findOptsFromURL(r.URL, &core.Item{})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		list, err := svc.FlaggedUsers(opts)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		if list == nil {
+			list = []core.User{}
+		}
+
+		go cache.Set(cacheKey, list, userCacheExpr)
+
+		respondOK(w, list)
+	}
+}
+
 const userVanityCacheExpr = time.Hour
 
 type vanityUserResp struct {

@@ -11,7 +11,7 @@ import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
+    // flexGrow: 1,
     padding: '4px 12px 2px',
     marginBottom: 3,
     display: 'flex',
@@ -21,6 +21,7 @@ const useStyles = makeStyles(theme => ({
     // '&:hover': {
     //   borderColor: theme.palette.grey[700],
     // },
+    width: 325,
   },
   input: {
     [theme.breakpoints.down('sm')]: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SearchInput({ value, onChange, onSubmit, onClear, ...other }) {
+export default function SearchInput({ value, onChange, onSubmit, onClear, style, ...other }) {
   const classes = useStyles()
 
   const router = useRouter()
@@ -81,7 +82,12 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, ...oth
   }
 
   return (
-    <Paper onSubmit={handleSubmit} className={classes.root} component="form" elevation={0}>
+    <Paper
+      onSubmit={handleSubmit}
+      className={classes.root}
+      component="form"
+      elevation={0}
+      style={style}>
       <InputBase
         onInput={handleChange}
         value={keyword}
@@ -107,10 +113,12 @@ SearchInput.propTypes = {
   onChange: PropTypes.func,
   onSubmit: PropTypes.func,
   onClear: PropTypes.func,
+  style: PropTypes.object,
 }
 SearchInput.defaultProps = {
   value: '',
   onChange: () => {},
   onSubmit: () => {},
   onClear: () => {},
+  style: {},
 }

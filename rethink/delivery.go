@@ -57,6 +57,21 @@ func (s *deliveryStorage) Count(o core.FindOpts) (num int, err error) {
 	return
 }
 
+func (s *deliveryStorage) ToVerify(o core.FindOpts) ([]core.Delivery, error) {
+	var res []core.Delivery
+	o.KeywordFields = s.keywordFields
+	q := findOpts(o).parseOpts(s.table(), func(t r.Term) r.Term {
+		return t.Filter(func(d r.Term) r.Term {
+			return d.Field("retries").Default(0).Lt(core.DeliveryRetryLimit)
+		})
+	})
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return res, nil
+}
+
 // includeRelatedFields injects user details base on market foreign keys.
 func (s *deliveryStorage) includeRelatedFields(q r.Term) r.Term {
 	return q

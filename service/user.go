@@ -22,6 +22,10 @@ func (s *userService) Users(opts core.FindOpts) ([]core.User, error) {
 	return s.userStg.Find(opts)
 }
 
+func (s *userService) FlaggedUsers(opts core.FindOpts) ([]core.User, error) {
+	return s.userStg.FindFlagged(opts)
+}
+
 func (s *userService) User(id string) (*core.User, error) {
 	return s.userStg.Get(id)
 }
@@ -42,7 +46,7 @@ func (s *userService) Create(u *core.User) error {
 	}
 	u.Avatar = url
 
-	if err := u.CheckCreate(); err != nil {
+	if err = u.CheckCreate(); err != nil {
 		return err
 	}
 

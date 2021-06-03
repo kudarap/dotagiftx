@@ -105,7 +105,7 @@ export default function Faq() {
             size="large"
             target="_blank"
             rel="noreferrer noopener"
-            href="https://www.paypal.com/donate?hosted_button_id=KZW994N5WDH2Q">
+            href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=LBY7VY8PQ9D3Y&item_name=Support+DotagiftX.com&currency_code=USD">
             Donate with PayPal
           </PaypalButton>
           <Typography color="textSecondary" style={{ marginTop: 6 }}>

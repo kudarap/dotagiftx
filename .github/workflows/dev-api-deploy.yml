@@ -43,9 +43,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Compile
-        run: make build
-
       - name: Build Image
         run: docker build -t $IMAGE_NAME .
 

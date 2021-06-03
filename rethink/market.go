@@ -66,9 +66,13 @@ func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, 
 	q := r.Table(tableMarket).
 		// .filter(r.row.hasFields('inventory_status').not().or(r.row('inventory_status').eq(500)))
 		Filter(func(t r.Term) r.Term {
-			return t.HasFields(marketFieldInventoryStatus).Not().Or(
-				t.Field(marketFieldInventoryStatus).Eq(core.InventoryStatusError),
-			)
+			return t.HasFields(marketFieldInventoryStatus).Not().
+				Or(t.Field(marketFieldInventoryStatus).Eq(core.InventoryStatusError))
+		}).
+		Filter(func(t r.Term) r.Term {
+			return t.And(t.Field(marketFieldStatus).Eq(core.MarketStatusLive).
+				Or(t.Field(marketFieldStatus).Eq(core.MarketStatusReserved))).
+				And(t.Field(marketFieldType).Eq(core.MarketTypeAsk))
 		})
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
 
@@ -175,7 +179,7 @@ func (s *marketStorage) Index(id string) (*core.Market, error) {
 	}
 
 	var dels []core.Delivery
-	_ = s.db.list(r.Table(tableDelivery).GetAllByIndex(inventoryFieldMarketID, mkt.ID), &dels)
+	_ = s.db.list(r.Table(tableDelivery).GetAllByIndex(deliveryFieldMarketID, mkt.ID), &dels)
 	if len(dels) != 0 {
 		mkt.Delivery = &dels[0]
 	}

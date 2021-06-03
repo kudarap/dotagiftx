@@ -11,11 +11,12 @@ import AppContext from '@/components/AppContext'
 function Root({ children }) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
+  const isTablet = useMediaQuery(theme.breakpoints.down('sm'))
   const currentAuth = Auth.get()
   const isLoggedIn = Auth.isOk()
 
   return (
-    <AppContext.Provider value={{ isMobile, currentAuth, isLoggedIn }}>
+    <AppContext.Provider value={{ isMobile, isTablet, currentAuth, isLoggedIn }}>
       <Theme>{children}</Theme>
       {/* {currentAuth.user_id && (
         <Theme>

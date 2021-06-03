@@ -2,13 +2,13 @@ package http
 
 import (
 	"net/http"
-	"path/filepath"
 
+	"github.com/kudarap/dotagiftx/assets"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/sirupsen/logrus"
 )
 
-var pixel = filepath.Join("assets/image/pixel.gif")
+const pixelImage = "image/pixel.gif"
 
 func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,8 @@ func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFun
 		w.Header().Set("Expires", "0")
 
 		// output image
+		image, _ := assets.Content.ReadFile(pixelImage)
 		w.Header().Set("Content-Type", "image/gif")
-		http.ServeFile(w, r, pixel)
+		w.Write(image)
 	}
 }

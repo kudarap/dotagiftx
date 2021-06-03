@@ -75,7 +75,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
             </TableRow>
           )}
 
-          {!error && items.length === 0 && (
+          {!error && items && items.length === 0 && (
             <TableRow>
               <TableCell align="center" colSpan={3}>
                 No Result
@@ -83,54 +83,55 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
             </TableRow>
           )}
 
-          {items.map(item => (
-            <TableRow key={item.id} hover>
-              <TableCell className={classes.th} component="th" scope="row" padding="none">
-                <Link
-                  className={classes.link}
-                  href={`/[slug]${itemURLSuffix}`}
-                  as={`/${item.slug}${itemURLSuffix}`}
-                  disableUnderline>
-                  <ItemImage
-                    className={classes.image}
-                    image={item.image}
-                    width={77}
-                    height={55}
-                    title={item.name}
-                    rarity={item.rarity}
-                  />
+          {items &&
+            items.map(item => (
+              <TableRow key={item.id} hover>
+                <TableCell className={classes.th} component="th" scope="row" padding="none">
+                  <Link
+                    className={classes.link}
+                    href={`/[slug]${itemURLSuffix}`}
+                    as={`/${item.slug}${itemURLSuffix}`}
+                    disableUnderline>
+                    <ItemImage
+                      className={classes.image}
+                      image={item.image}
+                      width={77}
+                      height={55}
+                      title={item.name}
+                      rarity={item.rarity}
+                    />
 
-                  <div>
-                    <strong>{item.name}</strong>
-                    <br />
-                    <Typography variant="caption" color="textSecondary">
-                      {item.hero}
+                    <div>
+                      <strong>{item.name}</strong>
+                      <br />
+                      <Typography variant="caption" color="textSecondary">
+                        {item.hero}
+                      </Typography>
+                      <RarityTag rarity={item.rarity} />
+                    </div>
+                  </Link>
+                </TableCell>
+
+                {!isMobile && (
+                  <TableCell align="right">
+                    <Typography variant="body2" color="textSecondary">
+                      {/* eslint-disable-next-line no-nested-ternary */}
+                      {isRecentMode
+                        ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
+                        : bidType
+                        ? item.bid_count
+                        : item.quantity}
                     </Typography>
-                    <RarityTag rarity={item.rarity} />
-                  </div>
-                </Link>
-              </TableCell>
+                  </TableCell>
+                )}
 
-              {!isMobile && (
                 <TableCell align="right">
-                  <Typography variant="body2" color="textSecondary">
-                    {/* eslint-disable-next-line no-nested-ternary */}
-                    {isRecentMode
-                      ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
-                      : bidType
-                      ? item.bid_count
-                      : item.quantity}
+                  <Typography variant="body2" style={bidType ? { color: bidColor.A200 } : null}>
+                    {format.amount(bidType ? item.highest_bid : item.lowest_ask, 'USD')}
                   </Typography>
                 </TableCell>
-              )}
-
-              <TableCell align="right">
-                <Typography variant="body2" style={bidType ? { color: bidColor.A200 } : null}>
-                  {format.amount(bidType ? item.highest_bid : item.lowest_ask, 'USD')}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

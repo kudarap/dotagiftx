@@ -55,6 +55,9 @@ type (
 		// Users returns a list of users.
 		Users(opts FindOpts) ([]User, error)
 
+		// FlaggedUsers returns a list of flagged/reported users.
+		FlaggedUsers(opts FindOpts) ([]User, error)
+
 		// User returns user details by id.
 		User(id string) (*User, error)
 
@@ -75,6 +78,9 @@ type (
 	UserStorage interface {
 		// Find returns a list of users from data store.
 		Find(opts FindOpts) ([]User, error)
+
+		// FindFlagged returns a list of flagged users from data store.
+		FindFlagged(opts FindOpts) ([]User, error)
 
 		// Get returns user details by id from data store.
 		Get(id string) (*User, error)

@@ -15,6 +15,7 @@ type Dispatcher struct {
 	// Jobs service dependencies
 	deliverySvc  core.DeliveryService
 	inventorySvc core.InventoryService
+	deliveryStg  core.DeliveryStorage
 	marketStg    core.MarketStorage
 	logSvc       *logrus.Logger
 }
@@ -23,6 +24,7 @@ type Dispatcher struct {
 func NewDispatcher(worker *worker.Worker,
 	deliverySvc core.DeliveryService,
 	inventorySvc core.InventoryService,
+	deliveryStg core.DeliveryStorage,
 	marketStg core.MarketStorage,
 	logSvc *logrus.Logger,
 ) *Dispatcher {
@@ -30,6 +32,7 @@ func NewDispatcher(worker *worker.Worker,
 		worker,
 		deliverySvc,
 		inventorySvc,
+		deliveryStg,
 		marketStg,
 		logSvc,
 	}
@@ -54,6 +57,7 @@ func (d *Dispatcher) RegisterJobs() {
 	))
 	d.worker.AddJob(NewGiftWrappedUpdate(
 		d.deliverySvc,
+		d.deliveryStg,
 		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_giftwrapped_update"),
 	))

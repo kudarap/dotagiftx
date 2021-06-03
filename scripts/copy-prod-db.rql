@@ -7,6 +7,8 @@ testDB.table('catalog').delete();
 testDB.table('item').delete();
 testDB.table('market').delete();
 testDB.table('user').delete();
+testDB.table('inventory').delete();
+testDB.table('delivery').delete();
 testDB.table('track').delete();
 
 testDB.table('auth').insert(productionDB.table('auth'));
@@ -14,4 +16,6 @@ testDB.table('catalog').insert(productionDB.table('catalog'));
 testDB.table('item').insert(productionDB.table('item'));
 testDB.table('market').insert(productionDB.table('market'));
 testDB.table('user').insert(productionDB.table('user'));
+testDB.table('delivery').insert(productionDB.table('delivery'));
+testDB.table('delivery').insert(productionDB.table('delivery'));
 testDB.table('track').insert(productionDB.table('track').limit(100));

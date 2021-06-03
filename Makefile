@@ -17,6 +17,8 @@ run: generate build
 
 build:
 	go build -v -ldflags=$(LDFLAGS) -o $(PROJECTNAME) ./cmd/$(PROJECTNAME)
+build-worker:
+	go build -v -ldflags=$(LDFLAGS) -o dxworker ./cmd/dxworker
 build-linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags="$(LDFLAGS)" \
 		-o ./$(PROJECTNAME)_amd64 ./cmd/$(PROJECTNAME)

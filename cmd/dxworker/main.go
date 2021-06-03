@@ -5,10 +5,8 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx/gokit/envconf"
-	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
-	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/jobs"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
@@ -49,7 +47,6 @@ func main() {
 
 type application struct {
 	config  Config
-	server  *http.Server
 	worker  *worker.Worker
 	logger  *logrus.Logger
 	version *version.Version
@@ -88,10 +85,10 @@ func (app *application) setup() error {
 
 	// External services setup.
 	logSvc.Println("setting up external services...")
-	steamClient, err := setupSteam(app.config.Steam, redisClient)
-	if err != nil {
-		return err
-	}
+	//steamClient, err := setupSteam(app.config.Steam, redisClient)
+	//if err != nil {
+	//	return err
+	//}
 
 	// Setup application worker
 	app.worker = worker.New()
@@ -101,41 +98,41 @@ func (app *application) setup() error {
 
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
-	userStg := rethink.NewUser(rethinkClient)
-	authStg := rethink.NewAuth(rethinkClient)
-	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
-	itemStg := rethink.NewItem(rethinkClient)
+	//userStg := rethink.NewUser(rethinkClient)
+	//authStg := rethink.NewAuth(rethinkClient)
+	//catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
+	//itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
-	trackStg := rethink.NewTrack(rethinkClient)
-	statsStg := rethink.NewStats(rethinkClient)
-	reportStg := rethink.NewReport(rethinkClient)
+	//trackStg := rethink.NewTrack(rethinkClient)
+	//statsStg := rethink.NewStats(rethinkClient)
+	//reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
 
 	// Service inits.
 	logSvc.Println("setting up services...")
-	fileMgr := setupFileManager(app.config)
-	userSvc := service.NewUser(userStg, fileMgr)
-	authSvc := service.NewAuth(steamClient, authStg, userSvc)
-	imageSvc := service.NewImage(fileMgr)
-	itemSvc := service.NewItem(itemStg, fileMgr)
+	//fileMgr := setupFileManager(app.config)
+	//userSvc := service.NewUser(userStg, fileMgr)
+	//authSvc := service.NewAuth(steamClient, authStg, userSvc)
+	//imageSvc := service.NewImage(fileMgr)
+	//itemSvc := service.NewItem(itemStg, fileMgr)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg)
-	marketSvc := service.NewMarket(
-		marketStg,
-		userStg,
-		itemStg,
-		trackStg,
-		catalogStg,
-		deliverySvc,
-		inventorySvc,
-		steamClient,
-		dispatcher,
-		app.contextLog("service_market"),
-	)
-	trackSvc := service.NewTrack(trackStg, itemStg)
-	statsSvc := service.NewStats(statsStg)
-	reportSvc := service.NewReport(reportStg)
+	//marketSvc := service.NewMarket(
+	//	marketStg,
+	//	userStg,
+	//	itemStg,
+	//	trackStg,
+	//	catalogStg,
+	//	deliverySvc,
+	//	inventorySvc,
+	//	steamClient,
+	//	dispatcher,
+	//	app.contextLog("service_market"),
+	//)
+	//trackSvc := service.NewTrack(trackStg, itemStg)
+	//statsSvc := service.NewStats(statsStg)
+	//reportSvc := service.NewReport(reportStg)
 
 	// Register job on the worker.
 	*dispatcher = *jobs.NewDispatcher(
@@ -154,26 +151,6 @@ func (app *application) setup() error {
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
 	//fixes.MarketIndexRebuild(marketStg)
 	//redisClient.BulkDel("")
-
-	// Server setup.
-	logSvc.Println("setting up http server...")
-	srv := http.NewServer(
-		app.config.SigKey,
-		userSvc,
-		authSvc,
-		imageSvc,
-		itemSvc,
-		marketSvc,
-		trackSvc,
-		statsSvc,
-		reportSvc,
-		steamClient,
-		redisClient,
-		initVer(app.config),
-		logSvc,
-	)
-	srv.Addr = app.config.Addr
-	app.server = srv
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
@@ -194,9 +171,8 @@ func (app *application) setup() error {
 func (app *application) run() error {
 	defer app.closerFn()
 
-	go app.worker.Start()
-
-	return app.server.Run()
+	app.worker.Start()
+	return nil
 }
 
 func (app *application) contextLog(name string) log.Logger {
@@ -216,11 +192,6 @@ func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
 	}
 
 	return c, nil
-}
-
-func setupFileManager(cfg Config) *file.Local {
-	c := cfg.Upload
-	return file.New(c.Path, c.Size, c.Types)
 }
 
 func setupRethink(cfg rethink.Config) (c *rethink.Client, err error) {

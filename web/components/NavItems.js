@@ -5,7 +5,7 @@ import Link from '@/components/Link'
 
 let key = 100
 
-export default function MenuItems({ profile, onClose, onLogout }) {
+export default function NavItems({ profile, onClose, onLogout }) {
   const handleClose = () => {
     onClose()
   }
@@ -45,7 +45,7 @@ export default function MenuItems({ profile, onClose, onLogout }) {
     </MenuItem>,
   ]
 }
-MenuItems.propTypes = {
+NavItems.propTypes = {
   profile: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
