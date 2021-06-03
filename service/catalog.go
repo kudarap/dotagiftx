@@ -67,11 +67,12 @@ func (s *marketService) CatalogDetails(slug string, opts core.FindOpts) (*core.C
 	filter := opts.Filter.(*core.Market)
 	filter.ItemID = catalog.ID
 	opts.Filter = filter
-	res, _, err := s.Markets(context.Background(), opts)
+	res, meta, err := s.Markets(context.Background(), opts)
 	if err != nil {
 		return nil, err
 	}
 	catalog.Asks = res
+	catalog.Quantity = meta.TotalCount
 
 	return catalog, err
 }
