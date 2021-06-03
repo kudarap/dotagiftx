@@ -4,8 +4,8 @@ import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { catalog as getCatalog } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import ItemDetails from '@/components/ItemDetails'
-import ErrorPage from './404'
 import { VERIFIED_INVENTORY_VERIFIED } from '@/constants/verified'
+import ErrorPage from './404'
 
 export default function DynamicPage(props) {
   const { error } = props
@@ -41,7 +41,7 @@ export async function getServerSideProps(props) {
 
   // Handles no market entry on item
   try {
-    catalog = await getCatalog(slug)
+    catalog = await getCatalog(slug, marketSearchFilter)
   } catch (e) {
     error = `catalog get error: ${e.message}`
   }
