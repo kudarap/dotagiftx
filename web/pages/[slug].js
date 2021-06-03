@@ -5,6 +5,7 @@ import { catalog as getCatalog } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import ItemDetails from '@/components/ItemDetails'
 import ErrorPage from './404'
+import { VERIFIED_INVENTORY_VERIFIED } from '@/constants/verified'
 
 export default function DynamicPage(props) {
   const { error } = props
@@ -26,6 +27,7 @@ const marketSearchFilter = {
   page: 1,
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
+  inventory_status: VERIFIED_INVENTORY_VERIFIED,
   sort: 'price',
 }
 
