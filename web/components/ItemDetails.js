@@ -38,6 +38,7 @@ import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import MarketSalesChart from '@/components/MarketSalesChart'
 import MarketActivity from '@/components/MarketActivity'
+import { VERIFIED_INVENTORY_VERIFIED } from '@/constants/verified'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -96,6 +97,7 @@ const marketReservedFilter = {
 const marketDeliveredFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_SOLD,
+  inventory_status: VERIFIED_INVENTORY_VERIFIED,
   sort: 'updated_at:desc',
 }
 
