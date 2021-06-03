@@ -96,7 +96,13 @@ func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger 
 			}
 		}
 
-		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"))
+		opts, err := findOptsFromURL(r.URL, &core.Market{})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"), opts)
 		if err != nil {
 			respondError(w, err)
 			return

@@ -123,7 +123,7 @@ type (
 		Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
 
 		// CatalogDetails returns catalog details by item id.
-		CatalogDetails(id string) (*Catalog, error)
+		CatalogDetails(id string, opts FindOpts) (*Catalog, error)
 
 		// TrendingCatalog returns a top 10 trending catalogs.
 		TrendingCatalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
