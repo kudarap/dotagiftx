@@ -14,12 +14,12 @@ type statsStorage struct {
 	db *Client
 }
 
-func (s *statsStorage) CountMarketStatus(o core.FindOpts) (*core.MarketStatusCount, error) {
+func (s *statsStorage) CountMarketStatus(opts core.FindOpts) (*core.MarketStatusCount, error) {
 	var res []struct {
 		Group     core.MarketStatus `db:"group"`
 		Reduction int               `db:"reduction"`
 	}
-	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), o)
+	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), opts)
 	if err := s.db.list(q.Count(), &res); err != nil {
 		return nil, err
 	}
@@ -36,6 +36,74 @@ func (s *statsStorage) CountMarketStatus(o core.FindOpts) (*core.MarketStatusCou
 		Removed:      mapRes[core.MarketStatusRemoved],
 		Cancelled:    mapRes[core.MarketStatusCancelled],
 		BidCompleted: mapRes[core.MarketStatusBidCompleted],
+	}
+
+	cds, err := s.CountDeliveryStatus(opts)
+	if err != nil {
+		return nil, err
+	}
+	msc.DeliveryNoHit = cds.DeliveryNoHit
+	msc.DeliveryNameVerified = cds.DeliveryNameVerified
+	msc.DeliverySenderVerified = cds.DeliverySenderVerified
+	msc.DeliveryPrivate = cds.DeliveryPrivate
+	msc.DeliveryError = cds.DeliveryError
+
+	cis, err := s.CountInventoryStatus(opts)
+	if err != nil {
+		return nil, err
+	}
+	msc.InventoryNoHit = cis.InventoryNoHit
+	msc.InventoryVerified = cis.InventoryVerified
+	msc.InventoryPrivate = cis.InventoryPrivate
+	msc.InventoryError = cis.InventoryError
+
+	return msc, nil
+}
+
+func (s *statsStorage) CountDeliveryStatus(o core.FindOpts) (*core.MarketStatusCount, error) {
+	var res []struct {
+		Group     core.DeliveryStatus `db:"group"`
+		Reduction int                 `db:"reduction"`
+	}
+	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldDeliveryStatus), o)
+	if err := s.db.list(q.Count(), &res); err != nil {
+		return nil, err
+	}
+	mapRes := map[core.DeliveryStatus]int{}
+	for _, rr := range res {
+		mapRes[rr.Group] = rr.Reduction
+	}
+
+	msc := &core.MarketStatusCount{
+		DeliveryNoHit:          mapRes[core.DeliveryStatusNoHit],
+		DeliveryNameVerified:   mapRes[core.DeliveryStatusNameVerified],
+		DeliverySenderVerified: mapRes[core.DeliveryStatusSenderVerified],
+		DeliveryPrivate:        mapRes[core.DeliveryStatusPrivate],
+		DeliveryError:          mapRes[core.DeliveryStatusError],
+	}
+
+	return msc, nil
+}
+
+func (s *statsStorage) CountInventoryStatus(o core.FindOpts) (*core.MarketStatusCount, error) {
+	var res []struct {
+		Group     core.InventoryStatus `db:"group"`
+		Reduction int                  `db:"reduction"`
+	}
+	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldInventoryStatus), o)
+	if err := s.db.list(q.Count(), &res); err != nil {
+		return nil, err
+	}
+	mapRes := map[core.InventoryStatus]int{}
+	for _, rr := range res {
+		mapRes[rr.Group] = rr.Reduction
+	}
+
+	msc := &core.MarketStatusCount{
+		InventoryNoHit:    mapRes[core.InventoryStatusNoHit],
+		InventoryVerified: mapRes[core.InventoryStatusVerified],
+		InventoryPrivate:  mapRes[core.InventoryStatusPrivate],
+		InventoryError:    mapRes[core.InventoryStatusError],
 	}
 
 	return msc, nil

@@ -89,8 +89,8 @@ type (
 		SearchText    string `json:"-"               db:"search_text,omitempty,indexed"`
 		UserRankScore int    `json:"user_rank_score" db:"user_rank_score,omitempty,indexed"`
 
-		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty"`
-		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
+		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty,indexed"`
+		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty,indexed"`
 
 		// Include related fields.
 		User      *User      `json:"user,omitempty"      db:"user,omitempty"`
