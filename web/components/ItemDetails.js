@@ -80,7 +80,7 @@ const useStyles = makeStyles(theme => ({
 const marketBuyOrderFilter = {
   type: MARKET_TYPE_BID,
   status: MARKET_STATUS_LIVE,
-  sort: 'price:desc',
+  sort: 'user_rank_score:desc',
 }
 
 const marketSalesGraphFilter = {
