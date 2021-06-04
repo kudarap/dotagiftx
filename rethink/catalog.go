@@ -249,9 +249,10 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
 	// Get market offers from LIVE status.
 	offer := r.Table(tableMarket).Filter(core.Market{
-		ItemID: itemID,
-		Type:   core.MarketTypeAsk,
-		Status: core.MarketStatusLive,
+		ItemID:          itemID,
+		Type:            core.MarketTypeAsk,
+		Status:          core.MarketStatusLive,
+		InventoryStatus: core.InventoryStatusVerified,
 	})
 	// Get offer count on the market by item ID.
 	q := offer.Count()
