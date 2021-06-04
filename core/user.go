@@ -130,7 +130,7 @@ const (
 	userScoreBidCompleteRate = 4
 
 	userScoreVerifiedInventoryRate      = 2
-	userScoreVerifiedDeliveryItemRate   = 4
+	userScoreVerifiedDeliveryNameRate   = 4
 	userScoreVerifiedDeliverySenderRate = 6
 )
 
@@ -141,5 +141,9 @@ func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore += stats.Reserved * userScoreReservedRate
 	u.RankScore += stats.Sold * userScoreDeliveredRate
 	u.RankScore += stats.BidCompleted * userScoreBidCompleteRate
+
+	u.RankScore += stats.InventoryVerified * userScoreVerifiedInventoryRate
+	u.RankScore += stats.DeliveryNameVerified * userScoreVerifiedDeliveryNameRate
+	u.RankScore += stats.DeliverySenderVerified * userScoreVerifiedDeliverySenderRate
 	return &u
 }
