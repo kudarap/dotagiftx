@@ -127,6 +127,7 @@ func (app *application) setup() error {
 		itemStg,
 		trackStg,
 		catalogStg,
+		statsStg,
 		deliverySvc,
 		inventorySvc,
 		steamClient,
@@ -134,8 +135,8 @@ func (app *application) setup() error {
 		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
-	statsSvc := service.NewStats(statsStg)
 	reportSvc := service.NewReport(reportStg)
+	statsSvc := service.NewStats(statsStg)
 
 	// Register job on the worker.
 	*dispatcher = *jobs.NewDispatcher(

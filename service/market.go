@@ -22,6 +22,7 @@ func NewMarket(
 	is core.ItemStorage,
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
+	st core.StatsStorage,
 	vd core.DeliveryService,
 	vi core.InventoryService,
 	sc core.SteamClient,
@@ -33,6 +34,7 @@ func NewMarket(
 		is,
 		ts,
 		cs,
+		st,
 		vd,
 		vi,
 		sc,
@@ -47,6 +49,7 @@ type marketService struct {
 	itemStg      core.ItemStorage
 	trackStg     core.TrackStorage
 	catalogStg   core.CatalogStorage
+	statsStg     core.StatsStorage
 	deliverySvc  core.DeliveryService
 	inventorySvc core.InventoryService
 	steam        core.SteamClient
@@ -141,6 +144,9 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 
 	//go func() {
+	if err := s.updateUserScore(mkt.UserID); err != nil {
+		return err
+	}
 	if _, err := s.marketStg.Index(mkt.ID); err != nil {
 		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 	}
@@ -291,11 +297,31 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		}
 	}
 
+	if err = s.updateUserScore(mkt.UserID); err != nil {
+		return err
+	}
 	if _, err = s.marketStg.Index(mkt.ID); err != nil {
 		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 	}
 
 	return nil
+}
+
+func (s *marketService) updateUserScore(userID string) error {
+	opts := core.FindOpts{
+		Filter: core.Market{UserID: userID},
+	}
+	stats, err := s.statsStg.CountMarketStatus(opts)
+	if err != nil {
+		return err
+	}
+
+	u := &core.User{ID: userID, MarketStats: *stats}
+	u = u.CalcRankScore(*stats)
+	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
+		return err
+	}
+	return s.userStg.Update(u)
 }
 
 func (s *marketService) checkFlaggedUser(userID string) error {

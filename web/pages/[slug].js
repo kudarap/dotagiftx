@@ -28,7 +28,7 @@ const marketSearchFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   inventory_status: VERIFIED_INVENTORY_VERIFIED,
-  sort: 'price',
+  sort: 'user_rank_score:desc',
 }
 
 // This gets called on every request
