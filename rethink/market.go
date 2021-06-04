@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -221,6 +222,32 @@ func (s *marketStorage) Create(in *core.Market) error {
 func (s *marketStorage) Update(in *core.Market) error {
 	in.UpdatedAt = now()
 	return s.BaseUpdate(in)
+}
+
+func (s *marketStorage) UpdateUserScore(userID string, rankScore int) error {
+	if userID == "" {
+		return fmt.Errorf("user id is required to update user score")
+	}
+
+	// get all user live market
+	opts := core.FindOpts{Filter: core.Market{
+		UserID: userID,
+		Status: core.MarketStatusLive,
+	}}
+	markets, err := s.Find(opts)
+	if err != nil {
+		return err
+	}
+
+	// set new user rank score
+	for _, mm := range markets {
+		mm.UserRankScore = rankScore
+		if err = s.BaseUpdate(&mm); err != nil {
+			return fmt.Errorf("could not update market user rank: %s", err)
+		}
+	}
+
+	return nil
 }
 
 func (s *marketStorage) BaseUpdate(in *core.Market) error {

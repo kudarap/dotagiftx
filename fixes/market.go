@@ -8,6 +8,24 @@ import (
 	"github.com/kudarap/dotagiftx/steam"
 )
 
+func MarketSetRankingScores(userSvc core.UserService, marketSvc core.MarketService) {
+	users, err := userSvc.Users(core.FindOpts{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, uu := range users {
+		if err = marketSvc.UpdateUserRankScore(uu.ID); err != nil {
+			fmt.Println("market user score error:", err)
+			continue
+		}
+
+		fmt.Println("market user score ok!:", uu.ID)
+	}
+
+	fmt.Println("market user score done!")
+}
+
 func MarketIndexRebuild(marketStg core.MarketStorage) {
 	res, _ := marketStg.Find(core.FindOpts{})
 
