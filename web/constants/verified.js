@@ -11,7 +11,7 @@ import Error from '@material-ui/icons/ErrorOutline'
 
 const iconStyle = {
   style: {
-    fontSize: '0.875rem',
+    fontSize: '1rem',
     marginLeft: 4,
     marginRight: 2,
     marginBottom: -2,
