@@ -151,7 +151,7 @@ export default function MarketList({
     router.push(linkProps)
   }
 
-  const offerListLoading = !offers && loading
+  const offerListLoading = loading
   const buyOrderLoading = !buyOrders.data
 
   return (
@@ -342,14 +342,6 @@ function baseTable(Component) {
                 <Typography variant="caption" color="textSecondary">
                   {error}
                 </Typography>
-              </TableCell>
-            </TableRow>
-          )}
-
-          {loading && (
-            <TableRow>
-              <TableCell align="center" colSpan={3}>
-                Loading...
               </TableCell>
             </TableRow>
           )}

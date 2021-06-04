@@ -43,6 +43,7 @@ export async function getServerSideProps(props) {
   // Handles no market entry on item
   try {
     marketSearchFilter.sort = query.sort || marketSearchFilter.sort
+    marketSearchFilter.page = query.page || marketSearchFilter.page
     catalog = await getCatalog(slug, marketSearchFilter)
   } catch (e) {
     error = `catalog get error: ${e.message}`
