@@ -28,7 +28,8 @@ const marketSearchFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   inventory_status: VERIFIED_INVENTORY_VERIFIED,
-  sort: 'user_rank_score:desc',
+  sort: 'best',
+  nocache: true,
 }
 
 // This gets called on every request
@@ -41,6 +42,7 @@ export async function getServerSideProps(props) {
 
   // Handles no market entry on item
   try {
+    marketSearchFilter.sort = query.sort || marketSearchFilter.sort
     catalog = await getCatalog(slug, marketSearchFilter)
   } catch (e) {
     error = `catalog get error: ${e.message}`

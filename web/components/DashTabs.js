@@ -10,7 +10,8 @@ const StyledTabs = withStyles(theme => ({
     '& > span': {
       // maxWidth: 40,
       width: '100%',
-      backgroundColor: theme.palette.accent.main,
+      // backgroundColor: theme.palette.accent.main,
+      backgroundColor: theme.palette.grey[400],
     },
   },
 }))(props => <Tabs {...props} TabIndicatorProps={{ children: <span /> }} />)

@@ -80,7 +80,7 @@ const useStyles = makeStyles(theme => ({
 const marketBuyOrderFilter = {
   type: MARKET_TYPE_BID,
   status: MARKET_STATUS_LIVE,
-  sort: 'user_rank_score:desc',
+  sort: 'best',
 }
 
 const marketSalesGraphFilter = {
@@ -163,10 +163,11 @@ export default function ItemDetails({
       }
       setLoading(false)
     })()
-  }, [filter.page])
+  }, [filter.page, filter.sort])
 
   // Handles update of buyer orders when changes.
   marketBuyOrderFilter.item_id = item.id
+  marketBuyOrderFilter.sort = filter.sort
   const getBuyOrders = async () => {
     setLoading(true)
     try {
@@ -225,7 +226,7 @@ export default function ItemDetails({
   }
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
-  const linkProps = { href: `/${item.slug}` }
+  const linkProps = { href: `/${item.slug}`, query: { sort: filter.sort } }
 
   let historyCount = false
   if (!marketReservedError && marketReserved) {
@@ -428,6 +429,7 @@ export default function ItemDetails({
             buyOrders={buyOrders}
             error={error}
             loading={loading}
+            sort={filter.sort}
             pagination={
               !error && (
                 <TablePaginationRouter

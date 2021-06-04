@@ -5,16 +5,16 @@ import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import { debounce } from '@material-ui/core'
 import bidColor from '@material-ui/core/colors/teal'
-// import Avatar from '@/components/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
-import Tab from '@material-ui/core/Tab'
-import Tabs from '@material-ui/core/Tabs'
 import Paper from '@material-ui/core/Paper'
+import Select from '@material-ui/core/Select'
+import FormControl from '@material-ui/core/FormControl'
+import MenuItem from '@material-ui/core/MenuItem'
 import Typography from '@material-ui/core/Typography'
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
@@ -32,6 +32,28 @@ import SellButton from '@/components/SellButton'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import Avatar from '@/components/Avatar'
 import DonatorBadge from '@/components/DonatorBadge'
+import DashTabs from '@/components/DashTabs'
+import DashTab from '@/components/DashTab'
+
+const sortOpts = [
+  ['best', 'Best'],
+  ['recent', 'Recent'],
+  ['lowest', 'Lowest'],
+  // ['highest', 'Highest'],
+].map(([value, label]) => ({ value, label }))
+const defaultSort = sortOpts[0].value
+
+function SelectSort(props) {
+  return (
+    <FormControl variant="outlined" size="small">
+      <Select id="select-sort" {...props}>
+        {sortOpts.map(opt => (
+          <MenuItem value={opt.value}>{opt.label}</MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  )
+}
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -50,16 +72,28 @@ const useStyles = makeStyles(theme => ({
       background: theme.palette.grey[100],
     },
   },
+  tab: {
+    width: 168,
+    textTransform: 'none',
+  },
 }))
 
 const buyOrderKeyQuery = 'buyorder'
 
-export default function MarketList({ offers, buyOrders, error, loading, pagination }) {
+export default function MarketList({
+  offers,
+  buyOrders,
+  error,
+  loading,
+  sort: initSort,
+  pagination,
+}) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
 
   const [tabIdx, setTabIdx] = React.useState(0)
+  const [sort, setSort] = React.useState(initSort || defaultSort)
 
   const router = useRouter()
   useEffect(() => {
@@ -106,6 +140,17 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
     })()
   }
 
+  const linkProps = { query: {} }
+  const handleSelectSortChange = e => {
+    setSort(e.target.value)
+    linkProps.query.sort = e.target.value
+    if (tabIdx === 1) {
+      linkProps.query[buyOrderKeyQuery] = ''
+    }
+
+    router.push(linkProps)
+  }
+
   const offerListLoading = !offers && loading
   const buyOrderLoading = !buyOrders.data
 
@@ -116,22 +161,31 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
           <TableHead className={classes.tableHead}>
             <TableRow>
               <TableHeadCell colSpan={3} padding="none">
-                <Tabs
-                  className={classes.tabs}
-                  variant="fullWidth"
-                  value={tabIdx}
-                  onChange={handleTabChange}>
-                  <Tab
-                    value={0}
-                    label={`${offers.total_count || ''} Offers`}
-                    style={{ textTransform: 'none' }}
-                  />
-                  <Tab
-                    value={1}
-                    label={`${buyOrders.total_count || ''} Buy Orders`}
-                    style={{ textTransform: 'none' }}
-                  />
-                </Tabs>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    textTransform: 'none',
+                    paddingRight: 3,
+                  }}>
+                  <DashTabs className={classes.tabs} value={tabIdx} onChange={handleTabChange}>
+                    <DashTab
+                      className={classes.tab}
+                      value={0}
+                      label="Offers"
+                      badgeContent={offers.total_count}
+                    />
+                    <DashTab
+                      className={classes.tab}
+                      value={1}
+                      label="Buy Orders"
+                      badgeContent={buyOrders.total_count}
+                    />
+                  </DashTabs>
+
+                  {tabIdx === 0 && <SelectSort value={sort} onChange={handleSelectSortChange} />}
+                </div>
               </TableHeadCell>
             </TableRow>
           </TableHead>
@@ -194,11 +248,13 @@ MarketList.propTypes = {
   pagination: PropTypes.element,
   error: PropTypes.string,
   loading: PropTypes.bool,
+  sort: PropTypes.string,
 }
 MarketList.defaultProps = {
   pagination: null,
   error: null,
   loading: false,
+  sort: null,
 }
 
 const OfferList = props => {
