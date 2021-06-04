@@ -154,6 +154,7 @@ func (app *application) setup() error {
 	//fixes.ReIndexAll(itemStg, catalogStg)
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
 	//fixes.MarketIndexRebuild(marketStg)
+	//fixes.MarketSetRankingScores(userSvc, marketSvc)
 	//redisClient.BulkDel("")
 
 	// Server setup.

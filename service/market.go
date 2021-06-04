@@ -144,7 +144,7 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 
 	//go func() {
-	if err := s.updateUserScore(mkt.UserID); err != nil {
+	if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
 		return err
 	}
 	if _, err := s.marketStg.Index(mkt.ID); err != nil {
@@ -297,7 +297,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		}
 	}
 
-	if err = s.updateUserScore(mkt.UserID); err != nil {
+	if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
 		return err
 	}
 	if _, err = s.marketStg.Index(mkt.ID); err != nil {
@@ -307,7 +307,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	return nil
 }
 
-func (s *marketService) updateUserScore(userID string) error {
+func (s *marketService) UpdateUserRankScore(userID string) error {
 	opts := core.FindOpts{
 		Filter: core.Market{UserID: userID},
 	}
