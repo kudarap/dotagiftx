@@ -148,7 +148,7 @@ export default function ItemDetails({
 
   // Handles offer update when page changes.
   React.useEffect(() => {
-    if (filter.page === 1) {
+    if (initialAsks) {
       setMarkets(initialAsks)
       return
     }
@@ -169,7 +169,7 @@ export default function ItemDetails({
   marketBuyOrderFilter.item_id = item.id
   marketBuyOrderFilter.sort = filter.sort
   const getBuyOrders = async () => {
-    setLoading(true)
+    // setLoading(true)
     try {
       const res = await marketSearch(marketBuyOrderFilter)
       res.loaded = true
@@ -177,7 +177,7 @@ export default function ItemDetails({
     } catch (e) {
       setError(e.message)
     }
-    setLoading(false)
+    // setLoading(false)
   }
   // Get 10 buy orders on page load.
   React.useEffect(() => {

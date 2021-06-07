@@ -38,8 +38,8 @@ import DashTab from '@/components/DashTab'
 const sortOpts = [
   ['best', 'Best'],
   ['recent', 'Recent'],
-  ['lowest', 'Lowest'],
-  // ['highest', 'Highest'],
+  ['lowest', 'Lowest Price'],
+  ['highest', 'Highest Price'],
 ].map(([value, label]) => ({ value, label }))
 const defaultSort = sortOpts[0].value
 
@@ -151,7 +151,7 @@ export default function MarketList({
     router.push(linkProps)
   }
 
-  const offerListLoading = loading
+  const offerListLoading = loading && tabIdx === 0
   const buyOrderLoading = !buyOrders.data
 
   return (
