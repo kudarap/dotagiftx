@@ -34,26 +34,7 @@ import Avatar from '@/components/Avatar'
 import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
-
-const sortOpts = [
-  ['best', 'Best'],
-  ['recent', 'Recent'],
-  ['lowest', 'Lowest'],
-  // ['highest', 'Highest'],
-].map(([value, label]) => ({ value, label }))
-const defaultSort = sortOpts[0].value
-
-function SelectSort(props) {
-  return (
-    <FormControl variant="outlined" size="small">
-      <Select id="select-sort" {...props}>
-        {sortOpts.map(opt => (
-          <MenuItem value={opt.value}>{opt.label}</MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  )
-}
+import SelectSort from '@/components/SelectSort'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -77,6 +58,15 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'none',
   },
 }))
+
+const sortOpts = [
+  ['best', 'Best'],
+  ['recent', 'Recent'],
+  ['lowest', 'Lowest'],
+  // ['highest', 'Highest'],
+].map(([value, label]) => ({ value, label }))
+
+const defaultSort = sortOpts[0].value
 
 const buyOrderKeyQuery = 'buyorder'
 
@@ -184,7 +174,15 @@ export default function MarketList({
                     />
                   </DashTabs>
 
-                  {tabIdx === 0 && <SelectSort value={sort} onChange={handleSelectSortChange} />}
+                  {tabIdx === 0 && (
+                    <SelectSort
+                      variant="outlined"
+                      size="small"
+                      options={sortOpts}
+                      value={sort}
+                      onChange={handleSelectSortChange}
+                    />
+                  )}
                 </div>
               </TableHeadCell>
             </TableRow>

@@ -9,7 +9,7 @@ const StyledTab = withStyles(theme => ({
     textTransform: 'none',
     color: theme.palette.text.primary,
     fontWeight: theme.typography.fontWeightRegular,
-    fontSize: theme.typography.pxToRem(15),
+    fontSize: theme.typography.pxToRem(14),
     marginRight: theme.spacing(1),
     '&:focus': {
       opacity: 1,
@@ -35,10 +35,10 @@ export default function DashTab(props) {
       label={
         badgeContent ? (
           <StyledBadge badgeContent={badgeContent} max={999}>
-            <Typography>{label}</Typography>
+            {label}
           </StyledBadge>
         ) : (
-          <Typography>{label}</Typography>
+          label
         )
       }
     />
