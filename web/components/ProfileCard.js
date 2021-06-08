@@ -32,10 +32,11 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ProfileCard({ user, marketSummary, loading, ...other }) {
+export default function ProfileCard({ user, loading, ...other }) {
   const classes = useStyles()
 
   const storeProfile = `/profiles/${user.steam_id}`
+  const marketSummary = user.market_stats
 
   const isProfileReported = Boolean(user.status)
 
@@ -72,16 +73,16 @@ export default function ProfileCard({ user, marketSummary, loading, ...other }) 
 
         <Typography variant="body2" component="span">
           <Link href={`/profiles/${user.steam_id}`}>
-            {!loading && marketSummary ? marketSummary.live : '--'} Items
+            {marketSummary ? marketSummary.live : '--'} Items
           </Link>{' '}
           &middot;{' '}
           <Link href={`/profiles/${user.steam_id}/reserved`}>
-            {!loading && marketSummary ? marketSummary.reserved : '--'} Reserved
+            {marketSummary ? marketSummary.reserved : '--'} Reserved
           </Link>{' '}
           &middot;{' '}
           <Link href={`/profiles/${user.steam_id}/delivered`}>
-            {!loading && marketSummary ? marketSummary.sold : '--'} Delivered
-          </Link>
+            {marketSummary ? marketSummary.sold : '--'} Delivered
+          </Link>{' '}
         </Typography>
 
         <br />
