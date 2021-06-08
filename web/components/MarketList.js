@@ -12,9 +12,6 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
-import Select from '@material-ui/core/Select'
-import FormControl from '@material-ui/core/FormControl'
-import MenuItem from '@material-ui/core/MenuItem'
 import Typography from '@material-ui/core/Typography'
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
@@ -141,7 +138,7 @@ export default function MarketList({
     router.push(linkProps)
   }
 
-  const offerListLoading = loading
+  const offerListLoading = loading && tabIdx === 0
   const buyOrderLoading = !buyOrders.data
 
   return (
