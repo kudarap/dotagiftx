@@ -207,7 +207,11 @@ export default function ItemDetails({
   }
   const handleTabChange = idx => {
     setTabIndex(idx)
-    const { sort } = router.query
+    const { slug } = router.query
+    let { sort } = router.query
+    if (!sort) {
+      sort = 'best'
+    }
 
     const query = {}
     if (sort) {
@@ -216,10 +220,16 @@ export default function ItemDetails({
 
     if (idx === 0) {
       handleFilterChange({ sort, page: 1 }, true)
-    } else {
-      query.buyorder = ''
+      let url = `${slug}`
+      if (sort) {
+        url += `?sort=${sort}`
+      }
+
+      router.push(url, null, { shallow: true })
+      return
     }
 
+    query.buyorder = ''
     router.push({ query }, null, { shallow: true })
   }
 
