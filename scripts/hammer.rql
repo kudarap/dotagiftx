@@ -21,3 +21,8 @@ var testDB = r.db('d2g_production');
 testDB.table('user')
   .group(r.row('created_at').month())
   .count()
+
+#  
+r.db('d2g_production').table('market')
+  .filter({ delivery_status: 100 })
+  .update({ delivery_status: r.literal() })

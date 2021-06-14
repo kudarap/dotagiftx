@@ -2,6 +2,8 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
+import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import MuiLink from '@material-ui/core/Link'
@@ -31,7 +33,7 @@ import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
-import TablePaginationRouter from '@/components/TablePaginationRouter'
+import TablePagination from '@/components/TablePagination'
 import ChipLink from '@/components/ChipLink'
 import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
@@ -81,6 +83,7 @@ const marketBuyOrderFilter = {
   type: MARKET_TYPE_BID,
   status: MARKET_STATUS_LIVE,
   sort: 'best',
+  nocache: true,
 }
 
 const marketSalesGraphFilter = {
@@ -107,10 +110,12 @@ const swrConfig = [
   },
 ]
 
+const BUYORDER_QUERY_KEY = 'buyorder'
+
 export default function ItemDetails({
   item,
   error: initialError,
-  filter,
+  filter: initialFilter,
   initialAsks,
   initialBids,
   canonicalURL,
@@ -140,52 +145,105 @@ export default function ItemDetails({
     )
   }
 
-  const [markets, setMarkets] = React.useState(initialAsks)
-  const [buyOrders, setBuyOrders] = React.useState(initialBids)
+  const [offers, setOffers] = React.useState(initialAsks)
+  const [orders, setOrders] = React.useState(initialBids)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
+  const [tabIndex, setTabIndex] = React.useState(0)
 
-  // Handles offer update when page changes.
-  React.useEffect(() => {
-    if (initialAsks) {
-      setMarkets(initialAsks)
-      return
+  const router = useRouter()
+  // Handle shallow route update for sort and page query
+  const updateFilterRouter = f => {
+    const { sort, page } = f
+    const query = { sort, page }
+
+    if (tabIndex === 1) {
+      query.buyorder = ''
+    } else {
+      delete query.buyorder
     }
 
+    router.push({ query }, null, { shallow: true })
+  }
+  // Set active tab on load
+  React.useEffect(() => {
+    if (has(router.query, BUYORDER_QUERY_KEY)) {
+      setTabIndex(1)
+    } else {
+      setTabIndex(0)
+    }
+  }, [])
+
+  // Handle offers data on load. when its available display immediately.
+  React.useEffect(() => {
+    setOffers(initialAsks)
+  }, [initialAsks])
+
+  // Handle filter changes
+  const [filter, setFilter] = React.useState(initialFilter)
+  const handleFilterChange = (nextFilter, skipRouteUpdate = false) => {
+    const f = { ...filter, ...nextFilter }
+    setFilter(f)
+    if (!skipRouteUpdate) {
+      updateFilterRouter(f)
+    }
+    setLoading(true)
     ;(async () => {
-      setLoading(true)
       try {
-        const res = await marketSearch(filter)
-        setMarkets(res)
+        const res = await marketSearch(f)
+        setOffers(res)
       } catch (e) {
         setError(e.message)
       }
       setLoading(false)
     })()
-  }, [filter.page, filter.sort])
+  }
+  const handleSortChange = sort => {
+    handleFilterChange({ sort, page: 1 })
+  }
+  const handlePageChange = (e, page) => {
+    handleFilterChange({ page })
+  }
+  const handleTabChange = idx => {
+    setTabIndex(idx)
+    const { sort } = router.query
+
+    const query = {}
+    if (sort) {
+      query.sort = sort
+    }
+
+    if (idx === 0) {
+      handleFilterChange({ sort, page: 1 }, true)
+    } else {
+      query.buyorder = ''
+    }
+
+    router.push({ query }, null, { shallow: true })
+  }
 
   // Handles update of buyer orders when changes.
-  marketBuyOrderFilter.item_id = item.id
-  marketBuyOrderFilter.sort = filter.sort
   const getBuyOrders = async () => {
-    // setLoading(true)
+    marketBuyOrderFilter.item_id = item.id
+    marketBuyOrderFilter.sort = filter.sort
+    setLoading(true)
     try {
       const res = await marketSearch(marketBuyOrderFilter)
       res.loaded = true
-      setBuyOrders(res)
+      setOrders(res)
     } catch (e) {
       setError(e.message)
     }
-    // setLoading(false)
+    setLoading(false)
   }
   // Get 10 buy orders on page load.
   React.useEffect(() => {
     getBuyOrders()
-  }, [])
+  }, [filter.sort])
 
   // Retrieve market sales graph.
-  const shouldLoadGraph = Boolean(buyOrders.loaded)
+  const shouldLoadGraph = Boolean(orders.loaded)
   marketSalesGraphFilter.item_id = item.id
   const { data: marketGraph, error: marketGraphError } = useSWR(
     shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
@@ -226,7 +284,6 @@ export default function ItemDetails({
   }
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
-  const linkProps = { href: `/${item.slug}`, query: { sort: filter.sort } }
 
   let historyCount = false
   if (!marketReservedError && marketReserved) {
@@ -425,17 +482,20 @@ export default function ItemDetails({
           )}
 
           <MarketList
-            offers={markets}
-            buyOrders={buyOrders}
+            offers={offers}
+            buyOrders={orders}
             error={error}
             loading={loading}
+            onSortChange={handleSortChange}
+            tabIndex={tabIndex}
+            onTabChange={handleTabChange}
             sort={filter.sort}
             pagination={
               !error && (
-                <TablePaginationRouter
-                  linkProps={linkProps}
+                <TablePagination
+                  onChangePage={handlePageChange}
                   style={{ textAlign: 'right' }}
-                  count={markets.total_count || 0}
+                  count={offers.total_count || 0}
                   page={filter.page}
                 />
               )

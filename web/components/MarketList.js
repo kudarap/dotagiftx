@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import has from 'lodash/has'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import { debounce } from '@material-ui/core'
@@ -59,52 +58,38 @@ const useStyles = makeStyles(theme => ({
 const sortOpts = [
   ['best', 'Best'],
   ['recent', 'Recent'],
-  ['lowest', 'Lowest'],
-  // ['highest', 'Highest'],
+  ['lowest', 'Lowest price'],
+  ['highest', 'Highest price'],
 ].map(([value, label]) => ({ value, label }))
 
 const defaultSort = sortOpts[0].value
-
-const buyOrderKeyQuery = 'buyorder'
 
 export default function MarketList({
   offers,
   buyOrders,
   error,
-  loading,
+  loading: initLoading,
   sort: initSort,
   pagination,
+  tabIndex,
+  onSortChange,
+  onTabChange,
 }) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
 
-  const [tabIdx, setTabIdx] = React.useState(0)
   const [sort, setSort] = React.useState(initSort || defaultSort)
 
   const router = useRouter()
-  useEffect(() => {
-    if (has(router.query, buyOrderKeyQuery)) {
-      setTabIdx(1)
-    } else {
-      setTabIdx(0)
-    }
-  }, [router.query])
-
   const handleTabChange = (e, value) => {
-    setTabIdx(value)
-    let p = `/${router.query.slug}`
-    if (value === 1) {
-      p += `?${buyOrderKeyQuery}`
-    }
-
-    router.push(p)
+    onTabChange(value)
   }
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
     let src = offers
-    if (tabIdx === 1) {
+    if (tabIndex === 1) {
       src = buyOrders
     }
 
@@ -112,7 +97,7 @@ export default function MarketList({
   }
   const handleRemoveClick = marketIdx => {
     let src = offers
-    if (tabIdx === 1) {
+    if (tabIndex === 1) {
       src = buyOrders
     }
 
@@ -127,19 +112,13 @@ export default function MarketList({
     })()
   }
 
-  const linkProps = { query: {} }
   const handleSelectSortChange = e => {
     setSort(e.target.value)
-    linkProps.query.sort = e.target.value
-    if (tabIdx === 1) {
-      linkProps.query[buyOrderKeyQuery] = ''
-    }
-
-    router.push(linkProps)
+    onSortChange(e.target.value)
   }
 
-  const offerListLoading = loading && tabIdx === 0
-  const buyOrderLoading = !buyOrders.data
+  const offerListLoading = initLoading && tabIndex === 0
+  const buyOrderLoading = !buyOrders.data || (initLoading && tabIndex === 1)
 
   return (
     <>
@@ -156,7 +135,7 @@ export default function MarketList({
                     textTransform: 'none',
                     paddingRight: 3,
                   }}>
-                  <DashTabs className={classes.tabs} value={tabIdx} onChange={handleTabChange}>
+                  <DashTabs className={classes.tabs} value={tabIndex} onChange={handleTabChange}>
                     <DashTab
                       className={classes.tab}
                       value={0}
@@ -171,21 +150,19 @@ export default function MarketList({
                     />
                   </DashTabs>
 
-                  {tabIdx === 0 && (
-                    <SelectSort
-                      variant="outlined"
-                      size="small"
-                      options={sortOpts}
-                      value={sort}
-                      onChange={handleSelectSortChange}
-                    />
-                  )}
+                  <SelectSort
+                    variant="outlined"
+                    size="small"
+                    options={sortOpts}
+                    value={sort}
+                    onChange={handleSelectSortChange}
+                  />
                 </div>
               </TableHeadCell>
             </TableRow>
           </TableHead>
 
-          {tabIdx === 0 ? (
+          {tabIndex === 0 ? (
             <OfferList
               datatable={offers}
               loading={offerListLoading}
@@ -210,9 +187,9 @@ export default function MarketList({
       </TableContainer>
 
       {/* Only display pagination on offer list */}
-      {tabIdx === 0 && pagination}
+      {tabIndex === 0 && pagination}
 
-      {tabIdx === 1 && buyOrders.data.length !== 0 && buyOrders.total_count > 10 && (
+      {tabIndex === 1 && buyOrders.data.length !== 0 && buyOrders.total_count > 10 && (
         <Typography color="textSecondary" align="right" variant="body2" style={{ margin: 8 }}>
           {buyOrders.total_count - 10} more hidden buy orders at &nbsp;
           {amount(buyOrders.data[9].price || 0, 'USD')} or less
@@ -220,18 +197,18 @@ export default function MarketList({
       )}
 
       {/* Fixes bottom spacing */}
-      {((tabIdx === 0 && offers.total_count === 0) ||
-        (tabIdx === 1 && buyOrders.total_count <= 10)) && <div style={{ margin: 8 }}>&nbsp;</div>}
+      {((tabIndex === 0 && offers.total_count === 0) ||
+        (tabIndex === 1 && buyOrders.total_count <= 10)) && <div style={{ margin: 8 }}>&nbsp;</div>}
 
       <ContactDialog
         market={currentMarket}
-        open={tabIdx === 0 && !!currentMarket}
+        open={tabIndex === 0 && !!currentMarket}
         onClose={() => handleContactClick(null)}
       />
 
       <ContactBuyerDialog
         market={currentMarket}
-        open={tabIdx === 1 && !!currentMarket}
+        open={tabIndex === 1 && !!currentMarket}
         onClose={() => handleContactClick(null)}
       />
     </>
@@ -337,6 +314,14 @@ function baseTable(Component) {
                 <Typography variant="caption" color="textSecondary">
                   {error}
                 </Typography>
+              </TableCell>
+            </TableRow>
+          )}
+
+          {!error && loading && datatable.data.length === 0 && (
+            <TableRow>
+              <TableCell align="center" colSpan={3}>
+                Loading...
               </TableCell>
             </TableRow>
           )}

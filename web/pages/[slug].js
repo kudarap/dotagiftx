@@ -10,17 +10,23 @@ import ErrorPage from './404'
 export default function DynamicPage(props) {
   const { error } = props
   if (error) {
-    console.error(error)
     return <ErrorPage />
+  }
+
+  const { item } = props
+  if (!item) {
+    return null
   }
 
   return <ItemDetails {...props} />
 }
 DynamicPage.propTypes = {
+  item: PropTypes.object,
   error: PropTypes.string,
 }
 DynamicPage.defaultProps = {
   error: null,
+  item: null,
 }
 
 const marketSearchFilter = {
@@ -36,6 +42,12 @@ const marketSearchFilter = {
 export async function getServerSideProps(props) {
   const { params, query } = props
   const { slug } = params
+  // NOTE: this is weird routing bug. maybe happening during page transition.
+  if (slug === 'undefined') {
+    return {
+      props: {},
+    }
+  }
 
   let catalog = {}
   let error = null
@@ -54,7 +66,7 @@ export async function getServerSideProps(props) {
       props: {
         item: catalog,
         filter: {},
-        error: 'catalog not found',
+        error: 'catalog not found x',
       },
     }
   }
@@ -78,8 +90,6 @@ export async function getServerSideProps(props) {
   }
 
   const canonicalURL = `${APP_URL}/${slug}`
-
-  console.log({ catalog, filter, initialAsks })
 
   return {
     props: {
