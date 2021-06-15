@@ -221,12 +221,18 @@ MarketList.propTypes = {
   error: PropTypes.string,
   loading: PropTypes.bool,
   sort: PropTypes.string,
+  tabIndex: PropTypes.number,
+  onSortChange: PropTypes.func,
+  onTabChange: PropTypes.func,
 }
 MarketList.defaultProps = {
   pagination: null,
   error: null,
   loading: false,
   sort: null,
+  tabIndex: 1,
+  onSortChange: () => {},
+  onTabChange: () => {},
 }
 
 const OfferList = props => {
