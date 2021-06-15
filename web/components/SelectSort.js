@@ -15,7 +15,9 @@ export default function SelectSort({ options = [], variant, size, ...other }) {
     <FormControl {...{ variant, size }}>
       <StyledSelect id="select-sort" {...other}>
         {options.map(opt => (
-          <MenuItem value={opt.value}>{opt.label}</MenuItem>
+          <MenuItem key={opt.value} value={opt.value}>
+            {opt.label}
+          </MenuItem>
         ))}
       </StyledSelect>
     </FormControl>
