@@ -151,6 +151,7 @@ export default function MarketList({
                   </DashTabs>
 
                   <SelectSort
+                    disabled={loading}
                     variant="outlined"
                     size="small"
                     options={sortOpts}
