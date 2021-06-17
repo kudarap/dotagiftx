@@ -11,7 +11,8 @@ type (
 		Sold      int `json:"sold"      db:"sold"`
 		Removed   int `json:"removed"   db:"removed"`
 		Cancelled int `json:"cancelled" db:"cancelled"`
-		//BidLive      int `json:"bid_live"      db:"bid_live"`
+
+		BidLive      int `json:"bid_live"      db:"bid_live"`
 		BidCompleted int `json:"bid_completed" db:"bid_completed"`
 
 		DeliveryNoHit          int `json:"delivery_no_hit"          db:"delivery_no_hit"`

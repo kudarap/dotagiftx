@@ -20,7 +20,7 @@ func (s *statsStorage) CountMarketStatus(opts core.FindOpts) (*core.MarketStatus
 		Reduction int               `db:"reduction"`
 	}
 	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), opts)
-	if err := s.db.list(q.Count(), &res); err != nil {
+	if err := s.db.list(q.Filter(core.Market{Type: core.MarketTypeAsk}).Count(), &res); err != nil {
 		return nil, err
 	}
 	mapRes := map[core.MarketStatus]int{}
@@ -37,6 +37,18 @@ func (s *statsStorage) CountMarketStatus(opts core.FindOpts) (*core.MarketStatus
 		Cancelled:    mapRes[core.MarketStatusCancelled],
 		BidCompleted: mapRes[core.MarketStatusBidCompleted],
 	}
+
+	// Count bid stats
+	q = newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), opts)
+	if err := s.db.list(q.Filter(core.Market{Type: core.MarketTypeBid}).Count(), &res); err != nil {
+		return nil, err
+	}
+	mapRes = map[core.MarketStatus]int{}
+	for _, rr := range res {
+		mapRes[rr.Group] = rr.Reduction
+	}
+	msc.BidLive = mapRes[core.MarketStatusLive]
+	msc.BidCompleted = mapRes[core.MarketStatusBidCompleted]
 
 	cds, err := s.CountDeliveryStatus(opts)
 	if err != nil {
