@@ -192,8 +192,9 @@ export default function MarketList({
 
       {tabIndex === 1 && buyOrders.data.length !== 0 && buyOrders.total_count > 10 && (
         <Typography color="textSecondary" align="right" variant="body2" style={{ margin: 8 }}>
-          {buyOrders.total_count - 10} more hidden buy orders at &nbsp;
-          {amount(buyOrders.data[9].price || 0, 'USD')} or less
+          {buyOrders.total_count - 10} more hidden buy orders
+          {/* {buyOrders.total_count - 10} more hidden buy orders at &nbsp; */}
+          {/* {amount(buyOrders.data[9].price || 0, 'USD')} or less */}
         </Typography>
       )}
 
