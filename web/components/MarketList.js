@@ -117,8 +117,8 @@ export default function MarketList({
     onSortChange(e.target.value)
   }
 
-  const offerListLoading = loading === 'offer'
-  const buyOrderLoading = !buyOrders.data || loading === 'order'
+  const offerListLoading = loading === 'ask'
+  const buyOrderLoading = !buyOrders.data || loading === 'bid'
 
   return (
     <>

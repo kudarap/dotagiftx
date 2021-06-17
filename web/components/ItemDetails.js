@@ -181,29 +181,14 @@ export default function ItemDetails({
   }, [initialAsks])
 
   // Handle filter changes
-  const [filter, setFilter] = React.useState(initialFilter)
+  const [filter, setFilter] = React.useState({ sort: initialFilter.sort, page: initialFilter.page })
   const handleFilterChange = (nextFilter, skipRouteUpdate = false) => {
     const f = { ...filter, ...nextFilter }
     setFilter(f)
+
     if (!skipRouteUpdate) {
       updateFilterRouter(f)
     }
-
-    // Skip if not on active tab
-    if (tabIndex !== 0) {
-      return
-    }
-
-    setLoading('offer')
-    ;(async () => {
-      try {
-        const res = await marketSearch(f)
-        setOffers(res)
-      } catch (e) {
-        setError(e.message)
-      }
-      setLoading(null)
-    })()
   }
   const handleSortChange = sort => {
     handleFilterChange({ sort, page: 1 })
@@ -239,11 +224,20 @@ export default function ItemDetails({
     router.push({ query }, null, { shallow: true })
   }
 
-  // Handles update of buyer orders when changes.
+  const getOffers = async f => {
+    setLoading('ask')
+    try {
+      const res = await marketSearch({ ...initialFilter, ...f })
+      setOffers(res)
+    } catch (e) {
+      setError(e.message)
+    }
+    setLoading(null)
+  }
   const getBuyOrders = async () => {
     marketBuyOrderFilter.item_id = item.id
     marketBuyOrderFilter.sort = filter.sort
-    setLoading('order')
+    setLoading('bid')
     try {
       const res = await marketSearch(marketBuyOrderFilter)
       res.loaded = true
@@ -253,18 +247,37 @@ export default function ItemDetails({
     }
     setLoading(null)
   }
-  // Get 10 buy orders on page load.
+  const handleBuyOrderClick = () => {
+    setOpenBuyOrderDialog(true)
+  }
+  const handleBuyerChange = () => {
+    getBuyOrders()
+  }
+
+  // Handle initial buy orders on page load.
   React.useEffect(() => {
     getBuyOrders()
   }, [])
-  // Update buy orders on sort change
+
+  // Handles update offers and buy orders on filter change
   React.useEffect(() => {
-    if (tabIndex !== 1) {
+    // Check initial props is same and skip the fetch
+    if (filter.sort === initialFilter.sort && filter.page === initialFilter.page) {
+      setOffers(initialAsks)
       return
     }
 
-    getBuyOrders()
-  }, [filter.sort])
+    switch (tabIndex) {
+      case 0:
+        getOffers(filter)
+        break
+      case 1:
+        getBuyOrders()
+        break
+      default:
+      // no default
+    }
+  }, [filter.page, filter.sort, tabIndex])
 
   // Retrieve market sales graph.
   const shouldLoadGraph = Boolean(orders.loaded)
@@ -289,14 +302,6 @@ export default function ItemDetails({
     error: marketDeliveredError,
     isValidating: marketDeliveredLoading,
   } = useSWR(marketReserved ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
-
-  const handleBuyOrderClick = () => {
-    setOpenBuyOrderDialog(true)
-  }
-
-  const handleBuyerChange = () => {
-    getBuyOrders()
-  }
 
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`

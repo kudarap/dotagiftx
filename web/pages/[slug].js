@@ -35,7 +35,6 @@ const marketSearchFilter = {
   status: MARKET_STATUS_LIVE,
   inventory_status: VERIFIED_INVENTORY_VERIFIED,
   sort: 'best',
-  nocache: true,
 }
 
 // This gets called on every request
@@ -55,7 +54,7 @@ export async function getServerSideProps(props) {
   // Handles no market entry on item
   try {
     marketSearchFilter.sort = query.sort || marketSearchFilter.sort
-    marketSearchFilter.page = query.page || marketSearchFilter.page
+    marketSearchFilter.page = Number(query.page || marketSearchFilter.page)
     catalog = await getCatalog(slug, marketSearchFilter)
   } catch (e) {
     error = `catalog get error: ${e.message}`
@@ -72,9 +71,6 @@ export async function getServerSideProps(props) {
   }
 
   const filter = { ...marketSearchFilter, item_id: catalog.id }
-  if (query.page) {
-    filter.page = Number(query.page)
-  }
 
   const askData = catalog.asks || []
   const initialAsks = {
