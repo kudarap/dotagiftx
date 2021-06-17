@@ -237,11 +237,15 @@ export default function ItemDetails({
     setLoading(null)
   }
   const getBuyOrders = async () => {
-    marketBuyOrderFilter.item_id = item.id
-    marketBuyOrderFilter.sort = filter.sort
+    // marketBuyOrderFilter.item_id = item.id
+    // marketBuyOrderFilter.sort = filter.sort
     setLoading('bid')
     try {
-      const res = await marketSearch(marketBuyOrderFilter)
+      const res = await marketSearch({
+        ...marketBuyOrderFilter,
+        sort: filter.sort,
+        item_id: item.id,
+      })
       res.loaded = true
       setOrders(res)
     } catch (e) {
@@ -263,10 +267,9 @@ export default function ItemDetails({
 
   // Handles update offers and buy orders on filter change
   React.useEffect(() => {
-    console.log('filter x', filter)
     // Check initial props is same and skip the fetch
     if (filter.sort === initialFilter.sort && filter.page === initialFilter.page) {
-      setOffers(initialAsks)
+      // setOffers(initialAsks)
       return
     }
 

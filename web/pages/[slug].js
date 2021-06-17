@@ -52,11 +52,13 @@ export async function getServerSideProps(props) {
   let catalog = {}
   let error = null
 
-  // Handles no market entry on item
+  const sort = query.sort || marketSearchFilter.sort
+  const page = Number(query.page || marketSearchFilter.page)
+  const filter = { ...marketSearchFilter, sort, page }
+
   try {
-    marketSearchFilter.sort = query.sort || marketSearchFilter.sort
-    marketSearchFilter.page = Number(query.page || marketSearchFilter.page)
-    catalog = await getCatalog(slug, marketSearchFilter)
+    catalog = await getCatalog(slug, filter)
+    filter.item_id = catalog.id
   } catch (e) {
     error = `catalog get error: ${e.message}`
   }
@@ -70,8 +72,6 @@ export async function getServerSideProps(props) {
       },
     }
   }
-
-  const filter = { ...marketSearchFilter, item_id: catalog.id }
 
   const askData = catalog.asks || []
   const initialAsks = {
@@ -88,7 +88,6 @@ export async function getServerSideProps(props) {
 
   const canonicalURL = `${APP_URL}/${slug}`
 
-  console.log('filter', filter)
   return {
     props: {
       item: catalog,
