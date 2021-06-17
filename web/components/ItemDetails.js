@@ -195,6 +195,8 @@ export default function ItemDetails({
   }
   const handlePageChange = (e, page) => {
     handleFilterChange({ page })
+    // Scroll to top
+    window.scrollTo(0, 0)
   }
   const handleTabChange = idx => {
     setTabIndex(idx)
