@@ -203,7 +203,9 @@ export default function UserDetails({
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
                   <Link href={`${linkProps.href}/reserved`}>{profile.stats.reserved} Reserved</Link>{' '}
                   &middot;{' '}
-                  <Link href={`${linkProps.href}/delivered`}>{profile.stats.sold} Delivered</Link>
+                  <Link href={`${linkProps.href}/delivered`}>{profile.stats.sold} Delivered</Link>{' '}
+                  &middot;{' '}
+                  <Link href={`${linkProps.href}`}>{profile.stats.bid_completed} Bought</Link>
                 </Typography>
                 <br />
                 <ChipLink label="Steam Profile" href={profileURL} />
