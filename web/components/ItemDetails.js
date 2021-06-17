@@ -177,6 +177,8 @@ export default function ItemDetails({
 
   // Handle offers data on load. when its available display immediately.
   React.useEffect(() => {
+    console.log('initialAsks x', initialFilter)
+
     setOffers(initialAsks)
   }, [initialAsks])
 
