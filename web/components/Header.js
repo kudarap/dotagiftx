@@ -176,8 +176,8 @@ export default function Header({ disableSearch }) {
                 href="/banned-users"
                 underline="none"
                 style={{
-                  border: '2px solid #9F1818',
                   padding: '0 6px',
+                  background: '#9F1818',
                 }}>
                 Banned users
               </Link>
