@@ -12,6 +12,8 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import Box from '@material-ui/core/Box'
+
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
@@ -122,6 +124,19 @@ export default function MarketList({
 
   return (
     <>
+      {isMobile && (
+        <Box style={{ float: 'right', margin: '16px 0 8px' }}>
+          <SelectSort
+            disabled={loading}
+            variant="outlined"
+            size="small"
+            options={sortOpts}
+            value={sort}
+            onChange={handleSelectSortChange}
+          />
+        </Box>
+      )}
+
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="market list table">
           <TableHead className={classes.tableHead}>
@@ -150,14 +165,16 @@ export default function MarketList({
                     />
                   </DashTabs>
 
-                  <SelectSort
-                    disabled={loading}
-                    variant="outlined"
-                    size="small"
-                    options={sortOpts}
-                    value={sort}
-                    onChange={handleSelectSortChange}
-                  />
+                  {!isMobile && (
+                    <SelectSort
+                      disabled={loading}
+                      variant="outlined"
+                      size="small"
+                      options={sortOpts}
+                      value={sort}
+                      onChange={handleSelectSortChange}
+                    />
+                  )}
                 </div>
               </TableHeadCell>
             </TableRow>
