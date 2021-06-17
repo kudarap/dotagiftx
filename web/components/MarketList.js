@@ -68,7 +68,7 @@ export default function MarketList({
   offers,
   buyOrders,
   error,
-  loading: initLoading,
+  loading,
   sort: initSort,
   pagination,
   tabIndex,
@@ -117,8 +117,8 @@ export default function MarketList({
     onSortChange(e.target.value)
   }
 
-  const offerListLoading = initLoading && tabIndex === 0
-  const buyOrderLoading = !buyOrders.data || (initLoading && tabIndex === 1)
+  const offerListLoading = loading === 'offer'
+  const buyOrderLoading = !buyOrders.data || loading === 'order'
 
   return (
     <>

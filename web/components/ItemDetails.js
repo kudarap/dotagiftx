@@ -148,7 +148,7 @@ export default function ItemDetails({
   const [offers, setOffers] = React.useState(initialAsks)
   const [orders, setOrders] = React.useState(initialBids)
   const [error, setError] = React.useState(null)
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState(null)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
   const [tabIndex, setTabIndex] = React.useState(0)
 
@@ -188,7 +188,13 @@ export default function ItemDetails({
     if (!skipRouteUpdate) {
       updateFilterRouter(f)
     }
-    setLoading(true)
+
+    // Skip if not on active tab
+    if (tabIndex !== 0) {
+      return
+    }
+
+    setLoading('offer')
     ;(async () => {
       try {
         const res = await marketSearch(f)
@@ -196,7 +202,7 @@ export default function ItemDetails({
       } catch (e) {
         setError(e.message)
       }
-      setLoading(false)
+      setLoading(null)
     })()
   }
   const handleSortChange = sort => {
@@ -237,7 +243,7 @@ export default function ItemDetails({
   const getBuyOrders = async () => {
     marketBuyOrderFilter.item_id = item.id
     marketBuyOrderFilter.sort = filter.sort
-    setLoading(true)
+    setLoading('order')
     try {
       const res = await marketSearch(marketBuyOrderFilter)
       res.loaded = true
@@ -245,10 +251,18 @@ export default function ItemDetails({
     } catch (e) {
       setError(e.message)
     }
-    setLoading(false)
+    setLoading(null)
   }
   // Get 10 buy orders on page load.
   React.useEffect(() => {
+    getBuyOrders()
+  }, [])
+  // Update buy orders on sort change
+  React.useEffect(() => {
+    if (tabIndex !== 1) {
+      return
+    }
+
     getBuyOrders()
   }, [filter.sort])
 
