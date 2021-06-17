@@ -141,14 +141,14 @@ export default function MarketList({
         <Table className={classes.table} aria-label="market list table">
           <TableHead className={classes.tableHead}>
             <TableRow>
-              <TableHeadCell colSpan={3} padding="none">
+              <TableHeadCell colSpan={isMobile ? 2 : 3} padding="none">
                 <div
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     textTransform: 'none',
-                    paddingRight: 3,
+                    paddingRight: isMobile ? 0 : 3,
                   }}>
                   <DashTabs className={classes.tabs} value={tabIndex} onChange={handleTabChange}>
                     <DashTab
