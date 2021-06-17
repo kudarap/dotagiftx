@@ -93,6 +93,9 @@ type (
 
 		// Update persists user changes to data store.
 		Update(*User) error
+
+		// BaseUpdate persists user changes to data store without updating metadata.
+		BaseUpdate(*User) error
 	}
 )
 

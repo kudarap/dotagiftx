@@ -321,7 +321,7 @@ func (s *marketService) UpdateUserRankScore(userID string) error {
 	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
 		return err
 	}
-	return s.userStg.Update(u)
+	return s.userStg.BaseUpdate(u)
 }
 
 func (s *marketService) checkFlaggedUser(userID string) error {

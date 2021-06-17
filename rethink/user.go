@@ -116,18 +116,22 @@ func (s *userStorage) Create(in *core.User) error {
 }
 
 func (s *userStorage) Update(in *core.User) error {
+	in.UpdatedAt = now()
+	return s.BaseUpdate(in)
+}
+
+func (s *userStorage) BaseUpdate(in *core.User) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
 	}
 
-	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
 
-	if err := mergo.Merge(in, cur); err != nil {
+	if err = mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
 	}
 
