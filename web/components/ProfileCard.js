@@ -84,7 +84,7 @@ export default function ProfileCard({ user, loading, ...other }) {
             {marketSummary ? marketSummary.sold : '--'} Delivered
           </Link>{' '}
           &middot;{' '}
-          <Link href={`/profiles/${user.steam_id}`}>
+          <Link href={`/profiles/${user.steam_id}/bought`}>
             {marketSummary ? marketSummary.bid_completed : '--'} Bought
           </Link>{' '}
         </Typography>
