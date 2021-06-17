@@ -261,6 +261,7 @@ export default function ItemDetails({
 
   // Handles update offers and buy orders on filter change
   React.useEffect(() => {
+    console.log('filter x', filter)
     // Check initial props is same and skip the fetch
     if (filter.sort === initialFilter.sort && filter.page === initialFilter.page) {
       setOffers(initialAsks)

@@ -87,6 +87,7 @@ export async function getServerSideProps(props) {
 
   const canonicalURL = `${APP_URL}/${slug}`
 
+  console.log('filter', filter)
   return {
     props: {
       item: catalog,
