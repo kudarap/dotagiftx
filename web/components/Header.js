@@ -173,13 +173,13 @@ export default function Header({ disableSearch }) {
             <>
               <Link
                 className={classes.nav}
-                href="/blacklist"
+                href="/banned-users"
                 underline="none"
                 style={{
-                  borderBottom: '2px solid #dc3914',
-                  marginBottom: -2,
+                  border: '2px solid #9F1818',
+                  padding: '0 6px',
                 }}>
-                Blacklist
+                Banned users
               </Link>
               <Link className={classes.nav} href="/guides" underline="none">
                 Guides
@@ -306,8 +306,12 @@ export default function Header({ disableSearch }) {
                   </MenuItem>
                 )}
 
-                <MenuItem onClick={handleClose} component={Link} href="/blacklist" disableUnderline>
-                  Blacklist
+                <MenuItem
+                  onClick={handleClose}
+                  component={Link}
+                  href="/banned-users"
+                  disableUnderline>
+                  Banned users
                 </MenuItem>
                 <MenuItem onClick={handleClose} component={Link} href="/guides" disableUnderline>
                   Guides

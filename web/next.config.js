@@ -19,6 +19,11 @@ module.exports = {
         destination: '/profiles/:id',
         permanent: true,
       },
+      {
+        source: '/blacklist',
+        destination: '/banned-users',
+        permanent: true,
+      },
     ]
   },
 }

@@ -58,7 +58,7 @@ export default function Blacklist() {
   return (
     <>
       <Head>
-        <title>{APP_NAME} :: Blacklist</title>
+        <title>{APP_NAME} :: Banned users</title>
       </Head>
 
       <Header />
@@ -66,12 +66,12 @@ export default function Blacklist() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            Blacklist
+            Banned users
           </Typography>
-          <Alert severity="warning">
+          <Typography>
             These accounts were flagged as <strong>banned</strong> or <strong>suspended</strong> due
             to scam incident or account involvement to a scam.
-          </Alert>
+          </Typography>
           <br />
 
           <SearchBar
@@ -80,11 +80,9 @@ export default function Blacklist() {
           />
           <br />
           <br />
-
           {error && <Typography color="error">Could not load blacklisted users</Typography>}
           {!data && !error && <Typography>Loading...</Typography>}
           {!error && data && data.map(user => <UserCard data={user} />)}
-
           {!error && data && data.length === 0 && resolvedQuery && (
             <Typography>
               User probably changed their custom URL&nbsp;
