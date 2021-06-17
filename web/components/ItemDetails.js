@@ -177,8 +177,6 @@ export default function ItemDetails({
 
   // Handle offers data on load. when its available display immediately.
   React.useEffect(() => {
-    console.log('initialAsks x', initialFilter)
-
     setOffers(initialAsks)
   }, [initialAsks])
 
@@ -269,7 +267,7 @@ export default function ItemDetails({
   React.useEffect(() => {
     // Check initial props is same and skip the fetch
     if (filter.sort === initialFilter.sort && filter.page === initialFilter.page) {
-      // setOffers(initialAsks)
+      setOffers(initialAsks)
       return
     }
 
