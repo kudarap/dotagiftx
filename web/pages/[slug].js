@@ -41,7 +41,6 @@ const marketSearchFilter = {
 export async function getServerSideProps(props) {
   const { params, query } = props
   const { slug } = params
-  console.log('SSR', slug, query)
   // NOTE: this is weird routing bug. maybe happening during page transition.
   if (slug === 'undefined') {
     return {
