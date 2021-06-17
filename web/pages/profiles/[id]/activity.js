@@ -134,7 +134,7 @@ UserActivity.propTypes = {
 
 export async function getServerSideProps({ params }) {
   const profile = await user(String(params.id))
-  const canonicalURL = `${APP_URL}/profiles/${params.id}/reserve`
+  const canonicalURL = `${APP_URL}/profiles/${params.id}/activity`
 
   return {
     props: {
