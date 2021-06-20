@@ -54,6 +54,16 @@ const useStyles = makeStyles(theme => ({
     width: 168,
     textTransform: 'none',
   },
+  sortButtons: {
+    display: 'flex',
+    '& .MuiChip-root': {
+      marginRight: theme.spacing(1),
+    },
+  },
+  activeSortButtons: {
+    color: `${theme.palette.grey[800]} !important`,
+    background: `${theme.palette.grey[100]} !important`,
+  },
 }))
 
 export default function MarketList({
@@ -262,43 +272,29 @@ function baseTable(Component) {
 
     const { datatable, loading, error, bidMode, sort, onSort } = props
 
-    const activeChipSortStyle = { marginRight: 14, background: '#eee', color: '#333' }
-
     return (
       <>
         <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
           <TableRow>
             <TableHeadCell colSpan={2}>
-              <div style={{ display: 'flex' }}>
+              <div className={classes.sortButtons}>
                 <Chip
+                  className={sort === 'price' ? classes.activeSortButtons : null}
                   onClick={() => onSort('price')}
-                  style={
-                    sort === 'price'
-                      ? activeChipSortStyle
-                      : { marginRight: activeChipSortStyle.marginRight }
-                  }
                   label={bidMode ? 'Highest price' : 'Lowest price'}
                   variant="outlined"
                   clickable
                 />
                 <Chip
                   onClick={() => onSort('best')}
-                  style={
-                    sort === 'best'
-                      ? activeChipSortStyle
-                      : { marginRight: activeChipSortStyle.marginRight }
-                  }
+                  className={sort === 'best' ? classes.activeSortButtons : null}
                   label={bidMode ? 'Top buyers' : 'Top sellers'}
                   variant="outlined"
                   clickable
                 />
                 <Chip
                   onClick={() => onSort('recent')}
-                  style={
-                    sort === 'recent'
-                      ? activeChipSortStyle
-                      : { marginRight: activeChipSortStyle.marginRight }
-                  }
+                  className={sort === 'recent' ? classes.activeSortButtons : null}
                   label="Recent"
                   variant="outlined"
                   clickable
