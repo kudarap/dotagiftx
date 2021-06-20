@@ -2,7 +2,6 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Badge from '@material-ui/core/Badge'
 import Tab from '@material-ui/core/Tab'
-import Typography from '@material-ui/core/Typography'
 
 const StyledTab = withStyles(theme => ({
   root: {
@@ -10,7 +9,7 @@ const StyledTab = withStyles(theme => ({
     color: theme.palette.text.primary,
     fontWeight: theme.typography.fontWeightRegular,
     fontSize: theme.typography.pxToRem(14),
-    marginRight: theme.spacing(1),
+    // marginRight: theme.spacing(1),
     '&:focus': {
       opacity: 1,
     },
