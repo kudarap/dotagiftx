@@ -124,19 +124,6 @@ export default function MarketList({
 
   return (
     <>
-      {isMobile && (
-        <Box style={{ float: 'right', margin: '16px 0 8px' }}>
-          <SelectSort
-            disabled={loading}
-            variant="outlined"
-            size="small"
-            options={sortOpts}
-            value={sort}
-            onChange={handleSelectSortChange}
-          />
-        </Box>
-      )}
-
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="market list table">
           <TableHead className={classes.tableHead}>
@@ -144,37 +131,15 @@ export default function MarketList({
               <TableHeadCell colSpan={isMobile ? 2 : 3} padding="none">
                 <div
                   style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    // display: 'flex',
+                    // justifyContent: 'space-between',
+                    // alignItems: 'center',
                     textTransform: 'none',
-                    paddingRight: isMobile ? 0 : 3,
                   }}>
-                  <DashTabs className={classes.tabs} value={tabIndex} onChange={handleTabChange}>
-                    <DashTab
-                      className={classes.tab}
-                      value={0}
-                      label="Offers"
-                      badgeContent={offers.total_count}
-                    />
-                    <DashTab
-                      className={classes.tab}
-                      value={1}
-                      label="Buy Orders"
-                      badgeContent={buyOrders.total_count}
-                    />
+                  <DashTabs variant="fullWidth" value={tabIndex} onChange={handleTabChange}>
+                    <DashTab value={0} label="Offers" badgeContent={offers.total_count} />
+                    <DashTab value={1} label="Buy Orders" badgeContent={buyOrders.total_count} />
                   </DashTabs>
-
-                  {!isMobile && (
-                    <SelectSort
-                      disabled={loading}
-                      variant="outlined"
-                      size="small"
-                      options={sortOpts}
-                      value={sort}
-                      onChange={handleSelectSortChange}
-                    />
-                  )}
                 </div>
               </TableHeadCell>
             </TableRow>
@@ -318,18 +283,36 @@ function baseTable(Component) {
       <>
         <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
           <TableRow>
-            <TableHeadCell size="small">
-              <Typography color="textSecondary" variant="body2">
-                {bidMode ? 'Buyer' : 'Seller'}
-              </Typography>
+            <TableHeadCell colSpan={isMobile ? 2 : 3}>
+              <div style={{ display: 'flex' }}>
+                <Button variant="contained" size="small">
+                  {bidMode ? 'Highest' : 'Lowest'} price
+                </Button>
+                &nbsp; &nbsp;
+                <Button variant="outlined" size="small">
+                  Best
+                </Button>
+                &nbsp; &nbsp;
+                <Button variant="outlined" size="small">
+                  Recent
+                </Button>
+              </div>
             </TableHeadCell>
-            <TableHeadCell size="small" align="right">
-              <Typography color="textSecondary" variant="body2">
-                {bidMode ? 'Buy Price' : 'Price'}
-              </Typography>
-            </TableHeadCell>
-            {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
           </TableRow>
+
+          {/*<TableRow>*/}
+          {/*  <TableHeadCell size="small">*/}
+          {/*    <Typography color="textSecondary" variant="body2">*/}
+          {/*      {bidMode ? 'Buyer' : 'Seller'}*/}
+          {/*    </Typography>*/}
+          {/*  </TableHeadCell>*/}
+          {/*  <TableHeadCell size="small" align="right">*/}
+          {/*    <Typography color="textSecondary" variant="body2">*/}
+          {/*      {bidMode ? 'Buy Price' : 'Price'}*/}
+          {/*    </Typography>*/}
+          {/*  </TableHeadCell>*/}
+          {/*  {!isMobile && <TableHeadCell size="small" align="center" width={160} />}*/}
+          {/*</TableRow>*/}
 
           {error && (
             <TableRow>
