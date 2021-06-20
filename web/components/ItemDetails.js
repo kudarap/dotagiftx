@@ -156,11 +156,7 @@ export default function ItemDetails({
   const [tabIndex, setTabIndex] = React.useState(0)
 
   const router = useRouter()
-  // Handle shallow route update for sort and page query
-  const updateFilterRouter = f => {
-    const { page } = f
-    router.push({ query: { page } }, null, { shallow: true })
-  }
+
   // Set active tab on load
   React.useEffect(() => {
     switch (marketType) {
@@ -182,21 +178,11 @@ export default function ItemDetails({
 
   // Handle filter changes
   const [sort, setSort] = React.useState(sortParam || DEFAULT_SORT)
-  const [filter, setFilter] = React.useState({
-    sort: sortParam || DEFAULT_SORT,
-    page: initialFilter.page,
-  })
-  const handleFilterChange = (nextFilter, skipRouteUpdate = false) => {
-    const f = { ...filter, ...nextFilter }
-    setFilter(f)
-
-    if (!skipRouteUpdate) {
-      updateFilterRouter(f)
-    }
-  }
+  const [page, setPage] = React.useState(initialFilter.page)
   const handleTabChange = idx => {
     setTabIndex(idx)
     setSort('price')
+    setPage(1)
 
     // process offers
     if (idx === 0) {
@@ -209,6 +195,7 @@ export default function ItemDetails({
   }
   const handleSortChange = sortValue => {
     setSort(sortValue)
+    setPage(1)
 
     // process offers
     if (tabIndex === 0) {
@@ -219,18 +206,20 @@ export default function ItemDetails({
     // process buy orders
     router.push(`/${item.slug}/${BUYORDERS_PARAM_KEY}/${sortValue}`, null, { shallow: true })
   }
-  const handlePageChange = (e, page) => {
-    handleFilterChange({ page })
-    // Scroll to top
+  const handlePageChange = (e, pageValue) => {
+    setPage(pageValue)
+    // scroll to top when page change
     window.scrollTo(0, 0)
+    router.push({ query: { page: pageValue } }, null, { shallow: true })
   }
 
-  const getOffers = async f => {
+  const getOffers = async (sortValue, pageValue) => {
     setLoading('ask')
     try {
       const res = await marketSearch({
         ...initialFilter,
-        sort: f.sort === 'price' ? 'lowest' : f.sort,
+        sort: sortValue === 'price' ? 'lowest' : sortValue,
+        page: pageValue,
       })
       setOffers(res)
     } catch (e) {
@@ -272,13 +261,13 @@ export default function ItemDetails({
     }
 
     // Check initial props is same and skip the fetch
-    if (sort === initialFilter.sort && filter.page === initialFilter.page) {
+    if (sort === initialFilter.sort && page === initialFilter.page) {
       setOffers(initialAsks)
       return
     }
 
-    getOffers({ sort })
-  }, [sort, tabIndex])
+    getOffers(sort, page)
+  }, [tabIndex, sort, page])
 
   // Retrieve market sales graph.
   const shouldLoadGraph = Boolean(orders.loaded)
@@ -526,7 +515,7 @@ export default function ItemDetails({
                   onChangePage={handlePageChange}
                   style={{ textAlign: 'right' }}
                   count={offers.total_count || 0}
-                  page={filter.page}
+                  page={page}
                 />
               )
             }
@@ -583,12 +572,14 @@ ItemDetails.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
   marketType: PropTypes.string.isRequired,
   filter: PropTypes.object,
+  sortParam: PropTypes.string,
   initialAsks: PropTypes.object,
   initialBids: PropTypes.object,
   error: PropTypes.string,
 }
 ItemDetails.defaultProps = {
   filter: {},
+  sortParam: DEFAULT_SORT,
   initialAsks: {
     data: [],
   },
