@@ -221,7 +221,7 @@ func (m Market) CheckUpdate() error {
 
 const defaultCurrency = "USD"
 
-// SetDefault sets default values for a new market.
+// SetDefaults sets default values for a new market.
 func (m *Market) SetDefaults() {
 	m.Status = MarketStatusLive
 	m.Currency = defaultCurrency
