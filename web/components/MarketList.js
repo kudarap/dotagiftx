@@ -115,7 +115,7 @@ export default function MarketList({
         <Table className={classes.table} aria-label="market list table">
           <TableHead className={classes.tableHead}>
             <TableRow>
-              <TableHeadCell colSpan={isMobile ? 2 : 3} padding="none">
+              <TableHeadCell colSpan={2} padding="none">
                 <DashTabs variant="fullWidth" value={tabIndex} onChange={handleTabChange}>
                   <DashTab value={0} label="Offers" badgeContent={offers.total_count} />
                   <DashTab value={1} label="Buy Orders" badgeContent={buyOrders.total_count} />
@@ -232,7 +232,7 @@ function baseTable(Component) {
   const wrapped = props => {
     const classes = useStyles()
 
-    const { currentUserID, isMobile } = props
+    const { currentUserID } = props
 
     const { onContact, onRemove } = props
     const handleContactClick = marketIdx => {
@@ -268,7 +268,7 @@ function baseTable(Component) {
       <>
         <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
           <TableRow>
-            <TableHeadCell colSpan={isMobile ? 2 : 3}>
+            <TableHeadCell colSpan={2}>
               <div style={{ display: 'flex' }}>
                 <Chip
                   onClick={() => onSort('price')}
@@ -427,11 +427,11 @@ function baseTable(Component) {
 }
 
 const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
-  <>
-    <TableCell align="right">
-      <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-    </TableCell>
-    <TableCell align="center">
+  <TableCell align="right">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+      <Typography variant="body2" style={{ marginRight: 16 }}>
+        {amount(market.price, market.currency)}
+      </Typography>
       {currentUserID === market.user.id ? (
         // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
         <div>
@@ -444,8 +444,8 @@ const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact
           Contact Seller
         </BuyButton>
       )}
-    </TableCell>
-  </>
+    </div>
+  </TableCell>
 ))
 
 const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact }) => (
@@ -464,11 +464,12 @@ const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact })
 ))
 
 const OrderListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
-  <>
-    <TableCell align="right">
-      <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-    </TableCell>
-    <TableCell align="center">
+  <TableCell align="right">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+      <Typography variant="body2" style={{ marginRight: 16 }}>
+        {amount(market.price, market.currency)}
+      </Typography>
+
       {currentUserID === market.user.id ? (
         // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
         <div>
@@ -485,8 +486,8 @@ const OrderListDesktop = baseTable(({ market, currentUserID, onRemove, onContact
           {market.user.id ? `Contact Buyer` : `Sign in to view`}
         </SellButton>
       )}
-    </TableCell>
-  </>
+    </div>
+  </TableCell>
 ))
 
 const OrderListMini = baseTable(({ market, currentUserID, onRemove, onContact }) => (
