@@ -41,7 +41,6 @@ const marketSearchFilter = {
 export async function getServerSideProps(props) {
   const { params, query } = props
   const { slugs } = params
-  console.log(slugs)
 
   // NOTE: this is weird routing bug. maybe happening during page transition.
   if (slugs.indexOf('undefined') !== -1) {
@@ -51,9 +50,6 @@ export async function getServerSideProps(props) {
   }
 
   const [itemSlug, marketTypeParam, sortParam] = slugs
-  console.log({ itemSlug, marketTypeParam, sortParam })
-  // const slug = slugs[0] || null
-  // const type = slugs[1] || null
 
   let catalog = {}
   let error = null
@@ -97,7 +93,7 @@ export async function getServerSideProps(props) {
       canonicalURL,
       filter,
       marketType,
-      sortParam: sortParam || null,
+      sortParam: sortParam || 'price',
       initialAsks,
       initialBids,
       error,

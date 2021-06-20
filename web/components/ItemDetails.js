@@ -252,21 +252,24 @@ export default function ItemDetails({
   // Handle initial buy orders on page load.
   React.useEffect(() => {
     getBuyOrders(sort)
-  }, [sort])
+  }, [])
 
   // Handles update offers and buy orders on filter change
   React.useEffect(() => {
-    if (tabIndex !== 0) {
+    // process offers
+    if (tabIndex === 0) {
+      // check initial props is same and skip the fetch
+      if (sort === sortParam && page === initialFilter.page) {
+        setOffers(initialAsks)
+        return
+      }
+
+      getOffers(sort, page)
       return
     }
 
-    // Check initial props is same and skip the fetch
-    if (sort === initialFilter.sort && page === initialFilter.page) {
-      setOffers(initialAsks)
-      return
-    }
-
-    getOffers(sort, page)
+    // process buy orders
+    getBuyOrders(sort)
   }, [tabIndex, sort, page])
 
   // Retrieve market sales graph.
