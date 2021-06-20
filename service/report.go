@@ -1,7 +1,10 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"net/http"
 	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -61,5 +64,31 @@ func (s *reportService) Create(ctx context.Context, rep *core.Report) error {
 		return errors.New(core.ReportErrRequiredFields, err)
 	}
 
-	return s.reportStg.Create(rep)
+	if err := s.reportStg.Create(rep); err != nil {
+		return err
+	}
+
+	return s.shootToDiscord(*rep)
+}
+
+const discordURL = "https://discord.com/api/webhooks/856275008867008523/hS3jT4bUyoJbtBMZq106QK24sM2L54Xvyyz1M_hExOu-tQeKyZjmbNIWteg-Yg2sTfvU"
+
+func (s *reportService) shootToDiscord(rep core.Report) error {
+	payload := struct {
+		Username string `json:"username"`
+		Content  string `json:"content"`
+	}{
+		rep.UserID,
+		rep.Label + ": " + rep.Text,
+	}
+
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(payload); err != nil {
+		return err
+	}
+	resp, err := http.Post(discordURL, "application/json", b)
+	if err != nil {
+		return err
+	}
+	return resp.Body.Close()
 }
