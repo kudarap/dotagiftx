@@ -34,29 +34,36 @@ const marketSearchFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   inventory_status: VERIFIED_INVENTORY_VERIFIED,
-  sort: 'best',
+  sort: 'lowest',
 }
 
 // This gets called on every request
 export async function getServerSideProps(props) {
   const { params, query } = props
-  const { slug } = params
+  const { slugs } = params
+  console.log(slugs)
+
   // NOTE: this is weird routing bug. maybe happening during page transition.
-  if (slug === 'undefined') {
+  if (slugs.indexOf('undefined') !== -1) {
     return {
       props: {},
     }
   }
 
+  const [itemSlug, marketTypeParam, sortParam] = slugs
+  console.log({ itemSlug, marketTypeParam, sortParam })
+  // const slug = slugs[0] || null
+  // const type = slugs[1] || null
+
   let catalog = {}
   let error = null
 
-  const sort = query.sort || marketSearchFilter.sort
+  const sort = sortParam || marketSearchFilter.sort
   const page = Number(query.page || marketSearchFilter.page)
   const filter = { ...marketSearchFilter, sort, page }
 
   try {
-    catalog = await getCatalog(slug, filter)
+    catalog = await getCatalog(itemSlug, filter)
     filter.item_id = catalog.id
   } catch (e) {
     error = `catalog get error: ${e.message}`
@@ -64,11 +71,7 @@ export async function getServerSideProps(props) {
 
   if (!catalog.id) {
     return {
-      props: {
-        item: catalog,
-        filter: {},
-        error: 'catalog not found x',
-      },
+      notFound: true,
     }
   }
 
@@ -85,13 +88,16 @@ export async function getServerSideProps(props) {
     total_count: catalog.bid_count,
   }
 
-  const canonicalURL = `${APP_URL}/${slug}`
+  const canonicalURL = `${APP_URL}/${itemSlug}`
+  const marketType = marketTypeParam || 'offers'
 
   return {
     props: {
       item: catalog,
       canonicalURL,
       filter,
+      marketType,
+      sortParam: sortParam || null,
       initialAsks,
       initialBids,
       error,

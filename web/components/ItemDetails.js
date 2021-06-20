@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import useSWR from 'swr'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import MuiLink from '@material-ui/core/Link'
@@ -82,7 +81,7 @@ const useStyles = makeStyles(theme => ({
 const marketBuyOrderFilter = {
   type: MARKET_TYPE_BID,
   status: MARKET_STATUS_LIVE,
-  sort: 'best',
+  sort: 'highest',
   nocache: true,
 }
 
@@ -110,12 +109,15 @@ const swrConfig = [
   },
 ]
 
-const BUYORDER_QUERY_KEY = 'buyorder'
+const OFFERS_PARAM_KEY = 'offers'
+const BUYORDERS_PARAM_KEY = 'buyorders'
 
 export default function ItemDetails({
   item,
   error: initialError,
   filter: initialFilter,
+  marketType,
+  sortParam,
   initialAsks,
   initialBids,
   canonicalURL,
@@ -147,6 +149,7 @@ export default function ItemDetails({
 
   const [offers, setOffers] = React.useState(initialAsks)
   const [orders, setOrders] = React.useState(initialBids)
+  const [sort, setSort] = React.useState(sortParam)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(null)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
@@ -155,25 +158,22 @@ export default function ItemDetails({
   const router = useRouter()
   // Handle shallow route update for sort and page query
   const updateFilterRouter = f => {
-    const { sort, page } = f
-    const query = { sort, page }
-
-    if (tabIndex === 1) {
-      query.buyorder = ''
-    } else {
-      delete query.buyorder
-    }
-
-    router.push({ query }, null, { shallow: true })
+    const { page } = f
+    router.push({ query: { page } }, null, { shallow: true })
   }
   // Set active tab on load
   React.useEffect(() => {
-    if (has(router.query, BUYORDER_QUERY_KEY)) {
-      setTabIndex(1)
-    } else {
-      setTabIndex(0)
+    switch (marketType) {
+      case OFFERS_PARAM_KEY:
+        setTabIndex(0)
+        break
+      case BUYORDERS_PARAM_KEY:
+        setTabIndex(1)
+        break
+      default:
+        setTabIndex(0)
     }
-  }, [])
+  }, [marketType])
 
   // Handle offers data on load. when its available display immediately.
   React.useEffect(() => {
@@ -181,7 +181,7 @@ export default function ItemDetails({
   }, [initialAsks])
 
   // Handle filter changes
-  const [filter, setFilter] = React.useState({ sort: initialFilter.sort, page: initialFilter.page })
+  const [filter, setFilter] = React.useState({ sort: sortParam, page: initialFilter.page })
   const handleFilterChange = (nextFilter, skipRouteUpdate = false) => {
     const f = { ...filter, ...nextFilter }
     setFilter(f)
@@ -190,40 +190,36 @@ export default function ItemDetails({
       updateFilterRouter(f)
     }
   }
-  const handleSortChange = sort => {
-    handleFilterChange({ sort, page: 1 })
+  const handleTabChange = idx => {
+    setTabIndex(idx)
+
+    // process offers
+    if (idx === 0) {
+      handleFilterChange({ sort: 'lowest', page: 1 }, true)
+      router.push(`/${item.slug}/${OFFERS_PARAM_KEY}`, null, { shallow: true })
+      return
+    }
+
+    // process buy orders
+    router.push(`/${item.slug}/${BUYORDERS_PARAM_KEY}`, null, { shallow: true })
+  }
+  const handleSortChange = sortValue => {
+    setFilter({ ...filter, sort: sortValue })
+
+    // process offers
+    if (tabIndex === 0) {
+      handleFilterChange({ sort: sortValue, page: 1 })
+      return
+    }
+
+    // process buy orders
+    setSort(sortValue)
+    router.push(`/${item.slug}/${BUYORDERS_PARAM_KEY}/${sortValue}`, null, { shallow: true })
   }
   const handlePageChange = (e, page) => {
     handleFilterChange({ page })
     // Scroll to top
     window.scrollTo(0, 0)
-  }
-  const handleTabChange = idx => {
-    setTabIndex(idx)
-    const { slug } = router.query
-    let { sort } = router.query
-    if (!sort) {
-      sort = 'best'
-    }
-
-    const query = {}
-    if (sort) {
-      query.sort = sort
-    }
-
-    if (idx === 0) {
-      handleFilterChange({ sort, page: 1 }, true)
-      let url = `${slug}`
-      if (sort) {
-        url += `?sort=${sort}`
-      }
-
-      router.push(url, null, { shallow: true })
-      return
-    }
-
-    query.buyorder = ''
-    router.push({ query }, null, { shallow: true })
   }
 
   const getOffers = async f => {
@@ -236,14 +232,14 @@ export default function ItemDetails({
     }
     setLoading(null)
   }
-  const getBuyOrders = async () => {
+  const getBuyOrders = async sortValue => {
     // marketBuyOrderFilter.item_id = item.id
     // marketBuyOrderFilter.sort = filter.sort
     setLoading('bid')
     try {
       const res = await marketSearch({
         ...marketBuyOrderFilter,
-        sort: filter.sort,
+        sort: sortValue === 'price' ? 'highest' : sortValue,
         item_id: item.id,
       })
       res.loaded = true
@@ -257,32 +253,27 @@ export default function ItemDetails({
     setOpenBuyOrderDialog(true)
   }
   const handleBuyerChange = () => {
-    getBuyOrders()
+    getBuyOrders(sort)
   }
 
   // Handle initial buy orders on page load.
   React.useEffect(() => {
-    getBuyOrders()
-  }, [])
+    getBuyOrders(sort)
+  }, [sort])
 
   // Handles update offers and buy orders on filter change
   React.useEffect(() => {
-    switch (tabIndex) {
-      case 0:
-        // Check initial props is same and skip the fetch
-        if (filter.sort === initialFilter.sort && filter.page === initialFilter.page) {
-          setOffers(initialAsks)
-          return
-        }
-
-        getOffers(filter)
-        break
-      case 1:
-        getBuyOrders()
-        break
-      default:
-      // no default
+    if (tabIndex !== 0) {
+      return
     }
+
+    // Check initial props is same and skip the fetch
+    if (filter.sort === initialFilter.sort && filter.page === initialFilter.page) {
+      setOffers(initialAsks)
+      return
+    }
+
+    getOffers(filter)
   }, [filter.page, filter.sort, tabIndex])
 
   // Retrieve market sales graph.
@@ -524,7 +515,7 @@ export default function ItemDetails({
             onSortChange={handleSortChange}
             tabIndex={tabIndex}
             onTabChange={handleTabChange}
-            sort={filter.sort}
+            sort={sort}
             pagination={
               !error && (
                 <TablePagination
@@ -586,6 +577,7 @@ export default function ItemDetails({
 ItemDetails.propTypes = {
   item: PropTypes.object.isRequired,
   canonicalURL: PropTypes.string.isRequired,
+  marketType: PropTypes.string.isRequired,
   filter: PropTypes.object,
   initialAsks: PropTypes.object,
   initialBids: PropTypes.object,

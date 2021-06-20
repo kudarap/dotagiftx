@@ -12,7 +12,6 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import Box from '@material-ui/core/Box'
 
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
@@ -32,7 +31,7 @@ import Avatar from '@/components/Avatar'
 import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
-import SelectSort from '@/components/SelectSort'
+import Chip from '@material-ui/core/Chip'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -57,14 +56,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const sortOpts = [
-  ['best', 'Best'],
-  ['recent', 'Recent'],
-  ['lowest', 'Lowest price'],
-  ['highest', 'Highest price'],
-].map(([value, label]) => ({ value, label }))
-
-const defaultSort = sortOpts[0].value
+const defaultSort = 'price'
 
 export default function MarketList({
   offers,
@@ -114,9 +106,9 @@ export default function MarketList({
     })()
   }
 
-  const handleSelectSortChange = e => {
-    setSort(e.target.value)
-    onSortChange(e.target.value)
+  const handleSortClick = v => {
+    setSort(v)
+    onSortChange(v)
   }
 
   const offerListLoading = loading === 'ask'
@@ -129,18 +121,10 @@ export default function MarketList({
           <TableHead className={classes.tableHead}>
             <TableRow>
               <TableHeadCell colSpan={isMobile ? 2 : 3} padding="none">
-                <div
-                  style={{
-                    // display: 'flex',
-                    // justifyContent: 'space-between',
-                    // alignItems: 'center',
-                    textTransform: 'none',
-                  }}>
-                  <DashTabs variant="fullWidth" value={tabIndex} onChange={handleTabChange}>
-                    <DashTab value={0} label="Offers" badgeContent={offers.total_count} />
-                    <DashTab value={1} label="Buy Orders" badgeContent={buyOrders.total_count} />
-                  </DashTabs>
-                </div>
+                <DashTabs variant="fullWidth" value={tabIndex} onChange={handleTabChange}>
+                  <DashTab value={0} label="Offers" badgeContent={offers.total_count} />
+                  <DashTab value={1} label="Buy Orders" badgeContent={buyOrders.total_count} />
+                </DashTabs>
               </TableHeadCell>
             </TableRow>
           </TableHead>
@@ -150,6 +134,8 @@ export default function MarketList({
               datatable={offers}
               loading={offerListLoading}
               error={error}
+              sort={sort}
+              onSort={handleSortClick}
               onContact={handleContactClick}
               onRemove={handleRemoveClick}
               currentUserID={currentUserID}
@@ -160,6 +146,8 @@ export default function MarketList({
               datatable={buyOrders}
               loading={buyOrderLoading}
               error={error}
+              sort={sort}
+              onSort={handleSortClick}
               onContact={handleContactClick}
               onRemove={handleRemoveClick}
               currentUserID={currentUserID}
@@ -277,7 +265,9 @@ function baseTable(Component) {
     const open = Boolean(anchorEl)
     const popoverElementID = open ? 'verified-status-popover' : undefined
 
-    const { datatable, loading, error, bidMode } = props
+    const { datatable, loading, error, bidMode, sort, onSort } = props
+
+    const activeChipSortStyle = { marginRight: 14, background: '#eee', color: '#333' }
 
     return (
       <>
@@ -285,34 +275,56 @@ function baseTable(Component) {
           <TableRow>
             <TableHeadCell colSpan={isMobile ? 2 : 3}>
               <div style={{ display: 'flex' }}>
-                <Button variant="contained" size="small">
-                  {bidMode ? 'Highest' : 'Lowest'} price
-                </Button>
-                &nbsp; &nbsp;
-                <Button variant="outlined" size="small">
-                  Best
-                </Button>
-                &nbsp; &nbsp;
-                <Button variant="outlined" size="small">
-                  Recent
-                </Button>
+                <Chip
+                  onClick={() => onSort('price')}
+                  style={
+                    sort === 'price'
+                      ? activeChipSortStyle
+                      : { marginRight: activeChipSortStyle.marginRight }
+                  }
+                  label={bidMode ? 'Highest price' : 'Lowest price'}
+                  variant="outlined"
+                  clickable
+                />
+                <Chip
+                  onClick={() => onSort('best')}
+                  style={
+                    sort === 'best'
+                      ? activeChipSortStyle
+                      : { marginRight: activeChipSortStyle.marginRight }
+                  }
+                  label={bidMode ? 'Top buyers' : 'Top sellers'}
+                  variant="outlined"
+                  clickable
+                />
+                <Chip
+                  onClick={() => onSort('recent')}
+                  style={
+                    sort === 'recent'
+                      ? activeChipSortStyle
+                      : { marginRight: activeChipSortStyle.marginRight }
+                  }
+                  label="Recent"
+                  variant="outlined"
+                  clickable
+                />
               </div>
             </TableHeadCell>
           </TableRow>
 
-          {/*<TableRow>*/}
-          {/*  <TableHeadCell size="small">*/}
-          {/*    <Typography color="textSecondary" variant="body2">*/}
-          {/*      {bidMode ? 'Buyer' : 'Seller'}*/}
-          {/*    </Typography>*/}
-          {/*  </TableHeadCell>*/}
-          {/*  <TableHeadCell size="small" align="right">*/}
-          {/*    <Typography color="textSecondary" variant="body2">*/}
-          {/*      {bidMode ? 'Buy Price' : 'Price'}*/}
-          {/*    </Typography>*/}
-          {/*  </TableHeadCell>*/}
-          {/*  {!isMobile && <TableHeadCell size="small" align="center" width={160} />}*/}
-          {/*</TableRow>*/}
+          {/* <TableRow> */}
+          {/*  <TableHeadCell size="small"> */}
+          {/*    <Typography color="textSecondary" variant="body2"> */}
+          {/*      {bidMode ? 'Buyer' : 'Seller'} */}
+          {/*    </Typography> */}
+          {/*  </TableHeadCell> */}
+          {/*  <TableHeadCell size="small" align="right"> */}
+          {/*    <Typography color="textSecondary" variant="body2"> */}
+          {/*      {bidMode ? 'Buy Price' : 'Price'} */}
+          {/*    </Typography> */}
+          {/*  </TableHeadCell> */}
+          {/*  {!isMobile && <TableHeadCell size="small" align="center" width={160} />} */}
+          {/* </TableRow> */}
 
           {error && (
             <TableRow>
