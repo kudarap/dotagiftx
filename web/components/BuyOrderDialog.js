@@ -128,7 +128,7 @@ export default function BuyOrderDialog(props) {
 
     if (market) {
       // Forces to refresh buy order table
-      router.push(`${router.query.slug}?buyorder`)
+      router.push(`/${catalog.slug}/buyorders`)
     }
   }
 

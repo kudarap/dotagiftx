@@ -45,7 +45,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
 
   const isRecentMode = variant === 'recent'
 
-  const itemURLSuffix = bidType ? '?buyorder' : ''
+  const itemURLSuffix = bidType ? '/buyorders' : ''
 
   return (
     <TableContainer component={Paper}>
