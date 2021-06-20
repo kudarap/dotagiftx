@@ -56,14 +56,12 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const defaultSort = 'price'
-
 export default function MarketList({
   offers,
   buyOrders,
   error,
   loading,
-  sort: initSort,
+  sort,
   pagination,
   tabIndex,
   onSortChange,
@@ -72,8 +70,6 @@ export default function MarketList({
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
-
-  const [sort, setSort] = React.useState(initSort || defaultSort)
 
   const router = useRouter()
   const handleTabChange = (e, value) => {
@@ -107,7 +103,6 @@ export default function MarketList({
   }
 
   const handleSortClick = v => {
-    setSort(v)
     onSortChange(v)
   }
 

@@ -109,6 +109,7 @@ const swrConfig = [
   },
 ]
 
+const DEFAULT_SORT = 'price'
 const OFFERS_PARAM_KEY = 'offers'
 const BUYORDERS_PARAM_KEY = 'buyorders'
 
@@ -149,7 +150,6 @@ export default function ItemDetails({
 
   const [offers, setOffers] = React.useState(initialAsks)
   const [orders, setOrders] = React.useState(initialBids)
-  const [sort, setSort] = React.useState(sortParam)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(null)
   const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
@@ -181,7 +181,11 @@ export default function ItemDetails({
   }, [initialAsks])
 
   // Handle filter changes
-  const [filter, setFilter] = React.useState({ sort: sortParam, page: initialFilter.page })
+  const [sort, setSort] = React.useState(sortParam || DEFAULT_SORT)
+  const [filter, setFilter] = React.useState({
+    sort: sortParam || DEFAULT_SORT,
+    page: initialFilter.page,
+  })
   const handleFilterChange = (nextFilter, skipRouteUpdate = false) => {
     const f = { ...filter, ...nextFilter }
     setFilter(f)
@@ -192,10 +196,10 @@ export default function ItemDetails({
   }
   const handleTabChange = idx => {
     setTabIndex(idx)
+    setSort('price')
 
     // process offers
     if (idx === 0) {
-      handleFilterChange({ sort: 'lowest', page: 1 }, true)
       router.push(`/${item.slug}/${OFFERS_PARAM_KEY}`, null, { shallow: true })
       return
     }
@@ -204,16 +208,15 @@ export default function ItemDetails({
     router.push(`/${item.slug}/${BUYORDERS_PARAM_KEY}`, null, { shallow: true })
   }
   const handleSortChange = sortValue => {
-    setFilter({ ...filter, sort: sortValue })
+    setSort(sortValue)
 
     // process offers
     if (tabIndex === 0) {
-      handleFilterChange({ sort: sortValue, page: 1 })
+      router.push(`/${item.slug}/${OFFERS_PARAM_KEY}/${sortValue}`, null, { shallow: true })
       return
     }
 
     // process buy orders
-    setSort(sortValue)
     router.push(`/${item.slug}/${BUYORDERS_PARAM_KEY}/${sortValue}`, null, { shallow: true })
   }
   const handlePageChange = (e, page) => {
@@ -225,7 +228,10 @@ export default function ItemDetails({
   const getOffers = async f => {
     setLoading('ask')
     try {
-      const res = await marketSearch({ ...initialFilter, ...f })
+      const res = await marketSearch({
+        ...initialFilter,
+        sort: f.sort === 'price' ? 'lowest' : f.sort,
+      })
       setOffers(res)
     } catch (e) {
       setError(e.message)
@@ -233,8 +239,6 @@ export default function ItemDetails({
     setLoading(null)
   }
   const getBuyOrders = async sortValue => {
-    // marketBuyOrderFilter.item_id = item.id
-    // marketBuyOrderFilter.sort = filter.sort
     setLoading('bid')
     try {
       const res = await marketSearch({
@@ -268,13 +272,13 @@ export default function ItemDetails({
     }
 
     // Check initial props is same and skip the fetch
-    if (filter.sort === initialFilter.sort && filter.page === initialFilter.page) {
+    if (sort === initialFilter.sort && filter.page === initialFilter.page) {
       setOffers(initialAsks)
       return
     }
 
-    getOffers(filter)
-  }, [filter.page, filter.sort, tabIndex])
+    getOffers({ sort })
+  }, [sort, tabIndex])
 
   // Retrieve market sales graph.
   const shouldLoadGraph = Boolean(orders.loaded)
