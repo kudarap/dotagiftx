@@ -354,7 +354,8 @@ function baseTable(Component) {
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
                     <div>
-                      <strong>{market.user.name}</strong>
+                      {/* check for redacted data */}
+                      {market.user.id ? <strong>{market.user.name}</strong> : <em>████████████</em>}
                       {Boolean(market.user.donation) && (
                         <DonatorBadge style={{ marginLeft: 4 }}>DONATOR</DonatorBadge>
                       )}
