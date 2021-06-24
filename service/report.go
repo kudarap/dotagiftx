@@ -1,7 +1,11 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -61,5 +65,46 @@ func (s *reportService) Create(ctx context.Context, rep *core.Report) error {
 		return errors.New(core.ReportErrRequiredFields, err)
 	}
 
-	return s.reportStg.Create(rep)
+	if err := s.reportStg.Create(rep); err != nil {
+		return err
+	}
+
+	go func() {
+		if err := s.shootToDiscord(rep.ID); err != nil {
+			fmt.Println("could not shoot to discord:", err)
+		}
+	}()
+
+	return nil
+}
+
+const discordURL = "https://discord.com/api/webhooks/856275008867008523/hS3jT4bUyoJbtBMZq106QK24sM2L54Xvyyz1M_hExOu-tQeKyZjmbNIWteg-Yg2sTfvU"
+
+func (s *reportService) shootToDiscord(reportID string) error {
+	reps, _, err := s.Reports(core.FindOpts{Filter: core.Report{ID: reportID}})
+	if err != nil {
+		return err
+	}
+	if len(reps) == 0 {
+		return nil
+	}
+	rep := reps[0]
+
+	payload := struct {
+		Username string `json:"username"`
+		Content  string `json:"content"`
+	}{
+		fmt.Sprintf("%s (%s)", rep.User.Name, rep.User.SteamID),
+		fmt.Sprintf("[%s] %s", rep.Type, rep.Text),
+	}
+
+	b := new(bytes.Buffer)
+	if err = json.NewEncoder(b).Encode(payload); err != nil {
+		return err
+	}
+	resp, err := http.Post(discordURL, "application/json", b)
+	if err != nil {
+		return err
+	}
+	return resp.Body.Close()
 }

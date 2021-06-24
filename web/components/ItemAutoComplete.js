@@ -7,7 +7,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { item, itemSearch } from '@/service/api'
 
-const itemSearchFilter = { limit: 1000, sort: 'view_count:desc', active: true }
+// const itemSearchFilter = { limit: 1000, sort: 'view_count:desc', active: true }
+const itemSearchFilter = { limit: 1000, sort: 'created_at:desc', active: true }
 const optionTextSeparator = ' - '
 
 function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
