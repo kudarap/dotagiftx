@@ -120,7 +120,7 @@ func (app *application) setup() error {
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, fileMgr)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	inventorySvc := service.NewInventory(inventoryStg, marketStg)
+	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	marketSvc := service.NewMarket(
 		marketStg,
 		userStg,

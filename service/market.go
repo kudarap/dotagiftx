@@ -143,7 +143,6 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	//go func() {
 	if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
 		return err
 	}
@@ -153,7 +152,7 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
 		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
-	//}()
+
 	if mkt.Type == core.MarketTypeAsk {
 		s.dispatch.VerifyInventory(mkt.UserID)
 	}
@@ -282,12 +281,6 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	go func() {
-		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
-			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
-		}
-	}()
-
 	if mkt.Type == core.MarketTypeAsk {
 		switch mkt.Status {
 		case core.MarketStatusReserved:
@@ -302,6 +295,9 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	}
 	if _, err = s.marketStg.Index(mkt.ID); err != nil {
 		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+	}
+	if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
+		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
 
 	return nil

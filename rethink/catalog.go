@@ -422,7 +422,7 @@ func (s *catalogStorage) update(in *core.Catalog) error {
 		return errors.New(core.StorageUncaughtErr, err)
 	}
 
-	if err := mergo.Merge(in, cur); err != nil {
+	if err = mergo.Merge(in, cur); err != nil {
 		return errors.New(core.StorageMergeErr, err)
 	}
 
