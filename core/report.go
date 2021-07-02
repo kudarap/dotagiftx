@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"strconv"
 	"time"
 )
 
@@ -87,4 +88,21 @@ func (r Report) CheckCreate() error {
 	}
 
 	return nil
+}
+
+var ReportTypeTexts = map[ReportType]string{
+	ReportTypeFeedback:     "Feedback",
+	ReportTypeSurvey:       "Survey",
+	ReportTypeBug:          "Bug",
+	ReportTypeScamAlert:    "ScamAlert",
+	ReportTypeScamIncident: "ScamIncident",
+}
+
+func (t ReportType) String() string {
+	s, ok := ReportTypeTexts[t]
+	if !ok {
+		return strconv.Itoa(int(t))
+	}
+
+	return s
 }

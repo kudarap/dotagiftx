@@ -9,13 +9,14 @@ import (
 )
 
 // NewInventory returns new Inventory service.
-func NewInventory(rs core.InventoryStorage, ms core.MarketStorage) core.InventoryService {
-	return &InventoryService{rs, ms}
+func NewInventory(rs core.InventoryStorage, ms core.MarketStorage, cs core.CatalogStorage) core.InventoryService {
+	return &InventoryService{rs, ms, cs}
 }
 
 type InventoryService struct {
 	inventoryStg core.InventoryStorage
 	marketStg    core.MarketStorage
+	catalogStg   core.CatalogStorage
 }
 
 func (s *InventoryService) Inventories(opts core.FindOpts) ([]core.Inventory, *core.FindMetadata, error) {
@@ -63,8 +64,12 @@ func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {
 	}
 
 	defer func() {
-		if _, err := s.marketStg.Index(inv.MarketID); err != nil {
+		mkt, err := s.marketStg.Index(inv.MarketID)
+		if err != nil {
 			log.Printf("could not index market %s: %s", inv.MarketID, err)
+		}
+		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
+			log.Printf("could not index catalog %s: %s", inv.MarketID, err)
 		}
 	}()
 

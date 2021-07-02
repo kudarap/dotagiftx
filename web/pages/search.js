@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Select from '@material-ui/core/Select'
+import FormControl from '@material-ui/core/FormControl'
 import MenuItem from '@material-ui/core/MenuItem'
 import { catalogSearch } from '@/service/api'
 import Footer from '@/components/Footer'
@@ -31,13 +32,15 @@ const sortOpts = [
   ['recent-bid', 'New Buy Orders'],
 ].map(([value, label]) => ({ value, label }))
 
-function SelectSort(props) {
+function SelectSort({ className, style, ...other }) {
   return (
-    <Select id="select-sort" {...props}>
-      {sortOpts.map(opt => (
-        <MenuItem value={opt.value}>{opt.label}</MenuItem>
-      ))}
-    </Select>
+    <FormControl size="small" {...{ className, style }}>
+      <Select id="select-sort" {...other}>
+        {sortOpts.map(opt => (
+          <MenuItem value={opt.value}>{opt.label}</MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   )
 }
 

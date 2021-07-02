@@ -40,6 +40,9 @@ func handleMarketList(
 			}
 		}
 
+		// Special query flags with findOpts
+		sortQueryModifier(r)
+
 		opts, err := findOptsFromURL(r.URL, &core.Market{})
 		if err != nil {
 			respondError(w, err)
@@ -74,6 +77,30 @@ func handleMarketList(
 
 		respondOK(w, data)
 	}
+}
+
+func sortQueryModifier(r *http.Request) {
+	if !hasQueryField(r.URL, "sort") {
+		return
+	}
+
+	query := r.URL.Query()
+	switch query.Get("sort") {
+	case "best":
+		query.Set("sort", "user_rank_score:desc")
+		break
+	case "recent":
+		query.Set("sort", "updated_at:desc")
+		break
+	case "lowest":
+		query.Set("sort", "price")
+		break
+	case "highest":
+		query.Set("sort", "price:desc")
+		break
+	}
+
+	r.URL.RawQuery = query.Encode()
 }
 
 func handleMarketDetail(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {

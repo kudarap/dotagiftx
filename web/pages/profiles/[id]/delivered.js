@@ -6,7 +6,7 @@ import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_SOLD } from '@/constants/market'
-import { CDN_URL, marketSearch, statsMarketSummary, user } from '@/service/api'
+import { CDN_URL, marketSearch, user } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -129,6 +129,10 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
                 style={{ textDecoration: 'underline' }}>
                 {stats.sold} Delivered
               </Typography>
+              &nbsp;&middot;&nbsp;
+              <Typography component={Link} href={`${profileURL}/bought`}>
+                {stats.bid_completed} Bought
+              </Typography>
             </div>
           </div>
           <br />
@@ -152,7 +156,7 @@ export async function getServerSideProps({ params }) {
   const profile = await user(String(params.id))
   const canonicalURL = `${APP_URL}/profiles/${params.id}/delivered`
 
-  const stats = await statsMarketSummary({ user_id: profile.id })
+  const stats = profile.market_stats || {}
 
   return {
     props: {

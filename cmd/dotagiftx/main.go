@@ -120,13 +120,14 @@ func (app *application) setup() error {
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, fileMgr)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	inventorySvc := service.NewInventory(inventoryStg, marketStg)
+	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	marketSvc := service.NewMarket(
 		marketStg,
 		userStg,
 		itemStg,
 		trackStg,
 		catalogStg,
+		statsStg,
 		deliverySvc,
 		inventorySvc,
 		steamClient,
@@ -134,8 +135,8 @@ func (app *application) setup() error {
 		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
-	statsSvc := service.NewStats(statsStg)
 	reportSvc := service.NewReport(reportStg)
+	statsSvc := service.NewStats(statsStg)
 
 	// Register job on the worker.
 	*dispatcher = *jobs.NewDispatcher(
@@ -153,6 +154,7 @@ func (app *application) setup() error {
 	//fixes.ReIndexAll(itemStg, catalogStg)
 	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
 	//fixes.MarketIndexRebuild(marketStg)
+	//fixes.MarketSetRankingScores(userSvc, marketSvc)
 	//redisClient.BulkDel("")
 
 	// Server setup.

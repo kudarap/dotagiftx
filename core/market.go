@@ -86,10 +86,11 @@ type (
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
 
 		// Will be use for full-text searching.
-		SearchText string `json:"-" db:"search_text,omitempty,indexed"`
+		SearchText    string `json:"-"               db:"search_text,omitempty,indexed"`
+		UserRankScore int    `json:"user_rank_score" db:"user_rank_score,omitempty,indexed"`
 
-		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty"`
-		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty"`
+		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty,indexed"`
+		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty,indexed"`
 
 		// Include related fields.
 		User      *User      `json:"user,omitempty"      db:"user,omitempty"`
@@ -112,6 +113,9 @@ type (
 		// Update saves market details changes.
 		Update(context.Context, *Market) error
 
+		// UpdateUserRankScore sets new user ranking score on all live market by user id.
+		UpdateUserRankScore(userID string) error
+
 		//// Index Index composes market data for faster search and retrieval.
 		//Index(ctx context.Context, id string) (*Market, error)
 
@@ -123,7 +127,7 @@ type (
 		Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
 
 		// CatalogDetails returns catalog details by item id.
-		CatalogDetails(id string) (*Catalog, error)
+		CatalogDetails(id string, opts FindOpts) (*Catalog, error)
 
 		// TrendingCatalog returns a top 10 trending catalogs.
 		TrendingCatalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
@@ -160,6 +164,9 @@ type (
 
 		// Index composes market data for faster search and retrieval.
 		Index(id string) (*Market, error)
+
+		// UpdateUserScore sets new rank score value of all live market by user ID.
+		UpdateUserScore(userID string, rankScore int) error
 	}
 )
 
@@ -214,7 +221,7 @@ func (m Market) CheckUpdate() error {
 
 const defaultCurrency = "USD"
 
-// SetDefault sets default values for a new market.
+// SetDefaults sets default values for a new market.
 func (m *Market) SetDefaults() {
 	m.Status = MarketStatusLive
 	m.Currency = defaultCurrency

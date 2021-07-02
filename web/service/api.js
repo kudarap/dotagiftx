@@ -41,7 +41,8 @@ export const authRevoke = refreshToken =>
 
 export const version = () => http.request(http.GET, VERSION)
 export const item = slug => http.request(http.GET, `${ITEMS}/${slug}`)
-export const catalog = slug => http.request(http.GET, `${CATALOGS}/${slug}`)
+export const catalog = (slug, marketFilter = {}) =>
+  http.request(http.GET, `${CATALOGS}/${slug}?${querystring.stringify(marketFilter)}`)
 export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 export const vanity = vid => http.request(http.GET, `${VANITY}/${vid}`)
 export const statsMarketSummary = (filter = {}) =>

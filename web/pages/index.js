@@ -228,7 +228,7 @@ export default function Index({ marketSummary, trendingItems }) {
               href="/search?sort=recent-bid"
               disableUnderline>
               <Typography variant="h4" component="span">
-                {marketSummary.bids.live}
+                {marketSummary.bids.bid_live}
               </Typography>
               <br />
               <Typography color="textSecondary" variant="body2">

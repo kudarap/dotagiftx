@@ -26,6 +26,7 @@ import { MARKET_STATUS_SOLD } from '@/constants/market'
 const useStyles = makeStyles({
   root: {
     minWidth: 300,
+    zIndex: 1,
   },
   poweredBy: {
     color: indigo[400],
@@ -171,7 +172,7 @@ function CardX(props) {
 export function VerifiedStatusPopover({ market, ...other }) {
   return (
     <Popper
-      style={{ marginTop: 2 }}
+      style={{ marginTop: 2, zIndex: 1 }}
       placement="right-start"
       // placement="top"
       disablePortal={false}

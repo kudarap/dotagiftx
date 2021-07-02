@@ -1,0 +1,28 @@
+# careful using this
+
+# ban
+var testDB = r.db('d2g_production');
+testDB.table('user')
+  .filter({ steam_id: 'XXXXXXXXXX' })
+  .update({ status: 400, updated_at: r.now() })
+# cancel items
+var testDB = r.db('d2g_production');
+testDB.table('market')
+  .filter({ user_id: '387e41d0-5da0-45f6-93c9-aebe65caf23e', status: 200 })
+  .update({ status: 600 })
+
+# donate
+testDB.table('user')
+  .filter({ steam_id: 'XXXXXXXXXX' })
+  .update({ donation: 2, donated_at: r.now() })
+
+# user count monthly
+var testDB = r.db('d2g_production');
+testDB.table('user')
+  .group(r.row('created_at').month())
+  .count()
+
+#  
+r.db('d2g_production').table('market')
+  .filter({ delivery_status: 100 })
+  .update({ delivery_status: r.literal() })

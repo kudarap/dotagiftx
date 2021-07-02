@@ -1,21 +1,18 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import has from 'lodash/has'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import { debounce } from '@material-ui/core'
 import bidColor from '@material-ui/core/colors/teal'
-// import Avatar from '@/components/Avatar'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
-import Tab from '@material-ui/core/Tab'
-import Tabs from '@material-ui/core/Tabs'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
@@ -32,6 +29,9 @@ import SellButton from '@/components/SellButton'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import Avatar from '@/components/Avatar'
 import DonatorBadge from '@/components/DonatorBadge'
+import DashTabs from '@/components/DashTabs'
+import DashTab from '@/components/DashTab'
+import Chip from '@material-ui/core/Chip'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -50,40 +50,46 @@ const useStyles = makeStyles(theme => ({
       background: theme.palette.grey[100],
     },
   },
+  tab: {
+    width: 168,
+    textTransform: 'none',
+  },
+  sortButtons: {
+    display: 'flex',
+    '& .MuiChip-root': {
+      marginRight: theme.spacing(1),
+    },
+  },
+  activeSortButtons: {
+    color: `${theme.palette.grey[800]} !important`,
+    background: `${theme.palette.grey[100]} !important`,
+  },
 }))
 
-const buyOrderKeyQuery = 'buyorder'
-
-export default function MarketList({ offers, buyOrders, error, loading, pagination }) {
+export default function MarketList({
+  offers,
+  buyOrders,
+  error,
+  loading,
+  sort,
+  pagination,
+  tabIndex,
+  onSortChange,
+  onTabChange,
+}) {
   const classes = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
 
-  const [tabIdx, setTabIdx] = React.useState(0)
-
   const router = useRouter()
-  useEffect(() => {
-    if (has(router.query, buyOrderKeyQuery)) {
-      setTabIdx(1)
-    } else {
-      setTabIdx(0)
-    }
-  }, [router.query])
-
   const handleTabChange = (e, value) => {
-    setTabIdx(value)
-    let p = `/${router.query.slug}`
-    if (value === 1) {
-      p += `?${buyOrderKeyQuery}`
-    }
-
-    router.push(p)
+    onTabChange(value)
   }
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleContactClick = marketIdx => {
     let src = offers
-    if (tabIdx === 1) {
+    if (tabIndex === 1) {
       src = buyOrders
     }
 
@@ -91,7 +97,7 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
   }
   const handleRemoveClick = marketIdx => {
     let src = offers
-    if (tabIdx === 1) {
+    if (tabIndex === 1) {
       src = buyOrders
     }
 
@@ -106,8 +112,12 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
     })()
   }
 
-  const offerListLoading = !offers && loading
-  const buyOrderLoading = !buyOrders.data
+  const handleSortClick = v => {
+    onSortChange(v)
+  }
+
+  const offerListLoading = loading === 'ask'
+  const buyOrderLoading = !buyOrders.data || loading === 'bid'
 
   return (
     <>
@@ -115,32 +125,22 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
         <Table className={classes.table} aria-label="market list table">
           <TableHead className={classes.tableHead}>
             <TableRow>
-              <TableHeadCell colSpan={3} padding="none">
-                <Tabs
-                  className={classes.tabs}
-                  variant="fullWidth"
-                  value={tabIdx}
-                  onChange={handleTabChange}>
-                  <Tab
-                    value={0}
-                    label={`${offers.total_count || ''} Offers`}
-                    style={{ textTransform: 'none' }}
-                  />
-                  <Tab
-                    value={1}
-                    label={`${buyOrders.total_count || ''} Buy Orders`}
-                    style={{ textTransform: 'none' }}
-                  />
-                </Tabs>
+              <TableHeadCell colSpan={2} padding="none">
+                <DashTabs variant="fullWidth" value={tabIndex} onChange={handleTabChange}>
+                  <DashTab value={0} label="Offers" badgeContent={offers.total_count} />
+                  <DashTab value={1} label="Buy Orders" badgeContent={buyOrders.total_count} />
+                </DashTabs>
               </TableHeadCell>
             </TableRow>
           </TableHead>
 
-          {tabIdx === 0 ? (
+          {tabIndex === 0 ? (
             <OfferList
               datatable={offers}
               loading={offerListLoading}
               error={error}
+              sort={sort}
+              onSort={handleSortClick}
               onContact={handleContactClick}
               onRemove={handleRemoveClick}
               currentUserID={currentUserID}
@@ -151,6 +151,8 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
               datatable={buyOrders}
               loading={buyOrderLoading}
               error={error}
+              sort={sort}
+              onSort={handleSortClick}
               onContact={handleContactClick}
               onRemove={handleRemoveClick}
               currentUserID={currentUserID}
@@ -161,28 +163,29 @@ export default function MarketList({ offers, buyOrders, error, loading, paginati
       </TableContainer>
 
       {/* Only display pagination on offer list */}
-      {tabIdx === 0 && pagination}
+      {tabIndex === 0 && pagination}
 
-      {tabIdx === 1 && buyOrders.data.length !== 0 && buyOrders.total_count > 10 && (
+      {tabIndex === 1 && buyOrders.data.length !== 0 && buyOrders.total_count > 10 && (
         <Typography color="textSecondary" align="right" variant="body2" style={{ margin: 8 }}>
-          {buyOrders.total_count - 10} more hidden buy orders at &nbsp;
-          {amount(buyOrders.data[9].price || 0, 'USD')} or less
+          {buyOrders.total_count - 10} more hidden buy orders
+          {/* {buyOrders.total_count - 10} more hidden buy orders at &nbsp; */}
+          {/* {amount(buyOrders.data[9].price || 0, 'USD')} or less */}
         </Typography>
       )}
 
       {/* Fixes bottom spacing */}
-      {((tabIdx === 0 && offers.total_count === 0) ||
-        (tabIdx === 1 && buyOrders.total_count <= 10)) && <div style={{ margin: 8 }}>&nbsp;</div>}
+      {((tabIndex === 0 && offers.total_count === 0) ||
+        (tabIndex === 1 && buyOrders.total_count <= 10)) && <div style={{ margin: 8 }}>&nbsp;</div>}
 
       <ContactDialog
         market={currentMarket}
-        open={tabIdx === 0 && !!currentMarket}
+        open={tabIndex === 0 && !!currentMarket}
         onClose={() => handleContactClick(null)}
       />
 
       <ContactBuyerDialog
         market={currentMarket}
-        open={tabIdx === 1 && !!currentMarket}
+        open={tabIndex === 1 && !!currentMarket}
         onClose={() => handleContactClick(null)}
       />
     </>
@@ -194,11 +197,19 @@ MarketList.propTypes = {
   pagination: PropTypes.element,
   error: PropTypes.string,
   loading: PropTypes.bool,
+  sort: PropTypes.string,
+  tabIndex: PropTypes.number,
+  onSortChange: PropTypes.func,
+  onTabChange: PropTypes.func,
 }
 MarketList.defaultProps = {
   pagination: null,
   error: null,
   loading: false,
+  sort: null,
+  tabIndex: 1,
+  onSortChange: () => {},
+  onTabChange: () => {},
 }
 
 const OfferList = props => {
@@ -231,7 +242,7 @@ function baseTable(Component) {
   const wrapped = props => {
     const classes = useStyles()
 
-    const { currentUserID, isMobile } = props
+    const { currentUserID } = props
 
     const { onContact, onRemove } = props
     const handleContactClick = marketIdx => {
@@ -259,24 +270,52 @@ function baseTable(Component) {
     const open = Boolean(anchorEl)
     const popoverElementID = open ? 'verified-status-popover' : undefined
 
-    const { datatable, loading, error, bidMode } = props
+    const { datatable, loading, error, bidMode, sort, onSort } = props
 
     return (
       <>
         <TableBody style={{ opacity: loading ? 0.5 : 1 }}>
           <TableRow>
-            <TableHeadCell size="small">
-              <Typography color="textSecondary" variant="body2">
-                {bidMode ? 'Buyer' : 'Seller'}
-              </Typography>
+            <TableHeadCell colSpan={2}>
+              <div className={classes.sortButtons}>
+                <Chip
+                  className={sort === 'price' ? classes.activeSortButtons : null}
+                  onClick={() => onSort('price')}
+                  label={bidMode ? 'Highest price' : 'Lowest price'}
+                  variant="outlined"
+                  clickable
+                />
+                <Chip
+                  onClick={() => onSort('best')}
+                  className={sort === 'best' ? classes.activeSortButtons : null}
+                  label={bidMode ? 'Top buyers' : 'Top sellers'}
+                  variant="outlined"
+                  clickable
+                />
+                <Chip
+                  onClick={() => onSort('recent')}
+                  className={sort === 'recent' ? classes.activeSortButtons : null}
+                  label="Recent"
+                  variant="outlined"
+                  clickable
+                />
+              </div>
             </TableHeadCell>
-            <TableHeadCell size="small" align="right">
-              <Typography color="textSecondary" variant="body2">
-                {bidMode ? 'Buy Price' : 'Price'}
-              </Typography>
-            </TableHeadCell>
-            {!isMobile && <TableHeadCell size="small" align="center" width={160} />}
           </TableRow>
+
+          {/* <TableRow> */}
+          {/*  <TableHeadCell size="small"> */}
+          {/*    <Typography color="textSecondary" variant="body2"> */}
+          {/*      {bidMode ? 'Buyer' : 'Seller'} */}
+          {/*    </Typography> */}
+          {/*  </TableHeadCell> */}
+          {/*  <TableHeadCell size="small" align="right"> */}
+          {/*    <Typography color="textSecondary" variant="body2"> */}
+          {/*      {bidMode ? 'Buy Price' : 'Price'} */}
+          {/*    </Typography> */}
+          {/*  </TableHeadCell> */}
+          {/*  {!isMobile && <TableHeadCell size="small" align="center" width={160} />} */}
+          {/* </TableRow> */}
 
           {error && (
             <TableRow>
@@ -290,7 +329,7 @@ function baseTable(Component) {
             </TableRow>
           )}
 
-          {loading && (
+          {!error && loading && datatable.data.length === 0 && (
             <TableRow>
               <TableCell align="center" colSpan={3}>
                 Loading...
@@ -318,7 +357,8 @@ function baseTable(Component) {
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
                     <div>
-                      <strong>{market.user.name}</strong>
+                      {/* check for redacted data */}
+                      {market.user.id ? <strong>{market.user.name}</strong> : <em>████████████</em>}
                       {Boolean(market.user.donation) && (
                         <DonatorBadge style={{ marginLeft: 4 }}>DONATOR</DonatorBadge>
                       )}
@@ -383,11 +423,11 @@ function baseTable(Component) {
 }
 
 const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
-  <>
-    <TableCell align="right">
-      <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-    </TableCell>
-    <TableCell align="center">
+  <TableCell align="right">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+      <Typography variant="body2" style={{ marginRight: 16 }}>
+        {amount(market.price, market.currency)}
+      </Typography>
       {currentUserID === market.user.id ? (
         // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
         <div>
@@ -400,8 +440,8 @@ const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact
           Contact Seller
         </BuyButton>
       )}
-    </TableCell>
-  </>
+    </div>
+  </TableCell>
 ))
 
 const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact }) => (
@@ -420,11 +460,12 @@ const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact })
 ))
 
 const OrderListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
-  <>
-    <TableCell align="right">
-      <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
-    </TableCell>
-    <TableCell align="center">
+  <TableCell align="right">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+      <Typography variant="body2" style={{ marginRight: 16 }}>
+        {amount(market.price, market.currency)}
+      </Typography>
+
       {currentUserID === market.user.id ? (
         // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
         <div>
@@ -441,8 +482,8 @@ const OrderListDesktop = baseTable(({ market, currentUserID, onRemove, onContact
           {market.user.id ? `Contact Buyer` : `Sign in to view`}
         </SellButton>
       )}
-    </TableCell>
-  </>
+    </div>
+  </TableCell>
 ))
 
 const OrderListMini = baseTable(({ market, currentUserID, onRemove, onContact }) => (

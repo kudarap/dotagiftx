@@ -23,9 +23,9 @@ func handleMarketCatalogList(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var noCache bool
-		query := r.URL.Query()
 
 		// Special query flags with findOpts override for popular and recent items.
+		query := r.URL.Query()
 		if hasQueryField(r.URL, "sort") {
 			switch query.Get("sort") {
 			case queryFlagRecentItems:
@@ -42,6 +42,7 @@ func handleMarketCatalogList(
 
 			r.URL.RawQuery = query.Encode()
 		}
+		sortQueryModifier(r)
 
 		opts, err := findOptsFromURL(r.URL, &core.Catalog{})
 		if err != nil {
@@ -96,7 +97,16 @@ func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger 
 			}
 		}
 
-		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"))
+		// Special query flags with findOpts
+		sortQueryModifier(r)
+
+		opts, err := findOptsFromURL(r.URL, &core.Market{})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"), opts)
 		if err != nil {
 			respondError(w, err)
 			return

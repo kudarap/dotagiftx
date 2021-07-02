@@ -5,13 +5,26 @@ import "time"
 type (
 	// MarketStatusCount represents total number of records per status.
 	MarketStatusCount struct {
-		Pending      int `json:"pending"       db:"pending"`
-		Live         int `json:"live"          db:"live"`
-		Reserved     int `json:"reserved"      db:"reserved"`
-		Sold         int `json:"sold"          db:"sold"`
-		Removed      int `json:"removed"       db:"removed"`
-		Cancelled    int `json:"cancelled"     db:"cancelled"`
+		Pending   int `json:"pending"   db:"pending"`
+		Live      int `json:"live"      db:"live"`
+		Reserved  int `json:"reserved"  db:"reserved"`
+		Sold      int `json:"sold"      db:"sold"`
+		Removed   int `json:"removed"   db:"removed"`
+		Cancelled int `json:"cancelled" db:"cancelled"`
+
+		BidLive      int `json:"bid_live"      db:"bid_live"`
 		BidCompleted int `json:"bid_completed" db:"bid_completed"`
+
+		DeliveryNoHit          int `json:"delivery_no_hit"          db:"delivery_no_hit"`
+		DeliveryNameVerified   int `json:"delivery_name_verified"   db:"delivery_name_verified"`
+		DeliverySenderVerified int `json:"delivery_sender_verified" db:"delivery_sender_verified"`
+		DeliveryPrivate        int `json:"delivery_private"         db:"delivery_private"`
+		DeliveryError          int `json:"delivery_error"           db:"delivery_error"`
+
+		InventoryNoHit    int `json:"inventory_no_hit"   db:"inventory_no_hit"`
+		InventoryVerified int `json:"inventory_verified" db:"inventory_verified"`
+		InventoryPrivate  int `json:"inventory_private"  db:"inventory_private"`
+		InventoryError    int `json:"inventory_error"    db:"inventory_error"`
 	}
 
 	MarketSaleSummary struct {

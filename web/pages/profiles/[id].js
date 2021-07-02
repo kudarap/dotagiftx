@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
@@ -6,16 +6,8 @@ import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
-import DonatorIcon from '@material-ui/icons/FavoriteBorder'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
-import {
-  CDN_URL,
-  marketSearch,
-  statsMarketSummary,
-  trackProfileViewURL,
-  user,
-  vanity,
-} from '@/service/api'
+import { CDN_URL, marketSearch, trackProfileViewURL, user, vanity } from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -203,7 +195,11 @@ export default function UserDetails({
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
                   <Link href={`${linkProps.href}/reserved`}>{profile.stats.reserved} Reserved</Link>{' '}
                   &middot;{' '}
-                  <Link href={`${linkProps.href}/delivered`}>{profile.stats.sold} Delivered</Link>
+                  <Link href={`${linkProps.href}/delivered`}>{profile.stats.sold} Delivered</Link>{' '}
+                  &middot;{' '}
+                  <Link href={`${linkProps.href}/bought`}>
+                    {profile.stats.bid_completed} Bought
+                  </Link>
                 </Typography>
                 <br />
                 <ChipLink label="Steam Profile" href={profileURL} />
@@ -317,7 +313,7 @@ export async function getServerSideProps({ params, query }) {
   }
 
   // Retrieve initial user market summary.
-  profile.stats = await statsMarketSummary({ type: MARKET_TYPE_ASK, user_id: profile.id })
+  profile.stats = profile.market_stats
 
   // Retrieve initial user market data.
   let markets = {}

@@ -11,7 +11,7 @@ import Error from '@material-ui/icons/ErrorOutline'
 
 const iconStyle = {
   style: {
-    fontSize: '0.875rem',
+    fontSize: '1rem',
     marginLeft: 4,
     marginRight: 2,
     marginBottom: -2,
@@ -27,10 +27,10 @@ const ultraStyle = {
   style: { ...iconStyle.style, color: 'gold' },
 }
 
-const VERIFIED_INVENTORY_NOHIT = 100
-const VERIFIED_INVENTORY_VERIFIED = 200
-const VERIFIED_INVENTORY_PRIVATE = 400
-const VERIFIED_INVENTORY_ERROR = 500
+export const VERIFIED_INVENTORY_NOHIT = 100
+export const VERIFIED_INVENTORY_VERIFIED = 200
+export const VERIFIED_INVENTORY_PRIVATE = 400
+export const VERIFIED_INVENTORY_ERROR = 500
 
 export const VERIFIED_INVENTORY_MAP_LABEL = {
   [VERIFIED_INVENTORY_NOHIT]: 'Not Found',

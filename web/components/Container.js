@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Container({ children, disableMinHeight }) {
+export default function Container({ children, disableMinHeight, ...other }) {
   const classes = useStyles()
 
   return (
@@ -20,7 +20,8 @@ export default function Container({ children, disableMinHeight }) {
       className={classes.root}
       maxWidth="md"
       disableGutters
-      style={{ minHeight: disableMinHeight ? 0 : `calc(100vh - ${APP_FOOTER_HEIGHT_TOTAL}px)` }}>
+      style={{ minHeight: disableMinHeight ? 0 : `calc(100vh - ${APP_FOOTER_HEIGHT_TOTAL}px)` }}
+      {...other}>
       {children}
     </MuiContainer>
   )

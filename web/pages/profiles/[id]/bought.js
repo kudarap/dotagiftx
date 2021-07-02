@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { APP_NAME, APP_URL } from '@/constants/strings'
-import { MARKET_STATUS_RESERVED } from '@/constants/market'
+import { MARKET_STATUS_BID_COMPLETED } from '@/constants/market'
 import { CDN_URL, marketSearch, user } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const defaultFilter = {
-  status: MARKET_STATUS_RESERVED,
+  status: MARKET_STATUS_BID_COMPLETED,
   sort: 'updated_at:desc',
   page: 1,
 }
@@ -119,10 +119,7 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
                 {stats.live} Items
               </Typography>
               &nbsp;&middot;&nbsp;
-              <Typography
-                component={Link}
-                href={`${profileURL}/reserved`}
-                style={{ textDecoration: 'underline' }}>
+              <Typography component={Link} href={`${profileURL}/reserved`}>
                 {stats.reserved} Reserved
               </Typography>
               &nbsp;&middot;&nbsp;
@@ -130,7 +127,10 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
                 {stats.sold} Delivered
               </Typography>
               &nbsp;&middot;&nbsp;
-              <Typography component={Link} href={`${profileURL}/bought`}>
+              <Typography
+                component={Link}
+                href={`${profileURL}/bought`}
+                style={{ textDecoration: 'underline' }}>
                 {stats.bid_completed} Bought
               </Typography>
             </div>
@@ -154,7 +154,7 @@ UserReserved.propTypes = {
 
 export async function getServerSideProps({ params }) {
   const profile = await user(String(params.id))
-  const canonicalURL = `${APP_URL}/profiles/${params.id}/reserve`
+  const canonicalURL = `${APP_URL}/profiles/${params.id}/bought`
 
   const stats = profile.market_stats || {}
 
