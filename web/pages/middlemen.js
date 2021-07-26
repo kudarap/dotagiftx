@@ -66,7 +66,7 @@ export default function Middlemen() {
           <Typography variant="h5" component="h1" gutterBottom>
             SteamRep&apos;s Active Middlemen
             <Typography variant="caption" color="textSecondary" component="sup">
-              &nbsp;updated Feb 26 2021
+              &nbsp;updated July 26 2021
             </Typography>
           </Typography>
           <Typography>
@@ -117,13 +117,15 @@ export default function Middlemen() {
 
           {/* DotagiftX middleman */}
           <Typography variant="h5" component="h2" gutterBottom>
-            DotagiftX&apos;s Middleman{' '}
-            <sup style={{ color: 'yellowgreen', fontSize: '12px' }}>New!</sup>
+            DotagiftX&apos;s Middleman
           </Typography>
           <Typography>
             <ul>
-              <li>
+              {/* <li>
                 <Middleman name="kudarap" id="76561198088587178" internal />
+              </li> */}
+              <li>
+                <Middleman name="| S W A G G E R |" id="76561198265102770" internal />
               </li>
             </ul>
             <Typography color="textSecondary">
