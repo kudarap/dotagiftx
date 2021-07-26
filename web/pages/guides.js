@@ -36,7 +36,7 @@ export default function Blacklist() {
           <br />
 
           <Typography style={{ fontWeight: 'bold' }} gutterBottom>
-            Profile Checking
+            Profile checking
             <Typography color="textSecondary">
               You can go to their Steam profiles and change the url{' '}
               <Typography
@@ -75,7 +75,7 @@ export default function Blacklist() {
           <br />
 
           <Typography style={{ fontWeight: 'bold' }} gutterBottom>
-            Prepare Evidences
+            Prepare evidences
             <Typography color="textSecondary">
               Prepare in-case the seller scam you. Take screenshots of things during transaction
               that you can use to submit a case on SteamRep. If you buying here on DotagiftX make
@@ -84,17 +84,48 @@ export default function Blacklist() {
           </Typography>
           <br />
 
+          <Typography style={{ fontWeight: 'bold' }}>
+            Gift restrictions
+            <Typography color="textSecondary">
+              To combat credit card fraud, Valve has placed several restrictions on gifting.{' '}
+              <Link
+                href="https://dota2.fandom.com/wiki/Wrapped_Gift"
+                target="_blank"
+                color="secondary"
+                rel="noreferrer noopener">
+                dota2.fandom.com
+              </Link>
+            </Typography>
+          </Typography>
+          <Typography color="textSecondary">
+            <ul>
+              <li>Gifts can be sent to a friend, but not sold on the Steam Market</li>
+              <li>
+                Gifts can only be sent to friends of at least one year, unless Mobile Authenticator
+                is activated.
+              </li>
+              <li>
+                Only a limited number of items can be gifted within a certain time. ( 8 items for
+                every 24 hours )
+                <li>
+                  The number of gifts one can send is determined by the player's Experience Trophy.
+                </li>
+              </li>
+            </ul>
+          </Typography>
+          <br />
+
           <Typography style={{ fontWeight: 'bold' }}>Buying giftables</Typography>
           <Typography color="textSecondary">
             <ul>
-              <li>Always check the item or set availability on seller&apos;s Dota 2 inventory .</li>
+              <li>Always check the item or set availability on seller&apos;s Dota 2 inventory.</li>
               <li>
                 Dota 2 Giftables transaction only viable if the two steam user parties have been
                 friends for 30 days.
               </li>
               <li>
                 As Giftables involves a party having to go first, please always check seller&apos;s
-                reputation through&nbsp; SteamRep and transaction history .
+                reputation through&nbsp; SteamRep and transaction history.
               </li>
 
               <li>
@@ -122,6 +153,13 @@ export default function Blacklist() {
                 accept or integrate any payment service.
               </li>
             </ul>
+          </Typography>
+
+          <Typography>
+            You can read more on{' '}
+            <Link href="/faq" color="secondary">
+              FAQs
+            </Link>
           </Typography>
         </Container>
       </main>

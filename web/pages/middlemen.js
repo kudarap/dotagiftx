@@ -130,19 +130,15 @@ export default function Middlemen() {
             </ul>
             <Typography color="textSecondary">
               It&apos;s strongly recommended to get your middleman from Official SteamRep but if you
-              trust
-              <Link href="/profiles/76561198088587178" color="textPrimary">
-                &nbsp;kudarap&nbsp;
-              </Link>
-              enough to middle your transaction, you can message a request on{' '}
+              trust user/s listed above, you can reach them on{' '}
               <Link
                 href="https://discord.gg/UFt9Ny42kM"
                 target="_blank"
                 color="secondary"
                 rel="noreferrer noopener">
                 Discord
-              </Link>{' '}
-              to give a heads up.
+              </Link>
+              .
             </Typography>
           </Typography>
           <br />
