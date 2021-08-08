@@ -24,7 +24,6 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
 import moment from 'moment'
 import Button from '@/components/Button'
-import { Alert } from '@material-ui/lab'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -70,7 +69,7 @@ export default function Blacklist() {
           </Typography>
           <Typography>
             These accounts were flagged as <strong>banned</strong> or <strong>suspended</strong> due
-            to scam incident or account involvement to a scam.
+            to abusive behaviour or account involvement to a scam incident.
           </Typography>
           <br />
 
