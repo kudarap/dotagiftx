@@ -133,28 +133,28 @@ SearchBar.defaultProps = {
 
 function UserCard({ data }) {
   return (
-    <div style={{ display: 'flex', marginBottom: 12 }}>
-      <Avatar style={{ marginTop: 4 }} {...retinaSrcSet(data.avatar, 40, 40)} />
+    <div style={{ display: 'flex', marginBottom: 14 }}>
+      <Avatar style={{ marginTop: 2 }} {...retinaSrcSet(data.avatar, 40, 40)} />
       <div style={{ marginLeft: 8 }}>
         <Typography>
-          <strong>{data.name}</strong>
-          <span
-            style={{
-              padding: '2px 6px',
-              color: 'white',
-              background: USER_STATUS_MAP_COLOR[data.status],
-              marginLeft: 4,
-              fontSize: 10,
-              fontWeight: 500,
-            }}>
-            {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
-          </span>
+          {/* <strong>{data.name}</strong> */}
           <Typography variant="body2" color="textSecondary">
             SteamID {data.steam_id}
+            <span
+              style={{
+                padding: '2px 6px',
+                color: 'white',
+                background: USER_STATUS_MAP_COLOR[data.status],
+                marginLeft: 4,
+                fontSize: 10,
+                fontWeight: 500,
+              }}>
+              {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
+            </span>
           </Typography>
         </Typography>
         <Link variant="body2" href={`/profiles/${data.steam_id}/activity`}>
-          History
+          Market History
         </Link>
         &nbsp;&middot;&nbsp;
         <Link
