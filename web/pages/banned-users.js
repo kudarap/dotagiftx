@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
 import startsWith from 'lodash/startsWith'
+import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
@@ -23,7 +25,6 @@ import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
 import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
 import moment from 'moment'
-import Button from '@/components/Button'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -41,6 +42,34 @@ const filter = {
 
 const STEAMURL = 'https://steamcommunity.com'
 
+// returns Steam ID when available and
+// resolves URL when its a vanity/custom for auto-resolve profile.
+function resolveProfileURL(url = '') {
+  if (url === '') {
+    return false
+  }
+
+  const u = cleanURL(url)
+  if (!isVanityURL(u)) {
+    return u
+  }
+
+  return u.replaceAll(STEAMURL, '')
+}
+
+function cleanURL(url = '') {
+  const s = url.split('/')
+  if (s.length < 5) {
+    return url
+  }
+
+  return s.slice(0, 5).join('/')
+}
+
+function isVanityURL(url = '') {
+  return url.startsWith(STEAMURL + '/id/')
+}
+
 export default function Blacklist() {
   const classes = useStyles()
 
@@ -49,9 +78,14 @@ export default function Blacklist() {
   const url = parseParams(BLACKLIST, filter)
   const { data, error } = useSWR(url, fetcherBase)
 
+  const router = useRouter()
   let resolvedQuery = false
   if (startsWith(query, STEAMURL, 0)) {
-    resolvedQuery = query.replaceAll(STEAMURL, APP_URL)
+    resolvedQuery = resolveProfileURL(query)
+    console.log('res', resolvedQuery)
+    if (isVanityURL(query)) {
+      router.push(resolvedQuery)
+    }
   }
 
   return (
@@ -74,8 +108,9 @@ export default function Blacklist() {
           <br />
 
           <SearchBar
-            placeholder="Search by Steam ID or exact custom URL..."
+            placeholder="Search by Steam ID or Steam Profile URL"
             onInput={v => setQuery(v)}
+            helperText="76561198088587178 or https://steamcommunity.com/id/kudarap"
           />
           <br />
           <br />
@@ -83,16 +118,7 @@ export default function Blacklist() {
           {!data && !error && <Typography>Loading...</Typography>}
           {!error && data && data.map(user => <UserCard data={user} />)}
           {!error && data && data.length === 0 && resolvedQuery && (
-            <Typography>
-              User probably changed their custom URL&nbsp;
-              <Button
-                color="secondary"
-                component={Link}
-                href={resolvedQuery}
-                style={{ marginTop: -6 }}>
-                Continue to resolve custom URL
-              </Button>
-            </Typography>
+            <Typography>Please wait. Redirecting to profile...</Typography>
           )}
         </Container>
       </main>
