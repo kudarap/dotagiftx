@@ -110,7 +110,7 @@ export default function Blacklist() {
           <SearchBar
             placeholder="Search by Steam ID or Steam Profile URL"
             onInput={v => setQuery(v)}
-            helperText="76561198088587178 or https://steamcommunity.com/id/kudarap"
+            helperText="eg. 76561198088587178 or https://steamcommunity.com/id/kudarap"
           />
           <br />
           <br />
