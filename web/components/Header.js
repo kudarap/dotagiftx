@@ -171,6 +171,25 @@ export default function Header({ disableSearch }) {
 
           <span className={classes.spacer} />
 
+          <Link className={classes.nav} href="/search?q=nemestice" underline="none">
+            Nemestice
+          </Link>
+          <Link className={classes.nav} href="/heroes" underline="none">
+            Heroes
+          </Link>
+          <Link className={classes.nav} href="/treasures" underline="none">
+            Treasures
+          </Link>
+          <Link className={classes.nav} href="/banned-users" underline="none">
+            FAQs
+          </Link>
+          <Link className={classes.nav} href="/guides" underline="none">
+            Guides
+          </Link>
+          <Link className={classes.nav} href="/banned-users" underline="none">
+            Bans
+          </Link>
+
           <NoSsr>
             {!disableSearch && <SearchInputMini style={{ width: isMobile ? '100%' : 325 }} />}
 
