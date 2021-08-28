@@ -8,6 +8,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import MarketForm from '@/components/MarketForm'
 import { VERIFIED_INVENTORY_VERIFIED, VERIFIED_DELIVERY_MAP_ICON } from '@/constants/verified'
+import BuyingGuildeDialog from '@/components/BuyingGuideDialog'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -41,6 +42,8 @@ export default function About() {
           <MarketForm />
         </Container>
       </main>
+
+      <BuyingGuildeDialog open />
 
       <Footer />
     </>
