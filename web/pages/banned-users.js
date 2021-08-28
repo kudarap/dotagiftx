@@ -4,13 +4,11 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
 import startsWith from 'lodash/startsWith'
-import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import {
   APP_NAME,
-  APP_URL,
   DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
@@ -42,6 +40,19 @@ const filter = {
 
 const STEAMURL = 'https://steamcommunity.com'
 
+function cleanURL(url = '') {
+  const s = url.split('/')
+  if (s.length < 5) {
+    return url
+  }
+
+  return s.slice(0, 5).join('/')
+}
+
+function isVanityURL(url = '') {
+  return url.startsWith(`${STEAMURL}/id/`)
+}
+
 // returns Steam ID when available and
 // resolves URL when its a vanity/custom for auto-resolve profile.
 function resolveProfileURL(url = '') {
@@ -57,19 +68,6 @@ function resolveProfileURL(url = '') {
   return u.replaceAll(STEAMURL, '')
 }
 
-function cleanURL(url = '') {
-  const s = url.split('/')
-  if (s.length < 5) {
-    return url
-  }
-
-  return s.slice(0, 5).join('/')
-}
-
-function isVanityURL(url = '') {
-  return url.startsWith(STEAMURL + '/id/')
-}
-
 export default function Blacklist() {
   const classes = useStyles()
 
@@ -82,7 +80,6 @@ export default function Blacklist() {
   let resolvedQuery = false
   if (startsWith(query, STEAMURL, 0)) {
     resolvedQuery = resolveProfileURL(query)
-    console.log('res', resolvedQuery)
     if (isVanityURL(query)) {
       router.push(resolvedQuery)
     }
@@ -163,7 +160,7 @@ function UserCard({ data }) {
         style={{ marginTop: 2 }}
         {...retinaSrcSet(data.avatar, 40, 40)}
         component={Link}
-        href={`/profiles/${data.steam_id}/activity`}
+        href={`/profiles/${data.steam_id}`}
       />
       <div style={{ marginLeft: 8 }}>
         <Typography>
