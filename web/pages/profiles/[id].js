@@ -173,7 +173,6 @@ export default function UserDetails({
             <Avatar
               className={classes.avatar}
               src={`${CDN_URL}/${profile.avatar}`}
-              // glow={Boolean(profile.donation)}
               glow={isDonationGlowExpired(profile.donated_at)}
             />
             <Typography component="h1">

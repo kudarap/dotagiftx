@@ -7,6 +7,7 @@ import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 import DonatorBadge from '@/components/DonatorBadge'
+import { isDonationGlowExpired } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -47,7 +48,7 @@ export default function ProfileCard({ user, loading, ...other }) {
       <a href={storeProfile} target="_blank" rel="noreferrer noopener">
         <Avatar
           className={classes.avatar}
-          // glow={Boolean(user.donation)}
+          glow={isDonationGlowExpired(user.donated_at)}
           {...retinaSrcSet(user.avatar, 100, 100)}
         />
       </a>

@@ -14,7 +14,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
-import { myMarket } from '@/service/api'
+import { isDonationGlowExpired, myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
@@ -353,7 +353,7 @@ function baseTable(Component) {
                     <Avatar
                       className={classes.avatar}
                       alt={market.user.name}
-                      glow={Boolean(market.user.donation)}
+                      glow={isDonationGlowExpired(market.user.donated_at)}
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
                     <div>
