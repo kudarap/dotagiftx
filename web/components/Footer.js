@@ -102,7 +102,7 @@ export default function Footer() {
           {/* </li> */}
           <li>
             <Link href="/faq" color="textSecondary">
-              FAQ
+              FAQs
             </Link>
           </li>
           <li>
