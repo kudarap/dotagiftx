@@ -68,3 +68,14 @@ export const reportSearch = http.baseSearchRequest(REPORTS)
 export const trackItemViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
 export const trackProfileViewURL = userID => `${API_URL}${TRACK}?t=p&u=${userID}`
 export const getLoginURL = `${API_URL}${AUTH_STEAM}`
+
+const donationGlowExpr = 30 // days
+export const isDonationGlowExpired = donatedAt => {
+  if (!donatedAt) {
+    return false
+  }
+
+  const d = new Date(donatedAt)
+  d.setDate(d.getDate() + donationGlowExpr)
+  return d > new Date()
+}
