@@ -113,12 +113,10 @@ export default function Login() {
           </Typography>
           <Typography component="h2">
             <ul className={classes.list}>
-              <li>Post Items</li>
-              <li>Track Reservations</li>
-              <li>Record Sales History</li>
-              <li>
-                Place Buy Order <sup style={{ color: 'yellowgreen' }}>New!</sup>
-              </li>
+              <li>Post items</li>
+              <li>Track reservations</li>
+              <li>Record sales history</li>
+              <li>Place buy order</li>
             </ul>
           </Typography>
 

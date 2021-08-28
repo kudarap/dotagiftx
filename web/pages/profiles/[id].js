@@ -7,7 +7,14 @@ import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@/components/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
-import { CDN_URL, marketSearch, trackProfileViewURL, user, vanity } from '@/service/api'
+import {
+  CDN_URL,
+  isDonationGlowExpired,
+  marketSearch,
+  trackProfileViewURL,
+  user,
+  vanity,
+} from '@/service/api'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -25,9 +32,9 @@ import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
-import ErrorPage from '../404'
 import DonatorBadge from '@/components/DonatorBadge'
 import AppContext from '@/components/AppContext'
+import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -166,7 +173,7 @@ export default function UserDetails({
             <Avatar
               className={classes.avatar}
               src={`${CDN_URL}/${profile.avatar}`}
-              glow={Boolean(profile.donation)}
+              glow={isDonationGlowExpired(profile.donated_at)}
             />
             <Typography component="h1">
               <Typography
@@ -188,7 +195,9 @@ export default function UserDetails({
                 )}
               </Typography>
               {isProfileReported && (
-                <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>
+                <Typography color="error">
+                  {profile.notes || USER_STATUS_MAP_TEXT[profile.status]}
+                </Typography>
               )}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 import teal from '@material-ui/core/colors/teal'
 import { blueGrey } from '@material-ui/core/colors'
 
@@ -38,7 +38,7 @@ const baseThemeOpts = {
   },
 }
 
-export const muiTheme = createMuiTheme(baseThemeOpts)
+export const muiTheme = createTheme(baseThemeOpts)
 
 export default function Theme({ children }) {
   return (
@@ -52,7 +52,7 @@ Theme.propTypes = {
   children: PropTypes.node.isRequired,
 }
 
-const muiLightTheme = createMuiTheme({
+const muiLightTheme = createTheme({
   ...baseThemeOpts,
   palette: {
     ...baseThemeOpts.palette,

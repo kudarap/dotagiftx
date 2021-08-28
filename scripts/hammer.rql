@@ -4,7 +4,7 @@
 var testDB = r.db('d2g_production');
 testDB.table('user')
   .filter({ steam_id: 'XXXXXXXXXX' })
-  .update({ status: 400, updated_at: r.now() })
+  .update({ status: 400, updated_at: r.now(), notes: 'involve scam incident' })
 # cancel items
 var testDB = r.db('d2g_production');
 testDB.table('market')
