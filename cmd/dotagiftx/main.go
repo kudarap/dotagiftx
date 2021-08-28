@@ -48,11 +48,10 @@ func main() {
 }
 
 type application struct {
-	config  Config
-	server  *http.Server
-	worker  *worker.Worker
-	logger  *logrus.Logger
-	version *version.Version
+	config Config
+	server *http.Server
+	worker *worker.Worker
+	logger *logrus.Logger
 
 	closerFn func()
 }

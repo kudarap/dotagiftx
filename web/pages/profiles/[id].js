@@ -195,7 +195,9 @@ export default function UserDetails({
                 )}
               </Typography>
               {isProfileReported && (
-                <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>
+                <Typography color="error">
+                  {profile.notes || USER_STATUS_MAP_TEXT[profile.status]}
+                </Typography>
               )}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">

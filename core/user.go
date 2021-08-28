@@ -44,6 +44,7 @@ type (
 		URL       string     `json:"url"        db:"url,omitempty"         valid:"required"`
 		Avatar    string     `json:"avatar"     db:"avatar,omitempty"      valid:"required"`
 		Status    UserStatus `json:"status"     db:"status,omitempty"`
+		Notes     string     `json:"notes"      db:"notes,omitempty"`
 		Donation  float64    `json:"donation"   db:"donation,omitempty"`
 		DonatedAt *time.Time `json:"donated_at" db:"donated_at,omitempty"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
