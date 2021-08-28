@@ -1,6 +1,6 @@
 module github.com/kudarap/dotagiftx
 
-go 1.16
+go 1.17
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -27,4 +27,25 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/rethinkdb/rethinkdb-go.v6 v6.2.1
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+)
+
+require (
+	github.com/beevik/etree v1.1.0 // indirect
+	github.com/cespare/xxhash v1.1.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200624174652-8d2f3be8b2d9 // indirect
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
+	github.com/leodido/go-urn v1.2.0 // indirect
+	github.com/mattn/go-isatty v0.0.12 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
+	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
+	github.com/opentracing/opentracing-go v1.1.1-0.20190913142402-a7454ce5950e // indirect
+	go.opentelemetry.io/otel v0.7.0 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/exp v0.0.0-20200513190911-00229845015e // indirect
+	google.golang.org/grpc v1.30.0 // indirect
+	google.golang.org/protobuf v1.23.0 // indirect
+	gopkg.in/cenkalti/backoff.v2 v2.2.1 // indirect
 )
