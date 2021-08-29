@@ -37,6 +37,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const steamCommunityBaseURL = 'https://steamcommunity.com'
+const steamProfileBaseURL = `${steamCommunityBaseURL}/profiles/`
 
 export default function MarketUpdateDialog(props) {
   const classes = useStyles()
@@ -149,6 +150,20 @@ export default function MarketUpdateDialog(props) {
                   {MARKET_STATUS_MAP_TEXT[market.status]}
                 </strong>
                 <br />
+                {market.resell && (
+                  <div>
+                    <Typography color="textSecondary" component="span">
+                      {`Seller Steam ID: `}
+                    </Typography>
+                    <Link
+                      href={steamProfileBaseURL + market.seller_steam_id}
+                      target="_blank"
+                      rel="noreferrer noopener">
+                      {market.seller_steam_id}
+                    </Link>
+                    <br />
+                  </div>
+                )}
                 <Typography color="textSecondary" component="span">
                   {`Price: `}
                 </Typography>

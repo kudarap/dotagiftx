@@ -23,6 +23,7 @@ import {
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ItemImageDialog from '@/components/ItemImageDialog'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -32,6 +33,8 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
   },
 }))
+
+const steamProfileBaseURL = `https://steamcommunity.com'/profiles/`
 
 export default function ReserveUpdateDialog(props) {
   const classes = useStyles()
@@ -125,6 +128,20 @@ export default function ReserveUpdateDialog(props) {
                   {MARKET_STATUS_MAP_TEXT[market.status]}
                 </strong>
                 <br />
+                {market.resell && (
+                  <div>
+                    <Typography color="textSecondary" component="span">
+                      {`Seller Steam ID: `}
+                    </Typography>
+                    <Link
+                      href={steamProfileBaseURL + market.seller_steam_id}
+                      target="_blank"
+                      rel="noreferrer noopener">
+                      {market.seller_steam_id}
+                    </Link>
+                    <br />
+                  </div>
+                )}
                 <Typography color="textSecondary" component="span">
                   {`Price: `}
                 </Typography>
