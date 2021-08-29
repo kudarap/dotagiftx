@@ -54,7 +54,8 @@ export const myMarket = {
   PATCH: (id, payload) => http.authnRequest(http.PATCH, `${MY_MARKETS}/${id}`, payload),
 }
 export const myProfile = {
-  GET: () => http.authnRequest(http.GET, MY_PROFILE),
+  GET: (nocache = false) =>
+    http.authnRequest(http.GET, `${MY_PROFILE}?${nocache ? 'nocache' : ''}`),
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
 export const reportCreate = payload => http.authnRequest(http.POST, REPORTS, payload)

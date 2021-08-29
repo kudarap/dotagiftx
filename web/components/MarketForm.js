@@ -1,21 +1,24 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import startsWith from 'lodash/startsWith'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import SubmitIcon from '@material-ui/icons/Check'
 import Alert from '@material-ui/lab/Alert'
-import { catalog, myMarket } from '@/service/api'
+import { catalog, myMarket, myProfile } from '@/service/api'
 import { APP_NAME } from '@/constants/strings'
 import { itemRarityColorMap } from '@/constants/palette'
 import * as format from '@/lib/format'
+import * as url from '@/lib/url'
 import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
+import ReSellInput from './ReSellerInput'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,6 +47,8 @@ const defaultPayload = {
   notes: '',
 }
 
+const steamCommunityBaseURL = 'https://steamcommunity.com'
+
 const checkMarketPayload = payload => {
   if (!payload.item_id) {
     return 'Item reference should be valid'
@@ -62,6 +67,15 @@ const checkMarketPayload = payload => {
     return `Notes max length limit reached ${notesLen}/${MARKET_NOTES_MAX_LEN}`
   }
 
+  if (payload.seller_steam_id) {
+    if (!url.isValid(payload.seller_steam_id)) {
+      return 'Steam Profile is not a valid URL.'
+    }
+    if (!startsWith(payload.seller_steam_id, steamCommunityBaseURL, 0)) {
+      return `Steam Profile should start with ${steamCommunityBaseURL}`
+    }
+  }
+
   return null
 }
 
@@ -74,6 +88,18 @@ export default function MarketForm() {
   const [newMarketID, setNewMarketID] = React.useState(null)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
+
+  const [subscription, setSubscription] = React.useState(0)
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return
+    }
+
+    ;(async () => {
+      const user = await myProfile.GET(true)
+      setSubscription(user.subscription)
+    })()
+  }, [isLoggedIn])
 
   const handleItemSelect = val => {
     // Reset values when item is selected
@@ -105,6 +131,11 @@ export default function MarketForm() {
       item_id: payload.item_id,
       price: Number(payload.price),
       notes: String(payload.notes).trim(),
+    }
+
+    // experimental fields
+    if (payload.seller_steam_id) {
+      newMarket.seller_steam_id = String(payload.seller_steam_id).trim()
     }
 
     const err = checkMarketPayload({ ...newMarket, quantity })
@@ -287,6 +318,20 @@ export default function MarketForm() {
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         </div>
+        {subscription === 1 && (
+          <>
+            <ReSellInput
+              variant="outlined"
+              fullWidth
+              color="secondary"
+              label="Seller Profile URL"
+              placeholder="https://steamcommunity.com/..."
+              value={payload.seller_steam_id}
+              onInput={e => setPayload({ ...payload, seller_steam_id: e.target.value })}
+              disabled={loading || !isLoggedIn || Boolean(newMarketID)}
+            />
+          </>
+        )}
         <br />
         <TextField
           variant="outlined"
