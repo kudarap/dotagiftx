@@ -186,7 +186,7 @@ export default function ReserveUpdateDialog(props) {
               color="secondary"
               variant="outlined"
               label="Notes"
-              helperText="Screenshot URL for verification or Reason for cancellation"
+              helperText="Screenshot URL for verification or reason for cancellation"
               placeholder="https://imgur.com/a/..."
               value={notes}
               onInput={e => setNotes(e.target.value)}
