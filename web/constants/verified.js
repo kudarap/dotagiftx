@@ -8,6 +8,7 @@ import DoubleCheckIcon from '@material-ui/icons/DoneAll'
 import Private from '@material-ui/icons/VisibilityOff'
 // import Private from '@material-ui/icons/Block'
 import Error from '@material-ui/icons/ErrorOutline'
+import ManualCheckIcon from '@material-ui/icons/CheckCircleOutline'
 
 const iconStyle = {
   style: {
@@ -23,12 +24,17 @@ const rareStyle = {
   style: { ...iconStyle.style, color: 'lightgreen' },
 }
 
+const resellStyle = {
+  style: { ...iconStyle.style, color: 'aqua' },
+}
+
 const ultraStyle = {
   style: { ...iconStyle.style, color: 'gold' },
 }
 
 export const VERIFIED_INVENTORY_NOHIT = 100
 export const VERIFIED_INVENTORY_VERIFIED = 200
+export const VERIFIED_INVENTORY_VERIFIED_RESELL = 201
 export const VERIFIED_INVENTORY_PRIVATE = 400
 export const VERIFIED_INVENTORY_ERROR = 500
 
@@ -48,6 +54,7 @@ export const VERIFIED_INVENTORY_MAP_TEXT = {
 export const VERIFIED_INVENTORY_MAP_ICON = {
   [VERIFIED_INVENTORY_NOHIT]: <NoHitIcon {...iconStyle} />,
   [VERIFIED_INVENTORY_VERIFIED]: <CheckIcon {...rareStyle} />,
+  [VERIFIED_INVENTORY_VERIFIED_RESELL]: <ManualCheckIcon {...resellStyle} />,
   [VERIFIED_INVENTORY_PRIVATE]: <Private {...iconStyle} />,
   [VERIFIED_INVENTORY_ERROR]: <Error {...iconStyle} />,
 }

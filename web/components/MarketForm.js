@@ -225,7 +225,7 @@ export default function MarketForm() {
           onSelect={handleItemSelect}
           disabled={loading || !isLoggedIn}
         />
-        {/* <br /> */}
+        <br />
 
         {/* Selected item preview */}
         {item.id && (
@@ -276,7 +276,7 @@ export default function MarketForm() {
               </Link>
             </Typography>
             <br />
-            <br />
+            {/* <br /> */}
           </div>
         )}
 
@@ -331,6 +331,7 @@ export default function MarketForm() {
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         </div>
+        <br />
 
         <TextField
           variant="outlined"
