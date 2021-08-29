@@ -12,7 +12,10 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
-import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
+import {
+  VERIFIED_INVENTORY_MAP_ICON,
+  VERIFIED_INVENTORY_VERIFIED_RESELL,
+} from '@/constants/verified'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
@@ -147,7 +150,9 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                         data-index={idx}
                         onMouseLeave={debouncePopoverClose}
                         onMouseEnter={handlePopoverOpen}>
-                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                        {market.resell
+                          ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
+                          : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       </span>
 
                       <br />
