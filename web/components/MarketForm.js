@@ -225,7 +225,7 @@ export default function MarketForm() {
           onSelect={handleItemSelect}
           disabled={loading || !isLoggedIn}
         />
-        <br />
+        {/* <br /> */}
 
         {/* Selected item preview */}
         {item.id && (
@@ -280,6 +280,19 @@ export default function MarketForm() {
           </div>
         )}
 
+        {subscription === 1 && (
+          <ReSellInput
+            variant="outlined"
+            fullWidth
+            color="secondary"
+            label="Seller Profile URL"
+            placeholder="https://steamcommunity.com/..."
+            value={payload.seller_steam_id}
+            onInput={e => setPayload({ ...payload, seller_steam_id: e.target.value })}
+            disabled={loading || !isLoggedIn || Boolean(newMarketID)}
+          />
+        )}
+
         <div>
           <TextField
             variant="outlined"
@@ -318,21 +331,7 @@ export default function MarketForm() {
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         </div>
-        {subscription === 1 && (
-          <>
-            <ReSellInput
-              variant="outlined"
-              fullWidth
-              color="secondary"
-              label="Seller Profile URL"
-              placeholder="https://steamcommunity.com/..."
-              value={payload.seller_steam_id}
-              onInput={e => setPayload({ ...payload, seller_steam_id: e.target.value })}
-              disabled={loading || !isLoggedIn || Boolean(newMarketID)}
-            />
-          </>
-        )}
-        <br />
+
         <TextField
           variant="outlined"
           fullWidth
