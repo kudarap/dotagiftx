@@ -178,17 +178,29 @@ export function VerifiedStatusPopover({ market, ...other }) {
     <Popper
       style={{ marginTop: 2, zIndex: 1 }}
       placement="right-start"
-      // placement="top"
       disablePortal={false}
-      modifiers={{
-        flip: {
+      modifiers={[
+        {
+          name: 'flip',
           enabled: true,
+          options: {
+            altBoundary: true,
+            rootBoundary: 'document',
+            padding: 8,
+          },
         },
-        preventOverflow: {
+        {
+          name: 'preventOverflow',
           enabled: true,
-          boundariesElement: 'scrollParent',
+          options: {
+            altAxis: true,
+            altBoundary: true,
+            tether: true,
+            rootBoundary: 'document',
+            padding: 8,
+          },
         },
-      }}
+      ]}
       {...other}>
       <VerifiedStatusCard market={market} onMouseLeave={other.onClose} />
     </Popper>
