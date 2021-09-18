@@ -51,6 +51,11 @@ const baseThemeOpts = {
         },
       ],
     },
+    MuiLink: {
+      defaultProps: {
+        underline: 'hover',
+      },
+    },
   },
 }
 
