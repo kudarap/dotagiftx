@@ -101,7 +101,7 @@ export default function Footer() {
           {/*  </Link> */}
           {/* </li> */}
           <li>
-            <Link href="/faq" color="textSecondary">
+            <Link href="/faqs" color="textSecondary">
               FAQs
             </Link>
           </li>

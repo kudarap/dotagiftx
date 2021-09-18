@@ -157,7 +157,7 @@ export default function Blacklist() {
 
           <Typography>
             You can read more on{' '}
-            <Link href="/faq" color="secondary">
+            <Link href="/faqs" color="secondary">
               FAQs
             </Link>
           </Typography>
