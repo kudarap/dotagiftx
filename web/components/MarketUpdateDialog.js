@@ -2,16 +2,16 @@ import React, { useContext } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import startsWith from 'lodash/startsWith'
-import { makeStyles } from '@material-ui/core/styles'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
-import TextField from '@material-ui/core/TextField'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import ReserveIcon from '@material-ui/icons/EventAvailable'
-import RemoveIcon from '@material-ui/icons/Delete'
+import makeStyles from '@mui/styles/makeStyles'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import CircularProgress from '@mui/material/CircularProgress'
+import ReserveIcon from '@mui/icons-material/EventAvailable'
+import RemoveIcon from '@mui/icons-material/Delete'
 import * as url from '@/lib/url'
 import { amount, dateTime } from '@/lib/format'
 import { myMarket } from '@/service/api'
@@ -29,7 +29,7 @@ import ItemImageDialog from '@/components/ItemImageDialog'
 
 const useStyles = makeStyles(theme => ({
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'block',
     },
     display: 'inline-flex',

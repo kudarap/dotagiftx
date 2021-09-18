@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
 import Avatar from '@/components/Avatar'
 import ChipLink from '@/components/ChipLink'
 import {
@@ -26,19 +26,19 @@ import ProfileCard from '@/components/ProfileCard'
 
 const useStyles = makeStyles(theme => ({
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
   },
   profileName: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
   },
   avatar: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
     width: 100,

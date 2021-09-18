@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
 import Avatar from '@/components/Avatar'
 import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
@@ -11,20 +11,20 @@ import { isDonationGlowExpired } from '@/service/api'
 
 const useStyles = makeStyles(theme => ({
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
   },
   profileName: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
     fontSize: '1.9vw',
   },
   avatar: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
     width: 100,

@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { APP_FOOTER_HEIGHT_TOTAL } from '@/constants/app'
-import { makeStyles } from '@material-ui/core/styles'
-import MuiContainer from '@material-ui/core/Container'
+import makeStyles from '@mui/styles/makeStyles'
+import MuiContainer from '@mui/material/Container'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       padding: theme.spacing(1),
     },
   },

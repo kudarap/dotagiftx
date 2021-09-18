@@ -1,6 +1,6 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
-import Tabs from '@material-ui/core/Tabs'
+import withStyles from '@mui/styles/withStyles'
+import Tabs from '@mui/material/Tabs'
 
 const StyledTabs = withStyles(theme => ({
   indicator: {

@@ -1,7 +1,7 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import Divider from '@material-ui/core/Divider'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
@@ -18,12 +18,12 @@ const mobileHeightCompensator = 100
 
 const useStyles = makeStyles(theme => ({
   root: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       // Keeps the footer on the bottom of the screen on small screens.
       height: APP_FOOTER_HEIGHT + mobileHeightCompensator,
       backgroundPositionX: '0, -70%',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       paddingBottom: theme.spacing(0),
     },
     marginTop: theme.spacing(5),
@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -140px`,
   },
   list: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'flex',
       justifyContent: 'space-evenly',
       flexWrap: 'wrap',
@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     listStyle: 'none',
     padding: 0,
     '& li': {
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         float: 'none',
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   vavleCopyright: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(0),
       marginBottom: theme.spacing(3),
       textAlign: 'center',
