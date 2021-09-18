@@ -141,7 +141,7 @@ export default function Header({ disableSearch }) {
   const isBrandMini = !disableSearch && isMobile
 
   return (
-    <AppBar position="static" variant="outlined" className={classes.appBar}>
+    <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
       {/*<NoticeMe />*/}
       <Container disableMinHeight>
         <Toolbar variant="dense" disableGutters>

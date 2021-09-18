@@ -1,16 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { createTheme, ThemeProvider } from '@material-ui/core/styles'
-import teal from '@material-ui/core/colors/teal'
-import { blueGrey } from '@material-ui/core/colors'
+
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles'
+import { teal, blueGrey } from '@mui/material/colors'
 
 const baseThemeOpts = {
   typography: {
     fontFamily: 'Ubuntu, sans-serif',
   },
   palette: {
-    type: 'dark',
+    mode: 'dark',
     primary: {
       main: '#263238',
     },
@@ -29,10 +29,10 @@ const baseThemeOpts = {
       white: '#FFFBF1',
     },
   },
-  overrides: {
+  components: {
     MuiAvatar: {
-      root: {
-        borderRadius: '15%',
+      defaultProps: {
+        variant: 'rounded',
       },
     },
   },
@@ -42,10 +42,12 @@ export const muiTheme = createTheme(baseThemeOpts)
 
 export default function Theme({ children }) {
   return (
-    <ThemeProvider theme={muiTheme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </StyledEngineProvider>
   )
 }
 Theme.propTypes = {
