@@ -58,9 +58,7 @@ const useStyles = makeStyles(theme => ({
     },
     cursor: 'pointer',
   },
-  avatarMenu: {
-    marginTop: theme.spacing(4),
-  },
+  avatarMenu: {},
   spacer: {
     width: theme.spacing(1),
   },
