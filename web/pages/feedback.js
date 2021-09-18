@@ -3,12 +3,12 @@ import Head from 'next/head'
 import makeStyles from '@mui/styles/makeStyles'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
+import { FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
-import { FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material'
 import {
   REPORT_TYPE_BUG,
   REPORT_TYPE_FEEDBACK,
@@ -109,7 +109,7 @@ export default function About() {
             )}
             <br />
             <form>
-              <FormControl fullWidth color="secondary">
+              <FormControl fullWidth color="secondary" variant="standard">
                 <InputLabel id="demo-simple-select-label">Type</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
