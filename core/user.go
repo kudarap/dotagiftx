@@ -33,8 +33,12 @@ const (
 	UserStatusBanned    UserStatus = 400
 )
 
+const UserSubscriptionResell UserSubscription = 1
+
 type (
 	UserStatus uint
+
+	UserSubscription uint
 
 	// User represents user information.
 	User struct {
@@ -44,6 +48,7 @@ type (
 		URL       string     `json:"url"        db:"url,omitempty"         valid:"required"`
 		Avatar    string     `json:"avatar"     db:"avatar,omitempty"      valid:"required"`
 		Status    UserStatus `json:"status"     db:"status,omitempty"`
+		Notes     string     `json:"notes"      db:"notes,omitempty"`
 		Donation  float64    `json:"donation"   db:"donation,omitempty"`
 		DonatedAt *time.Time `json:"donated_at" db:"donated_at,omitempty"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
@@ -51,6 +56,9 @@ type (
 
 		MarketStats MarketStatusCount `json:"market_stats" db:"market_stats,omitempty"`
 		RankScore   int               `json:"rank_score" db:"rank_score,omitempty"`
+
+		// NOTE! Experimental subscription flag
+		Subscription UserSubscription `json:"subscription" db:"subscription,omitempty"`
 	}
 
 	// UserService provides access to user service.

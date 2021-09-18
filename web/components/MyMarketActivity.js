@@ -122,7 +122,7 @@ export default function MyMarketActivity({ datatable, loading, error }) {
                 onMouseEnter={handlePopoverOpen}>
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
-                  VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                  VERIFIED_INVENTORY_MAP_ICON[market.inventory_status + Number(market.resell)]}
 
                 {market.status === MARKET_STATUS_SOLD &&
                   VERIFIED_DELIVERY_MAP_ICON[market.delivery_status]}

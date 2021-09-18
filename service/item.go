@@ -61,9 +61,7 @@ func (s *itemService) TopOrigins() ([]string, error) {
 	}
 
 	var pt []string
-	for _, s := range sortedKeys(col) {
-		pt = append(pt, s)
-	}
+	pt = append(pt, sortedKeys(col)...)
 
 	return pt, nil
 }
@@ -254,7 +252,7 @@ func sortedKeys(m map[string]int) []string {
 	sm.m = m
 	sm.s = make([]string, len(m))
 	i := 0
-	for key, _ := range m {
+	for key := range m {
 		sm.s[i] = key
 		i++
 	}

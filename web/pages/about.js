@@ -10,7 +10,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
-import SteamIcon from '@/components/SteamIcon'
+// import SteamIcon from '@/components/SteamIcon'
 import DiscordIcon from '@/components/DiscordIcon'
 
 const useStyles = makeStyles(theme => ({
@@ -65,7 +65,7 @@ export default function About() {
             href="https://www.reddit.com/message/compose/?to=kudarap">
             Reddit
           </Button>
-          <Button
+          {/* <Button
             startIcon={<SteamIcon />}
             size="large"
             component={Link}
@@ -73,16 +73,16 @@ export default function About() {
             rel="noreferrer noopener"
             href="https://steamcommunity.com/profiles/76561198088587178">
             Steam
+          </Button> */}
+          <Button
+            startIcon={
+              <img src="/icon_2x.png" style={{ height: 22, filter: 'brightness(10)' }} alt="dgx" />
+            }
+            size="large"
+            component={Link}
+            href="/profiles/76561198088587178">
+            DotagiftX
           </Button>
-          {/* <Button */}
-          {/*  startIcon={ */}
-          {/*    <img src="/icon_1x.png" style={{ height: 22, filter: 'brightness(10)' }} alt="dgx" /> */}
-          {/*  } */}
-          {/*  size="large" */}
-          {/*  component={Link} */}
-          {/*  href="/profiles/76561198088587178"> */}
-          {/*  DotagiftX */}
-          {/* </Button> */}
         </Container>
       </main>
 

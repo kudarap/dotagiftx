@@ -11,7 +11,10 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import green from '@material-ui/core/colors/lightGreen'
-import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
+import {
+  VERIFIED_INVENTORY_MAP_ICON,
+  VERIFIED_INVENTORY_VERIFIED_RESELL,
+} from '@/constants/verified'
 import Link from '@/components/Link'
 import BuyButton from '@/components/BuyButton'
 import RarityTag from '@/components/RarityTag'
@@ -136,7 +139,9 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                           data-index={idx}
                           onMouseLeave={debouncePopoverClose}
                           onMouseEnter={handlePopoverOpen}>
-                          {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                          {market.resell
+                            ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
+                            : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                         </span>
                         <br />
                         <Typography variant="caption" color="textSecondary">

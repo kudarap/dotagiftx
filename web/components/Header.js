@@ -12,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton'
 import MoreIcon from '@material-ui/icons/Menu'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
-import { authRevoke, myProfile } from '@/service/api'
+import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
@@ -210,7 +210,7 @@ export default function Header({ disableSearch }) {
                     aria-haspopup="true"
                     onClick={handleClick}
                     className={classes.avatar}
-                    glow={Boolean(profile.donation)}
+                    glow={isDonationGlowExpired(profile.donated_at)}
                     {...retinaSrcSet(profile.avatar, 36, 36)}
                   />
 
@@ -263,7 +263,7 @@ export default function Header({ disableSearch }) {
                     aria-haspopup="true"
                     onClick={handleClick}
                     className={classes.avatar}
-                    glow={Boolean(profile.donation)}
+                    glow={isDonationGlowExpired(profile.donated_at)}
                     style={{ width: 34, height: 34 }}
                     {...retinaSrcSet(profile.avatar, 36, 36)}
                   />

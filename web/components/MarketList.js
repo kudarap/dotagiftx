@@ -13,8 +13,11 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
-import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
-import { myMarket } from '@/service/api'
+import {
+  VERIFIED_INVENTORY_MAP_ICON,
+  VERIFIED_INVENTORY_VERIFIED_RESELL,
+} from '@/constants/verified'
+import { isDonationGlowExpired, myMarket } from '@/service/api'
 import { amount, dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
@@ -353,7 +356,7 @@ function baseTable(Component) {
                     <Avatar
                       className={classes.avatar}
                       alt={market.user.name}
-                      glow={Boolean(market.user.donation)}
+                      glow={isDonationGlowExpired(market.user.donated_at)}
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
                     <div>
@@ -372,7 +375,9 @@ function baseTable(Component) {
                         data-index={idx}
                         onMouseLeave={debouncePopoverClose}
                         onMouseEnter={handlePopoverOpen}>
-                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                        {market.resell
+                          ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
+                          : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       </span>
                     </div>
                   </div>
