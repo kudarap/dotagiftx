@@ -1,5 +1,5 @@
 import withStyles from '@mui/styles/withStyles'
-import primary from '@mui/material/colors/lightGreen'
+import { lightGreen as primary } from '@mui/material/colors'
 import Button from '@/components/Button'
 
 export default withStyles(theme => ({

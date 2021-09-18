@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import makeStyles from '@mui/styles/makeStyles'
 import { debounce } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import lightGreen from '@mui/material/colors/lightGreen'
-import teal from '@mui/material/colors/teal'
+import { lightGreen } from '@mui/material/colors'
+import { teal } from '@mui/material/colors'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
   MARKET_TYPE_BID,

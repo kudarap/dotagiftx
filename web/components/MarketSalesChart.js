@@ -11,7 +11,8 @@ import {
   Legend,
 } from 'recharts'
 import Paper from '@mui/material/Paper'
-import graphColor from '@mui/material/colors/lightGreen'
+import { lightGreen as graphColor } from '@mui/material/colors'
+
 import { amount } from '@/lib/format'
 
 const testdata = JSON.parse(

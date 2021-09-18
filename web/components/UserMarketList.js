@@ -10,7 +10,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
-import green from '@mui/material/colors/lightGreen'
+import { lightGreen as green } from '@mui/material/colors'
 import {
   VERIFIED_INVENTORY_MAP_ICON,
   VERIFIED_INVENTORY_VERIFIED_RESELL,

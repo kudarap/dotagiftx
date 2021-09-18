@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import bidColor from '@mui/material/colors/teal'
+import { teal as bidColor } from '@mui/material/colors'
 import makeStyles from '@mui/styles/makeStyles'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'

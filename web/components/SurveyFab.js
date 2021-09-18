@@ -6,7 +6,7 @@ import VoteIcon from '@mui/icons-material/HowToVote'
 import VoteDialog from '@/components/VoteDialog'
 import { reportSearch } from '@/service/api'
 import { REPORT_TYPE_SURVEY } from '@/constants/report'
-import teal from '@mui/material/colors/teal'
+import { teal } from '@mui/material/colors'
 import { Slide } from '@mui/material'
 
 const useStyles = makeStyles(theme => ({

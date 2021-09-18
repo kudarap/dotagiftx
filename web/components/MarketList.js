@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import makeStyles from '@mui/styles/makeStyles'
 import { debounce } from '@mui/material'
-import bidColor from '@mui/material/colors/teal'
+import { teal as bidColor } from '@mui/material/colors'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -12,6 +12,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
+import Chip from '@mui/material/Chip'
 
 import {
   VERIFIED_INVENTORY_MAP_ICON,
@@ -34,7 +35,6 @@ import Avatar from '@/components/Avatar'
 import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
-import Chip from '@mui/material/Chip'
 
 const useStyles = makeStyles(theme => ({
   seller: {
