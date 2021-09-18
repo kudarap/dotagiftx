@@ -1,7 +1,7 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import LinearProgress from '@mui/material/LinearProgress'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -16,7 +16,7 @@ import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
@@ -110,7 +110,7 @@ export default function MyHistory() {
             style={{ textAlign: 'right', minHeight: 48 }}
             count={soldItems.total_count || 0}
             page={soldFilter.page}
-            onChangePage={handleSoldPageChange}
+            onPageChange={handleSoldPageChange}
           />
 
           <Typography id="delivered" component="h1" gutterBottom>
@@ -123,7 +123,7 @@ export default function MyHistory() {
             style={{ textAlign: 'right', minHeight: 48 }}
             count={completedItems.total_count || 0}
             page={completedFilter.page}
-            onChangePage={handleCompletedPageChange}
+            onPageChange={handleCompletedPageChange}
           />
 
           <Typography id="cancelled" component="h1" gutterBottom>
@@ -136,7 +136,7 @@ export default function MyHistory() {
             style={{ textAlign: 'right', minHeight: 48 }}
             count={cancelledItems.total_count || 0}
             page={cancelledFilter.page}
-            onChangePage={handleCancelledPageChange}
+            onPageChange={handleCancelledPageChange}
           />
         </Container>
       </main>

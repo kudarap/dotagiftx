@@ -4,11 +4,11 @@ import useSWR from 'swr'
 import Head from 'next/head'
 import Router from 'next/router'
 import dynamic from 'next/dynamic'
-import { makeStyles } from '@material-ui/core/styles'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
-import Divider from '@material-ui/core/Divider'
+import makeStyles from '@mui/styles/makeStyles'
+import LinearProgress from '@mui/material/LinearProgress'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Divider from '@mui/material/Divider'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import {
   CATALOGS,
@@ -36,7 +36,7 @@ const Footer = dynamic(() => import('@/components/Footer'))
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(4),
   },
   banner: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(0),
     },
     margin: theme.spacing(0, 0, 2, 0),
@@ -56,12 +56,12 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 4,
   },
   bannerText: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.body2.fontSize,
     },
   },
   footLinks: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
     },
   },

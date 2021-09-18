@@ -1,14 +1,14 @@
 import React from 'react'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Alert from '@material-ui/lab/Alert'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
-import { FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@material-ui/core'
+import { FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material'
 import {
   REPORT_TYPE_BUG,
   REPORT_TYPE_FEEDBACK,
@@ -20,7 +20,7 @@ import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
@@ -132,7 +132,7 @@ export default function About() {
                 variant="outlined"
                 required
                 rows={3}
-                rowsMax={6}
+                maxRows={6}
                 color="secondary"
                 value={payload.text}
                 onInput={handleTextChange}

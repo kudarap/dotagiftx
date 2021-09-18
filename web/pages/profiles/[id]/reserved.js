@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import Avatar from '@/components/Avatar'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_RESERVED } from '@/constants/market'
 import { CDN_URL, marketSearch, user } from '@/service/api'
@@ -15,7 +15,7 @@ import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),

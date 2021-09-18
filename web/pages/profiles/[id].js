@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import has from 'lodash/has'
-import { makeStyles } from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import Avatar from '@/components/Avatar'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
@@ -38,25 +38,25 @@ import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
   },
   profileName: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
   },
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
   },
   avatar: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
     width: 100,
