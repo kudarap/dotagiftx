@@ -10,8 +10,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
-import Paper from '@material-ui/core/Paper'
-import graphColor from '@material-ui/core/colors/lightGreen'
+import Paper from '@mui/material/Paper'
+import graphColor from '@mui/material/colors/lightGreen'
 import { amount } from '@/lib/format'
 
 const testdata = JSON.parse(

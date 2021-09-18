@@ -1,5 +1,5 @@
-import { withStyles } from '@material-ui/core/styles'
-import primary from '@material-ui/core/colors/lightGreen'
+import withStyles from '@mui/styles/withStyles'
+import primary from '@mui/material/colors/lightGreen'
 import Button from '@/components/Button'
 
 export default withStyles(theme => ({

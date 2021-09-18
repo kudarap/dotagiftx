@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import { debounce } from '@material-ui/core'
-import Typography from '@material-ui/core/Typography'
-import lightGreen from '@material-ui/core/colors/lightGreen'
-import teal from '@material-ui/core/colors/teal'
+import makeStyles from '@mui/styles/makeStyles'
+import { debounce } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import lightGreen from '@mui/material/colors/lightGreen'
+import teal from '@mui/material/colors/teal'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
   MARKET_TYPE_BID,
