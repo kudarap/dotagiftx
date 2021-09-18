@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles'
-import { teal, blueGrey } from '@mui/material/colors'
+import { teal, blueGrey, grey } from '@mui/material/colors'
 
 const baseThemeOpts = {
   typography: {
@@ -12,7 +12,9 @@ const baseThemeOpts = {
   palette: {
     mode: 'dark',
     primary: {
-      main: '#263238',
+      main: grey[200],
+      light: grey[100],
+      dark: grey[400],
     },
     secondary: {
       main: '#C79123',
@@ -22,7 +24,7 @@ const baseThemeOpts = {
     },
     background: {
       default: '#263238',
-      paper: '#2e3d44',
+      paper: '#263238',
     },
     // App specific colors.
     app: {
@@ -34,6 +36,20 @@ const baseThemeOpts = {
       defaultProps: {
         variant: 'rounded',
       },
+    },
+    MuiButton: {
+      defaultProps: {
+        // variant: 'default',
+      },
+      variants: [
+        {
+          props: { variant: 'defaultx' },
+          style: {
+            textTransform: 'none',
+            border: `2px dashed white`,
+          },
+        },
+      ],
     },
   },
 }
@@ -58,15 +74,17 @@ const muiLightTheme = createTheme({
   ...baseThemeOpts,
   palette: {
     ...baseThemeOpts.palette,
-    type: 'light',
+    mode: 'light',
     background: {
       paper: blueGrey.A100,
     },
   },
-  overrides: {
+  components: {
     MuiTableCell: {
-      root: {
-        borderBottomColor: blueGrey[200],
+      styleOverrides: {
+        root: {
+          borderBottomColor: blueGrey[200],
+        },
       },
     },
   },
