@@ -21,7 +21,7 @@ function TablePaginationRouter({
   count,
   page: initPage,
   rowsPerPage,
-  onChangePage,
+  onPageChange,
   linkProps,
   ...other
 }) {
@@ -31,19 +31,19 @@ function TablePaginationRouter({
   const page = Number(initPage)
 
   const handleFirstPageButtonClick = evt => {
-    onChangePage(evt, 1)
+    onPageChange(evt, 1)
   }
 
   const handleBackButtonClick = evt => {
-    onChangePage(evt, page - 1)
+    onPageChange(evt, page - 1)
   }
 
   const handleNextButtonClick = evt => {
-    onChangePage(evt, page + 1)
+    onPageChange(evt, page + 1)
   }
 
   const handleLastPageButtonClick = evt => {
-    onChangePage(evt, Math.max(0, Math.ceil(count / rowsPerPage)))
+    onPageChange(evt, Math.max(0, Math.ceil(count / rowsPerPage)))
   }
 
   const cPage = page === 0 ? 1 : page
@@ -114,13 +114,13 @@ function TablePaginationRouter({
 TablePaginationRouter.propTypes = {
   linkProps: PropTypes.object.isRequired,
   count: PropTypes.number.isRequired,
-  onChangePage: PropTypes.func,
+  onPageChange: PropTypes.func,
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number,
 }
 TablePaginationRouter.defaultProps = {
   rowsPerPage: 10,
-  onChangePage: () => {},
+  onPageChange: () => {},
 }
 
 export default TablePaginationRouter

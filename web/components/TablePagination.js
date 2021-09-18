@@ -15,24 +15,24 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function TablePagination({ count, page, rowsPerPage, onChangePage, ...other }) {
+function TablePagination({ count, page, rowsPerPage, onPageChange, ...other }) {
   const classes = useStyles()
   const theme = useTheme()
 
   const handleFirstPageButtonClick = evt => {
-    onChangePage(evt, 1)
+    onPageChange(evt, 1)
   }
 
   const handleBackButtonClick = evt => {
-    onChangePage(evt, page - 1)
+    onPageChange(evt, page - 1)
   }
 
   const handleNextButtonClick = evt => {
-    onChangePage(evt, page + 1)
+    onPageChange(evt, page + 1)
   }
 
   const handleLastPageButtonClick = evt => {
-    onChangePage(evt, Math.max(0, Math.ceil(count / rowsPerPage)))
+    onPageChange(evt, Math.max(0, Math.ceil(count / rowsPerPage)))
   }
 
   const cPage = page === 0 ? 1 : page
@@ -85,7 +85,7 @@ function TablePagination({ count, page, rowsPerPage, onChangePage, ...other }) {
 }
 TablePagination.propTypes = {
   count: PropTypes.number.isRequired,
-  onChangePage: PropTypes.func.isRequired,
+  onPageChange: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number,
 }
