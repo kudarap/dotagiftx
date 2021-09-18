@@ -24,7 +24,7 @@ const baseThemeOpts = {
     },
     background: {
       default: '#263238',
-      paper: '#263238',
+      paper: '#2e3d44',
     },
     // App specific colors.
     app: {
@@ -55,6 +55,9 @@ const baseThemeOpts = {
       defaultProps: {
         underline: 'hover',
       },
+    },
+    MuiPaper: {
+      styleOverrides: { root: { backgroundImage: 'unset' } },
     },
   },
 }
