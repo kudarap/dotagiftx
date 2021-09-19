@@ -1,25 +1,15 @@
 import moment from 'moment'
 import React from 'react'
 
-import { blacklistSearch } from '@/service/api'
+import AppContext from './AppContext'
 
 export default function LatestBan() {
-  const [ban, setBan] = React.useState(null)
-
-  React.useEffect(() => {
-    ;(async () => {
-      try {
-        const user = await blacklistSearch({ limit: 1 })
-        setBan(user[0] || null)
-      } catch (error) {
-        console.log('error getting lastest ban', error)
-      }
-    })()
-  }, [])
-
-  if (!ban) {
+  const { latestBan } = React.useContext(AppContext)
+  if (!latestBan) {
     return null
   }
+
+  console.log('laset', latestBan)
 
   return (
     <span
@@ -30,7 +20,7 @@ export default function LatestBan() {
         marginTop: '-3px',
         color: '#FF6464',
       }}>
-      {moment(ban.updated_at).fromNow()}
+      {moment(latestBan.updated_at).fromNow()}
     </span>
   )
 }
