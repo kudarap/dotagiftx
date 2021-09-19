@@ -9,8 +9,6 @@ export default function LatestBan() {
     return null
   }
 
-  console.log('laset', latestBan)
-
   return (
     <span
       style={{
