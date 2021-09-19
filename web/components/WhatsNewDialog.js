@@ -17,6 +17,10 @@ function useLocalStorage(key, initialValue) {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState(() => {
+    if (typeof window === 'undefined') {
+      return initialValue
+    }
+
     try {
       // Get from local storage by key
       const item = window.localStorage.getItem(key)
@@ -57,15 +61,14 @@ export default function WhatsNewDialog(props) {
 
   const [open, setOpen] = useState(targetUpdateID > clientUpdateID)
   const handleClose = () => {
+    setClientUpdateID(targetUpdateID)
     setOpen(false)
   }
 
   const handleSubmit = () => {
-    setClientUpdateID(targetUpdateID)
     handleClose()
   }
 
-  console.log(targetUpdateID, clientUpdateID)
   return (
     <Dialog
       fullWidth
@@ -88,7 +91,11 @@ export default function WhatsNewDialog(props) {
           <br />
           <br />
           Please read carefully on{' '}
-          <Link href="/rules" color="secondary" target="_blank">
+          <Link
+            href="/rules"
+            color="secondary"
+            target="_blank"
+            onClick={() => setClientUpdateID(targetUpdateID)}>
             Rules
           </Link>{' '}
           page.
