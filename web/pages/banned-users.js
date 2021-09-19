@@ -157,7 +157,7 @@ function UserCard({ data }) {
   return (
     <div style={{ display: 'flex', marginBottom: 14 }}>
       <Avatar
-        style={{ marginTop: 2 }}
+        style={{ marginTop: 6 }}
         {...retinaSrcSet(data.avatar, 40, 40)}
         component={Link}
         href={`/profiles/${data.steam_id}`}
@@ -165,8 +165,11 @@ function UserCard({ data }) {
       <div style={{ marginLeft: 8 }}>
         <Typography>
           {/* <strong>{data.name}</strong> */}
-          <Typography variant="body2" color="textSecondary">
-            SteamID {`${data.steam_id} `}
+          <Typography color="textSecondary">
+            <Link variant="body2" color="secondary" href={`/profiles/${data.steam_id}`}>
+              SteamID {`${data.steam_id}`}
+            </Link>
+            {` `}
             <span
               style={{
                 padding: '2px 6px',
@@ -179,37 +182,41 @@ function UserCard({ data }) {
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
+          <Link variant="body2" href={`/profiles/${data.steam_id}`}>
+            Profile
+          </Link>
+          {/* &nbsp;&middot;&nbsp;
+          <Link variant="body2" href={`/profiles/${data.steam_id}/activity`}>
+            Market History
+          </Link> */}
+          &nbsp;&middot;&nbsp;
+          <Link
+            variant="body2"
+            gutterBottom
+            target="_blank"
+            rel="noreferrer noopener"
+            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
+            Steam Profile
+          </Link>
+          &nbsp;&middot;&nbsp;
+          <Link
+            variant="body2"
+            gutterBottom
+            target="_blank"
+            rel="noreferrer noopener"
+            href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}>
+            SteamRep
+          </Link>
+          &nbsp;&middot;&nbsp;
+          <Link
+            variant="body2"
+            gutterBottom
+            target="_blank"
+            rel="noreferrer noopener"
+            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
+            Dotabuff
+          </Link>
         </Typography>
-        <Link variant="body2" href={`/profiles/${data.steam_id}/activity`}>
-          Market History
-        </Link>
-        &nbsp;&middot;&nbsp;
-        <Link
-          variant="body2"
-          gutterBottom
-          target="_blank"
-          rel="noreferrer noopener"
-          href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
-          Steam Profile
-        </Link>
-        &nbsp;&middot;&nbsp;
-        <Link
-          variant="body2"
-          gutterBottom
-          target="_blank"
-          rel="noreferrer noopener"
-          href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}>
-          SteamRep
-        </Link>
-        &nbsp;&middot;&nbsp;
-        <Link
-          variant="body2"
-          gutterBottom
-          target="_blank"
-          rel="noreferrer noopener"
-          href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
-          Dotabuff
-        </Link>
       </div>
     </div>
   )
