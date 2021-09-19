@@ -54,7 +54,8 @@ export const myMarket = {
   PATCH: (id, payload) => http.authnRequest(http.PATCH, `${MY_MARKETS}/${id}`, payload),
 }
 export const myProfile = {
-  GET: () => http.authnRequest(http.GET, MY_PROFILE),
+  GET: (nocache = false) =>
+    http.authnRequest(http.GET, `${MY_PROFILE}?${nocache ? 'nocache' : ''}`),
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
 export const reportCreate = payload => http.authnRequest(http.POST, REPORTS, payload)
@@ -64,6 +65,7 @@ export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)
 export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
 export const reportSearch = http.baseSearchRequest(REPORTS)
+export const blacklistSearch = http.baseSearchRequest(BLACKLIST)
 
 export const trackItemViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
 export const trackProfileViewURL = userID => `${API_URL}${TRACK}?t=p&u=${userID}`

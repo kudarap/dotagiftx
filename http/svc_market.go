@@ -88,16 +88,12 @@ func sortQueryModifier(r *http.Request) {
 	switch query.Get("sort") {
 	case "best":
 		query.Set("sort", "user_rank_score:desc")
-		break
 	case "recent":
 		query.Set("sort", "updated_at:desc")
-		break
 	case "lowest":
 		query.Set("sort", "price")
-		break
 	case "highest":
 		query.Set("sort", "price:desc")
-		break
 	}
 
 	r.URL.RawQuery = query.Encode()

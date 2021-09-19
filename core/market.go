@@ -97,6 +97,10 @@ type (
 		Item      *Item      `json:"item,omitempty"      db:"item,omitempty"`
 		Delivery  *Delivery  `json:"delivery,omitempty"  db:"delivery,omitempty"`
 		Inventory *Inventory `json:"inventory,omitempty" db:"inventory,omitempty"`
+
+		// NOTE! Experimental for reselling feature.
+		Resell        *bool  `json:"resell"          db:"resell,omitempty"`
+		SellerSteamID string `json:"seller_steam_id" db:"seller_steam_id,omitempty"`
 	}
 
 	// MarketService provides access to market service.

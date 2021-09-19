@@ -73,6 +73,10 @@ export default function VerifiedStatusCard({ market, ...other }) {
     inventoryURL = getInventoryURL(market.partner_steam_id)
   }
   if (!source) {
+    if (market.resell) {
+      return <ResellCard data={market} />
+    }
+
     return null
   }
 
@@ -199,5 +203,23 @@ function ClearedGift() {
       --
       {/* cleared */}
     </Typography>
+  )
+}
+
+function ResellCard({ data }) {
+  return (
+    <CardX>
+      <CardContent>
+        <Typography variant="h5" component="h2">
+          Item Resell
+        </Typography>
+        <Typography color="textSecondary" variant="body2" component="p">
+          Verified by {data.user.name} {dateFromNow(data.created_at)}
+        </Typography>
+        <Typography component="p">
+          Item manually verified by seller from partner&apos;s inventory
+        </Typography>
+      </CardContent>
+    </CardX>
   )
 }

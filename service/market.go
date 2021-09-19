@@ -133,6 +133,13 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		if err := s.checkAskType(mkt); err != nil {
 			return err
 		}
+
+		// NOTE! Experimental for reselling feature.
+		m, err := s.experimentalProcessResell(mkt)
+		if err != nil {
+			return err
+		}
+		mkt = m
 	case core.MarketTypeBid:
 		if err := s.checkBidType(mkt); err != nil {
 			return err
@@ -158,6 +165,22 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	}
 
 	return nil
+}
+
+func (s *marketService) experimentalProcessResell(m *core.Market) (*core.Market, error) {
+	if strings.TrimSpace(m.SellerSteamID) == "" {
+		return m, nil
+	}
+
+	ssid, err := s.steam.ResolveVanityURL(m.SellerSteamID)
+	if err != nil {
+		return nil, err
+	}
+	truePtr := true
+	m.Resell = &truePtr
+	m.SellerSteamID = ssid
+	m.InventoryStatus = core.InventoryStatusVerified // Override verification by reseller
+	return m, nil
 }
 
 func (s *marketService) checkAskType(ask *core.Market) error {

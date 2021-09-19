@@ -49,6 +49,7 @@ const defaultFilter = {
   type: MARKET_TYPE_ASK,
   sort: 'updated_at:desc',
   page: 1,
+  limit: 15,
 }
 
 const defaultData = {

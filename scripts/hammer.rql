@@ -26,3 +26,10 @@ testDB.table('user')
 r.db('d2g_production').table('market')
   .filter({ delivery_status: 100 })
   .update({ delivery_status: r.literal() })
+
+# re verify delivery
+var testDB = r.db('d2g_production');
+testDB.table('market')
+  .filter(r.row('updated_at').month().eq(r.september))
+  .filter({ status: 400, delivery_status: 100 })
+  //.update({ delivery: r.literal(), delivery_status: r.literal() })

@@ -1,16 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import useSWR from 'swr'
+import moment from 'moment'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
 import startsWith from 'lodash/startsWith'
-import has from 'lodash/has'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import {
   APP_NAME,
-  APP_URL,
   DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
@@ -20,11 +20,9 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import Avatar from '@/components/Avatar'
-import useSWR from 'swr'
 import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
 import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
-import moment from 'moment'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -42,6 +40,19 @@ const filter = {
 
 const STEAMURL = 'https://steamcommunity.com'
 
+function cleanURL(url = '') {
+  const s = url.split('/')
+  if (s.length < 5) {
+    return url
+  }
+
+  return s.slice(0, 5).join('/')
+}
+
+function isVanityURL(url = '') {
+  return url.startsWith(`${STEAMURL}/id/`)
+}
+
 // returns Steam ID when available and
 // resolves URL when its a vanity/custom for auto-resolve profile.
 function resolveProfileURL(url = '') {
@@ -57,19 +68,6 @@ function resolveProfileURL(url = '') {
   return u.replaceAll(STEAMURL, '')
 }
 
-function cleanURL(url = '') {
-  const s = url.split('/')
-  if (s.length < 5) {
-    return url
-  }
-
-  return s.slice(0, 5).join('/')
-}
-
-function isVanityURL(url = '') {
-  return url.startsWith(STEAMURL + '/id/')
-}
-
 export default function Blacklist() {
   const classes = useStyles()
 
@@ -82,7 +80,6 @@ export default function Blacklist() {
   let resolvedQuery = false
   if (startsWith(query, STEAMURL, 0)) {
     resolvedQuery = resolveProfileURL(query)
-    console.log('res', resolvedQuery)
     if (isVanityURL(query)) {
       router.push(resolvedQuery)
     }
@@ -160,16 +157,17 @@ function UserCard({ data }) {
   return (
     <div style={{ display: 'flex', marginBottom: 14 }}>
       <Avatar
-        style={{ marginTop: 2 }}
+        style={{ marginTop: 4 }}
         {...retinaSrcSet(data.avatar, 40, 40)}
         component={Link}
-        href={`/profiles/${data.steam_id}/activity`}
+        href={`/profiles/${data.steam_id}`}
       />
       <div style={{ marginLeft: 8 }}>
         <Typography>
           {/* <strong>{data.name}</strong> */}
-          <Typography variant="body2" color="textSecondary">
-            SteamID {`${data.steam_id} `}
+          <Typography color="textSecondary" variant="body2">
+            SteamID: {`${data.steam_id}`}
+            {` `}
             <span
               style={{
                 padding: '2px 6px',
@@ -182,37 +180,41 @@ function UserCard({ data }) {
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
+          <Link variant="body2" href={`/profiles/${data.steam_id}`}>
+            Profile
+          </Link>
+          {/* &nbsp;&middot;&nbsp;
+          <Link variant="body2" href={`/profiles/${data.steam_id}/activity`}>
+            Market History
+          </Link> */}
+          &nbsp;&middot;&nbsp;
+          <Link
+            variant="body2"
+            gutterBottom
+            target="_blank"
+            rel="noreferrer noopener"
+            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
+            Steam Profile
+          </Link>
+          &nbsp;&middot;&nbsp;
+          <Link
+            variant="body2"
+            gutterBottom
+            target="_blank"
+            rel="noreferrer noopener"
+            href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}>
+            SteamRep
+          </Link>
+          &nbsp;&middot;&nbsp;
+          <Link
+            variant="body2"
+            gutterBottom
+            target="_blank"
+            rel="noreferrer noopener"
+            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
+            Dotabuff
+          </Link>
         </Typography>
-        <Link variant="body2" href={`/profiles/${data.steam_id}/activity`}>
-          Market History
-        </Link>
-        &nbsp;&middot;&nbsp;
-        <Link
-          variant="body2"
-          gutterBottom
-          target="_blank"
-          rel="noreferrer noopener"
-          href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
-          Steam Profile
-        </Link>
-        &nbsp;&middot;&nbsp;
-        <Link
-          variant="body2"
-          gutterBottom
-          target="_blank"
-          rel="noreferrer noopener"
-          href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}>
-          SteamRep
-        </Link>
-        &nbsp;&middot;&nbsp;
-        <Link
-          variant="body2"
-          gutterBottom
-          target="_blank"
-          rel="noreferrer noopener"
-          href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
-          Dotabuff
-        </Link>
       </div>
     </div>
   )

@@ -31,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 const defaultFilter = {
   sort: 'updated_at:desc',
   page: 1,
+  limit: 15,
 }
 
 const defaultData = {
