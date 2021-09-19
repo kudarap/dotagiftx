@@ -171,6 +171,12 @@ export default function Header({ disableSearch }) {
           {/* Desktop nav buttons */}
           {!isMobile && (
             <>
+              <Link className={classes.nav} href="/guides" underline="none">
+                Guides
+              </Link>
+              <Link className={classes.nav} href="/rules" underline="none">
+                Rules
+              </Link>
               <Link
                 className={classes.nav}
                 href="/banned-users"
@@ -179,10 +185,7 @@ export default function Header({ disableSearch }) {
                   padding: '0 6px',
                   background: '#9F1818',
                 }}>
-                Banned users
-              </Link>
-              <Link className={classes.nav} href="/guides" underline="none">
-                Guides
+                Bans
               </Link>
 
               <span style={{ flexGrow: 1 }} />
@@ -306,15 +309,18 @@ export default function Header({ disableSearch }) {
                   </MenuItem>
                 )}
 
+                <MenuItem onClick={handleClose} component={Link} href="/guides" disableUnderline>
+                  Guides
+                </MenuItem>
+                <MenuItem onClick={handleClose} component={Link} href="/rules" disableUnderline>
+                  Rules
+                </MenuItem>
                 <MenuItem
                   onClick={handleClose}
                   component={Link}
                   href="/banned-users"
                   disableUnderline>
-                  Banned users
-                </MenuItem>
-                <MenuItem onClick={handleClose} component={Link} href="/guides" disableUnderline>
-                  Guides
+                  Bans
                 </MenuItem>
               </Menu>
             </>

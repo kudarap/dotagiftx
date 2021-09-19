@@ -40,17 +40,13 @@ export default function Version() {
         <Container>
           <Typography variant="h5" component="h1" gutterBottom style={{ marginBottom: 26 }}>
             Rules
-            <Typography
-              variant="caption"
-              component="sup"
-              color="textSecondary"
-              style={{ marginLeft: 8 }}>
+            <Typography variant="body2" color="textSecondary">
               Sep 19, 2021
             </Typography>
-            <Typography>
-              To keep the community fair and a little bit safe for both sellers and buyers. Here are
-              some written rules to follow.
-            </Typography>
+          </Typography>
+          <Typography color="textSecondary">
+            To keep the community fair and a little bit safe for both sellers and buyers. Here are
+            some written rules to follow.
           </Typography>
 
           <div className={classes.ruleContainer}>
@@ -88,7 +84,7 @@ export default function Version() {
             </Typography>
           </div>
 
-          <Typography>
+          <Typography color="textSecondary">
             Since we don&apos;t have profile feedback system yet. You can report them to{' '}
             <Link href="/feedback" color="secondary">
               Feedback
