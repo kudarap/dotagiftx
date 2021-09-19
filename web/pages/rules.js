@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -14,14 +15,12 @@ const useStyles = makeStyles(theme => ({
     },
     marginTop: theme.spacing(4),
   },
-  question: {
-    paddingTop: theme.spacing(2.5),
-    '&:target': {
-      borderBottom: `2px inset ${theme.palette.secondary.main}`,
-      '& .MuiLink-root:hover': {
-        textDecoration: 'none',
-      },
-    },
+  ruleContainer: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(2),
+    background: '#190f00',
+    color: '#c1b79b',
   },
 }))
 
@@ -41,7 +40,11 @@ export default function Version() {
         <Container>
           <Typography variant="h5" component="h1" gutterBottom style={{ marginBottom: 26 }}>
             Rules
-            <Typography variant="caption" component="sup" style={{ marginLeft: 8, color: 'cyan' }}>
+            <Typography
+              variant="caption"
+              component="sup"
+              color="textSecondary"
+              style={{ marginLeft: 8 }}>
               Sep 19, 2021
             </Typography>
             <Typography>
@@ -50,13 +53,9 @@ export default function Version() {
             </Typography>
           </Typography>
 
-          <div style={{ marginBottom: 26 }}>
+          <div className={classes.ruleContainer}>
             <Typography component="h2" style={{ fontWeight: 'bold' }}>
               Selling Rules
-            </Typography>
-            <Typography>
-              Breaking one of the rules will be punishable by <u>Account Suspension</u> to{' '}
-              <u>Permanent Ban</u>.
             </Typography>
 
             <Typography>
@@ -66,14 +65,16 @@ export default function Version() {
                 <li>No reservation cancellation without prior notice.</li>
               </ol>
             </Typography>
+
+            <Typography>
+              Breaking one of the rules will be punishable by <u>Account Suspension</u> to{' '}
+              <u>Permanent Ban</u>.
+            </Typography>
           </div>
 
-          <div>
+          <div className={classes.ruleContainer}>
             <Typography component="h2" style={{ fontWeight: 'bold' }}>
               Buying Rules
-            </Typography>
-            <Typography>
-              Breaking the rule will reflect a negative impact on buyer&apos;s profile.
             </Typography>
 
             <Typography>
@@ -81,7 +82,31 @@ export default function Version() {
                 <li>No reservation cancellation without prior notice.</li>
               </ol>
             </Typography>
+
+            <Typography>
+              Breaking the rule will reflect a negative impact on buyer&apos;s profile.
+            </Typography>
           </div>
+
+          <Typography>
+            Since we don&apos;t have profile feedback system yet. You can report them to{' '}
+            <Link href="/feedback" color="secondary">
+              Feedback
+            </Link>{' '}
+            page along with details. Please don&apos;t forget to include their dotagiftx profile and
+            if you have images please use link from imgur and alike.
+            <br />
+            <br />
+            If you have comments or suggestions regarding this feel free to reach out on{' '}
+            <Link
+              href="https://discord.gg/UFt9Ny42kM"
+              target="_blank"
+              color="secondary"
+              rel="noreferrer noopener">
+              Discord
+            </Link>{' '}
+            or submit a comment on feedback.
+          </Typography>
         </Container>
       </main>
 
