@@ -5,6 +5,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import * as Auth from '@/service/auth'
 import Theme from '@/components/Theme'
 import AppContext from '@/components/AppContext'
+// import WhatsNewDialog from '@/components/WhatsNewDialog'
 // import SurveyFab from '@/components/SurveyFab'
 // import { REPORT_LABEL_SURVEY_NEXT } from '@/constants/report'
 
@@ -21,6 +22,12 @@ function Root({ children }) {
       {/* {currentAuth.user_id && (
         <Theme>
           <SurveyFab userID={currentAuth.user_id} label={REPORT_LABEL_SURVEY_NEXT} />
+        </Theme>
+      )} */}
+
+      {/* {currentAuth.user_id && (
+        <Theme>
+          <WhatsNewDialog userID={currentAuth.user_id} open />
         </Theme>
       )} */}
     </AppContext.Provider>
