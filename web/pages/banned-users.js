@@ -157,7 +157,7 @@ function UserCard({ data }) {
   return (
     <div style={{ display: 'flex', marginBottom: 14 }}>
       <Avatar
-        style={{ marginTop: 6 }}
+        style={{ marginTop: 4 }}
         {...retinaSrcSet(data.avatar, 40, 40)}
         component={Link}
         href={`/profiles/${data.steam_id}`}
@@ -165,10 +165,8 @@ function UserCard({ data }) {
       <div style={{ marginLeft: 8 }}>
         <Typography>
           {/* <strong>{data.name}</strong> */}
-          <Typography color="textSecondary">
-            <Link variant="body2" color="secondary" href={`/profiles/${data.steam_id}`}>
-              SteamID {`${data.steam_id}`}
-            </Link>
+          <Typography color="textSecondary" variant="body2">
+            SteamID: {`${data.steam_id}`}
             {` `}
             <span
               style={{
