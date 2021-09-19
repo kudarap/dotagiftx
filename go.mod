@@ -3,11 +3,11 @@ module github.com/kudarap/dotagiftx
 go 1.17
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi v1.5.4
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-redis/redis/v8 v8.11.3
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/schema v1.2.0
 	github.com/guptarohit/asciigraph v0.5.2
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
