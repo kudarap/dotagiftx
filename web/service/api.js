@@ -65,6 +65,7 @@ export const marketSearch = http.baseSearchRequest(MARKETS)
 export const catalogSearch = http.baseSearchRequest(CATALOGS)
 export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
 export const reportSearch = http.baseSearchRequest(REPORTS)
+export const blacklistSearch = http.baseSearchRequest(BLACKLIST)
 
 export const trackItemViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
 export const trackProfileViewURL = userID => `${API_URL}${TRACK}?t=p&u=${userID}`

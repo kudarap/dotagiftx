@@ -1,5 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import useSWR from 'swr'
+import moment from 'moment'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
@@ -18,11 +20,9 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import Avatar from '@/components/Avatar'
-import useSWR from 'swr'
 import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
 import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
-import moment from 'moment'
 
 const useStyles = makeStyles(theme => ({
   main: {

@@ -21,6 +21,7 @@ import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import NavItems from '@/components/NavItems'
+import LatestBan from './LatestBan'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -177,15 +178,9 @@ export default function Header({ disableSearch }) {
               <Link className={classes.nav} href="/rules" underline="none">
                 Rules
               </Link>
-              <Link
-                className={classes.nav}
-                href="/banned-users"
-                underline="none"
-                style={{
-                  padding: '0 6px',
-                  background: '#9F1818',
-                }}>
+              <Link className={classes.nav} href="/banned-users" underline="none">
                 Bans
+                <LatestBan />
               </Link>
 
               <span style={{ flexGrow: 1 }} />
