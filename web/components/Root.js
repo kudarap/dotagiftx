@@ -21,7 +21,7 @@ function Root({ children }) {
   React.useEffect(() => {
     ;(async () => {
       try {
-        const user = await blacklistSearch({ limit: 1 })
+        const user = await blacklistSearch({ limit: 1, sort: 'updated_at:desc' })
         if (user) {
           setLatestBan(user[0])
         }
