@@ -109,7 +109,7 @@ export default function WhatsNewDialog(props) {
         <Typography>
           Minor update
           <ul>
-            <li>Added time of recent account banned or suspended on navigation header.</li>
+            <li>Added time of the latest flagged account on navigation header</li>
           </ul>
         </Typography>
       </DialogContent>
