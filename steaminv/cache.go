@@ -6,21 +6,22 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/kudarap/dotagiftx/gokit/cache"
+	localcache "github.com/kudarap/dotagiftx/gokit/cache"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
 var fastjson = jsoniter.ConfigFastest
 
 const (
-	cacheExpr   = time.Hour * 24
-	cachePrefix = "steaminv"
+	// localcacheExpr   = time.Hour * 24
+	localcacheExpr   = time.Minute * 10
+	localcachePrefix = "steaminv"
 )
 
 // InventoryAsset returns a compact format from all
 // inventory data with cache.
 func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
-	hit, _ := cache.Get(getCacheKey(steamID))
+	hit, _ := localcache.Get(getCacheKey(steamID))
 	if hit != nil {
 		b, _ := fastjson.Marshal(hit)
 		var asset []steam.Asset
@@ -34,7 +35,7 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 		return nil, err
 	}
 
-	if err = cache.Set(getCacheKey(steamID), asset, getCacheExpr()); err != nil {
+	if err = localcache.Set(getCacheKey(steamID), asset, getCacheExpr()); err != nil {
 		return nil, err
 	}
 
@@ -42,7 +43,7 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 }
 
 func getCacheKey(steamID string) string {
-	return fmt.Sprintf("%s_%s", cachePrefix, steamID)
+	return fmt.Sprintf("%s_%s", localcachePrefix, steamID)
 }
 
 func init() {
@@ -53,5 +54,5 @@ func getCacheExpr() time.Duration {
 	n := 10
 	r := rand.Intn(n-(-n)) + (-n)
 	d := time.Minute * time.Duration(r)
-	return cacheExpr + d
+	return localcacheExpr + d
 }
