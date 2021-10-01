@@ -40,7 +40,7 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 	if err != nil {
 		return err
 	}
-	if weildingHammer(u) {
+	if !weildingHammer(u) {
 		return ErrHammerNotWeilded
 	}
 
