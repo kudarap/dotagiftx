@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/kudarap/dotagiftx/core"
 )
@@ -116,7 +117,8 @@ func (s *BanService) sunderListings(userID string, from, to core.MarketStatus) e
 }
 
 func weildingHammer(u *core.User) error {
-	if u != nil && !u.Hammer {
+	fmt.Println("weildingHammer", u.Hammer)
+	if u == nil || !u.Hammer {
 		return ErrHammerNotWeilded
 	}
 
