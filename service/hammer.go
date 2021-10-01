@@ -40,8 +40,8 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 	if err != nil {
 		return err
 	}
-	if !weildingHammer(u) {
-		return ErrHammerNotWeilded
+	if err := weildingHammer(u); err != nil {
+		return err
 	}
 
 	u.Status += markedOfBaal // Marked! I could use this to track what was the last offense.
@@ -71,8 +71,8 @@ func (s *BanService) hilt(ctx context.Context, p core.HammerParams, us core.User
 	if err != nil {
 		return nil, err
 	}
-	if !weildingHammer(u) {
-		return nil, ErrHammerNotWeilded
+	if err := weildingHammer(u); err != nil {
+		return nil, err
 	}
 
 	u.Status = us
@@ -115,10 +115,10 @@ func (s *BanService) sunderListings(userID string, from, to core.MarketStatus) e
 	return nil
 }
 
-func weildingHammer(u *core.User) bool {
-	if u == nil {
-		return false
+func weildingHammer(u *core.User) error {
+	if u != nil && !u.Hammer {
+		return ErrHammerNotWeilded
 	}
 
-	return u.Hammer
+	return nil
 }
