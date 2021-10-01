@@ -71,7 +71,7 @@ func (s *BanService) hilt(ctx context.Context, p core.HammerParams, us core.User
 	if err != nil {
 		return nil, err
 	}
-	if weildingHammer(u) {
+	if !weildingHammer(u) {
 		return nil, ErrHammerNotWeilded
 	}
 
