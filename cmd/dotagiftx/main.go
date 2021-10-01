@@ -136,6 +136,7 @@ func (app *application) setup() error {
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	reportSvc := service.NewReport(reportStg)
 	statsSvc := service.NewStats(statsStg)
+	hammerSvc := service.NewHammerService(userStg, marketStg)
 
 	// Register job on the worker.
 	*dispatcher = *jobs.NewDispatcher(
@@ -168,6 +169,7 @@ func (app *application) setup() error {
 		trackSvc,
 		statsSvc,
 		reportSvc,
+		hammerSvc,
 		steamClient,
 		redisClient,
 		initVer(app.config),

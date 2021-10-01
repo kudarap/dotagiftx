@@ -57,5 +57,8 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Post("/items_import", handleItemImport(s.itemSvc, s.cache))
 		r.Post("/images", handleImageUpload(s.imageSvc))
 		r.Post("/reports", handleReportCreate(s.reportSvc))
+		r.Post("/hammer/ban", handleHammerBan(s.hammerSvc))
+		r.Post("/hammer/suspend", handleHammerSuspend(s.hammerSvc))
+		r.Post("/hammer/lift", handleHammerLift(s.hammerSvc))
 	})
 }

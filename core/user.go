@@ -59,6 +59,7 @@ type (
 
 		// NOTE! Experimental subscription flag
 		Subscription UserSubscription `json:"subscription" db:"subscription,omitempty"`
+		Hammer       bool             `json:"hammer"       db:"hammer,omitempty"`
 	}
 
 	// UserService provides access to user service.
