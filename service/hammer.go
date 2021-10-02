@@ -35,15 +35,14 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 	if au == nil {
 		return core.AuthErrNoAccess
 	}
+	if err := s.weildingHammer(au.UserID); err != nil {
+		return err
+	}
 
 	u, err := s.userStg.Get(steamID)
 	if err != nil {
 		return err
 	}
-	if err := weildingHammer(u); err != nil {
-		return err
-	}
-
 	u.Status += markedOfBaal // Marked! I could use this to track what was the last offense.
 	if err := s.userStg.Update(u); err != nil {
 		return err
@@ -62,6 +61,9 @@ func (s *BanService) hilt(ctx context.Context, p core.HammerParams, us core.User
 	if au == nil {
 		return nil, core.AuthErrNoAccess
 	}
+	if err := s.weildingHammer(au.UserID); err != nil {
+		return nil, err
+	}
 
 	if err := p.Validate(); err != nil {
 		return nil, err
@@ -69,9 +71,6 @@ func (s *BanService) hilt(ctx context.Context, p core.HammerParams, us core.User
 
 	u, err := s.userStg.Get(p.SteamID)
 	if err != nil {
-		return nil, err
-	}
-	if err := weildingHammer(u); err != nil {
 		return nil, err
 	}
 
@@ -115,10 +114,14 @@ func (s *BanService) sunderListings(userID string, from, to core.MarketStatus) e
 	return nil
 }
 
-func weildingHammer(u *core.User) error {
+func (s *BanService) weildingHammer(userID string) error {
+	u, err := s.userStg.Get(userID)
+	if err != nil {
+		return err
+	}
+
 	if u == nil || !u.Hammer {
 		return ErrHammerNotWeilded
 	}
-
 	return nil
 }
