@@ -67,7 +67,7 @@ func handleHammerLift(svc core.HammerService, cache core.Cache) http.HandlerFunc
 }
 
 func resetProfileListingCache(steamID string, cache core.Cache) {
-	cache.BulkDel(fmt.Sprintf("/blacklists/%s", steamID))
-	cache.BulkDel(fmt.Sprintf("/users/%s", steamID))
+	cache.BulkDel("/blacklists/*")
+	cache.BulkDel(fmt.Sprintf("/users/%s*", steamID))
 	cache.BulkDel(marketCacheKeyPrefix)
 }
