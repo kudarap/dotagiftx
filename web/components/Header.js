@@ -31,7 +31,10 @@ const useStyles = makeStyles(theme => ({
     borderTop: 'none',
     borderRight: 'none',
     borderLeft: 'none',
-    borderImage: "url('/ti10/divider.png') 1 repeat",
+  },
+  divider: {
+    height: 2,
+    borderImage: "url('/ti10/divider.png') repeat-x",
   },
   brand: {
     height: 30,
@@ -323,6 +326,7 @@ export default function Header({ disableSearch }) {
           )}
         </Toolbar>
       </Container>
+      <div className={classes.divider} />
     </AppBar>
   )
 }
