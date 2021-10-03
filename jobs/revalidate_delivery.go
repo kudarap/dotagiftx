@@ -26,7 +26,7 @@ func NewRevalidateDelivery(ds core.DeliveryService, ms core.MarketStorage, lg lo
 	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusSold}
 	return &RevalidateDelivery{
 		ds, ms, lg,
-		"verify_delivery", time.Hour, f}
+		"revalidate_delivery", time.Hour, f}
 }
 
 func (vd *RevalidateDelivery) String() string { return vd.name }
