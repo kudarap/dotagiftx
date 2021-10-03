@@ -44,6 +44,7 @@ export default class MyDocument extends Document {
           style={{
             backgroundImage: 'url(/ti10/bg_repeater.jpg)',
             backgroundAttachment: 'fixed',
+            backgroundPosition: 'center',
           }}>
           <Main />
           <NextScript />
