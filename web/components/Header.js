@@ -163,8 +163,8 @@ export default function Header({ disableSearch }) {
             ) : (
               <img
                 className={classes.brand}
-                src="/icon_1x.png"
-                srcSet="/icon_1x.png 1x, /icon_2x.png 2x"
+                src="/ti10/icon_1x.png"
+                srcSet="/ti10/icon_1x.png 1x, /ti10/icon_2x.png 2x"
                 alt={APP_NAME}
               />
             )}
