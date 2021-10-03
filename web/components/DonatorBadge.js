@@ -4,11 +4,12 @@ import Link from '@/components/Link'
 const useStyles = makeStyles(theme => ({
   root: {
     color: 'white',
-    padding: '0 4px',
+    padding: '1px 10px',
     fontSize: 10,
-    background: 'goldenrod',
+    background: 'linear-gradient(to right, #1A201F, #312d26)',
     fontWeight: 500,
     borderRadius: '2px',
+    border: '1px solid goldenrod',
     display: 'inline-block',
   },
 }))
