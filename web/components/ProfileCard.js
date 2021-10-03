@@ -61,7 +61,7 @@ export default function ProfileCard({ user, loading, ...other }) {
           {user.name}
           {Boolean(user.donation) && (
             <DonatorBadge
-              style={{ marginLeft: 4, marginTop: 10, position: 'absolute' }}
+              style={{ marginLeft: '0.375rem', marginTop: '0.375rem', position: 'absolute' }}
               size="medium">
               DONATOR
             </DonatorBadge>
