@@ -166,6 +166,8 @@ type (
 		// delivery status or needs re-processing of re-process error status.
 		PendingDeliveryStatus(o FindOpts) ([]Market, error)
 
+		RevalidateDeliveryStatus(o FindOpts) ([]Market, error)
+
 		// Index composes market data for faster search and retrieval.
 		Index(id string) (*Market, error)
 
