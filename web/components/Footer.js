@@ -11,10 +11,6 @@ import { APP_FOOTER_HEIGHT } from '@/constants/app'
 // const dotaHeroImage =
 //   'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1624488973'
 
-// TI event footer
-const dotaHeroImage =
-  'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3703047/23edeadc5c926f1f5ca00ae6f0f924d3704ec129.png'
-
 // const heroImage = '/assets/bg_hero.png'
 
 // const mobileHeightCompensator = 31
@@ -33,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
     // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
-    background: `linear-gradient(0deg, rgba(38, 41, 43, 0.7) 100%, transparent), url(${dotaHeroImage}) center -110px`,
+    background: `linear-gradient(0deg, rgba(38, 41, 43, 0.7) 100%, transparent), url(/ti10/banner.png) center -110px`,
   },
   list: {
     [theme.breakpoints.down('xs')]: {

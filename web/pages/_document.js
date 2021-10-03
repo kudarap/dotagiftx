@@ -42,8 +42,7 @@ export default class MyDocument extends Document {
         </Head>
         <body
           style={{
-            backgroundImage:
-              'url(https://cdn.cloudflare.steamstatic.com/apps/dota2/images/outlanders/patch-notes/bg_repeater.jpg)',
+            backgroundImage: 'url(/ti10/bg_repeater.jpg)',
             backgroundAttachment: 'fixed',
           }}>
           <Main />
