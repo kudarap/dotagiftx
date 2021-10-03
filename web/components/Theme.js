@@ -12,7 +12,7 @@ const baseThemeOpts = {
   palette: {
     type: 'dark',
     primary: {
-      main: '#263238',
+      main: '#19191a',
     },
     secondary: {
       main: '#C79123',
@@ -21,8 +21,8 @@ const baseThemeOpts = {
       main: teal.A200,
     },
     background: {
-      default: '#263238',
-      paper: '#2e3d44',
+      default: '#1f1f20',
+      paper: '#2d2e2f',
     },
     // App specific colors.
     app: {
@@ -33,6 +33,16 @@ const baseThemeOpts = {
     MuiAvatar: {
       root: {
         borderRadius: '15%',
+      },
+    },
+    MuiTableCell: {
+      root: {
+        borderBottomColor: '#52564e82',
+      },
+    },
+    MuiTableContainer: {
+      root: {
+        background: '#2d2e2f99',
       },
     },
   },

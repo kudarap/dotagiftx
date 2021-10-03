@@ -31,6 +31,8 @@ const useStyles = makeStyles(theme => ({
     borderTop: 'none',
     borderRight: 'none',
     borderLeft: 'none',
+    borderImage:
+      "url('https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react//dpc/ti10/divider.png') 1 repeat",
   },
   brand: {
     height: 30,
@@ -152,8 +154,8 @@ export default function Header({ disableSearch }) {
               <img
                 width={134}
                 className={classes.brand}
-                src="/brand_1x.png"
-                srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
+                src="/brand_ti10_1x.png"
+                srcSet="/brand_ti10_1x.png 1x, /brand_ti10_2x.png 2x"
                 alt={APP_NAME}
               />
             ) : (

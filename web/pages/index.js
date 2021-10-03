@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(0, 0, 2, 0),
     padding: theme.spacing(1.5),
     border: '1px solid #52564e',
-    background: '#2d3431',
+    background: 'linear-gradient(to right, #1A1C20, #312f26)',
     borderRadius: 4,
   },
   bannerText: {

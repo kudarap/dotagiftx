@@ -40,7 +40,12 @@ export default class MyDocument extends Document {
             </>
           )}
         </Head>
-        <body>
+        <body
+          style={{
+            backgroundImage:
+              'url(https://cdn.cloudflare.steamstatic.com/apps/dota2/images/outlanders/patch-notes/bg_repeater.jpg)',
+            backgroundAttachment: 'fixed',
+          }}>
           <Main />
           <NextScript />
         </body>

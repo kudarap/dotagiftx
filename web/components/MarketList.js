@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
   tableHead: {
     // background: theme.palette.grey[900],
-    background: '#202a2f',
+    background: 'linear-gradient(to right, #9d731f1f, #52c6bb26)',
   },
   tabs: {
     '& .MuiTabs-indicator': {
