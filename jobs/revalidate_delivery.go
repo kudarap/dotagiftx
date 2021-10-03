@@ -59,6 +59,11 @@ func (vd *RevalidateDelivery) Run(ctx context.Context) error {
 				continue
 			}
 
+			if mkt.Delivery.Retries > 10 {
+				vd.logger.Errorf("skipped process! max retries reached")
+				continue
+			}
+
 			status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue
