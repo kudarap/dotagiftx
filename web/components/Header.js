@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
   divider: {
     height: 2,
-    borderImage: "url('/ti10/divider.png') repeat-x",
+    background: "url('/ti10/divider.png') repeat-x",
   },
   brand: {
     height: 30,
