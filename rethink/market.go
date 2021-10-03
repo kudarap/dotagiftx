@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dotagiftx/core"
@@ -94,6 +95,27 @@ func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, e
 				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
 			//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError).
 			//	Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit)))
+		})
+	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+
+	var res []core.Market
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return res, nil
+}
+
+func (s *marketStorage) RevalidateDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
+	now := time.Now()
+	q := r.Table(tableMarket).
+		Filter(func(t r.Term) r.Term {
+			return t.Field(marketFieldStatus).Eq(core.MarketStatusSold).
+				And(t.Field(marketFieldUpdatedAt).Year().Eq(int(now.Year())).
+					And(t.Field(marketFieldUpdatedAt).Month().Eq(int(now.Month())).
+						And(t.Field(marketFieldUpdatedAt).Day().Eq(int(now.Day()))))).
+				And(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit).
+					Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusPrivate)))
 		})
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
 
