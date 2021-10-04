@@ -21,7 +21,7 @@ const baseThemeOpts = {
       main: teal.A200,
     },
     background: {
-      default: '#1f1f20',
+      default: '#121315',
       paper: '#2d2e2f',
     },
     // App specific colors.
