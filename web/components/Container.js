@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { APP_FOOTER_HEIGHT_TOTAL } from '@/constants/app'
 import makeStyles from '@mui/styles/makeStyles'
 import MuiContainer from '@mui/material/Container'
+
+import { APP_FOOTER_HEIGHT_TOTAL } from '@/constants/app'
 
 const useStyles = makeStyles(theme => ({
   root: {
