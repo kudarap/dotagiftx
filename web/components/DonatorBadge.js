@@ -5,10 +5,14 @@ const useStyles = makeStyles(theme => ({
   root: {
     color: 'white',
     padding: '0 4px',
+    padding: '0 0.675rem',
     fontSize: 10,
     background: 'goldenrod',
     fontWeight: 500,
+    background: 'linear-gradient(to right, #1A201F, #312d26)',
+    fontWeight: '0.875rem',
     borderRadius: '2px',
+    border: '1px solid goldenrod',
     display: 'inline-block',
   },
 }))
