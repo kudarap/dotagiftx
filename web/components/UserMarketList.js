@@ -118,11 +118,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
               data.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
                   <TableCell component="th" scope="row" padding="none">
-                    <Link
-                      className={classes.link}
-                      href="/[slug]"
-                      as={`/${market.item.slug}`}
-                      disableUnderline>
+                    <Link className={classes.link} href={`/${market.item.slug}`} disableUnderline>
                       <ItemImage
                         className={classes.image}
                         image={market.item.image}
@@ -131,6 +127,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                         title={market.item.name}
                         rarity={market.item.rarity}
                       />
+
                       <div>
                         <strong>{market.item.name}</strong>
                         <span
@@ -151,6 +148,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                       </div>
                     </Link>
                   </TableCell>
+
                   {!isMobile ? (
                     <>
                       <TableCell align="right">

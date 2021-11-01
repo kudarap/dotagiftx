@@ -89,8 +89,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                 <TableCell className={classes.th} component="th" scope="row" padding="none">
                   <Link
                     className={classes.link}
-                    href={`/[slug]${itemURLSuffix}`}
-                    as={`/${item.slug}${itemURLSuffix}`}
+                    href={`/${item.slug}${itemURLSuffix}`}
                     disableUnderline>
                     <ItemImage
                       className={classes.image}

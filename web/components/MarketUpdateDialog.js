@@ -139,7 +139,7 @@ export default function MarketUpdateDialog(props) {
             <ItemImageDialog item={market.item} />
 
             <Typography component="h1">
-              <Typography variant="h6" component={Link} href="/[slug]" as={`/${market.item.slug}`}>
+              <Typography variant="h6" component={Link} href={`/${market.item.slug}`}>
                 {market.item.name}
               </Typography>
               <Typography gutterBottom>

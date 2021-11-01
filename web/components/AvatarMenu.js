@@ -54,11 +54,7 @@ export default function AvatarMenu({ profile }) {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}>
-        <MenuItem
-          onClick={handleClose}
-          component={Link}
-          href="/profiles/[id]"
-          as={`/profiles/${profile.steam_id}`}>
+        <MenuItem onClick={handleClose} component={Link} href={`/profiles/${profile.steam_id}`}>
           Profile
         </MenuItem>
         <MenuItem onClick={handleClose}>Listings</MenuItem>
