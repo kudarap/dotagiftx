@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: 10,
     background: 'goldenrod',
     fontWeight: 500,
-    background: 'linear-gradient(to right, #1A201F, #312d26)',
+    background: 'linear-gradient(to right, #4D463CBA, #323E3CBA)',
     fontWeight: '0.875rem',
     borderRadius: '2px',
     border: '1px solid goldenrod',
