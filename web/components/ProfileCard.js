@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import makeStyles from '@mui/styles/makeStyles'
 import Typography from '@mui/material/Typography'
@@ -8,6 +8,7 @@ import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 import DonatorBadge from '@/components/DonatorBadge'
 import { isDonationGlowExpired } from '@/service/api'
+import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   details: {
@@ -25,16 +26,19 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     [theme.breakpoints.down('sm')]: {
-      margin: '0 auto',
+      margin: `0 auto ${theme.spacing(1)}`,
     },
     width: 100,
     height: 100,
     marginRight: theme.spacing(1.5),
   },
+  badge: {},
 }))
 
 export default function ProfileCard({ user, loading, ...other }) {
   const classes = useStyles()
+
+  const { isMobile } = useContext(AppContext)
 
   const storeProfile = `/profiles/${user.steam_id}`
   const marketSummary = user.market_stats
@@ -59,7 +63,7 @@ export default function ProfileCard({ user, loading, ...other }) {
           variant="h4"
           color={isProfileReported ? 'error' : ''}>
           {user.name}
-          {Boolean(user.donation) && (
+          {Boolean(user.donation) && !isMobile && (
             <DonatorBadge
               style={{ marginLeft: '0.375rem', marginTop: '0.375rem', position: 'absolute' }}
               size="medium">
@@ -67,6 +71,14 @@ export default function ProfileCard({ user, loading, ...other }) {
             </DonatorBadge>
           )}
         </Typography>
+
+        {Boolean(user.donation) && isMobile && (
+          <div>
+            <DonatorBadge style={{ marginTop: '0.375rem', marginBottom: '0.575rem' }} size="medium">
+              DONATOR
+            </DonatorBadge>
+          </div>
+        )}
 
         {isProfileReported && (
           <Typography color="error">{USER_STATUS_MAP_TEXT[user.status]}</Typography>
