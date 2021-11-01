@@ -31,6 +31,11 @@ const baseThemeOpts = {
       white: '#FFFBF1',
     },
   },
+  breakpoints: {
+    values: {
+      md: 1000,
+    },
+  },
   components: {
     MuiAvatar: {
       defaultProps: {
