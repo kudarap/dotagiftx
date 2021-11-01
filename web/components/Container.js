@@ -10,7 +10,8 @@ const maxWidth = 1000
 const useStyles = makeStyles(theme => ({
   root: {
     maxWidth,
-    [maxWidth]: {
+    padding: `0 ${theme.spacing(1)}`,
+    [theme.breakpoints.down('md')]: {
       padding: theme.spacing(1),
     },
   },

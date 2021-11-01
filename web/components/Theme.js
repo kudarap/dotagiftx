@@ -37,6 +37,11 @@ const baseThemeOpts = {
         variant: 'rounded',
       },
     },
+    MuiSelect: {
+      defaultProps: {
+        variant: 'standard',
+      },
+    },
     MuiButton: {
       defaultProps: {
         // variant: 'default',
