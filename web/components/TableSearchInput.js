@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
     padding: '3px 12px',
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.background.default,
     opacity: 0.8,
     margin: theme.spacing(1),
   },
