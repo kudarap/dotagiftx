@@ -5,9 +5,12 @@ import MuiContainer from '@mui/material/Container'
 
 import { APP_FOOTER_HEIGHT_TOTAL } from '@/constants/app'
 
+const maxWidth = 1000
+
 const useStyles = makeStyles(theme => ({
   root: {
-    [theme.breakpoints.down('md')]: {
+    maxWidth,
+    [maxWidth]: {
       padding: theme.spacing(1),
     },
   },
@@ -19,7 +22,6 @@ export default function Container({ children, disableMinHeight, ...other }) {
   return (
     <MuiContainer
       className={classes.root}
-      maxWidth="md"
       disableGutters
       style={{ minHeight: disableMinHeight ? 0 : `calc(100vh - ${APP_FOOTER_HEIGHT_TOTAL}px)` }}
       {...other}>
