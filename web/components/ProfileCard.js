@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
-    fontSize: '1.9vw',
+    fontSize: '1.8vw',
   },
   avatar: {
     [theme.breakpoints.down('sm')]: {
