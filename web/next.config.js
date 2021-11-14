@@ -1,6 +1,6 @@
 module.exports = {
   // NextJS v12 Rust compiler for minification
-  swcMinify: true,
+  // swcMinify: true,
   async rewrites() {
     return [
       {
