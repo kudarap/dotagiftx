@@ -1,5 +1,5 @@
-import { withStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
+import withStyles from '@mui/styles/withStyles'
+import Button from '@mui/material/Button'
 
 export default withStyles({
   root: {

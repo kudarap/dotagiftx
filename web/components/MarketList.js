@@ -1,17 +1,18 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
-import { debounce } from '@material-ui/core'
-import bidColor from '@material-ui/core/colors/teal'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import { debounce } from '@mui/material'
+import { teal as bidColor } from '@mui/material/colors'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import Chip from '@mui/material/Chip'
 
 import {
   VERIFIED_INVENTORY_MAP_ICON,
@@ -34,7 +35,6 @@ import Avatar from '@/components/Avatar'
 import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
-import Chip from '@material-ui/core/Chip'
 
 const useStyles = makeStyles(theme => ({
   seller: {
@@ -45,8 +45,8 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1.5),
   },
   tableHead: {
-    // background: theme.palette.grey[900],
-    background: '#202a2f',
+    // background: '#202a2f',
+    background: 'linear-gradient(to right, #9d731f1f, #52c6bb26)',
   },
   tabs: {
     '& .MuiTabs-indicator': {

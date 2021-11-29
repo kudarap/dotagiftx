@@ -1,16 +1,16 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import { debounce } from '@material-ui/core'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import green from '@material-ui/core/colors/lightGreen'
+import makeStyles from '@mui/styles/makeStyles'
+import { debounce } from '@mui/material'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import { lightGreen as green } from '@mui/material/colors'
 import {
   VERIFIED_INVENTORY_MAP_ICON,
   VERIFIED_INVENTORY_VERIFIED_RESELL,
@@ -118,11 +118,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
               data.data.map((market, idx) => (
                 <TableRow key={market.id} hover>
                   <TableCell component="th" scope="row" padding="none">
-                    <Link
-                      className={classes.link}
-                      href="/[slug]"
-                      as={`/${market.item.slug}`}
-                      disableUnderline>
+                    <Link className={classes.link} href={`/${market.item.slug}`} disableUnderline>
                       <ItemImage
                         className={classes.image}
                         image={market.item.image}
@@ -131,6 +127,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                         title={market.item.name}
                         rarity={market.item.rarity}
                       />
+
                       <div>
                         <strong>{market.item.name}</strong>
                         <span
@@ -151,6 +148,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                       </div>
                     </Link>
                   </TableCell>
+
                   {!isMobile ? (
                     <>
                       <TableCell align="right">

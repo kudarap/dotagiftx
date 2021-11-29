@@ -20,7 +20,7 @@ func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.
 	sitemap.Add(stm.URL{{"loc", "/search?sort=" + queryFlagRecentItems}, {"changefreq", "daily"}, {"priority", 0.6}})
 	sitemap.Add(stm.URL{{"loc", "/search?sort=" + queryFlagPopularItems}, {"changefreq", "daily"}, {"priority", 0.6}})
 	sitemap.Add(stm.URL{{"loc", "/about"}})
-	sitemap.Add(stm.URL{{"loc", "/faq"}})
+	sitemap.Add(stm.URL{{"loc", "/faqs"}})
 	sitemap.Add(stm.URL{{"loc", "/privacy"}})
 	sitemap.Add(stm.URL{{"loc", "/login"}})
 	sitemap.Add(stm.URL{{"loc", "/donate"}})

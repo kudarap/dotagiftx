@@ -1,18 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Popper from '@material-ui/core/Popper'
-import indigo from '@material-ui/core/colors/indigo'
-import { LightTheme } from '@/components/Theme'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Popper from '@mui/material/Popper'
+import { indigo } from '@mui/material/colors'
+import { ThemeProvider } from '@mui/material/styles'
+import { muiLightTheme } from '@/lib/theme'
 import {
   VERIFIED_DELIVERY_MAP_LABEL,
   VERIFIED_DELIVERY_MAP_TEXT,
@@ -167,9 +168,9 @@ VerifiedStatusCard.defaultProps = {
 
 function CardX(props) {
   return (
-    <LightTheme>
+    <ThemeProvider theme={muiLightTheme}>
       <Card {...props} />
-    </LightTheme>
+    </ThemeProvider>
   )
 }
 
@@ -178,17 +179,29 @@ export function VerifiedStatusPopover({ market, ...other }) {
     <Popper
       style={{ marginTop: 2, zIndex: 1 }}
       placement="right-start"
-      // placement="top"
       disablePortal={false}
-      modifiers={{
-        flip: {
+      modifiers={[
+        {
+          name: 'flip',
           enabled: true,
+          options: {
+            altBoundary: true,
+            rootBoundary: 'document',
+            padding: 8,
+          },
         },
-        preventOverflow: {
+        {
+          name: 'preventOverflow',
           enabled: true,
-          boundariesElement: 'scrollParent',
+          options: {
+            altAxis: true,
+            altBoundary: true,
+            tether: true,
+            rootBoundary: 'document',
+            padding: 8,
+          },
         },
-      }}
+      ]}
       {...other}>
       <VerifiedStatusCard market={market} onMouseLeave={other.onClose} />
     </Popper>

@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Fab from '@material-ui/core/Fab'
-import VoteIcon from '@material-ui/icons/HowToVote'
+import makeStyles from '@mui/styles/makeStyles'
+import Fab from '@mui/material/Fab'
+import VoteIcon from '@mui/icons-material/HowToVote'
 import VoteDialog from '@/components/VoteDialog'
 import { reportSearch } from '@/service/api'
 import { REPORT_TYPE_SURVEY } from '@/constants/report'
-import teal from '@material-ui/core/colors/teal'
-import { Slide } from '@material-ui/core'
+import { teal } from '@mui/material/colors'
+import { Slide } from '@mui/material'
 
 const useStyles = makeStyles(theme => ({
   root: {},

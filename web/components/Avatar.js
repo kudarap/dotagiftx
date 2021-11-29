@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import MuiAvatar from '@material-ui/core/Avatar'
+import MuiAvatar from '@mui/material/Avatar'
 
 export default function Avatar(props) {
   const { glow, style: initStyle, src, ...other } = props

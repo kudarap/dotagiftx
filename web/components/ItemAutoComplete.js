@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import filter from 'lodash/filter'
 import { useRouter } from 'next/router'
-import TextField from '@material-ui/core/TextField'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import CircularProgress from '@mui/material/CircularProgress'
 import { item, itemSearch } from '@/service/api'
 
 // const itemSearchFilter = { limit: 1000, sort: 'view_count:desc', active: true }
@@ -98,7 +98,7 @@ function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
       }}
       onInputChange={handleInputChange}
       inputValue={value}
-      getOptionSelected={(opt, val) => opt.name === val.name}
+      isOptionEqualToValue={(opt, val) => opt.name === val.name}
       getOptionLabel={option => option.text}
       options={options}
       loading={loading}

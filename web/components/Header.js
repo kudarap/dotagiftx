@@ -1,15 +1,15 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import { makeStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
+import makeStyles from '@mui/styles/makeStyles'
+import AppBar from '@mui/material/AppBar'
 import Avatar from '@/components/Avatar'
-import Toolbar from '@material-ui/core/Toolbar'
+import Toolbar from '@mui/material/Toolbar'
 import Button from '@/components/Button'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import IconButton from '@material-ui/core/IconButton'
-import MoreIcon from '@material-ui/icons/Menu'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import IconButton from '@mui/material/IconButton'
+import MoreIcon from '@mui/icons-material/Menu'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
@@ -58,9 +58,7 @@ const useStyles = makeStyles(theme => ({
     },
     cursor: 'pointer',
   },
-  avatarMenu: {
-    marginTop: theme.spacing(4),
-  },
+  avatarMenu: {},
   spacer: {
     width: theme.spacing(1),
   },
@@ -141,7 +139,7 @@ export default function Header({ disableSearch }) {
   const isBrandMini = !disableSearch && isMobile
 
   return (
-    <AppBar position="static" variant="outlined" className={classes.appBar}>
+    <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
       {/*<NoticeMe />*/}
       <Container disableMinHeight>
         <Toolbar variant="dense" disableGutters>

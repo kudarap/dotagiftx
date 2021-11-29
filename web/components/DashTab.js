@@ -1,7 +1,7 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
-import Badge from '@material-ui/core/Badge'
-import Tab from '@material-ui/core/Tab'
+import withStyles from '@mui/styles/withStyles'
+import Badge from '@mui/material/Badge'
+import Tab from '@mui/material/Tab'
 
 const StyledTab = withStyles(theme => ({
   root: {

@@ -1,16 +1,16 @@
 import React, { useContext } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import bidColor from '@material-ui/core/colors/teal'
-import { makeStyles } from '@material-ui/core/styles'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
+import { teal as bidColor } from '@mui/material/colors'
+import makeStyles from '@mui/styles/makeStyles'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
 import * as format from '@/lib/format'
 import Link from '@/components/Link'
 import RarityTag from '@/components/RarityTag'
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'right',
   },
   link: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       paddingLeft: theme.spacing(0),
     },
     padding: theme.spacing(2, 2, 2, 0),
@@ -89,8 +89,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                 <TableCell className={classes.th} component="th" scope="row" padding="none">
                   <Link
                     className={classes.link}
-                    href={`/[slug]${itemURLSuffix}`}
-                    as={`/${item.slug}${itemURLSuffix}`}
+                    href={`/${item.slug}${itemURLSuffix}`}
                     disableUnderline>
                     <ItemImage
                       className={classes.image}

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import useSWR from 'swr'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import MuiLink from '@material-ui/core/Link'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import MuiLink from '@mui/material/Link'
 import { schemaOrgProduct } from '@/lib/richdata'
 import {
   MARKET_STATUS_LIVE,
@@ -42,13 +42,13 @@ import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
   },
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
       display: 'block',
     },
@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
   },
   title: {},
   media: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '8px auto 8px !important',
       width: 300,
       height: 170,
@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1.5),
   },
   postItemButton: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: `8px auto !important`,
       width: '48%',
     },
@@ -515,7 +515,7 @@ export default function ItemDetails({
             pagination={
               !error && (
                 <TablePagination
-                  onChangePage={handlePageChange}
+                  onPageChange={handlePageChange}
                   style={{ textAlign: 'right' }}
                   count={offers.total_count || 0}
                   page={page}

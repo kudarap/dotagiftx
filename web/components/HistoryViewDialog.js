@@ -1,10 +1,10 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Dialog from '@material-ui/core/Dialog'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
 import { amount, dateCalendar } from '@/lib/format'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import DialogCloseButton from '@/components/DialogCloseButton'
@@ -14,12 +14,12 @@ import {
   MARKET_TYPE_BID,
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
-import { TextField } from '@material-ui/core'
+import { TextField } from '@mui/material'
 import ItemImageDialog from '@/components/ItemImageDialog'
 
 const useStyles = makeStyles(theme => ({
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'block',
     },
     display: 'inline-flex',

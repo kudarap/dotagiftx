@@ -1,14 +1,18 @@
-import { makeStyles } from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   root: {
     color: 'white',
     padding: '0 4px',
+    padding: '0 0.675rem',
     fontSize: 10,
     background: 'goldenrod',
     fontWeight: 500,
+    background: 'linear-gradient(to right, #4D463CBA, #323E3CBA)',
+    fontWeight: '0.875rem',
     borderRadius: '2px',
+    border: '1px solid goldenrod',
     display: 'inline-block',
   },
 }))

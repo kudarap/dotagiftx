@@ -2,11 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { APP_NAME } from '@/constants/strings'
+import CssBaseline from '@mui/material/CssBaseline'
+
+import { ThemeProvider } from '@mui/material/styles'
+
 import Root from '@/components/Root'
+import theme from '@/lib/theme'
 import '@/components/Avatar.css'
 
 export default function MyApp(props) {
   const { Component, pageProps } = props
+
+  const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -15,6 +22,9 @@ export default function MyApp(props) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles)
     }
+
+    // FOUC hotfix
+    setMounted(true)
   }, [])
 
   return (
@@ -27,9 +37,17 @@ export default function MyApp(props) {
         {/*  content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" */}
         {/* /> */}
       </Head>
-      <Root>
-        <Component {...pageProps} />
-      </Root>
+
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+
+        <Root>
+          {/* FOUC hotfix */}
+          <div style={{ visibility: !mounted ? 'hidden' : '' }}>
+            <Component {...pageProps} />
+          </div>
+        </Root>
+      </ThemeProvider>
     </>
   )
 }

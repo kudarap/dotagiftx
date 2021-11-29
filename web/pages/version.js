@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import { version } from '@/service/api'
 import Header from '@/components/Header'
 import Container from '@/components/Container'

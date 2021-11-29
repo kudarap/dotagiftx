@@ -1,8 +1,8 @@
 import React from 'react'
 import useSWR from 'swr'
 import map from 'lodash/map'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
 import { fetcher, REPORTS } from '@/service/api'
 import { dateFromNow } from '@/lib/format'
 import { REPORT_TYPE_MAP_TEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
@@ -13,7 +13,7 @@ import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
