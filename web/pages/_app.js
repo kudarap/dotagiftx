@@ -13,6 +13,8 @@ import '@/components/Avatar.css'
 export default function MyApp(props) {
   const { Component, pageProps } = props
 
+  const [mounted, setMounted] = React.useState(false)
+
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     // eslint-disable-next-line no-undef
@@ -20,6 +22,9 @@ export default function MyApp(props) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles)
     }
+
+    // FOUC hotfix
+    setMounted(true)
   }, [])
 
   return (
@@ -33,15 +38,18 @@ export default function MyApp(props) {
         {/* /> */}
       </Head>
 
-      {/* <StyledEngineProvider injectFirst> */}
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
 
-        <Root>
-          <Component {...pageProps} />
-        </Root>
-      </ThemeProvider>
-      {/* </StyledEngineProvider> */}
+          <Root>
+            {/* FOUC hotfix */}
+            <div style={{ visibility: !mounted ? 'hidden' : '' }}>
+              <Component {...pageProps} />
+            </div>
+          </Root>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </>
   )
 }
