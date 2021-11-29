@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { APP_NAME } from '@/constants/strings'
 import CssBaseline from '@mui/material/CssBaseline'
 
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
+import { ThemeProvider } from '@mui/material/styles'
 
 import Root from '@/components/Root'
 import theme from '@/lib/theme'
@@ -38,18 +38,16 @@ export default function MyApp(props) {
         {/* /> */}
       </Head>
 
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
 
-          <Root>
-            {/* FOUC hotfix */}
-            <div style={{ visibility: !mounted ? 'hidden' : '' }}>
-              <Component {...pageProps} />
-            </div>
-          </Root>
-        </ThemeProvider>
-      </StyledEngineProvider>
+        <Root>
+          {/* FOUC hotfix */}
+          <div style={{ visibility: !mounted ? 'hidden' : '' }}>
+            <Component {...pageProps} />
+          </div>
+        </Root>
+      </ThemeProvider>
     </>
   )
 }
