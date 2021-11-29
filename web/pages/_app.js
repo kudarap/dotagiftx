@@ -33,15 +33,15 @@ export default function MyApp(props) {
         {/* /> */}
       </Head>
 
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
+      {/* <StyledEngineProvider injectFirst> */}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
 
-          <Root>
-            <Component {...pageProps} />
-          </Root>
-        </ThemeProvider>
-      </StyledEngineProvider>
+        <Root>
+          <Component {...pageProps} />
+        </Root>
+      </ThemeProvider>
+      {/* </StyledEngineProvider> */}
     </>
   )
 }
