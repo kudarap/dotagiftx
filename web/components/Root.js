@@ -4,7 +4,6 @@ import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import * as Auth from '@/service/auth'
 import { blacklistSearch } from '@/service/api'
-import Theme from '@/components/Theme'
 import AppContext from '@/components/AppContext'
 import WhatsNewDialog from '@/components/WhatsNewDialog'
 // import SurveyFab from '@/components/SurveyFab'
@@ -33,7 +32,7 @@ function Root({ children }) {
 
   return (
     <AppContext.Provider value={{ isMobile, isTablet, currentAuth, isLoggedIn, latestBan }}>
-      <Theme>{children}</Theme>
+      {children}
       {/* {currentAuth.user_id && (
         <Theme>
           <SurveyFab userID={currentAuth.user_id} label={REPORT_LABEL_SURVEY_NEXT} />
@@ -41,9 +40,7 @@ function Root({ children }) {
       )} */}
 
       {/* {currentAuth.user_id && ( */}
-      <Theme>
-        <WhatsNewDialog userID={currentAuth.user_id} />
-      </Theme>
+      <WhatsNewDialog userID={currentAuth.user_id} />
       {/* )} */}
     </AppContext.Provider>
   )

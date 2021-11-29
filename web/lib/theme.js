@@ -1,8 +1,4 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-
-import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles'
+import { createTheme } from '@mui/material/styles'
 import { teal, blueGrey, grey } from '@mui/material/colors'
 
 const baseThemeOpts = {
@@ -67,23 +63,11 @@ const baseThemeOpts = {
   },
 }
 
-export const muiTheme = createTheme(baseThemeOpts)
+const muiTheme = createTheme(baseThemeOpts)
 
-export default function Theme({ children }) {
-  return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={muiTheme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    </StyledEngineProvider>
-  )
-}
-Theme.propTypes = {
-  children: PropTypes.node.isRequired,
-}
+export default muiTheme
 
-const muiLightTheme = createTheme({
+export const muiLightTheme = createTheme({
   ...baseThemeOpts,
   palette: {
     ...baseThemeOpts.palette,
@@ -102,10 +86,3 @@ const muiLightTheme = createTheme({
     },
   },
 })
-
-export function LightTheme({ children }) {
-  return <ThemeProvider theme={muiLightTheme}>{children}</ThemeProvider>
-}
-LightTheme.propTypes = {
-  children: PropTypes.node.isRequired,
-}

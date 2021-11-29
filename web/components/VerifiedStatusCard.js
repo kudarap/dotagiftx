@@ -12,7 +12,8 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Popper from '@mui/material/Popper'
 import { indigo } from '@mui/material/colors'
-import { LightTheme } from '@/components/Theme'
+import { ThemeProvider } from '@mui/material/styles'
+import { muiLightTheme } from '@/lib/theme'
 import {
   VERIFIED_DELIVERY_MAP_LABEL,
   VERIFIED_DELIVERY_MAP_TEXT,
@@ -167,9 +168,9 @@ VerifiedStatusCard.defaultProps = {
 
 function CardX(props) {
   return (
-    <LightTheme>
+    <ThemeProvider theme={muiLightTheme}>
       <Card {...props} />
-    </LightTheme>
+    </ThemeProvider>
   )
 }
 
