@@ -19,7 +19,7 @@ const StyledTab = withStyles(theme => ({
 
 const StyledBadge = withStyles(theme => ({
   badge: {
-    top: 12,
+    top: 10,
     position: 'relative',
     border: `2px solid ${theme.palette.background.paper}`,
     padding: '0 4px',
