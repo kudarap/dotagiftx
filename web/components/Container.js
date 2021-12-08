@@ -9,7 +9,7 @@ const maxWidth = 1000
 
 const useStyles = makeStyles()(theme => ({
   root: {
-    padding: `0 ${theme.spacing(1)}`,
+    padding: theme.spacing(0, 1),
     [theme.breakpoints.down('md')]: {
       padding: theme.spacing(1),
     },
@@ -24,8 +24,8 @@ export default function Container({ children, disableMinHeight, ...other }) {
       className={classes.root}
       disableGutters
       style={{
-        minHeight: disableMinHeight ? 0 : `calc(102vh - ${APP_FOOTER_HEIGHT_TOTAL}px)`,
-        maxWidth,
+        minHeight: disableMinHeight ? 0 : `calc(100vh - ${APP_FOOTER_HEIGHT_TOTAL}px)`,
+        maxWidth: other.maxWidth ? null : maxWidth,
       }}
       {...other}>
       {children}

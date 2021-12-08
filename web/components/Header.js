@@ -10,6 +10,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
 import MoreIcon from '@mui/icons-material/Menu'
+import SearchIcon from '@mui/icons-material/Search'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
@@ -23,7 +24,6 @@ import { APP_CACHE_PROFILE } from '@/constants/app'
 import NavItems from '@/components/NavItems'
 import LatestBan from './LatestBan'
 import { NoSsr } from '@mui/material'
-// import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
 import brandImage from '../public/brand_2x.png'
@@ -147,7 +147,7 @@ export default function Header({ disableSearch }) {
   return (
     <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
       {/*<NoticeMe />*/}
-      <Container disableMinHeight>
+      <Container disableMinHeight maxWidth="xl">
         <Toolbar variant="dense" disableGutters>
           {/* Branding button */}
           {/* Desktop nav branding */}

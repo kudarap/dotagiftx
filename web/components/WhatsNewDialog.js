@@ -105,7 +105,6 @@ export default function WhatsNewDialog(props) {
         </Typography>
 
         <br />
-        <br />
         <Divider />
         <br />
 

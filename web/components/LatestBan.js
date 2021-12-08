@@ -37,7 +37,7 @@ export default function LatestBan() {
         position: 'absolute',
         fontSize: '0.6rem',
         display: 'block',
-        marginTop: '-5px',
+        marginTop: '-0.24rem',
         color: '#FF6464',
         filter: `grayscale(${grayscale}%)`,
       }}>
