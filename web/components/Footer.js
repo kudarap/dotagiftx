@@ -9,7 +9,7 @@ import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
 const dotaHeroImage =
-  'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1635456056'
+  'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1639541655'
 
 // const heroImage = '/assets/bg_hero.png'
 
