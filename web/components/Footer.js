@@ -8,8 +8,8 @@ import { APP_NAME } from '@/constants/strings'
 import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
-const dotaHeroImage =
-  'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1639541655'
+const t = 1639646619362
+const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${t}`
 
 // const heroImage = '/assets/bg_hero.png'
 
@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       // Keeps the footer on the bottom of the screen on small screens.
       height: APP_FOOTER_HEIGHT + mobileHeightCompensator,
-      backgroundPositionX: '0, -70%',
+      // backgroundPositionX: '0, -70%',
     },
     [theme.breakpoints.down('md')]: {
       paddingBottom: theme.spacing(0),
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
     // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
-    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -100px`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.7) 100%, transparent), url(${dotaHeroImage}) center -60px`,
   },
   list: {
     [theme.breakpoints.down('sm')]: {

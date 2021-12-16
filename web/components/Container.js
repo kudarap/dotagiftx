@@ -24,7 +24,7 @@ export default function Container({ children, disableMinHeight, ...other }) {
       className={classes.root}
       disableGutters
       style={{
-        minHeight: disableMinHeight ? 0 : `calc(100vh - ${APP_FOOTER_HEIGHT_TOTAL}px)`,
+        minHeight: disableMinHeight ? 0 : `calc(102vh - ${APP_FOOTER_HEIGHT_TOTAL}px)`,
         maxWidth,
       }}
       {...other}>
