@@ -55,12 +55,16 @@ func (vd *RevalidateDelivery) Run(ctx context.Context) error {
 
 		for _, mkt := range res {
 			if mkt.User == nil || mkt.Item == nil {
-				vd.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				vd.logger.Debug("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
 			}
 
+			if mkt.Delivery == nil {
+				vd.logger.Debug("skipped process! no delivery data")
+				continue
+			}
 			if mkt.Delivery.Retries > 10 {
-				vd.logger.Errorf("skipped process! max retries reached")
+				vd.logger.Debug("skipped process! max retries reached")
 				continue
 			}
 
