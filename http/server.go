@@ -17,8 +17,9 @@ import (
 )
 
 const (
-	defaultAddr     = ":8000"
-	shutdownTimeout = 10 * time.Second
+	defaultAddr      = ":8000"
+	shutdownTimeout  = 10 * time.Second
+	readWriteTimeout = 15 * time.Second
 )
 
 // NewServer returns new http server.
@@ -108,8 +109,10 @@ func (s *Server) Run() error {
 
 	// Setup http router.
 	srv := &http.Server{
-		Addr:    s.Addr,
-		Handler: s.handler,
+		Addr:         s.Addr,
+		Handler:      s.handler,
+		WriteTimeout: readWriteTimeout,
+		ReadTimeout:  readWriteTimeout,
 	}
 
 	// Handle error on server start.
