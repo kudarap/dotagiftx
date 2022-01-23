@@ -69,6 +69,9 @@ export default function WhatsNewDialog(props) {
     handleClose()
   }
 
+  // HOTFIX! google not indexing
+  return null
+
   return (
     <Dialog
       fullWidth
