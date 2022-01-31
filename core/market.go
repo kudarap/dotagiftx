@@ -120,7 +120,7 @@ type (
 		// UpdateUserRankScore sets new user ranking score on all live market by user id.
 		UpdateUserRankScore(userID string) error
 
-		//// Index Index composes market data for faster search and retrieval.
+		// Index composes market data for faster search and retrieval.
 		//Index(ctx context.Context, id string) (*Market, error)
 
 		// AutoCompleteBid detects if there's matching reservation on buy order and automatically
