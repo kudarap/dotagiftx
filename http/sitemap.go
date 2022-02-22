@@ -25,6 +25,9 @@ func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.
 	sitemap.Add(stm.URL{{"loc", "/login"}})
 	sitemap.Add(stm.URL{{"loc", "/donate"}})
 	sitemap.Add(stm.URL{{"loc", "/middlemen"}})
+	sitemap.Add(stm.URL{{"loc", "/guides"}})
+	sitemap.Add(stm.URL{{"loc", "/rules"}})
+	sitemap.Add(stm.URL{{"loc", "/bans"}})
 
 	// Add item slug locations.
 	origins := map[string]struct{}{}
@@ -43,14 +46,13 @@ func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.
 	}
 
 	// Add user profile locations.
-	for _, uu := range users {
-		sitemap.Add(stm.URL{{"loc", "/profiles/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.6}})
-	}
-
+	//for _, uu := range users {
+	//	sitemap.Add(stm.URL{{"loc", "/profiles/" + uu.SteamID}, {"changefreq", "monthly"}, {"priority", 0.6}})
+	//}
 	// Add user vanity urls locations.
-	for _, v := range vanities {
-		sitemap.Add(stm.URL{{"loc", "/id/" + v}, {"changefreq", "daily"}, {"priority", 0.6}})
-	}
+	//for _, v := range vanities {
+	//	sitemap.Add(stm.URL{{"loc", "/id/" + v}, {"changefreq", "monthly"}, {"priority", 0.6}})
+	//}
 
 	return sitemap
 }
@@ -60,7 +62,9 @@ const vanityPrefix = "https://steamcommunity.com/id/"
 func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam core.SteamClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(core.FindOpts{})
-		users, _ := userSvc.Users(core.FindOpts{})
+		users, _ := userSvc.Users(core.FindOpts{
+			Limit: 0,
+		})
 
 		var vanities []string
 		for _, u := range users {
@@ -79,7 +83,9 @@ func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam cor
 		}
 
 		w.Header().Set("content-type", "text/xml")
-		w.Write(buildSitemap(items, users, vanities).XMLContent())
+		if _, err := w.Write(buildSitemap(items, users, vanities).XMLContent()); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		return
 	}
 }
