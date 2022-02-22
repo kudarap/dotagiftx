@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
 	"github.com/kudarap/dotagiftx/core"
@@ -56,9 +57,14 @@ func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.
 	return sitemap
 }
 
-const vanityPrefix = "https://steamcommunity.com/id/"
+const (
+	vanityPrefix = "https://steamcommunity.com/id/"
 
-func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam core.SteamClient) http.HandlerFunc {
+	sitemapCacheKey  = "sitemap"
+	sitemapCacheExpr = time.Hour
+)
+
+func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(core.FindOpts{})
 		users, _ := userSvc.Users(core.FindOpts{
@@ -67,13 +73,7 @@ func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam cor
 
 		var vanities []string
 		for _, u := range users {
-			//sp, _ := steam.Player(u.SteamID)
-			//if sp == nil || sp.URL == "" {
-			//	continue
-			//}
 			sp := u
-
-			// Not a custom url.
 			if !strings.HasPrefix(sp.URL, vanityPrefix) {
 				continue
 			}
@@ -81,8 +81,9 @@ func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam cor
 			vanities = append(vanities, strings.TrimPrefix(sp.URL, vanityPrefix))
 		}
 
+		sm := buildSitemap(items, users, vanities).XMLContent()
 		w.Header().Set("content-type", "text/xml")
-		if _, err := w.Write(buildSitemap(items, users, vanities).XMLContent()); err != nil {
+		if _, err := w.Write(sm); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
