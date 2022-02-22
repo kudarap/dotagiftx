@@ -2,3 +2,7 @@ User-agent: *
 Allow: /
 
 Sitemap: https://api.dotagiftx.com/sitemap.xml
+
+# Block all crawlers for /profiles
+User-agent: *
+Disallow: /profiles
