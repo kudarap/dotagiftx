@@ -1,6 +1,6 @@
 module.exports = {
   // NextJS v12 Rust compiler for minification
-  // swcMinify: true,
+  swcMinify: true,
   async rewrites() {
     return [
       {
@@ -24,6 +24,11 @@ module.exports = {
       {
         source: '/blacklist',
         destination: '/banned-users',
+        permanent: true,
+      },
+      {
+        source: '/banned-users',
+        destination: '/bans',
         permanent: true,
       },
     ]
