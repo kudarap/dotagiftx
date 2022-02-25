@@ -28,7 +28,7 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-export default withStyles(Button, theme => ({
+const PaypalButton = withStyles(Button, theme => ({
   root: {
     marginTop: theme.spacing(2),
     width: 300,

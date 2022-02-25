@@ -3,7 +3,7 @@ import { withStyles } from 'tss-react/mui'
 import Tabs from '@mui/material/Tabs'
 
 const StyledTabs = withStyles(
-  props => <Tabs {...props} tabstabindicatorprops={{ children: <span /> }} />,
+  props => <Tabs {...props} TabIndicatorProps={{ children: <span /> }} />,
   theme => ({
     indicator: {
       display: 'flex',

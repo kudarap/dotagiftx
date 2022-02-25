@@ -39,12 +39,17 @@ const baseThemeOpts = {
       },
     },
     MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
       defaultProps: {
         // variant: 'default',
       },
       variants: [
         {
-          props: { variant: 'defaultx' },
+          props: { variant: 'default' },
           style: {
             textTransform: 'none',
             border: `2px dashed white`,
