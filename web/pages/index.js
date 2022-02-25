@@ -326,7 +326,7 @@ export async function getServerSideProps() {
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)
-  marketSummary.bids.live = format.numberWithCommas(marketSummary.bids.live)
+  marketSummary.bids.bid_live = format.numberWithCommas(marketSummary.bids.bid_live)
 
   let trendingItems = { error: null }
   try {
