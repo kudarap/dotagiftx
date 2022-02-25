@@ -1,5 +1,5 @@
 import React from 'react'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Container from '@/components/Container'
@@ -16,7 +16,7 @@ const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/lib
 // const mobileHeightCompensator = 31
 const mobileHeightCompensator = 100
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {
     [theme.breakpoints.down('sm')]: {
       // Keeps the footer on the bottom of the screen on small screens.
@@ -82,7 +82,7 @@ function SteamAwardIcon(props) {
 }
 
 export default function Footer() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <footer className={classes.root}>
