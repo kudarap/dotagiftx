@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
     // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
-    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.5) 100%, transparent), url(${dotaHeroImage}) center right`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.5) 100%, transparent), url(${dotaHeroImage}) center center`,
   },
   list: {
     [theme.breakpoints.down('sm')]: {
