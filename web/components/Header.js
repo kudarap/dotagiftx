@@ -150,15 +150,15 @@ export default function Header({ disableSearch }) {
               <img
                 width={134}
                 className={classes.brand}
-                src="/brand_1x.png"
-                srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
+                src="/ukr/brand_1x.png"
+                srcSet="/ukr/brand_1x.png 1x, /ukr/brand_2x.png 2x"
                 alt={APP_NAME}
               />
             ) : (
               <img
                 className={classes.brand}
-                src="/icon_1x.png"
-                srcSet="/icon_1x.png 1x, /icon_2x.png 2x"
+                src="/ukr/icon_1x.png"
+                srcSet="/ukr/icon_1x.png 1x, /ukr/icon_2x.png 2x"
                 alt={APP_NAME}
               />
             )}
