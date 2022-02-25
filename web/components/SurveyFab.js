@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Fab from '@mui/material/Fab'
 import VoteIcon from '@mui/icons-material/HowToVote'
 import VoteDialog from '@/components/VoteDialog'
@@ -9,7 +9,7 @@ import { REPORT_TYPE_SURVEY } from '@/constants/report'
 import { teal } from '@mui/material/colors'
 import { Slide } from '@mui/material'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {},
   fab: {
     position: 'fixed',
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function SurveyFab({ userID, label }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [open, setOpen] = React.useState(false)
 

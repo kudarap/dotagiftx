@@ -6,7 +6,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
 import startsWith from 'lodash/startsWith'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import {
@@ -24,7 +24,7 @@ import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
 import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -69,7 +69,7 @@ function resolveProfileURL(url = '') {
 }
 
 export default function Blacklist() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [query, setQuery] = React.useState('')
   filter.q = query

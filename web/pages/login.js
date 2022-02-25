@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
@@ -19,7 +19,7 @@ import { set as setAuth } from '@/service/auth'
 import AppContext from '@/components/AppContext'
 import Link from '@/components/Link'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Login() {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isLoggedIn, isMobile } = useContext(AppContext)
 
   const [loading, setLoading] = React.useState(false)

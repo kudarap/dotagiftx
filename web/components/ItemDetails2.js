@@ -1,29 +1,17 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import useSWR from 'swr'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import { Box } from '@mui/system'
 import { schemaOrgProduct } from '@/lib/richdata'
-import {
-  MARKET_STATUS_LIVE,
-  MARKET_STATUS_RESERVED,
-  MARKET_STATUS_SOLD,
-  MARKET_TYPE_ASK,
-  MARKET_TYPE_BID,
-} from '@/constants/market'
-import { itemRarityColorMap } from '@/constants/palette'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
 import { APP_NAME } from '@/constants/strings'
-import {
-  CDN_URL,
-  fetcher,
-  GRAPH_MARKET_SALES,
-  MARKETS,
-  marketSearch,
-  trackItemViewURL,
-} from '@/service/api'
+import { CDN_URL, marketSearch, trackItemViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -31,14 +19,11 @@ import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import Button from '@/components/Button'
 import TablePagination from '@/components/TablePagination'
 import ChipLink from '@/components/ChipLink'
-import AppContext from '@/components/AppContext'
-import BidButton from '@/components/BidButton'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
-import MarketSalesChart from '@/components/MarketSalesChart'
-import MarketActivity from '@/components/MarketActivity'
+import ItemGraph from '@/components/ItemGraph'
+import ItemActivity from '@/components/ItemActivity'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -57,14 +42,11 @@ const useStyles = makeStyles()(theme => ({
   title: {},
   media: {
     [theme.breakpoints.down('sm')]: {
-      margin: '8px auto 8px !important',
       width: 300,
       height: 170,
     },
     width: 165,
     height: 110,
-    marginRight: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
   },
   postItemButton: {
     [theme.breakpoints.down('sm')]: {
@@ -85,30 +67,6 @@ const marketBuyOrderFilter = {
   nocache: true,
 }
 
-const marketSalesGraphFilter = {
-  type: MARKET_TYPE_ASK,
-}
-
-const marketReservedFilter = {
-  type: MARKET_TYPE_ASK,
-  status: MARKET_STATUS_RESERVED,
-  sort: 'updated_at:desc',
-}
-
-const marketDeliveredFilter = {
-  type: MARKET_TYPE_ASK,
-  status: MARKET_STATUS_SOLD,
-  sort: 'updated_at:desc',
-}
-
-const swrConfig = [
-  fetcher,
-  {
-    revalidateOnFocus: false,
-    revalidateOnMount: true,
-  },
-]
-
 const DEFAULT_SORT = 'price'
 const OFFERS_PARAM_KEY = 'offers'
 const BUYORDERS_PARAM_KEY = 'buyorders'
@@ -124,8 +82,6 @@ export default function ItemDetails({
   canonicalURL,
 }) {
   const { classes } = useStyles()
-
-  const { isMobile } = useContext(AppContext)
 
   if (initialError) {
     return (
@@ -272,30 +228,6 @@ export default function ItemDetails({
     getBuyOrders(sort)
   }, [tabIndex, sort, page])
 
-  // Retrieve market sales graph.
-  const shouldLoadGraph = Boolean(orders.loaded)
-  marketSalesGraphFilter.item_id = item.id
-  const { data: marketGraph, error: marketGraphError } = useSWR(
-    shouldLoadGraph ? [GRAPH_MARKET_SALES, marketSalesGraphFilter] : null,
-    ...swrConfig
-  )
-
-  // Retrieve market sale activity.
-  const shouldLoadHistory = Boolean(marketGraph)
-  marketReservedFilter.item_id = item.id
-  const {
-    data: marketReserved,
-    error: marketReservedError,
-    isValidating: marketReservedLoading,
-  } = useSWR(shouldLoadHistory ? [MARKETS, marketReservedFilter] : null, ...swrConfig)
-
-  marketDeliveredFilter.item_id = item.id
-  const {
-    data: marketDelivered,
-    error: marketDeliveredError,
-    isValidating: marketDeliveredLoading,
-  } = useSWR(marketReserved ? [MARKETS, marketDeliveredFilter] : null, ...swrConfig)
-
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
   let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
@@ -306,15 +238,6 @@ export default function ItemDetails({
   }
 
   const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
-
-  let historyCount = false
-  if (!marketReservedError && marketReserved) {
-    historyCount = marketReserved.total_count
-  }
-  if (!marketDeliveredError && marketDelivered) {
-    historyCount += marketDelivered.total_count
-  }
-  const isHistoryLoading = marketReservedLoading || marketDeliveredLoading
 
   return (
     <>
@@ -346,92 +269,9 @@ export default function ItemDetails({
 
       <main className={classes.main}>
         <Container>
-          {!isMobile ? (
-            <div className={classes.details}>
-              {item.image && (
-                <div>
-                  <a href={wikiLink} target="_blank" rel="noreferrer noopener">
-                    <ItemImage
-                      className={classes.media}
-                      image={item.image}
-                      width={165}
-                      height={110}
-                      title={item.name}
-                      rarity={item.rarity}
-                    />
-                  </a>
-                  <Button
-                    className={classes.postItemButton}
-                    variant="outlined"
-                    color="secondary"
-                    component={Link}
-                    href={`/post-item?s=${item.slug}`}
-                    disableUnderline
-                    fullWidth>
-                    Post this item
-                  </Button>
-                </div>
-              )}
-
-              <Typography component="h1">
-                <Typography component="p" variant="h4">
-                  {item.name}
-                </Typography>
-                <Typography gutterBottom>
-                  <Link href={`/search?origin=${item.origin}`}>{item.origin}</Link>{' '}
-                  {item.rarity !== 'regular' && (
-                    <>
-                      &mdash;
-                      <RarityTag
-                        rarity={item.rarity}
-                        variant="body1"
-                        component={Link}
-                        href={`/search?rarity=${item.rarity}`}
-                      />
-                    </>
-                  )}
-                  <br />
-                  <Typography color="textSecondary" component="span">
-                    {`Used by: `}
-                  </Typography>
-                  <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
-                  <br />
-                  <ChipLink label="Dota 2 Wiki" href={wikiLink} />
-                  &nbsp;&middot;&nbsp;
-                  <Typography
-                    variant="body2"
-                    component={MuiLink}
-                    color="textPrimary"
-                    href="#reserved">
-                    {item.reserved_count} Reserved
-                  </Typography>
-                  &nbsp;&middot;&nbsp;
-                  <Typography
-                    variant="body2"
-                    component={MuiLink}
-                    color="textPrimary"
-                    href="#delivered">
-                    {item.sold_count} Delivered
-                  </Typography>
-                  {/* <br /> */}
-                  {/* <Typography color="textSecondary" component="span"> */}
-                  {/*  {`Median Ask: `} */}
-                  {/* </Typography> */}
-                  {/* {item.median_ask.toFixed(2)} */}
-                </Typography>
-                <BidButton
-                  onClick={handleBuyOrderClick}
-                  className={classes.postItemButton}
-                  style={{ marginTop: 1 }}
-                  variant="outlined"
-                  fullWidth>
-                  Place buy order
-                </BidButton>
-              </Typography>
-            </div>
-          ) : (
-            /* mobile screen */
-            <div>
+          {/* Item Details */}
+          <Grid container spacing={1.5}>
+            <Grid item>
               <div style={{ background: 'rgba(0, 0, 0, 0.15)' }}>
                 {item.image && (
                   <a href={wikiLink} target="_blank" rel="noreferrer noopener">
@@ -445,64 +285,77 @@ export default function ItemDetails({
                   </a>
                 )}
               </div>
-
-              <Typography
-                noWrap
-                component="h1"
-                variant="h6"
-                style={
-                  item.rarity !== 'regular' ? { color: itemRarityColorMap[item.rarity] } : null
-                }>
-                {item.name}
-              </Typography>
-              <Typography>
-                <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
-              </Typography>
-              <Typography
-                color="textSecondary"
-                variant="body2"
-                component={Link}
-                href={`/search?origin=${item.origin}`}>
-                {item.origin}
+            </Grid>
+            <Grid item>
+              <Grid>
+                <Typography component="h1" variant="h4">
+                  {item.name}
+                </Typography>
+              </Grid>
+              <Grid>
+                <Link href={`/search?origin=${item.origin}`}>{item.origin}</Link>{' '}
                 {item.rarity !== 'regular' && (
                   <>
-                    &nbsp;&middot;
+                    &mdash;
                     <RarityTag
-                      color="textSecondary"
-                      variant="body2"
-                      component={Link}
                       rarity={item.rarity}
+                      variant="body1"
+                      component={Link}
                       href={`/search?rarity=${item.rarity}`}
                     />
                   </>
                 )}
-              </Typography>
-              <div style={{ marginTop: 8 }}>
+              </Grid>
+              <Grid>
+                <Typography color="textSecondary" component="span">
+                  {`Used by: `}
+                </Typography>
+                <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
+              </Grid>
+              <Grid>
                 <ChipLink label="Dota 2 Wiki" href={wikiLink} />
-              </div>
+                &nbsp;&middot;&nbsp;
+                <Typography
+                  variant="body2"
+                  component={MuiLink}
+                  color="textPrimary"
+                  href="#reserved">
+                  {item.reserved_count} Reserved
+                </Typography>
+                &nbsp;&middot;&nbsp;
+                <Typography
+                  variant="body2"
+                  component={MuiLink}
+                  color="textPrimary"
+                  href="#delivered">
+                  {item.sold_count} Delivered
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
 
-              <br />
-              <div align="center" style={{ display: 'flex', marginBottom: 2 }}>
-                <Button
-                  className={classes.postItemButton}
-                  variant="outlined"
-                  color="secondary"
-                  component={Link}
-                  href={`/post-item?s=${item.slug}`}
-                  disableUnderline>
-                  Post this item
-                </Button>
-                <BidButton
-                  onClick={handleBuyOrderClick}
-                  className={classes.postItemButton}
-                  variant="outlined"
-                  disableUnderline>
-                  Place buy order
-                </BidButton>
-              </div>
-            </div>
-          )}
+          {/* Action Buttons */}
+          <Box sx={{ display: 'flex', pt: 0.5, pb: 1.5 }}>
+            <Button
+              className={classes.postItemButton}
+              sx={{ mr: 1.5 }}
+              variant="outlined"
+              color="secondary"
+              component={Link}
+              href={`/post-item?s=${item.slug}`}
+              disableUnderline>
+              Post this item
+            </Button>
+            <Button
+              onClick={handleBuyOrderClick}
+              className={classes.postItemButton}
+              variant="outlined"
+              color="bid">
+              Place buy order
+            </Button>
+          </Box>
 
+          {/* Listings */}
           <MarketList
             offers={offers}
             buyOrders={orders}
@@ -524,47 +377,23 @@ export default function ItemDetails({
             }
           />
 
-          {shouldLoadHistory && isHistoryLoading && <div>Loading {item.name} history...</div>}
+          {/* History */}
+          <ItemGraph />
 
-          {shouldLoadHistory && !isHistoryLoading && (
-            <div>
-              <div>{item.name} history</div>
-              {historyCount === 0 && (
-                <Typography variant="body2" color="textSecondary">
-                  No history yet
-                </Typography>
-              )}
-
-              {!marketGraphError && marketGraph && (
-                <>
-                  <br />
-                  <MarketSalesChart data={marketGraph} />
-                </>
-              )}
-
-              <div id="reserved">
-                {marketReserved && marketReserved.result_count !== 0 && (
-                  <MarketActivity datatable={marketReserved} disablePrice />
-                )}
-              </div>
-              <div id="delivered">
-                {marketDelivered && marketDelivered.result_count !== 0 && (
-                  <MarketActivity datatable={marketDelivered} disablePrice />
-                )}
-              </div>
-            </div>
-          )}
+          {/* Lastest Activity */}
+          <ItemActivity />
         </Container>
-        <BuyOrderDialog
-          catalog={item}
-          open={openBuyOrderDialog}
-          onClose={() => {
-            setOpenBuyOrderDialog(false)
-          }}
-          onChange={handleBuyerChange}
-        />
-        <img src={trackItemViewURL(item.id)} alt="" />
       </main>
+
+      <BuyOrderDialog
+        catalog={item}
+        open={openBuyOrderDialog}
+        onClose={() => {
+          setOpenBuyOrderDialog(false)
+        }}
+        onChange={handleBuyerChange}
+      />
+      <img src={trackItemViewURL(item.id)} alt="" />
 
       <Footer />
     </>

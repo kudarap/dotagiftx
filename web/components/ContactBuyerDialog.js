@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -24,7 +24,7 @@ import MarketNotes from '@/components/MarketNotes'
 import DonatorBadge from '@/components/DonatorBadge'
 import ProfileCard from '@/components/ProfileCard'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   details: {
     [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function ContactBuyerDialog(props) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props

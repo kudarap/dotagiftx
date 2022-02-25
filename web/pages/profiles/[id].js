@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import has from 'lodash/has'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
@@ -36,7 +36,7 @@ import DonatorBadge from '@/components/DonatorBadge'
 import AppContext from '@/components/AppContext'
 import ErrorPage from '../404'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -73,7 +73,7 @@ export default function UserDetails({
   error: initialError,
   canonicalURL,
 }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [loading, setLoading] = React.useState(false)

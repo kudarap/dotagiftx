@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import startsWith from 'lodash/startsWith'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -26,7 +26,7 @@ import {
 import AppContext from '@/components/AppContext'
 import ItemImageDialog from '@/components/ItemImageDialog'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   details: {
     [theme.breakpoints.down('sm')]: {
       display: 'block',
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 const steamCommunityBaseURL = 'https://steamcommunity.com'
 
 export default function BuyOrderUpdateDialog(props) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const [steamProfileURL, setSteamProfileURL] = React.useState('')

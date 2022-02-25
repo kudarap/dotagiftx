@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from '@mui/material/styles'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import FirstPageIcon from '@mui/icons-material/FirstPage'
@@ -9,14 +9,14 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   caption: {
     marginRight: theme.spacing(2.5),
   },
 }))
 
 function TablePagination({ count, page, rowsPerPage, onPageChange, ...other }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const theme = useTheme()
 
   const handleFirstPageButtonClick = evt => {

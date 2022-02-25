@@ -1,5 +1,5 @@
 import React from 'react'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import * as format from '@/lib/format'
 import { myMarketSearch } from '@/service/api'
@@ -10,7 +10,7 @@ import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import MyMarketList from '@/components/MyMarketList'
 import TablePagination from '@/components/TablePagination'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -35,7 +35,7 @@ const initialDatatable = {
 }
 
 export default function MyListings() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [data, setData] = React.useState(initialDatatable)
   const [total, setTotal] = React.useState(0)

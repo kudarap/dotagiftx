@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { catalog as getCatalog } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
-import ItemDetails from '@/components/ItemDetails'
+import ItemDetails from '@/components/ItemDetails2'
 import { VERIFIED_INVENTORY_VERIFIED } from '@/constants/verified'
 import ErrorPage from './404'
 

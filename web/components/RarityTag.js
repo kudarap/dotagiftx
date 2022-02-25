@@ -9,18 +9,18 @@ import {
 
 // background: linear-gradient(#f9ffbf 10%, #fff 90%);
 // text-shadow: 0px 0px 10px yellowgreen;
-// -webkit-background-clip: text;
-// -webkit-text-fill-color: transparent;
+// WebkitBackgroundClip: text;
+// WebkitTextFillColor: transparent;
 
 // background: linear-gradient(#fdd08e 10%, #fff 90%);
 // text-shadow: 0px 0px 10px darkorange;
-// -webkit-background-clip: text;
-// -webkit-text-fill-color: transparent;
+// WebkitBackgroundClip: text;
+// WebkitTextFillColor: transparent;
 
 // background: linear-gradient(#F8E8B9 10%, #fff 90%);
 // text-shadow: 0px 0px 10px goldenrod;
-// -webkit-background-clip: text;
-// -webkit-text-fill-color: transparent;
+// WebkitBackgroundClip: text;
+// WebkitTextFillColor: transparent;
 const rarityStylerMap = {
   regular: null,
   rare: { color: ITEM_RARITY_RARE },
@@ -32,20 +32,20 @@ const rarityStylerMap2 = {
   rare: {
     color: 'yellowgreen',
     background: 'linear-gradient(#f9ffbf 10%, #fff 90%)',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
     filter: 'drop-shadow(0px 0px 2px yellowgreen)',
   },
   'very rare': {
     background: 'linear-gradient(#fdd08e 10%, #fff 90%)',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
     filter: 'drop-shadow(0px 0px 2px darkorange)',
   },
   'ultra rare': {
     background: 'linear-gradient(#F8E8B9 10%, #fff 90%)',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
     filter: 'drop-shadow(0px 0px 2px goldenrod)',
   },
 }
