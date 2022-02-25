@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@/components/Avatar'
 import Toolbar from '@mui/material/Toolbar'
@@ -25,7 +25,7 @@ import LatestBan from './LatestBan'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {},
   appBar: {
     borderTop: 'none',
@@ -35,19 +35,19 @@ const useStyles = makeStyles(theme => ({
   brand: {
     height: 30,
     marginBottom: -5,
-    '-webkit-transition': 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    WebkitTransition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     '&:hover': {
       filter: 'brightness(115%)',
     },
     // This fixes the tap highlight effect on mobile.
-    '-webkit-touch-callout': 'none',
-    '-webkit-user-select': 'none',
-    '-khtml-user-select': 'none',
-    '-moz-user-select': 'none',
-    '-ms-user-select': 'none',
-    'user-select': 'none',
-    '-webkit-tap-highlight-color': 'transparent',
+    WebkitTouchCallout: 'none',
+    WebkitUserSelect: 'none',
+    KhtmUserSelect: 'none',
+    MozUserSelect: 'none',
+    MsUserSelect: 'none',
+    UserSelect: 'none',
+    WebkitTapHighlightColor: 'transparent',
   },
   avatar: {
     width: 36,
@@ -80,7 +80,7 @@ const defaultProfile = {
 }
 
 export default function Header({ disableSearch }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
   const { isTablet: isMobile, isLoggedIn, currentAuth } = useContext(AppContext)

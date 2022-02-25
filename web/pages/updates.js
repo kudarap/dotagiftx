@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
@@ -8,7 +8,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Divider from '@mui/material/Divider'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Updates() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <div className="container">

@@ -1,14 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import debounce from 'lodash/debounce'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Paper from '@mui/material/Paper'
 import InputBase from '@mui/material/InputBase'
 import CircularProgress from '@mui/material/CircularProgress'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {
     padding: '3px 12px',
     display: 'flex',
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function TableSearchInput({ onInput, loading, ...other }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [value, setValue] = React.useState('')
 

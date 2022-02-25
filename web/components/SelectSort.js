@@ -1,15 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import withStyles from '@mui/styles/withStyles'
+import { withStyles } from 'tss-react/mui'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 
-const StyledSelect = withStyles(theme => ({
+// export default withStyles(<Select {...props} />, theme => ({
+export default withStyles(Select, theme => ({
   root: {
     fontSize: theme.typography.fontSize,
   },
-}))(props => <Select {...props} />)
+}))
 
 export default function SelectSort({ options, variant, size, ...other }) {
   return (

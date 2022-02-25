@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import { debounce } from '@mui/material'
 import { teal as bidColor } from '@mui/material/colors'
 import Table from '@mui/material/Table'
@@ -36,7 +36,7 @@ import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   seller: {
     display: 'flex',
     padding: theme.spacing(2),
@@ -80,7 +80,7 @@ export default function MarketList({
   onSortChange,
   onTabChange,
 }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
 
@@ -243,7 +243,7 @@ OrderList.defaultProps = OfferList.defaultProps
 
 function baseTable(Component) {
   const wrapped = props => {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const { currentUserID } = props
 

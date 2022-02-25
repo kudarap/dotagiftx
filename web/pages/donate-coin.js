@@ -1,7 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import makeStyles from '@mui/styles/makeStyles'
-import withStyles from '@mui/styles/withStyles'
+import { makeStyles, withStyles } from 'tss-react/mui'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import SvgIcon from '@mui/material/SvgIcon'
@@ -11,7 +10,7 @@ import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -29,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const PaypalButton = withStyles(theme => ({
+export default withStyles(Button, theme => ({
   root: {
     marginTop: theme.spacing(2),
     width: 300,
@@ -40,7 +39,7 @@ const PaypalButton = withStyles(theme => ({
       backgroundColor: '#ffc439',
     },
   },
-}))(Button)
+}))
 
 function PaypalIcon(props) {
   return (
@@ -73,7 +72,7 @@ function EthIcon(props) {
 }
 
 export default function Faq() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <>

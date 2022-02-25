@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -54,7 +54,7 @@ const assetModifier = asset => {
 const getInventoryURL = steamID => `https://steamcommunity.com/profiles/${steamID}/inventory/#570_2`
 
 export default function VerifiedStatusCard({ market, ...other }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   if (market === null) {
     return null

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -20,7 +20,7 @@ import BuyOrderUpdateDialog from '@/components/BuyOrderUpdateDialog'
 import TableSearchInput from '@/components/TableSearchInput'
 import AppContext from '@/components/AppContext'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   seller: {
     display: 'inline-flex',
   },
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function MyBuyOrderList({ datatable, loading, error, onSearchInput, onReload }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const [currentMarket, setCurrentMarket] = React.useState(null)

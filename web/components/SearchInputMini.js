@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import querystring from 'querystring'
 import has from 'lodash/has'
 import { useRouter } from 'next/router'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Paper from '@mui/material/Paper'
 import InputBase from '@mui/material/InputBase'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {
     // flexGrow: 1,
     padding: '4px 12px 2px',
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function SearchInput({ value, onChange, onSubmit, onClear, style, ...other }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const router = useRouter()
   const { query } = router

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
 import Header from '@/components/Header'
@@ -18,7 +18,7 @@ import { Alert } from '@mui/material'
 import Link from '@/components/Link'
 import { dateFromNow } from '@/lib/format'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function NotRegisteredProfile({ profile, canonicalURL }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
   const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`

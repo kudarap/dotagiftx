@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import { debounce } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { lightGreen } from '@mui/material/colors'
@@ -27,7 +27,7 @@ const priceTagStyle = {
   color: 'white',
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   profile: {
     float: 'left',
     marginRight: theme.spacing(1),
@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function MyMarketActivity({ datatable, loading, error }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [currentIndex, setIndex] = React.useState(null)
   const [anchorEl, setAnchorEl] = React.useState(null)

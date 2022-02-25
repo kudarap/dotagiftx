@@ -1,5 +1,5 @@
 import React from 'react'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import LinearProgress from '@mui/material/LinearProgress'
 import Footer from '@/components/Footer'
@@ -14,7 +14,7 @@ import {
 import HistoryList from '@/components/HistoryList'
 import TablePagination from '@/components/TablePagination'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -48,7 +48,7 @@ const initialDatatable = {
 }
 
 export default function MyHistory() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [soldItems, setSoldItems] = React.useState(initialDatatable)
   const [soldFilter, setSoldFilter] = React.useState(activeMarketFilter)
