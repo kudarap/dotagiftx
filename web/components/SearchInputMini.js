@@ -9,33 +9,26 @@ import InputBase from '@mui/material/InputBase'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
 
+import { styled } from '@mui/material/styles'
+
+const SearchPaper = styled(Paper)(({ theme }) => ({
+  padding: '4px 12px 2px',
+  marginBottom: 3,
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: theme.palette.grey[100],
+  width: 325,
+}))
+
+const Input = styled(InputBase)(({ theme }) => ({
+  [theme.breakpoints.down('md')]: {
+    height: 39,
+  },
+  margin: '0 auto',
+  color: theme.palette.grey[800],
+}))
+
 const useStyles = makeStyles()(theme => ({
-  root: {
-    // flexGrow: 1,
-    padding: '4px 12px 2px',
-    marginBottom: 3,
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: theme.palette.grey[100],
-    // border: `1px solid ${theme.palette.background.paper}`,
-    // '&:hover': {
-    //   borderColor: theme.palette.grey[700],
-    // },
-    width: 325,
-  },
-  input: {
-    [theme.breakpoints.down('md')]: {
-      height: 39,
-    },
-    margin: '0 auto',
-    color: theme.palette.grey[800],
-    // backgroundColor: theme.palette.background.paper,
-  },
-  verticalDivider: {
-    borderRight: `1px solid ${theme.palette.grey[300]}`,
-    height: 40,
-    margin: theme.spacing(0, 1.5),
-  },
   actionIcons: {
     color: theme.palette.grey[500],
   },
@@ -82,13 +75,13 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, style,
   }
 
   return (
-    <Paper
+    <SearchPaper
       onSubmit={handleSubmit}
       className={classes.root}
       component="form"
       elevation={0}
       style={style}>
-      <InputBase
+      <Input
         onInput={handleChange}
         value={keyword}
         className={classes.input}
@@ -105,7 +98,7 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, style,
       ) : (
         <SearchIcon className={classes.iconButtons} onClick={handleSubmit} />
       )}
-    </Paper>
+    </SearchPaper>
   )
 }
 SearchInput.propTypes = {

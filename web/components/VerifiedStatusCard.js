@@ -24,7 +24,7 @@ import { dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
 import { MARKET_STATUS_SOLD } from '@/constants/market'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
   root: {
     minWidth: 300,
     zIndex: 1,
@@ -124,6 +124,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
                         color="secondary"
                         target="_blank"
                         rel="noreferrer noopener"
+                        underline="none"
                         href={`${inventoryURL}_${asset.asset_id}`}>
                         <strong>{asset.displayName}</strong>
                       </Link>
@@ -151,6 +152,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
           variant="caption"
           target="_blank"
           rel="noreferrer noopener"
+          underline="none"
           href={`https://steaminventory.org/?profile=${steamInvProfile}`}>
           Powered by <strong>SteamInventory.org</strong>
         </Link>

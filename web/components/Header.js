@@ -27,11 +27,7 @@ const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
 const useStyles = makeStyles()(theme => ({
   root: {},
-  appBar: {
-    borderTop: 'none',
-    borderRight: 'none',
-    borderLeft: 'none',
-  },
+  appBar: {},
   brand: {
     height: 30,
     marginBottom: -5,
@@ -67,7 +63,7 @@ const useStyles = makeStyles()(theme => ({
     '&:hover': {
       color: '#f1e0ba',
     },
-    margin: theme.spacing(0, 1),
+    padding: theme.spacing(0, 1),
   },
 }))
 

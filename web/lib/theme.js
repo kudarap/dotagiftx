@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 import { teal, blueGrey, grey } from '@mui/material/colors'
+import { responsiveFontSizes } from '@mui/material'
 
 const baseThemeOpts = {
   typography: {
@@ -28,6 +29,15 @@ const baseThemeOpts = {
     },
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          borderTop: 'none',
+          borderLeft: 'none',
+          borderRight: 'none',
+        },
+      },
+    },
     MuiAvatar: {
       defaultProps: {
         variant: 'rounded',
@@ -70,24 +80,26 @@ const baseThemeOpts = {
 
 const muiTheme = createTheme(baseThemeOpts)
 
-export default muiTheme
+export default responsiveFontSizes(muiTheme)
 
-export const muiLightTheme = createTheme({
-  ...baseThemeOpts,
-  palette: {
-    ...baseThemeOpts.palette,
-    mode: 'light',
-    background: {
-      paper: blueGrey.A100,
+export const muiLightTheme = responsiveFontSizes(
+  createTheme({
+    ...baseThemeOpts,
+    palette: {
+      ...baseThemeOpts.palette,
+      mode: 'light',
+      background: {
+        paper: blueGrey.A100,
+      },
     },
-  },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          borderBottomColor: blueGrey[200],
+    components: {
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+            borderBottomColor: blueGrey[200],
+          },
         },
       },
     },
-  },
-})
+  })
+)
