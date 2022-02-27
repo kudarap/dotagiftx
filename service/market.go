@@ -22,6 +22,7 @@ func NewMarket(
 	is core.ItemStorage,
 	ts core.TrackStorage,
 	cs core.CatalogStorage,
+	st core.StatsStorage,
 	vd core.DeliveryService,
 	vi core.InventoryService,
 	sc core.SteamClient,
@@ -33,6 +34,7 @@ func NewMarket(
 		is,
 		ts,
 		cs,
+		st,
 		vd,
 		vi,
 		sc,
@@ -47,6 +49,7 @@ type marketService struct {
 	itemStg      core.ItemStorage
 	trackStg     core.TrackStorage
 	catalogStg   core.CatalogStorage
+	statsStg     core.StatsStorage
 	deliverySvc  core.DeliveryService
 	inventorySvc core.InventoryService
 	steam        core.SteamClient
@@ -130,6 +133,13 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		if err := s.checkAskType(mkt); err != nil {
 			return err
 		}
+
+		// NOTE! Experimental for reselling feature.
+		m, err := s.experimentalProcessResell(mkt)
+		if err != nil {
+			return err
+		}
+		mkt = m
 	case core.MarketTypeBid:
 		if err := s.checkBidType(mkt); err != nil {
 			return err
@@ -140,19 +150,37 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	//go func() {
+	if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
+		return err
+	}
 	if _, err := s.marketStg.Index(mkt.ID); err != nil {
 		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 	}
 	if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
 		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 	}
-	//}()
+
 	if mkt.Type == core.MarketTypeAsk {
 		s.dispatch.VerifyInventory(mkt.UserID)
 	}
 
 	return nil
+}
+
+func (s *marketService) experimentalProcessResell(m *core.Market) (*core.Market, error) {
+	if strings.TrimSpace(m.SellerSteamID) == "" {
+		return m, nil
+	}
+
+	ssid, err := s.steam.ResolveVanityURL(m.SellerSteamID)
+	if err != nil {
+		return nil, err
+	}
+	truePtr := true
+	m.Resell = &truePtr
+	m.SellerSteamID = ssid
+	m.InventoryStatus = core.InventoryStatusVerified // Override verification by reseller
+	return m, nil
 }
 
 func (s *marketService) checkAskType(ask *core.Market) error {
@@ -276,12 +304,6 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	go func() {
-		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
-			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
-		}
-	}()
-
 	if mkt.Type == core.MarketTypeAsk {
 		switch mkt.Status {
 		case core.MarketStatusReserved:
@@ -291,11 +313,34 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		}
 	}
 
+	if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
+		return err
+	}
 	if _, err = s.marketStg.Index(mkt.ID); err != nil {
 		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 	}
+	if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
+		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+	}
 
 	return nil
+}
+
+func (s *marketService) UpdateUserRankScore(userID string) error {
+	opts := core.FindOpts{
+		Filter: core.Market{UserID: userID},
+	}
+	stats, err := s.statsStg.CountMarketStatus(opts)
+	if err != nil {
+		return err
+	}
+
+	u := &core.User{ID: userID, MarketStats: *stats}
+	u = u.CalcRankScore(*stats)
+	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
+		return err
+	}
+	return s.userStg.BaseUpdate(u)
 }
 
 func (s *marketService) checkFlaggedUser(userID string) error {
@@ -376,87 +421,4 @@ func (s *marketService) userMarket(userID, id string) (*core.Market, error) {
 	}
 
 	return cur, nil
-}
-
-func (s *marketService) Catalog(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
-	res, err := s.catalogStg.Find(opts)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if !opts.WithMeta {
-		return res, nil, err
-	}
-
-	// Get result and total count for metadata.
-	tc, err := s.catalogStg.Count(opts)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return res, &core.FindMetadata{
-		ResultCount: len(res),
-		TotalCount:  tc,
-	}, nil
-}
-
-func (s *marketService) TrendingCatalog(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
-	res, err := s.catalogStg.Trending()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if !opts.WithMeta {
-		return res, nil, err
-	}
-
-	return res, &core.FindMetadata{
-		ResultCount: len(res),
-		TotalCount:  10, // Fixed value of top 10
-	}, nil
-}
-
-func (s *marketService) CatalogDetails(slug string) (*core.Catalog, error) {
-	if slug == "" {
-		return nil, core.CatalogErrNotFound
-	}
-
-	c, err := s.catalogStg.Get(slug)
-	if err == core.CatalogErrNotFound {
-		i, err := s.itemStg.GetBySlug(slug)
-		if err != nil {
-			return nil, err
-		}
-
-		c := i.ToCatalog()
-		return &c, nil
-
-	} else if err != nil {
-		return nil, err
-	}
-
-	// Retrieve 10 live asks entries.
-	mf := core.Market{Type: core.MarketTypeAsk, ItemID: c.ID, Status: core.MarketStatusLive}
-	fo := core.FindOpts{
-		Filter: mf,
-		Limit:  10,
-		Sort:   "price",
-	}
-	res, _, err := s.Markets(context.Background(), fo)
-	if err != nil {
-		return nil, err
-	}
-	c.Asks = res
-	// Retrieve 10 live bids entries.
-	//mf.Type = core.MarketTypeBid
-	//fo.Filter = mf
-	//fo.Sort = "price"
-	//fo.Desc = true
-	//res, _, err = s.Markets(context.Background(), fo)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//c.Bids = res
-
-	return c, err
 }

@@ -12,4 +12,4 @@ docker run --rm --name dotagiftx-redis \
   -p 6379:6379 \
   -e REDIS_PASSWORD=root \
   -v "$PWD/.localdata/redis":/data \
-  -d bitnami/redis:6.0
+  -d bitnami/redis:6.2

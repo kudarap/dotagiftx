@@ -1,17 +1,18 @@
 // Verified delivery and inventory
 
-// import NoHitIcon from '@material-ui/icons/RemoveCircleOutline'
-// import NoHitIcon from '@material-ui/icons/HighlightOff'
-import NoHitIcon from '@material-ui/icons/Block'
-import CheckIcon from '@material-ui/icons/Done'
-import DoubleCheckIcon from '@material-ui/icons/DoneAll'
-import Private from '@material-ui/icons/VisibilityOff'
-// import Private from '@material-ui/icons/Block'
-import Error from '@material-ui/icons/ErrorOutline'
+// import NoHitIcon from '@mui/icons-material/RemoveCircleOutline'
+// import NoHitIcon from '@mui/icons-material/HighlightOff'
+import NoHitIcon from '@mui/icons-material/Block'
+import CheckIcon from '@mui/icons-material/Done'
+import DoubleCheckIcon from '@mui/icons-material/DoneAll'
+import Private from '@mui/icons-material/VisibilityOff'
+// import Private from '@mui/icons-material/Block'
+import Error from '@mui/icons-material/ErrorOutline'
+import ManualCheckIcon from '@mui/icons-material/CheckCircleOutline'
 
 const iconStyle = {
   style: {
-    fontSize: '0.875rem',
+    fontSize: '1rem',
     marginLeft: 4,
     marginRight: 2,
     marginBottom: -2,
@@ -23,14 +24,19 @@ const rareStyle = {
   style: { ...iconStyle.style, color: 'lightgreen' },
 }
 
+const resellStyle = {
+  style: { ...iconStyle.style, color: 'aqua' },
+}
+
 const ultraStyle = {
   style: { ...iconStyle.style, color: 'gold' },
 }
 
-const VERIFIED_INVENTORY_NOHIT = 100
-const VERIFIED_INVENTORY_VERIFIED = 200
-const VERIFIED_INVENTORY_PRIVATE = 400
-const VERIFIED_INVENTORY_ERROR = 500
+export const VERIFIED_INVENTORY_NOHIT = 100
+export const VERIFIED_INVENTORY_VERIFIED = 200
+export const VERIFIED_INVENTORY_VERIFIED_RESELL = 201
+export const VERIFIED_INVENTORY_PRIVATE = 400
+export const VERIFIED_INVENTORY_ERROR = 500
 
 export const VERIFIED_INVENTORY_MAP_LABEL = {
   [VERIFIED_INVENTORY_NOHIT]: 'Not Found',
@@ -48,6 +54,7 @@ export const VERIFIED_INVENTORY_MAP_TEXT = {
 export const VERIFIED_INVENTORY_MAP_ICON = {
   [VERIFIED_INVENTORY_NOHIT]: <NoHitIcon {...iconStyle} />,
   [VERIFIED_INVENTORY_VERIFIED]: <CheckIcon {...rareStyle} />,
+  [VERIFIED_INVENTORY_VERIFIED_RESELL]: <ManualCheckIcon {...resellStyle} />,
   [VERIFIED_INVENTORY_PRIVATE]: <Private {...iconStyle} />,
   [VERIFIED_INVENTORY_ERROR]: <Error {...iconStyle} />,
 }

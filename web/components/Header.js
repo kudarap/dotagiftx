@@ -1,18 +1,18 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import { makeStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
+import makeStyles from '@mui/styles/makeStyles'
+import AppBar from '@mui/material/AppBar'
 import Avatar from '@/components/Avatar'
-import Toolbar from '@material-ui/core/Toolbar'
+import Toolbar from '@mui/material/Toolbar'
 import Button from '@/components/Button'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import IconButton from '@material-ui/core/IconButton'
-import MoreIcon from '@material-ui/icons/Menu'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import IconButton from '@mui/material/IconButton'
+import MoreIcon from '@mui/icons-material/Menu'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
-import { authRevoke, myProfile } from '@/service/api'
+import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
@@ -21,6 +21,7 @@ import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import NavItems from '@/components/NavItems'
+import LatestBan from './LatestBan'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -57,9 +58,7 @@ const useStyles = makeStyles(theme => ({
     },
     cursor: 'pointer',
   },
-  avatarMenu: {
-    marginTop: theme.spacing(4),
-  },
+  avatarMenu: {},
   spacer: {
     width: theme.spacing(1),
   },
@@ -140,7 +139,7 @@ export default function Header({ disableSearch }) {
   const isBrandMini = !disableSearch && isMobile
 
   return (
-    <AppBar position="static" variant="outlined" className={classes.appBar}>
+    <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
       {/*<NoticeMe />*/}
       <Container disableMinHeight>
         <Toolbar variant="dense" disableGutters>
@@ -171,18 +170,15 @@ export default function Header({ disableSearch }) {
           {/* Desktop nav buttons */}
           {!isMobile && (
             <>
-              <Link
-                className={classes.nav}
-                href="/blacklist"
-                underline="none"
-                style={{
-                  borderBottom: '2px solid #dc3914',
-                  marginBottom: -2,
-                }}>
-                Blacklist
-              </Link>
               <Link className={classes.nav} href="/guides" underline="none">
                 Guides
+              </Link>
+              <Link className={classes.nav} href="/rules" underline="none">
+                Rules
+              </Link>
+              <Link className={classes.nav} href="/banned-users" underline="none">
+                Bans
+                <LatestBan />
               </Link>
 
               <span style={{ flexGrow: 1 }} />
@@ -210,7 +206,7 @@ export default function Header({ disableSearch }) {
                     aria-haspopup="true"
                     onClick={handleClick}
                     className={classes.avatar}
-                    glow={Boolean(profile.donation)}
+                    glow={isDonationGlowExpired(profile.donated_at)}
                     {...retinaSrcSet(profile.avatar, 36, 36)}
                   />
 
@@ -263,7 +259,7 @@ export default function Header({ disableSearch }) {
                     aria-haspopup="true"
                     onClick={handleClick}
                     className={classes.avatar}
-                    glow={Boolean(profile.donation)}
+                    glow={isDonationGlowExpired(profile.donated_at)}
                     style={{ width: 34, height: 34 }}
                     {...retinaSrcSet(profile.avatar, 36, 36)}
                   />
@@ -306,11 +302,18 @@ export default function Header({ disableSearch }) {
                   </MenuItem>
                 )}
 
-                <MenuItem onClick={handleClose} component={Link} href="/blacklist" disableUnderline>
-                  Blacklist
-                </MenuItem>
                 <MenuItem onClick={handleClose} component={Link} href="/guides" disableUnderline>
                   Guides
+                </MenuItem>
+                <MenuItem onClick={handleClose} component={Link} href="/rules" disableUnderline>
+                  Rules
+                </MenuItem>
+                <MenuItem
+                  onClick={handleClose}
+                  component={Link}
+                  href="/banned-users"
+                  disableUnderline>
+                  Bans
                 </MenuItem>
               </Menu>
             </>

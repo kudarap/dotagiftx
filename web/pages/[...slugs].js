@@ -4,59 +4,71 @@ import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { catalog as getCatalog } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
 import ItemDetails from '@/components/ItemDetails'
+import { VERIFIED_INVENTORY_VERIFIED } from '@/constants/verified'
 import ErrorPage from './404'
 
 export default function DynamicPage(props) {
   const { error } = props
   if (error) {
-    console.error(error)
     return <ErrorPage />
+  }
+
+  const { item } = props
+  if (!item) {
+    return null
   }
 
   return <ItemDetails {...props} />
 }
 DynamicPage.propTypes = {
+  item: PropTypes.object,
   error: PropTypes.string,
 }
 DynamicPage.defaultProps = {
   error: null,
+  item: null,
 }
 
 const marketSearchFilter = {
   page: 1,
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
-  sort: 'price',
+  inventory_status: VERIFIED_INVENTORY_VERIFIED,
+  sort: 'lowest',
 }
 
 // This gets called on every request
 export async function getServerSideProps(props) {
   const { params, query } = props
-  const { slug } = params
+  const { slugs } = params
+
+  // NOTE: this is weird routing bug. maybe happening during page transition.
+  if (slugs.indexOf('undefined') !== -1) {
+    return {
+      props: {},
+    }
+  }
+
+  const [itemSlug, marketTypeParam, sortParam] = slugs
 
   let catalog = {}
   let error = null
 
-  // Handles no market entry on item
+  const sort = sortParam || marketSearchFilter.sort
+  const page = Number(query.page || marketSearchFilter.page)
+  const filter = { ...marketSearchFilter, sort, page }
+
   try {
-    catalog = await getCatalog(slug)
+    catalog = await getCatalog(itemSlug, filter)
+    filter.item_id = catalog.id
   } catch (e) {
     error = `catalog get error: ${e.message}`
   }
 
   if (!catalog.id) {
     return {
-      props: {
-        item: catalog,
-        filter: {},
-        error: 'catalog not found',
-      },
+      notFound: true,
     }
-  }
-
-  const filter = { ...marketSearchFilter, item_id: catalog.id }
-  if (query.page) {
-    filter.page = Number(query.page)
   }
 
   const askData = catalog.asks || []
@@ -72,13 +84,16 @@ export async function getServerSideProps(props) {
     total_count: catalog.bid_count,
   }
 
-  const canonicalURL = `${APP_URL}/${slug}`
+  const canonicalURL = `${APP_URL}/${itemSlug}`
+  const marketType = marketTypeParam || 'offers'
 
   return {
     props: {
       item: catalog,
       canonicalURL,
       filter,
+      marketType,
+      sortParam: sortParam || 'price',
       initialAsks,
       initialBids,
       error,

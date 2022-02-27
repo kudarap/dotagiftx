@@ -29,8 +29,11 @@ type Client struct {
 // New create new rethink database instance.
 func New(c Config) (*Client, error) {
 	sess, err := r.Connect(r.ConnectOpts{
-		Address:  c.Addr,
-		Database: c.Name,
+		Address:    c.Addr,
+		Database:   c.Name,
+		Timeout:    time.Minute,
+		InitialCap: 10,
+		MaxOpen:    10,
 	})
 	if err != nil {
 		return nil, err

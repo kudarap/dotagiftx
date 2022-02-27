@@ -24,7 +24,7 @@ func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Skip caching when nocache flag exists.
 	_, noCache = r.URL.Query()[cacheSkipKey]
 	// Set owner user id for scoped requests.
-	userID := ""
+	var userID string
 	au := AuthFromContext(r.Context())
 	if au != nil {
 		userID = au.UserID

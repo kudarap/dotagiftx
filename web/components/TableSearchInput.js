@@ -1,19 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import debounce from 'lodash/debounce'
-import { makeStyles } from '@material-ui/core/styles'
-import Paper from '@material-ui/core/Paper'
-import InputBase from '@material-ui/core/InputBase'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import SearchIcon from '@material-ui/icons/Search'
-import CloseIcon from '@material-ui/icons/Close'
+import makeStyles from '@mui/styles/makeStyles'
+import Paper from '@mui/material/Paper'
+import InputBase from '@mui/material/InputBase'
+import CircularProgress from '@mui/material/CircularProgress'
+import SearchIcon from '@mui/icons-material/Search'
+import CloseIcon from '@mui/icons-material/Close'
 
 const useStyles = makeStyles(theme => ({
   root: {
     padding: '3px 12px',
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.background.default,
     opacity: 0.8,
     margin: theme.spacing(1),
   },

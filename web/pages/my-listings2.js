@@ -1,6 +1,6 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
 import * as format from '@/lib/format'
 import { myMarketSearch } from '@/service/api'
 import Footer from '@/components/Footer'
@@ -12,7 +12,7 @@ import TablePagination from '@/components/TablePagination'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
@@ -92,7 +92,7 @@ export default function MyListings() {
             style={{ textAlign: 'right' }}
             count={data.total_count || 0}
             page={filter.page}
-            onChangePage={handlePageChange}
+            onPageChange={handlePageChange}
           />
         </Container>
       </main>

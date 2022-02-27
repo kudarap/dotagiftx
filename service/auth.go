@@ -48,13 +48,13 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 			return nil, core.AuthErrLogin
 		}
 
-		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
-			return nil, errors.New(core.UserErrSteamSync, err)
-		}
-
 		u, _ := s.userSvc.User(au.UserID)
 		if err = u.CheckStatus(); err != nil {
 			return nil, err
+		}
+
+		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
+			return nil, errors.New(core.UserErrSteamSync, err)
 		}
 
 		return au, nil

@@ -17,8 +17,9 @@ import (
 )
 
 const (
-	defaultAddr     = ":8000"
-	shutdownTimeout = 10 * time.Second
+	defaultAddr      = ":8000"
+	shutdownTimeout  = 10 * time.Second
+	readWriteTimeout = 15 * time.Second
 )
 
 // NewServer returns new http server.
@@ -32,6 +33,7 @@ func NewServer(
 	ts core.TrackService,
 	ss core.StatsService,
 	rs core.ReportService,
+	hs core.HammerService,
 	sc core.SteamClient,
 	c core.Cache,
 	v *version.Version,
@@ -47,6 +49,7 @@ func NewServer(
 		trackSvc:  ts,
 		statsSvc:  ss,
 		reportSvc: rs,
+		hammerSvc: hs,
 		steam:     sc,
 		cache:     c,
 		logger:    l,
@@ -68,6 +71,7 @@ type Server struct {
 	trackSvc  core.TrackService
 	statsSvc  core.StatsService
 	reportSvc core.ReportService
+	hammerSvc core.HammerService
 	steam     core.SteamClient
 
 	cache   core.Cache
@@ -105,8 +109,10 @@ func (s *Server) Run() error {
 
 	// Setup http router.
 	srv := &http.Server{
-		Addr:    s.Addr,
-		Handler: s.handler,
+		Addr:         s.Addr,
+		Handler:      s.handler,
+		WriteTimeout: readWriteTimeout,
+		ReadTimeout:  readWriteTimeout,
 	}
 
 	// Handle error on server start.

@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import Avatar from '@/components/Avatar'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { CDN_URL, marketSearch, user } from '@/service/api'
 import Footer from '@/components/Footer'
@@ -14,7 +14,7 @@ import MarketActivity from '@/components/MyMarketActivity'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
@@ -31,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 const defaultFilter = {
   sort: 'updated_at:desc',
   page: 1,
+  limit: 15,
 }
 
 const defaultData = {
@@ -134,7 +135,7 @@ UserActivity.propTypes = {
 
 export async function getServerSideProps({ params }) {
   const profile = await user(String(params.id))
-  const canonicalURL = `${APP_URL}/profiles/${params.id}/reserve`
+  const canonicalURL = `${APP_URL}/profiles/${params.id}/activity`
 
   return {
     props: {

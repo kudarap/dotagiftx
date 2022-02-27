@@ -1,16 +1,15 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
-import Badge from '@material-ui/core/Badge'
-import Tab from '@material-ui/core/Tab'
-import Typography from '@material-ui/core/Typography'
+import withStyles from '@mui/styles/withStyles'
+import Badge from '@mui/material/Badge'
+import Tab from '@mui/material/Tab'
 
 const StyledTab = withStyles(theme => ({
   root: {
     textTransform: 'none',
     color: theme.palette.text.primary,
     fontWeight: theme.typography.fontWeightRegular,
-    fontSize: theme.typography.pxToRem(15),
-    marginRight: theme.spacing(1),
+    fontSize: theme.typography.pxToRem(14),
+    // marginRight: theme.spacing(1),
     '&:focus': {
       opacity: 1,
     },
@@ -20,7 +19,7 @@ const StyledTab = withStyles(theme => ({
 
 const StyledBadge = withStyles(theme => ({
   badge: {
-    top: 12,
+    top: 10,
     position: 'relative',
     border: `2px solid ${theme.palette.background.paper}`,
     padding: '0 4px',
@@ -35,10 +34,10 @@ export default function DashTab(props) {
       label={
         badgeContent ? (
           <StyledBadge badgeContent={badgeContent} max={999}>
-            <Typography>{label}</Typography>
+            {label}
           </StyledBadge>
         ) : (
-          <Typography>{label}</Typography>
+          label
         )
       }
     />

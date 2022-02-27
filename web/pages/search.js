@@ -2,11 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import LinearProgress from '@mui/material/LinearProgress'
+import Select from '@mui/material/Select'
+import FormControl from '@mui/material/FormControl'
+import MenuItem from '@mui/material/MenuItem'
 import { catalogSearch } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -31,13 +32,15 @@ const sortOpts = [
   ['recent-bid', 'New Buy Orders'],
 ].map(([value, label]) => ({ value, label }))
 
-function SelectSort(props) {
+function SelectSort({ className, style, ...other }) {
   return (
-    <Select id="select-sort" {...props}>
-      {sortOpts.map(opt => (
-        <MenuItem value={opt.value}>{opt.label}</MenuItem>
-      ))}
-    </Select>
+    <FormControl size="small" {...{ className, style }}>
+      <Select id="select-sort" {...other}>
+        {sortOpts.map(opt => (
+          <MenuItem value={opt.value}>{opt.label}</MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   )
 }
 

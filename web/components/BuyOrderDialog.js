@@ -1,15 +1,15 @@
 import React, { useContext, useState } from 'react'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Dialog from '@material-ui/core/Dialog'
-import TextField from '@material-ui/core/TextField'
-import Typography from '@material-ui/core/Typography'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import DialogContent from '@material-ui/core/DialogContent'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Alert from '@material-ui/lab/Alert'
-import SubmitIcon from '@material-ui/icons/Check'
+import makeStyles from '@mui/styles/makeStyles'
+import Dialog from '@mui/material/Dialog'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
+import SubmitIcon from '@mui/icons-material/Check'
 import * as format from '@/lib/format'
 import { myMarket } from '@/service/api'
 import Link from '@/components/Link'
@@ -22,19 +22,19 @@ import Button from '@/components/Button'
 
 const useStyles = makeStyles(theme => ({
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
   },
   profileName: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
   },
   avatar: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
     width: 100,
@@ -128,7 +128,7 @@ export default function BuyOrderDialog(props) {
 
     if (market) {
       // Forces to refresh buy order table
-      router.push(`${router.query.slug}?buyorder`)
+      router.push(`/${catalog.slug}/buyorders`)
     }
   }
 

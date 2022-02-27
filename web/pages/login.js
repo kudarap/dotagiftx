@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Alert from '@material-ui/lab/Alert'
-import AlertTitle from '@material-ui/lab/AlertTitle'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 import { APP_NAME } from '@/constants/strings'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import * as Storage from '@/service/storage'
@@ -21,7 +21,7 @@ import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.info.main,
   },
   heading: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
   },
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: 0,
   },
   banner: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       maxWidth: 'none',
     },
     maxWidth: theme.breakpoints.values.sm,
@@ -113,12 +113,10 @@ export default function Login() {
           </Typography>
           <Typography component="h2">
             <ul className={classes.list}>
-              <li>Post Items</li>
-              <li>Track Reservations</li>
-              <li>Record Sales History</li>
-              <li>
-                Place Buy Order <sup style={{ color: 'yellowgreen' }}>New!</sup>
-              </li>
+              <li>Post items</li>
+              <li>Track reservations</li>
+              <li>Record sales history</li>
+              <li>Place buy order</li>
             </ul>
           </Typography>
 

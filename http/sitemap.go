@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
 	"github.com/kudarap/dotagiftx/core"
@@ -20,11 +21,13 @@ func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.
 	sitemap.Add(stm.URL{{"loc", "/search?sort=" + queryFlagRecentItems}, {"changefreq", "daily"}, {"priority", 0.6}})
 	sitemap.Add(stm.URL{{"loc", "/search?sort=" + queryFlagPopularItems}, {"changefreq", "daily"}, {"priority", 0.6}})
 	sitemap.Add(stm.URL{{"loc", "/about"}})
-	sitemap.Add(stm.URL{{"loc", "/faq"}})
+	sitemap.Add(stm.URL{{"loc", "/faqs"}})
 	sitemap.Add(stm.URL{{"loc", "/privacy"}})
 	sitemap.Add(stm.URL{{"loc", "/login"}})
 	sitemap.Add(stm.URL{{"loc", "/donate"}})
 	sitemap.Add(stm.URL{{"loc", "/middlemen"}})
+	sitemap.Add(stm.URL{{"loc", "/guides"}})
+	sitemap.Add(stm.URL{{"loc", "/rules"}})
 
 	// Add item slug locations.
 	origins := map[string]struct{}{}
@@ -43,34 +46,34 @@ func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.
 	}
 
 	// Add user profile locations.
-	for _, uu := range users {
-		sitemap.Add(stm.URL{{"loc", "/profiles/" + uu.SteamID}, {"changefreq", "daily"}, {"priority", 0.6}})
-	}
-
+	//for _, uu := range users {
+	//	sitemap.Add(stm.URL{{"loc", "/profiles/" + uu.SteamID}, {"changefreq", "monthly"}, {"priority", 0.6}})
+	//}
 	// Add user vanity urls locations.
-	for _, v := range vanities {
-		sitemap.Add(stm.URL{{"loc", "/id/" + v}, {"changefreq", "daily"}, {"priority", 0.6}})
-	}
+	//for _, v := range vanities {
+	//	sitemap.Add(stm.URL{{"loc", "/id/" + v}, {"changefreq", "monthly"}, {"priority", 0.6}})
+	//}
 
 	return sitemap
 }
 
-const vanityPrefix = "https://steamcommunity.com/id/"
+const (
+	vanityPrefix = "https://steamcommunity.com/id/"
 
-func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam core.SteamClient) http.HandlerFunc {
+	sitemapCacheKey  = "sitemap"
+	sitemapCacheExpr = time.Hour
+)
+
+func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(core.FindOpts{})
-		users, _ := userSvc.Users(core.FindOpts{})
+		users, _ := userSvc.Users(core.FindOpts{
+			Limit: 0,
+		})
 
 		var vanities []string
 		for _, u := range users {
-			//sp, _ := steam.Player(u.SteamID)
-			//if sp == nil || sp.URL == "" {
-			//	continue
-			//}
 			sp := u
-
-			// Not a custom url.
 			if !strings.HasPrefix(sp.URL, vanityPrefix) {
 				continue
 			}
@@ -78,8 +81,11 @@ func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, steam cor
 			vanities = append(vanities, strings.TrimPrefix(sp.URL, vanityPrefix))
 		}
 
+		sm := buildSitemap(items, users, vanities).XMLContent()
 		w.Header().Set("content-type", "text/xml")
-		w.Write(buildSitemap(items, users, vanities).XMLContent())
+		if _, err := w.Write(sm); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		return
 	}
 }

@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-// import Avatar from '@material-ui/core/Avatar'
+import makeStyles from '@mui/styles/makeStyles'
+// import Avatar from '@mui/material/Avatar'
 import Avatar from '@/components/Avatar'
 import Button from '@/components/Button'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 
@@ -54,11 +54,7 @@ export default function AvatarMenu({ profile }) {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}>
-        <MenuItem
-          onClick={handleClose}
-          component={Link}
-          href="/profiles/[id]"
-          as={`/profiles/${profile.steam_id}`}>
+        <MenuItem onClick={handleClose} component={Link} href={`/profiles/${profile.steam_id}`}>
           Profile
         </MenuItem>
         <MenuItem onClick={handleClose}>Listings</MenuItem>

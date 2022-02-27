@@ -1,17 +1,17 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import ItemImage from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       background: 'rgba(0, 0, 0, 0.15)',
     },
   },
   media: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '0 auto !important',
       width: 300,
       height: 170,

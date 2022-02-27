@@ -1,10 +1,10 @@
 import React from 'react'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import AwardIcon from '@material-ui/icons/Flare'
-import KeyIcon from '@material-ui/icons/VpnKey'
-import MoneyIcon from '@material-ui/icons/LocalAtm'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import AwardIcon from '@mui/icons-material/Flare'
+import KeyIcon from '@mui/icons-material/VpnKey'
+import MoneyIcon from '@mui/icons-material/LocalAtm'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -12,13 +12,13 @@ import Footer from '@/components/Footer'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import ProfileCard from '@/components/ProfileCard'
-import Table from '@material-ui/core/Table'
-import { Paper } from '@material-ui/core'
+import Table from '@mui/material/Table'
+import { Paper } from '@mui/material'
 import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),

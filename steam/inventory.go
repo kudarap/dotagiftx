@@ -280,5 +280,5 @@ func extractValueFromPrefix(s, prefix string) (value string, ok bool) {
 }
 
 func isFlagExists(s, flag string) (ok bool) {
-	return strings.ToUpper(s) == strings.ToUpper(flag)
+	return strings.EqualFold(s, flag)
 }

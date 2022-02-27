@@ -1,9 +1,10 @@
 import React from 'react'
 import Head from 'next/head'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
-import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
-import SvgIcon from '@material-ui/core/SvgIcon'
+import makeStyles from '@mui/styles/makeStyles'
+import withStyles from '@mui/styles/withStyles'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import SvgIcon from '@mui/material/SvgIcon'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -12,7 +13,7 @@ import Button from '@/components/Button'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
@@ -105,7 +106,7 @@ export default function Faq() {
             size="large"
             target="_blank"
             rel="noreferrer noopener"
-            href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=LBY7VY8PQ9D3Y&item_name=Support+DotagiftX.com&currency_code=USD">
+            href="https://www.paypal.com/donate?hosted_button_id=2788DNVV23E4J">
             Donate with PayPal
           </PaypalButton>
           <Typography color="textSecondary" style={{ marginTop: 6 }}>

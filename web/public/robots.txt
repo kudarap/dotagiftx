@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+User-agent: *
+Disallow: /profiles
+
+User-agent: *
+Disallow: /bans
+
 Sitemap: https://api.dotagiftx.com/sitemap.xml

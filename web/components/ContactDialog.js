@@ -1,11 +1,10 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
-import { statsMarketSummary } from '@/service/api'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
 import ChipLink from '@/components/ChipLink'
 import {
   DOTABUFF_PROFILE_BASE_URL,
@@ -19,37 +18,10 @@ import AppContext from '@/components/AppContext'
 import MarketNotes from '@/components/MarketNotes'
 import ProfileCard from '@/components/ProfileCard'
 
-const marketSummaryFilter = {}
-
 export default function ContactDialog(props) {
   const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props
-
-  const [loading, setLoading] = React.useState(true)
-  const [marketSummary, setMarketSummary] = React.useState(null)
-  React.useEffect(() => {
-    if (!market) {
-      return
-    }
-
-    ;(async () => {
-      marketSummaryFilter.user_id = market.user.id
-      try {
-        const res = await statsMarketSummary(marketSummaryFilter)
-        setMarketSummary(res)
-      } catch (e) {
-        console.log('error getting stats market summary', e.message)
-      }
-      setLoading(false)
-    })()
-
-    // eslint-disable-next-line consistent-return
-    return () => {
-      setMarketSummary(null)
-    }
-  }, [market])
-
   if (!market) {
     return null
   }
@@ -72,7 +44,7 @@ export default function ContactDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <ProfileCard user={market.user} marketSummary={marketSummary} loading={loading}>
+          <ProfileCard user={market.user}>
             {/* <Typography color="textSecondary" component="span"> */}
             {/*  {`Links: `} */}
             {/* </Typography> */}

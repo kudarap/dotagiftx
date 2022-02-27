@@ -1,18 +1,21 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import { debounce } from '@material-ui/core'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import Snackbar from '@material-ui/core/Snackbar'
-import Alert from '@material-ui/lab/Alert'
-import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
+import makeStyles from '@mui/styles/makeStyles'
+import { debounce } from '@mui/material'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+import {
+  VERIFIED_INVENTORY_MAP_ICON,
+  VERIFIED_INVENTORY_VERIFIED_RESELL,
+} from '@/constants/verified'
 import * as format from '@/lib/format'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
@@ -147,7 +150,9 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                         data-index={idx}
                         onMouseLeave={debouncePopoverClose}
                         onMouseEnter={handlePopoverOpen}>
-                        {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                        {market.resell
+                          ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
+                          : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       </span>
 
                       <br />

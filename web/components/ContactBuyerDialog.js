@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
+import makeStyles from '@mui/styles/makeStyles'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
 import Avatar from '@/components/Avatar'
 import ChipLink from '@/components/ChipLink'
 import {
@@ -22,22 +22,23 @@ import AppContext from '@/components/AppContext'
 import BidButton from '@/components/BidButton'
 import MarketNotes from '@/components/MarketNotes'
 import DonatorBadge from '@/components/DonatorBadge'
+import ProfileCard from '@/components/ProfileCard'
 
 const useStyles = makeStyles(theme => ({
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
   },
   profileName: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
   },
   avatar: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
     width: 100,
@@ -77,52 +78,20 @@ export default function ContactBuyerDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <div
-            className={classes.details}
-            style={
-              isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
-            }>
-            <a href={storeProfile} target="_blank" rel="noreferrer noopener">
-              <Avatar
-                className={classes.avatar}
-                glow={Boolean(market.user.donation)}
-                {...retinaSrcSet(market.user.avatar, 100, 100)}
-              />
-            </a>
-            <Typography component="h1">
-              <Typography
-                className={classes.profileName}
-                component="p"
-                variant="h4"
-                color={isProfileReported ? 'error' : ''}>
-                {market.user.name}
-                {Boolean(market.user.donation) && (
-                  <DonatorBadge
-                    style={{ marginLeft: 4, marginTop: 12, position: 'absolute' }}
-                    size="medium">
-                    DONATOR
-                  </DonatorBadge>
-                )}
-              </Typography>
-              {isProfileReported && (
-                <Typography color="error">{USER_STATUS_MAP_TEXT[market.user.status]}</Typography>
-              )}
-              <Typography gutterBottom>
-                <ChipLink
-                  label="SteamRep"
-                  href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
-                />
-                &nbsp;
-                <ChipLink
-                  label="Dotabuff"
-                  href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
-                />
-                &nbsp;
-                <ChipLink label="Steam Inventory" href={dota2Inventory} />
-                {market.notes && <MarketNotes text={market.notes} />}
-              </Typography>
-            </Typography>
-          </div>
+          <ProfileCard user={market.user}>
+            <ChipLink
+              label="SteamRep"
+              href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
+            />
+            &nbsp;
+            <ChipLink
+              label="Dotabuff"
+              href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
+            />
+            &nbsp;
+            <ChipLink label="Steam Inventory" href={dota2Inventory} />
+            {market.notes && <MarketNotes text={market.notes} />}
+          </ProfileCard>
 
           <Typography variant="body2" color="textSecondary">
             <br />

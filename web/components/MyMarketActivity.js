@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import { debounce } from '@material-ui/core'
-import Typography from '@material-ui/core/Typography'
-import lightGreen from '@material-ui/core/colors/lightGreen'
-import teal from '@material-ui/core/colors/teal'
+import makeStyles from '@mui/styles/makeStyles'
+import { debounce } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import { lightGreen } from '@mui/material/colors'
+import { teal } from '@mui/material/colors'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
   MARKET_TYPE_ASK,
@@ -122,7 +122,7 @@ export default function MyMarketActivity({ datatable, loading, error }) {
                 onMouseEnter={handlePopoverOpen}>
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
-                  VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                  VERIFIED_INVENTORY_MAP_ICON[market.inventory_status + Number(market.resell)]}
 
                 {market.status === MARKET_STATUS_SOLD &&
                   VERIFIED_DELIVERY_MAP_ICON[market.delivery_status]}

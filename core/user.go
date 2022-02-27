@@ -33,8 +33,12 @@ const (
 	UserStatusBanned    UserStatus = 400
 )
 
+const UserSubscriptionResell UserSubscription = 1
+
 type (
 	UserStatus uint
+
+	UserSubscription uint
 
 	// User represents user information.
 	User struct {
@@ -44,10 +48,18 @@ type (
 		URL       string     `json:"url"        db:"url,omitempty"         valid:"required"`
 		Avatar    string     `json:"avatar"     db:"avatar,omitempty"      valid:"required"`
 		Status    UserStatus `json:"status"     db:"status,omitempty"`
+		Notes     string     `json:"notes"      db:"notes,omitempty"`
 		Donation  float64    `json:"donation"   db:"donation,omitempty"`
 		DonatedAt *time.Time `json:"donated_at" db:"donated_at,omitempty"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
+
+		MarketStats MarketStatusCount `json:"market_stats" db:"market_stats,omitempty"`
+		RankScore   int               `json:"rank_score" db:"rank_score,omitempty"`
+
+		// NOTE! Experimental subscription flag
+		Subscription UserSubscription `json:"subscription" db:"subscription,omitempty"`
+		Hammer       bool             `json:"hammer"       db:"hammer,omitempty"`
 	}
 
 	// UserService provides access to user service.
@@ -90,6 +102,9 @@ type (
 
 		// Update persists user changes to data store.
 		Update(*User) error
+
+		// BaseUpdate persists user changes to data store without updating metadata.
+		BaseUpdate(*User) error
 	}
 )
 
@@ -117,4 +132,30 @@ func (u User) CheckStatus() error {
 	}
 
 	return nil
+}
+
+const (
+	userScoreLiveRate        = 1
+	userScoreReservedRate    = 2
+	userScoreDeliveredRate   = 3
+	userScoreBidRate         = 1
+	userScoreBidCompleteRate = 4
+
+	userScoreVerifiedInventoryRate      = 2
+	userScoreVerifiedDeliveryNameRate   = 4
+	userScoreVerifiedDeliverySenderRate = 6
+)
+
+// CalcRankScore return user score base on profile and market activity.
+func (u User) CalcRankScore(stats MarketStatusCount) *User {
+	u.RankScore = 1
+	u.RankScore += stats.Live * userScoreLiveRate
+	u.RankScore += stats.Reserved * userScoreReservedRate
+	u.RankScore += stats.Sold * userScoreDeliveredRate
+	u.RankScore += stats.BidCompleted * userScoreBidCompleteRate
+
+	u.RankScore += stats.InventoryVerified * userScoreVerifiedInventoryRate
+	u.RankScore += stats.DeliveryNameVerified * userScoreVerifiedDeliveryNameRate
+	u.RankScore += stats.DeliverySenderVerified * userScoreVerifiedDeliverySenderRate
+	return &u
 }

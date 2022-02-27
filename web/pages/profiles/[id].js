@@ -1,17 +1,16 @@
-import React, { useContext, useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import has from 'lodash/has'
-import { makeStyles } from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import Avatar from '@/components/Avatar'
-import Typography from '@material-ui/core/Typography'
-import DonatorIcon from '@material-ui/icons/FavoriteBorder'
+import Typography from '@mui/material/Typography'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
+  isDonationGlowExpired,
   marketSearch,
-  statsMarketSummary,
   trackProfileViewURL,
   user,
   vanity,
@@ -33,31 +32,31 @@ import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
-import ErrorPage from '../404'
 import DonatorBadge from '@/components/DonatorBadge'
 import AppContext from '@/components/AppContext'
+import ErrorPage from '../404'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
     marginTop: theme.spacing(4),
   },
   profileName: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: theme.typography.h6.fontSize,
     },
   },
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
       display: 'block',
     },
     display: 'inline-flex',
   },
   avatar: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
     width: 100,
@@ -174,7 +173,7 @@ export default function UserDetails({
             <Avatar
               className={classes.avatar}
               src={`${CDN_URL}/${profile.avatar}`}
-              glow={Boolean(profile.donation)}
+              glow={isDonationGlowExpired(profile.donated_at)}
             />
             <Typography component="h1">
               <Typography
@@ -196,14 +195,20 @@ export default function UserDetails({
                 )}
               </Typography>
               {isProfileReported && (
-                <Typography color="error">{USER_STATUS_MAP_TEXT[profile.status]}</Typography>
+                <Typography color="error">
+                  {profile.notes || USER_STATUS_MAP_TEXT[profile.status]}
+                </Typography>
               )}
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
                   <Link href={`${linkProps.href}/reserved`}>{profile.stats.reserved} Reserved</Link>{' '}
                   &middot;{' '}
-                  <Link href={`${linkProps.href}/delivered`}>{profile.stats.sold} Delivered</Link>
+                  <Link href={`${linkProps.href}/delivered`}>{profile.stats.sold} Delivered</Link>{' '}
+                  &middot;{' '}
+                  <Link href={`${linkProps.href}/bought`}>
+                    {profile.stats.bid_completed} Bought
+                  </Link>
                 </Typography>
                 <br />
                 <ChipLink label="Steam Profile" href={profileURL} />
@@ -317,7 +322,7 @@ export async function getServerSideProps({ params, query }) {
   }
 
   // Retrieve initial user market summary.
-  profile.stats = await statsMarketSummary({ type: MARKET_TYPE_ASK, user_id: profile.id })
+  profile.stats = profile.market_stats
 
   // Retrieve initial user market data.
   let markets = {}

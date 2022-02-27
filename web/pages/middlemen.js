@@ -1,9 +1,9 @@
 import React from 'react'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Link from '@material-ui/core/Link'
-import Alert from '@material-ui/lab/Alert'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import Link from '@mui/material/Link'
+import Alert from '@mui/material/Alert'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -12,7 +12,7 @@ import ChipLink from '@/components/ChipLink'
 
 const useStyles = makeStyles(theme => ({
   main: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
@@ -66,7 +66,7 @@ export default function Middlemen() {
           <Typography variant="h5" component="h1" gutterBottom>
             SteamRep&apos;s Active Middlemen
             <Typography variant="caption" color="textSecondary" component="sup">
-              &nbsp;updated Feb 26 2021
+              &nbsp;updated July 26 2021
             </Typography>
           </Typography>
           <Typography>
@@ -117,30 +117,28 @@ export default function Middlemen() {
 
           {/* DotagiftX middleman */}
           <Typography variant="h5" component="h2" gutterBottom>
-            DotagiftX&apos;s Middleman{' '}
-            <sup style={{ color: 'yellowgreen', fontSize: '12px' }}>New!</sup>
+            DotagiftX&apos;s Middleman
           </Typography>
           <Typography>
             <ul>
-              <li>
+              {/* <li>
                 <Middleman name="kudarap" id="76561198088587178" internal />
+              </li> */}
+              <li>
+                <Middleman name="| S W A G G E R |" id="76561198265102770" internal />
               </li>
             </ul>
             <Typography color="textSecondary">
               It&apos;s strongly recommended to get your middleman from Official SteamRep but if you
-              trust
-              <Link href="/profiles/76561198088587178" color="textPrimary">
-                &nbsp;kudarap&nbsp;
-              </Link>
-              enough to middle your transaction, you can message a request on{' '}
+              trust user/s listed above, you can reach them on{' '}
               <Link
                 href="https://discord.gg/UFt9Ny42kM"
                 target="_blank"
                 color="secondary"
                 rel="noreferrer noopener">
                 Discord
-              </Link>{' '}
-              to give a heads up.
+              </Link>
+              .
             </Typography>
           </Typography>
           <br />

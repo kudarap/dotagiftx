@@ -100,7 +100,7 @@ func (app *application) setup() error {
 	logSvc.Println("setting up data stores...")
 	//userStg := rethink.NewUser(rethinkClient)
 	//authStg := rethink.NewAuth(rethinkClient)
-	//catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
+	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	//itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	//trackStg := rethink.NewTrack(rethinkClient)
@@ -117,7 +117,7 @@ func (app *application) setup() error {
 	//imageSvc := service.NewImage(fileMgr)
 	//itemSvc := service.NewItem(itemStg, fileMgr)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	inventorySvc := service.NewInventory(inventoryStg, marketStg)
+	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	//marketSvc := service.NewMarket(
 	//	marketStg,
 	//	userStg,

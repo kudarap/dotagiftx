@@ -66,7 +66,7 @@ const withDataFetch = (Component, initFilter, searchFn = myMarketSearch) => {
           count={data.total_count || 0}
           page={filter.page}
           rowsPerPage={filter.limit}
-          onChangePage={handlePageChange}
+          onPageChange={handlePageChange}
         />
       </>
     )

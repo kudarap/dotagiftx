@@ -1,15 +1,15 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import TextField from '@material-ui/core/TextField'
-import DeliveredIcon from '@material-ui/icons/AssignmentTurnedIn'
-import CancelIcon from '@material-ui/icons/Cancel'
+import makeStyles from '@mui/styles/makeStyles'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField from '@mui/material/TextField'
+import DeliveredIcon from '@mui/icons-material/AssignmentTurnedIn'
+import CancelIcon from '@mui/icons-material/Cancel'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import { myMarket } from '@/service/api'
 import { amount, dateTime } from '@/lib/format'
@@ -23,15 +23,18 @@ import {
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ItemImageDialog from '@/components/ItemImageDialog'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles(theme => ({
   details: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'block',
     },
     display: 'inline-flex',
   },
 }))
+
+const steamProfileBaseURL = `https://steamcommunity.com'/profiles/`
 
 export default function ReserveUpdateDialog(props) {
   const classes = useStyles()
@@ -125,6 +128,20 @@ export default function ReserveUpdateDialog(props) {
                   {MARKET_STATUS_MAP_TEXT[market.status]}
                 </strong>
                 <br />
+                {market.resell && (
+                  <div>
+                    <Typography color="textSecondary" component="span">
+                      {`Seller Steam ID: `}
+                    </Typography>
+                    <Link
+                      href={steamProfileBaseURL + market.seller_steam_id}
+                      target="_blank"
+                      rel="noreferrer noopener">
+                      {market.seller_steam_id}
+                    </Link>
+                    <br />
+                  </div>
+                )}
                 <Typography color="textSecondary" component="span">
                   {`Price: `}
                 </Typography>
@@ -169,7 +186,7 @@ export default function ReserveUpdateDialog(props) {
               color="secondary"
               variant="outlined"
               label="Notes"
-              helperText="Screenshot URL for verification or Reason for cancellation"
+              helperText="Screenshot URL for verification or reason for cancellation"
               placeholder="https://imgur.com/a/..."
               value={notes}
               onInput={e => setNotes(e.target.value)}

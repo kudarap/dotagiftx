@@ -1,8 +1,10 @@
 package rethink
 
 import (
+	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/imdario/mergo"
 	"github.com/kudarap/dotagiftx/core"
@@ -93,6 +95,27 @@ func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, e
 				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
 			//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError).
 			//	Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit)))
+		})
+	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+
+	var res []core.Market
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(core.StorageUncaughtErr, err)
+	}
+
+	return res, nil
+}
+
+func (s *marketStorage) RevalidateDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
+	now := time.Now()
+	q := r.Table(tableMarket).
+		Filter(func(t r.Term) r.Term {
+			return t.Field(marketFieldStatus).Eq(core.MarketStatusSold).
+				And(t.Field(marketFieldUpdatedAt).Year().Eq(int(now.Year())).
+					And(t.Field(marketFieldUpdatedAt).Month().Eq(int(now.Month())).
+						And(t.Field(marketFieldUpdatedAt).Day().Eq(int(now.Day()))))).
+				And(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit).
+					Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusPrivate)))
 		})
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
 
@@ -221,6 +244,32 @@ func (s *marketStorage) Create(in *core.Market) error {
 func (s *marketStorage) Update(in *core.Market) error {
 	in.UpdatedAt = now()
 	return s.BaseUpdate(in)
+}
+
+func (s *marketStorage) UpdateUserScore(userID string, rankScore int) error {
+	if userID == "" {
+		return fmt.Errorf("user id is required to update user score")
+	}
+
+	// get all user live market
+	opts := core.FindOpts{Filter: core.Market{
+		UserID: userID,
+		Status: core.MarketStatusLive,
+	}}
+	markets, err := s.Find(opts)
+	if err != nil {
+		return err
+	}
+
+	// set new user rank score
+	for _, mm := range markets {
+		mm.UserRankScore = rankScore
+		if err = s.BaseUpdate(&mm); err != nil {
+			return fmt.Errorf("could not update market user rank: %s", err)
+		}
+	}
+
+	return nil
 }
 
 func (s *marketStorage) BaseUpdate(in *core.Market) error {

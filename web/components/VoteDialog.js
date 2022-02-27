@@ -1,26 +1,26 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import shuffle from 'lodash/shuffle'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Radio from '@material-ui/core/Radio'
-import RadioGroup from '@material-ui/core/RadioGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormControl from '@material-ui/core/FormControl'
-import FormLabel from '@material-ui/core/FormLabel'
-import VoteIcon from '@material-ui/icons/HowToVote'
-import RemoveIcon from '@material-ui/icons/Close'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import VoteIcon from '@mui/icons-material/HowToVote'
+import RemoveIcon from '@mui/icons-material/Close'
 import { reportCreate } from '@/service/api'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
 import { REPORT_LABEL_SURVEY_NEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
-import { TextField } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { TextField } from '@mui/material'
+import { Alert } from '@mui/material'
 
 const voteOptions = shuffle([
   'Inventory import from Steam',
@@ -83,7 +83,6 @@ export default function VoteDialog(props) {
     <Dialog
       fullWidth
       disableEscapeKeyDown
-      disableBackdropClick
       fullScreen={isMobile}
       open={open}
       onClose={handleClose}

@@ -1,6 +1,6 @@
 import React from 'react'
-import Link from '@material-ui/core/Link'
-import Chip from '@material-ui/core/Chip'
+import Link from '@mui/material/Link'
+import Chip from '@mui/material/Chip'
 
 export default function ChipLink(props) {
   return (

@@ -108,7 +108,7 @@ func (w *Worker) runner(ctx context.Context, job Job) {
 // queueJob handles job whether it should be queued immediately or
 // standby aside and wait for its next iteration.
 //
-// waiting jobs will be vanish into abyss when the worker is done.
+// waiting jobs will be vanished into abyss when the worker is done.
 func (w *Worker) queueJob(j Job, now bool) {
 	if w.closed {
 		w.logger.Warnf("SKIP job:%s queue is closed", j)
@@ -140,7 +140,7 @@ func (w *Worker) Stop() error {
 	return nil
 }
 
-// RunOnce will queue the job but it will not register to worker's jobs,
+// RunOnce will queue the job, but it will not register to worker's jobs,
 // since its one-time job it will ignore the Interval() value.
 //
 // If you want a recurring Job, you must register it worker constructor.
