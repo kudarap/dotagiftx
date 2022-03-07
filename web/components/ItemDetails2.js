@@ -40,23 +40,28 @@ const useStyles = makeStyles()(theme => ({
     display: 'inline-flex',
   },
   title: {},
+  mediaContainer: {
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
+  },
   media: {
     [theme.breakpoints.down('sm')]: {
       width: 300,
       height: 170,
+      margin: '0 auto',
     },
     width: 165,
     height: 110,
   },
+  itemStats: {
+    marginBottom: theme.spacing(1),
+  },
   postItemButton: {
     [theme.breakpoints.down('sm')]: {
-      margin: `8px auto !important`,
-      width: '48%',
+      width: '50%',
     },
-    width: 165,
-    marginRight: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
-    // height: 40,
+    width: 172,
   },
 }))
 
@@ -271,7 +276,7 @@ export default function ItemDetails({
         <Container>
           {/* Item Details */}
           <Grid container spacing={1.5}>
-            <Grid item>
+            <Grid item className={classes.mediaContainer}>
               <div style={{ background: 'rgba(0, 0, 0, 0.15)' }}>
                 {item.image && (
                   <a href={wikiLink} target="_blank" rel="noreferrer noopener">
@@ -281,6 +286,7 @@ export default function ItemDetails({
                       width={300}
                       height={170}
                       title={item.name}
+                      rarity={item.rarity}
                     />
                   </a>
                 )}
@@ -308,11 +314,12 @@ export default function ItemDetails({
               </Grid>
               <Grid>
                 <Typography color="textSecondary" component="span">
-                  {`Used by: `}
+                  {`Hero: `}
                 </Typography>
                 <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
               </Grid>
-              <Grid>
+
+              <Grid className={classes.itemStats} spacing={1}>
                 <ChipLink label="Dota 2 Wiki" href={wikiLink} />
                 &nbsp;&middot;&nbsp;
                 <Typography
@@ -335,25 +342,24 @@ export default function ItemDetails({
           </Grid>
 
           {/* Action Buttons */}
-          <Box sx={{ display: 'flex', pt: 0.5, pb: 1.5 }}>
-            <Button
-              className={classes.postItemButton}
-              sx={{ mr: 1.5 }}
-              variant="outlined"
-              color="secondary"
-              component={Link}
-              href={`/post-item?s=${item.slug}`}
-              disableUnderline>
-              Post this item
-            </Button>
-            <Button
-              onClick={handleBuyOrderClick}
-              className={classes.postItemButton}
-              variant="outlined"
-              color="bid">
-              Place buy order
-            </Button>
-          </Box>
+          <Grid container alignItems="center" spacing={1} sx={{ pb: 1.5 }}>
+            <Grid item className={classes.postItemButton}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="secondary"
+                component={Link}
+                href={`/post-item?s=${item.slug}`}
+                disableUnderline>
+                Post this item
+              </Button>
+            </Grid>
+            <Grid item className={classes.postItemButton}>
+              <Button fullWidth onClick={handleBuyOrderClick} variant="outlined" color="bid">
+                Place buy order
+              </Button>
+            </Grid>
+          </Grid>
 
           {/* Listings */}
           <MarketList
