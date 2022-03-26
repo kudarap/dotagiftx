@@ -1,11 +1,11 @@
 module github.com/kudarap/dotagiftx
 
-go 1.17
+go 1.18
 
 require (
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi v1.5.4
-	github.com/go-playground/validator/v10 v10.9.0
+	github.com/go-playground/validator/v10 v10.10.1
 	github.com/go-redis/redis/v8 v8.11.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/schema v1.2.0
@@ -40,11 +40,11 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
-	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
-	golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069 // indirect
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
+	golang.org/x/sys v0.0.0-20220325203850-36772127a21f // indirect
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/cenkalti/backoff.v2 v2.2.1 // indirect
 )
