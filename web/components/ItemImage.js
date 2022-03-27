@@ -52,6 +52,7 @@ export default function ItemImage({ image, title, rarity, className, width, heig
         style={imgStyle}
         width={width}
         height={height}
+        quality={100}
         responsive
         {...other}
       />

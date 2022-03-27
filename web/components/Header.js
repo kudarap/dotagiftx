@@ -26,6 +26,9 @@ import { NoSsr } from '@mui/material'
 // import SearchInputMini from '@/components/SearchInputMini'
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
+import brandImage from '../public/brand_2x.png'
+import Image from 'next/image'
+
 const useStyles = makeStyles()(theme => ({
   root: {},
   appBar: {},
@@ -34,10 +37,10 @@ const useStyles = makeStyles()(theme => ({
       maxWidth: 30,
       overflow: 'hidden',
     },
+    marginBottom: -5,
   },
   brand: {
     height: 30,
-    marginBottom: -5,
     WebkitTransition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     '&:hover': {
@@ -149,13 +152,21 @@ export default function Header({ disableSearch }) {
           {/* Branding button */}
           {/* Desktop nav branding */}
           <Link href="/" disableUnderline className={classes.logo}>
-            <img
+            <Image
               width={134}
+              height={30}
+              layout="fixed"
               className={classes.brand}
-              src="/ukr/brand_1x.png"
-              srcSet="/ukr/brand_1x.png 1x, /ukr/brand_2x.png 2x"
+              src={brandImage}
               alt={APP_NAME}
             />
+            {/* <img
+              width={134}
+              className={classes.brand}
+              src="/brand_1x.png"
+              srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
+              alt={APP_NAME}
+            /> */}
           </Link>
 
           <span className={classes.spacer} />

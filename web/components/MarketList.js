@@ -13,7 +13,6 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
-
 import {
   VERIFIED_INVENTORY_MAP_ICON,
   VERIFIED_INVENTORY_VERIFIED_RESELL,

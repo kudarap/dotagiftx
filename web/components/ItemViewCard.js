@@ -17,7 +17,7 @@ const useStyles = makeStyles()(theme => ({
   media: {
     [theme.breakpoints.down('sm')]: {
       width: 300,
-      height: 170,
+      height: 198,
       margin: '0 auto',
     },
     width: 165,

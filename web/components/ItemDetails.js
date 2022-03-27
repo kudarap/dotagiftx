@@ -260,7 +260,7 @@ export default function ItemDetails({
           <ItemViewCard item={item} />
 
           {/* Action Buttons */}
-          <Grid container alignItems="center" spacing={1} sx={{ pb: 1.5 }}>
+          <Grid container alignItems="center" spacing={1} sx={{ mb: 3 }}>
             <Grid item className={classes.postItemButton}>
               <Button
                 fullWidth
