@@ -41,8 +41,8 @@ export default function ItemViewCard({ item }) {
               <ItemImage
                 className={classes.media}
                 image={item.image}
-                width={300}
-                height={170}
+                width={330}
+                height={220}
                 title={item.name}
                 rarity={item.rarity}
               />
