@@ -51,12 +51,12 @@ export default function ItemViewCard({ item }) {
         </div>
       </Grid>
       <Grid item>
-        <Grid>
+        <div>
           <Typography component="h1" variant="h4">
             {item.name}
           </Typography>
-        </Grid>
-        <Grid>
+        </div>
+        <div>
           <Link href={`/search?origin=${item.origin}`}>{item.origin}</Link>{' '}
           {item.rarity !== 'regular' && (
             <>
@@ -69,15 +69,14 @@ export default function ItemViewCard({ item }) {
               />
             </>
           )}
-        </Grid>
-        <Grid>
+        </div>
+        <div>
           <Typography color="textSecondary" component="span">
             {`Hero: `}
           </Typography>
           <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
-        </Grid>
-
-        <Grid className={classes.itemStats} spacing={1}>
+        </div>
+        <div className={classes.itemStats} spacing={1}>
           <ChipLink label="Dota 2 Wiki" href={wikiLink} />
           &nbsp;&middot;&nbsp;
           <Typography variant="body2" component={MuiLink} color="textPrimary" href="#reserved">
@@ -87,7 +86,7 @@ export default function ItemViewCard({ item }) {
           <Typography variant="body2" component={MuiLink} color="textPrimary" href="#delivered">
             {item.sold_count} Delivered
           </Typography>
-        </Grid>
+        </div>
       </Grid>
     </Grid>
   )
