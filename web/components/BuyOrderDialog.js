@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Dialog from '@mui/material/Dialog'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -20,7 +20,7 @@ import { itemRarityColorMap } from '@/constants/palette'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import Button from '@/components/Button'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   details: {
     [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
@@ -66,7 +66,7 @@ const checkPayload = payload => {
 }
 
 export default function BuyOrderDialog(props) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile, isLoggedIn } = useContext(AppContext)
 
   const { catalog, open, onClose, onChange } = props

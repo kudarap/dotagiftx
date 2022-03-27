@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import AwardIcon from '@mui/icons-material/Flare'
 import KeyIcon from '@mui/icons-material/VpnKey'
@@ -16,7 +16,7 @@ import Table from '@mui/material/Table'
 import { Paper } from '@mui/material'
 import DonatorBadge from '@/components/DonatorBadge'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Faq() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <>

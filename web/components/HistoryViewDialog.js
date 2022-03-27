@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -17,7 +17,7 @@ import AppContext from '@/components/AppContext'
 import { TextField } from '@mui/material'
 import ItemImageDialog from '@/components/ItemImageDialog'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   details: {
     [theme.breakpoints.down('sm')]: {
       display: 'block',
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function HistoryViewDialog(props) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const { market, open, onClose } = props

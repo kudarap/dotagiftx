@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -8,7 +8,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import CloseIcon from '@mui/icons-material/Close'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     // marginTop: theme.spacing(4),
   },
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 export default function SearchInput(props) {
   const { value, onChange, onSubmit, onClear, label, ...other } = props
 
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [keyword, setKeyword] = React.useState(value)
 

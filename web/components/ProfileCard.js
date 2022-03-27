@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Avatar from '@/components/Avatar'
 import { USER_STATUS_MAP_TEXT } from '@/constants/user'
@@ -10,7 +10,7 @@ import DonatorBadge from '@/components/DonatorBadge'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   details: {
     [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function ProfileCard({ user, loading, ...other }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const { isMobile } = useContext(AppContext)
 

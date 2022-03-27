@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import {
   MARKET_STATUS_LIVE,
   MARKET_STATUS_RESERVED,
@@ -21,7 +21,7 @@ import MyMarketActivity from '@/components/MyMarketActivity'
 import withDatatableFetch from '@/components/withDatatableFetch'
 import TabPanel from '@/components/TabPanel'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -38,7 +38,7 @@ const initialMarketStats = {
 }
 
 export default function MyListings() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const { currentAuth } = React.useContext(AppContext)
 

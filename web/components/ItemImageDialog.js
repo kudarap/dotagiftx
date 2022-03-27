@@ -1,10 +1,10 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import ItemImage from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {
     [theme.breakpoints.down('sm')]: {
       background: 'rgba(0, 0, 0, 0.15)',
@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function ItemImageDialog({ item }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
   let width = 165

@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {
     marginTop: theme.spacing(1),
   },
@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function MarketNotes({ text }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <div className={classes.root}>

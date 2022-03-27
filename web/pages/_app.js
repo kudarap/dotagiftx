@@ -1,34 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { APP_NAME } from '@/constants/strings'
 import CssBaseline from '@mui/material/CssBaseline'
-
 import { ThemeProvider } from '@mui/material/styles'
-
-import Root from '@/components/Root'
+import { CacheProvider } from '@emotion/react'
+import { APP_NAME } from '@/constants/strings'
 import theme from '@/lib/theme'
+import createEmotionCache from '@/lib/createEmotionCache'
+import Root from '@/components/Root'
 import '@/components/Avatar.css'
 
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache
+
 export default function MyApp(props) {
-  const { Component, pageProps } = props
-
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    // Remove the server-side injected CSS.
-    // eslint-disable-next-line no-undef
-    const jssStyles = document.querySelector('#jss-server-side')
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles)
-    }
-
-    // FOUC hotfix
-    setMounted(true)
-  }, [])
+  const { Component, emotionCache = clientSideEmotionCache(), pageProps } = props
 
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <Head>
         <title>{APP_NAME} :: Dota 2 Giftables Community Market</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
@@ -42,17 +31,15 @@ export default function MyApp(props) {
         <CssBaseline />
 
         <Root>
-          {/* FOUC hotfix */}
-          <div style={{ visibility: !mounted ? 'hidden' : '' }}>
-            <Component {...pageProps} />
-          </div>
+          <Component {...pageProps} />
         </Root>
       </ThemeProvider>
-    </>
+    </CacheProvider>
   )
 }
 
 MyApp.propTypes = {
   Component: PropTypes.elementType.isRequired,
+  emotionCache: PropTypes.object,
   pageProps: PropTypes.object.isRequired,
 }

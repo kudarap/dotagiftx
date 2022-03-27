@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import querystring from 'querystring'
 import { useTheme } from '@mui/material/styles'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import FirstPageIcon from '@mui/icons-material/FirstPage'
@@ -11,7 +11,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
 import Link from '@/components/Link'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   caption: {
     marginRight: theme.spacing(2.5),
   },
@@ -25,7 +25,7 @@ function TablePaginationRouter({
   linkProps,
   ...other
 }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const theme = useTheme()
 
   const page = Number(initPage)
