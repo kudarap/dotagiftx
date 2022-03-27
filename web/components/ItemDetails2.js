@@ -4,10 +4,8 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
-import MuiLink from '@mui/material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
-import { Box } from '@mui/system'
 import { schemaOrgProduct } from '@/lib/richdata'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
 import { APP_NAME } from '@/constants/strings'
@@ -15,15 +13,13 @@ import { CDN_URL, marketSearch, trackItemViewURL } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import RarityTag from '@/components/RarityTag'
 import MarketList from '@/components/MarketList'
-import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import TablePagination from '@/components/TablePagination'
-import ChipLink from '@/components/ChipLink'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import ItemGraph from '@/components/ItemGraph'
 import ItemActivity from '@/components/ItemActivity'
+import ItemViewCard from './ItemViewCard'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -275,71 +271,7 @@ export default function ItemDetails({
       <main className={classes.main}>
         <Container>
           {/* Item Details */}
-          <Grid container spacing={1.5}>
-            <Grid item className={classes.mediaContainer}>
-              <div style={{ background: 'rgba(0, 0, 0, 0.15)' }}>
-                {item.image && (
-                  <a href={wikiLink} target="_blank" rel="noreferrer noopener">
-                    <ItemImage
-                      className={classes.media}
-                      image={item.image}
-                      width={300}
-                      height={170}
-                      title={item.name}
-                      rarity={item.rarity}
-                    />
-                  </a>
-                )}
-              </div>
-            </Grid>
-            <Grid item>
-              <Grid>
-                <Typography component="h1" variant="h4">
-                  {item.name}
-                </Typography>
-              </Grid>
-              <Grid>
-                <Link href={`/search?origin=${item.origin}`}>{item.origin}</Link>{' '}
-                {item.rarity !== 'regular' && (
-                  <>
-                    &mdash;
-                    <RarityTag
-                      rarity={item.rarity}
-                      variant="body1"
-                      component={Link}
-                      href={`/search?rarity=${item.rarity}`}
-                    />
-                  </>
-                )}
-              </Grid>
-              <Grid>
-                <Typography color="textSecondary" component="span">
-                  {`Hero: `}
-                </Typography>
-                <Link href={`/search?hero=${item.hero}`}>{item.hero}</Link>
-              </Grid>
-
-              <Grid className={classes.itemStats} spacing={1}>
-                <ChipLink label="Dota 2 Wiki" href={wikiLink} />
-                &nbsp;&middot;&nbsp;
-                <Typography
-                  variant="body2"
-                  component={MuiLink}
-                  color="textPrimary"
-                  href="#reserved">
-                  {item.reserved_count} Reserved
-                </Typography>
-                &nbsp;&middot;&nbsp;
-                <Typography
-                  variant="body2"
-                  component={MuiLink}
-                  color="textPrimary"
-                  href="#delivered">
-                  {item.sold_count} Delivered
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
+          <ItemViewCard item={item} />
 
           {/* Action Buttons */}
           <Grid container alignItems="center" spacing={1} sx={{ pb: 1.5 }}>
