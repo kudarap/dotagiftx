@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
+import useInView from 'react-cool-inview'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
@@ -221,7 +222,9 @@ export default function ItemDetails({
     metaDesc += ` Price starting at $${startingPrice}`
   }
 
-  const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
+  const { observe, inView } = useInView({
+    onEnter: ({ unobserve }) => unobserve(), // only run once
+  })
 
   return (
     <>
@@ -299,7 +302,7 @@ export default function ItemDetails({
           />
 
           {/* History */}
-          <ItemGraph itemId={item.id} itemName={item.name} />
+          <div ref={observe}>{inView && <ItemGraph itemId={item.id} itemName={item.name} />}</div>
         </Container>
       </main>
 
