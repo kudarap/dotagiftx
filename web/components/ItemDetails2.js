@@ -18,7 +18,6 @@ import Link from '@/components/Link'
 import TablePagination from '@/components/TablePagination'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import ItemGraph from '@/components/ItemGraph'
-import ItemActivity from '@/components/ItemActivity'
 import ItemViewCard from './ItemViewCard'
 
 const useStyles = makeStyles()(theme => ({
@@ -34,24 +33,6 @@ const useStyles = makeStyles()(theme => ({
       display: 'block',
     },
     display: 'inline-flex',
-  },
-  title: {},
-  mediaContainer: {
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
-  media: {
-    [theme.breakpoints.down('sm')]: {
-      width: 300,
-      height: 170,
-      margin: '0 auto',
-    },
-    width: 165,
-    height: 110,
-  },
-  itemStats: {
-    marginBottom: theme.spacing(1),
   },
   postItemButton: {
     [theme.breakpoints.down('sm')]: {
@@ -316,10 +297,7 @@ export default function ItemDetails({
           />
 
           {/* History */}
-          <ItemGraph />
-
-          {/* Lastest Activity */}
-          <ItemActivity />
+          <ItemGraph itemId={item.id} itemName={item.name} />
         </Container>
       </main>
 

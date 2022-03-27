@@ -525,7 +525,6 @@ export default function ItemDetails({
           />
 
           {shouldLoadHistory && isHistoryLoading && <div>Loading {item.name} history...</div>}
-
           {shouldLoadHistory && !isHistoryLoading && (
             <div>
               <div>{item.name} history</div>
@@ -534,7 +533,6 @@ export default function ItemDetails({
                   No history yet
                 </Typography>
               )}
-
               {!marketGraphError && marketGraph && (
                 <>
                   <br />

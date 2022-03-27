@@ -59,7 +59,7 @@ export default function MarketSalesChart({ data }) {
   })
 
   return (
-    <div style={{ width: '100%', height: 200 }}>
+    <div style={{ width: '100%', height: 200, marginLeft: -20 }}>
       <ResponsiveContainer>
         <LineChart data={format}>
           <CartesianGrid strokeDasharray="3 3" stroke="#555" />
