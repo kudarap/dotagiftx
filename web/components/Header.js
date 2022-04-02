@@ -31,7 +31,12 @@ import Image from 'next/image'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
-  appBar: {},
+  appBar: {
+    [theme.breakpoints.down('sm')]: {
+      padding: 0,
+    },
+    padding: theme.spacing(0, 1.5),
+  },
   logo: {
     [theme.breakpoints.down('sm')]: {
       maxWidth: 30,
@@ -171,28 +176,27 @@ export default function Header({ disableSearch }) {
 
           <span className={classes.spacer} />
 
-          <Link className={classes.nav} href="/search?q=nemestice" underline="none">
-            Nemestice
-          </Link>
-          <Link className={classes.nav} href="/heroes" underline="none">
-            Heroes
-          </Link>
-          <Link className={classes.nav} href="/treasures" underline="none">
+          {/* <Link
+            className={classes.nav}
+            href="/search?q=Aghanim"
+            underline="none"
+            style={{
+              color: '#DFE9F2',
+              textShadow: '0px 0px 10px #275AF2, 2px 2px 10px #41A0F2',
+            }}>
+            Aghanim's 2021
+          </Link> */}
+          <Link className={classes.nav} href="/treasury" underline="none">
             Treasures
+          </Link>
+          <Link className={classes.nav} href="/plus" underline="none">
+            Plus
           </Link>
           <Link className={classes.nav} href="/banned-users" underline="none">
             FAQs
           </Link>
-          <Link className={classes.nav} href="/guides" underline="none">
-            Guides
-          </Link>
-          <Link className={classes.nav} href="/banned-users" underline="none">
-            Bans
-          </Link>
 
           <NoSsr>
-            {!disableSearch && <SearchInputMini style={{ width: isMobile ? '100%' : 325 }} />}
-
             {/* Desktop nav buttons */}
             {!isMobile && (
               <>
@@ -208,6 +212,9 @@ export default function Header({ disableSearch }) {
                 </Link>
 
                 <span style={{ flexGrow: 1 }} />
+
+                <SearchInputMini style={{ width: isMobile ? '100%' : 225, marginTop: 4 }} />
+                <span className={classes.spacer} />
 
                 {/* Post item button */}
                 {/*<Button variant="outlined" component={Link} href="/buy-order" disableUnderline>*/}

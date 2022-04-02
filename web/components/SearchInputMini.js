@@ -12,11 +12,11 @@ import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
 
 const SearchPaper = styled(Paper)(({ theme }) => ({
-  padding: '4px 12px 2px',
+  padding: '4px 8px 2px 12px',
   marginBottom: 3,
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: theme.palette.grey[100],
+  backgroundColor: theme.palette.background.default,
   width: 325,
 }))
 
@@ -25,7 +25,7 @@ const Input = styled(InputBase)(({ theme }) => ({
     height: 39,
   },
   margin: '0 auto',
-  color: theme.palette.grey[800],
+  color: theme.palette.grey[100],
 }))
 
 const useStyles = makeStyles()(theme => ({
@@ -86,7 +86,7 @@ export default function SearchInput({ value, onChange, onSubmit, onClear, style,
         value={keyword}
         className={classes.input}
         size="small"
-        placeholder="Search for item name, hero, treasure"
+        placeholder="Search..."
         variant="outlined"
         color="secondary"
         fullWidth
