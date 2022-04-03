@@ -8,6 +8,7 @@ import Footer from '@/components/Footer'
 import { Grid } from '@mui/material'
 import { styled } from '@mui/system'
 import Image from 'next/image'
+import Link from '@/components/Link'
 
 const treasures = [
   {
@@ -183,17 +184,19 @@ export default function Treasures({ data }) {
             {treasures.map(treasure => {
               return (
                 <Grid item xs={6} md={3}>
-                  <Item style={{ borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}` }}>
-                    <div>
-                      <Image
-                        src={'/assets/treasures/' + treasure.image}
-                        alt={treasure.name}
-                        width={256}
-                        height={171}
-                      />
-                    </div>
-                    <Typography noWrap>{treasure.name}</Typography>
-                  </Item>
+                  <Link href={`/search?origin=${treasure.name}`} underline="none">
+                    <Item style={{ borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}` }}>
+                      <div>
+                        <Image
+                          src={'/assets/treasures/' + treasure.image}
+                          alt={treasure.name}
+                          width={256}
+                          height={171}
+                        />
+                      </div>
+                      <Typography noWrap>{treasure.name}</Typography>
+                    </Item>
+                  </Link>
                 </Grid>
               )
             })}
