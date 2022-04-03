@@ -9,127 +9,125 @@ import { Grid } from '@mui/material'
 import { styled } from '@mui/system'
 import Image from 'next/image'
 
-import placeholder from '../public/assets/treasure.png'
-
 const treasures = [
   {
-    name: "Aghanim's 2021 Ageless Heirlooms",
-    image: 'placeholder.png',
-    rarity: 'mythical',
-    items: 10,
-  },
-  {
     name: "Aghanim's 2021 Collector's Cache",
-    image: 'placeholder.png',
+    image: 'aghanim_s_2021_collector_s_cache.webp',
     rarity: 'mythical',
     items: 17,
   },
   {
+    name: "Aghanim's 2021 Ageless Heirlooms",
+    image: 'aghanim_s_2021_ageless_heirlooms.webp',
+    rarity: 'mythical',
+    items: 10,
+  },
+  {
     name: "Aghanim's 2021 Continuum Collection",
-    image: 'placeholder.png',
+    image: 'aghanim_s_2021_continuum_collection.webp',
     rarity: 'mythical',
     items: 7,
   },
   {
     name: "Aghanim's 2021 Immortal Treasure",
-    image: 'placeholder.png',
+    image: 'aghanim_s_2021_immortal_treasure.webp',
     rarity: 'immortal',
     items: 9,
   },
   {
+    name: "Nemestice 2021 Collector's Cache",
+    image: 'nemestice_2021_collector_s_cache.webp',
+    rarity: 'mythical',
+    items: 15,
+  },
+  {
+    name: 'Nemestice 2021 Immortal Treasure',
+    image: 'nemestice_2021_immortal_treasure.webp',
+    rarity: 'mythical',
+    items: 9,
+  },
+  {
+    name: 'Nemestice 2021 Themed Treasure',
+    image: 'nemestice_2021_themed_treasure.webp',
+    rarity: 'mythical',
+    items: 11,
+  },
+  {
     name: 'Immortal Treasure I 2020',
-    image: 'placeholder.png',
+    image: 'immortal_treasure_i_2020.webp',
     rarity: 'immortal',
     items: 10,
   },
   {
     name: 'Immortal Treasure II 2020',
-    image: 'placeholder.png',
+    image: 'immortal_treasure_ii_2020.webp',
     rarity: 'immortal',
     items: 10,
   },
   {
     name: 'Immortal Treasure III 2020',
-    image: 'placeholder.png',
+    image: 'immortal_treasure_iii_2020.webp',
     rarity: 'immortal',
     items: 8,
   },
   {
-    name: "Nemestice 2021 Collector's Cache",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 15,
-  },
-  {
-    name: 'Nemestice 2021 Immortal Treasure',
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 9,
-  },
-  {
-    name: 'Nemestice 2021 Themed Treasure',
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 11,
-  },
-  {
-    name: "The International 2015 Collector's Cache",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 11,
-  },
-  {
-    name: "The International 2016 Collector's Cache",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 15,
-  },
-  {
-    name: "The International 2017 Collector's Cache",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 22,
-  },
-  {
-    name: "The International 2018 Collector's Cache",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 17,
-  },
-  {
-    name: "The International 2018 Collector's Cache II",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 14,
-  },
-  {
-    name: "The International 2019 Collector's Cache",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 18,
-  },
-  {
-    name: "The International 2019 Collector's Cache II",
-    image: 'placeholder.png',
-    rarity: 'immortal',
-    items: 16,
-  },
-  {
     name: "The International 2020 Collector's Cache",
-    image: 'placeholder.png',
-    rarity: 'immortal',
+    image: 'the_international_2020_collector_s_cache.webp',
+    rarity: 'mythical',
     items: 18,
   },
   {
     name: "The International 2020 Collector's Cache II",
-    image: 'placeholder.png',
-    rarity: 'immortal',
+    image: 'the_international_2020_collector_s_cache_ii.webp',
+    rarity: 'mythical',
     items: 17,
   },
   {
+    name: "The International 2019 Collector's Cache",
+    image: 'the_international_2019_collector_s_cache.webp',
+    rarity: 'mythical',
+    items: 18,
+  },
+  {
+    name: "The International 2019 Collector's Cache II",
+    image: 'the_international_2019_collector_s_cache_ii.webp',
+    rarity: 'mythical',
+    items: 16,
+  },
+  {
+    name: "The International 2018 Collector's Cache",
+    image: 'the_international_2018_collector_s_cache.webp',
+    rarity: 'mythical',
+    items: 17,
+  },
+  {
+    name: "The International 2018 Collector's Cache II",
+    image: 'the_international_2018_collector_s_cache_ii.webp',
+    rarity: 'mythical',
+    items: 14,
+  },
+  {
+    name: "The International 2017 Collector's Cache",
+    image: 'the_international_2017_collector_s_cache.webp',
+    rarity: 'mythical',
+    items: 22,
+  },
+  {
+    name: "The International 2016 Collector's Cache",
+    image: 'the_international_2016_collector_s_cache.webp',
+    rarity: 'mythical',
+    items: 15,
+  },
+  {
+    name: "The International 2015 Collector's Cache",
+    image: 'the_international_2015_collector_s_cache.webp',
+    rarity: 'mythical',
+    items: 11,
+  },
+  {
     name: 'Treasure of the Cryptic Beacon',
-    image: 'placeholder.png',
-    rarity: 'immortal',
+    image: 'treasure_of_the_cryptic_beacon.webp',
+    rarity: 'mythical',
     items: 6,
   },
 ]
@@ -184,12 +182,17 @@ export default function Treasures({ data }) {
           <Grid container spacing={1}>
             {treasures.map(treasure => {
               return (
-                <Grid item xs={6} md={4}>
+                <Grid item xs={6} md={3}>
                   <Item style={{ borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}` }}>
                     <div>
-                      <Image src={placeholder} alt={treasure.name} layout="responsive" />
+                      <Image
+                        src={'/assets/treasures/' + treasure.image}
+                        alt={treasure.name}
+                        width={256}
+                        height={171}
+                      />
                     </div>
-                    {treasure.name}
+                    <Typography noWrap>{treasure.name}</Typography>
                   </Item>
                 </Grid>
               )
