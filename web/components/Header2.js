@@ -9,7 +9,7 @@ import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
-import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
+import MoreIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import Container from '@/components/Container'
 import * as Storage from '@/service/storage'
@@ -78,10 +78,7 @@ const useStyles = makeStyles()(theme => ({
     '&:hover': {
       color: '#f1e0ba',
     },
-    padding: theme.spacing(0, 1.5),
-  },
-  navMore: {
-    display: 'flex',
+    padding: theme.spacing(0, 1),
   },
 }))
 
@@ -177,7 +174,7 @@ export default function Header({ disableSearch }) {
             /> */}
           </Link>
 
-          <span className={classes.spacer} style={{ width: 20 }} />
+          <span className={classes.spacer} />
 
           {/* <Link
             className={classes.nav}
@@ -189,83 +186,172 @@ export default function Header({ disableSearch }) {
             }}>
             Aghanim's 2021
           </Link> */}
-          <Link className={classes.nav} href="/treasures" underline="none">
+          <Link className={classes.nav} href="/treasury" underline="none">
             Treasures
           </Link>
-          <Link
-            className={classes.nav}
-            href="/plus"
-            underline="none"
-            style={{
-              color: '#DFE9F2',
-              textShadow: '0px 0px 10px #275AF2, 2px 2px 10px #41A0F2',
-            }}>
-            Dotagift<span style={{ fontSize: 20 }}>+</span>
-          </Link>
-          <Link className={classes.nav} href="/rules" underline="none">
-            Rules
+          <Link className={classes.nav} href="/plus" underline="none">
+            Plus
           </Link>
           <Link className={classes.nav} href="/banned-users" underline="none">
-            Bans
-            <LatestBan />
-          </Link>
-          <Link className={classes.nav} href="#" underline="none">
-            <div className={classes.navMore}>
-              <span>More</span> <MoreIcon />
-            </div>
+            FAQs
           </Link>
 
           <NoSsr>
-            <span style={{ flexGrow: 1 }} />
-
-            <SearchInputMini style={{ width: isMobile ? '100%' : 200, marginTop: 4 }} />
-            <span className={classes.spacer} />
-
-            {/* Post item button */}
-            <Button
-              variant="outlined"
-              color="secondary"
-              component={Link}
-              href="/post-item"
-              disableUnderline>
-              Post item
-            </Button>
-            <span className={classes.spacer} />
-
-            {/* Avatar menu button */}
-            {isLoggedIn ? (
+            {/* Desktop nav buttons */}
+            {!isMobile && (
               <>
-                <Avatar
-                  aria-controls="avatar-menu"
+                <Link className={classes.nav} href="/guides" underline="none">
+                  Guides
+                </Link>
+                <Link className={classes.nav} href="/rules" underline="none">
+                  Rules
+                </Link>
+                <Link className={classes.nav} href="/banned-users" underline="none">
+                  Bans
+                  <LatestBan />
+                </Link>
+
+                <span style={{ flexGrow: 1 }} />
+
+                <SearchInputMini style={{ width: isMobile ? '100%' : 225, marginTop: 4 }} />
+                <span className={classes.spacer} />
+
+                {/* Post item button */}
+                {/*<Button variant="outlined" component={Link} href="/buy-order" disableUnderline>*/}
+                {/*  Buy Order*/}
+                {/*</Button>*/}
+                {/*<span className={classes.spacer} />*/}
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  component={Link}
+                  href="/post-item"
+                  disableUnderline>
+                  Post item
+                </Button>
+                <span className={classes.spacer} />
+
+                {/* Avatar menu button */}
+                {isLoggedIn ? (
+                  <>
+                    <Avatar
+                      aria-controls="avatar-menu"
+                      aria-haspopup="true"
+                      onClick={handleClick}
+                      className={classes.avatar}
+                      glow={isDonationGlowExpired(profile.donated_at)}
+                      {...retinaSrcSet(profile.avatar, 36, 36)}
+                    />
+
+                    <Menu
+                      className={classes.avatarMenu}
+                      id="avatar-menu"
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl)}
+                      onClose={handleClose}>
+                      <NavItems
+                        profile={profile}
+                        onClose={handleClose}
+                        onLogout={handleLogout}
+                        isMobile={isMobile}
+                      />
+                    </Menu>
+                  </>
+                ) : (
+                  <Button startIcon={<SteamIcon />} component={Link} href="/login" disableUnderline>
+                    Sign in
+                  </Button>
+                )}
+              </>
+            )}
+
+            {/* Mobile nav buttons */}
+            {isMobile && (
+              <>
+                <span className={classes.spacer} style={{ flexGrow: 1 }} />
+                {disableSearch && (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    component={Link}
+                    href="/post-item"
+                    disableUnderline
+                    style={{ marginRight: 8 }}>
+                    Post item
+                  </Button>
+                )}
+                <IconButton
+                  aria-controls="more-menu"
                   aria-haspopup="true"
-                  onClick={handleClick}
-                  className={classes.avatar}
-                  glow={isDonationGlowExpired(profile.donated_at)}
-                  {...retinaSrcSet(profile.avatar, 36, 36)}
-                />
+                  size="small"
+                  onClick={handleMoreClick}>
+                  {isLoggedIn ? (
+                    <Avatar
+                      aria-controls="avatar-menu"
+                      aria-haspopup="true"
+                      onClick={handleClick}
+                      className={classes.avatar}
+                      glow={isDonationGlowExpired(profile.donated_at)}
+                      style={{ width: 34, height: 34 }}
+                      {...retinaSrcSet(profile.avatar, 36, 36)}
+                    />
+                  ) : (
+                    <MoreIcon />
+                  )}
+                </IconButton>
+
                 <Menu
                   className={classes.avatarMenu}
-                  id="avatar-menu"
-                  anchorEl={anchorEl}
+                  id="more-menu"
+                  anchorEl={moreEl}
                   keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}>
-                  <NavItems
-                    profile={profile}
-                    onClose={handleClose}
-                    onLogout={handleLogout}
-                    isMobile={isMobile}
-                  />
+                  open={Boolean(moreEl)}
+                  onClose={handleMoreClose}>
+                  {!disableSearch && (
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/post-item"
+                      disableUnderline>
+                      Post item
+                    </MenuItem>
+                  )}
+
+                  {isLoggedIn ? (
+                    <NavItems
+                      profile={profile}
+                      onClose={handleClose}
+                      onLogout={handleLogout}
+                      isMobile={isMobile}
+                    />
+                  ) : (
+                    <MenuItem
+                      onClick={handleMoreClose}
+                      component={Link}
+                      href="/login"
+                      disableUnderline>
+                      Sign in
+                    </MenuItem>
+                  )}
+
+                  <MenuItem onClick={handleClose} component={Link} href="/guides" disableUnderline>
+                    Guides
+                  </MenuItem>
+                  <MenuItem onClick={handleClose} component={Link} href="/rules" disableUnderline>
+                    Rules
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleClose}
+                    component={Link}
+                    href="/banned-users"
+                    disableUnderline>
+                    Bans
+                  </MenuItem>
                 </Menu>
               </>
-            ) : (
-              <Button startIcon={<SteamIcon />} component={Link} href="/login" disableUnderline>
-                Sign in
-              </Button>
             )}
           </NoSsr>
-
-          {/* Mobile nav buttons */}
         </Toolbar>
       </Container>
     </AppBar>

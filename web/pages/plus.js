@@ -5,11 +5,11 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 
-export default function Version({ data }) {
+export default function Plus({ data }) {
   return (
     <div className="container">
       <Head>
-        <title>Treasury</title>
+        <title>Plus</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -19,10 +19,17 @@ export default function Version({ data }) {
         <Container>
           <br />
           <Typography variant="h5" component="h1">
-            Treasury
+            Dotagift Plus
           </Typography>
           <br />
-          <div>List of Treaures</div>
+          <div>List of features</div>
+
+          <ul>
+            <li>Profile Badge</li>
+            <li>Refresher Orb</li>
+            <li>Shopkeeper's Blessing</li>
+            <li>Gem of True Sight</li>
+          </ul>
         </Container>
       </main>
 
