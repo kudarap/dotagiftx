@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
 import { makeStyles } from 'tss-react/mui'
@@ -25,10 +25,10 @@ import { APP_NAME } from '@/constants/strings'
 import NavItems from '@/components/NavItems'
 import LatestBan from './LatestBan'
 
-const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
-
 import brandImage from '../public/brand_2x.png'
 import Image from 'next/image'
+import SearchDialog from './SearchDialog'
+import SearchButton from './SearchButton'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -96,14 +96,10 @@ const defaultProfile = {
 }
 
 export default function Header() {
-  const { classes } = useStyles()
-  // NOTE! this makes the mobile version of the nav to be ignored when on homepage
-  // which is the disableSearch prop uses.
-  const { isTablet: isMobile, isLoggedIn, currentAuth } = useContext(AppContext)
-
-  const [profile, setProfile] = React.useState(defaultProfile)
+  const { isLoggedIn, currentAuth } = useContext(AppContext)
 
   // load profile data if logged in.
+  const [profile, setProfile] = React.useState(defaultProfile)
   React.useEffect(() => {
     ;(async () => {
       if (!isLoggedIn) {
@@ -122,6 +118,8 @@ export default function Header() {
     })()
   }, [])
 
+  const [openSearchDialog, setOpenSearchDialog] = useState(false)
+
   const handleLogout = () => {
     ;(async () => {
       try {
@@ -134,6 +132,8 @@ export default function Header() {
       window.location = '/'
     })()
   }
+
+  const { classes } = useStyles()
 
   return (
     <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
@@ -191,7 +191,10 @@ export default function Header() {
           <NoSsr>
             <span style={{ flexGrow: 1 }} />
 
-            <SearchInputMini style={{ width: isMobile ? '100%' : 200, marginTop: 4 }} />
+            <SearchButton
+              style={{ width: 180, marginTop: 4 }}
+              onClick={() => setOpenSearchDialog(true)}
+            />
             <span className={classes.spacer} />
 
             {/* Post item button */}
@@ -218,6 +221,8 @@ export default function Header() {
           {/* Mobile nav buttons */}
         </Toolbar>
       </Container>
+
+      <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
     </AppBar>
   )
 }
@@ -262,6 +267,7 @@ const moreMenuLinks = [
   ['Updates', '/updates'],
   ['Guides', '/guides'],
   ['FAQs', '/faqs'],
+  ['Middleman', '/middlemen'],
 ].map(n => ({ label: n[0], path: n[1] }))
 
 function MoreMenu() {

@@ -1,75 +1,76 @@
 import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
+import InputBase from '@mui/material/InputBase'
+import Typography from '@mui/material/Typography'
 import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Grid from '@mui/material/Grid'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import SearchIcon from '@mui/icons-material/Search'
-import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
-import SearchInput from '@/components/SearchInput'
-import Link from '@/components/Link'
-import { InputBase } from '@mui/material'
+import Link from './Link'
 
-function generate(element) {
-  return [0, 1, 2, 3, 4].map(value =>
-    React.cloneElement(element, {
-      key: value,
-    })
-  )
-}
+const tempTopKeywords = [
+  { keyword: 'pudge', score: 216 },
+  { keyword: 'immortal', score: 164 },
+  { keyword: '2015', score: 114 },
+  { keyword: 'cache', score: 112 },
+  { keyword: 'shadow fiend', score: 111 },
+  { keyword: 'sven', score: 103 },
+  { keyword: 'ember', score: 101 },
+  { keyword: 'huskar', score: 101 },
+  { keyword: 'Oracle', score: 96 },
+  { keyword: 'mirana', score: 95 },
+  { keyword: 'mars', score: 87 },
+  { keyword: 'dragon knight', score: 80 },
+]
 
-export default function SearchDialog() {
+function SearchDialog({ open, onClose }) {
   const { isMobile } = useContext(AppContext)
 
-  const [open, setOpen] = useState(false)
-  const handleClose = () => setOpen(false)
-
-  const handleSubmit = () => {
-    handleClose()
+  const [keyword, setKeyword] = useState('')
+  const router = useRouter()
+  const handleSubmit = e => {
+    e.preventDefault()
+    router.push(`/search?q=${keyword}`)
   }
 
   return (
     <>
-      <Button variant="outlined" sx={{ px: 1, py: 0.8, minWidth: 0 }} onClick={() => setOpen(true)}>
-        <SearchIcon fontSize="small" />
-      </Button>
-
       <Dialog
         fullWidth
         fullScreen={isMobile}
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle id="alert-dialog-title" component="form" onSubmit={handleSubmit}>
           <InputBase
             autoFocus
+            fullWidth
             sx={{ fontSize: '1.1em' }}
             startAdornment={<SearchIcon sx={{ mr: 2, fontSize: '1.1em' }} />}
-            endAdornment={<DialogCloseButton sx={{ fontSize: '1.1em' }} onClick={handleClose} />}
+            endAdornment={<DialogCloseButton sx={{ fontSize: '1.1em' }} onClick={onClose} />}
             placeholder="Search..."
-            fullWidth
+            onChange={e => setKeyword(e.target.value)}
           />
         </DialogTitle>
         <Divider />
-        <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <List>
-                {generate(
-                  <ListItem>
-                    <ListItemText primary="Single-line item" />
-                  </ListItem>
-                )}
-              </List>
-            </Grid>
+        <DialogContent sx={{ pb: 6 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Top keywords
+          </Typography>
+          <Grid container spacing={{ xs: 2, sm: 1 }}>
+            {tempTopKeywords.map(item => (
+              <Grid item sm={6} xs={12}>
+                <Link href={`/search?q=${item.keyword}`} style={{ textTransform: 'capitalize' }}>
+                  {item.keyword}
+                </Link>
+              </Grid>
+            ))}
           </Grid>
         </DialogContent>
       </Dialog>
@@ -77,8 +78,12 @@ export default function SearchDialog() {
   )
 }
 SearchDialog.propTypes = {
-  userID: PropTypes.string,
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
 }
 SearchDialog.defaultProps = {
-  userID: '',
+  open: false,
+  onClose: () => {},
 }
+
+export default SearchDialog
