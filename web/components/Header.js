@@ -30,6 +30,7 @@ import Image from 'next/image'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import { IconButton } from '@mui/material'
+import MenuDrawer from './MenuDrawer'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -119,6 +120,7 @@ export default function Header() {
     })()
   }, [])
 
+  const [openDrawer, setOpenDrawer] = useState(false)
   const [openSearchDialog, setOpenSearchDialog] = useState(false)
 
   const handleLogout = () => {
@@ -212,6 +214,7 @@ export default function Header() {
               Post item
             </Button>
             <Button
+              onClick={() => setOpenDrawer(true)}
               variant="outlined"
               sx={{
                 display: {
@@ -250,6 +253,7 @@ export default function Header() {
       </Container>
 
       <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
+      <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} />
     </AppBar>
   )
 }
@@ -291,9 +295,9 @@ AvatarMenu.propTypes = {
 }
 
 const moreMenuLinks = [
-  ['Updates', '/updates'],
   ['Guides', '/guides'],
   ['FAQs', '/faqs'],
+  ['Updates', '/updates'],
   ['Middleman', '/middlemen'],
 ].map(n => ({ label: n[0], path: n[1] }))
 
