@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
-import dynamic from 'next/dynamic'
 import { makeStyles } from 'tss-react/mui'
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@/components/Avatar'
@@ -8,8 +7,9 @@ import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import NoSsr from '@mui/material/NoSsr'
-import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
 import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
+import MenuIcon from '@mui/icons-material/Menu'
 import HoverMenu from 'material-ui-popup-state/HoverMenu'
 import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
 import * as Storage from '@/service/storage'
@@ -29,6 +29,7 @@ import brandImage from '../public/brand_2x.png'
 import Image from 'next/image'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
+import { IconButton } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -75,15 +76,15 @@ const useStyles = makeStyles()(theme => ({
     width: theme.spacing(1),
   },
   nav: {
+    [theme.breakpoints.down('md')]: {
+      display: 'none',
+    },
     fontWeight: theme.typography.fontWeightMedium,
     '&:hover': {
       color: '#f1e0ba',
     },
     padding: theme.spacing(0, 1.5),
     cursor: 'pointer',
-  },
-  navMore: {
-    display: 'flex',
   },
 }))
 
@@ -140,7 +141,6 @@ export default function Header() {
       {/*<NoticeMe />*/}
       <Container disableMinHeight maxWidth="xl">
         <Toolbar variant="dense" disableGutters>
-          {/* Branding button */}
           {/* Desktop nav branding */}
           <Link href="/" disableUnderline className={classes.logo}>
             <Image
@@ -185,7 +185,6 @@ export default function Header() {
             Bans
             <LatestBan />
           </Link>
-
           <MoreMenu />
 
           <NoSsr>
@@ -199,6 +198,12 @@ export default function Header() {
 
             {/* Post item button */}
             <Button
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'inherit',
+                },
+              }}
               variant="outlined"
               color="secondary"
               component={Link}
@@ -206,13 +211,35 @@ export default function Header() {
               disableUnderline>
               Post item
             </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                display: {
+                  width: 36,
+                  height: 36,
+                  xs: 'inherit',
+                  md: 'none',
+                },
+              }}>
+              <MenuIcon fontSize="small" />
+            </Button>
             <span className={classes.spacer} />
 
             {/* Avatar menu button */}
             {isLoggedIn ? (
               <AvatarMenu profile={profile} onLogout={handleLogout} />
             ) : (
-              <Button startIcon={<SteamIcon />} component={Link} href="/login" disableUnderline>
+              <Button
+                sx={{
+                  display: {
+                    xs: 'none',
+                    md: 'inherit',
+                  },
+                }}
+                startIcon={<SteamIcon />}
+                component={Link}
+                href="/login"
+                disableUnderline>
                 Sign in
               </Button>
             )}
@@ -279,11 +306,17 @@ function MoreMenu() {
   const { classes } = useStyles()
   return (
     <div>
-      <Typography className={classes.nav} {...bindHover(popupState)}>
-        <div className={classes.navMore}>
-          <span>More</span> <MoreIcon />
-        </div>
-      </Typography>
+      <Box
+        sx={{
+          display: {
+            sm: 'none',
+            md: 'flex',
+          },
+        }}
+        className={classes.nav}
+        {...bindHover(popupState)}>
+        <span>More</span> <MoreIcon />
+      </Box>
       <HoverMenu
         {...bindMenu(popupState)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
@@ -298,6 +331,16 @@ function MoreMenu() {
             {menu.label}
           </MenuItem>
         ))}
+
+        <MenuItem
+          onClick={popupState.close}
+          component={Link}
+          href="https://discord.gg/UFt9Ny42kM"
+          target="_blank"
+          rel="noreferrer noopener"
+          disableUnderline>
+          Discord
+        </MenuItem>
       </HoverMenu>
     </div>
   )
