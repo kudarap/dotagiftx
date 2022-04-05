@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
 import { makeStyles } from 'tss-react/mui'
@@ -23,7 +23,10 @@ import { APP_NAME } from '@/constants/strings'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import NavItems from '@/components/NavItems'
 import LatestBan from './LatestBan'
-import { NoSsr } from '@mui/material'
+import { NoSsr, Typography } from '@mui/material'
+import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
+import HoverMenu from 'material-ui-popup-state/HoverMenu'
+
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
 import brandImage from '../public/brand_2x.png'
@@ -79,6 +82,7 @@ const useStyles = makeStyles()(theme => ({
       color: '#f1e0ba',
     },
     padding: theme.spacing(0, 1.5),
+    cursor: 'pointer',
   },
   navMore: {
     display: 'flex',
@@ -128,14 +132,6 @@ export default function Header({ disableSearch }) {
     setAnchorEl(null)
   }
 
-  const [moreEl, setMoreEl] = React.useState(null)
-  const handleMoreClick = e => {
-    setMoreEl(e.currentTarget)
-  }
-  const handleMoreClose = () => {
-    setMoreEl(null)
-  }
-
   const handleLogout = () => {
     ;(async () => {
       try {
@@ -149,8 +145,6 @@ export default function Header({ disableSearch }) {
       window.location = '/'
     })()
   }
-
-  const isBrandMini = !disableSearch && isMobile
 
   return (
     <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
@@ -177,7 +171,7 @@ export default function Header({ disableSearch }) {
             /> */}
           </Link>
 
-          <span className={classes.spacer} style={{ width: 20 }} />
+          <span className={classes.spacer} />
 
           {/* <Link
             className={classes.nav}
@@ -192,14 +186,7 @@ export default function Header({ disableSearch }) {
           <Link className={classes.nav} href="/treasures" underline="none">
             Treasures
           </Link>
-          <Link
-            className={classes.nav}
-            href="/plus"
-            underline="none"
-            style={{
-              color: '#DFE9F2',
-              textShadow: '0px 0px 10px #275AF2, 2px 2px 10px #41A0F2',
-            }}>
+          <Link className={classes.nav} href="/plus" underline="none">
             Dotagift<span style={{ fontSize: 20 }}>+</span>
           </Link>
           <Link className={classes.nav} href="/rules" underline="none">
@@ -209,11 +196,8 @@ export default function Header({ disableSearch }) {
             Bans
             <LatestBan />
           </Link>
-          <Link className={classes.nav} href="#" underline="none">
-            <div className={classes.navMore}>
-              <span>More</span> <MoreIcon />
-            </div>
-          </Link>
+
+          <MoreMenu />
 
           <NoSsr>
             <span style={{ flexGrow: 1 }} />
@@ -276,6 +260,45 @@ Header.propTypes = {
 }
 Header.defaultProps = {
   disableSearch: false,
+}
+
+const moreMenuLinks = [
+  ['Updates', '/updates'],
+  ['Guides', '/guides'],
+  ['FAQs', '/faqs'],
+].map(n => ({ label: n[0], path: n[1] }))
+
+function MoreMenu() {
+  const popupState = usePopupState({
+    variant: 'popover',
+    popupId: 'demoMenu',
+  })
+
+  const { classes } = useStyles()
+  return (
+    <div>
+      <Typography id="more-button" className={classes.nav} {...bindHover(popupState)}>
+        <div className={classes.navMore}>
+          <span>More</span> <MoreIcon />
+        </div>
+      </Typography>
+      <HoverMenu
+        {...bindMenu(popupState)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        {moreMenuLinks.map(menu => (
+          <MenuItem
+            key={menu.path}
+            onClick={popupState.close}
+            component={Link}
+            href={menu.path}
+            disableUnderline>
+            {menu.label}
+          </MenuItem>
+        ))}
+      </HoverMenu>
+    </div>
+  )
 }
 
 function NoticeMe() {

@@ -9,6 +9,7 @@ import { Grid } from '@mui/material'
 import { styled } from '@mui/system'
 import Image from 'next/image'
 import Link from '@/components/Link'
+import { APP_NAME } from '@/constants/strings'
 
 const treasures = [
   {
@@ -146,13 +147,11 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }))
 
-const pageTitle = 'All Giftable Treasures'
-
-export default function Treasures({ data }) {
+export default function Treasures() {
   return (
     <div className="container">
       <Head>
-        <title>{pageTitle}</title>
+        <title>{APP_NAME} :: All Giftable Treasures</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -176,8 +175,8 @@ export default function Treasures({ data }) {
         </div>
 
         <Container style={{ position: 'relative' }}>
-          <Typography variant="h5" component="h1" sx={{ mt: -35, mb: 4 }}>
-            {pageTitle}
+          <Typography variant="h4" component="h1" sx={{ mt: -35, mb: 4 }}>
+            All Giftable Treasures
           </Typography>
 
           <Grid container spacing={1}>

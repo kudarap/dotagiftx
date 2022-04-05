@@ -4,12 +4,13 @@ import Typography from '@mui/material/Typography'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
+import { APP_NAME } from '@/constants/strings'
 
 export default function Plus({ data }) {
   return (
     <div className="container">
       <Head>
-        <title>Plus</title>
+        <title>{APP_NAME} :: Plus</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
