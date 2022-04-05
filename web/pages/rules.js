@@ -7,6 +7,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Link from '@/components/Link'
+import { APP_NAME } from '@/constants/strings'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -30,7 +31,7 @@ export default function Version() {
   return (
     <div className="container">
       <Head>
-        <title>Rules</title>
+        <title>{APP_NAME} :: Rules</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

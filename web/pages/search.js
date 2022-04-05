@@ -8,19 +8,25 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
-import { catalogSearch } from '@/service/api'
+import { catalogSearch, statsMarketSummary } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import CatalogList from '@/components/CatalogList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import { APP_NAME, APP_URL } from '@/constants/strings'
+import SearchInput from '@/components/SearchInput'
+import * as format from '@/lib/format'
 
 const useStyles = makeStyles()(theme => ({
   main: {
     marginTop: theme.spacing(2),
   },
-  listControl: {},
+  searchBar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1, 0, 1),
+  },
   paginator: {
     float: 'right',
   },
@@ -44,7 +50,7 @@ function SelectSort({ className, style, ...other }) {
   )
 }
 
-export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
+export default function Search({ catalogs: initialCatalogs, marketSummary, filter, canonicalURL }) {
   const { classes } = useStyles()
 
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
@@ -85,6 +91,8 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
 
   const isBidType = filter.sort === 'recent-bid'
 
+  const description = `Search on ${marketSummary.live} Giftable items`
+
   return (
     <>
       <Head>
@@ -96,15 +104,20 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
 
       <main className={classes.main}>
         <Container>
-          {searchTerm && (
-            <>
-              <Typography component="h1" variant="h6">
-                {catalogs && catalogs.total_count} results for &quot;{searchTerm}&quot;
-              </Typography>
-            </>
-          )}
+          <SearchInput label="" />
 
-          <SelectSort style={{ float: 'right' }} value={sort} onChange={handleSelectSortChange} />
+          <div className={classes.searchBar}>
+            {searchTerm && (
+              <div>
+                <Typography component="h1" variant="h6">
+                  {catalogs && catalogs.total_count} results for &quot;{searchTerm}&quot;
+                </Typography>
+              </div>
+            )}
+
+            <SelectSort style={{ float: 'right' }} value={sort} onChange={handleSelectSortChange} />
+          </div>
+
           {!catalogs && <LinearProgress color="secondary" />}
           {catalogs && (
             <div>
@@ -153,6 +166,12 @@ export async function getServerSideProps({ query }) {
     error = e.message
   }
 
+  const marketSummary = await statsMarketSummary()
+  marketSummary.live = format.numberWithCommas(marketSummary.live)
+  marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
+  marketSummary.sold = format.numberWithCommas(marketSummary.sold)
+  marketSummary.bids.bid_live = format.numberWithCommas(marketSummary.bids.bid_live)
+
   const canonicalURL = `${APP_URL}/search?q=${filter.q}`
 
   return {
@@ -160,6 +179,7 @@ export async function getServerSideProps({ query }) {
       canonicalURL,
       filter,
       catalogs,
+      marketSummary,
       error,
     },
   }
