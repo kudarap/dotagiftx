@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
 import { makeStyles } from 'tss-react/mui'
@@ -6,26 +6,24 @@ import AppBar from '@mui/material/AppBar'
 import Avatar from '@/components/Avatar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import IconButton from '@mui/material/IconButton'
+import NoSsr from '@mui/material/NoSsr'
+import Typography from '@mui/material/Typography'
 import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
-import SearchIcon from '@mui/icons-material/Search'
-import Container from '@/components/Container'
+import HoverMenu from 'material-ui-popup-state/HoverMenu'
+import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
+import { APP_CACHE_PROFILE } from '@/constants/app'
+import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
-import { APP_CACHE_PROFILE } from '@/constants/app'
 import NavItems from '@/components/NavItems'
 import LatestBan from './LatestBan'
-import { NoSsr, Typography } from '@mui/material'
-import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
-import HoverMenu from 'material-ui-popup-state/HoverMenu'
 
 const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
 
@@ -97,7 +95,7 @@ const defaultProfile = {
   created_at: null,
 }
 
-export default function Header({ disableSearch }) {
+export default function Header() {
   const { classes } = useStyles()
   // NOTE! this makes the mobile version of the nav to be ignored when on homepage
   // which is the disableSearch prop uses.
@@ -124,14 +122,6 @@ export default function Header({ disableSearch }) {
     })()
   }, [])
 
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const handleClick = e => {
-    setAnchorEl(e.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
   const handleLogout = () => {
     ;(async () => {
       try {
@@ -140,7 +130,6 @@ export default function Header({ disableSearch }) {
         console.warn(e.message)
       }
       destroyLoginSess()
-      handleClose()
       // eslint-disable-next-line no-undef
       window.location = '/'
     })()
@@ -218,30 +207,7 @@ export default function Header({ disableSearch }) {
 
             {/* Avatar menu button */}
             {isLoggedIn ? (
-              <>
-                <Avatar
-                  aria-controls="avatar-menu"
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                  className={classes.avatar}
-                  glow={isDonationGlowExpired(profile.donated_at)}
-                  {...retinaSrcSet(profile.avatar, 36, 36)}
-                />
-                <Menu
-                  className={classes.avatarMenu}
-                  id="avatar-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}>
-                  <NavItems
-                    profile={profile}
-                    onClose={handleClose}
-                    onLogout={handleLogout}
-                    isMobile={isMobile}
-                  />
-                </Menu>
-              </>
+              <AvatarMenu profile={profile} onLogout={handleLogout} />
             ) : (
               <Button startIcon={<SteamIcon />} component={Link} href="/login" disableUnderline>
                 Sign in
@@ -262,6 +228,36 @@ Header.defaultProps = {
   disableSearch: false,
 }
 
+function AvatarMenu({ profile, onLogout }) {
+  const popupState = usePopupState({
+    variant: 'popover',
+    popupId: 'avatar-menu',
+  })
+
+  const { classes } = useStyles()
+  return (
+    <>
+      <Avatar
+        className={classes.avatar}
+        glow={isDonationGlowExpired(profile.donated_at)}
+        {...retinaSrcSet(profile.avatar, 36, 36)}
+        {...bindHover(popupState)}
+      />
+      <HoverMenu
+        className={classes.avatarMenu}
+        {...bindMenu(popupState)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        <NavItems profile={profile} onClose={popupState.close} onLogout={onLogout} />
+      </HoverMenu>
+    </>
+  )
+}
+AvatarMenu.propTypes = {
+  profile: PropTypes.object,
+  onLogout: PropTypes.func,
+}
+
 const moreMenuLinks = [
   ['Updates', '/updates'],
   ['Guides', '/guides'],
@@ -271,13 +267,13 @@ const moreMenuLinks = [
 function MoreMenu() {
   const popupState = usePopupState({
     variant: 'popover',
-    popupId: 'demoMenu',
+    popupId: 'more-menu',
   })
 
   const { classes } = useStyles()
   return (
     <div>
-      <Typography id="more-button" className={classes.nav} {...bindHover(popupState)}>
+      <Typography className={classes.nav} {...bindHover(popupState)}>
         <div className={classes.navMore}>
           <span>More</span> <MoreIcon />
         </div>
