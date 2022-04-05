@@ -65,7 +65,7 @@ function SearchDialog({ open, onClose }) {
           </Typography>
           <Grid container spacing={{ xs: 2, sm: 1 }}>
             {tempTopKeywords.map(item => (
-              <Grid item sm={6} xs={12}>
+              <Grid key={item.keyword} item sm={6} xs={12}>
                 <Link href={`/search?q=${item.keyword}`} style={{ textTransform: 'capitalize' }}>
                   {item.keyword}
                 </Link>
