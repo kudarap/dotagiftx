@@ -1,48 +1,42 @@
-import React, { useContext, useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import { useRouter } from 'next/router'
-import InputBase from '@mui/material/InputBase'
-import Typography from '@mui/material/Typography'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
-import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
-import Button from '@mui/material/Button'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
 import Divider from '@mui/material/Divider'
-import SearchIcon from '@mui/icons-material/Search'
-import DialogCloseButton from '@/components/DialogCloseButton'
-import AppContext from '@/components/AppContext'
 import Link from './Link'
+
+const convertToNav = ([label, path]) => ({ label, path })
 
 const primaryLinks = [
   ['Home', '/'],
+  ['Post item', '/post-item'],
+].map(convertToNav)
+
+const secondaryLinks = [
   ['Treasures', '/treasures'],
   ['Rules', '/rules'],
   ['Bans', '/banned-users'],
   ['Guides', '/guides'],
-].map(n => ({ label: n[0], path: n[1] }))
-
-const secondaryLinks = [
   ['FAQs', '/faqs'],
   ['Updates', '/updates'],
   ['Middleman', '/middlemen'],
-].map(n => ({ label: n[0], path: n[1] }))
+].map(convertToNav)
 
 function MenuDrawer({ profile, open, onClose }) {
+  let links = [...primaryLinks]
+  if (!profile.id) {
+    links.splice(1, 0, convertToNav(['Login', '/login']))
+  }
+
   return (
     <>
       <Drawer anchor="right" open={open} onClose={onClose}>
         <Box sx={{ width: 250 }} role="presentation" onClick={onClose} onKeyDown={onClose}>
           <List>
-            {primaryLinks.map(link => (
+            {links.map(link => (
               <ListItem button key={link.path} component={Link} href={link.path}>
                 <ListItemText primary={link.label} />
               </ListItem>

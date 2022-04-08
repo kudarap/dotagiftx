@@ -253,7 +253,7 @@ export default function Header() {
       </Container>
 
       <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
-      <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} />
+      <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
     </AppBar>
   )
 }
