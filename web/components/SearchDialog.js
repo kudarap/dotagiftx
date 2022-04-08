@@ -35,6 +35,7 @@ function SearchDialog({ open, onClose }) {
   const router = useRouter()
   const handleSubmit = e => {
     e.preventDefault()
+    onClose()
     router.push(`/search?q=${keyword}`)
   }
 
@@ -66,7 +67,10 @@ function SearchDialog({ open, onClose }) {
           <Grid container spacing={{ xs: 2, sm: 1 }}>
             {tempTopKeywords.map(item => (
               <Grid key={item.keyword} item sm={6} xs={12}>
-                <Link href={`/search?q=${item.keyword}`} style={{ textTransform: 'capitalize' }}>
+                <Link
+                  href={`/search?q=${item.keyword}`}
+                  style={{ textTransform: 'capitalize' }}
+                  onClick={onClose}>
                   {item.keyword}
                 </Link>
               </Grid>
