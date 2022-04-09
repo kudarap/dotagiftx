@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 import { teal, blueGrey, grey } from '@mui/material/colors'
+import { responsiveFontSizes } from '@mui/material'
 
 const baseThemeOpts = {
   typography: {
@@ -15,6 +16,9 @@ const baseThemeOpts = {
     secondary: {
       main: '#C79123',
     },
+    bid: {
+      main: teal[300],
+    },
     accent: {
       main: teal.A200,
     },
@@ -28,6 +32,15 @@ const baseThemeOpts = {
     },
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          borderTop: 'none',
+          borderLeft: 'none',
+          borderRight: 'none',
+        },
+      },
+    },
     MuiAvatar: {
       defaultProps: {
         variant: 'rounded',
@@ -39,12 +52,17 @@ const baseThemeOpts = {
       },
     },
     MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
       defaultProps: {
         // variant: 'default',
       },
       variants: [
         {
-          props: { variant: 'defaultx' },
+          props: { variant: 'default' },
           style: {
             textTransform: 'none',
             border: `2px dashed white`,
@@ -65,24 +83,26 @@ const baseThemeOpts = {
 
 const muiTheme = createTheme(baseThemeOpts)
 
-export default muiTheme
+export default responsiveFontSizes(muiTheme)
 
-export const muiLightTheme = createTheme({
-  ...baseThemeOpts,
-  palette: {
-    ...baseThemeOpts.palette,
-    mode: 'light',
-    background: {
-      paper: blueGrey.A100,
+export const muiLightTheme = responsiveFontSizes(
+  createTheme({
+    ...baseThemeOpts,
+    palette: {
+      ...baseThemeOpts.palette,
+      mode: 'light',
+      background: {
+        paper: blueGrey.A100,
+      },
     },
-  },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          borderBottomColor: blueGrey[200],
+    components: {
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+            borderBottomColor: blueGrey[200],
+          },
         },
       },
     },
-  },
-})
+  })
+)

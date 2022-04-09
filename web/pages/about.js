@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import RedditIcon from '@mui/icons-material/Reddit'
@@ -13,7 +13,7 @@ import Button from '@/components/Button'
 // import SteamIcon from '@/components/SteamIcon'
 import DiscordIcon from '@/components/DiscordIcon'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function About() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <>

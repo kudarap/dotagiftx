@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
+import Image from 'next/image'
 
 const baseSizeQuality = 20
 export function retinaSrcSet(filename, width, height) {
@@ -16,7 +17,6 @@ export function retinaSrcSet(filename, width, height) {
 
 export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
   const contStyle = {
-    display: 'flex',
     lineHeight: 1,
     flexShrink: 0,
     overflow: 'hidden',
@@ -29,8 +29,6 @@ export default function ItemImage({ image, title, rarity, className, width, heig
 
   const imgStyle = {
     color: 'transparent',
-    width: '100%',
-    height: '100%',
     objectFit: 'cover',
     textAlign: 'center',
     textIndent: '10000px',
@@ -48,12 +46,14 @@ export default function ItemImage({ image, title, rarity, className, width, heig
 
   return (
     <div style={contStyle} className={className}>
-      <img
-        loading="lazy"
+      <Image
         src={baseSrc}
-        srcSet={srcSet}
         alt={title || image}
         style={imgStyle}
+        width={width}
+        height={height}
+        quality={100}
+        responsive
         {...other}
       />
     </div>

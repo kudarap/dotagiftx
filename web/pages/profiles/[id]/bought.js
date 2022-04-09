@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
 import { APP_NAME, APP_URL } from '@/constants/strings'
@@ -13,7 +13,7 @@ import Container from '@/components/Container'
 import Link from '@/components/Link'
 import MarketActivity from '@/components/MarketActivity'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -44,7 +44,7 @@ const defaultData = {
 const scrollBias = 300
 
 export default function UserReserved({ profile, stats, canonicalURL }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [datatable, setDatatable] = React.useState(defaultData)
   const [filter, setFilter] = React.useState({ ...defaultFilter, user_id: profile.id })

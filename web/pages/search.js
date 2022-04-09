@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import LinearProgress from '@mui/material/LinearProgress'
 import Select from '@mui/material/Select'
@@ -16,7 +16,7 @@ import CatalogList from '@/components/CatalogList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     marginTop: theme.spacing(2),
   },
@@ -45,7 +45,7 @@ function SelectSort({ className, style, ...other }) {
 }
 
 export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)
   const [loading, setLoading] = React.useState(false)

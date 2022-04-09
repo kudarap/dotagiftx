@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import startsWith from 'lodash/startsWith'
 import Paper from '@mui/material/Paper'
 import TextField from '@mui/material/TextField'
@@ -20,7 +20,7 @@ import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ReSellInput from './ReSellerInput'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {
     maxWidth: theme.breakpoints.values.sm,
     margin: '0 auto',
@@ -80,7 +80,7 @@ const checkMarketPayload = payload => {
 }
 
 export default function MarketForm() {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isLoggedIn } = useContext(AppContext)
 
   const [item, setItem] = React.useState(defaultItem)

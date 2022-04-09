@@ -1,11 +1,11 @@
 import React from 'react'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Container from '@/components/Container'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     marginTop: theme.spacing(6),
   },
@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
 
 // eslint-disable-next-line react/prop-types
 function Error({ statusCode }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <>

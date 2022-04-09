@@ -11,7 +11,6 @@ import (
 func Sha1(s string) string {
 	h := sha1.New()
 	h.Write([]byte(s + Salt))
-
 	return hex.EncodeToString(h.Sum(nil))
 }
 

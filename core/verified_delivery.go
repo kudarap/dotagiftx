@@ -45,7 +45,7 @@ const (
 	DeliveryStatusSenderVerified DeliveryStatus = 300
 
 	// DeliveryStatusPrivate buyer's inventory is not visible to
-	// public and we can do nothing about it.
+	// public, and we can do nothing about it.
 	DeliveryStatusPrivate DeliveryStatus = 400
 
 	// DeliveryStatusError error occurred during API request or

@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import Head from 'next/head'
 import Router from 'next/router'
 import dynamic from 'next/dynamic'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import LinearProgress from '@mui/material/LinearProgress'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
@@ -34,7 +34,7 @@ const CatalogList = dynamic(() => import('@/components/CatalogList'))
 const Link = dynamic(() => import('@/components/Link'))
 const Footer = dynamic(() => import('@/components/Footer'))
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -84,7 +84,7 @@ const topSellerItemsFilter = {
 }
 
 export default function Index({ marketSummary, trendingItems }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const { data: recentBidItems, error: recentBidError } = useSWR(
     [CATALOGS, recentBidItemsFilter],

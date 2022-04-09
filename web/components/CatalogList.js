@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import { teal as bidColor } from '@mui/material/colors'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -18,7 +18,7 @@ import TableHeadCell from '@/components/TableHeadCell'
 import ItemImage from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   th: {
     cursor: 'pointer',
   },
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function CatalogList({ items = [], loading, error, variant, bidType }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const isRecentMode = variant === 'recent'

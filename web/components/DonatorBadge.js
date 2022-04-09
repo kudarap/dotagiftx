@@ -1,7 +1,7 @@
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Link from '@/components/Link'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   root: {
     color: 'white',
     padding: '0 4px',
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function DonatorBadge({ style: initialStyle, size, ...other }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const currentStyle = { ...initialStyle }
   if (size === 'medium') {

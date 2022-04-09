@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 // import Avatar from '@mui/material/Avatar'
 import Avatar from '@/components/Avatar'
 import Button from '@/components/Button'
@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   avatar: {
     width: theme.spacing(3),
     height: theme.spacing(3),
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function AvatarMenu({ profile }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const [anchorEl, setAnchorEl] = React.useState(null)
 

@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import makeStyles from '@mui/styles/makeStyles'
-import { debounce } from '@mui/material'
+import { makeStyles } from 'tss-react/mui'
+import { debounce, NoSsr } from '@mui/material'
 import { teal as bidColor } from '@mui/material/colors'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -13,7 +13,6 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
-
 import {
   VERIFIED_INVENTORY_MAP_ICON,
   VERIFIED_INVENTORY_VERIFIED_RESELL,
@@ -36,7 +35,7 @@ import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   seller: {
     display: 'flex',
     padding: theme.spacing(2),
@@ -80,7 +79,7 @@ export default function MarketList({
   onSortChange,
   onTabChange,
 }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile, currentAuth } = useContext(AppContext)
   const currentUserID = currentAuth.user_id || null
 
@@ -243,7 +242,7 @@ OrderList.defaultProps = OfferList.defaultProps
 
 function baseTable(Component) {
   const wrapped = props => {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const { currentUserID } = props
 
@@ -429,23 +428,25 @@ function baseTable(Component) {
 
 const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (
   <TableCell align="right">
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-      <Typography variant="body2" style={{ marginRight: 16 }}>
-        {amount(market.price, market.currency)}
-      </Typography>
-      {currentUserID === market.user.id ? (
-        // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
-        <div>
-          <Button variant="outlined" onClick={onRemove}>
-            Remove
-          </Button>
-        </div>
-      ) : (
-        <BuyButton variant="contained" onClick={onContact}>
-          Contact Seller
-        </BuyButton>
-      )}
-    </div>
+    <NoSsr>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+        <Typography variant="body2" style={{ marginRight: 16 }}>
+          {amount(market.price, market.currency)}
+        </Typography>
+        {currentUserID === market.user.id ? (
+          // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+          <div>
+            <Button variant="outlined" onClick={onRemove}>
+              Remove
+            </Button>
+          </div>
+        ) : (
+          <BuyButton variant="contained" onClick={onContact}>
+            Contact Seller
+          </BuyButton>
+        )}
+      </div>
+    </NoSsr>
   </TableCell>
 ))
 

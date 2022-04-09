@@ -1,8 +1,8 @@
-import withStyles from '@mui/styles/withStyles'
+import { withStyles } from 'tss-react/mui'
 import { teal as primary } from '@mui/material/colors'
 import Button from '@/components/Button'
 
-export default withStyles(theme => ({
+export default withStyles(Button, theme => ({
   root: {
     color: primary[300],
     borderColor: 'rgba(77, 182, 172, 0.5)',
@@ -12,4 +12,4 @@ export default withStyles(theme => ({
       backgroundColor: 'rgba(77, 182, 172, 0.1)',
     },
   },
-}))(Button)
+}))

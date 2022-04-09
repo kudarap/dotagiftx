@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
 import { APP_NAME } from '@/constants/strings'
@@ -9,7 +9,7 @@ import Container from '@/components/Container'
 import Link from '@/components/Link'
 import Footer from '@/components/Footer'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -35,7 +35,7 @@ function slugify(s) {
 }
 
 function Question({ children, ...other }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const id = slugify(children)
   return (
     <Typography
@@ -59,8 +59,8 @@ function Answer({ children }) {
   )
 }
 
-export default function Faq() {
-  const classes = useStyles()
+export default function Faqs() {
+  const { classes } = useStyles()
 
   return (
     <>

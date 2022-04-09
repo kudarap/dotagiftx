@@ -42,7 +42,7 @@ type (
 		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}
 
-	// AuthService provides access to services.
+	// AuthService provides access to service.
 	AuthService interface {
 		// SteamLogin redirects for authorization and process creation of auth.
 		SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth, error)
@@ -66,10 +66,10 @@ type (
 		// GetByUsername returns an auth details by username from data store.
 		GetByUsername(username string) (*Auth, error)
 
-		// GetByUsernameAndPass returns an auth details by username and password from data store.
+		// GetByUsernameAndPassword returns an auth details by username and password from data store.
 		GetByUsernameAndPassword(username, password string) (*Auth, error)
 
-		// Get returns an auth details by refreshToken from data store.
+		// GetByRefreshToken returns an auth details by refreshToken from data store.
 		GetByRefreshToken(refreshToken string) (*Auth, error)
 
 		// Create persists a new auth to data store.

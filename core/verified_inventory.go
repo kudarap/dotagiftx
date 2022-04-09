@@ -31,7 +31,7 @@ const (
 	InventoryStatusVerified InventoryStatus = 200
 
 	// InventoryStatusPrivate buyer's inventory is not visible to
-	// public and we can do nothing about it.
+	// public, and we can do nothing about it.
 	InventoryStatusPrivate InventoryStatus = 400
 
 	// InventoryStatusError error occurred during API request or

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import {
   MARKET_STATUS_BID_COMPLETED,
   MARKET_STATUS_LIVE,
@@ -22,7 +22,7 @@ import MyBuyOrderList from '@/components/MyBuyOrderList'
 import TabPanel from '@/components/TabPanel'
 import MyOrderActivity from '@/components/MyOrderActivity'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
@@ -39,7 +39,7 @@ const initialMarketStats = {
 }
 
 export default function MyOrders() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const { currentAuth } = React.useContext(AppContext)
 

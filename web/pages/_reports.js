@@ -1,7 +1,7 @@
 import React from 'react'
 import useSWR from 'swr'
 import map from 'lodash/map'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import { fetcher, REPORTS } from '@/service/api'
 import { dateFromNow } from '@/lib/format'
@@ -11,7 +11,7 @@ import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Link from '@/components/Link'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   main: {
     [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
@@ -30,7 +30,7 @@ const filter = {
 }
 
 export default function Feedback() {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const { data: reports, error } = useSWR([REPORTS, filter], fetcher)
 

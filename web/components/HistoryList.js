@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import makeStyles from '@mui/styles/makeStyles'
+import { makeStyles } from 'tss-react/mui'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -18,7 +18,7 @@ import ItemImage from '@/components/ItemImage'
 import HistoryViewDialog from '@/components/HistoryViewDialog'
 import AppContext from '@/components/AppContext'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   seller: {
     display: 'inline-flex',
   },
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function HistoryList({ datatable, loading, error }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
   const [currentMarket, setCurrentMarket] = React.useState(null)

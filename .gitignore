@@ -12,6 +12,7 @@
 /dotagiftx_amd64
 /dxworker
 /dxworker_amd64
+/deliverycheck
 
 # local data
 .localdata
