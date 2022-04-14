@@ -16,14 +16,14 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import { APP_NAME } from '@/constants/strings'
-import tangoImage from '../public/assets/tango.png'
 
 const FeatureList = styled('ul')(({ theme }) => ({
   listStyle: 'none',
   '& li:before': {
-    content: `'✅ '`,
+    content: `'✔'`,
+    marginRight: 8,
   },
-  paddingLeft: theme.spacing(1),
+  paddingLeft: 0,
 }))
 
 export default function Plus() {
@@ -40,9 +40,16 @@ export default function Plus() {
         <Container>
           <Box>
             <Typography
+              sx={{ mt: 8 }}
+              style={{
+                background: 'linear-gradient( to right, #B5793D 20%, #F0CF59 50%, #B5793D 80% )',
+                '-webkit-background-clip': 'text',
+                '-webkit-text-fill-color': 'transparent',
+                letterSpacing: 3,
+                // textTransform: 'uppercase',
+              }}
               variant="h3"
               component="h1"
-              sx={{ mt: 8 }}
               fontWeight="bold"
               color="secondary">
               Dotagift Plus
@@ -53,7 +60,7 @@ export default function Plus() {
             </Typography>
           </Box>
 
-          <Grid container spacing={4} sx={{ mt: 0 }}>
+          <Grid container spacing={2} sx={{ mt: 0 }}>
             <Grid item xs={12} sm={6} md={4}>
               <Box
                 sx={{
@@ -125,24 +132,70 @@ export default function Plus() {
             </Grid>
           </Grid>
           <br />
-          <Typography variant="caption">Subscriptions automatically renew</Typography>
+          <Typography variant="body2" paragraph textAlign="center" color="text.secondary">
+            Subscriptions automatically renew
+          </Typography>
 
           <Box sx={{ mt: 5 }}>
-            <Typography variant="h6">Exclusive Features</Typography>
-            <ul>
-              <li>Partner Badge</li>
-              <li>Refresher Shard - Automatically refreshes expiring buy orders.</li>
-              <li>Refresher Orb - Automatically refreshes expiring buy orders and listings.</li>
-              <li>
-                Shopkeeper's Contract - Grants the ability to resell items outside your inventory.
-              </li>
-              <li>Dedicated Pos-5 - Exclusive support channel on Discord and Steam.</li>
-            </ul>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Exclusive Features
+            </Typography>
+            <Grid container spacing={1.5}>
+              <Grid item md={3} sm={4} xs={6}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                  <img src="/assets/badge-bp.png" height={48} />
+                  <Typography>Partner Badge</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Simple cosmetic enhancement on your profile
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item md={3} sm={4} xs={6}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                  <img src="/assets/refresher-shard.png" height={48} />
+                  <Typography>Refresher Shard</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Automatically refreshes expiring buy orders
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item md={3} sm={4} xs={6}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                  <img src="/assets/refresher-orb.png" height={48} />
+                  <Typography>Refresher Orb</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Automatically refreshes expiring buy orders and listings
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item md={3} sm={4} xs={6}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                  <img src="/assets/recipe.png" height={48} />
+                  <Typography>Shopkeeper's Contract</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Grants the ability to resell items outside your inventory
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item md={3} sm={4} xs={6}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                  <img src="/assets/courier.png" height={48} />
+                  <Typography>Dedicated Pos-5</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Exclusive support channel on Discord and Steam
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
           </Box>
 
           <Box
             sx={{
-              mt: 10,
+              mt: 5,
               p: 4,
               textAlign: 'center',
               background: 'url(/assets/plus-banner.png) no-repeat top center',
@@ -166,7 +219,7 @@ function FeatureUnlockables() {
     <React.Fragment>
       <Timeline>
         <TimelineItem>
-          <TimelineOppositeContent color="text.secondary">3 subscribers</TimelineOppositeContent>
+          <TimelineOppositeContent color="text.secondary">5 subscribers</TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineDot />
             <TimelineConnector />

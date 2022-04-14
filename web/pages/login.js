@@ -37,7 +37,8 @@ const useStyles = makeStyles()(theme => ({
   list: {
     listStyle: 'none',
     '& li:before': {
-      content: `'✔ '`,
+      content: `'✔'`,
+      marginRight: 8,
     },
     paddingLeft: theme.spacing(2),
     marginTop: 0,
