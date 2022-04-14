@@ -33,14 +33,15 @@ export default function Updates() {
           <Typography variant="h5" gutterBottom>
             April 10, 2022
           </Typography>
-          <Typography variant="body" gutterBottom>
+          {/* <Typography variant="body" gutterBottom>
             v0.18.0: Dotagift+
-          </Typography>
+          </Typography> */}
           <Typography color="textSecondary">
             <ul>
               <li>added subscription page</li>
               <li>added treasures page</li>
               <li>added update page</li>
+              <li>added search dialog with top queries</li>
               <li>reworked navigation header</li>
             </ul>
           </Typography>
@@ -51,9 +52,9 @@ export default function Updates() {
           <Typography variant="h5" gutterBottom>
             Feb 27, 2022
           </Typography>
-          <Typography variant="body" gutterBottom>
+          {/* <Typography variant="body" gutterBottom>
             v0.17.1: Enable SSR
-          </Typography>
+          </Typography> */}
           <Typography color="textSecondary">
             <ul>
               <li>added inventory checker cli tool</li>
@@ -71,9 +72,9 @@ export default function Updates() {
           <Typography variant="h5" gutterBottom>
             Feb 27, 2022
           </Typography>
-          <Typography variant="body" gutterBottom>
+          {/* <Typography variant="body" gutterBottom>
             v0.17.0: Improved logo and material-ui v5 migration
-          </Typography>
+          </Typography> */}
           <Typography color="textSecondary">
             <ul>
               <li>added hammer service endpoint</li>

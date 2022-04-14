@@ -52,6 +52,8 @@ export default function SearchButton({ style, onClick, ...other }) {
           placeholder="Search..."
           variant="outlined"
           color="secondary"
+          onChange={onClick}
+          value=""
           {...other}
         />
       </SearchPaper>
