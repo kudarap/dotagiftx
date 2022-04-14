@@ -175,9 +175,9 @@ export default function Header() {
           <Link className={classes.nav} href="/treasures" underline="none">
             Treasures
           </Link>
-          <Link className={classes.nav} href="/plus" underline="none">
+          {/* <Link className={classes.nav} href="/plus" underline="none">
             Dotagift<span style={{ fontSize: 20 }}>+</span>
-          </Link>
+          </Link> */}
           <Link className={classes.nav} href="/rules" underline="none">
             Rules
           </Link>
@@ -342,6 +342,9 @@ function MoreMenu() {
           rel="noreferrer noopener"
           disableUnderline>
           Discord
+        </MenuItem>
+        <MenuItem onClick={popupState.close} component={Link} href="/plus" disableUnderline>
+          Dotagift<span style={{ fontSize: 20 }}>+</span>
         </MenuItem>
       </HoverMenu>
     </div>

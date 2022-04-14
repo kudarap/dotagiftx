@@ -16,6 +16,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import { APP_NAME } from '@/constants/strings'
+import Link from '@/components/Link'
 
 const FeatureList = styled('ul')(({ theme }) => ({
   listStyle: 'none',
@@ -72,7 +73,9 @@ export default function Plus() {
                 <Typography variant="h6">Supporter</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
                   <li>Profile Badge</li>
-                  <li>Refresher Shard</li>
+                  <li>
+                    <Link href="#exclusive-features">Refresher Shard</Link>
+                  </li>
                 </Box>
                 <Button variant="outlined" fullWidth sx={{ bgcolor: 'rgb(78, 93, 128)' }}>
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
@@ -94,7 +97,9 @@ export default function Plus() {
                 <Typography variant="h6">Trader</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
                   <li>Profile Badge</li>
-                  <li>Refresher Orb</li>
+                  <li>
+                    <Link href="#exclusive-features">Refresher Orb</Link>
+                  </li>
                 </Box>
                 <Button variant="outlined" fullWidth sx={{ bgcolor: 'rgb(100, 159, 192)' }}>
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
@@ -118,9 +123,15 @@ export default function Plus() {
                 <Typography variant="h6">Partner</Typography>
                 <Box component={FeatureList}>
                   <li>Profile Badge</li>
-                  <li>Refresher Orb</li>
-                  <li>Shopkeeper's Contract</li>
-                  <li>Dedicated Pos-5</li>
+                  <li>
+                    <Link href="#exclusive-features">Refresher Orb</Link>
+                  </li>
+                  <li>
+                    <Link href="#exclusive-features">Shopkeeper's Contract</Link>
+                  </li>
+                  <li>
+                    <Link href="#exclusive-features">Dedicated Pos-5</Link>
+                  </li>
                 </Box>
                 <Button variant="outlined" fullWidth sx={{ bgcolor: 'rgb(197, 144, 35)' }}>
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
@@ -137,7 +148,7 @@ export default function Plus() {
           </Typography>
 
           <Box sx={{ mt: 5 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 2 }} id="exclusive-features">
               Exclusive Features
             </Typography>
             <Grid container spacing={1.5}>

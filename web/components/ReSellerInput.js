@@ -11,7 +11,7 @@ export default function ReSellInput(props) {
       <FormControlLabel
         style={{ color: '#ff9800' }}
         control={<Checkbox checked={checked} onChange={() => setChecked(!checked)} />}
-        label="Item Resell - I confirm this item exist on seller's inventory."
+        label="Shopkeeper's Contract - I confirm this item exist on seller's inventory."
       />
       {checked && (
         <>
