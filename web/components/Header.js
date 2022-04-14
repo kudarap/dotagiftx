@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
+import Image from 'next/image'
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@/components/Avatar'
 import Toolbar from '@mui/material/Toolbar'
@@ -24,12 +25,9 @@ import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import NavItems from '@/components/NavItems'
 import LatestBan from './LatestBan'
-
 import brandImage from '../public/brand_2x.png'
-import Image from 'next/image'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
-import { IconButton } from '@mui/material'
 import MenuDrawer from './MenuDrawer'
 
 const useStyles = makeStyles()(theme => ({
