@@ -141,7 +141,7 @@ export default function Plus() {
               Exclusive Features
             </Typography>
             <Grid container spacing={1.5}>
-              <Grid item md={3} sm={4} xs={6}>
+              {/* <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
                   <img src="/assets/badge-bp.png" height={48} />
                   <Typography>Partner Badge</Typography>
@@ -149,7 +149,7 @@ export default function Plus() {
                     Simple cosmetic enhancement on your profile
                   </Typography>
                 </Box>
-              </Grid>
+              </Grid> */}
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
@@ -195,7 +195,7 @@ export default function Plus() {
 
           <Box
             sx={{
-              mt: 5,
+              mt: 8,
               p: 4,
               textAlign: 'center',
               background: 'url(/assets/plus-banner.png) no-repeat top center',
