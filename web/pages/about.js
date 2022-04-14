@@ -38,9 +38,31 @@ export default function About() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
-            Who is behind this?
+            What about it?
+          </Typography>
+          <Typography component="h1" color="textSecondary">
+            <Typography color="secondary" component="span">
+              {APP_NAME}
+            </Typography>{' '}
+            is short for Dota 2 giftables exchange, it was made to provide better search and pricing
+            for Dota 2 giftable items like Collector&apos;s Caches which are not available on{' '}
+            <Link href="https://steamcommunity.com" rel="noreferrer noopener" target="_blank">
+              Steam Community Market
+            </Link>
+            . The project was heavily inspired by <strong>Giftable Megathread</strong> from{' '}
+            <Link
+              href="https://www.reddit.com/r/Dota2Trade"
+              rel="noreferrer noopener"
+              target="_blank">
+              r/Dota2Trade
+            </Link>
+            .
           </Typography>
           <br />
+
+          <Typography variant="h5" gutterBottom>
+            Who is behind this?
+          </Typography>
           <Avatar src="/kudarap.jpg" style={{ width: 100, height: 100 }} />
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; author
