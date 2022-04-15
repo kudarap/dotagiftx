@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Divider from '@mui/material/Divider'
+import Link from '@/components/Link'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -31,7 +32,7 @@ export default function Updates() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" gutterBottom>
-            April 10, 2022
+            April 15, 2022
           </Typography>
           {/* <Typography variant="body" gutterBottom>
             v0.18.0: Dotagift+
@@ -41,9 +42,16 @@ export default function Updates() {
               <li>added subscription page</li>
               <li>added treasures page</li>
               <li>added update page</li>
+              <li>added expiring post page</li>
               <li>added search dialog with top queries</li>
               <li>reworked navigation header</li>
             </ul>
+          </Typography>
+          <Typography>
+            Read more about{' '}
+            <Link href="/expiring-posts" color="secondary">
+              Expiring Posts
+            </Link>
           </Typography>
           <br />
           <Divider />

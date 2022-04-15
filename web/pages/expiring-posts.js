@@ -70,6 +70,13 @@ export default function ThanksSubscriber() {
             </Link>
             .
           </Typography>
+          <br />
+
+          <Typography>
+            Also in this update, we added a new <Link href="/treasures">Treasures</Link> page and a
+            subscription-based feature <Link href="/plus">Dotagift Plus</Link> to support the
+            project.
+          </Typography>
 
           <Divider sx={{ my: 4 }} />
 
