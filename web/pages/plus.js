@@ -221,6 +221,7 @@ export default function Plus() {
 
           <Box
             sx={{
+              display: 'none',
               mt: 8,
               p: 4,
               textAlign: 'center',

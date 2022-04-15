@@ -41,7 +41,7 @@ export default function About() {
             What about it?
           </Typography>
           <Typography component="h1" color="textSecondary">
-            <Typography color="secondary" component="span">
+            <Typography color="secondary" component="span" fontWeight="bold">
               {APP_NAME}
             </Typography>{' '}
             is short for Dota 2 giftables exchange, it was made to provide better search and pricing
