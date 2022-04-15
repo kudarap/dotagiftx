@@ -29,6 +29,7 @@ import brandImage from '../public/brand_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
+import ExpiringPostsBanner from './ExpiringPostsBanner'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -137,32 +138,33 @@ export default function Header() {
   const { classes } = useStyles()
 
   return (
-    <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
-      {/*<NoticeMe />*/}
-      <Container disableMinHeight maxWidth="xl">
-        <Toolbar variant="dense" disableGutters>
-          {/* Desktop nav branding */}
-          <Link href="/" disableUnderline className={classes.logo}>
-            <Image
-              width={134}
-              height={30}
-              layout="fixed"
-              className={classes.brand}
-              src={brandImage}
-              alt={APP_NAME}
-            />
-            {/* <img
+    <>
+      <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
+        {/*<NoticeMe />*/}
+        <Container disableMinHeight maxWidth="xl">
+          <Toolbar variant="dense" disableGutters>
+            {/* Desktop nav branding */}
+            <Link href="/" disableUnderline className={classes.logo}>
+              <Image
+                width={134}
+                height={30}
+                layout="fixed"
+                className={classes.brand}
+                src={brandImage}
+                alt={APP_NAME}
+              />
+              {/* <img
               width={134}
               className={classes.brand}
               src="/brand_1x.png"
               srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
               alt={APP_NAME}
             /> */}
-          </Link>
+            </Link>
 
-          <span className={classes.spacer} />
+            <span className={classes.spacer} />
 
-          {/* <Link
+            {/* <Link
             className={classes.nav}
             href="/search?q=Aghanim"
             underline="none"
@@ -172,64 +174,31 @@ export default function Header() {
             }}>
             Aghanim's 2021
           </Link> */}
-          <Link className={classes.nav} href="/treasures" underline="none">
-            Treasures
-          </Link>
-          {/* <Link className={classes.nav} href="/plus" underline="none">
+            <Link className={classes.nav} href="/treasures" underline="none">
+              Treasures
+            </Link>
+            {/* <Link className={classes.nav} href="/plus" underline="none">
             Dotagift<span style={{ fontSize: 20 }}>+</span>
           </Link> */}
-          <Link className={classes.nav} href="/rules" underline="none">
-            Rules
-          </Link>
-          <Link className={classes.nav} href="/banned-users" underline="none">
-            Bans
-            <LatestBan />
-          </Link>
-          <MoreMenu />
+            <Link className={classes.nav} href="/rules" underline="none">
+              Rules
+            </Link>
+            <Link className={classes.nav} href="/banned-users" underline="none">
+              Bans
+              <LatestBan />
+            </Link>
+            <MoreMenu />
 
-          <NoSsr>
-            <span style={{ flexGrow: 1 }} />
+            <NoSsr>
+              <span style={{ flexGrow: 1 }} />
 
-            <SearchButton
-              style={{ width: 180, marginTop: 4 }}
-              onClick={() => setOpenSearchDialog(true)}
-            />
-            <span className={classes.spacer} />
+              <SearchButton
+                style={{ width: 180, marginTop: 4 }}
+                onClick={() => setOpenSearchDialog(true)}
+              />
+              <span className={classes.spacer} />
 
-            {/* Post item button */}
-            <Button
-              sx={{
-                display: {
-                  xs: 'none',
-                  md: 'inherit',
-                },
-              }}
-              variant="outlined"
-              color="secondary"
-              component={Link}
-              href="/post-item"
-              disableUnderline>
-              Post item
-            </Button>
-            <Button
-              onClick={() => setOpenDrawer(true)}
-              variant="outlined"
-              sx={{
-                display: {
-                  width: 36,
-                  height: 36,
-                  xs: 'inherit',
-                  md: 'none',
-                },
-              }}>
-              <MenuIcon fontSize="small" />
-            </Button>
-            <span className={classes.spacer} />
-
-            {/* Avatar menu button */}
-            {isLoggedIn ? (
-              <AvatarMenu profile={profile} onLogout={handleLogout} />
-            ) : (
+              {/* Post item button */}
               <Button
                 sx={{
                   display: {
@@ -237,22 +206,58 @@ export default function Header() {
                     md: 'inherit',
                   },
                 }}
-                startIcon={<SteamIcon />}
+                variant="outlined"
+                color="secondary"
                 component={Link}
-                href="/login"
+                href="/post-item"
                 disableUnderline>
-                Sign in
+                Post item
               </Button>
-            )}
-          </NoSsr>
+              <Button
+                onClick={() => setOpenDrawer(true)}
+                variant="outlined"
+                sx={{
+                  display: {
+                    width: 36,
+                    height: 36,
+                    xs: 'inherit',
+                    md: 'none',
+                  },
+                }}>
+                <MenuIcon fontSize="small" />
+              </Button>
+              <span className={classes.spacer} />
 
-          {/* Mobile nav buttons */}
-        </Toolbar>
-      </Container>
+              {/* Avatar menu button */}
+              {isLoggedIn ? (
+                <AvatarMenu profile={profile} onLogout={handleLogout} />
+              ) : (
+                <Button
+                  sx={{
+                    display: {
+                      xs: 'none',
+                      md: 'inherit',
+                    },
+                  }}
+                  startIcon={<SteamIcon />}
+                  component={Link}
+                  href="/login"
+                  disableUnderline>
+                  Sign in
+                </Button>
+              )}
+            </NoSsr>
 
-      <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
-      <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
-    </AppBar>
+            {/* Mobile nav buttons */}
+          </Toolbar>
+        </Container>
+
+        <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
+        <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
+      </AppBar>
+
+      <ExpiringPostsBanner userID={currentAuth.user_id} />
+    </>
   )
 }
 Header.propTypes = {
