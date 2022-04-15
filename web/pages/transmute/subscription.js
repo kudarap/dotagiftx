@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react'
-import {
-  PayPalScriptProvider,
-  PayPalButtons,
-  usePayPalScriptReducer,
-} from '@paypal/react-paypal-js'
+import React, { useEffect, useState } from 'react'
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
+import { useRouter } from 'next/router'
 
-export const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
+const isPaypalLive = false
 
 const subscriptions = {
   supporter: {
@@ -78,8 +75,16 @@ const FeatureList = styled('ul')(({ theme }) => ({
 }))
 
 export default function Subscription({ data }) {
-  const plusId = 'trader'
-  const sub = subscriptions[plusId]
+  const router = useRouter()
+  const { query } = router
+  const [subscription, setSubscription] = useState(null)
+  useEffect(() => {
+    if (!query.id) {
+      return
+    }
+
+    setSubscription(subscriptions[query.id])
+  }, [query.id])
 
   return (
     <div className="container">
@@ -91,24 +96,26 @@ export default function Subscription({ data }) {
             <Typography variant="h4" component="h1" fontWeight="bold">
               Dotagift Plus
             </Typography>
-            <Typography variant="h6">{sub.name} Subscription</Typography>
-            <FeatureList>
-              {sub.features.map(v => (
-                <li key={v}>{v}</li>
-              ))}
-            </FeatureList>
+            {subscription && (
+              <>
+                <Typography variant="h6">{subscription.name} Subscription</Typography>
+                <FeatureList>
+                  {subscription.features.map(v => (
+                    <li key={v}>{v}</li>
+                  ))}
+                </FeatureList>
+              </>
+            )}
           </Box>
 
           <Box sx={{ textAlign: 'center' }}>
-            <PayPalScriptProvider
-              options={{
-                'client-id': PAYPAL_CLIENT_ID,
-                components: 'buttons',
-                intent: 'subscription',
-                vault: true,
-              }}>
-              <ButtonWrapper type="subscription" planId={sub.planId} customId="STEAMID-2000001" />
-            </PayPalScriptProvider>
+            {subscription && (
+              <ButtonWrapper
+                type="subscription"
+                planId={isPaypalLive ? subscription.planIdLive : subscription.planId}
+                customId="STEAMID-2000001"
+              />
+            )}
           </Box>
         </Container>
       </main>

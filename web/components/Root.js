@@ -6,8 +6,11 @@ import * as Auth from '@/service/auth'
 import { blacklistSearch } from '@/service/api'
 import AppContext from '@/components/AppContext'
 import WhatsNewDialog from '@/components/WhatsNewDialog'
+import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 // import SurveyFab from '@/components/SurveyFab'
 // import { REPORT_LABEL_SURVEY_NEXT } from '@/constants/report'
+
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 
 function Root({ children }) {
   const theme = useTheme()
@@ -32,7 +35,16 @@ function Root({ children }) {
 
   return (
     <AppContext.Provider value={{ isMobile, isTablet, currentAuth, isLoggedIn, latestBan }}>
-      {children}
+      <PayPalScriptProvider
+        options={{
+          'client-id': PAYPAL_CLIENT_ID,
+          components: 'buttons',
+          intent: 'subscription',
+          vault: true,
+        }}>
+        {children}
+      </PayPalScriptProvider>
+
       {/* {currentAuth.user_id && (
         <Theme>
           <SurveyFab userID={currentAuth.user_id} label={REPORT_LABEL_SURVEY_NEXT} />

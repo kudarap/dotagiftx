@@ -77,7 +77,12 @@ export default function Plus() {
                     <Link href="#exclusive-features">Refresher Shard</Link>
                   </li>
                 </Box>
-                <Button variant="outlined" fullWidth sx={{ bgcolor: 'rgb(78, 93, 128)' }}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  sx={{ bgcolor: 'rgb(78, 93, 128)' }}
+                  component={Link}
+                  href="/transmute/subscription?id=supporter">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
                     $1
                   </Typography>
@@ -101,7 +106,12 @@ export default function Plus() {
                     <Link href="#exclusive-features">Refresher Orb</Link>
                   </li>
                 </Box>
-                <Button variant="outlined" fullWidth sx={{ bgcolor: 'rgb(100, 159, 192)' }}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  sx={{ bgcolor: 'rgb(100, 159, 192)' }}
+                  component={Link}
+                  href="/transmute/subscription?id=trader">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
                     $3
                   </Typography>
@@ -133,7 +143,12 @@ export default function Plus() {
                     <Link href="#exclusive-features">Dedicated Pos-5</Link>
                   </li>
                 </Box>
-                <Button variant="outlined" fullWidth sx={{ bgcolor: 'rgb(197, 144, 35)' }}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  sx={{ bgcolor: 'rgb(197, 144, 35)' }}
+                  component={Link}
+                  href="/transmute/subscription?id=partner">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
                     $20
                   </Typography>
