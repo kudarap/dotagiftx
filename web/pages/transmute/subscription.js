@@ -115,7 +115,7 @@ export default function Subscription({ data }) {
             )}
           </Box>
 
-          {!currentAuth.isLoggedIn && (
+          {!currentAuth.user_id && (
             <Alert severity="warning">
               You must be signed in to proceed — <Link href="/login">Sign in now</Link>
             </Alert>
