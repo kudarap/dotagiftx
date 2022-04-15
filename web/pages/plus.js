@@ -43,7 +43,7 @@ export default function Plus() {
             <Typography
               sx={{ mt: 8 }}
               style={{
-                background: 'linear-gradient( to right, #B5793D 20%, #F0CF59 50%, #B5793D 80% )',
+                background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
                 '-webkit-background-clip': 'text',
                 '-webkit-text-fill-color': 'transparent',
                 letterSpacing: 3,
@@ -211,7 +211,7 @@ export default function Plus() {
               textAlign: 'center',
               background: 'url(/assets/plus-banner.png) no-repeat top center',
             }}>
-            <Typography variant="h6">Unlockable Features</Typography>
+            <Typography variant="h6">Partnership Goals</Typography>
             <FeatureUnlockables />
             <Typography variant="caption">
               Locked features will start development when goal is reached.
