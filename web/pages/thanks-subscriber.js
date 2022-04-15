@@ -16,9 +16,7 @@ export default function Version() {
             <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
               Thank you for Supporting DotagiftX
             </Typography>
-            <Typography>
-              It might take a few minutes to take effect and might ask you to re-login
-            </Typography>
+            <Typography>Effect may take few minutes and might ask you to re-login</Typography>
           </Box>
         </Container>
       </main>
