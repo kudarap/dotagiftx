@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
-import { useRouter } from 'next/router'
+import AppContext from '@/components/AppContext'
+import Link from '@/components/Link'
 
 const isPaypalLive = false
 
@@ -75,6 +78,8 @@ const FeatureList = styled('ul')(({ theme }) => ({
 }))
 
 export default function Subscription({ data }) {
+  const { currentAuth } = useContext(AppContext)
+
   const router = useRouter()
   const { query } = router
   const [subscription, setSubscription] = useState(null)
@@ -86,6 +91,8 @@ export default function Subscription({ data }) {
     setSubscription(subscriptions[query.id])
   }, [query.id])
 
+  const isReady = currentAuth.steam_id && subscription
+
   return (
     <div className="container">
       <Header />
@@ -96,7 +103,7 @@ export default function Subscription({ data }) {
             <Typography variant="h4" component="h1" fontWeight="bold">
               Dotagift Plus
             </Typography>
-            {subscription && (
+            {isReady && (
               <>
                 <Typography variant="h6">{subscription.name} Subscription</Typography>
                 <FeatureList>
@@ -108,12 +115,18 @@ export default function Subscription({ data }) {
             )}
           </Box>
 
+          {!currentAuth.isLoggedIn && (
+            <Alert severity="warning">
+              You must be signed in to proceed — <Link href="/login">Sign in now</Link>
+            </Alert>
+          )}
+
           <Box sx={{ textAlign: 'center' }}>
-            {subscription && (
+            {isReady && (
               <ButtonWrapper
                 type="subscription"
                 planId={isPaypalLive ? subscription.planIdLive : subscription.planId}
-                customId="STEAMID-2000001"
+                customId={`STEAMID-${currentAuth.steam_id}`}
               />
             )}
           </Box>
