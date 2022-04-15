@@ -15,18 +15,21 @@ const isPaypalLive = false
 
 const subscriptions = {
   supporter: {
+    id: 'supporter',
     name: 'Supporter',
     features: ['Supporter Badge', 'Refresher Shard'],
     planId: 'P-616716383W896284VMJMR4CY',
     planIdLive: 'P-616716383W896284VMJMR4CY',
   },
   trader: {
+    id: 'trader',
     name: 'Trader',
     features: ['Trader Badge', 'Refresher Orb'],
     planId: 'P-28V29656NC814125PMJMSDWQ',
     planIdLive: 'P-28V29656NC814125PMJMSDWQ',
   },
   partner: {
+    id: 'partner',
     name: 'Partner',
     features: ['Partner Badge', 'Refresher Orb', "Shopkeeper's Contract", 'Dedicated Pos-5'],
     planId: 'P-2FS77965H7642004PMJMSD6Q',
@@ -34,8 +37,10 @@ const subscriptions = {
   },
 }
 
-const ButtonWrapper = ({ type, planId, customId }) => {
+const ButtonWrapper = ({ type, planId, customId, subId }) => {
   const [{ options }, dispatch] = usePayPalScriptReducer()
+
+  const router = useRouter()
 
   useEffect(() => {
     dispatch({
@@ -56,9 +61,12 @@ const ButtonWrapper = ({ type, planId, customId }) => {
             custom_id: customId,
           })
           .then(orderId => {
-            // send orderId to subscription verifier to ack the process
             return orderId
           })
+      }}
+      onApprove={data => {
+        // send orderId to subscription verifier to ack the process
+        router.push(`/thanks-subscriber?id=${subId}`)
       }}
       style={{
         label: 'subscribe',
@@ -87,9 +95,13 @@ export default function Subscription({ data }) {
     if (!query.id) {
       return
     }
+    if (!currentAuth.user_id) {
+      router.push('/login')
+      return
+    }
 
     setSubscription(subscriptions[query.id])
-  }, [query.id])
+  }, [query.id, currentAuth.user_id])
 
   const isReady = currentAuth.steam_id && subscription
 
@@ -115,18 +127,13 @@ export default function Subscription({ data }) {
             )}
           </Box>
 
-          {!currentAuth.user_id && (
-            <Alert severity="warning">
-              You must be signed in to proceed — <Link href="/login">Sign in now</Link>
-            </Alert>
-          )}
-
           <Box sx={{ textAlign: 'center' }}>
             {isReady && (
               <ButtonWrapper
                 type="subscription"
                 planId={isPaypalLive ? subscription.planIdLive : subscription.planId}
                 customId={`STEAMID-${currentAuth.steam_id}`}
+                subId={subscription.id}
               />
             )}
           </Box>
