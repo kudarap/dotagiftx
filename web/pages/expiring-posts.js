@@ -50,7 +50,7 @@ export default function ThanksSubscriber() {
 
             <Typography fontWeight="bold">Buy orders - 7 days</Typography>
             <Typography color="text.secondary">
-              Buyer oders on the other hand will have 7 days validity and same with the item
+              Buyer orders on the other hand will have 7 days validity and same with the item
               listings, they need to re-post their order if they still require it.
             </Typography>
             <br />
