@@ -34,23 +34,24 @@ export default function ThanksSubscriber() {
             <Typography>
               Due to number of outdated listings on site, some improvements were made to make sure
               that posts were updated regularly by both seller and buyer. We will role out the
-              update on <span style={{ color: 'coral' }}>May 1, 2022</span> and start removing very
-              old posts.
+              update on <span style={{ color: 'salmon' }}>May 1, 2022</span> and start removing aged
+              posts.
             </Typography>
           </Box>
 
           <Box sx={{ mb: 2 }}>
             <Typography fontWeight="bold">Listings - 30 days</Typography>
             <Typography color="text.secondary">
-              Sellers item will be available on site for 30 days from posted date, they need to
-              re-list their items and make necessary updates if needed.
+              Seller listings will be available on site for 30 days from posted date, they need to
+              re-list their items and make necessary updates if needed and will reset the
+              expiration.
             </Typography>
             <br />
 
             <Typography fontWeight="bold">Buy orders - 7 days</Typography>
             <Typography color="text.secondary">
-              on the other hand will be having 7 days validity and same with the item listings, they
-              need to re-post their order if they still require it.
+              Buyer oders on the other hand will have 7 days validity and same with the item
+              listings, they need to re-post their order if they still require it.
             </Typography>
             <br />
           </Box>
@@ -58,14 +59,14 @@ export default function ThanksSubscriber() {
           <Typography>
             Let us know what you think by reaching us on{' '}
             <Link
-              color="secondary"
+              underline="always"
               target="_blank"
               rel="noreferrer noopener"
               href="https://discord.gg/UFt9Ny42kM">
               Discord
             </Link>{' '}
             or send us a{' '}
-            <Link color="secondary" href="/feedback">
+            <Link underline="always" href="/feedback">
               Feedback
             </Link>
             .
@@ -73,12 +74,18 @@ export default function ThanksSubscriber() {
           <br />
 
           <Typography>
-            Also in this update, we added a new <Link href="/treasures">Treasures</Link> page and a
-            subscription-based feature <Link href="/plus">Dotagift Plus</Link> to support the
-            project.
+            Also in this update, we added a new{' '}
+            <Link href="/treasures" underline="always">
+              Treasures
+            </Link>{' '}
+            page and a subscription-based feature{' '}
+            <Link href="/plus" underline="always">
+              Dotagift+
+            </Link>{' '}
+            to support the project.
           </Typography>
 
-          <Divider sx={{ my: 4 }} />
+          <Divider sx={{ mt: 5, mb: 3.5 }} />
 
           <Box>
             <Typography variant="h6" sx={{ mb: 2 }}>
@@ -86,32 +93,46 @@ export default function ThanksSubscriber() {
             </Typography>
             <Typography fontWeight="bold">What will happen with my current listings?</Typography>
             <Typography color="text.secondary">
-              Your current listing will still be available and 30days(seller)/ 7 days(buyer)
-              validity will start on effective date provided for expiring items.
+              Your current posts will still be available and 30 days
+            </Typography>
+            <br />
+
+            <Typography fontWeight="bold">What will happen with my current buy orders?</Typography>
+            <Typography color="text.secondary">
+              Your current posts will still be available and 7 days
+            </Typography>
+            <br />
+
+            <Typography fontWeight="bold">Do I need to re-post after it expires?</Typography>
+            <Typography color="text.secondary">
+              Yes, as it will be automatically removed after the expiration date.
             </Typography>
             <br />
 
             <Typography fontWeight="bold">
-              Do I need to re post my listings/orders after it expires?
+              Does updating the price resets the expiration?
             </Typography>
             <Typography color="text.secondary">
-              Yes, as it will be automatically deleted after 30days(seller)/ 7 days(buyer).
+              Yes, because that is the point of this update. Updating the listing with same pricing
+              will also reset the expiration.
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">
-              What should I do to avoid re-listing/re-posting?
-            </Typography>
+            <Typography fontWeight="bold">What should I do to avoid re-posting?</Typography>
             <Typography color="text.secondary">
               We do have new features on site where you need to subscribe a month for your items to
-              not expire. Please refer to Dotagift+ page.
+              not expire. Please refer to{' '}
+              <Link href="/plus" underline="always">
+                Dotagift+
+              </Link>{' '}
+              page.
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">Why the sudden change/update?</Typography>
+            <Typography fontWeight="bold">Why the sudden change?</Typography>
             <Typography color="text.secondary">
-              This is to ensure that all items posted on site is updated and active seller/buyer
-              will be prioritize.
+              This is to ensure that all items posted on site is updated and active users will be
+              prioritize.
             </Typography>
             <br />
           </Box>
