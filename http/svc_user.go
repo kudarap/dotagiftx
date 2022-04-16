@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -57,7 +58,7 @@ func handlePublicProfile(svc core.UserService, cache core.Cache) http.HandlerFun
 	}
 }
 
-func handleProcSubscription(svc core.UserService) http.HandlerFunc {
+func handleProcSubscription(svc core.UserService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			SubscriptionID string `json:"subscription_id"`
@@ -73,6 +74,10 @@ func handleProcSubscription(svc core.UserService) http.HandlerFunc {
 			return
 		}
 
+		go func() {
+			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
+			cache.BulkDel(marketCacheKeyPrefix)
+		}()
 		respondOK(w, u)
 	}
 }

@@ -52,7 +52,8 @@ export default function ThanksSubscriber() {
 
     ;(async () => {
       try {
-        await processMySubscription(subscriptionID)
+        const res = await processMySubscription(subscriptionID)
+        Storage.save(APP_CACHE_PROFILE, res)
         setVerified(true)
       } catch (e) {
         setVerified(false)
