@@ -33,7 +33,12 @@ const (
 	UserStatusBanned    UserStatus = 400
 )
 
-const UserSubscriptionResell UserSubscription = 1
+const (
+	UserSubscriptionResell    UserSubscription = 1
+	UserSubscriptionSupporter UserSubscription = 100
+	UserSubscriptionTrader    UserSubscription = 101
+	UserSubscriptionPartner   UserSubscription = 109
+)
 
 type (
 	UserStatus uint
@@ -58,8 +63,10 @@ type (
 		RankScore   int               `json:"rank_score" db:"rank_score,omitempty"`
 
 		// NOTE! Experimental subscription flag
-		Subscription UserSubscription `json:"subscription" db:"subscription,omitempty"`
-		Hammer       bool             `json:"hammer"       db:"hammer,omitempty"`
+		Subscription UserSubscription `json:"subscription"  db:"subscription,omitempty"`
+		SubscribedAt *time.Time       `json:"subscribed_at" db:"subscribed_at,omitempty"`
+		Boons        []string         `json:"boons"         db:"boons,omitempty"`
+		Hammer       bool             `json:"hammer"        db:"hammer,omitempty"`
 	}
 
 	// UserService provides access to user service.
@@ -146,6 +153,15 @@ const (
 	userScoreVerifiedDeliverySenderRate = 6
 )
 
+type UserBoon string
+
+const (
+	BoonRefresherShard      = "REFRESHER_SHARD"
+	BoonRefresherOrb        = "REFRESHER_ORB"
+	BoonShopKeepersContract = "SHOPKEEPERS_CONTRACT"
+	BoonDedicatedPos5       = "DEDICATED_POS_5"
+)
+
 // CalcRankScore return user score base on profile and market activity.
 func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore = 1
@@ -158,4 +174,13 @@ func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore += stats.DeliveryNameVerified * userScoreVerifiedDeliveryNameRate
 	u.RankScore += stats.DeliverySenderVerified * userScoreVerifiedDeliverySenderRate
 	return &u
+}
+
+func (u User) HasBoon(ub UserBoon) bool {
+	for _, b := range u.Boons {
+		if ub == UserBoon(b) {
+			return true
+		}
+	}
+	return false
 }

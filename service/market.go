@@ -135,7 +135,7 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		}
 
 		// NOTE! Experimental for reselling feature.
-		m, err := s.experimentalProcessResell(mkt)
+		m, err := s.processShopkeepersContract(mkt)
 		if err != nil {
 			return err
 		}
@@ -167,7 +167,13 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	return nil
 }
 
-func (s *marketService) experimentalProcessResell(m *core.Market) (*core.Market, error) {
+func (s *marketService) processShopkeepersContract(m *core.Market) (*core.Market, error) {
+	user, err := s.userStg.Get(m.UserID)
+	if err != nil {
+		return nil, err
+	}
+	user.HasBoon(core.BoonShopKeepersContract)
+
 	if strings.TrimSpace(m.SellerSteamID) == "" {
 		return m, nil
 	}
