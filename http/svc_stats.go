@@ -85,6 +85,28 @@ func handleStatsTopHeroes(itemSvc core.ItemService, cache core.Cache) http.Handl
 	return topStatsBaseHandler(itemSvc.TopHeroes, cache)
 }
 
+func handleStatsTopKeywords(statsSvc core.StatsService, cache core.Cache) http.HandlerFunc {
+	const expiration = time.Hour * 12
+	return func(w http.ResponseWriter, r *http.Request) {
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
+		res, err := statsSvc.TopKeywords()
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		go cache.Set(cacheKey, res, expiration)
+		respondOK(w, res)
+	}
+}
+
 func topStatsBaseHandler(fn func() ([]string, error), cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.

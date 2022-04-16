@@ -106,6 +106,7 @@ func (app *application) setup() error {
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
+
 	statsStg := rethink.NewStats(rethinkClient)
 	reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
@@ -135,7 +136,7 @@ func (app *application) setup() error {
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	reportSvc := service.NewReport(reportStg)
-	statsSvc := service.NewStats(statsStg)
+	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
 
 	// Register job on the worker.

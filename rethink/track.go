@@ -81,6 +81,50 @@ func (s *trackStorage) Create(in *core.Track) error {
 	return nil
 }
 
+const last7days = 604800
+
+// TopKeywords returns top recent searched keywords.
+//
+/*
+	var thisWeek = 604800;
+	r.db('d2g_production').table('track')
+	 .between(r.now().sub(thisWeek), r.now(), {index: 'created_at'})
+	 .filter({ type: 's' })
+	 .group('keyword')
+	 .count()
+	 .ungroup()
+	 .orderBy(r.desc('reduction'))
+	 .limit(12)
+	 .map(function(doc) {
+	   return {
+		 keyword: doc('group'),
+		 score: doc('reduction'),
+	   }
+	 })
+*/
+func (s *trackStorage) TopKeywords() ([]core.SearchKeywordScore, error) {
+	now := r.Now()
+	q := s.table().Between(now.Sub(last7days), now, r.BetweenOpts{Index: trackFieldCreatedAt}).
+		Filter(map[string]interface{}{"type": "s"}).
+		Group("keyword").
+		Count().
+		Ungroup().
+		OrderBy(r.Desc("reduction")).
+		Limit(12).
+		Map(func(doc r.Term) interface{} {
+			return map[string]interface{}{
+				"Keyword": doc.Field("group"),
+				"Score":   doc.Field("reduction"),
+			}
+		})
+
+	var res []core.SearchKeywordScore
+	if err := s.db.list(q, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (s *trackStorage) table() r.Term {
 	return r.Table(tableTrack)
 }
