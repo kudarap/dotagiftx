@@ -171,6 +171,7 @@ export default function UserDetails({
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
             }>
             <Avatar
+              badge="partner"
               className={classes.avatar}
               src={`${CDN_URL}/${profile.avatar}`}
               glow={isDonationGlowExpired(profile.donated_at)}

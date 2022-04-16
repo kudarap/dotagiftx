@@ -20,8 +20,6 @@ function SearchDialog({ open, onClose }) {
 
   const { data: topKeywords } = useSWR(STATS_TOP_KEYWORDS, fetcherBase)
 
-  console.log(topKeywords)
-
   const [keyword, setKeyword] = useState('')
   const router = useRouter()
   const handleSubmit = e => {

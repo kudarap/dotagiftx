@@ -35,10 +35,8 @@ const subscriptions = {
   },
 }
 
-const ButtonWrapper = ({ type, planId, customId, subId }) => {
+const ButtonWrapper = ({ type, planId, customId, onSuccess }) => {
   const [{ options }, dispatch] = usePayPalScriptReducer()
-
-  const router = useRouter()
 
   useEffect(() => {
     dispatch({
@@ -62,10 +60,7 @@ const ButtonWrapper = ({ type, planId, customId, subId }) => {
             return orderId
           })
       }}
-      onApprove={data => {
-        // send orderId to subscription verifier to ack the process
-        router.push(`/thanks-subscriber?id=${subId}`)
-      }}
+      onApprove={onSuccess}
       style={{
         label: 'subscribe',
         color: 'blue',
@@ -101,6 +96,11 @@ export default function Subscription({ data }) {
     setSubscription(subscriptions[query.id])
   }, [query.id, currentAuth.user_id])
 
+  const handleSuccess = data => {
+    // send orderId to subscription verifier to ack the process
+    router.push(`/thanks-subscriber?id=${subscription.id}`)
+  }
+
   const isReady = currentAuth.steam_id && subscription
 
   return (
@@ -131,7 +131,7 @@ export default function Subscription({ data }) {
                 type="subscription"
                 planId={isPaypalLive ? subscription.planIdLive : subscription.planId}
                 customId={`STEAMID-${currentAuth.steam_id}`}
-                subId={subscription.id}
+                onSuccess={handleSuccess}
               />
             )}
           </Box>

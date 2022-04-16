@@ -9,6 +9,7 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import DonatorBadge from '@/components/DonatorBadge'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
+import SubscriberBadge from './SubscriberBadge'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -51,6 +52,7 @@ export default function ProfileCard({ user, loading, ...other }) {
       style={isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
       <a href={storeProfile} target="_blank" rel="noreferrer noopener">
         <Avatar
+          badge="partner"
           className={classes.avatar}
           glow={isDonationGlowExpired(user.donated_at)}
           {...retinaSrcSet(user.avatar, 100, 100)}
