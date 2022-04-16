@@ -32,7 +32,7 @@ function ExpiringPostsBanner({ userID }) {
     <Alert
       severity="warning"
       action={<BasicMenu color="inherit" size="small" onClose={handleSubmit} />}>
-      Major update: We will roll out Expiring items on May 1, 2022 —{' '}
+      <strong>Major update</strong>: We will roll out Expiring items on May 1, 2022 —{' '}
       <Link href="/expiring-posts">Read more</Link>
     </Alert>
   )
