@@ -14,18 +14,54 @@ import AppContext from '@/components/AppContext'
 import Link from './Link'
 
 const tempTopKeywords = [
-  { keyword: 'pudge', score: 216 },
-  { keyword: 'immortal', score: 164 },
-  { keyword: '2015', score: 114 },
-  { keyword: 'cache', score: 112 },
-  { keyword: 'shadow fiend', score: 111 },
-  { keyword: 'sven', score: 103 },
-  { keyword: 'ember', score: 101 },
-  { keyword: 'huskar', score: 101 },
-  { keyword: 'Oracle', score: 96 },
-  { keyword: 'mirana', score: 95 },
-  { keyword: 'mars', score: 87 },
-  { keyword: 'dragon knight', score: 80 },
+  {
+    keyword: 'nemestice',
+    score: 262,
+  },
+  {
+    keyword: 'pudge',
+    score: 149,
+  },
+  {
+    keyword: 'sven',
+    score: 139,
+  },
+  {
+    keyword: 'tiny',
+    score: 127,
+  },
+  {
+    keyword: '2015',
+    score: 106,
+  },
+  {
+    keyword: 'immortal',
+    score: 105,
+  },
+  {
+    keyword: 'night stalker',
+    score: 86,
+  },
+  {
+    keyword: 'shadow fiend',
+    score: 86,
+  },
+  {
+    keyword: 'ember',
+    score: 85,
+  },
+  {
+    keyword: 'huskar',
+    score: 85,
+  },
+  {
+    keyword: 'undying',
+    score: 78,
+  },
+  {
+    keyword: 'Pudge',
+    score: 77,
+  },
 ]
 
 function SearchDialog({ open, onClose }) {
