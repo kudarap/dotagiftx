@@ -16,21 +16,21 @@ const subscriptions = {
     id: 'supporter',
     name: 'Supporter',
     features: ['Supporter Badge', 'Refresher Shard'],
-    planId: 'P-616716383W896284VMJMR4CY',
+    planId: 'P-16467111M44423113MJNKYKI',
     planIdLive: 'P-0EB00258NU2523843MJMW6JY',
   },
   trader: {
     id: 'trader',
     name: 'Trader',
     features: ['Trader Badge', 'Refresher Orb'],
-    planId: 'P-28V29656NC814125PMJMSDWQ',
+    planId: 'P-16467111M44423113MJNKYKI',
     planIdLive: 'P-6TG171216S461482EMJMW55Q',
   },
   partner: {
     id: 'partner',
     name: 'Partner',
     features: ['Partner Badge', 'Refresher Orb', "Shopkeeper's Contract", 'Dedicated Pos-5'],
-    planId: 'P-2FS77965H7642004PMJMSD6Q',
+    planId: 'P-2Y98477558961784RMJNLBYI',
     planIdLive: 'P-0EB00258NU2523843MJMW6JY',
   },
 }
@@ -97,6 +97,7 @@ export default function Subscription({ data }) {
   }, [query.id, currentAuth.user_id])
 
   const handleSuccess = data => {
+    console.log(data)
     // send orderId to subscription verifier to ack the process
     router.push(`/thanks-subscriber?id=${subscription.id}`)
   }
