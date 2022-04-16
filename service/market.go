@@ -134,7 +134,6 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 			return err
 		}
 
-		// NOTE! Experimental for reselling feature.
 		m, err := s.processShopkeepersContract(mkt)
 		if err != nil {
 			return err
