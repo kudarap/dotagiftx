@@ -10,6 +10,7 @@ import DonatorBadge from '@/components/DonatorBadge'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from './SubscriberBadge'
+import { getUserBadgeFromBoons } from '@/lib/badge'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -46,13 +47,17 @@ export default function ProfileCard({ user, loading, ...other }) {
 
   const isProfileReported = Boolean(user.status)
 
+  const userBadge = getUserBadgeFromBoons(user.boons)
+
+  console.log(user)
+
   return (
     <div
       className={classes.details}
       style={isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
       <a href={storeProfile} target="_blank" rel="noreferrer noopener">
         <Avatar
-          badge="partner"
+          badge={userBadge}
           className={classes.avatar}
           glow={isDonationGlowExpired(user.donated_at)}
           {...retinaSrcSet(user.avatar, 100, 100)}
@@ -65,20 +70,22 @@ export default function ProfileCard({ user, loading, ...other }) {
           variant="h4"
           color={isProfileReported ? 'error' : ''}>
           {user.name}
-          {Boolean(user.donation) && !isMobile && (
-            <DonatorBadge
+          {userBadge && !isMobile && (
+            <SubscriberBadge
+              type={userBadge}
               style={{ marginLeft: '0.375rem', marginTop: '0.375rem', position: 'absolute' }}
-              size="medium">
-              DONATOR
-            </DonatorBadge>
+              size="medium"
+            />
           )}
         </Typography>
 
-        {Boolean(user.donation) && isMobile && (
+        {Boolean(userBadge) && isMobile && (
           <div>
-            <DonatorBadge style={{ marginTop: '0.375rem', marginBottom: '0.575rem' }} size="medium">
-              DONATOR
-            </DonatorBadge>
+            <SubscriberBadge
+              type={userBadge}
+              style={{ marginTop: '0.375rem', marginBottom: '0.575rem' }}
+              size="medium"
+            />
           </div>
         )}
 

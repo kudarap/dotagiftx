@@ -34,6 +34,8 @@ import Avatar from '@/components/Avatar'
 import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
+import { getUserBadgeFromBoons } from '@/lib/badge'
+import SubscriberBadge from './SubscriberBadge'
 
 const useStyles = makeStyles()(theme => ({
   seller: {
@@ -353,6 +355,7 @@ function baseTable(Component) {
                 <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
                   <div className={classes.seller}>
                     <Avatar
+                      badge={getUserBadgeFromBoons(market.user.boons)}
                       className={classes.avatar}
                       alt={market.user.name}
                       glow={isDonationGlowExpired(market.user.donated_at)}
@@ -361,8 +364,11 @@ function baseTable(Component) {
                     <div>
                       {/* check for redacted data */}
                       {market.user.id ? <strong>{market.user.name}</strong> : <em>████████████</em>}
-                      {Boolean(market.user.donation) && (
-                        <DonatorBadge style={{ marginLeft: 4 }}>DONATOR</DonatorBadge>
+                      {Boolean(getUserBadgeFromBoons(market.user.boons)) && (
+                        <SubscriberBadge
+                          style={{ marginLeft: 4 }}
+                          type={getUserBadgeFromBoons(market.user.boons)}
+                        />
                       )}
                       <br />
                       <Typography variant="caption" color="textSecondary">

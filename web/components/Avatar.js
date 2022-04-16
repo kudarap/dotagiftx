@@ -42,12 +42,13 @@ export default function Avatar(props) {
     }
   }
   if (badge) {
+    const borderWidth = style.width < 40 ? 2 : 1
     style = {
       ...style,
-      borderTop: '2px solid ' + frameBadges[badge].color,
-      borderLeft: '2px solid ' + frameBadges[badge].color,
-      borderRight: '2px solid ' + frameBadges[badge].color,
-      borderBottom: '4px solid ' + frameBadges[badge].color,
+      borderTop: borderWidth * 1 + 'px solid ' + frameBadges[badge].color,
+      borderLeft: borderWidth * 1 + 'px solid ' + frameBadges[badge].color,
+      borderRight: borderWidth * 1 + 'px solid ' + frameBadges[badge].color,
+      borderBottom: borderWidth * 2 + 'px solid ' + frameBadges[badge].color,
     }
   }
 
