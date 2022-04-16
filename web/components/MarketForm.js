@@ -20,6 +20,8 @@ import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ReSellInput from './ReSellerInput'
 
+const USER_SUBSCRIPTION_PARTNER = 109
+
 const useStyles = makeStyles()(theme => ({
   root: {
     maxWidth: theme.breakpoints.values.sm,
@@ -280,7 +282,7 @@ export default function MarketForm() {
           </div>
         )}
 
-        {subscription === 1 && (
+        {subscription === USER_SUBSCRIPTION_PARTNER && (
           <ReSellInput
             variant="outlined"
             fullWidth
