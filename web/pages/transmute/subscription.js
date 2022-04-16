@@ -99,7 +99,7 @@ export default function Subscription({ data }) {
   const handleSuccess = data => {
     console.log(data)
     // send orderId to subscription verifier to ack the process
-    router.push(`/thanks-subscriber?id=${subscription.id}`)
+    router.push(`/thanks-subscriber?sub=${subscription.id}&subid=${data.subscriptionID}`)
   }
 
   const isReady = currentAuth.steam_id && subscription

@@ -12,13 +12,18 @@ import AppContext from '@/components/AppContext'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import * as Storage from '@/service/storage'
 import Avatar from '@/components/Avatar'
-import { CDN_URL } from '@/service/api'
+import { CDN_URL, processMySubscription } from '@/service/api'
 import SubscriberBadge from '@/components/SubscriberBadge'
+import { useRouter } from 'next/router'
 
 const avatarSize = 92
 
 export default function ThanksSubscriber() {
   const { isLoggedIn } = useContext(AppContext)
+
+  const router = useRouter()
+  const subscriptionName = router?.query?.sub
+  const subscriptionID = router?.query?.subid
 
   const [profile, setProfile] = React.useState(null)
   React.useEffect(() => {
@@ -39,6 +44,22 @@ export default function ThanksSubscriber() {
     })()
   }, [])
 
+  const [verified, setVerified] = React.useState(null)
+  React.useEffect(() => {
+    if (!subscriptionID) {
+      return
+    }
+
+    ;(async () => {
+      try {
+        await processMySubscription(subscriptionID)
+        setVerified(true)
+      } catch (e) {
+        setVerified(false)
+      }
+    })()
+  }, [subscriptionID])
+
   return (
     <div className="container">
       <Header />
@@ -52,16 +73,20 @@ export default function ThanksSubscriber() {
             <Typography>Effect may take few minutes and might ask you to re-login</Typography>
           </Box>
 
-          {profile && (
+          {profile && subscriptionName && (
             <Box sx={{ mt: 8, textAlign: 'center' }}>
               <Avatar
-                sx={{ m: 'auto' }}
-                badge="supporter"
+                sx={{ m: 'auto', mb: 1 }}
+                badge={subscriptionName}
                 style={{ width: avatarSize, height: avatarSize }}
                 src={`${CDN_URL}/${profile.avatar}`}
                 // {...retinaSrcSet(profile.avatar, avatarSize, avatarSize)}
               />
-              <SubscriberBadge type="supporter" size="medium" />
+              {verified === null && <Typography>Verifying...</Typography>}
+              {verified === false && (
+                <Typography color="error">Error verifying your subscription</Typography>
+              )}
+              {verified === true && <SubscriberBadge type={subscriptionName} size="medium" />}
             </Box>
           )}
 
