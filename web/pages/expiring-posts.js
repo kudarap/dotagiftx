@@ -32,26 +32,23 @@ export default function ThanksSubscriber() {
               Expiring posts
             </Typography>
             <Typography>
-              Due to number of outdated listings on site, some improvements were made to make sure
-              that posts were updated regularly by both seller and buyer. We will role out the
-              update on <span style={{ color: 'salmon' }}>May 1, 2022</span> and start removing aged
-              posts.
+              Due to the number of outdated listings on the site, some improvements were made to
+              make sure that posts were updated regularly by both seller and buyer. We will roll out
+              the update on <span style={{ color: 'salmon' }}>May 1, 2022</span> and start removing
+              aged posts.
             </Typography>
           </Box>
 
           <Box sx={{ mb: 2 }}>
             <Typography fontWeight="bold">Listings - 30 days</Typography>
             <Typography color="text.secondary">
-              Seller listings will be available on site for 30 days from posted date, they need to
-              re-list their items and make necessary updates if needed and will reset the
-              expiration.
+              Your current listing will still be available + 30 days from effective date.
             </Typography>
             <br />
 
             <Typography fontWeight="bold">Buy orders - 7 days</Typography>
             <Typography color="text.secondary">
-              Buyer oders on the other hand will have 7 days validity and same with the item
-              listings, they need to re-post their order if they still require it.
+              Your current order will still be available + 7 days from effective date.
             </Typography>
             <br />
           </Box>
