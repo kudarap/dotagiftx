@@ -53,14 +53,27 @@ type (
 		TotalSales          int
 	}
 
+	SearchKeywordScore struct {
+		Keyword string `json:"keyword"`
+		Score   int    `json:"score"`
+	}
+
 	// StatsService provides access to stats service.
 	StatsService interface {
 		//CountTotalMarketStatus() (*MarketStatusCount, error)
+
 		//CountUserMarketStatus(userID string) (*MarketStatusCount, error)
+
+		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
+
+		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
+
+		TopKeywords() ([]SearchKeywordScore, error)
+	}
+
+	StatsStorage interface {
 		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
 
 		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
 	}
-
-	StatsStorage StatsService
 )

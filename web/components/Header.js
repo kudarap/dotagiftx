@@ -1,37 +1,44 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
-import dynamic from 'next/dynamic'
 import { makeStyles } from 'tss-react/mui'
+import Image from 'next/image'
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@/components/Avatar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import IconButton from '@mui/material/IconButton'
-import MoreIcon from '@mui/icons-material/Menu'
-import SearchIcon from '@mui/icons-material/Search'
-import Container from '@/components/Container'
+import NoSsr from '@mui/material/NoSsr'
+import Box from '@mui/system/Box'
+import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
+import MenuIcon from '@mui/icons-material/Menu'
+import HoverMenu from 'material-ui-popup-state/HoverMenu'
+import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
+import { APP_CACHE_PROFILE } from '@/constants/app'
+import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
-import { APP_CACHE_PROFILE } from '@/constants/app'
 import NavItems from '@/components/NavItems'
 import LatestBan from './LatestBan'
-import { NoSsr } from '@mui/material'
-const SearchInputMini = dynamic(() => import('@/components/SearchInputMini'))
-
 import brandImage from '../public/brand_2x.png'
-import Image from 'next/image'
+import SearchDialog from './SearchDialog'
+import SearchButton from './SearchButton'
+import MenuDrawer from './MenuDrawer'
+import ExpiringPostsBanner from './ExpiringPostsBanner'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
-  appBar: {},
+  appBar: {
+    [theme.breakpoints.down('sm')]: {
+      padding: 0,
+    },
+    padding: theme.spacing(0, 1.5),
+  },
   logo: {
     [theme.breakpoints.down('sm')]: {
       maxWidth: 30,
@@ -69,11 +76,15 @@ const useStyles = makeStyles()(theme => ({
     width: theme.spacing(1),
   },
   nav: {
+    [theme.breakpoints.down('md')]: {
+      display: 'none',
+    },
     fontWeight: theme.typography.fontWeightMedium,
     '&:hover': {
       color: '#f1e0ba',
     },
-    padding: theme.spacing(0, 1),
+    padding: theme.spacing(0, 1.5),
+    cursor: 'pointer',
   },
 }))
 
@@ -85,15 +96,11 @@ const defaultProfile = {
   created_at: null,
 }
 
-export default function Header({ disableSearch }) {
-  const { classes } = useStyles()
-  // NOTE! this makes the mobile version of the nav to be ignored when on homepage
-  // which is the disableSearch prop uses.
-  const { isTablet: isMobile, isLoggedIn, currentAuth } = useContext(AppContext)
-
-  const [profile, setProfile] = React.useState(defaultProfile)
+export default function Header() {
+  const { isLoggedIn, currentAuth } = useContext(AppContext)
 
   // load profile data if logged in.
+  const [profile, setProfile] = React.useState(defaultProfile)
   React.useEffect(() => {
     ;(async () => {
       if (!isLoggedIn) {
@@ -112,21 +119,8 @@ export default function Header({ disableSearch }) {
     })()
   }, [])
 
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const handleClick = e => {
-    setAnchorEl(e.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const [moreEl, setMoreEl] = React.useState(null)
-  const handleMoreClick = e => {
-    setMoreEl(e.currentTarget)
-  }
-  const handleMoreClose = () => {
-    setMoreEl(null)
-  }
+  const [openDrawer, setOpenDrawer] = useState(false)
+  const [openSearchDialog, setOpenSearchDialog] = useState(false)
 
   const handleLogout = () => {
     ;(async () => {
@@ -136,218 +130,134 @@ export default function Header({ disableSearch }) {
         console.warn(e.message)
       }
       destroyLoginSess()
-      handleClose()
       // eslint-disable-next-line no-undef
       window.location = '/'
     })()
   }
 
-  const isBrandMini = !disableSearch && isMobile
+  const { classes } = useStyles()
 
   return (
-    <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
-      {/*<NoticeMe />*/}
-      <Container disableMinHeight maxWidth="xl">
-        <Toolbar variant="dense" disableGutters>
-          {/* Branding button */}
-          {/* Desktop nav branding */}
-          <Link href="/" disableUnderline className={classes.logo}>
-            <Image
-              width={134}
-              height={30}
-              layout="fixed"
-              className={classes.brand}
-              src={brandImage}
-              alt={APP_NAME}
-            />
-            {/* <img
+    <>
+      <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
+        {/*<NoticeMe />*/}
+        <Container disableMinHeight maxWidth="xl">
+          <Toolbar variant="dense" disableGutters>
+            {/* Desktop nav branding */}
+            <Link href="/" disableUnderline className={classes.logo}>
+              <Image
+                width={134}
+                height={30}
+                layout="fixed"
+                className={classes.brand}
+                src={brandImage}
+                alt={APP_NAME}
+              />
+              {/* <img
               width={134}
               className={classes.brand}
               src="/brand_1x.png"
               srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
               alt={APP_NAME}
             /> */}
-          </Link>
+            </Link>
 
-          <span className={classes.spacer} />
+            <span className={classes.spacer} />
 
-          <Link className={classes.nav} href="/search?q=nemestice" underline="none">
-            Nemestice
-          </Link>
-          <Link className={classes.nav} href="/heroes" underline="none">
-            Heroes
-          </Link>
-          <Link className={classes.nav} href="/treasures" underline="none">
-            Treasures
-          </Link>
-          <Link className={classes.nav} href="/banned-users" underline="none">
-            FAQs
-          </Link>
-          <Link className={classes.nav} href="/guides" underline="none">
-            Guides
-          </Link>
-          <Link className={classes.nav} href="/banned-users" underline="none">
-            Bans
-          </Link>
+            {/* <Link
+            className={classes.nav}
+            href="/search?q=Aghanim"
+            underline="none"
+            style={{
+              color: '#DFE9F2',
+              textShadow: '0px 0px 10px #275AF2, 2px 2px 10px #41A0F2',
+            }}>
+            Aghanim's 2021
+          </Link> */}
+            <Link className={classes.nav} href="/treasures" underline="none">
+              Treasures
+            </Link>
+            <Link className={classes.nav} href="/plus" underline="none">
+              Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>
+            </Link>
+            <Link className={classes.nav} href="/rules" underline="none">
+              Rules
+            </Link>
+            <Link className={classes.nav} href="/banned-users" underline="none">
+              Bans
+              <LatestBan />
+            </Link>
+            <MoreMenu />
 
-          <NoSsr>
-            {!disableSearch && <SearchInputMini style={{ width: isMobile ? '100%' : 325 }} />}
+            <NoSsr>
+              <span style={{ flexGrow: 1 }} />
 
-            {/* Desktop nav buttons */}
-            {!isMobile && (
-              <>
-                <Link className={classes.nav} href="/guides" underline="none">
-                  Guides
-                </Link>
-                <Link className={classes.nav} href="/rules" underline="none">
-                  Rules
-                </Link>
-                <Link className={classes.nav} href="/banned-users" underline="none">
-                  Bans
-                  <LatestBan />
-                </Link>
+              <SearchButton
+                style={{ width: 180, marginTop: 4 }}
+                onClick={() => setOpenSearchDialog(true)}
+              />
+              <span className={classes.spacer} />
 
-                <span style={{ flexGrow: 1 }} />
+              {/* Post item button */}
+              <Button
+                sx={{
+                  display: {
+                    xs: 'none',
+                    md: 'inherit',
+                  },
+                }}
+                variant="outlined"
+                color="secondary"
+                component={Link}
+                href="/post-item"
+                disableUnderline>
+                Post item
+              </Button>
+              <Button
+                onClick={() => setOpenDrawer(true)}
+                variant="outlined"
+                sx={{
+                  display: {
+                    width: 36,
+                    height: 36,
+                    xs: 'inherit',
+                    md: 'none',
+                  },
+                }}>
+                <MenuIcon fontSize="small" />
+              </Button>
+              <span className={classes.spacer} />
 
-                {/* Post item button */}
-                {/*<Button variant="outlined" component={Link} href="/buy-order" disableUnderline>*/}
-                {/*  Buy Order*/}
-                {/*</Button>*/}
-                {/*<span className={classes.spacer} />*/}
+              {/* Avatar menu button */}
+              {isLoggedIn ? (
+                <AvatarMenu profile={profile} onLogout={handleLogout} />
+              ) : (
                 <Button
-                  variant="outlined"
-                  color="secondary"
+                  sx={{
+                    display: {
+                      xs: 'none',
+                      md: 'inherit',
+                    },
+                  }}
+                  startIcon={<SteamIcon />}
                   component={Link}
-                  href="/post-item"
+                  href="/login"
                   disableUnderline>
-                  Post item
+                  Sign in
                 </Button>
-                <span className={classes.spacer} />
-
-                {/* Avatar menu button */}
-                {isLoggedIn ? (
-                  <>
-                    <Avatar
-                      aria-controls="avatar-menu"
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      className={classes.avatar}
-                      glow={isDonationGlowExpired(profile.donated_at)}
-                      {...retinaSrcSet(profile.avatar, 36, 36)}
-                    />
-
-                    <Menu
-                      className={classes.avatarMenu}
-                      id="avatar-menu"
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}>
-                      <NavItems
-                        profile={profile}
-                        onClose={handleClose}
-                        onLogout={handleLogout}
-                        isMobile={isMobile}
-                      />
-                    </Menu>
-                  </>
-                ) : (
-                  <Button startIcon={<SteamIcon />} component={Link} href="/login" disableUnderline>
-                    Sign in
-                  </Button>
-                )}
-              </>
-            )}
+              )}
+            </NoSsr>
 
             {/* Mobile nav buttons */}
-            {isMobile && (
-              <>
-                <span className={classes.spacer} style={{ flexGrow: 1 }} />
-                {disableSearch && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    component={Link}
-                    href="/post-item"
-                    disableUnderline
-                    style={{ marginRight: 8 }}>
-                    Post item
-                  </Button>
-                )}
-                <IconButton
-                  aria-controls="more-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={handleMoreClick}>
-                  {isLoggedIn ? (
-                    <Avatar
-                      aria-controls="avatar-menu"
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      className={classes.avatar}
-                      glow={isDonationGlowExpired(profile.donated_at)}
-                      style={{ width: 34, height: 34 }}
-                      {...retinaSrcSet(profile.avatar, 36, 36)}
-                    />
-                  ) : (
-                    <MoreIcon />
-                  )}
-                </IconButton>
+          </Toolbar>
+        </Container>
 
-                <Menu
-                  className={classes.avatarMenu}
-                  id="more-menu"
-                  anchorEl={moreEl}
-                  keepMounted
-                  open={Boolean(moreEl)}
-                  onClose={handleMoreClose}>
-                  {!disableSearch && (
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/post-item"
-                      disableUnderline>
-                      Post item
-                    </MenuItem>
-                  )}
+        <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
+        <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
+      </AppBar>
 
-                  {isLoggedIn ? (
-                    <NavItems
-                      profile={profile}
-                      onClose={handleClose}
-                      onLogout={handleLogout}
-                      isMobile={isMobile}
-                    />
-                  ) : (
-                    <MenuItem
-                      onClick={handleMoreClose}
-                      component={Link}
-                      href="/login"
-                      disableUnderline>
-                      Sign in
-                    </MenuItem>
-                  )}
-
-                  <MenuItem onClick={handleClose} component={Link} href="/guides" disableUnderline>
-                    Guides
-                  </MenuItem>
-                  <MenuItem onClick={handleClose} component={Link} href="/rules" disableUnderline>
-                    Rules
-                  </MenuItem>
-                  <MenuItem
-                    onClick={handleClose}
-                    component={Link}
-                    href="/banned-users"
-                    disableUnderline>
-                    Bans
-                  </MenuItem>
-                </Menu>
-              </>
-            )}
-          </NoSsr>
-        </Toolbar>
-      </Container>
-    </AppBar>
+      <ExpiringPostsBanner userID={currentAuth.user_id} />
+    </>
   )
 }
 Header.propTypes = {
@@ -355,6 +265,95 @@ Header.propTypes = {
 }
 Header.defaultProps = {
   disableSearch: false,
+}
+
+function AvatarMenu({ profile, onLogout }) {
+  const popupState = usePopupState({
+    variant: 'popover',
+    popupId: 'avatar-menu',
+  })
+
+  const { classes } = useStyles()
+  return (
+    <>
+      <Avatar
+        className={classes.avatar}
+        glow={isDonationGlowExpired(profile.donated_at)}
+        {...retinaSrcSet(profile.avatar, 36, 36)}
+        {...bindHover(popupState)}
+      />
+      <HoverMenu
+        className={classes.avatarMenu}
+        {...bindMenu(popupState)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        <NavItems profile={profile} onClose={popupState.close} onLogout={onLogout} />
+      </HoverMenu>
+    </>
+  )
+}
+AvatarMenu.propTypes = {
+  profile: PropTypes.object,
+  onLogout: PropTypes.func,
+}
+
+const moreMenuLinks = [
+  ['Guides', '/guides'],
+  ['FAQs', '/faqs'],
+  ['Updates', '/updates'],
+  ['Middleman', '/middlemen'],
+].map(n => ({ label: n[0], path: n[1] }))
+
+function MoreMenu() {
+  const popupState = usePopupState({
+    variant: 'popover',
+    popupId: 'more-menu',
+  })
+
+  const { classes } = useStyles()
+  return (
+    <div>
+      <Box
+        sx={{
+          display: {
+            sm: 'none',
+            md: 'flex',
+          },
+        }}
+        className={classes.nav}
+        {...bindHover(popupState)}>
+        <span>More</span> <MoreIcon />
+      </Box>
+      <HoverMenu
+        {...bindMenu(popupState)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        {moreMenuLinks.map(menu => (
+          <MenuItem
+            key={menu.path}
+            onClick={popupState.close}
+            component={Link}
+            href={menu.path}
+            disableUnderline>
+            {menu.label}
+          </MenuItem>
+        ))}
+
+        <MenuItem
+          onClick={popupState.close}
+          component={Link}
+          href="https://discord.gg/UFt9Ny42kM"
+          target="_blank"
+          rel="noreferrer noopener"
+          disableUnderline>
+          Discord
+        </MenuItem>
+        {/* <MenuItem onClick={popupState.close} component={Link} href="/plus" disableUnderline>
+          Dotagift<span style={{ fontSize: 20 }}>+</span>
+        </MenuItem> */}
+      </HoverMenu>
+    </div>
+  )
 }
 
 function NoticeMe() {

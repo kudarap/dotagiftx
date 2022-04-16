@@ -35,6 +35,8 @@ import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import DonatorBadge from '@/components/DonatorBadge'
 import AppContext from '@/components/AppContext'
 import ErrorPage from '../404'
+import { getUserBadgeFromBoons } from '@/lib/badge'
+import SubscriberBadge from '@/components/SubscriberBadge'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -140,6 +142,8 @@ export default function UserDetails({
 
   const isProfileReported = Boolean(profile.status)
 
+  const userBadge = getUserBadgeFromBoons(profile.boons)
+
   return (
     <>
       <Head>
@@ -171,6 +175,7 @@ export default function UserDetails({
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
             }>
             <Avatar
+              badge={userBadge}
               className={classes.avatar}
               src={`${CDN_URL}/${profile.avatar}`}
               glow={isDonationGlowExpired(profile.donated_at)}
@@ -182,16 +187,16 @@ export default function UserDetails({
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
-                {Boolean(profile.donation) && (
-                  <DonatorBadge
+                {Boolean(userBadge) && (
+                  <SubscriberBadge
                     style={
                       isMobile
                         ? { margin: '0 4px' }
                         : { marginLeft: 4, marginTop: 12, position: 'absolute' }
                     }
-                    size="medium">
-                    DONATOR
-                  </DonatorBadge>
+                    type={userBadge}
+                    size="medium"
+                  />
                 )}
               </Typography>
               {isProfileReported && (

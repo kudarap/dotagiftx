@@ -31,6 +31,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/stats/market_summary", handleStatsMarketSummary(s.statsSvc, s.cache))
 		r.Get("/stats/top_origins", handleStatsTopOrigins(s.itemSvc, s.cache))
 		r.Get("/stats/top_heroes", handleStatsTopHeroes(s.itemSvc, s.cache))
+		r.Get("/stats/top_keywords", handleStatsTopKeywords(s.statsSvc, s.cache))
 		r.Get("/graph/market_sales", handleGraphMarketSales(s.statsSvc, s.cache))
 		r.Route("/reports", func(r chi.Router) {
 			r.Get("/", handleReportList(s.reportSvc))
@@ -46,6 +47,7 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Use(s.authorizer)
 		r.Route("/my", func(r chi.Router) {
 			r.Get("/profile", handleProfile(s.userSvc, s.cache))
+			r.Post("/process_subscription", handleProcSubscription(s.userSvc, s.cache))
 			r.Route("/markets", func(r chi.Router) {
 				r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.cache, s.logger))
 				r.Post("/", handleMarketCreate(s.marketSvc, s.cache))

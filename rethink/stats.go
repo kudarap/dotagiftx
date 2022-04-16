@@ -122,21 +122,21 @@ func (s *statsStorage) CountInventoryStatus(o core.FindOpts) (*core.MarketStatus
 }
 
 /*
-productionDB.table('market')
-  .filter(r.row('status').eq(300).or(r.row('status').eq(400)))
-  .group([
-    r.row('updated_at').year(),
-    r.row('updated_at').month(),
-    r.row('updated_at').day(),
-    r.row('updated_at').timezone()])
-  .getField('price').ungroup()
-  .map(function (doc) {
-    return {
-      date: r.time(doc('group').nth(0), doc('group').nth(1), doc('group').nth(2), doc('group').nth(3)),
-      count: doc('reduction').count(),
-      avg: doc('reduction').avg()
-    }
-  })
+	productionDB.table('market')
+	  .filter(r.row('status').eq(300).or(r.row('status').eq(400)))
+	  .group([
+		r.row('updated_at').year(),
+		r.row('updated_at').month(),
+		r.row('updated_at').day(),
+		r.row('updated_at').timezone()])
+	  .getField('price').ungroup()
+	  .map(function (doc) {
+		return {
+		  date: r.time(doc('group').nth(0), doc('group').nth(1), doc('group').nth(2), doc('group').nth(3)),
+		  count: doc('reduction').count(),
+		  avg: doc('reduction').avg()
+		}
+	  })
 */
 func (s *statsStorage) GraphMarketSales(o core.FindOpts) ([]core.MarketSalesGraph, error) {
 	q := newFindOptsQuery(r.Table(tableMarket), o).Filter(func(t r.Term) r.Term {

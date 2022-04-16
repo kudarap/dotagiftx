@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"strings"
 	"time"
 )
 
@@ -33,7 +34,12 @@ const (
 	UserStatusBanned    UserStatus = 400
 )
 
-const UserSubscriptionResell UserSubscription = 1
+const (
+	UserSubscriptionResell    UserSubscription = 1
+	UserSubscriptionSupporter UserSubscription = 100
+	UserSubscriptionTrader    UserSubscription = 101
+	UserSubscriptionPartner   UserSubscription = 109
+)
 
 type (
 	UserStatus uint
@@ -58,8 +64,10 @@ type (
 		RankScore   int               `json:"rank_score" db:"rank_score,omitempty"`
 
 		// NOTE! Experimental subscription flag
-		Subscription UserSubscription `json:"subscription" db:"subscription,omitempty"`
-		Hammer       bool             `json:"hammer"       db:"hammer,omitempty"`
+		Subscription UserSubscription `json:"subscription"  db:"subscription,omitempty"`
+		SubscribedAt *time.Time       `json:"subscribed_at" db:"subscribed_at,omitempty"`
+		Boons        []string         `json:"boons"         db:"boons,omitempty"`
+		Hammer       bool             `json:"hammer"        db:"hammer,omitempty"`
 	}
 
 	// UserService provides access to user service.
@@ -84,6 +92,9 @@ type (
 
 		// SteamSync saves updated steam info.
 		SteamSync(sp *SteamPlayer) (*User, error)
+
+		// ProcSubscription validates and process subscription features.
+		ProcSubscription(ctx context.Context, subscriptionID string) (*User, error)
 	}
 
 	// UserStorage defines operation for user records.
@@ -146,6 +157,19 @@ const (
 	userScoreVerifiedDeliverySenderRate = 6
 )
 
+type UserBoon string
+
+const (
+	BoonSupporterBadge = "SUPPORTER_BADGE"
+	BoonTraderBadge    = "TRADER_BADGE"
+	BoonPartnerBadge   = "PARTNER_BADGE"
+
+	BoonRefresherShard      = "REFRESHER_SHARD"
+	BoonRefresherOrb        = "REFRESHER_ORB"
+	BoonShopKeepersContract = "SHOPKEEPERS_CONTRACT"
+	BoonDedicatedPos5       = "DEDICATED_POS_5"
+)
+
 // CalcRankScore return user score base on profile and market activity.
 func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore = 1
@@ -158,4 +182,61 @@ func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore += stats.DeliveryNameVerified * userScoreVerifiedDeliveryNameRate
 	u.RankScore += stats.DeliverySenderVerified * userScoreVerifiedDeliverySenderRate
 	return &u
+}
+
+func (u User) HasBoon(ub UserBoon) bool {
+	for _, b := range u.Boons {
+		if ub == UserBoon(b) {
+			return true
+		}
+	}
+	return false
+}
+
+var userSubscriptionLabels = map[UserSubscription]string{
+	UserSubscriptionSupporter: "SUPPORTER",
+	UserSubscriptionTrader:    "TRADER",
+	UserSubscriptionPartner:   "PARTNER",
+}
+
+var userSubscriptionBoons = map[UserSubscription][]string{
+	UserSubscriptionSupporter: {
+		BoonSupporterBadge,
+		BoonRefresherShard,
+	},
+	UserSubscriptionTrader: {
+		BoonTraderBadge,
+		BoonRefresherOrb,
+	},
+	UserSubscriptionPartner: {
+		BoonPartnerBadge,
+		BoonRefresherOrb,
+		BoonShopKeepersContract,
+		BoonDedicatedPos5,
+	},
+}
+
+func (s UserSubscription) String() string {
+	l, ok := userSubscriptionLabels[s]
+	if !ok {
+		return ""
+	}
+	return l
+}
+
+func (s UserSubscription) Boons() []string {
+	bb, ok := userSubscriptionBoons[s]
+	if !ok {
+		return nil
+	}
+	return bb
+}
+
+func UserSubscriptionFromString(s string) UserSubscription {
+	for t, l := range userSubscriptionLabels {
+		if strings.EqualFold(s, l) {
+			return t
+		}
+	}
+	return 0
 }

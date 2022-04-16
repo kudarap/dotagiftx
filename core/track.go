@@ -63,8 +63,7 @@ type (
 		// Track returns track details by id.
 		Track(id string) (*Track, error)
 
-		// Create saves new track from http request.
-		// Primarily used on client side.
+		// CreateFromRequest saves new track from http request. Primarily used on client side.
 		CreateFromRequest(r *http.Request) error
 
 		// CreateSearchKeyword saves new keyword tracking data.
@@ -84,6 +83,9 @@ type (
 
 		// Create persists a new track to data store.
 		Create(*Track) error
+
+		// ThisWeekKeywords returns top search keywords this week.
+		TopKeywords() ([]SearchKeywordScore, error)
 	}
 )
 

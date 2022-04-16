@@ -10,6 +10,7 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/jobs"
+	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
@@ -91,6 +92,10 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
+	paypalClient, err := setupPaypal(app.config.Paypal)
+	if err != nil {
+		return err
+	}
 
 	// Setup application worker
 	app.worker = worker.New()
@@ -106,6 +111,7 @@ func (app *application) setup() error {
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
+
 	statsStg := rethink.NewStats(rethinkClient)
 	reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
@@ -114,7 +120,7 @@ func (app *application) setup() error {
 	// Service inits.
 	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(app.config)
-	userSvc := service.NewUser(userStg, fileMgr)
+	userSvc := service.NewUser(userStg, fileMgr, paypalClient)
 	authSvc := service.NewAuth(steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, fileMgr)
@@ -135,7 +141,7 @@ func (app *application) setup() error {
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	reportSvc := service.NewReport(reportStg)
-	statsSvc := service.NewStats(statsStg)
+	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
 
 	// Register job on the worker.
@@ -216,6 +222,15 @@ func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
 	c, err := steam.New(cfg, rc)
 	if err != nil {
 		return nil, fmt.Errorf("could not setup steam client: %s", err)
+	}
+
+	return c, nil
+}
+
+func setupPaypal(cfg paypal.Config) (*paypal.Client, error) {
+	c, err := paypal.New(cfg.ClientID, cfg.Secret, cfg.Live)
+	if err != nil {
+		return nil, fmt.Errorf("could not setup paypal client: %s", err)
 	}
 
 	return c, nil

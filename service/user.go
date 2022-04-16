@@ -2,20 +2,23 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewUser returns a new User service.
-func NewUser(us core.UserStorage, fm core.FileManager) core.UserService {
-	return &userService{us, fm}
+func NewUser(us core.UserStorage, fm core.FileManager, sc subscriptionChecker) core.UserService {
+	return &userService{us, fm, sc}
 }
 
 type userService struct {
-	userStg core.UserStorage
-	fileMgr core.FileManager
+	userStg     core.UserStorage
+	fileMgr     core.FileManager
+	subsChecker subscriptionChecker
 }
 
 func (s *userService) Users(opts core.FindOpts) ([]core.User, error) {
@@ -82,11 +85,48 @@ func (s *userService) SteamSync(sp *core.SteamPlayer) (*core.User, error) {
 		return nil, err
 	}
 
-	if err := s.userStg.Update(&u); err != nil {
+	if err = s.userStg.Update(&u); err != nil {
 		return nil, err
 	}
 
 	return &u, nil
+}
+
+func (s *userService) ProcSubscription(ctx context.Context, subscriptionID string) (*core.User, error) {
+	au := core.AuthFromContext(ctx)
+	if au == nil {
+		return nil, core.AuthErrNoAccess
+	}
+	user, err := s.userStg.Get(au.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	plan, steamID, err := s.subsChecker.Subscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+	if user.SteamID != steamID {
+		return nil, fmt.Errorf("could not validate subscription steam id")
+	}
+	userSubs := core.UserSubscriptionFromString(plan)
+	if userSubs == 0 {
+		return nil, fmt.Errorf("could not validate subscription plan")
+	}
+
+	if user.SubscribedAt != nil && user.Subscription == userSubs {
+		return user, nil
+	}
+
+	t := time.Now()
+	user.Subscription = userSubs
+	user.SubscribedAt = &t
+	user.Boons = userSubs.Boons()
+	if err = user.CheckUpdate(); err != nil {
+		return nil, err
+	}
+
+	return user, s.userStg.Update(user)
 }
 
 // downloadProfileImage saves image file from a url.
@@ -103,4 +143,8 @@ func (s *userService) downloadProfileImage(url string) (string, error) {
 	}
 
 	return f, nil
+}
+
+type subscriptionChecker interface {
+	Subscription(id string) (plan, steamID string, err error)
 }

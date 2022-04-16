@@ -20,6 +20,8 @@ import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ReSellInput from './ReSellerInput'
 
+const USER_SUBSCRIPTION_PARTNER = 109
+
 const useStyles = makeStyles()(theme => ({
   root: {
     maxWidth: theme.breakpoints.values.sm,
@@ -86,6 +88,7 @@ export default function MarketForm() {
   const [item, setItem] = React.useState(defaultItem)
   const [payload, setPayload] = React.useState(defaultPayload)
   const [newMarketID, setNewMarketID] = React.useState(null)
+  const [partnerSteamID, setPartnerSteamID] = React.useState(null)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
@@ -134,8 +137,8 @@ export default function MarketForm() {
     }
 
     // experimental fields
-    if (payload.seller_steam_id) {
-      newMarket.seller_steam_id = String(payload.seller_steam_id).trim()
+    if (partnerSteamID) {
+      newMarket.seller_steam_id = String(partnerSteamID).trim()
     }
 
     const err = checkMarketPayload({ ...newMarket, quantity })
@@ -189,6 +192,7 @@ export default function MarketForm() {
     setItem(defaultItem)
     setPayload(defaultPayload)
     setNewMarketID(null)
+    setPartnerSteamID(null)
     setError(null)
 
     const inputEl = itemSelectEl.current.getElementsByTagName('input')[0]
@@ -280,7 +284,7 @@ export default function MarketForm() {
           </div>
         )}
 
-        {subscription === 1 && (
+        {subscription === USER_SUBSCRIPTION_PARTNER && (
           <ReSellInput
             variant="outlined"
             fullWidth
@@ -288,7 +292,7 @@ export default function MarketForm() {
             label="Seller Profile URL"
             placeholder="https://steamcommunity.com/..."
             value={payload.seller_steam_id}
-            onInput={e => setPayload({ ...payload, seller_steam_id: e.target.value })}
+            onInput={e => setPartnerSteamID(e.target.value)}
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         )}
