@@ -42,13 +42,16 @@ export default function ThanksSubscriber() {
           <Box sx={{ mb: 2 }}>
             <Typography fontWeight="bold">Listings - 30 days</Typography>
             <Typography color="text.secondary">
-              Your current listing will still be available + 30 days from effective date.
+              Seller listings will be available on site for 30 days from posted date, they need to
+              re-list their items and make necessary updates if needed and will reset the
+              expiration.
             </Typography>
             <br />
 
             <Typography fontWeight="bold">Buy orders - 7 days</Typography>
             <Typography color="text.secondary">
-              Your current order will still be available + 7 days from effective date.
+              Buyer oders on the other hand will have 7 days validity and same with the item
+              listings, they need to re-post their order if they still require it.
             </Typography>
             <br />
           </Box>
@@ -90,13 +93,13 @@ export default function ThanksSubscriber() {
             </Typography>
             <Typography fontWeight="bold">What will happen with my current listings?</Typography>
             <Typography color="text.secondary">
-              Your current posts will still be available and 30 days
+              Your current posts will still be available +30 days from effective date.
             </Typography>
             <br />
 
             <Typography fontWeight="bold">What will happen with my current buy orders?</Typography>
             <Typography color="text.secondary">
-              Your current posts will still be available and 7 days
+              Your current posts will still be available +7 days from effective date.
             </Typography>
             <br />
 
