@@ -172,7 +172,9 @@ func (s *marketService) processShopkeepersContract(m *core.Market) (*core.Market
 	if err != nil {
 		return nil, err
 	}
-	user.HasBoon(core.BoonShopKeepersContract)
+	if !user.HasBoon(core.BoonShopKeepersContract) {
+		return nil, fmt.Errorf("could not find BoonShopKeepersContract")
+	}
 
 	if strings.TrimSpace(m.SellerSteamID) == "" {
 		return m, nil
