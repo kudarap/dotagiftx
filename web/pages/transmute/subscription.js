@@ -9,7 +9,7 @@ import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import AppContext from '@/components/AppContext'
 
-const isPaypalLive = process.env.NEXT_PUBLIC_API_URL.startsWith('https://dotagiftx.com')
+const isPaypalLive = process.env.NEXT_PUBLIC_API_URL.startsWith('https://api.dotagiftx.com')
 
 const subscriptions = {
   supporter: {
