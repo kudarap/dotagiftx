@@ -23,7 +23,7 @@ const subscriptions = {
     id: 'trader',
     name: 'Trader',
     features: ['Trader Badge', 'Refresher Orb'],
-    planId: 'P-16467111M44423113MJNKYKI',
+    planId: 'P-38P22523A72261937MJNLBRI',
     planIdLive: 'P-6TG171216S461482EMJMW55Q',
   },
   partner: {
