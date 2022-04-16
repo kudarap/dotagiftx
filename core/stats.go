@@ -54,8 +54,8 @@ type (
 	}
 
 	SearchKeywordScore struct {
-		Keyword string
-		Score   int
+		Keyword string `json:"keyword"`
+		Score   int    `json:"score"`
 	}
 
 	// StatsService provides access to stats service.
