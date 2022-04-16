@@ -57,6 +57,26 @@ func handlePublicProfile(svc core.UserService, cache core.Cache) http.HandlerFun
 	}
 }
 
+func handleProcSubscription(svc core.UserService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		form := struct {
+			SubscriptionID string `json:"subscription_id"`
+		}{}
+		if err := parseForm(r, &form); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		u, err := svc.ProcSubscription(r.Context(), form.SubscriptionID)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, u)
+	}
+}
+
 func handleBlacklisted(svc core.UserService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.

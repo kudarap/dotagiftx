@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"strings"
 	"time"
 )
 
@@ -91,6 +92,9 @@ type (
 
 		// SteamSync saves updated steam info.
 		SteamSync(sp *SteamPlayer) (*User, error)
+
+		// ProcSubscription validates and process subscription features.
+		ProcSubscription(ctx context.Context, subscriptionID string) (*User, error)
 	}
 
 	// UserStorage defines operation for user records.
@@ -156,6 +160,10 @@ const (
 type UserBoon string
 
 const (
+	BoonSupporterBadge = "SUPPORTER_BADGE"
+	BoonTraderBadge    = "TRADER_BADGE"
+	BoonPartnerBadge   = "PARTNER_BADGE"
+
 	BoonRefresherShard      = "REFRESHER_SHARD"
 	BoonRefresherOrb        = "REFRESHER_ORB"
 	BoonShopKeepersContract = "SHOPKEEPERS_CONTRACT"
@@ -183,4 +191,52 @@ func (u User) HasBoon(ub UserBoon) bool {
 		}
 	}
 	return false
+}
+
+var userSubscriptionLabels = map[UserSubscription]string{
+	UserSubscriptionSupporter: "SUPPORTER",
+	UserSubscriptionTrader:    "TRADER",
+	UserSubscriptionPartner:   "PARTNER",
+}
+
+var userSubscriptionBoons = map[UserSubscription][]string{
+	UserSubscriptionSupporter: {
+		BoonSupporterBadge,
+		BoonRefresherShard,
+	},
+	UserSubscriptionTrader: {
+		BoonTraderBadge,
+		BoonRefresherOrb,
+	},
+	UserSubscriptionPartner: {
+		BoonPartnerBadge,
+		BoonRefresherOrb,
+		BoonShopKeepersContract,
+		BoonDedicatedPos5,
+	},
+}
+
+func (s UserSubscription) String() string {
+	l, ok := userSubscriptionLabels[s]
+	if !ok {
+		return ""
+	}
+	return l
+}
+
+func (s UserSubscription) Boons() []string {
+	bb, ok := userSubscriptionBoons[s]
+	if !ok {
+		return nil
+	}
+	return bb
+}
+
+func UserSubscriptionFromString(s string) UserSubscription {
+	for t, l := range userSubscriptionLabels {
+		if strings.EqualFold(s, l) {
+			return t
+		}
+	}
+	return 0
 }

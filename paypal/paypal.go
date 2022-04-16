@@ -7,8 +7,16 @@ import (
 	"github.com/plutov/paypal/v4"
 )
 
+// Config represents paypal config.
+type Config struct {
+	ClientID string
+	Secret   string
+	Live     bool
+}
+
+// Client represents paypal client.
 type Client struct {
-	paypalClient *paypal.Client
+	pc *paypal.Client
 }
 
 func New(clientID, secret string, live bool) (*Client, error) {
@@ -27,15 +35,15 @@ func New(clientID, secret string, live bool) (*Client, error) {
 const customIDPrefix = "STEAMID-"
 
 func (c *Client) Subscription(id string) (plan, steamID string, err error) {
-	if c.paypalClient.Token == nil {
-		_, err = c.paypalClient.GetAccessToken(context.Background())
+	if c.pc.Token == nil {
+		_, err = c.pc.GetAccessToken(context.Background())
 		if err != nil {
 			return
 		}
 	}
 
 	ctx := context.Background()
-	sub, err := c.paypalClient.GetSubscriptionDetails(ctx, id)
+	sub, err := c.pc.GetSubscriptionDetails(ctx, id)
 	if err != nil {
 		return
 	}
@@ -47,9 +55,9 @@ func (c *Client) Subscription(id string) (plan, steamID string, err error) {
 }
 
 func (c *Client) planName(ctx context.Context, planID string) (name string, err error) {
-	p, err := c.paypalClient.GetSubscriptionPlan(ctx, planID)
+	p, err := c.pc.GetSubscriptionPlan(ctx, planID)
 	if err != nil {
 		return
 	}
-	return strings.ToUpper(p.Name), nil
+	return p.Name, nil
 }
