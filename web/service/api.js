@@ -26,6 +26,7 @@ export const CATALOGS_TREND = '/catalogs_trend'
 export const STATS = '/stats'
 export const STATS_TOP_ORIGINS = `${STATS}/top_origins`
 export const STATS_TOP_HEROES = `${STATS}/top_heroes`
+export const STATS_TOP_KEYWORDS = `${STATS}/top_keywords`
 export const STATS_MARKET_SUMMARY = `${STATS}/market_summary`
 export const GRAPH_MARKET_SALES = `/graph/market_sales`
 export const REPORTS = '/reports'

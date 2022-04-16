@@ -12,60 +12,15 @@ import SearchIcon from '@mui/icons-material/Search'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
 import Link from './Link'
-
-const tempTopKeywords = [
-  {
-    keyword: 'nemestice',
-    score: 262,
-  },
-  {
-    keyword: 'pudge',
-    score: 149,
-  },
-  {
-    keyword: 'sven',
-    score: 139,
-  },
-  {
-    keyword: 'tiny',
-    score: 127,
-  },
-  {
-    keyword: '2015',
-    score: 106,
-  },
-  {
-    keyword: 'immortal',
-    score: 105,
-  },
-  {
-    keyword: 'night stalker',
-    score: 86,
-  },
-  {
-    keyword: 'shadow fiend',
-    score: 86,
-  },
-  {
-    keyword: 'ember',
-    score: 85,
-  },
-  {
-    keyword: 'huskar',
-    score: 85,
-  },
-  {
-    keyword: 'undying',
-    score: 78,
-  },
-  {
-    keyword: 'Pudge',
-    score: 77,
-  },
-]
+import useSWR from 'swr'
+import { fetcherBase, STATS_TOP_KEYWORDS } from '@/service/api'
 
 function SearchDialog({ open, onClose }) {
   const { isMobile } = useContext(AppContext)
+
+  const { data: topKeywords } = useSWR(STATS_TOP_KEYWORDS, fetcherBase)
+
+  console.log(topKeywords)
 
   const [keyword, setKeyword] = useState('')
   const router = useRouter()
@@ -101,16 +56,17 @@ function SearchDialog({ open, onClose }) {
             Top keywords
           </Typography>
           <Grid container spacing={{ xs: 2, sm: 1 }}>
-            {tempTopKeywords.map(item => (
-              <Grid key={item.keyword} item sm={6} xs={12}>
-                <Link
-                  href={`/search?q=${item.keyword}`}
-                  style={{ textTransform: 'capitalize' }}
-                  onClick={onClose}>
-                  {item.keyword}
-                </Link>
-              </Grid>
-            ))}
+            {topKeywords &&
+              topKeywords.map(item => (
+                <Grid key={item.keyword} item sm={6} xs={12}>
+                  <Link
+                    href={`/search?q=${item.keyword}`}
+                    style={{ textTransform: 'capitalize' }}
+                    onClick={onClose}>
+                    {item.keyword}
+                  </Link>
+                </Grid>
+              ))}
           </Grid>
         </DialogContent>
       </Dialog>
