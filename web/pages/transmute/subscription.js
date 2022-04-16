@@ -17,7 +17,7 @@ const subscriptions = {
     name: 'Supporter',
     features: ['Supporter Badge', 'Refresher Shard'],
     planId: 'P-16467111M44423113MJNKYKI',
-    planIdLive: 'P-0EB00258NU2523843MJMW6JY',
+    planIdLive: 'P-8JJ23834W3257961PMJMEB5A',
   },
   trader: {
     id: 'trader',
