@@ -93,13 +93,13 @@ export default function ThanksSubscriber() {
             </Typography>
             <Typography fontWeight="bold">What will happen with my current listings?</Typography>
             <Typography color="text.secondary">
-              Your current posts will still be available +30 days from effective date.
+              No change but all your listing older than 30 days on effective date will be removed.
             </Typography>
             <br />
 
             <Typography fontWeight="bold">What will happen with my current buy orders?</Typography>
             <Typography color="text.secondary">
-              Your current posts will still be available +7 days from effective date.
+              No change but all your orders older than 7 days on effective date will be removed.
             </Typography>
             <br />
 
