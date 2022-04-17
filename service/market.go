@@ -171,12 +171,12 @@ func (s *marketService) processShopkeepersContract(m *core.Market) (*core.Market
 	if err != nil {
 		return nil, err
 	}
-	if !user.HasBoon(core.BoonShopKeepersContract) {
-		return nil, fmt.Errorf("could not find BoonShopKeepersContract")
-	}
 
 	if strings.TrimSpace(m.SellerSteamID) == "" {
 		return m, nil
+	}
+	if !user.HasBoon(core.BoonShopKeepersContract) {
+		return nil, fmt.Errorf("could not find BoonShopKeepersContract")
 	}
 
 	ssid, err := s.steam.ResolveVanityURL(m.SellerSteamID)
