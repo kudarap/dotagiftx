@@ -75,10 +75,10 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 		dlvMap[rr.Group] = rr.Reduction
 	}
 	marketStats.DeliveryNoHit = dlvMap[core.DeliveryStatusNoHit]
-	marketStats.DeliveryNameVerified = dlvMap[core.DeliveryStatusNoHit]
-	marketStats.DeliverySenderVerified = dlvMap[core.DeliveryStatusNoHit]
-	marketStats.DeliveryPrivate = dlvMap[core.DeliveryStatusNoHit]
-	marketStats.DeliveryError = dlvMap[core.DeliveryStatusNoHit]
+	marketStats.DeliveryNameVerified = dlvMap[core.DeliveryStatusNameVerified]
+	marketStats.DeliverySenderVerified = dlvMap[core.DeliveryStatusSenderVerified]
+	marketStats.DeliveryPrivate = dlvMap[core.DeliveryStatusPrivate]
+	marketStats.DeliveryError = dlvMap[core.DeliveryStatusError]
 	fmt.Println("rethink/stats count dlv", time.Now().Sub(benchStart))
 
 	// Count inventory stats
