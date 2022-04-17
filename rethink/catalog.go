@@ -259,7 +259,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
 	// Get market offers from LIVE status.
 	offer := r.Table(tableMarket).
-		GetAll(itemID, marketFieldItemID).
+		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(core.Market{
 			Type:            core.MarketTypeAsk,
 			Status:          core.MarketStatusLive,
@@ -303,7 +303,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 // getBuyOrdersSummary returns market buy orders from BID type and LIVE status.
 func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max float64, recent *time.Time, err error) {
 	buyOrder := r.Table(tableMarket).
-		GetAll(itemID, marketFieldItemID).
+		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(core.Market{
 			Type:   core.MarketTypeBid,
 			Status: core.MarketStatusLive,
@@ -339,7 +339,7 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 // getSaleSummary returns market sales stats which calculated from RESERVED and SOLD statuses.
 func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, recent *time.Time, err error) {
 	sale := r.Table(tableMarket).
-		GetAll(itemID, marketFieldItemID).
+		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(core.Market{
 			Type: core.MarketTypeAsk,
 		}).Filter(func(doc r.Term) r.Term {
@@ -376,7 +376,7 @@ func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, 
 
 func (s *catalogStorage) getReservedCounts(itemID string) (count int, err error) {
 	reserved := r.Table(tableMarket).
-		GetAll(itemID, marketFieldItemID).
+		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(core.Market{
 			Type:   core.MarketTypeAsk,
 			Status: core.MarketStatusReserved,
