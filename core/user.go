@@ -212,7 +212,7 @@ var userSubscriptionBoons = map[UserSubscription][]string{
 		BoonPartnerBadge,
 		BoonRefresherOrb,
 		BoonShopKeepersContract,
-		BoonDedicatedPos5,
+		//BoonDedicatedPos5,
 	},
 }
 

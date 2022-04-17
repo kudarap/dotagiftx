@@ -24,17 +24,35 @@ func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.Hand
 			return
 		}
 
-		f.Type = core.MarketTypeAsk
-		asks, err := svc.CountMarketStatus(core.FindOpts{Filter: f})
-		if err != nil {
-			respondError(w, err)
-			return
-		}
-		f.Type = core.MarketTypeBid
-		bids, err := svc.CountMarketStatus(core.FindOpts{Filter: f})
-		if err != nil {
-			respondError(w, err)
-			return
+		var err error
+		var asks *core.MarketStatusCount
+		var bids *core.MarketStatusCount
+
+		// check for user mode
+		if f.UserID != "" {
+			stats, errStat := svc.CountUserMarketStatus(f.UserID)
+			if errStat != nil {
+				respondError(w, errStat)
+				return
+			}
+			asks = stats
+			bids = &core.MarketStatusCount{
+				BidLive:      stats.BidLive,
+				BidCompleted: stats.BidCompleted,
+			}
+		} else {
+			f.Type = core.MarketTypeAsk
+			asks, err = svc.CountMarketStatus(core.FindOpts{Filter: f})
+			if err != nil {
+				respondError(w, err)
+				return
+			}
+			f.Type = core.MarketTypeBid
+			bids, err = svc.CountMarketStatus(core.FindOpts{Filter: f})
+			if err != nil {
+				respondError(w, err)
+				return
+			}
 		}
 
 		res := struct {

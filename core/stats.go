@@ -69,6 +69,8 @@ type (
 		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
 
 		TopKeywords() ([]SearchKeywordScore, error)
+
+		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
 	}
 
 	StatsStorage interface {

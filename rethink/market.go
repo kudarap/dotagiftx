@@ -253,7 +253,7 @@ func (s *marketStorage) UpdateUserScore(userID string, rankScore int) error {
 
 	// get all user live market
 	var markets []core.Market
-	q := s.table().GetAll(userID, marketFieldUserID).Filter(core.Market{Status: core.MarketStatusLive})
+	q := s.table().GetAllByIndex(marketFieldUserID, userID).Filter(core.Market{Status: core.MarketStatusLive})
 	if err := s.db.list(q, &markets); err != nil {
 		return err
 	}

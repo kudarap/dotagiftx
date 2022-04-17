@@ -20,7 +20,7 @@ type statsStorage struct {
 func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusCount, error) {
 	var benchStart time.Time
 
-	baseQuery := r.Table(tableMarket).GetAll(userID, marketFieldUserID)
+	baseQuery := r.Table(tableMarket).GetAllByIndex(marketFieldUserID, userID)
 
 	var marketResult []struct {
 		Group     core.MarketStatus `db:"group"`
@@ -28,8 +28,9 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	}
 
 	benchStart = time.Now()
-	if err := s.db.list(baseQuery.Group(marketFieldStatus).
-		Filter(core.Market{Type: core.MarketTypeAsk}).Count(), &marketResult); err != nil {
+	if err := s.db.list(baseQuery.
+		Filter(core.Market{Type: core.MarketTypeAsk}).
+		Group(marketFieldStatus).Count(), &marketResult); err != nil {
 		return nil, err
 	}
 	mktMap := map[core.MarketStatus]int{}
@@ -49,8 +50,9 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 
 	// Count market bid stats
 	benchStart = time.Now()
-	if err := s.db.list(baseQuery.Group(marketFieldStatus).
-		Filter(core.Market{Type: core.MarketTypeBid}).Count(), &marketResult); err != nil {
+	if err := s.db.list(baseQuery.
+		Filter(core.Market{Type: core.MarketTypeBid}).
+		Group(marketFieldStatus).Count(), &marketResult); err != nil {
 		return nil, err
 	}
 	mktMap = map[core.MarketStatus]int{}
