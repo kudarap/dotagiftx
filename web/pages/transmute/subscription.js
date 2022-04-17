@@ -29,7 +29,7 @@ const subscriptions = {
   partner: {
     id: 'partner',
     name: 'Partner',
-    features: ['Partner Badge', 'Refresher Orb', "Shopkeeper's Contract"],
+    features: ['Partner Badge', 'Refresher Orb', "Shopkeeper's Contract", 'Dedicated Pos-5'],
     planId: 'P-2Y98477558961784RMJNLBYI',
     planIdLive: 'P-0EB00258NU2523843MJMW6JY',
   },
