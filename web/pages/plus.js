@@ -71,7 +71,7 @@ export default function Plus() {
                   backgroundImage: 'linear-gradient(#4654755c, #465475)',
                 }}>
                 <Typography variant="h6">Supporter</Typography>
-                <Box component={FeatureList} sx={{ height: 72 }}>
+                <Box component={FeatureList} sx={{ height: 97 }}>
                   <li>Profile Badge</li>
                   <li>
                     <Link href="#exclusive-features">Refresher Shard</Link>
@@ -100,7 +100,7 @@ export default function Plus() {
                   backgroundImage: 'linear-gradient(#578ba863, #578ba8)',
                 }}>
                 <Typography variant="h6">Trader</Typography>
-                <Box component={FeatureList} sx={{ height: 72 }}>
+                <Box component={FeatureList} sx={{ height: 97 }}>
                   <li>Profile Badge</li>
                   <li>
                     <Link href="#exclusive-features">Refresher Orb</Link>
@@ -139,9 +139,9 @@ export default function Plus() {
                   <li>
                     <Link href="#exclusive-features">Shopkeeper's Contract</Link>
                   </li>
-                  {/* <li>
+                  <li>
                     <Link href="#exclusive-features">Dedicated Pos-5</Link>
-                  </li> */}
+                  </li>
                 </Box>
                 <Button
                   variant="outlined"
@@ -150,7 +150,7 @@ export default function Plus() {
                   component={Link}
                   href="/transmute/subscription?id=partner">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
-                    $10
+                    $20
                   </Typography>
                   /mo
                 </Button>
