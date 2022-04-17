@@ -252,19 +252,16 @@ func (s *marketStorage) UpdateUserScore(userID string, rankScore int) error {
 	}
 
 	// get all user live market
-	opts := core.FindOpts{Filter: core.Market{
-		UserID: userID,
-		Status: core.MarketStatusLive,
-	}}
-	markets, err := s.Find(opts)
-	if err != nil {
+	var markets []core.Market
+	q := s.table().GetAll(userID, marketFieldUserID).Filter(core.Market{Status: core.MarketStatusLive})
+	if err := s.db.list(q, &markets); err != nil {
 		return err
 	}
 
 	// set new user rank score
 	for _, mm := range markets {
 		mm.UserRankScore = rankScore
-		if err = s.BaseUpdate(&mm); err != nil {
+		if err := s.BaseUpdate(&mm); err != nil {
 			return fmt.Errorf("could not update market user rank: %s", err)
 		}
 	}

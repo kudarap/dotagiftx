@@ -264,7 +264,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 		return
 	}
 
-	// Get lowest ask price on the market by item ID.
+	// Get the lowest ask price on the market by item ID.
 	q = offer.Min(marketFieldPrice).Field(marketFieldPrice).Default(0)
 	if err = s.db.one(q, &lowest); err != nil {
 		err = fmt.Errorf("could not get lowest ask price: %s", err)

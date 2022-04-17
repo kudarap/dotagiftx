@@ -1,6 +1,9 @@
 package rethink
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/kudarap/dotagiftx/core"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
@@ -12,6 +15,92 @@ func NewStats(c *Client) core.StatsStorage {
 
 type statsStorage struct {
 	db *Client
+}
+
+func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusCount, error) {
+	var benchS time.Time
+
+	baseQuery := r.Table(tableMarket).GetAll(userID, marketFieldUserID)
+
+	var marketResult []struct {
+		Group     core.MarketStatus `db:"group"`
+		Reduction int               `db:"reduction"`
+	}
+
+	benchS = time.Now()
+	if err := s.db.list(baseQuery.Group(marketFieldStatus).
+		Filter(core.Market{Type: core.MarketTypeAsk}).Count(), &marketResult); err != nil {
+		return nil, err
+	}
+	mktMap := map[core.MarketStatus]int{}
+	for _, rr := range marketResult {
+		mktMap[rr.Group] = rr.Reduction
+	}
+	marketStats := &core.MarketStatusCount{
+		Pending:      mktMap[core.MarketStatusPending],
+		Live:         mktMap[core.MarketStatusLive],
+		Sold:         mktMap[core.MarketStatusSold],
+		Reserved:     mktMap[core.MarketStatusReserved],
+		Removed:      mktMap[core.MarketStatusRemoved],
+		Cancelled:    mktMap[core.MarketStatusCancelled],
+		BidCompleted: mktMap[core.MarketStatusBidCompleted],
+	}
+	fmt.Println("rethink/stats count ask", time.Now().Sub(benchS))
+
+	// Count market bid stats
+	benchS = time.Now()
+	if err := s.db.list(baseQuery.Group(marketFieldStatus).
+		Filter(core.Market{Type: core.MarketTypeBid}).Count(), &marketResult); err != nil {
+		return nil, err
+	}
+	mktMap = map[core.MarketStatus]int{}
+	for _, rr := range marketResult {
+		mktMap[rr.Group] = rr.Reduction
+	}
+	marketStats.BidLive = mktMap[core.MarketStatusLive]
+	marketStats.BidCompleted = mktMap[core.MarketStatusBidCompleted]
+	fmt.Println("rethink/stats count bid", time.Now().Sub(benchS))
+
+	// Count delivery stats
+	benchS = time.Now()
+	var deliveryResult []struct {
+		Group     core.DeliveryStatus `db:"group"`
+		Reduction int                 `db:"reduction"`
+	}
+	if err := s.db.list(baseQuery.Group(marketFieldDeliveryStatus).Count(), &deliveryResult); err != nil {
+		return nil, err
+	}
+	dlvMap := map[core.DeliveryStatus]int{}
+	for _, rr := range deliveryResult {
+		dlvMap[rr.Group] = rr.Reduction
+	}
+	marketStats.DeliveryNoHit = dlvMap[core.DeliveryStatusNoHit]
+	marketStats.DeliveryNameVerified = dlvMap[core.DeliveryStatusNoHit]
+	marketStats.DeliverySenderVerified = dlvMap[core.DeliveryStatusNoHit]
+	marketStats.DeliveryPrivate = dlvMap[core.DeliveryStatusNoHit]
+	marketStats.DeliveryError = dlvMap[core.DeliveryStatusNoHit]
+	fmt.Println("rethink/stats count dlv", time.Now().Sub(benchS))
+
+	// Count inventory stats
+	benchS = time.Now()
+	var inventoryResult []struct {
+		Group     core.InventoryStatus `db:"group"`
+		Reduction int                  `db:"reduction"`
+	}
+	if err := s.db.list(baseQuery.Group(marketFieldInventoryStatus).Count(), &inventoryResult); err != nil {
+		return nil, err
+	}
+	invMap := map[core.InventoryStatus]int{}
+	for _, rr := range inventoryResult {
+		invMap[rr.Group] = rr.Reduction
+	}
+	marketStats.InventoryNoHit = invMap[core.InventoryStatusNoHit]
+	marketStats.InventoryVerified = invMap[core.InventoryStatusVerified]
+	marketStats.InventoryPrivate = invMap[core.InventoryStatusPrivate]
+	marketStats.InventoryError = invMap[core.InventoryStatusError]
+	fmt.Println("rethink/stats count inv", time.Now().Sub(benchS))
+
+	return marketStats, nil
 }
 
 func (s *statsStorage) CountMarketStatus(opts core.FindOpts) (*core.MarketStatusCount, error) {
@@ -81,17 +170,16 @@ func (s *statsStorage) CountDeliveryStatus(o core.FindOpts) (*core.MarketStatusC
 	if err := s.db.list(q.Count(), &res); err != nil {
 		return nil, err
 	}
-	mapRes := map[core.DeliveryStatus]int{}
+	dlvMap := map[core.DeliveryStatus]int{}
 	for _, rr := range res {
-		mapRes[rr.Group] = rr.Reduction
+		dlvMap[rr.Group] = rr.Reduction
 	}
-
 	msc := &core.MarketStatusCount{
-		DeliveryNoHit:          mapRes[core.DeliveryStatusNoHit],
-		DeliveryNameVerified:   mapRes[core.DeliveryStatusNameVerified],
-		DeliverySenderVerified: mapRes[core.DeliveryStatusSenderVerified],
-		DeliveryPrivate:        mapRes[core.DeliveryStatusPrivate],
-		DeliveryError:          mapRes[core.DeliveryStatusError],
+		DeliveryNoHit:          dlvMap[core.DeliveryStatusNoHit],
+		DeliveryNameVerified:   dlvMap[core.DeliveryStatusNameVerified],
+		DeliverySenderVerified: dlvMap[core.DeliveryStatusSenderVerified],
+		DeliveryPrivate:        dlvMap[core.DeliveryStatusPrivate],
+		DeliveryError:          dlvMap[core.DeliveryStatusError],
 	}
 
 	return msc, nil

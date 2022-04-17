@@ -75,5 +75,7 @@ type (
 		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
 
 		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
+
+		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
 	}
 )
