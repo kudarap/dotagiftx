@@ -18,7 +18,7 @@ type statsStorage struct {
 }
 
 func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusCount, error) {
-	var benchS time.Time
+	var benchStart time.Time
 
 	baseQuery := r.Table(tableMarket).GetAll(userID, marketFieldUserID)
 
@@ -27,7 +27,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 		Reduction int               `db:"reduction"`
 	}
 
-	benchS = time.Now()
+	benchStart = time.Now()
 	if err := s.db.list(baseQuery.Group(marketFieldStatus).
 		Filter(core.Market{Type: core.MarketTypeAsk}).Count(), &marketResult); err != nil {
 		return nil, err
@@ -45,10 +45,10 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 		Cancelled:    mktMap[core.MarketStatusCancelled],
 		BidCompleted: mktMap[core.MarketStatusBidCompleted],
 	}
-	fmt.Println("rethink/stats count ask", time.Now().Sub(benchS))
+	fmt.Println("rethink/stats count ask", time.Now().Sub(benchStart))
 
 	// Count market bid stats
-	benchS = time.Now()
+	benchStart = time.Now()
 	if err := s.db.list(baseQuery.Group(marketFieldStatus).
 		Filter(core.Market{Type: core.MarketTypeBid}).Count(), &marketResult); err != nil {
 		return nil, err
@@ -59,10 +59,10 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	}
 	marketStats.BidLive = mktMap[core.MarketStatusLive]
 	marketStats.BidCompleted = mktMap[core.MarketStatusBidCompleted]
-	fmt.Println("rethink/stats count bid", time.Now().Sub(benchS))
+	fmt.Println("rethink/stats count bid", time.Now().Sub(benchStart))
 
 	// Count delivery stats
-	benchS = time.Now()
+	benchStart = time.Now()
 	var deliveryResult []struct {
 		Group     core.DeliveryStatus `db:"group"`
 		Reduction int                 `db:"reduction"`
@@ -79,10 +79,10 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	marketStats.DeliverySenderVerified = dlvMap[core.DeliveryStatusNoHit]
 	marketStats.DeliveryPrivate = dlvMap[core.DeliveryStatusNoHit]
 	marketStats.DeliveryError = dlvMap[core.DeliveryStatusNoHit]
-	fmt.Println("rethink/stats count dlv", time.Now().Sub(benchS))
+	fmt.Println("rethink/stats count dlv", time.Now().Sub(benchStart))
 
 	// Count inventory stats
-	benchS = time.Now()
+	benchStart = time.Now()
 	var inventoryResult []struct {
 		Group     core.InventoryStatus `db:"group"`
 		Reduction int                  `db:"reduction"`
@@ -98,7 +98,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	marketStats.InventoryVerified = invMap[core.InventoryStatusVerified]
 	marketStats.InventoryPrivate = invMap[core.InventoryStatusPrivate]
 	marketStats.InventoryError = invMap[core.InventoryStatusError]
-	fmt.Println("rethink/stats count inv", time.Now().Sub(benchS))
+	fmt.Println("rethink/stats count inv", time.Now().Sub(benchStart))
 
 	return marketStats, nil
 }

@@ -250,9 +250,7 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 func bench(name string, fn func()) {
 	s := time.Now()
 	fn()
-	fmt.Println(strings.Repeat("+", 50))
-	fmt.Println(name, "took", time.Now().Sub(s))
-	fmt.Println(strings.Repeat("+", 50))
+	fmt.Println("BENCH service/market", name, time.Now().Sub(s))
 }
 
 func (s *marketService) UpdateUserRankScore(userID string) error {
