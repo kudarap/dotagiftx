@@ -153,7 +153,7 @@ const (
 	userScoreBidCompleteRate = 4
 
 	userScoreVerifiedInventoryRate      = 2
-	userScoreVerifiedDeliveryNameRate   = 4
+	userScoreVerifiedDeliveryNameRate   = 1
 	userScoreVerifiedDeliverySenderRate = 6
 )
 
