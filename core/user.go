@@ -173,7 +173,7 @@ const (
 // CalcRankScore return user score base on profile and market activity.
 func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore = 1
-	u.RankScore += stats.Live * userScoreLiveRate
+	u.RankScore += (stats.Live - stats.ResellLive) * userScoreLiveRate
 	u.RankScore += stats.Reserved * userScoreReservedRate
 	u.RankScore += stats.Sold * userScoreDeliveredRate
 	u.RankScore += stats.BidCompleted * userScoreBidCompleteRate

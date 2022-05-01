@@ -59,16 +59,11 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	for _, rr := range marketResult {
 		resellMap[rr.Group] = rr.Reduction
 	}
-	resellStats := &core.MarketStatusCount{
-		Pending:      resellMap[core.MarketStatusPending],
-		Live:         resellMap[core.MarketStatusLive],
-		Sold:         resellMap[core.MarketStatusSold],
-		Reserved:     resellMap[core.MarketStatusReserved],
-		Removed:      resellMap[core.MarketStatusRemoved],
-		Cancelled:    resellMap[core.MarketStatusCancelled],
-		BidCompleted: resellMap[core.MarketStatusBidCompleted],
-	}
-	marketStats.Live -= resellStats.Live
+	marketStats.ResellLive = resellMap[core.MarketStatusLive]
+	marketStats.ResellSold = resellMap[core.MarketStatusSold]
+	marketStats.ResellReserved = resellMap[core.MarketStatusReserved]
+	marketStats.ResellRemoved = resellMap[core.MarketStatusRemoved]
+	marketStats.ResellCancelled = resellMap[core.MarketStatusCancelled]
 	fmt.Println("rethink/stats count resell", time.Now().Sub(benchStart))
 
 	// Count market bid stats

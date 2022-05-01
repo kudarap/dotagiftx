@@ -25,6 +25,12 @@ type (
 		InventoryVerified int `json:"inventory_verified" db:"inventory_verified"`
 		InventoryPrivate  int `json:"inventory_private"  db:"inventory_private"`
 		InventoryError    int `json:"inventory_error"    db:"inventory_error"`
+
+		ResellLive      int `json:"resell_live" db:"resell_live"`
+		ResellReserved  int `json:"resell_reserved" db:"resell_reserved"`
+		ResellSold      int `json:"resell_sold" db:"resell_sold"`
+		ResellRemoved   int `json:"resell_removed" db:"resell_removed"`
+		ResellCancelled int `json:"resell_cancelled" db:"resell_cancelled"`
 	}
 
 	MarketSaleSummary struct {
