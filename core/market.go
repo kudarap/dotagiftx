@@ -181,7 +181,7 @@ type (
 		UpdateUserScore(userID string, rankScore int) error
 
 		// UpdateExpiring sets live items to expired status by expiration time.
-		UpdateExpiring(t MarketType, b UserBoon, expiration time.Time) error
+		UpdateExpiring(t MarketType, b UserBoon, expiration time.Time) (itemIDs []string, err error)
 	}
 )
 

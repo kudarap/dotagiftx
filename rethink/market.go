@@ -290,18 +290,15 @@ func (s *marketStorage) BaseUpdate(in *core.Market) error {
 	return nil
 }
 
-func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOff time.Time) error {
+func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOff time.Time) (ids []string, err error) {
 	// Collects exempted users ids.
 	q := r.Table(tableUser).
 		HasFields("boons").
-		Filter(r.Row.Field("boons").Contains(b))
-	var uu []core.User
-	if err := s.db.list(q, &uu); err != nil {
-		return errors.New(core.StorageUncaughtErr, err)
-	}
+		Filter(r.Row.Field("boons").Contains(b)).
+		Field("id")
 	var exemptedUserIDs []string
-	for _, u := range uu {
-		exemptedUserIDs = append(exemptedUserIDs, u.ID)
+	if err = s.db.list(q, &exemptedUserIDs); err != nil {
+		return nil, fmt.Errorf("could not get users: %s", err)
 	}
 
 	// Sets expired entry state base on cutOff time.
@@ -314,11 +311,20 @@ func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOf
 		Update(core.Market{
 			Status: core.MarketStatusExpired, UpdatedAt: &now,
 		})
-	if err := s.db.update(q); err != nil {
-		return errors.New(core.StorageUncaughtErr, err)
+	if err = s.db.update(q); err != nil {
+		return nil, fmt.Errorf("could not update expiring markets: %s", err)
 	}
 
-	return nil
+	// Collect and return affected item ids.
+	q = s.table().Filter(core.Market{Status: core.MarketStatusExpired, UpdatedAt: &now}).
+		Group(marketFieldItemID).Count().Ungroup().
+		Field("group")
+	var itemIDs []string
+	if err = s.db.list(q, &itemIDs); err != nil {
+		return nil, fmt.Errorf("could not get affected markets: %s", err)
+	}
+
+	return itemIDs, nil
 }
 
 func (s *marketStorage) findIndexLegacy(o core.FindOpts) ([]core.Catalog, error) {

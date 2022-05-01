@@ -151,6 +151,7 @@ func (app *application) setup() error {
 		inventorySvc,
 		deliveryStg,
 		marketStg,
+		catalogStg,
 		redisClient,
 		logger,
 	)
