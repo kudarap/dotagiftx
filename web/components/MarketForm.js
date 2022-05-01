@@ -368,7 +368,7 @@ export default function MarketForm() {
           </Button>
         )}
 
-        {boons && boons.indexOf('REFRESHER_ORB') !== -1 && (
+        {boons && boons.indexOf('REFRESHER_ORB') === -1 && (
           <div align="center">
             <Typography
               sx={{ color: 'salmon' }}
