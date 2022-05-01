@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import SubmitIcon from '@mui/icons-material/Check'
 import Alert from '@mui/material/Alert'
+import moment from 'moment'
 import { catalog, myMarket, myProfile } from '@/service/api'
 import { APP_NAME } from '@/constants/strings'
 import { itemRarityColorMap } from '@/constants/palette'
@@ -16,11 +17,10 @@ import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
+import { MARKET_ASK_EXPR_DAYS, MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
+import { VERIFIED_INVENTORY_VERIFIED, VERIFIED_DELIVERY_MAP_ICON } from '@/constants/verified'
 import AppContext from '@/components/AppContext'
 import ReSellInput from './ReSellerInput'
-
-const USER_SUBSCRIPTION_PARTNER = 109
 
 const useStyles = makeStyles()(theme => ({
   root: {
@@ -92,7 +92,7 @@ export default function MarketForm() {
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
-  const [subscription, setSubscription] = React.useState(0)
+  const [boons, setBoons] = React.useState([])
   useEffect(() => {
     if (!isLoggedIn) {
       return
@@ -100,7 +100,8 @@ export default function MarketForm() {
 
     ;(async () => {
       const user = await myProfile.GET(true)
-      setSubscription(user.subscription)
+      console.log(user.boons)
+      setBoons(user.boons || [])
     })()
   }, [isLoggedIn])
 
@@ -222,6 +223,11 @@ export default function MarketForm() {
         <Typography variant="h5" component="h1">
           Post your item on {APP_NAME}
         </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Only verified ({VERIFIED_DELIVERY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED]}) items from your
+          inventory will be listed on Item page. All your posts will still be visible on your
+          profile.
+        </Typography>
         <br />
 
         <ItemAutoComplete
@@ -284,7 +290,7 @@ export default function MarketForm() {
           </div>
         )}
 
-        {subscription === USER_SUBSCRIPTION_PARTNER && (
+        {boons && boons.indexOf('SHOPKEEPERS_CONTRACT') !== -1 && (
           <ReSellInput
             variant="outlined"
             fullWidth
@@ -361,6 +367,20 @@ export default function MarketForm() {
             Post Item
           </Button>
         )}
+
+        {boons && boons.indexOf('REFRESHER_ORB') !== -1 && (
+          <div align="center">
+            <Typography
+              sx={{ color: 'salmon' }}
+              component={Link}
+              variant="body2"
+              href="/expiring-posts">
+              This listing will expires in {MARKET_ASK_EXPR_DAYS} days -{' '}
+              {moment().add(MARKET_ASK_EXPR_DAYS, 'days').calendar()}
+            </Typography>
+          </div>
+        )}
+
         <div style={{ marginTop: 2 }}>
           {newMarketID && (
             <Alert
@@ -384,8 +404,9 @@ export default function MarketForm() {
             </Typography>
           )}
         </div>
+        <br />
+
         <Typography variant="body2" color="textSecondary" component="div">
-          <br />
           Guides for selling Giftables
           <ul>
             <li>Please make sure your item exist in your inventory.</li>
