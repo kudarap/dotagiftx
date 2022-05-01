@@ -22,6 +22,7 @@ const (
 	marketFieldDeliveryStatus  = "delivery_status"
 	marketFieldNotes           = "notes"
 	marketFieldPrice           = "price"
+	marketFieldResell          = "resell"
 	marketFieldCreatedAt       = "created_at"
 	marketFieldUpdatedAt       = "updated_at"
 	// Hidden field for searching item details.

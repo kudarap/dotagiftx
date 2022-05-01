@@ -48,6 +48,29 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	}
 	fmt.Println("rethink/stats count ask", time.Now().Sub(benchStart))
 
+	benchStart = time.Now()
+	if err := s.db.list(baseQuery.
+		HasFields(marketFieldResell).
+		Filter(core.Market{Type: core.MarketTypeAsk}).
+		Group(marketFieldStatus).Count(), &marketResult); err != nil {
+		return nil, err
+	}
+	resellMap := map[core.MarketStatus]int{}
+	for _, rr := range marketResult {
+		resellMap[rr.Group] = rr.Reduction
+	}
+	resellStats := &core.MarketStatusCount{
+		Pending:      resellMap[core.MarketStatusPending],
+		Live:         resellMap[core.MarketStatusLive],
+		Sold:         resellMap[core.MarketStatusSold],
+		Reserved:     resellMap[core.MarketStatusReserved],
+		Removed:      resellMap[core.MarketStatusRemoved],
+		Cancelled:    resellMap[core.MarketStatusCancelled],
+		BidCompleted: resellMap[core.MarketStatusBidCompleted],
+	}
+	marketStats.Live -= resellStats.Live
+	fmt.Println("rethink/stats count resell", time.Now().Sub(benchStart))
+
 	// Count market bid stats
 	benchStart = time.Now()
 	if err := s.db.list(baseQuery.
