@@ -76,9 +76,13 @@ func (m *ExpiringMarket) Run(ctx context.Context) error {
 	m.logger.Println("affected items indexed!", len(itemIndexed))
 
 	m.logger.Println("invalidating market cache...")
+	if err = m.cache.BulkDel("catalogs_trend"); err != nil {
+		m.logger.Errorf("could not perform bulk delete on catalog trend cache: %s", err)
+		return err
+	}
 	// svc_market market is the prefixed used for caching market related data.
-	if err := m.cache.BulkDel("svc_market"); err != nil {
-		m.logger.Errorf("could not perform bulk delete on cache: %s", err)
+	if err = m.cache.BulkDel("svc_market"); err != nil {
+		m.logger.Errorf("could not perform bulk delete on market cache: %s", err)
 		return err
 	}
 	m.logger.Println("market cache invalidated!")
