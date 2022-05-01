@@ -290,25 +290,6 @@ func (s *marketStorage) BaseUpdate(in *core.Market) error {
 	return nil
 }
 
-// UpdateExpiring
-//var except = r.expr([
-//  "c7500922-e516-4438-b42e-8d97e3a06f94",
-//  "d4e9084f-66ad-4c3b-a762-bdde4e260e7d",
-//  "0295df59-6bc5-4d35-9b6e-c43f42c9751c",
-//  "be2ccd7b-bdc8-47c1-b123-76450d8de0ec",
-//  "f230e60a-d44d-4192-a0e1-6ebd9d1f0d3c",
-//  "e34900d3-81b4-41f5-9b51-7d44143f5b6a",
-//	"82127eac-b17a-4a29-99c7-be6c8c0f9511"
-//]);
-//var cutoff = r.time(2021, 4, 1, 'Z');
-//r.db('d2g').table('market')
-//  .filter({ type: 10, status: 200 })
-//  .filter(r.row('created_at').lt(cutoff))
-//  .filter(function(doc) {
-//    return except.contains(doc('user_id')).not()
-//	})
-//  .update({ status: 700, updated_at: r.now() })
-//
 func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOff time.Time) error {
 	// Collects exempted users ids.
 	q := r.Table(tableUser).
@@ -323,6 +304,7 @@ func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOf
 		exemptedUserIDs = append(exemptedUserIDs, u.ID)
 	}
 
+	// Sets expired entry state base on cutOff time.
 	now := time.Now()
 	q = s.table().Filter(core.Market{Status: core.MarketStatusLive, Type: t}).
 		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).

@@ -157,6 +157,7 @@ const (
 	userScoreVerifiedDeliverySenderRate = 6
 )
 
+// UserBoon represents user perks in an item form.
 type UserBoon string
 
 const (

@@ -11,7 +11,7 @@ import (
 	"github.com/kudarap/dotagiftx/verified"
 )
 
-// VerifyInventory represents a inventory verification job.
+// VerifyInventory represents inventory verification job.
 type VerifyInventory struct {
 	inventorySvc core.InventoryService
 	marketStg    core.MarketStorage
