@@ -39,11 +39,8 @@ const (
 	maxMarketNotesLen        = 200
 	MaxMarketQtyLimitPerUser = 5
 
-	TrendScoreRateView        = 0.05
-	TrendScoreRateMarketEntry = 0.01
-	TrendScoreRateReserved    = 4
-	TrendScoreRateSold        = 4
-	TrendScoreRateBid         = 2
+	MarketAskExpirationDays = 30
+	MarketBidExpirationDays = 7
 )
 
 // Market types.
@@ -62,6 +59,15 @@ const (
 	MarketStatusRemoved      MarketStatus = 500
 	MarketStatusCancelled    MarketStatus = 600
 	MarketStatusExpired      MarketStatus = 700
+)
+
+// Market trending score rates.
+const (
+	TrendScoreRateView        = 0.05
+	TrendScoreRateMarketEntry = 0.01
+	TrendScoreRateReserved    = 4
+	TrendScoreRateSold        = 4
+	TrendScoreRateBid         = 2
 )
 
 type (
@@ -173,6 +179,9 @@ type (
 
 		// UpdateUserScore sets new rank score value of all live market by user ID.
 		UpdateUserScore(userID string, rankScore int) error
+
+		// UpdateExpiring sets live items to expired status by expiration time.
+		UpdateExpiring(t MarketType, b UserBoon, expiration time.Time) error
 	}
 )
 
