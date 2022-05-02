@@ -179,7 +179,7 @@ func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore += stats.Sold * userScoreDeliveredRate
 	u.RankScore += stats.BidCompleted * userScoreBidCompleteRate
 
-	u.RankScore += stats.InventoryVerified * userScoreVerifiedInventoryRate
+	u.RankScore += (stats.InventoryVerified - stats.ResellLive) * userScoreVerifiedInventoryRate
 	u.RankScore += stats.DeliveryNameVerified * userScoreVerifiedDeliveryNameRate
 	u.RankScore += stats.DeliverySenderVerified * userScoreVerifiedDeliverySenderRate
 	return &u
