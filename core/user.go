@@ -154,7 +154,7 @@ const (
 
 	userScoreVerifiedInventoryRate      = 2
 	userScoreVerifiedDeliveryNameRate   = 1
-	userScoreVerifiedDeliverySenderRate = 6
+	userScoreVerifiedDeliverySenderRate = 7
 )
 
 // UserBoon represents user perks in an item form.
