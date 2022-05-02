@@ -175,6 +175,7 @@ export default function UserDetails({
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
             }>
             <Avatar
+              large
               badge={userBadge}
               className={classes.avatar}
               src={`${CDN_URL}/${profile.avatar}`}

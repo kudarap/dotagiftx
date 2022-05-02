@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import MuiAvatar from '@mui/material/Avatar'
+import { badgeSettings } from './SubscriberBadge'
 
 const frameOptions = {
   donator: {
@@ -13,23 +14,10 @@ const frameOptions = {
   },
 }
 
-const frameBadges = {
-  supporter: {
-    color: '#596b95',
-  },
-  trader: {
-    color: '#629cbd',
-  },
-  partner: {
-    color: '#ae7f1e',
-  },
-}
-
 export default function Avatar(props) {
-  const { glow, style: initStyle, src, badge, ...other } = props
+  const { glow, large = false, style: initStyle, src, badge, ...other } = props
 
   const glowFrame = frameOptions.donator
-
   let style = initStyle
   if (glow) {
     style = {
@@ -42,13 +30,13 @@ export default function Avatar(props) {
     }
   }
   if (badge) {
-    const borderWidth = style.width < 40 ? 2 : 1
+    const borderWidth = large ? 2 : 1
     style = {
       ...style,
-      borderTop: borderWidth * 1 + 'px solid ' + frameBadges[badge].color,
-      borderLeft: borderWidth * 1 + 'px solid ' + frameBadges[badge].color,
-      borderRight: borderWidth * 1 + 'px solid ' + frameBadges[badge].color,
-      borderBottom: borderWidth * 2 + 'px solid ' + frameBadges[badge].color,
+      borderTop: borderWidth * 1 + 'px solid ' + badgeSettings[badge].color,
+      borderLeft: borderWidth * 1 + 'px solid ' + badgeSettings[badge].color,
+      borderRight: borderWidth * 1 + 'px solid ' + badgeSettings[badge].color,
+      borderBottom: borderWidth * 2 + 'px solid ' + badgeSettings[badge].color,
     }
   }
 
@@ -75,6 +63,7 @@ export default function Avatar(props) {
 Avatar.propTypes = {
   style: PropTypes.object,
   glow: PropTypes.bool,
+  large: PropTypes.bool,
   src: PropTypes.string,
   badge: PropTypes.string,
 }
@@ -82,6 +71,7 @@ Avatar.propTypes = {
 Avatar.defaultProps = {
   style: {},
   glow: false,
+  large: false,
   src: null,
   badge: null,
 }

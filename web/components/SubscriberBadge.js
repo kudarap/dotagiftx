@@ -1,7 +1,11 @@
 import { makeStyles } from 'tss-react/mui'
 import Link from '@/components/Link'
 
-const badgeSettings = {
+export const badgeSettings = {
+  middleman: {
+    label: 'Middleman',
+    color: '#15803D',
+  },
   supporter: {
     label: 'Supporter',
     color: '#596b95',
