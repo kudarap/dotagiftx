@@ -32,35 +32,38 @@ func NewExpiringMarket(ms core.MarketStorage, cs core.CatalogStorage, cc core.Ca
 	}
 }
 
-func (m *ExpiringMarket) String() string { return m.name }
+func (em *ExpiringMarket) String() string { return em.name }
 
-func (m *ExpiringMarket) Interval() time.Duration { return m.interval }
+func (em *ExpiringMarket) Interval() time.Duration { return em.interval }
 
-func (m *ExpiringMarket) Run(ctx context.Context) error {
+func (em *ExpiringMarket) Run(ctx context.Context) error {
 	var itemIDs []string
 	now := time.Now()
 
+	// Process expiring bids.
 	bidExpr := now.Add(-dayHours * core.MarketBidExpirationDays)
-	m.logger.Println("updating expiring bids", bidExpr)
-	ids, err := m.marketStg.UpdateExpiring(core.MarketTypeBid, core.BoonRefresherShard, bidExpr)
+	em.logger.Println("updating expiring bids", bidExpr)
+	ids, err := em.marketStg.UpdateExpiring(core.MarketTypeBid, core.BoonRefresherShard, bidExpr)
 	if err != nil {
-		m.logger.Errorf("could not update expiring bids: %s", err)
+		em.logger.Errorf("could not update expiring bids: %s", err)
 		return err
 	}
 	itemIDs = append(itemIDs, ids...)
-	m.logger.Println("updating expiring bids finished!")
+	em.logger.Println("updating expiring bids finished!")
 
+	// Process expiring asks.
 	askExpr := now.Add(-dayHours * core.MarketAskExpirationDays)
-	m.logger.Println("updating expiring asks", askExpr)
-	ids, err = m.marketStg.UpdateExpiring(core.MarketTypeAsk, core.BoonRefresherOrb, askExpr)
+	em.logger.Println("updating expiring asks", askExpr)
+	ids, err = em.marketStg.UpdateExpiring(core.MarketTypeAsk, core.BoonRefresherOrb, askExpr)
 	if err != nil {
-		m.logger.Errorf("could not update expiring asks: %s", err)
+		em.logger.Errorf("could not update expiring asks: %s", err)
 		return err
 	}
 	itemIDs = append(itemIDs, ids...)
-	m.logger.Println("updating expiring asks finished!")
+	em.logger.Println("updating expiring asks finished!")
 
-	m.logger.Println("indexing affected expire items...", len(itemIDs))
+	// Re-index affected items.
+	em.logger.Println("indexing affected expire items...", len(itemIDs))
 	itemIndexed := map[string]struct{}{}
 	for _, id := range itemIDs {
 		if _, hit := itemIndexed[id]; hit {
@@ -68,23 +71,24 @@ func (m *ExpiringMarket) Run(ctx context.Context) error {
 		}
 		itemIndexed[id] = struct{}{}
 
-		if _, err = m.catalogStg.Index(id); err != nil {
-			m.logger.Errorf("could not index expired item: %s", err)
+		if _, err = em.catalogStg.Index(id); err != nil {
+			em.logger.Errorf("could not index expired item: %s", err)
 			continue
 		}
 	}
-	m.logger.Println("affected items indexed!", len(itemIndexed))
+	em.logger.Println("affected items indexed!", len(itemIndexed))
 
-	m.logger.Println("invalidating market cache...")
-	if err = m.cache.BulkDel("catalogs_trend"); err != nil {
-		m.logger.Errorf("could not perform bulk delete on catalog trend cache: %s", err)
+	// Invalidate market caches.
+	em.logger.Println("invalidating market cache...")
+	if err = em.cache.BulkDel("catalogs_trend"); err != nil {
+		em.logger.Errorf("could not perform bulk delete on catalog trend cache: %s", err)
 		return err
 	}
 	// svc_market market is the prefixed used for caching market related data.
-	if err = m.cache.BulkDel("svc_market"); err != nil {
-		m.logger.Errorf("could not perform bulk delete on market cache: %s", err)
+	if err = em.cache.BulkDel("svc_market"); err != nil {
+		em.logger.Errorf("could not perform bulk delete on market cache: %s", err)
 		return err
 	}
-	m.logger.Println("market cache invalidated!")
+	em.logger.Println("market cache invalidated!")
 	return nil
 }
