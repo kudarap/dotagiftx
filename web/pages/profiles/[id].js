@@ -28,11 +28,10 @@ import {
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
-import { USER_STATUS_MAP_TEXT } from '@/constants/user'
+import { USER_STATUS_MAP_TEXT, USER_STATUS_BANNED, USER_STATUS_SUSPENDED } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
-import DonatorBadge from '@/components/DonatorBadge'
 import AppContext from '@/components/AppContext'
 import ErrorPage from '../404'
 import { getUserBadgeFromBoons } from '@/lib/badge'
@@ -67,6 +66,11 @@ const useStyles = makeStyles()(theme => ({
     marginBottom: theme.spacing(0.5),
   },
 }))
+
+const userReportBgColorMap = {
+  [USER_STATUS_SUSPENDED]: '#1e1201',
+  [USER_STATUS_BANNED]: '#2d0000',
+}
 
 export default function UserDetails({
   profile,
@@ -172,7 +176,13 @@ export default function UserDetails({
           <div
             className={classes.details}
             style={
-              isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
+              isProfileReported
+                ? {
+                    backgroundColor: userReportBgColorMap[profile.status],
+                    padding: 10,
+                    width: '100%',
+                  }
+                : null
             }>
             <Avatar
               large
@@ -186,7 +196,12 @@ export default function UserDetails({
                 className={classes.profileName}
                 component="p"
                 variant="h4"
-                color={isProfileReported ? 'error' : 'textPrimary'}>
+                color="textPrimary"
+                style={
+                  isProfileReported
+                    ? { backgroundColor: userReportBgColorMap[profile.status] }
+                    : null
+                }>
                 {profile.name}
                 {Boolean(userBadge) && (
                   <SubscriberBadge
