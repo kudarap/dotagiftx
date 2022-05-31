@@ -56,7 +56,7 @@ export default function Blacklist() {
               </Typography>{' '}
               that will lead you to their Dotagiftx profile with transaction history and links to
               SteamRep and Dotabuff. You can search scammers on{' '}
-              <Link href="/banned-users" color="secondary">
+              <Link href="/bans" color="secondary">
                 Banned users
               </Link>
               .

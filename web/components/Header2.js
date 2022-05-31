@@ -341,11 +341,7 @@ export default function Header({ disableSearch }) {
                   <MenuItem onClick={handleClose} component={Link} href="/rules" disableUnderline>
                     Rules
                   </MenuItem>
-                  <MenuItem
-                    onClick={handleClose}
-                    component={Link}
-                    href="/banned-users"
-                    disableUnderline>
+                  <MenuItem onClick={handleClose} component={Link} href="/bans" disableUnderline>
                     Bans
                   </MenuItem>
                 </Menu>

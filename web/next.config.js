@@ -23,7 +23,7 @@ module.exports = {
       },
       {
         source: '/blacklist',
-        destination: '/banned-users',
+        destination: '/bans',
         permanent: true,
       },
       {
