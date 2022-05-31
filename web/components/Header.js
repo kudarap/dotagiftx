@@ -182,7 +182,7 @@ export default function Header() {
             <Link className={classes.nav} href="/rules" underline="none">
               Rules
             </Link>
-            <Link className={classes.nav} href="/banned-users" underline="none">
+            <Link className={classes.nav} href="/bans" underline="none">
               Bans
               <LatestBan />
             </Link>
