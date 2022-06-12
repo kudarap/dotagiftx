@@ -155,6 +155,8 @@ const (
 	userScoreVerifiedInventoryRate      = 2
 	userScoreVerifiedDeliveryNameRate   = 1
 	userScoreVerifiedDeliverySenderRate = 7
+
+	userScoreResellDeliveryRate = 3
 )
 
 // UserBoon represents user perks in an item form.
@@ -182,6 +184,8 @@ func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore += (stats.InventoryVerified - stats.ResellLive) * userScoreVerifiedInventoryRate
 	u.RankScore += stats.DeliveryNameVerified * userScoreVerifiedDeliveryNameRate
 	u.RankScore += stats.DeliverySenderVerified * userScoreVerifiedDeliverySenderRate
+
+	u.RankScore += stats.ResellSold * userScoreResellDeliveryRate
 	return &u
 }
 
