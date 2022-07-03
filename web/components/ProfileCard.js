@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Avatar from '@/components/Avatar'
-import { USER_STATUS_MAP_TEXT } from '@/constants/user'
+import { USER_STATUS_BANNED, USER_STATUS_MAP_TEXT, USER_STATUS_SUSPENDED } from '@/constants/user'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 import { isDonationGlowExpired } from '@/service/api'
@@ -44,7 +44,8 @@ export default function ProfileCard({ user, loading, ...other }) {
   const storeProfile = `/profiles/${user.steam_id}`
   const marketSummary = user.market_stats
 
-  const isProfileReported = Boolean(user.status)
+  const isProfileReported =
+    user.status === USER_STATUS_SUSPENDED || user.status === USER_STATUS_BANNED
 
   const userBadge = getUserBadgeFromBoons(user.boons)
 
