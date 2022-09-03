@@ -68,7 +68,8 @@ func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.Hand
 func handleGraphMarketSales(svc core.StatsService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		//cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -88,7 +89,8 @@ func handleGraphMarketSales(svc core.StatsService, cache core.Cache) http.Handle
 			return
 		}
 
-		go cache.Set(cacheKey, res, marketCacheExpr)
+		const expiration = time.Hour * 4
+		go cache.Set(cacheKey, res, expiration)
 		respondOK(w, res)
 	}
 }
