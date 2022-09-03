@@ -167,11 +167,11 @@ export default function Index({ marketSummary, trendingItems }) {
           </div>
 
           <SearchInput label={description} onSubmit={handleSubmit} />
-          <Typography variant="caption" sx={{ mt: -2.5, mr: 2.5, float: 'right' }}>
+          {/* <Typography variant="caption" sx={{ mt: -2.5, mr: 2.5, float: 'right' }}>
             <Link href="/giveaway" target="_blank" rel="noreferrer noopener" color="secondary">
               Collector's Cache Giveaway
             </Link>
-          </Typography>
+          </Typography> */}
           <br />
 
           {/* Trending Items */}
