@@ -327,6 +327,21 @@ func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOf
 	return itemIDs, nil
 }
 
+func (s *marketStorage) BulkDeleteByStatus(ms core.MarketStatus, cutOff time.Time, limit int) error {
+	if ms != core.MarketStatusRemoved && ms != core.MarketStatusExpired {
+		return fmt.Errorf("market status %s not allowed to bulk delete", ms)
+	}
+
+	q := s.table().Filter(core.Market{Status: ms}).
+		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).
+		Limit(limit).
+		Delete()
+	if err := s.db.delete(q); err != nil && err != r.ErrEmptyResult {
+		return err
+	}
+	return nil
+}
+
 func (s *marketStorage) findIndexLegacy(o core.FindOpts) ([]core.Catalog, error) {
 	q := s.indexBaseQuery()
 

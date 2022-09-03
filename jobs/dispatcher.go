@@ -78,6 +78,9 @@ func (d *Dispatcher) RegisterJobs() {
 		d.cache,
 		log.WithPrefix(d.logSvc, "job_expiring_market"),
 	))
+	d.worker.AddJob(NewSweepMarket(
+		d.marketStg, log.WithPrefix(d.logSvc, "job_sweep_market"),
+	))
 }
 
 // VerifyDelivery creates a job to verify a delivery

@@ -41,6 +41,9 @@ const (
 
 	MarketAskExpirationDays = 30
 	MarketBidExpirationDays = 7
+
+	MarketSweepExpiredDays = 30
+	MarketSweepRemovedDays = 60
 )
 
 // Market types.
@@ -182,6 +185,8 @@ type (
 
 		// UpdateExpiring sets live items to expired status by expiration time.
 		UpdateExpiring(t MarketType, b UserBoon, expiration time.Time) (itemIDs []string, err error)
+
+		BulkDeleteByStatus(ms MarketStatus, cutOff time.Time, limit int) error
 	}
 )
 
