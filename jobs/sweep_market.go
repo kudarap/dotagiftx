@@ -31,7 +31,7 @@ func (cm *SweepMarket) String() string { return cm.name }
 func (cm *SweepMarket) Interval() time.Duration { return cm.interval }
 
 func (cm *SweepMarket) Run(ctx context.Context) error {
-	const limitPerBatch = 100
+	const limitPerBatch = 1000
 	now := time.Now()
 
 	// Clean up expiring markets.
