@@ -22,7 +22,7 @@ func NewSweepMarket(ms core.MarketStorage, lg log.Logger) *SweepMarket {
 		marketStg: ms,
 		logger:    lg,
 		name:      "clean_market",
-		interval:  defaultJobInterval,
+		interval:  time.Second * 10,
 	}
 }
 

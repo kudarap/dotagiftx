@@ -46,38 +46,38 @@ func NewDispatcher(worker *worker.Worker,
 
 // RegisterJobs add pre-defined jobs, mostly recurring one's.
 func (d *Dispatcher) RegisterJobs() {
-	d.worker.AddJob(NewRecheckInventory(
-		d.inventorySvc,
-		d.marketStg,
-		log.WithPrefix(d.logSvc, "job_recheck_inventory"),
-	))
-	d.worker.AddJob(NewVerifyInventory(
-		d.inventorySvc,
-		d.marketStg,
-		log.WithPrefix(d.logSvc, "job_verify_inventory"),
-	))
-	d.worker.AddJob(NewVerifyDelivery(
-		d.deliverySvc,
-		d.marketStg,
-		log.WithPrefix(d.logSvc, "job_verify_delivery"),
-	))
-	d.worker.AddJob(NewGiftWrappedUpdate(
-		d.deliverySvc,
-		d.deliveryStg,
-		d.marketStg,
-		log.WithPrefix(d.logSvc, "job_giftwrapped_update"),
-	))
-	d.worker.AddJob(NewRevalidateDelivery(
-		d.deliverySvc,
-		d.marketStg,
-		log.WithPrefix(d.logSvc, "job_revalidate_delivery"),
-	))
-	d.worker.AddJob(NewExpiringMarket(
-		d.marketStg,
-		d.catalogStg,
-		d.cache,
-		log.WithPrefix(d.logSvc, "job_expiring_market"),
-	))
+	//d.worker.AddJob(NewRecheckInventory(
+	//	d.inventorySvc,
+	//	d.marketStg,
+	//	log.WithPrefix(d.logSvc, "job_recheck_inventory"),
+	//))
+	//d.worker.AddJob(NewVerifyInventory(
+	//	d.inventorySvc,
+	//	d.marketStg,
+	//	log.WithPrefix(d.logSvc, "job_verify_inventory"),
+	//))
+	//d.worker.AddJob(NewVerifyDelivery(
+	//	d.deliverySvc,
+	//	d.marketStg,
+	//	log.WithPrefix(d.logSvc, "job_verify_delivery"),
+	//))
+	//d.worker.AddJob(NewGiftWrappedUpdate(
+	//	d.deliverySvc,
+	//	d.deliveryStg,
+	//	d.marketStg,
+	//	log.WithPrefix(d.logSvc, "job_giftwrapped_update"),
+	//))
+	//d.worker.AddJob(NewRevalidateDelivery(
+	//	d.deliverySvc,
+	//	d.marketStg,
+	//	log.WithPrefix(d.logSvc, "job_revalidate_delivery"),
+	//))
+	//d.worker.AddJob(NewExpiringMarket(
+	//	d.marketStg,
+	//	d.catalogStg,
+	//	d.cache,
+	//	log.WithPrefix(d.logSvc, "job_expiring_market"),
+	//))
 	d.worker.AddJob(NewSweepMarket(
 		d.marketStg, log.WithPrefix(d.logSvc, "job_sweep_market"),
 	))

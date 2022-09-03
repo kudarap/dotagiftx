@@ -141,16 +141,11 @@ func (app *application) setup() error {
 		inventorySvc,
 		deliveryStg,
 		marketStg,
+		catalogStg,
+		redisClient,
 		logger,
 	)
 	dispatcher.RegisterJobs()
-
-	// NOTE! this is for run-once scripts
-	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
-	//fixes.ReIndexAll(itemStg, catalogStg)
-	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	//fixes.MarketIndexRebuild(marketStg)
-	//redisClient.BulkDel("")
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")

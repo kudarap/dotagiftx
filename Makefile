@@ -22,6 +22,9 @@ build-worker:
 build-linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(LDFLAGS) \
 		-o ./$(PROJECTNAME)_amd64 ./cmd/$(PROJECTNAME)
+build-worker-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(LDFLAGS) \
+		-o ./dxworker_amd64 ./cmd/dxworker
 
 generate:
 	go generate ./core
