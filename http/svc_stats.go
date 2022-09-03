@@ -10,7 +10,8 @@ import (
 func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		//cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := core.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -60,7 +61,7 @@ func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.Hand
 			Bids *core.MarketStatusCount `json:"bids"`
 		}{asks, bids}
 
-		go cache.Set(cacheKey, res, marketCacheExpr)
+		go cache.Set(cacheKey, res, time.Hour)
 		respondOK(w, res)
 	}
 }
