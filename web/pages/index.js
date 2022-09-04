@@ -50,9 +50,20 @@ const useStyles = makeStyles()(theme => ({
     },
     margin: theme.spacing(0, 0, 2, 0),
     padding: theme.spacing(1.5),
-    border: '1px solid #52564e',
-    background: '#2d3431',
+    // TI 2022 event theme
+    border: '1px solid #ea695357',
+    background: theme.palette.background.paper,
+    // border: '1px solid #52564e',
+    // background: '#2d3431',
     borderRadius: 4,
+  },
+  bannerHighlight: {
+    background: '-webkit-linear-gradient(#EBCF87 10%, #EA6953 90%)',
+    'background-clip': 'border-box',
+    'background-clip': 'text',
+    '-webkit-background-clip': 'text',
+    '-webkit-text-fill-color': 'transparent',
+    filter: 'drop-shadow(0px 0px 5px #e1261c)',
   },
   bannerText: {
     [theme.breakpoints.down('sm')]: {
@@ -142,7 +153,7 @@ export default function Index({ marketSummary, trendingItems }) {
               component="h1"
               variant="body2"
               color="textSecondary">
-              <Typography color="secondary" component="span">
+              <Typography className={classes.bannerHighlight} color="secondary" component="span">
                 {APP_NAME}
               </Typography>{' '}
               was made to provide better search and pricing for Dota 2 Giftable items like
