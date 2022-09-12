@@ -1,6 +1,6 @@
 module github.com/kudarap/dotagiftx
 
-go 1.18
+go 1.19
 
 require (
 	github.com/fatih/structs v1.1.0
