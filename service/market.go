@@ -348,6 +348,15 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 	//	return err
 	//}
 
+	user, err := s.userStg.Get(ask.UserID)
+	if err != nil {
+		return err
+	}
+	qtyLimit := 1
+	if user.HasBoon(core.BoonRefresherOrb) {
+		qtyLimit = core.MaxMarketQtyLimitPerUser
+	}
+
 	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(core.FindOpts{
 		Filter: core.Market{
@@ -360,7 +369,7 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 	if err != nil {
 		return err
 	}
-	if qty >= core.MaxMarketQtyLimitPerUser {
+	if qty >= qtyLimit {
 		return core.MarketErrQtyLimitPerUser
 	}
 
