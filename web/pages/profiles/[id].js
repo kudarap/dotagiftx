@@ -6,6 +6,14 @@ import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
 import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
+import {
+  APP_NAME,
+  APP_URL,
+  DOTABUFF_PROFILE_BASE_URL,
+  STEAM_PROFILE_BASE_URL,
+  STEAMREP_PROFILE_BASE_URL,
+} from '@/constants/strings'
+import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
@@ -15,28 +23,19 @@ import {
   user,
   vanity,
 } from '@/service/api'
+import { getUserBadgeFromBoons } from '@/lib/badge'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
 import ChipLink from '@/components/ChipLink'
 import UserMarketList from '@/components/UserMarketList'
 import TablePaginationRouter from '@/components/TablePaginationRouter'
-import {
-  APP_NAME,
-  APP_URL,
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
-} from '@/constants/strings'
-import { USER_STATUS_MAP_TEXT } from '@/constants/user'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import NotRegisteredProfile from '@/components/NotRegisteredProfile'
-import DonatorBadge from '@/components/DonatorBadge'
 import AppContext from '@/components/AppContext'
-import ErrorPage from '../404'
-import { getUserBadgeFromBoons } from '@/lib/badge'
 import SubscriberBadge from '@/components/SubscriberBadge'
+import ErrorPage from '../404'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -284,7 +283,8 @@ const marketSearchFilter = {
 }
 
 // This gets called on every request
-export async function getServerSideProps({ params, query }) {
+export async function getServerSideProps(context) {
+  const { params, query } = context
   const vanityMode = Boolean(query.vanity)
 
   let profile
@@ -295,6 +295,12 @@ export async function getServerSideProps({ params, query }) {
     try {
       profile = await vanity(String(query.vanity))
       canonicalURL = `${APP_URL}/id/${query.vanity}`
+      return {
+        redirect: {
+          permanent: true,
+          destination: `/profiles/${profile.steam_id}`,
+        },
+      }
     } catch (e) {
       return {
         props: {
