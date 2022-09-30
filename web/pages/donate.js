@@ -91,7 +91,7 @@ export default function Faq() {
               <Typography color="textPrimary" component="span">
                 CS:GO case keys
               </Typography>
-              ) and will give you a donation badge on your profile in return.
+              ) and will give you a donator badge on your profile in return.
               <Button
                 target="_blank"
                 rel="noreferrer noopener"
