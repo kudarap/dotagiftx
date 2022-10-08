@@ -32,6 +32,21 @@ export default function Updates() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" gutterBottom>
+            October 8, 2022
+          </Typography>
+          <Typography color="textSecondary">
+            <ul>
+              <li>added immortal treasure 1 2022</li>
+              <li>changes vanity to redirect automaticaly to profile id</li>
+              <li>changes listing quantity limit to 1, user has refresher orb limit to 5</li>
+              <li>updated donate page copy that donator badge is not available anymore</li>
+              <li>updated theme for TI 2022 event</li>
+            </ul>
+          </Typography>
+          <Divider />
+          <br />
+
+          <Typography variant="h5" gutterBottom>
             September 3, 2022
           </Typography>
           <Typography color="textSecondary">
