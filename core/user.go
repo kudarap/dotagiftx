@@ -153,10 +153,13 @@ const (
 	userScoreBidCompleteRate = 4
 
 	userScoreVerifiedInventoryRate      = 2
-	userScoreVerifiedDeliveryNameRate   = 4
-	userScoreVerifiedDeliverySenderRate = 6
+	userScoreVerifiedDeliveryNameRate   = 1
+	userScoreVerifiedDeliverySenderRate = 7
+
+	userScoreResellDeliveryRate = 3
 )
 
+// UserBoon represents user perks in an item form.
 type UserBoon string
 
 const (
@@ -173,14 +176,16 @@ const (
 // CalcRankScore return user score base on profile and market activity.
 func (u User) CalcRankScore(stats MarketStatusCount) *User {
 	u.RankScore = 1
-	u.RankScore += stats.Live * userScoreLiveRate
+	u.RankScore += (stats.Live - stats.ResellLive) * userScoreLiveRate
 	u.RankScore += stats.Reserved * userScoreReservedRate
 	u.RankScore += stats.Sold * userScoreDeliveredRate
 	u.RankScore += stats.BidCompleted * userScoreBidCompleteRate
 
-	u.RankScore += stats.InventoryVerified * userScoreVerifiedInventoryRate
+	u.RankScore += (stats.InventoryVerified - stats.ResellLive) * userScoreVerifiedInventoryRate
 	u.RankScore += stats.DeliveryNameVerified * userScoreVerifiedDeliveryNameRate
 	u.RankScore += stats.DeliverySenderVerified * userScoreVerifiedDeliverySenderRate
+
+	u.RankScore += stats.ResellSold * userScoreResellDeliveryRate
 	return &u
 }
 
@@ -206,6 +211,7 @@ var userSubscriptionBoons = map[UserSubscription][]string{
 	},
 	UserSubscriptionTrader: {
 		BoonTraderBadge,
+		BoonRefresherShard,
 		BoonRefresherOrb,
 	},
 	UserSubscriptionPartner: {

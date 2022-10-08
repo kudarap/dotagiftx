@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Avatar from '@/components/Avatar'
-import { USER_STATUS_MAP_TEXT } from '@/constants/user'
+import { USER_STATUS_BANNED, USER_STATUS_MAP_TEXT, USER_STATUS_SUSPENDED } from '@/constants/user'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
-import DonatorBadge from '@/components/DonatorBadge'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from './SubscriberBadge'
@@ -45,11 +44,10 @@ export default function ProfileCard({ user, loading, ...other }) {
   const storeProfile = `/profiles/${user.steam_id}`
   const marketSummary = user.market_stats
 
-  const isProfileReported = Boolean(user.status)
+  const isProfileReported =
+    user.status === USER_STATUS_SUSPENDED || user.status === USER_STATUS_BANNED
 
   const userBadge = getUserBadgeFromBoons(user.boons)
-
-  console.log(user)
 
   return (
     <div
@@ -57,6 +55,7 @@ export default function ProfileCard({ user, loading, ...other }) {
       style={isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
       <a href={storeProfile} target="_blank" rel="noreferrer noopener">
         <Avatar
+          large
           badge={userBadge}
           className={classes.avatar}
           glow={isDonationGlowExpired(user.donated_at)}

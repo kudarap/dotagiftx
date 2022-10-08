@@ -17,6 +17,8 @@ type Dispatcher struct {
 	inventorySvc core.InventoryService
 	deliveryStg  core.DeliveryStorage
 	marketStg    core.MarketStorage
+	catalogStg   core.CatalogStorage
+	cache        core.Cache
 	logSvc       *logrus.Logger
 }
 
@@ -26,6 +28,8 @@ func NewDispatcher(worker *worker.Worker,
 	inventorySvc core.InventoryService,
 	deliveryStg core.DeliveryStorage,
 	marketStg core.MarketStorage,
+	catalogStg core.CatalogStorage,
+	cache core.Cache,
 	logSvc *logrus.Logger,
 ) *Dispatcher {
 	return &Dispatcher{
@@ -34,6 +38,8 @@ func NewDispatcher(worker *worker.Worker,
 		inventorySvc,
 		deliveryStg,
 		marketStg,
+		catalogStg,
+		cache,
 		logSvc,
 	}
 }
@@ -65,6 +71,15 @@ func (d *Dispatcher) RegisterJobs() {
 		d.deliverySvc,
 		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_revalidate_delivery"),
+	))
+	d.worker.AddJob(NewExpiringMarket(
+		d.marketStg,
+		d.catalogStg,
+		d.cache,
+		log.WithPrefix(d.logSvc, "job_expiring_market"),
+	))
+	d.worker.AddJob(NewSweepMarket(
+		d.marketStg, log.WithPrefix(d.logSvc, "job_sweep_market"),
 	))
 }
 

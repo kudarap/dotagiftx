@@ -195,6 +195,8 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		s.logger.Infof("catalog indexed %s @ %s\n", itemID, time.Now().Sub(bs))
 	}()
 
+	var benchStart time.Time
+
 	cat := &core.Catalog{}
 
 	var q r.Term
@@ -206,30 +208,38 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 
+	benchStart = time.Now()
 	// Get market offers summary from LIVE status.
 	cat.Quantity, cat.LowestAsk, cat.MedianAsk, cat.RecentAsk, err = s.getOffersSummary(itemID)
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
+	fmt.Println("rethink/catalog getOffersSummary", time.Now().Sub(benchStart))
 
+	benchStart = time.Now()
 	// Get market buy orders summary.
 	cat.BidCount, cat.HighestBid, cat.RecentBid, err = s.getBuyOrdersSummary(itemID)
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
+	fmt.Println("rethink/catalog getBuyOrdersSummary", time.Now().Sub(benchStart))
 
+	benchStart = time.Now()
 	// Get market sales stats which calculated from RESERVED and SOLD statuses.
 	cat.SaleCount, cat.AvgSale, cat.RecentSale, err = s.getSaleSummary(itemID)
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
+	fmt.Println("rethink/catalog getSaleSummary", time.Now().Sub(benchStart))
 
+	benchStart = time.Now()
 	// Get reserved and sold count on the market by item ID.
 	cat.ReservedCount, err = s.getReservedCounts(itemID)
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 	cat.SoldCount = cat.SaleCount - cat.ReservedCount
+	fmt.Println("rethink/catalog getReservedCounts", time.Now().Sub(benchStart))
 
 	// Check for exiting entry for update or create.
 	if cur, _ := s.Get(itemID); cur == nil {
@@ -248,12 +258,13 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 // getOffersSummary returns market offers summary from LIVE status.
 func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
 	// Get market offers from LIVE status.
-	offer := r.Table(tableMarket).Filter(core.Market{
-		ItemID:          itemID,
-		Type:            core.MarketTypeAsk,
-		Status:          core.MarketStatusLive,
-		InventoryStatus: core.InventoryStatusVerified,
-	})
+	offer := r.Table(tableMarket).
+		GetAllByIndex(marketFieldItemID, itemID).
+		Filter(core.Market{
+			Type:            core.MarketTypeAsk,
+			Status:          core.MarketStatusLive,
+			InventoryStatus: core.InventoryStatusVerified,
+		})
 	// Get offer count on the market by item ID.
 	q := offer.Count()
 	if err = s.db.one(q, &count); err != nil {
@@ -264,7 +275,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 		return
 	}
 
-	// Get lowest ask price on the market by item ID.
+	// Get the lowest ask price on the market by item ID.
 	q = offer.Min(marketFieldPrice).Field(marketFieldPrice).Default(0)
 	if err = s.db.one(q, &lowest); err != nil {
 		err = fmt.Errorf("could not get lowest ask price: %s", err)
@@ -291,11 +302,12 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 
 // getBuyOrdersSummary returns market buy orders from BID type and LIVE status.
 func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max float64, recent *time.Time, err error) {
-	buyOrder := r.Table(tableMarket).Filter(core.Market{
-		ItemID: itemID,
-		Type:   core.MarketTypeBid,
-		Status: core.MarketStatusLive,
-	})
+	buyOrder := r.Table(tableMarket).
+		GetAllByIndex(marketFieldItemID, itemID).
+		Filter(core.Market{
+			Type:   core.MarketTypeBid,
+			Status: core.MarketStatusLive,
+		})
 	// Get bid count on the market by item ID.
 	q := buyOrder.Count()
 	if err = s.db.one(q, &count); err != nil {
@@ -326,10 +338,11 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 
 // getSaleSummary returns market sales stats which calculated from RESERVED and SOLD statuses.
 func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, recent *time.Time, err error) {
-	sale := r.Table(tableMarket).Filter(core.Market{
-		ItemID: itemID,
-		Type:   core.MarketTypeAsk,
-	}).Filter(func(doc r.Term) r.Term {
+	sale := r.Table(tableMarket).
+		GetAllByIndex(marketFieldItemID, itemID).
+		Filter(core.Market{
+			Type: core.MarketTypeAsk,
+		}).Filter(func(doc r.Term) r.Term {
 		return doc.Field(marketFieldStatus).Eq(core.MarketStatusReserved).
 			Or(doc.Field(marketFieldStatus).Eq(core.MarketStatusSold))
 	})
@@ -362,11 +375,12 @@ func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, 
 }
 
 func (s *catalogStorage) getReservedCounts(itemID string) (count int, err error) {
-	reserved := r.Table(tableMarket).Filter(core.Market{
-		ItemID: itemID,
-		Type:   core.MarketTypeAsk,
-		Status: core.MarketStatusReserved,
-	}).Count()
+	reserved := r.Table(tableMarket).
+		GetAllByIndex(marketFieldItemID, itemID).
+		Filter(core.Market{
+			Type:   core.MarketTypeAsk,
+			Status: core.MarketStatusReserved,
+		}).Count()
 
 	if err = s.db.one(reserved, &count); err != nil {
 		err = fmt.Errorf("could not get reserved count: %s", err)

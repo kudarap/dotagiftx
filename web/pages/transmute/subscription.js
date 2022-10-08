@@ -9,7 +9,7 @@ import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import AppContext from '@/components/AppContext'
 
-const isPaypalLive = process.env.NEXT_PUBLIC_API_URL.startsWith('https://dotagiftx.com')
+const isPaypalLive = process.env.NEXT_PUBLIC_API_URL.startsWith('https://api.dotagiftx.com')
 
 const subscriptions = {
   supporter: {
@@ -17,7 +17,7 @@ const subscriptions = {
     name: 'Supporter',
     features: ['Supporter Badge', 'Refresher Shard'],
     planId: 'P-16467111M44423113MJNKYKI',
-    planIdLive: 'P-0EB00258NU2523843MJMW6JY',
+    planIdLive: 'P-8JJ23834W3257961PMJMEB5A',
   },
   trader: {
     id: 'trader',

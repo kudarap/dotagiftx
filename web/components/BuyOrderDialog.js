@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
+import moment from 'moment'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
@@ -11,11 +12,11 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import SubmitIcon from '@mui/icons-material/Check'
 import * as format from '@/lib/format'
-import { myMarket } from '@/service/api'
+import { myMarket, myProfile } from '@/service/api'
 import Link from '@/components/Link'
 import ItemImage from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
-import { MARKET_NOTES_MAX_LEN, MARKET_TYPE_BID } from '@/constants/market'
+import { MARKET_NOTES_MAX_LEN, MARKET_TYPE_BID, MARKET_BID_EXPR_DAYS } from '@/constants/market'
 import { itemRarityColorMap } from '@/constants/palette'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import Button from '@/components/Button'
@@ -76,6 +77,19 @@ export default function BuyOrderDialog(props) {
   const [notes, setNotes] = useState('')
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
+
+  const [boons, setBoons] = React.useState([])
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return
+    }
+
+    ;(async () => {
+      const user = await myProfile.GET(true)
+      console.log(user.boons)
+      setBoons(user.boons || [])
+    })()
+  }, [isLoggedIn])
 
   const handleSubmit = evt => {
     evt.preventDefault()
@@ -261,6 +275,22 @@ export default function BuyOrderDialog(props) {
               Place Order
             </Button>
           )}
+
+          {boons &&
+            boons.indexOf('REFRESHER_ORB') === -1 &&
+            boons.indexOf('REFRESHER_SHARD') === -1 && (
+              <div align="center">
+                <Typography
+                  sx={{ color: 'salmon' }}
+                  component={Link}
+                  variant="body2"
+                  href="/expiring-posts">
+                  This buy order will expires in {MARKET_BID_EXPR_DAYS} days -{' '}
+                  {moment().add(MARKET_BID_EXPR_DAYS, 'days').calendar()}
+                </Typography>
+              </div>
+            )}
+
           <div style={{ marginTop: 2 }}>
             {Boolean(market) && (
               <Alert

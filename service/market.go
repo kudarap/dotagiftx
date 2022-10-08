@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
@@ -149,15 +150,24 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
-		return err
-	}
-	if _, err := s.marketStg.Index(mkt.ID); err != nil {
-		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
-	}
-	if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
-		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
-	}
+	//if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
+	//	return err
+	//}
+	bench("market create :: UpdateUserRankScore", func() {
+		if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
+			s.logger.Errorf("could not update user rank %s: %s", mkt.UserID, err)
+		}
+	})
+	bench("market create :: marketStg.Index", func() {
+		if _, err := s.marketStg.Index(mkt.ID); err != nil {
+			s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+		}
+	})
+	bench("market create :: catalogStg.Index", func() {
+		if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+		}
+	})
 
 	if mkt.Type == core.MarketTypeAsk {
 		s.dispatch.VerifyInventory(mkt.UserID)
@@ -166,17 +176,160 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	return nil
 }
 
+func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
+	cur, err := s.checkOwnership(ctx, mkt.ID)
+	if err != nil {
+		return err
+	}
+	// Prevents access to update existing market when account is flagged.
+	if err = s.checkFlaggedUser(cur.UserID); err != nil {
+		return err
+	}
+
+	if err = mkt.CheckUpdate(); err != nil {
+		return err
+	}
+
+	// Resolves steam profile URL input as partner steam id.
+	if strings.TrimSpace(mkt.PartnerSteamID) != "" {
+		mkt.PartnerSteamID, err = s.steam.ResolveVanityURL(mkt.PartnerSteamID)
+		if err != nil {
+			return err
+		}
+	}
+	// Try to find a matching bid and set its status to complete.
+	if cur.Type == core.MarketTypeAsk && mkt.Status == core.MarketStatusReserved {
+		if err = s.AutoCompleteBid(ctx, *cur, mkt.PartnerSteamID); err != nil {
+			return err
+		}
+	}
+
+	// Append note to existing notes.
+	mkt.Notes = strings.TrimSpace(fmt.Sprintf("%s\n%s", cur.Notes, mkt.Notes))
+
+	// Do not allow update on these fields.
+	mkt.UserID = ""
+	mkt.ItemID = ""
+	mkt.Price = 0
+	mkt.Currency = ""
+	if err = s.marketStg.Update(mkt); err != nil {
+		return err
+	}
+
+	if mkt.Type == core.MarketTypeAsk {
+		switch mkt.Status {
+		case core.MarketStatusReserved:
+			s.dispatch.VerifyInventory(mkt.ID)
+		case core.MarketStatusSold:
+			s.dispatch.VerifyDelivery(mkt.ID)
+		}
+	}
+
+	//if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
+	//	return err
+	//}
+	bench("market update :: UpdateUserRankScore", func() {
+		if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
+			s.logger.Errorf("could not update user rank %s: %s", mkt.UserID, err)
+		}
+	})
+	bench("market update :: marketStg.Index", func() {
+		if _, err = s.marketStg.Index(mkt.ID); err != nil {
+			s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+		}
+	})
+	bench("market update :: catalogStg.Index", func() {
+		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+		}
+	})
+
+	return nil
+}
+
+func bench(name string, fn func()) {
+	s := time.Now()
+	fn()
+	fmt.Println("BENCH service/market", name, time.Now().Sub(s))
+}
+
+func (s *marketService) UpdateUserRankScore(userID string) error {
+	stats, err := s.statsStg.CountUserMarketStatus(userID)
+	if err != nil {
+		return fmt.Errorf("error getting user market stats: %s", err)
+	}
+
+	benchS := time.Now()
+	u := &core.User{ID: userID, MarketStats: *stats}
+	u = u.CalcRankScore(*stats)
+	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
+		return err
+	}
+	fmt.Println("service/market UpdateUserScore", time.Now().Sub(benchS))
+	return s.userStg.BaseUpdate(u)
+}
+
+func (s *marketService) checkFlaggedUser(userID string) error {
+	u, err := s.userStg.Get(userID)
+	if err != nil {
+		return err
+	}
+	if err = u.CheckStatus(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AutoCompleteBid detects if there's matching reservation on buy order and automatically
+// resolve it by setting complete-bid status.
+func (s *marketService) AutoCompleteBid(_ context.Context, ask core.Market, partnerSteamID string) error {
+	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
+		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
+	}
+
+	// Use buyer ID to get the matching market.
+	buyer, err := s.userStg.Get(partnerSteamID)
+	if err != nil {
+		return nil
+	}
+
+	// Find matching bid market to update status.
+	fo := core.FindOpts{
+		Filter: core.Market{
+			Type:   core.MarketTypeBid,
+			Status: core.MarketStatusLive,
+			ItemID: ask.ItemID,
+			UserID: buyer.ID,
+		},
+	}
+	bids, _ := s.marketStg.Find(fo)
+	if bids == nil || len(bids) == 0 {
+		return nil
+	}
+
+	// Set complete status and seller steam id on matching bid.
+	seller, err := s.userStg.Get(ask.UserID)
+	if err != nil {
+		return err
+	}
+	b := bids[0]
+	b.Status = core.MarketStatusBidCompleted
+	b.PartnerSteamID = seller.SteamID
+	return s.marketStg.Update(&b)
+}
+
 func (s *marketService) processShopkeepersContract(m *core.Market) (*core.Market, error) {
 	user, err := s.userStg.Get(m.UserID)
 	if err != nil {
 		return nil, err
 	}
-	if !user.HasBoon(core.BoonShopKeepersContract) {
-		return nil, fmt.Errorf("could not find BoonShopKeepersContract")
-	}
 
 	if strings.TrimSpace(m.SellerSteamID) == "" {
 		return m, nil
+	}
+	if !user.HasBoon(core.BoonShopKeepersContract) {
+		return nil, fmt.Errorf("could not find BoonShopKeepersContract")
 	}
 
 	ssid, err := s.steam.ResolveVanityURL(m.SellerSteamID)
@@ -242,11 +395,11 @@ func (s *marketService) checkBidType(bid *core.Market) error {
 }
 
 // restrictMatchingPriceValue restricts market price against its counter-part entry.
-// 1. market bid price should lower than lowest ask price.
-// 2. market ask price should higher than highest bid price.
-// This was design to enforced the user to check available offers or orders
+// 1. market bid price should lower than the lowest ask price.
+// 2. market ask price should higher than the highest bid price.
+// This was design to enforce the user to check available offers or orders
 // with desired price value.
-// Update 2021/03/08: It turns out some of the user are picky on which user they
+// Update 2021/03/08: It turns out some users are picky on which user they
 // want to get the item from, which is very reasonable, and will disable this restriction for now.
 func (s *marketService) restrictMatchingPriceValue(mkt *core.Market) error {
 	switch mkt.Type {
@@ -269,135 +422,6 @@ func (s *marketService) restrictMatchingPriceValue(mkt *core.Market) error {
 	}
 
 	return nil
-}
-
-func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
-	cur, err := s.checkOwnership(ctx, mkt.ID)
-	if err != nil {
-		return err
-	}
-	// Prevents access to update existing market when account is flagged.
-	if err = s.checkFlaggedUser(cur.UserID); err != nil {
-		return err
-	}
-
-	if err = mkt.CheckUpdate(); err != nil {
-		return err
-	}
-
-	// Resolves steam profile URL input as partner steam id.
-	if strings.TrimSpace(mkt.PartnerSteamID) != "" {
-		mkt.PartnerSteamID, err = s.steam.ResolveVanityURL(mkt.PartnerSteamID)
-		if err != nil {
-			return err
-		}
-	}
-	// Try to find a matching bid and set its status to complete.
-	if cur.Type == core.MarketTypeAsk && mkt.Status == core.MarketStatusReserved {
-		if err = s.AutoCompleteBid(ctx, *cur, mkt.PartnerSteamID); err != nil {
-			return err
-		}
-	}
-
-	// Append note to existing notes.
-	mkt.Notes = strings.TrimSpace(fmt.Sprintf("%s\n%s", cur.Notes, mkt.Notes))
-
-	// Do not allow update on these fields.
-	mkt.UserID = ""
-	mkt.ItemID = ""
-	mkt.Price = 0
-	mkt.Currency = ""
-	if err = s.marketStg.Update(mkt); err != nil {
-		return err
-	}
-
-	if mkt.Type == core.MarketTypeAsk {
-		switch mkt.Status {
-		case core.MarketStatusReserved:
-			s.dispatch.VerifyInventory(mkt.ID)
-		case core.MarketStatusSold:
-			s.dispatch.VerifyDelivery(mkt.ID)
-		}
-	}
-
-	if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
-		return err
-	}
-	if _, err = s.marketStg.Index(mkt.ID); err != nil {
-		s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
-	}
-	if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
-		s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
-	}
-
-	return nil
-}
-
-func (s *marketService) UpdateUserRankScore(userID string) error {
-	opts := core.FindOpts{
-		Filter: core.Market{UserID: userID},
-	}
-	stats, err := s.statsStg.CountMarketStatus(opts)
-	if err != nil {
-		return err
-	}
-
-	u := &core.User{ID: userID, MarketStats: *stats}
-	u = u.CalcRankScore(*stats)
-	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
-		return err
-	}
-	return s.userStg.BaseUpdate(u)
-}
-
-func (s *marketService) checkFlaggedUser(userID string) error {
-	u, err := s.userStg.Get(userID)
-	if err != nil {
-		return err
-	}
-	if err = u.CheckStatus(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// AutoCompleteBid detects if there's matching reservation on buy order and automatically
-// resolve it by setting complete-bid status.
-func (s *marketService) AutoCompleteBid(_ context.Context, ask core.Market, partnerSteamID string) error {
-	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
-		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
-	}
-
-	// Use buyer ID to get the matching market.
-	buyer, err := s.userStg.Get(partnerSteamID)
-	if err != nil {
-		return nil
-	}
-
-	// Find matching bid market to update status.
-	fo := core.FindOpts{
-		Filter: core.Market{
-			Type:   core.MarketTypeBid,
-			Status: core.MarketStatusLive,
-			ItemID: ask.ItemID,
-			UserID: buyer.ID,
-		},
-	}
-	bids, _ := s.marketStg.Find(fo)
-	if bids == nil || len(bids) == 0 {
-		return nil
-	}
-
-	// Set complete status and seller steam id on matching bid.
-	seller, err := s.userStg.Get(ask.UserID)
-	if err != nil {
-		return err
-	}
-	b := bids[0]
-	b.Status = core.MarketStatusBidCompleted
-	b.PartnerSteamID = seller.SteamID
-	return s.marketStg.Update(&b)
 }
 
 func (s *marketService) checkOwnership(ctx context.Context, id string) (*core.Market, error) {

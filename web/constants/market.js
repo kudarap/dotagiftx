@@ -15,6 +15,7 @@ export const MARKET_STATUS_SOLD = 400
 export const MARKET_STATUS_BID_COMPLETED = 410
 export const MARKET_STATUS_REMOVED = 500
 export const MARKET_STATUS_CANCELLED = 600
+export const MARKET_STATUS_EXPIRED = 700
 
 export const MARKET_STATUS_MAP_TEXT = {
   [MARKET_STATUS_PENDING]: 'Pending',
@@ -24,6 +25,7 @@ export const MARKET_STATUS_MAP_TEXT = {
   [MARKET_STATUS_BID_COMPLETED]: 'Completed Order',
   [MARKET_STATUS_REMOVED]: 'Removed',
   [MARKET_STATUS_CANCELLED]: 'Cancelled',
+  [MARKET_STATUS_EXPIRED]: 'Expired',
 }
 
 export const MARKET_BID_STATUS_MAP_TEXT = {
@@ -41,7 +43,11 @@ export const MARKET_STATUS_MAP_COLOR = {
   [MARKET_STATUS_BID_COMPLETED]: 'deepskyblue',
   [MARKET_STATUS_REMOVED]: 'grey',
   [MARKET_STATUS_CANCELLED]: 'orangered',
+  [MARKET_STATUS_EXPIRED]: 'grey',
 }
 
 export const MARKET_QTY_LIMIT = 5
 export const MARKET_NOTES_MAX_LEN = 200
+
+export const MARKET_ASK_EXPR_DAYS = 30
+export const MARKET_BID_EXPR_DAYS = 7

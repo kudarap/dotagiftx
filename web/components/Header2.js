@@ -192,7 +192,7 @@ export default function Header({ disableSearch }) {
           <Link className={classes.nav} href="/plus" underline="none">
             Plus
           </Link>
-          <Link className={classes.nav} href="/banned-users" underline="none">
+          <Link className={classes.nav} href="/bans" underline="none">
             FAQs
           </Link>
 
@@ -206,7 +206,7 @@ export default function Header({ disableSearch }) {
                 <Link className={classes.nav} href="/rules" underline="none">
                   Rules
                 </Link>
-                <Link className={classes.nav} href="/banned-users" underline="none">
+                <Link className={classes.nav} href="/bans" underline="none">
                   Bans
                   <LatestBan />
                 </Link>
@@ -341,11 +341,7 @@ export default function Header({ disableSearch }) {
                   <MenuItem onClick={handleClose} component={Link} href="/rules" disableUnderline>
                     Rules
                   </MenuItem>
-                  <MenuItem
-                    onClick={handleClose}
-                    component={Link}
-                    href="/banned-users"
-                    disableUnderline>
+                  <MenuItem onClick={handleClose} component={Link} href="/bans" disableUnderline>
                     Bans
                   </MenuItem>
                 </Menu>

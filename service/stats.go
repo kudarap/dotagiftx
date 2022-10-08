@@ -21,9 +21,7 @@ func (s *statsService) CountTotalMarketStatus() (*core.MarketStatusCount, error)
 }
 
 func (s *statsService) CountUserMarketStatus(userID string) (*core.MarketStatusCount, error) {
-	return s.statsStg.CountMarketStatus(core.FindOpts{
-		Filter: core.Market{UserID: userID},
-	})
+	return s.statsStg.CountUserMarketStatus(userID)
 }
 
 func (s *statsService) GraphMarketSales(opts core.FindOpts) ([]core.MarketSalesGraph, error) {

@@ -29,7 +29,6 @@ import brandImage from '../public/brand_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
-import ExpiringPostsBanner from './ExpiringPostsBanner'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -183,7 +182,7 @@ export default function Header() {
             <Link className={classes.nav} href="/rules" underline="none">
               Rules
             </Link>
-            <Link className={classes.nav} href="/banned-users" underline="none">
+            <Link className={classes.nav} href="/bans" underline="none">
               Bans
               <LatestBan />
             </Link>
@@ -255,8 +254,6 @@ export default function Header() {
         <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
       </AppBar>
-
-      <ExpiringPostsBanner userID={currentAuth.user_id} />
     </>
   )
 }

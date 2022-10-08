@@ -31,13 +31,6 @@ export default function About() {
 
       <main className={classes.main}>
         <Container maxWidth="sm">
-          <Alert severity="warning">
-            Only verified ({VERIFIED_DELIVERY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED]}) items from
-            inventory will be listed on Item page. All your posts will still be visible on your
-            Profile.
-          </Alert>
-          <br />
-
           <MarketForm />
         </Container>
       </main>

@@ -18,7 +18,7 @@ const primaryLinks = [
 const secondaryLinks = [
   ['Treasures', '/treasures'],
   ['Rules', '/rules'],
-  ['Bans', '/banned-users'],
+  ['Bans', '/bans'],
   ['Guides', '/guides'],
   ['FAQs', '/faqs'],
   ['Updates', '/updates'],

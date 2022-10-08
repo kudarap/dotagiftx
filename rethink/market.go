@@ -22,6 +22,7 @@ const (
 	marketFieldDeliveryStatus  = "delivery_status"
 	marketFieldNotes           = "notes"
 	marketFieldPrice           = "price"
+	marketFieldResell          = "resell"
 	marketFieldCreatedAt       = "created_at"
 	marketFieldUpdatedAt       = "updated_at"
 	// Hidden field for searching item details.
@@ -252,19 +253,16 @@ func (s *marketStorage) UpdateUserScore(userID string, rankScore int) error {
 	}
 
 	// get all user live market
-	opts := core.FindOpts{Filter: core.Market{
-		UserID: userID,
-		Status: core.MarketStatusLive,
-	}}
-	markets, err := s.Find(opts)
-	if err != nil {
+	var markets []core.Market
+	q := s.table().GetAllByIndex(marketFieldUserID, userID).Filter(core.Market{Status: core.MarketStatusLive})
+	if err := s.db.list(q, &markets); err != nil {
 		return err
 	}
 
 	// set new user rank score
 	for _, mm := range markets {
 		mm.UserRankScore = rankScore
-		if err = s.BaseUpdate(&mm); err != nil {
+		if err := s.BaseUpdate(&mm); err != nil {
 			return fmt.Errorf("could not update market user rank: %s", err)
 		}
 	}
@@ -289,6 +287,58 @@ func (s *marketStorage) BaseUpdate(in *core.Market) error {
 		return errors.New(core.StorageMergeErr, err)
 	}
 
+	return nil
+}
+
+func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOff time.Time) (ids []string, err error) {
+	// Collects exempted users ids.
+	q := r.Table(tableUser).
+		HasFields("boons").
+		Filter(r.Row.Field("boons").Contains(b)).
+		Field("id")
+	var exemptedUserIDs []string
+	if err = s.db.list(q, &exemptedUserIDs); err != nil {
+		return nil, fmt.Errorf("could not get users: %s", err)
+	}
+
+	// Sets expired entry state base on cutOff time.
+	now := time.Now()
+	q = s.table().Filter(core.Market{Status: core.MarketStatusLive, Type: t}).
+		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).
+		Filter(func(entry r.Term) r.Term {
+			return r.Expr(exemptedUserIDs).Contains(entry.Field(marketFieldUserID)).Not()
+		}).
+		Update(core.Market{
+			Status: core.MarketStatusExpired, UpdatedAt: &now,
+		})
+	if err = s.db.update(q); err != nil {
+		return nil, fmt.Errorf("could not update expiring markets: %s", err)
+	}
+
+	// Collect and return affected item ids.
+	q = s.table().Filter(core.Market{Status: core.MarketStatusExpired, UpdatedAt: &now}).
+		Group(marketFieldItemID).Count().Ungroup().
+		Field("group")
+	var itemIDs []string
+	if err = s.db.list(q, &itemIDs); err != nil {
+		return nil, fmt.Errorf("could not get affected markets: %s", err)
+	}
+
+	return itemIDs, nil
+}
+
+func (s *marketStorage) BulkDeleteByStatus(ms core.MarketStatus, cutOff time.Time, limit int) error {
+	if ms != core.MarketStatusRemoved && ms != core.MarketStatusExpired {
+		return fmt.Errorf("market status %s not allowed to bulk delete", ms)
+	}
+
+	q := s.table().Filter(core.Market{Status: ms}).
+		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).
+		Limit(limit).
+		Delete()
+	if err := s.db.delete(q); err != nil && err != r.ErrEmptyResult {
+		return err
+	}
 	return nil
 }
 
