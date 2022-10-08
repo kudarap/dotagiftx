@@ -36,8 +36,9 @@ func init() {
 }
 
 const (
-	maxMarketNotesLen        = 200
-	MaxMarketQtyLimitPerUser = 5
+	maxMarketNotesLen               = 200
+	MaxMarketQtyLimitPerFreeUser    = 1
+	MaxMarketQtyLimitPerPremiumUser = 5
 
 	MarketAskExpirationDays = 30
 	MarketBidExpirationDays = 7

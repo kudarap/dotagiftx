@@ -14,7 +14,7 @@ const baseThemeOpts = {
       dark: grey[400],
     },
     secondary: {
-      main: '#C79123',
+      main: '#ea7653',
     },
     bid: {
       main: teal[300],
@@ -23,8 +23,8 @@ const baseThemeOpts = {
       main: teal.A200,
     },
     background: {
-      default: '#263238',
-      paper: '#2e3d44',
+      default: '#201d1d',
+      paper: '#2d2928',
     },
     // App specific colors.
     app: {

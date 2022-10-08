@@ -3,12 +3,9 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
-import { APP_NAME } from '@/constants/strings'
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import Container from '@/components/Container'
+import * as format from '@/lib/format'
 import { marketSearch, statsMarketSummary } from '@/service/api'
-import MarketActivity from '@/components/MarketActivity'
+import { APP_NAME } from '@/constants/strings'
 import {
   MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_RESERVED,
@@ -16,6 +13,10 @@ import {
   MARKET_TYPE_ASK,
 } from '@/constants/market'
 import Link from '@/components/Link'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import Container from '@/components/Container'
+import MarketActivity from '@/components/MarketActivity'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -110,6 +111,8 @@ export default function History({ status, summary, error }) {
     }
   })
 
+  summary.sold = format.numberWithCommas(summary.sold)
+  summary.reserved = format.numberWithCommas(summary.reserved)
   return (
     <>
       <Header />

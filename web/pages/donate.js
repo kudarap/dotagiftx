@@ -91,7 +91,9 @@ export default function Faq() {
               <Typography color="textPrimary" component="span">
                 CS:GO case keys
               </Typography>
-              ) and will give you a donation badge on your profile in return.
+              ) and will give you a{' '}
+              <span style={{ textDecoration: 'line-through' }}>donator badge</span> on your profile
+              in return.
               <Button
                 target="_blank"
                 rel="noreferrer noopener"
@@ -116,7 +118,8 @@ export default function Faq() {
                 Crypto
               </Typography>{' '}
               if you want to help future cost of server and domain. Please don&apos;t forget to put
-              your profile link on the notes so I can award the donator badge.
+              your profile link on the notes so I can award the{' '}
+              <span style={{ textDecoration: 'line-through' }}>donator badge</span>.
               <Button
                 component={Link}
                 href="/donate-coin"
@@ -129,7 +132,10 @@ export default function Faq() {
           </div>
           <br />
 
-          <Typography color="textSecondary" component="em">
+          <Typography
+            color="textSecondary"
+            component="em"
+            style={{ textDecoration: 'line-through' }}>
             Donator badge will be on your profile forever and make your avatar glow for 30 days.
           </Typography>
 
