@@ -247,12 +247,6 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	return nil
 }
 
-func bench(name string, fn func()) {
-	s := time.Now()
-	fn()
-	fmt.Println("BENCH service/market", name, time.Now().Sub(s))
-}
-
 func (s *marketService) UpdateUserRankScore(userID string) error {
 	stats, err := s.statsStg.CountUserMarketStatus(userID)
 	if err != nil {
@@ -267,18 +261,6 @@ func (s *marketService) UpdateUserRankScore(userID string) error {
 	}
 	fmt.Println("service/market UpdateUserScore", time.Now().Sub(benchS))
 	return s.userStg.BaseUpdate(u)
-}
-
-func (s *marketService) checkFlaggedUser(userID string) error {
-	u, err := s.userStg.Get(userID)
-	if err != nil {
-		return err
-	}
-	if err = u.CheckStatus(); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // AutoCompleteBid detects if there's matching reservation on buy order and automatically
@@ -319,6 +301,18 @@ func (s *marketService) AutoCompleteBid(_ context.Context, ask core.Market, part
 	return s.marketStg.Update(&b)
 }
 
+func (s *marketService) checkFlaggedUser(userID string) error {
+	u, err := s.userStg.Get(userID)
+	if err != nil {
+		return err
+	}
+	if err = u.CheckStatus(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *marketService) processShopkeepersContract(m *core.Market) (*core.Market, error) {
 	user, err := s.userStg.Get(m.UserID)
 	if err != nil {
@@ -348,6 +342,15 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 	//	return err
 	//}
 
+	user, err := s.userStg.Get(ask.UserID)
+	if err != nil {
+		return err
+	}
+	qtyLimit := core.MaxMarketQtyLimitPerFreeUser
+	if user.HasBoon(core.BoonRefresherOrb) {
+		qtyLimit = core.MaxMarketQtyLimitPerPremiumUser
+	}
+
 	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(core.FindOpts{
 		Filter: core.Market{
@@ -360,8 +363,8 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 	if err != nil {
 		return err
 	}
-	if qty >= core.MaxMarketQtyLimitPerUser {
-		return core.MarketErrQtyLimitPerUser
+	if qty >= qtyLimit {
+		return fmt.Errorf("market quantity limit(%d) per item reached", qtyLimit)
 	}
 
 	return nil
@@ -452,4 +455,10 @@ func (s *marketService) userMarket(userID, id string) (*core.Market, error) {
 	}
 
 	return cur, nil
+}
+
+func bench(name string, fn func()) {
+	s := time.Now()
+	fn()
+	fmt.Println("BENCH service/market", name, time.Now().Sub(s))
 }

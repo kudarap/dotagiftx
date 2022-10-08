@@ -57,7 +57,7 @@ export default function Plus() {
             </Typography>
             <Typography variant="h6">
               Help support DotagiftX and get exclusive feature access, dedicated support, and
-              profile cosmetic.
+              profile badge.
             </Typography>
           </Box>
 
@@ -72,7 +72,7 @@ export default function Plus() {
                 }}>
                 <Typography variant="h6">Supporter</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
-                  <li>Profile Badge</li>
+                  <li>Supporter Badge</li>
                   <li>
                     <Link href="#exclusive-features">Refresher Shard</Link>
                   </li>
@@ -101,7 +101,7 @@ export default function Plus() {
                 }}>
                 <Typography variant="h6">Trader</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
-                  <li>Profile Badge</li>
+                  <li>Trader Badge</li>
                   <li>
                     <Link href="#exclusive-features">Refresher Orb</Link>
                   </li>
@@ -132,7 +132,7 @@ export default function Plus() {
                 }}>
                 <Typography variant="h6">Partner</Typography>
                 <Box component={FeatureList}>
-                  <li>Profile Badge</li>
+                  <li>Partner Badge</li>
                   <li>
                     <Link href="#exclusive-features">Refresher Orb</Link>
                   </li>
@@ -148,18 +148,19 @@ export default function Plus() {
                   fullWidth
                   sx={{ bgcolor: 'rgb(197, 144, 35)' }}
                   component={Link}
-                  href="/transmute/subscription?id=partner">
+                  // href="/transmute/subscription?id=partner">
+                  href="/about">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
-                    $20
+                    Contact us
                   </Typography>
-                  /mo
                 </Button>
               </Box>
             </Grid>
           </Grid>
           <br />
           <Typography variant="body2" paragraph textAlign="center" color="text.secondary">
-            Subscriptions automatically renew
+            Subscriptions automatically renew and you can cancel your subscription on Paypal
+            dashboard.
           </Typography>
 
           <Box sx={{ mt: 5 }}>

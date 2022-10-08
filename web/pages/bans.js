@@ -183,10 +183,6 @@ function UserCard({ data }) {
           <Link variant="body2" href={`/profiles/${data.steam_id}`}>
             Profile
           </Link>
-          {/* &nbsp;&middot;&nbsp;
-          <Link variant="body2" href={`/profiles/${data.steam_id}/activity`}>
-            Market History
-          </Link> */}
           &nbsp;&middot;&nbsp;
           <Link
             variant="body2"

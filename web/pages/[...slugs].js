@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
-import { catalog as getCatalog } from '@/service/api'
 import { APP_URL } from '@/constants/strings'
-import ItemDetails from '@/components/ItemDetails'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import { VERIFIED_INVENTORY_VERIFIED } from '@/constants/verified'
+import { catalog as getCatalog } from '@/service/api'
+import ItemDetails from '@/components/ItemDetails'
 import ErrorPage from './404'
 
 export default function DynamicPage(props) {
