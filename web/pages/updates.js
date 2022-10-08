@@ -32,6 +32,24 @@ export default function Updates() {
       <main className={classes.main}>
         <Container>
           <Typography variant="h5" gutterBottom>
+            September 3, 2022
+          </Typography>
+          <Typography color="textSecondary">
+            <ul>
+              <li>added expired market sweeper</li>
+              <li>added optimization on catalog indexing and invalidation</li>
+              <li>added 3 points for resell deliveries on user score</li>
+              <li>added refresher shard boon on trader subscription</li>
+              <li>added giveaway link</li>
+              <li>added middleman badge</li>
+              <li>fixes banned profile display</li>
+              <li>removed expiring post notice</li>
+            </ul>
+          </Typography>
+          <Divider />
+          <br />
+
+          <Typography variant="h5" gutterBottom>
             April 15, 2022
           </Typography>
           {/* <Typography variant="body" gutterBottom>
