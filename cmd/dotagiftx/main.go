@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/log"
@@ -63,6 +64,8 @@ func (app *application) loadConfig() error {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
+	fmt.Println("webhookURL", app.config.DiscordWebhookURL)
+
 	return nil
 }
 
@@ -96,6 +99,7 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
+	discordClient := discord.New(app.config.DiscordWebhookURL)
 
 	// Setup application worker
 	app.worker = worker.New()
@@ -140,7 +144,7 @@ func (app *application) setup() error {
 		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
-	reportSvc := service.NewReport(reportStg)
+	reportSvc := service.NewReport(reportStg, discordClient)
 	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
 
@@ -204,9 +208,7 @@ func (app *application) setup() error {
 
 func (app *application) run() error {
 	defer app.closerFn()
-
 	go app.worker.Start()
-
 	return app.server.Run()
 }
 
