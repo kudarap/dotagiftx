@@ -19,6 +19,12 @@ const treasures = [
     items: 9,
   },
   {
+    name: 'Immortal Treasure II 2022',
+    image: 'immortal_treasure_ii_2022.png',
+    rarity: 'immortal',
+    items: 9,
+  },
+  {
     name: "Aghanim's 2021 Collector's Cache",
     image: 'aghanim_s_2021_collector_s_cache.webp',
     rarity: 'mythical',
