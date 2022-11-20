@@ -36,15 +36,17 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
+const defaultPayload = {
+  type: REPORT_TYPE_FEEDBACK,
+  profile: '',
+  text: '',
+  reserved: false,
+}
+
 export default function About() {
   const { classes } = useStyles()
 
-  const [payload, setPayload] = React.useState({
-    type: REPORT_TYPE_FEEDBACK,
-    profile: '',
-    text: '',
-    reserved: false,
-  })
+  const [payload, setPayload] = React.useState(defaultPayload)
 
   const [message, setMessage] = React.useState(null)
   const [error, setError] = React.useState(null)
@@ -66,6 +68,7 @@ export default function About() {
       try {
         await reportCreate(payload)
         setMessage('Submitted successfully!')
+        setPayload(defaultPayload)
       } catch (e) {
         setError(e.message)
       }
