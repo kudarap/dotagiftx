@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
@@ -18,6 +19,7 @@ import {
   REPORT_TYPE_SCAM_INCIDENT,
 } from '@/constants/report'
 import { reportCreate } from '@/service/api'
+import AppContext from '@/components/AppContext'
 import Link from '@/components/Link'
 
 const useStyles = makeStyles()(theme => ({
@@ -51,6 +53,15 @@ export default function About() {
   const [message, setMessage] = React.useState(null)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
+
+  const { isLoggedIn } = useContext(AppContext)
+  const router = useRouter()
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/')
+      return null
+    }
+  }, [])
 
   const handleSubmit = () => {
     setError(null)
