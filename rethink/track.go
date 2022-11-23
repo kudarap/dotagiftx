@@ -106,7 +106,7 @@ func (s *trackStorage) TopKeywords() ([]core.SearchKeywordScore, error) {
 	now := r.Now()
 	q := s.table().Between(now.Sub(last7days), now, r.BetweenOpts{Index: trackFieldCreatedAt}).
 		Filter(map[string]interface{}{"type": "s"}).
-		Group("keyword").
+		Group(r.Row.Field("keyword").Downcase()).
 		Count().
 		Ungroup().
 		OrderBy(r.Desc("reduction")).
