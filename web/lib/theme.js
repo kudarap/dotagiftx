@@ -24,7 +24,7 @@ const baseThemeOpts = {
     },
     background: {
       default: '#201d1d',
-      paper: '#2d2928',
+      paper: '#2d2928d9',
     },
     // App specific colors.
     app: {

@@ -186,7 +186,7 @@ export default function Treasures() {
           }}>
           <div
             style={{
-              background: 'url(/assets/treasure-banner.png) no-repeat top center',
+              background: 'url(/assets/treasure-banner.png) no-repeat bottom center',
               width: '100%',
               height: '100%',
             }}></div>

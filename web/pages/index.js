@@ -34,12 +34,7 @@ const Link = dynamic(() => import('@/components/Link'))
 const Footer = dynamic(() => import('@/components/Footer'))
 
 const useStyles = makeStyles()(theme => ({
-  main: {
-    [theme.breakpoints.down('md')]: {
-      marginTop: theme.spacing(1),
-    },
-    marginTop: theme.spacing(4),
-  },
+  main: {},
   searchBar: {
     margin: '0 auto',
     marginBottom: theme.spacing(4),
@@ -146,8 +141,31 @@ export default function Index({ marketSummary, trendingItems }) {
       <Header disableSearch />
 
       <main className={classes.main}>
-        <Container>
-          <div className={classes.banner}>
+        <div
+          style={{
+            width: '100%',
+            height: 500,
+            maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
+            position: 'relative',
+            zIndex: 0,
+          }}>
+          <div
+            style={{
+              background: 'url(/assets/treasure-banner.png) no-repeat bottom center',
+              width: '100%',
+              height: '100%',
+            }}></div>
+        </div>
+
+        <Container
+          sx={{
+            mt: {
+              md: -35,
+              xs: -61,
+            },
+            position: 'relative',
+          }}>
+          <div className={classes.banner} hidden>
             <Typography
               className={classes.bannerText}
               component="h1"
