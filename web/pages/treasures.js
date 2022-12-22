@@ -31,6 +31,18 @@ const treasures = [
     items: 9,
   },
   {
+    name: 'The Battle Pass Collection 2022',
+    image: 'the_battle_pass_collection_2022.png',
+    rarity: 'immortal',
+    items: 8,
+  },
+  {
+    name: 'Ageless Heirlooms 2022',
+    image: 'ageless_heirlooms_2022.png',
+    rarity: 'immortal',
+    items: 10,
+  },
+  {
     name: "Aghanim's 2021 Collector's Cache",
     image: 'aghanim_s_2021_collector_s_cache.webp',
     rarity: 'mythical',
