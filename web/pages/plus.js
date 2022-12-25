@@ -148,11 +148,11 @@ export default function Plus() {
                   fullWidth
                   sx={{ bgcolor: 'rgb(197, 144, 35)' }}
                   component={Link}
-                  // href="/transmute/subscription?id=partner">
-                  href="/about">
+                  href="/transmute/subscription?id=partner">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
-                    Contact us
+                    $20
                   </Typography>
+                  /mo
                 </Button>
               </Box>
             </Grid>
