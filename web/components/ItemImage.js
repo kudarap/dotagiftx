@@ -15,7 +15,16 @@ export function retinaSrcSet(filename, width, height) {
   return { src, srcSet: `${src} 1x, ${src2x} 2x` }
 }
 
-export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
+export default function ItemImage({
+  image,
+  title,
+  rarity,
+  className,
+  width,
+  height,
+  nextOptimized,
+  ...other
+}) {
   const contStyle = {
     lineHeight: 1,
     flexShrink: 0,
@@ -44,6 +53,21 @@ export default function ItemImage({ image, title, rarity, className, width, heig
     srcSet = rs.srcSet
   }
 
+  if (!nextOptimized) {
+    return (
+      <div style={contStyle} className={className}>
+        <img
+          loading="lazy"
+          src={baseSrc}
+          alt={title || image}
+          style={imgStyle}
+          height={height}
+          {...other}
+        />
+      </div>
+    )
+  }
+
   return (
     <div style={contStyle} className={className}>
       <Image
@@ -66,9 +90,11 @@ ItemImage.propTypes = {
   title: PropTypes.string,
   rarity: PropTypes.string,
   className: PropTypes.string,
+  nextOptimized: PropTypes.bool,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
   className: '',
+  nextOptimized: false,
 }
