@@ -45,11 +45,8 @@ const useStyles = makeStyles()(theme => ({
     },
     margin: theme.spacing(0, 0, 2, 0),
     padding: theme.spacing(1.5),
-    // TI 2022 event theme
-    border: '1px solid #ea695357',
-    background: theme.palette.background.paper,
-    // border: '1px solid #52564e',
-    // background: '#2d3431',
+    border: '1px solid #52564e',
+    background: '#2d3431',
     borderRadius: 4,
   },
   bannerHighlight: {
@@ -152,6 +149,7 @@ export default function Index({ marketSummary, trendingItems }) {
           <div
             style={{
               background: 'url(/assets/treasure-banner.png) no-repeat bottom center',
+              backgroundColor: '#263238',
               width: '100%',
               height: '100%',
             }}></div>

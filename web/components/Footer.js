@@ -8,9 +8,9 @@ import { APP_NAME } from '@/constants/strings'
 import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
-// const t = 1645730826
-// const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${t}`
-const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/international2022/ti11_collectors_aegis.png`
+const t = 1675031642
+const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${t}`
+// const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/international2022/ti11_collectors_aegis.png`
 
 // const heroImage = '/assets/bg_hero.png'
 
@@ -29,9 +29,7 @@ const useStyles = makeStyles()(theme => ({
     },
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
-    // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -140px`,
-    // TI 2022 event
-    background: `linear-gradient(0deg, rgba(56, 38, 38, 0.3) 100%, transparent), url(${dotaHeroImage}) center center black`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) top center`,
   },
   list: {
     [theme.breakpoints.down('sm')]: {
@@ -65,7 +63,7 @@ const useStyles = makeStyles()(theme => ({
     marginTop: theme.spacing(4),
   },
   highlight: {
-    background: '-webkit-linear-gradient(#EBCF87 10%, #EA6953 90%)',
+    background: '-webkit-linear-gradient(#EBCF87 10%, #C79123 90%)',
     'background-clip': 'border-box',
     'background-clip': 'text',
     '-webkit-background-clip': 'text',
