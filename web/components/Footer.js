@@ -64,10 +64,10 @@ const useStyles = makeStyles()(theme => ({
   },
   highlight: {
     background: '-webkit-linear-gradient(#EBCF87 10%, #C79123 90%)',
-    'background-clip': 'border-box',
-    'background-clip': 'text',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
+    backgroundClip: 'border-box',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
     filter: 'drop-shadow(0px 0px 5px #e1261c)',
   },
 }))

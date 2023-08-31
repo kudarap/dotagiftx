@@ -51,10 +51,10 @@ const useStyles = makeStyles()(theme => ({
   },
   bannerHighlight: {
     background: '-webkit-linear-gradient(#EBCF87 10%, #EA6953 90%)',
-    'background-clip': 'border-box',
-    'background-clip': 'text',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
+    backgroundClip: 'border-box',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
     filter: 'drop-shadow(0px 0px 5px #e1261c)',
   },
   bannerText: {
@@ -141,16 +141,19 @@ export default function Index({ marketSummary, trendingItems }) {
         <div
           style={{
             width: '100%',
-            height: 500,
+            height: 340,
+            marginBottom: 500 - 340,
             maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
-            '-webkit-mask-image': 'linear-gradient(to top, transparent 0%, black 90%)',
+            WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
           }}>
           <div
             style={{
-              background: 'url(/assets/treasure-banner.png) no-repeat bottom center',
+              background: 'url(/assets/treasure-banner.png) no-repeat top center',
               backgroundColor: '#263238',
+              backgroundSize: 'cover',
+              backgroundPositionY: -60,
               width: '100%',
               height: '100%',
             }}></div>

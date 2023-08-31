@@ -13,6 +13,12 @@ import { APP_NAME } from '@/constants/strings'
 
 const treasures = [
   {
+    name: "August 2023 Collector's Cache",
+    image: 'august_2023_collector_s_cache.png',
+    rarity: 'mythical',
+    items: 16,
+  },
+  {
     name: "Diretide 2022 Collector's Cache II",
     image: 'diretide_2022_collector_s_cache_ii.png',
     rarity: 'immortal',
@@ -199,12 +205,14 @@ export default function Treasures() {
             width: '100%',
             height: 500,
             maskImage: 'linear-gradient(to top, transparent 25%, black 100%)',
+            WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
           }}>
           <div
             style={{
               background: 'url(/assets/treasure-banner.png) no-repeat bottom center',
+              backgroundPosition: 'center',
               width: '100%',
               height: '100%',
             }}></div>

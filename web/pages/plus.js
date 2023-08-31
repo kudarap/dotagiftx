@@ -44,8 +44,8 @@ export default function Plus() {
               sx={{ mt: 8 }}
               style={{
                 background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
-                '-webkit-background-clip': 'text',
-                '-webkit-text-fill-color': 'transparent',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
                 letterSpacing: 3,
                 // textTransform: 'uppercase',
               }}
