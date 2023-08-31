@@ -143,6 +143,7 @@ export default function Index({ marketSummary, trendingItems }) {
             width: '100%',
             height: 500,
             maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
+            '-webkit-mask-image': 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
           }}>
