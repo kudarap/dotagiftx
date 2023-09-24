@@ -374,16 +374,18 @@ function baseTable(Component) {
                       <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
                       </Typography>
-                      <span
-                        aria-owns={popoverElementID}
-                        aria-haspopup="true"
-                        data-index={idx}
-                        onMouseLeave={debouncePopoverClose}
-                        onMouseEnter={handlePopoverOpen}>
-                        {market.resell
-                          ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
-                          : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
-                      </span>
+                      {!bidMode && (
+                        <span
+                          aria-owns={popoverElementID}
+                          aria-haspopup="true"
+                          data-index={idx}
+                          onMouseLeave={debouncePopoverClose}
+                          onMouseEnter={handlePopoverOpen}>
+                          {market.resell
+                            ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
+                            : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
