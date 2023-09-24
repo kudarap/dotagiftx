@@ -73,9 +73,10 @@ func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, 
 				Or(t.Field(marketFieldInventoryStatus).Eq(core.InventoryStatusError))
 		}).
 		Filter(func(t r.Term) r.Term {
-			return t.And(t.Field(marketFieldStatus).Eq(core.MarketStatusLive).
-				Or(t.Field(marketFieldStatus).Eq(core.MarketStatusReserved))).
-				And(t.Field(marketFieldType).Eq(core.MarketTypeAsk))
+			return t.And(
+				t.Field(marketFieldStatus).Eq(core.MarketStatusLive).
+					Or(t.Field(marketFieldStatus).Eq(core.MarketStatusReserved)),
+			).And(t.Field(marketFieldType).Eq(core.MarketTypeAsk))
 		})
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
 

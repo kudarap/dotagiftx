@@ -26,6 +26,7 @@ import {
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ItemImageDialog from '@/components/ItemImageDialog'
+import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -47,6 +48,7 @@ export default function MarketUpdateDialog(props) {
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [loadingRemove, setLoadingRemove] = React.useState(false)
 
   const { onClose } = props
   const handleClose = () => {
@@ -54,6 +56,7 @@ export default function MarketUpdateDialog(props) {
     setNotes('')
     setError('')
     setLoading(false)
+    setLoadingRemove(false)
     onClose()
   }
 
@@ -65,7 +68,7 @@ export default function MarketUpdateDialog(props) {
 
   const { market } = props
   const handleRemoveClick = () => {
-    setLoading(true)
+    setLoadingRemove(true)
     setError(null)
     ;(async () => {
       try {
@@ -75,7 +78,7 @@ export default function MarketUpdateDialog(props) {
         setError(`Error: ${e.message}`)
       }
 
-      setLoading(false)
+      setLoadingRemove(false)
     })()
   }
 
@@ -224,13 +227,16 @@ export default function MarketUpdateDialog(props) {
         )}
         <DialogActions>
           <Button
-            disabled={loading}
-            startIcon={<RemoveIcon />}
+            disabled={loadingRemove}
+            startIcon={
+              loadingRemove ? <CircularProgress size={22} color="secondary" /> : <RemoveIcon />
+            }
             onClick={handleRemoveClick}
             variant="outlined">
             Remove Listing
           </Button>
           <Button
+            disabled={loading}
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
             variant="outlined"
             color="secondary"

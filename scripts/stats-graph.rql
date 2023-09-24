@@ -6,7 +6,7 @@ r.db('d2g_production').table('user')
   .count()
   
   
-var lastDays = r.time(2021, 1, 1, 'Z');
+var lastDays = r.time(2022, 1, 1, 'Z');
 r.db('d2g_production').table('user')
   .filter(r.row('created_at').gt(lastDays))
 	.group(
@@ -15,7 +15,7 @@ r.db('d2g_production').table('user')
   .count()
 
 
- var lastDays = r.time(2021, 5, 1, 'Z');
+var lastDays = r.time(2021, 5, 1, 'Z');
 var db = r.db('d2g_production');
 db.table('market')
   .filter({ type: 10, status: 400, delivery_status: 200 })
