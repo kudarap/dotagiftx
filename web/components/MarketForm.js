@@ -386,6 +386,7 @@ export default function MarketForm() {
             <Alert
               severity="success"
               variant="filled"
+              sx={{ color: 'primary.main' }}
               action={
                 <Button color="inherit" size="small" onClick={handleFormReset}>
                   Post More

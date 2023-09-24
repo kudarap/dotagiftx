@@ -63,7 +63,6 @@ export default function VerifiedStatusCard({ market, ...other }) {
 
   const { inventory, delivery } = market
 
-  console.log('market', market)
   if (market.inventory_status == VERIFIED_INVENTORY_PENDING) {
     return <PendingCard data={market} />
   }

@@ -296,6 +296,7 @@ export default function BuyOrderDialog(props) {
               <Alert
                 severity="success"
                 variant="filled"
+                sx={{ color: 'primary.main' }}
                 action={
                   <Button color="inherit" size="small" onClick={handleDone}>
                     Done

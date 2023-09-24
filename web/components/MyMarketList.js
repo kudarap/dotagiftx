@@ -152,7 +152,7 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                         onMouseEnter={handlePopoverOpen}>
                         {market.resell
                           ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
-                          : VERIFIED_INVENTORY_MAP_ICON[0]}
+                          : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       </span>
 
                       <br />
