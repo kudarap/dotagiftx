@@ -53,7 +53,7 @@ jobs:
       - name: SSH Deploy
         run: |
           docker save -o $IMAGE_FILE $IMAGE_NAME
-          scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
+          rsync -r -e "ssh bastion ssh" $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
           ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE"
 
 #          ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE && ./restart.sh"
