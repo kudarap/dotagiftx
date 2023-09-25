@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/fatih/structs v1.1.0
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible

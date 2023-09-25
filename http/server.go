@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 	gokitMw "github.com/kudarap/dotagiftx/gokit/http/middleware"

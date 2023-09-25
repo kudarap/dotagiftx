@@ -64,8 +64,6 @@ func (app *application) loadConfig() error {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
-	fmt.Println("webhookURL", app.config.DiscordWebhookURL)
-
 	return nil
 }
 

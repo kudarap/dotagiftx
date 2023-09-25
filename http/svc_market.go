@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 	"github.com/sirupsen/logrus"

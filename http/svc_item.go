@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/sirupsen/logrus"
 )

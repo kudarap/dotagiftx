@@ -1,6 +1,6 @@
 package http
 
-import "github.com/go-chi/chi"
+import "github.com/go-chi/chi/v5"
 
 func (s *Server) publicRouter(r chi.Router) {
 	r.Group(func(r chi.Router) {
