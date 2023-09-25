@@ -10,7 +10,7 @@ env:
   HOST: root@chiligarlic.com
   IMAGE_NAME: dotagiftx/api
   IMAGE_FILE: api.tar
-  WORKDIR: ~/cg/d2g.prod
+  WORKDIR: ~/dotagiftx/prod
 
 jobs:
   test:

@@ -10,7 +10,7 @@ env:
   HOST: root@chiligarlic.com
   IMAGE_NAME: dotagiftx/api:dev
   IMAGE_FILE: api.tar
-  WORKDIR: ~/cg/d2g
+  WORKDIR: ~/dotagiftx/dev
 #  BIN_FILE: dotagiftx
 #  BIN_NAME: gha_dev
 
