@@ -55,7 +55,7 @@ jobs:
       - name: SSH Image Deploy
         run: |
           docker save -o $IMAGE_FILE $IMAGE_NAME
-          rsync -r -e "ssh bastion ssh" $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
+          scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
           ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE && ./restart.sh"
 
 #      - name: SSH Binary Upload
