@@ -26,7 +26,6 @@ import {
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
 import ItemImageDialog from '@/components/ItemImageDialog'
-import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -228,9 +227,7 @@ export default function MarketUpdateDialog(props) {
         <DialogActions>
           <Button
             disabled={loadingRemove}
-            startIcon={
-              loadingRemove ? <CircularProgress size={22} color="secondary" /> : <RemoveIcon />
-            }
+            startIcon={loadingRemove ? <CircularProgress size={22} /> : <RemoveIcon />}
             onClick={handleRemoveClick}
             variant="outlined">
             Remove Listing

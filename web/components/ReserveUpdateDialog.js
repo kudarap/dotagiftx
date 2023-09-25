@@ -43,22 +43,24 @@ export default function ReserveUpdateDialog(props) {
   const [notes, setNotes] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [loadingCancel, setLoadingCancel] = React.useState(false)
 
   const { onClose } = props
   const handleClose = () => {
     setNotes('')
     setError('')
     setLoading(false)
+    setLoadingCancel(false)
     onClose()
   }
 
   const { market, onSuccess, onCancel } = props
-  const marketUpdate = payload => {
+  const marketUpdate = (payload, setLoader) => {
     if (loading) {
       return
     }
 
-    setLoading(true)
+    setLoader(true)
     setError(null)
     ;(async () => {
       try {
@@ -74,24 +76,30 @@ export default function ReserveUpdateDialog(props) {
         setError(`Error: ${e.message}`)
       }
 
-      setLoading(false)
+      setLoader(false)
     })()
   }
 
   const handleCancelClick = () => {
-    marketUpdate({
-      status: MARKET_STATUS_CANCELLED,
-      notes,
-    })
+    marketUpdate(
+      {
+        status: MARKET_STATUS_CANCELLED,
+        notes,
+      },
+      setLoadingCancel
+    )
   }
 
   const onFormSubmit = evt => {
     evt.preventDefault()
 
-    marketUpdate({
-      status: MARKET_STATUS_SOLD,
-      notes,
-    })
+    marketUpdate(
+      {
+        status: MARKET_STATUS_SOLD,
+        notes,
+      },
+      setLoading
+    )
   }
 
   if (!market) {
@@ -200,13 +208,14 @@ export default function ReserveUpdateDialog(props) {
         )}
         <DialogActions>
           <Button
-            disabled={loading}
-            startIcon={<CancelIcon />}
+            disabled={loadingCancel}
+            startIcon={loadingCancel ? <CircularProgress size={22} /> : <CancelIcon />}
             onClick={handleCancelClick}
             variant="outlined">
             Cancel Reservation
           </Button>
           <Button
+            disabled={loading}
             startIcon={
               loading ? <CircularProgress size={22} color="secondary" /> : <DeliveredIcon />
             }
