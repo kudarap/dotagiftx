@@ -1,5 +1,11 @@
 import { makeStyles } from 'tss-react/mui'
 import Link from '@/components/Link'
+import {
+  USER_SUBSCRIPTION_MAP_COLOR,
+  USER_SUBSCRIPTION_PARTNER,
+  USER_SUBSCRIPTION_SUPPORTER,
+  USER_SUBSCRIPTION_TRADER,
+} from '@/constants/user'
 
 export const badgeSettings = {
   middleman: {
@@ -8,15 +14,15 @@ export const badgeSettings = {
   },
   supporter: {
     label: 'Supporter',
-    color: '#596b95',
+    color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_SUPPORTER],
   },
   trader: {
     label: 'Trader',
-    color: '#629cbd',
+    color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_TRADER],
   },
   partner: {
     label: 'Partner',
-    color: '#C79123',
+    color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_PARTNER],
   },
 }
 

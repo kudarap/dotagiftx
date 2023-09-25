@@ -78,6 +78,16 @@ const baseThemeOpts = {
     MuiPaper: {
       styleOverrides: { root: { backgroundImage: 'unset' } },
     },
+    MuiAlert: {
+      variants: [
+        {
+          props: { variant: 'filled' },
+          style: {
+            color: 'white',
+          },
+        },
+      ],
+    },
   },
 }
 
