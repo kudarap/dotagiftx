@@ -5,8 +5,8 @@ import (
 	"math"
 	"time"
 
+	"dario.cat/mergo"
 	"github.com/fatih/structs"
-	"github.com/imdario/mergo"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
 	"github.com/kudarap/dotagiftx/gokit/log"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx/core"
 	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"

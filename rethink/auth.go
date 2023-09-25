@@ -7,7 +7,7 @@ import (
 	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 )
 
 const tableAuth = "auth"
