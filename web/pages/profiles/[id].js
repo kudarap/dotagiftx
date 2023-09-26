@@ -280,6 +280,7 @@ const marketSearchFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
+  index: 'user_id',
 }
 
 // This gets called on every request

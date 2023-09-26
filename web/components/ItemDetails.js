@@ -161,6 +161,7 @@ export default function ItemDetails({
         ...initialFilter,
         sort: sortValue === 'price' ? 'lowest' : sortValue,
         page: pageValue,
+        index: 'item_id',
       })
       setOffers(res)
     } catch (e) {
@@ -175,6 +176,7 @@ export default function ItemDetails({
         ...marketBuyOrderFilter,
         sort: sortValue === 'price' ? 'highest' : sortValue,
         item_id: item.id,
+        index: 'item_id',
       })
       res.loaded = true
       setOrders(res)
