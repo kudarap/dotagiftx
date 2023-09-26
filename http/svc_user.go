@@ -107,7 +107,7 @@ func handleBlacklisted(svc core.UserService, cache core.Cache) http.HandlerFunc 
 			list = []core.User{}
 		}
 
-		go cache.Set(cacheKey, list, userCacheExpr)
+		go cache.Set(cacheKey, list, time.Hour*24)
 
 		respondOK(w, list)
 	}
