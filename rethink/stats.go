@@ -230,7 +230,8 @@ func (s *statsStorage) CountInventoryStatus(o core.FindOpts) (*core.MarketStatus
 }
 
 /*
-	productionDB.table('market')
+productionDB.table('market')
+
 	  .filter(r.row('status').eq(300).or(r.row('status').eq(400)))
 	  .group([
 		r.row('updated_at').year(),
@@ -247,6 +248,7 @@ func (s *statsStorage) CountInventoryStatus(o core.FindOpts) (*core.MarketStatus
 	  })
 */
 func (s *statsStorage) GraphMarketSales(o core.FindOpts) ([]core.MarketSalesGraph, error) {
+	o.IndexKey = marketFieldItemID
 	q := newFindOptsQuery(r.Table(tableMarket), o).Filter(func(t r.Term) r.Term {
 		f := t.Field(marketFieldStatus)
 		return f.Eq(core.MarketStatusReserved).Or(f.Eq(core.MarketStatusSold))

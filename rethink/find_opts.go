@@ -21,6 +21,17 @@ func baseFindOptsQuery(q r.Term, o core.FindOpts, hookFn func(r.Term) r.Term) r.
 }
 
 func (o findOpts) parseOpts(q r.Term, hookFn func(r.Term) r.Term) r.Term {
+	// Use index query instead of filter if available and disable indexed sorting.
+	filter := o.parseFilter()
+	if o.IndexKey != "" {
+		v, ok := filter[o.IndexKey]
+		if ok {
+			q = q.GetAllByIndex(o.IndexKey, v)
+			delete(filter, o.IndexKey)
+			o.IndexSorting = false
+		}
+	}
+
 	if o.IndexSorting && o.Sort != "" {
 		q = q.OrderBy(r.OrderByOpts{Index: o.parseOrder()})
 	}
@@ -34,7 +45,7 @@ func (o findOpts) parseOpts(q r.Term, hookFn func(r.Term) r.Term) r.Term {
 	}
 
 	if o.Filter != nil {
-		q = q.Filter(o.parseFilter())
+		q = q.Filter(filter)
 	}
 
 	if o.UserID != "" {

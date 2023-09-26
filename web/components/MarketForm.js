@@ -380,9 +380,7 @@ export default function MarketForm() {
           </Button>
         )}
 
-        <RefresherOrbBoon boons={boons} />
-
-        <div style={{ marginTop: 2 }}>
+        <div style={{ marginTop: 1 }}>
           {newMarketID && (
             <Alert
               severity="success"
@@ -406,6 +404,9 @@ export default function MarketForm() {
             </Typography>
           )}
         </div>
+
+        <RefresherOrbBoon boons={boons} />
+
         <br />
 
         <Typography variant="body2" color="textSecondary" component="div">

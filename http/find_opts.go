@@ -35,6 +35,7 @@ func findOptsFromURL(u *url.URL, filter interface{}) (core.FindOpts, error) {
 	opts.Filter = filter
 	opts.WithMeta = true
 
+	opts.IndexKey = get("index")
 	return opts, nil
 }
 
