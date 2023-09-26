@@ -15,6 +15,7 @@ type (
 		WithMeta      bool
 		// Advance options
 		IndexSorting bool // Use for sorting indexed field.
+		IndexKey     string
 	}
 
 	// FindMetadata represents find metadata.
