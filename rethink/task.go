@@ -1,36 +1,54 @@
 package rethink
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/kudarap/dotagiftx/core"
+	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 const (
-	tableQueue = "queue"
+	tableTask = "task"
 )
 
-type queueStorage struct {
+type taskStorage struct {
 	db *Client
 }
 
-func NewQueue(c *Client) *queueStorage {
-	if err := c.autoMigrate(tableQueue); err != nil {
+func NewQueue(c *Client) *taskStorage {
+	if err := c.autoMigrate(tableTask); err != nil {
 		log.Fatalf("could not create %s table: %s", tableTrack, err)
 	}
 
-	if err := c.autoIndex(tableQueue, core.Track{}); err != nil {
+	if err := c.autoIndex(tableTask, core.Track{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &queueStorage{c}
+	return &taskStorage{c}
 }
 
-func (q *queueStorage) VerifyDelivery(marketID string) {
-	fmt.Println("VerifyDelivery", marketID)
+func (s *taskStorage) VerifyDelivery(marketID string) {
+	var t core.Task
+	t.Kind = core.TaskKindVerifyDelivery
+	t.Value = marketID
+	t.CreatedAt = now()
+	_, err := s.db.insert(s.table().Insert(t))
+	if err != nil {
+		log.Println("ERR TASK VerifyDelivery", err)
+	}
 }
 
-func (q *queueStorage) VerifyInventory(userID string) {
-	fmt.Println("VerifyInventory", userID)
+func (s *taskStorage) VerifyInventory(userID string) {
+	var t core.Task
+	t.Kind = core.TaskKindVerifyInventory
+	t.Value = userID
+	t.CreatedAt = now()
+	_, err := s.db.insert(s.table().Insert(t))
+	if err != nil {
+		log.Println("ERR TASK VerifyInventory", err)
+	}
+}
+
+func (s *taskStorage) table() r.Term {
+	return r.Table(tableTask)
 }
