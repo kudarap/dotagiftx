@@ -10,7 +10,6 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/http"
-	"github.com/kudarap/dotagiftx/jobs"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
@@ -102,8 +101,6 @@ func (app *application) setup() error {
 	// Setup application worker
 	app.worker = worker.New()
 	app.worker.SetLogger(app.contextLog("worker"))
-	// NOTE! this is shade I don't like this one bit
-	dispatcher := new(jobs.Dispatcher)
 
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
@@ -138,26 +135,13 @@ func (app *application) setup() error {
 		deliverySvc,
 		inventorySvc,
 		steamClient,
-		dispatcher,
+		rethink.NewQueue(rethinkClient),
 		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
 	reportSvc := service.NewReport(reportStg, discordClient)
 	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
-
-	// Register job on the worker.
-	*dispatcher = *jobs.NewDispatcher(
-		app.worker,
-		deliverySvc,
-		inventorySvc,
-		deliveryStg,
-		marketStg,
-		catalogStg,
-		redisClient,
-		logger,
-	)
-	dispatcher.RegisterJobs()
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
