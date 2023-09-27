@@ -43,7 +43,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 	opts.Limit = 10
 	opts.Page = 0
 
-	src := steaminv.InventoryAssetWithCache
+	source := steaminv.InventoryAssetWithCache
 	for {
 		res, err := vi.marketStg.PendingInventoryStatus(opts)
 		if err != nil {
@@ -65,7 +65,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
+			status, assets, err := verified.Inventory(source, mkt.User.SteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}

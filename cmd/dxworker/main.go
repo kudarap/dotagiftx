@@ -85,57 +85,25 @@ func (app *application) setup() error {
 
 	// External services setup.
 	logSvc.Println("setting up external services...")
-	//steamClient, err := setupSteam(app.config.Steam, redisClient)
-	//if err != nil {
-	//	return err
-	//}
 
 	// Setup application worker
 	app.worker = worker.New()
 	app.worker.SetLogger(app.contextLog("worker"))
-	// NOTE! this is shade I don't like this one bit
-	dispatcher := new(jobs.Dispatcher)
 
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
-	//userStg := rethink.NewUser(rethinkClient)
-	//authStg := rethink.NewAuth(rethinkClient)
 	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
-	//itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
-	//trackStg := rethink.NewTrack(rethinkClient)
-	//statsStg := rethink.NewStats(rethinkClient)
-	//reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
 
 	// Service inits.
 	logSvc.Println("setting up services...")
-	//fileMgr := setupFileManager(app.config)
-	//userSvc := service.NewUser(userStg, fileMgr)
-	//authSvc := service.NewAuth(steamClient, authStg, userSvc)
-	//imageSvc := service.NewImage(fileMgr)
-	//itemSvc := service.NewItem(itemStg, fileMgr)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
-	//marketSvc := service.NewMarket(
-	//	marketStg,
-	//	userStg,
-	//	itemStg,
-	//	trackStg,
-	//	catalogStg,
-	//	deliverySvc,
-	//	inventorySvc,
-	//	steamClient,
-	//	dispatcher,
-	//	app.contextLog("service_market"),
-	//)
-	//trackSvc := service.NewTrack(trackStg, itemStg)
-	//statsSvc := service.NewStats(statsStg)
-	//reportSvc := service.NewReport(reportStg)
 
 	// Register job on the worker.
-	*dispatcher = *jobs.NewDispatcher(
+	dispatcher := jobs.NewDispatcher(
 		app.worker,
 		deliverySvc,
 		inventorySvc,
@@ -146,13 +114,6 @@ func (app *application) setup() error {
 		logger,
 	)
 	dispatcher.RegisterJobs()
-
-	// NOTE! this is for run-once scripts
-	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
-	//fixes.ReIndexAll(itemStg, catalogStg)
-	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	//fixes.MarketIndexRebuild(marketStg)
-	//redisClient.BulkDel("")
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")

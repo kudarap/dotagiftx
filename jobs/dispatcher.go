@@ -23,7 +23,8 @@ type Dispatcher struct {
 }
 
 // NewDispatcher returns an instance dispatcher.
-func NewDispatcher(worker *worker.Worker,
+func NewDispatcher(
+	worker *worker.Worker,
 	deliverySvc core.DeliveryService,
 	inventorySvc core.InventoryService,
 	deliveryStg core.DeliveryStorage,

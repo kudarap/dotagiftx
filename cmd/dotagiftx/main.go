@@ -15,7 +15,6 @@ import (
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
-	"github.com/kudarap/dotagiftx/worker"
 	"github.com/sirupsen/logrus"
 )
 
@@ -51,7 +50,6 @@ func main() {
 type application struct {
 	config Config
 	server *http.Server
-	worker *worker.Worker
 	logger *logrus.Logger
 
 	closerFn func()
@@ -97,10 +95,6 @@ func (app *application) setup() error {
 		return err
 	}
 	discordClient := discord.New(app.config.DiscordWebhookURL)
-
-	// Setup application worker
-	app.worker = worker.New()
-	app.worker.SetLogger(app.contextLog("worker"))
 
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
@@ -174,9 +168,6 @@ func (app *application) setup() error {
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
-		if err = app.worker.Stop(); err != nil {
-			logSvc.Fatal("could not stop worker", err)
-		}
 		if err = redisClient.Close(); err != nil {
 			logSvc.Fatal("could not close redis client", err)
 		}
@@ -190,7 +181,6 @@ func (app *application) setup() error {
 
 func (app *application) run() error {
 	defer app.closerFn()
-	go app.worker.Start()
 	return app.server.Run()
 }
 
