@@ -55,7 +55,7 @@ type (
 	Inventory struct {
 		ID          string          `json:"id"                 db:"id,omitempty,omitempty"`
 		MarketID    string          `json:"market_id"          db:"market_id,omitempty,indexed" valid:"required"`
-		Status      InventoryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
+		Status      InventoryStatus `json:"status"             db:"status,omitempty,indexed"    valid:"required"`
 		Assets      []SteamAsset    `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries     int             `json:"retries"            db:"retries,omitempty"`
 		BundleCount int             `json:"bundle_count"       db:"bundle_count,omitempty"`

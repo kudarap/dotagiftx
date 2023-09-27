@@ -141,7 +141,7 @@ func (s *marketService) Create(ctx context.Context, market *core.Market) error {
 		market = m
 	case core.MarketTypeBid:
 		if err := s.checkBidType(market); err != nil {
-			return err
+			return fmt.Errorf("could not check bid type: %s", err)
 		}
 	}
 
