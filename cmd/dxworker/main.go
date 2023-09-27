@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/kudarap/dotagiftx/gokit/envconf"
@@ -11,7 +13,6 @@ import (
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
-	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/sirupsen/logrus"
 )
@@ -134,8 +135,14 @@ func (app *application) setup() error {
 func (app *application) run() error {
 	defer app.closerFn()
 
-	app.worker.Start()
-	return nil
+	// Handle quit on SIGINT (CTRL-C).
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+
+	go app.worker.Start()
+
+	<-quit
+	return app.worker.Stop()
 }
 
 func (app *application) contextLog(name string) log.Logger {
@@ -146,15 +153,6 @@ func newApp() *application {
 	a := &application{}
 	a.closerFn = func() {}
 	return a
-}
-
-func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
-	c, err := steam.New(cfg, rc)
-	if err != nil {
-		return nil, fmt.Errorf("could not setup steam client: %s", err)
-	}
-
-	return c, nil
 }
 
 func setupRethink(cfg rethink.Config) (c *rethink.Client, err error) {
@@ -209,8 +207,3 @@ func connRetry(name string, fn func() error) error {
 
 // version details used by ldflags.
 var tag, commit, built string
-
-func initVer(cfg Config) *version.Version {
-	v := version.New(cfg.Prod, tag, commit, built)
-	return v
-}

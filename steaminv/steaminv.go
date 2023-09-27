@@ -72,7 +72,7 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 	return Get(steamID)
 }
 
-// https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
+// Get https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
 // https://data-gz.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory gzipped
 func Get(steamID string) (*steam.AllInventory, error) {
 	url := fmt.Sprintf("https://data-gz.steaminventory.org/SteamInventory/%s", steamID)
@@ -84,7 +84,7 @@ func Get(steamID string) (*steam.AllInventory, error) {
 	return all, nil
 }
 
-// POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198088587178
+// Crawl POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198088587178
 func Crawl(steamID string) (status string, err error) {
 	url := fmt.Sprintf("https://job.steaminventory.org/ScheduleInventoryCrawl?profile=%s", steamID)
 	res, err := http.Post(url, "", nil)
@@ -189,7 +189,7 @@ func (d *rawMetadata) format() *Metadata {
 	return m
 }
 
-// https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
+// GetMeta https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
 func GetMeta(steamID string) (*Metadata, error) {
 	url := fmt.Sprintf("https://db.steaminventory.org/SteamInventory/%s", steamID)
 	raw := &rawMetadata{}

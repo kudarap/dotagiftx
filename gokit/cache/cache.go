@@ -2,7 +2,6 @@ package cache
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -33,7 +32,7 @@ func newData(val interface{}, d time.Duration) []byte {
 
 func Get(key string) (val interface{}, err error) {
 	path := filename(key)
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
@@ -55,7 +54,7 @@ func Get(key string) (val interface{}, err error) {
 
 func Set(key string, val interface{}, expr time.Duration) error {
 	path := filename(key)
-	err := ioutil.WriteFile(path, newData(val, expr), 0666)
+	err := os.WriteFile(path, newData(val, expr), 0666)
 	if err != nil {
 		return err
 	}
