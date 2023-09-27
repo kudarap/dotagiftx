@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"log"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -15,6 +16,22 @@ type taskStorage struct {
 	db *Client
 }
 
+func (s *taskStorage) Queue(ctx context.Context, p core.TaskPriority, t core.TaskType, payload interface{}) (id string, err error) {
+	n := now()
+	id, err = s.db.insert(s.table().Insert(core.Task{
+		Status:    0,
+		Priority:  p,
+		Type:      t,
+		Payload:   payload,
+		CreatedAt: n,
+		UpdatedAt: n,
+	}))
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
 func NewQueue(c *Client) *taskStorage {
 	if err := c.autoMigrate(tableTask); err != nil {
 		log.Fatalf("could not create %s table: %s", tableTrack, err)
@@ -25,28 +42,6 @@ func NewQueue(c *Client) *taskStorage {
 	}
 
 	return &taskStorage{c}
-}
-
-func (s *taskStorage) VerifyDelivery(marketID string) {
-	var t core.Task
-	t.Type = core.TaskTypeVerifyDelivery
-	t.Payload = marketID
-	t.CreatedAt = now()
-	_, err := s.db.insert(s.table().Insert(t))
-	if err != nil {
-		log.Println("ERR TASK VerifyDelivery", err)
-	}
-}
-
-func (s *taskStorage) VerifyInventory(userID string) {
-	var t core.Task
-	t.Type = core.TaskTypeVerifyInventory
-	t.Payload = userID
-	t.CreatedAt = now()
-	_, err := s.db.insert(s.table().Insert(t))
-	if err != nil {
-		log.Println("ERR TASK VerifyInventory", err)
-	}
 }
 
 func (s *taskStorage) table() r.Term {

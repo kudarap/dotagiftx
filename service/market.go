@@ -121,11 +121,11 @@ func (s *marketService) Create(ctx context.Context, market *core.Market) error {
 	}
 
 	// Check Item existence.
-	i, _ := s.itemStg.Get(market.ItemID)
-	if i == nil || !i.IsActive() {
+	item, _ := s.itemStg.Get(market.ItemID)
+	if item == nil || !item.IsActive() {
 		return core.ItemErrNotFound
 	}
-	market.ItemID = i.ID
+	market.ItemID = item.ID
 
 	// Check market details by type.
 	switch market.Type {
@@ -174,7 +174,9 @@ func (s *marketService) Create(ctx context.Context, market *core.Market) error {
 		if err != nil {
 			return err
 		}
+
 		market.User = user
+		market.Item = item
 		if _, err = s.taskProc.Queue(ctx, user.TaskPriorityQueue(), core.TaskTypeVerifyInventory, market); err != nil {
 			s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
 		}
@@ -229,9 +231,14 @@ func (s *marketService) Update(ctx context.Context, market *core.Market) error {
 		if err != nil {
 			return err
 		}
-		market.User = user
-		priority := user.TaskPriorityQueue()
+		item, err := s.itemStg.Get(market.ItemID)
+		if err != nil {
+			return err
+		}
 
+		market.User = user
+		market.Item = item
+		priority := user.TaskPriorityQueue()
 		switch market.Status {
 		case core.MarketStatusReserved:
 			if _, err = s.taskProc.Queue(ctx, priority, core.TaskTypeVerifyInventory, market); err != nil {
