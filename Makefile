@@ -15,6 +15,9 @@ install:
 run: generate build
 	./$(PROJECTNAME)
 
+run-worker: generate build-worker
+	./dxworker
+
 build:
 	go build -v -ldflags=$(LDFLAGS) -o $(PROJECTNAME) ./cmd/$(PROJECTNAME)
 build-worker:

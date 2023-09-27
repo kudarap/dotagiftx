@@ -3,7 +3,6 @@ package fixes
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -131,12 +130,12 @@ func ResolveCompletedBidSteamID(store core.MarketStorage, steam core.SteamClient
 		log.Println("resolving partner steam URL", m.PartnerSteamID)
 		m.PartnerSteamID, err = steam.ResolveVanityURL(m.PartnerSteamID)
 		if err != nil {
-			fmt.Println("could not resolve URL")
+			log.Println("could not resolve URL")
 			continue
 		}
 
 		if err = store.Update(&m); err != nil {
-			fmt.Println("could not update market entry", err)
+			log.Println("could not update market entry", err)
 		}
 
 		log.Println(m.PartnerSteamID, "fixed")

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -69,7 +70,7 @@ func (s *reportService) Create(ctx context.Context, rep *core.Report) error {
 
 	go func() {
 		if err := s.shootToDiscord(rep.ID); err != nil {
-			fmt.Println("could not shoot to discord:", err)
+			log.Println("could not shoot to discord:", err)
 		}
 	}()
 

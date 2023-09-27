@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -48,7 +49,7 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 
 	// crawl request
 	//log.Println(steamID, "sending crawl request...")
-	fmt.Println("STEAMINV CRAWL REQUEST", steamID)
+	log.Println("STEAMINV CRAWL REQUEST", steamID)
 	if _, err = Crawl(steamID); err != nil {
 		return nil, err
 	}

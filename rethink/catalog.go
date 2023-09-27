@@ -214,7 +214,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
-	fmt.Println("rethink/catalog getOffersSummary", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/catalog getOffersSummary", time.Now().Sub(benchStart))
 
 	benchStart = time.Now()
 	// Get market buy orders summary.
@@ -222,7 +222,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
-	fmt.Println("rethink/catalog getBuyOrdersSummary", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/catalog getBuyOrdersSummary", time.Now().Sub(benchStart))
 
 	benchStart = time.Now()
 	// Get market sales stats which calculated from RESERVED and SOLD statuses.
@@ -230,7 +230,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 	if err != nil {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
-	fmt.Println("rethink/catalog getSaleSummary", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/catalog getSaleSummary", time.Now().Sub(benchStart))
 
 	benchStart = time.Now()
 	// Get reserved and sold count on the market by item ID.
@@ -239,7 +239,7 @@ func (s *catalogStorage) Index(itemID string) (*core.Catalog, error) {
 		return nil, errors.New(core.CatalogErrIndexing, err)
 	}
 	cat.SoldCount = cat.SaleCount - cat.ReservedCount
-	fmt.Println("rethink/catalog getReservedCounts", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/catalog getReservedCounts", time.Now().Sub(benchStart))
 
 	// Check for exiting entry for update or create.
 	if cur, _ := s.Get(itemID); cur == nil {

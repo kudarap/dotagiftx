@@ -153,17 +153,17 @@ func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
 	//if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
 	//	return err
 	//}
-	bench("market create :: UpdateUserRankScore", func() {
+	bench(s.logger, "market create :: UpdateUserRankScore", func() {
 		if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
 			s.logger.Errorf("could not update user rank %s: %s", mkt.UserID, err)
 		}
 	})
-	bench("market create :: marketStg.Index", func() {
+	bench(s.logger, "market create :: marketStg.Index", func() {
 		if _, err := s.marketStg.Index(mkt.ID); err != nil {
 			s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 		}
 	})
-	bench("market create :: catalogStg.Index", func() {
+	bench(s.logger, "market create :: catalogStg.Index", func() {
 		if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
 			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 		}
@@ -228,17 +228,17 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 	//if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
 	//	return err
 	//}
-	bench("market update :: UpdateUserRankScore", func() {
+	bench(s.logger, "market update :: UpdateUserRankScore", func() {
 		if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
 			s.logger.Errorf("could not update user rank %s: %s", mkt.UserID, err)
 		}
 	})
-	bench("market update :: marketStg.Index", func() {
+	bench(s.logger, "market update :: marketStg.Index", func() {
 		if _, err = s.marketStg.Index(mkt.ID); err != nil {
 			s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
 		}
 	})
-	bench("market update :: catalogStg.Index", func() {
+	bench(s.logger, "market update :: catalogStg.Index", func() {
 		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
 			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
 		}
@@ -259,7 +259,7 @@ func (s *marketService) UpdateUserRankScore(userID string) error {
 	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
 		return err
 	}
-	fmt.Println("service/market UpdateUserScore", time.Now().Sub(benchS))
+	s.logger.Println("service/market UpdateUserScore", time.Now().Sub(benchS))
 	return s.userStg.BaseUpdate(u)
 }
 
@@ -457,8 +457,8 @@ func (s *marketService) userMarket(userID, id string) (*core.Market, error) {
 	return cur, nil
 }
 
-func bench(name string, fn func()) {
+func bench(l log.Logger, name string, fn func()) {
 	s := time.Now()
 	fn()
-	fmt.Println("BENCH service/market", name, time.Now().Sub(s))
+	l.Println("BENCH service/market", name, time.Now().Sub(s))
 }

@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -36,9 +35,7 @@ func (vi *VerifyInventory) Interval() time.Duration { return vi.interval }
 func (vi *VerifyInventory) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		fmt.Println("======== VERIFIED INVENTORY BENCHMARK TIME =========")
-		fmt.Println(time.Now().Sub(bs))
-		fmt.Println("====================================================")
+		vi.logger.Println("VERIFIED INVENTORY BENCHMARK TIME", time.Since(bs))
 	}()
 
 	opts := core.FindOpts{Filter: vi.filter}

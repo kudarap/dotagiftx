@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -30,25 +29,23 @@ func NewRecheckInventory(is core.InventoryService, ms core.MarketStorage, lg log
 		"recheck_inventory", time.Hour * 12, f}
 }
 
-func (vi *RecheckInventory) String() string { return vi.name }
+func (ri *RecheckInventory) String() string { return ri.name }
 
-func (vi *RecheckInventory) Interval() time.Duration { return vi.interval }
+func (ri *RecheckInventory) Interval() time.Duration { return ri.interval }
 
-func (vi *RecheckInventory) Run(ctx context.Context) error {
+func (ri *RecheckInventory) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		fmt.Println("======== RECHECK INVENTORY BENCHMARK TIME =========")
-		fmt.Println(time.Now().Sub(bs))
-		fmt.Println("====================================================")
+		ri.logger.Println("RECHECK INVENTORY BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := core.FindOpts{Filter: vi.filter}
+	opts := core.FindOpts{Filter: ri.filter}
 	opts.Sort = "updated_at:desc"
 	//opts.Limit = 10
 	opts.Page = 0
 
 	src := steaminv.InventoryAssetWithCache
-	invs, _, err := vi.inventorySvc.Inventories(opts)
+	invs, _, err := ri.inventorySvc.Inventories(opts)
 	if err != nil {
 		return err
 	}
@@ -58,13 +55,13 @@ func (vi *RecheckInventory) Run(ctx context.Context) error {
 			continue
 		}
 
-		mkt, _ := vi.market(ii.MarketID)
+		mkt, _ := ri.market(ii.MarketID)
 		if mkt == nil {
 			continue
 		}
 
 		if mkt.User == nil || mkt.Item == nil {
-			vi.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+			ri.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 			continue
 		}
 
@@ -72,15 +69,15 @@ func (vi *RecheckInventory) Run(ctx context.Context) error {
 		if err != nil {
 			continue
 		}
-		vi.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
+		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
-		err = vi.inventorySvc.Set(ctx, &core.Inventory{
+		err = ri.inventorySvc.Set(ctx, &core.Inventory{
 			MarketID: mkt.ID,
 			Status:   status,
 			Assets:   assets,
 		})
 		if err != nil {
-			vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 		}
 
 		//rest(5)
@@ -90,9 +87,9 @@ func (vi *RecheckInventory) Run(ctx context.Context) error {
 	return nil
 }
 
-func (vd *RecheckInventory) market(id string) (*core.Market, error) {
+func (ri *RecheckInventory) market(id string) (*core.Market, error) {
 	f := core.FindOpts{Filter: core.Market{ID: id}}
-	markets, err := vd.marketStg.Find(f)
+	markets, err := ri.marketStg.Find(f)
 	if err != nil {
 		return nil, err
 	}

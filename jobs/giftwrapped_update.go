@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
@@ -35,61 +34,59 @@ func NewGiftWrappedUpdate(ds core.DeliveryService, dstg core.DeliveryStorage, ms
 		"giftwrapped_update", time.Hour, f}
 }
 
-func (vd *GiftWrappedUpdate) String() string { return vd.name }
+func (gw *GiftWrappedUpdate) String() string { return gw.name }
 
-func (vd *GiftWrappedUpdate) Interval() time.Duration { return vd.interval }
+func (gw *GiftWrappedUpdate) Interval() time.Duration { return gw.interval }
 
-func (vd *GiftWrappedUpdate) Run(ctx context.Context) error {
+func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		fmt.Println("======== GIFT WRAPPED UPDATE BENCHMARK TIME =========")
-		fmt.Println(time.Now().Sub(bs))
-		fmt.Println("====================================================")
+		gw.logger.Println("GIFT WRAPPED UPDATE BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := core.FindOpts{Filter: vd.filter}
+	opts := core.FindOpts{Filter: gw.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
 
 	src := steaminv.InventoryAsset
 	for {
-		deliveries, err := vd.deliveryStg.ToVerify(opts)
+		deliveries, err := gw.deliveryStg.ToVerify(opts)
 		if err != nil {
 			return err
 		}
 
 		for _, dd := range deliveries {
-			vd.logger.Infoln("processing gift wrapped update", dd.ID, *dd.GiftOpened, dd.Retries)
+			gw.logger.Infoln("processing gift wrapped update", dd.ID, *dd.GiftOpened, dd.Retries)
 			if dd.RetriesExceeded() {
 				continue
 			}
 
-			mkt, _ := vd.market(dd.MarketID)
+			mkt, _ := gw.market(dd.MarketID)
 			if mkt == nil {
-				vd.logger.Errorf("skipped process! market not found")
+				gw.logger.Errorf("skipped process! market not found")
 				continue
 			}
 
 			if mkt.User == nil || mkt.Item == nil {
-				vd.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				gw.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
 			}
 
 			status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
-				vd.logger.Errorf("delivery verification error: %s", err)
+				gw.logger.Errorf("delivery verification error: %s", err)
 				continue
 			}
-			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
+			gw.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
-			err = vd.deliverySvc.Set(ctx, &core.Delivery{
+			err = gw.deliverySvc.Set(ctx, &core.Delivery{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,
 			})
 			if err != nil {
-				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				gw.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 			}
 
 			//rest(5)
@@ -103,9 +100,9 @@ func (vd *GiftWrappedUpdate) Run(ctx context.Context) error {
 	}
 }
 
-func (vd *GiftWrappedUpdate) market(id string) (*core.Market, error) {
+func (gw *GiftWrappedUpdate) market(id string) (*core.Market, error) {
 	f := core.FindOpts{Filter: core.Market{ID: id}}
-	markets, err := vd.marketStg.Find(f)
+	markets, err := gw.marketStg.Find(f)
 	if err != nil {
 		return nil, err
 	}
