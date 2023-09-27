@@ -1,20 +1,21 @@
 package rethink
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx/gokit/log"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 // NewStats creates new instance of market data store.
-func NewStats(c *Client) core.StatsStorage {
-	return &statsStorage{c}
+func NewStats(c *Client, lg log.Logger) core.StatsStorage {
+	return &statsStorage{c, lg}
 }
 
 type statsStorage struct {
-	db *Client
+	db     *Client
+	logger log.Logger
 }
 
 func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusCount, error) {
@@ -46,7 +47,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 		Cancelled:    mktMap[core.MarketStatusCancelled],
 		BidCompleted: mktMap[core.MarketStatusBidCompleted],
 	}
-	fmt.Println("rethink/stats count ask", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count ask", time.Now().Sub(benchStart))
 
 	benchStart = time.Now()
 	if err := s.db.list(baseQuery.
@@ -64,7 +65,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	marketStats.ResellReserved = resellMap[core.MarketStatusReserved]
 	marketStats.ResellRemoved = resellMap[core.MarketStatusRemoved]
 	marketStats.ResellCancelled = resellMap[core.MarketStatusCancelled]
-	fmt.Println("rethink/stats count resell", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count resell", time.Now().Sub(benchStart))
 
 	// Count market bid stats
 	benchStart = time.Now()
@@ -79,7 +80,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	}
 	marketStats.BidLive = mktMap[core.MarketStatusLive]
 	marketStats.BidCompleted = mktMap[core.MarketStatusBidCompleted]
-	fmt.Println("rethink/stats count bid", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count bid", time.Now().Sub(benchStart))
 
 	// Count delivery stats
 	benchStart = time.Now()
@@ -99,7 +100,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	marketStats.DeliverySenderVerified = dlvMap[core.DeliveryStatusSenderVerified]
 	marketStats.DeliveryPrivate = dlvMap[core.DeliveryStatusPrivate]
 	marketStats.DeliveryError = dlvMap[core.DeliveryStatusError]
-	fmt.Println("rethink/stats count dlv", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count dlv", time.Now().Sub(benchStart))
 
 	// Count inventory stats
 	benchStart = time.Now()
@@ -118,7 +119,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*core.MarketStatusC
 	marketStats.InventoryVerified = invMap[core.InventoryStatusVerified]
 	marketStats.InventoryPrivate = invMap[core.InventoryStatusPrivate]
 	marketStats.InventoryError = invMap[core.InventoryStatusError]
-	fmt.Println("rethink/stats count inv", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count inv", time.Now().Sub(benchStart))
 
 	return marketStats, nil
 }
