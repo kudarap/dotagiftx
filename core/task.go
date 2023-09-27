@@ -35,12 +35,14 @@ type (
 
 	// Task represents task data model.
 	Task struct {
-		ID        string       `json:"id"           db:"id,omitempty,indexed"`
-		Status    TaskStatus   `json:"status"       db:"status,omitempty,indexed"`
-		Priority  TaskPriority `json:"priority"     db:"priority,omitempty,indexed"`
-		Type      TaskType     `json:"type"         db:"type,omitempty,indexed"`
+		ID        string       `json:"id"           db:"id,omitempty,index"`
+		Status    TaskStatus   `json:"status"       db:"status,index"`
+		Priority  TaskPriority `json:"priority"     db:"priority,omitempty,index"`
+		Type      TaskType     `json:"type"         db:"type,omitempty,index"`
 		Payload   interface{}  `json:"payload"      db:"payload,omitempty"`
-		CreatedAt *time.Time   `json:"created_at"   db:"created_at,omitempty,indexed"`
+		Retry     int          `json:"retry"        db:"retry,omitempty"`
+		Note      string       `json:"note"         db:"note,omitempty"`
+		CreatedAt *time.Time   `json:"created_at"   db:"created_at,omitempty,index"`
 		UpdatedAt *time.Time   `json:"updated_at"   db:"updated_at,omitempty"`
 	}
 )

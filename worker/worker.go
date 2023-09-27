@@ -10,22 +10,23 @@ import (
 
 // Worker represents worker handling and running tasks.
 type Worker struct {
-	wg     sync.WaitGroup
-	quit   chan struct{}
-	queue  chan Job
-	jobs   []Job
-	closed bool
+	wg       sync.WaitGroup
+	quit     chan struct{}
+	queue    chan Job
+	jobs     []Job
+	closed   bool
+	taskProc *TaskProcessor
 
 	logger log.Logger
 }
 
 // New create new instance of a worker with a given jobs.
-func New(jobs ...Job) *Worker {
+func New(tp *TaskProcessor, jobs ...Job) *Worker {
 	w := &Worker{}
 	w.queue = make(chan Job, len(jobs))
 	w.quit = make(chan struct{})
 	w.jobs = jobs
-
+	w.taskProc = tp
 	w.logger = log.Default()
 	return w
 }
@@ -39,6 +40,9 @@ func (w *Worker) SetLogger(l log.Logger) {
 //
 // All assigned jobs will be run concurrently.
 func (w *Worker) Start() {
+	w.logger.Infof("running task processor...")
+	go w.taskProc.Run(&w.wg)
+
 	w.logger.Infof("running jobs...")
 
 	ctx := context.Background()

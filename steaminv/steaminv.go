@@ -16,7 +16,7 @@ const (
 	maxGetRetries = 5
 	retrySleepDur = time.Second * 5
 	// freshCacheDur = time.Hour
-	freshCacheDur = time.Minute * 5
+	freshCacheDur = time.Minute * 15
 )
 
 // InventoryAsset returns a compact format from all inventory data.

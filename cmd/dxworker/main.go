@@ -87,22 +87,23 @@ func (app *application) setup() error {
 	// External services setup.
 	logSvc.Println("setting up external services...")
 
-	// Setup application worker
-	app.worker = worker.New()
-	app.worker.SetLogger(app.contextLog("worker"))
-
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
 	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	marketStg := rethink.NewMarket(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
+	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
 	logSvc.Println("setting up services...")
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 
+	// Setup application worker
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc)
+	app.worker = worker.New(tp)
+	app.worker.SetLogger(app.contextLog("worker"))
 	// Register job on the worker.
 	dispatcher := jobs.NewDispatcher(
 		app.worker,
@@ -142,7 +143,7 @@ func (app *application) run() error {
 	go app.worker.Start()
 
 	<-quit
-	return app.worker.Stop()
+	return nil
 }
 
 func (app *application) contextLog(name string) log.Logger {
