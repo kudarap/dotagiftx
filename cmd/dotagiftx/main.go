@@ -105,7 +105,7 @@ func (app *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 
-	statsStg := rethink.NewStats(rethinkClient)
+	statsStg := rethink.NewStats(rethinkClient, app.contextLog("storage_stats"))
 	reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
