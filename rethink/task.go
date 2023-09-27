@@ -29,8 +29,8 @@ func NewQueue(c *Client) *taskStorage {
 
 func (s *taskStorage) VerifyDelivery(marketID string) {
 	var t core.Task
-	t.Kind = core.TaskKindVerifyDelivery
-	t.Value = marketID
+	t.Type = core.TaskTypeVerifyDelivery
+	t.Payload = marketID
 	t.CreatedAt = now()
 	_, err := s.db.insert(s.table().Insert(t))
 	if err != nil {
@@ -40,8 +40,8 @@ func (s *taskStorage) VerifyDelivery(marketID string) {
 
 func (s *taskStorage) VerifyInventory(userID string) {
 	var t core.Task
-	t.Kind = core.TaskKindVerifyInventory
-	t.Value = userID
+	t.Type = core.TaskTypeVerifyInventory
+	t.Payload = userID
 	t.CreatedAt = now()
 	_, err := s.db.insert(s.table().Insert(t))
 	if err != nil {
