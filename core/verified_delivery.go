@@ -73,7 +73,7 @@ type (
 		BuyerConfirmed   *bool          `json:"buyer_confirmed"    db:"buyer_confirmed,omitempty"`
 		BuyerConfirmedAt *time.Time     `json:"buyer_confirmed_at" db:"buyer_confirmed_at,omitempty"`
 		GiftOpened       *bool          `json:"gift_opened"        db:"gift_opened,omitempty"`
-		Status           DeliveryStatus `json:"status"             db:"status,omitempty"    valid:"required"`
+		Status           DeliveryStatus `json:"status"             db:"status,omitempty,indexed"    valid:"required"`
 		Assets           []SteamAsset   `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries          int            `json:"retries"            db:"retries,omitempty"`
 		CreatedAt        *time.Time     `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`

@@ -11,9 +11,8 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
-type Dispatcher interface {
-	VerifyDelivery(marketID string)
-	VerifyInventory(userID string)
+type TaskProcessor interface {
+	Queue(ctx context.Context, p core.TaskPriority, t core.TaskType, payload interface{}) (id string, err error)
 }
 
 // NewMarket returns new Market service.
@@ -27,7 +26,7 @@ func NewMarket(
 	vd core.DeliveryService,
 	vi core.InventoryService,
 	sc core.SteamClient,
-	dp Dispatcher,
+	tp TaskProcessor,
 	lg log.Logger,
 ) core.MarketService {
 	return &marketService{
@@ -39,7 +38,7 @@ func NewMarket(
 		vd,
 		vi,
 		sc,
-		dp,
+		tp,
 		lg,
 	}
 }
@@ -54,7 +53,7 @@ type marketService struct {
 	deliverySvc  core.DeliveryService
 	inventorySvc core.InventoryService
 	steam        core.SteamClient
-	dispatch     Dispatcher
+	taskProc     TaskProcessor
 	logger       log.Logger
 }
 
@@ -104,80 +103,90 @@ func (s *marketService) Market(ctx context.Context, id string) (*core.Market, er
 	return mkt, nil
 }
 
-func (s *marketService) Create(ctx context.Context, mkt *core.Market) error {
+func (s *marketService) Create(ctx context.Context, market *core.Market) error {
 	// Set market ownership.
 	au := core.AuthFromContext(ctx)
 	if au == nil {
 		return core.AuthErrNoAccess
 	}
-	mkt.UserID = au.UserID
+	market.UserID = au.UserID
 	// Prevents access to create new market when account is flagged.
 	if err := s.checkFlaggedUser(au.UserID); err != nil {
 		return err
 	}
 
-	mkt.SetDefaults()
-	if err := mkt.CheckCreate(); err != nil {
+	market.SetDefaults()
+	if err := market.CheckCreate(); err != nil {
 		return err
 	}
 
 	// Check Item existence.
-	i, _ := s.itemStg.Get(mkt.ItemID)
-	if i == nil || !i.IsActive() {
+	item, _ := s.itemStg.Get(market.ItemID)
+	if item == nil || !item.IsActive() {
 		return core.ItemErrNotFound
 	}
-	mkt.ItemID = i.ID
+	market.ItemID = item.ID
 
 	// Check market details by type.
-	switch mkt.Type {
+	switch market.Type {
 	case core.MarketTypeAsk:
-		if err := s.checkAskType(mkt); err != nil {
+		if err := s.checkAskType(market); err != nil {
 			return err
 		}
 
-		m, err := s.processShopkeepersContract(mkt)
+		m, err := s.processShopkeepersContract(market)
 		if err != nil {
 			return err
 		}
-		mkt = m
+		market = m
 	case core.MarketTypeBid:
-		if err := s.checkBidType(mkt); err != nil {
-			return err
+		if err := s.checkBidType(market); err != nil {
+			return fmt.Errorf("could not check bid type: %s", err)
 		}
 	}
 
-	if err := s.marketStg.Create(mkt); err != nil {
+	if err := s.marketStg.Create(market); err != nil {
 		return err
 	}
 
-	//if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
+	//if err := s.UpdateUserRankScore(market.UserID); err != nil {
 	//	return err
 	//}
 	bench(s.logger, "market create :: UpdateUserRankScore", func() {
-		if err := s.UpdateUserRankScore(mkt.UserID); err != nil {
-			s.logger.Errorf("could not update user rank %s: %s", mkt.UserID, err)
+		if err := s.UpdateUserRankScore(market.UserID); err != nil {
+			s.logger.Errorf("could not update user rank %s: %s", market.UserID, err)
 		}
 	})
 	bench(s.logger, "market create :: marketStg.Index", func() {
-		if _, err := s.marketStg.Index(mkt.ID); err != nil {
-			s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+		if _, err := s.marketStg.Index(market.ID); err != nil {
+			s.logger.Errorf("could not index market %s: %s", market.ItemID, err)
 		}
 	})
 	bench(s.logger, "market create :: catalogStg.Index", func() {
-		if _, err := s.catalogStg.Index(mkt.ItemID); err != nil {
-			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+		if _, err := s.catalogStg.Index(market.ItemID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", market.ItemID, err)
 		}
 	})
 
-	if mkt.Type == core.MarketTypeAsk {
-		s.dispatch.VerifyInventory(mkt.UserID)
+	// Queueing tasks for verifying post to prepare task payload.
+	if market.Type == core.MarketTypeAsk {
+		user, err := s.userStg.Get(market.UserID)
+		if err != nil {
+			return err
+		}
+
+		market.User = user
+		market.Item = item
+		if _, err = s.taskProc.Queue(ctx, user.TaskPriorityQueue(), core.TaskTypeVerifyInventory, market); err != nil {
+			s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
+		}
 	}
 
 	return nil
 }
 
-func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
-	cur, err := s.checkOwnership(ctx, mkt.ID)
+func (s *marketService) Update(ctx context.Context, market *core.Market) error {
+	cur, err := s.checkOwnership(ctx, market.ID)
 	if err != nil {
 		return err
 	}
@@ -186,61 +195,78 @@ func (s *marketService) Update(ctx context.Context, mkt *core.Market) error {
 		return err
 	}
 
-	if err = mkt.CheckUpdate(); err != nil {
+	if err = market.CheckUpdate(); err != nil {
 		return err
 	}
 
 	// Resolves steam profile URL input as partner steam id.
-	if strings.TrimSpace(mkt.PartnerSteamID) != "" {
-		mkt.PartnerSteamID, err = s.steam.ResolveVanityURL(mkt.PartnerSteamID)
+	if strings.TrimSpace(market.PartnerSteamID) != "" {
+		market.PartnerSteamID, err = s.steam.ResolveVanityURL(market.PartnerSteamID)
 		if err != nil {
 			return err
 		}
 	}
 	// Try to find a matching bid and set its status to complete.
-	if cur.Type == core.MarketTypeAsk && mkt.Status == core.MarketStatusReserved {
-		if err = s.AutoCompleteBid(ctx, *cur, mkt.PartnerSteamID); err != nil {
+	if cur.Type == core.MarketTypeAsk && market.Status == core.MarketStatusReserved {
+		if err = s.AutoCompleteBid(ctx, *cur, market.PartnerSteamID); err != nil {
 			return err
 		}
 	}
 
 	// Append note to existing notes.
-	mkt.Notes = strings.TrimSpace(fmt.Sprintf("%s\n%s", cur.Notes, mkt.Notes))
+	market.Notes = strings.TrimSpace(fmt.Sprintf("%s\n%s", cur.Notes, market.Notes))
 
 	// Do not allow update on these fields.
-	mkt.UserID = ""
-	mkt.ItemID = ""
-	mkt.Price = 0
-	mkt.Currency = ""
-	if err = s.marketStg.Update(mkt); err != nil {
+	market.UserID = ""
+	market.ItemID = ""
+	market.Price = 0
+	market.Currency = ""
+	if err = s.marketStg.Update(market); err != nil {
 		return err
 	}
 
-	if mkt.Type == core.MarketTypeAsk {
-		switch mkt.Status {
+	// Queueing tasks for verifications on inventory and delivery to prepare task payload.
+	if market.Type == core.MarketTypeAsk {
+		user, err := s.userStg.Get(market.UserID)
+		if err != nil {
+			return err
+		}
+		item, err := s.itemStg.Get(market.ItemID)
+		if err != nil {
+			return err
+		}
+
+		market.User = user
+		market.Item = item
+		priority := user.TaskPriorityQueue()
+		switch market.Status {
 		case core.MarketStatusReserved:
-			s.dispatch.VerifyInventory(mkt.ID)
+			if _, err = s.taskProc.Queue(ctx, priority, core.TaskTypeVerifyInventory, market); err != nil {
+				s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
+			}
 		case core.MarketStatusSold:
-			s.dispatch.VerifyDelivery(mkt.ID)
+			if _, err = s.taskProc.Queue(ctx, priority, core.TaskTypeVerifyDelivery, market); err != nil {
+				s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
+			}
 		}
 	}
 
-	//if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
+	//if err = s.UpdateUserRankScore(market.UserID); err != nil {
 	//	return err
 	//}
 	bench(s.logger, "market update :: UpdateUserRankScore", func() {
-		if err = s.UpdateUserRankScore(mkt.UserID); err != nil {
-			s.logger.Errorf("could not update user rank %s: %s", mkt.UserID, err)
+		if err = s.UpdateUserRankScore(market.UserID); err != nil {
+			s.logger.Errorf("could not update user rank %s: %s", market.UserID, err)
 		}
 	})
 	bench(s.logger, "market update :: marketStg.Index", func() {
-		if _, err = s.marketStg.Index(mkt.ID); err != nil {
-			s.logger.Errorf("could not index market %s: %s", mkt.ItemID, err)
+		if _, err = s.marketStg.Index(market.ID); err != nil {
+			s.logger.Errorf("could not index market %s: %s", market.ItemID, err)
 		}
 	})
 	bench(s.logger, "market update :: catalogStg.Index", func() {
-		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
-			s.logger.Errorf("could not index item %s: %s", mkt.ItemID, err)
+		if _, err = s.catalogStg.Index(market.ItemID); err != nil {
+			s.logger.Errorf("could not index item %s: %s", market.ItemID, err)
 		}
 	})
 

@@ -133,6 +133,16 @@ func (u User) CheckUpdate() error {
 	return nil
 }
 
+func (u User) TaskPriorityQueue() TaskPriority {
+	switch u.Subscription {
+	case UserSubscriptionPartner:
+		return TaskPriorityHigh
+	case UserSubscriptionTrader:
+		return TaskPriorityMedium
+	}
+	return TaskPriorityLow
+}
+
 // CheckStatus checks for reported and banned status.
 func (u User) CheckStatus() error {
 	switch u.Status {

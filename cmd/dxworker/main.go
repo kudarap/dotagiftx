@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/kudarap/dotagiftx/gokit/envconf"
@@ -11,7 +13,6 @@ import (
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
-	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/sirupsen/logrus"
 )
@@ -86,22 +87,23 @@ func (app *application) setup() error {
 	// External services setup.
 	logSvc.Println("setting up external services...")
 
-	// Setup application worker
-	app.worker = worker.New()
-	app.worker.SetLogger(app.contextLog("worker"))
-
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
 	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	marketStg := rethink.NewMarket(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
+	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
 	logSvc.Println("setting up services...")
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 
+	// Setup application worker
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc)
+	app.worker = worker.New(tp)
+	app.worker.SetLogger(app.contextLog("worker"))
 	// Register job on the worker.
 	dispatcher := jobs.NewDispatcher(
 		app.worker,
@@ -134,7 +136,13 @@ func (app *application) setup() error {
 func (app *application) run() error {
 	defer app.closerFn()
 
-	app.worker.Start()
+	// Handle quit on SIGINT (CTRL-C).
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+
+	go app.worker.Start()
+
+	<-quit
 	return nil
 }
 
@@ -146,15 +154,6 @@ func newApp() *application {
 	a := &application{}
 	a.closerFn = func() {}
 	return a
-}
-
-func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
-	c, err := steam.New(cfg, rc)
-	if err != nil {
-		return nil, fmt.Errorf("could not setup steam client: %s", err)
-	}
-
-	return c, nil
 }
 
 func setupRethink(cfg rethink.Config) (c *rethink.Client, err error) {
@@ -209,8 +208,3 @@ func connRetry(name string, fn func() error) error {
 
 // version details used by ldflags.
 var tag, commit, built string
-
-func initVer(cfg Config) *version.Version {
-	v := version.New(cfg.Prod, tag, commit, built)
-	return v
-}

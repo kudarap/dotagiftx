@@ -67,7 +67,9 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 // inventory status or needs re-processing of re-process error status.
 func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, error) {
 	// Filters out already check or no need to check market
-	q := r.Table(tableMarket).
+	q := r.Table(tableMarket)
+	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+	q = q.
 		// .filter(r.row.hasFields('inventory_status').not().or(r.row('inventory_status').eq(500)))
 		Filter(func(t r.Term) r.Term {
 			return t.HasFields(marketFieldInventoryStatus).Not().
@@ -78,7 +80,6 @@ func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, 
 				Or(t.Field(marketFieldStatus).Eq(core.MarketStatusReserved))).
 				And(t.Field(marketFieldType).Eq(core.MarketTypeAsk))
 		})
-	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
 
 	var res []core.Market
 	if err := s.db.list(q, &res); err != nil {
@@ -91,14 +92,14 @@ func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, 
 // PendingDeliveryStatus returns market entries that is pending for checking
 // delivery status or needs re-processing of re-process error status.
 func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
-	q := r.Table(tableMarket).
-		Filter(func(t r.Term) r.Term {
-			return t.HasFields(marketFieldDeliveryStatus).Not().
-				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
-			//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError).
-			//	Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit)))
-		})
+	q := r.Table(tableMarket)
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+	q = q.Filter(func(t r.Term) r.Term {
+		return t.HasFields(marketFieldDeliveryStatus).Not().
+			Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
+		//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError).
+		//	Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit)))
+	})
 
 	var res []core.Market
 	if err := s.db.list(q, &res); err != nil {
@@ -110,16 +111,16 @@ func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, e
 
 func (s *marketStorage) RevalidateDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
 	now := time.Now()
-	q := r.Table(tableMarket).
-		Filter(func(t r.Term) r.Term {
-			return t.Field(marketFieldStatus).Eq(core.MarketStatusSold).
-				And(t.Field(marketFieldUpdatedAt).Year().Eq(int(now.Year())).
-					And(t.Field(marketFieldUpdatedAt).Month().Eq(int(now.Month())).
-						And(t.Field(marketFieldUpdatedAt).Day().Eq(int(now.Day()))))).
-				And(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit).
-					Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusPrivate)))
-		})
+	q := r.Table(tableMarket)
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+	q = q.Filter(func(t r.Term) r.Term {
+		return t.Field(marketFieldStatus).Eq(core.MarketStatusSold).
+			And(t.Field(marketFieldUpdatedAt).Year().Eq(int(now.Year())).
+				And(t.Field(marketFieldUpdatedAt).Month().Eq(int(now.Month())).
+					And(t.Field(marketFieldUpdatedAt).Day().Eq(int(now.Day()))))).
+			And(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit).
+				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusPrivate)))
+	})
 
 	var res []core.Market
 	if err := s.db.list(q, &res); err != nil {
@@ -306,7 +307,7 @@ func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOf
 
 	// Sets expired entry state base on cutOff time.
 	now := time.Now()
-	q = s.table().Filter(core.Market{Status: core.MarketStatusLive, Type: t}).
+	q = s.table().GetAllByIndex("status", core.MarketStatusLive).Filter(core.Market{Type: t}).
 		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).
 		Filter(func(entry r.Term) r.Term {
 			return r.Expr(exemptedUserIDs).Contains(entry.Field(marketFieldUserID)).Not()
@@ -319,7 +320,7 @@ func (s *marketStorage) UpdateExpiring(t core.MarketType, b core.UserBoon, cutOf
 	}
 
 	// Collect and return affected item ids.
-	q = s.table().Filter(core.Market{Status: core.MarketStatusExpired, UpdatedAt: &now}).
+	q = s.table().GetAllByIndex("status", core.MarketStatusExpired).Filter(core.Market{UpdatedAt: &now}).
 		Group(marketFieldItemID).Count().Ungroup().
 		Field("group")
 	var itemIDs []string
@@ -335,7 +336,7 @@ func (s *marketStorage) BulkDeleteByStatus(ms core.MarketStatus, cutOff time.Tim
 		return fmt.Errorf("market status %s not allowed to bulk delete", ms)
 	}
 
-	q := s.table().Filter(core.Market{Status: ms}).
+	q := s.table().GetAllByIndex("status", ms).
 		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).
 		Limit(limit).
 		Delete()

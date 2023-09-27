@@ -14,13 +14,11 @@ import (
 var fastjson = jsoniter.ConfigFastest
 
 const (
-	// localcacheExpr   = time.Hour * 24
-	localcacheExpr   = time.Minute * 10
-	localcachePrefix = "steaminv"
+	localCacheExpr   = time.Hour
+	localCachePrefix = "steaminv"
 )
 
-// InventoryAsset returns a compact format from all
-// inventory data with cache.
+// InventoryAssetWithCache returns a compact format from all inventory data with cache.
 func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 	hit, _ := localcache.Get(getCacheKey(steamID))
 	if hit != nil {
@@ -44,16 +42,12 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 }
 
 func getCacheKey(steamID string) string {
-	return fmt.Sprintf("%s_%s", localcachePrefix, steamID)
-}
-
-func init() {
-	rand.Seed(time.Now().Unix())
+	return fmt.Sprintf("%s_%s", localCachePrefix, steamID)
 }
 
 func getCacheExpr() time.Duration {
 	n := 10
 	r := rand.Intn(n-(-n)) + (-n)
 	d := time.Minute * time.Duration(r)
-	return localcacheExpr + d
+	return localCacheExpr + d
 }

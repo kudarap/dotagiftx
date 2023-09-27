@@ -43,6 +43,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	opts.Sort = "updated_at:desc"
 	//opts.Limit = 10
 	opts.Page = 0
+	opts.IndexKey = "status"
 
 	src := steaminv.InventoryAssetWithCache
 	invs, _, err := ri.inventorySvc.Inventories(opts)
