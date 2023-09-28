@@ -40,6 +40,8 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 	for {
 		time.Sleep(p.rate)
 
+		start := time.Now()
+
 		t, err := p.queue.Get(ctx)
 		if err != nil {
 			log.Printf("ERR! could not get task from queue: %s", err)
@@ -80,7 +82,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 			continue
 		}
 
-		log.Println("task done!", task.ID)
+		log.Println("task done!", task.ID, time.Since(start))
 		task.Status = core.TaskStatusDone
 		if err = p.queue.Update(ctx, task); err != nil {
 			log.Printf("ERR! could not update task: %s", err)
