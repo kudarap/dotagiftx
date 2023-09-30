@@ -8,6 +8,7 @@ import { APP_NAME } from '@/constants/strings'
 import theme from '@/lib/theme'
 import createEmotionCache from '@/lib/createEmotionCache'
 import Root from '@/components/Root'
+import { Analytics } from '@vercel/analytics/react'
 import '@/components/Avatar.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -32,6 +33,7 @@ export default function MyApp(props) {
 
         <Root>
           <Component {...pageProps} />
+          <Analytics />
         </Root>
       </ThemeProvider>
     </CacheProvider>
