@@ -42,7 +42,32 @@ type (
 		Payload   interface{}  `json:"payload"      db:"payload,omitempty"`
 		Retry     int          `json:"retry"        db:"retry,omitempty"`
 		Note      string       `json:"note"         db:"note,omitempty"`
+		ElapsedMs int64        `json:"elapsed_ms"   db:"elapsed_ms,omitempty"`
 		CreatedAt *time.Time   `json:"created_at"   db:"created_at,omitempty,index"`
 		UpdatedAt *time.Time   `json:"updated_at"   db:"updated_at,omitempty"`
 	}
 )
+
+var taskTypeStrings = map[TaskType]string{
+	TaskTypeVerifyDelivery:  "verify_delivery",
+	TaskTypeVerifyInventory: "verify_inventory",
+}
+
+var taskPriorityStrings = map[TaskPriority]string{
+	TaskPriorityHigh:   "high",
+	TaskPriorityMedium: "medium",
+	TaskPriorityLow:    "low",
+}
+
+var TaskStatusStrings = map[TaskStatus]string{
+	TaskStatusPending:    "pending",
+	TaskStatusProcessing: "processing",
+	TaskStatusDone:       "done",
+	TaskStatusError:      "error",
+}
+
+func (t TaskType) String() string { return taskTypeStrings[t] }
+
+func (p TaskPriority) String() string { return taskPriorityStrings[p] }
+
+func (s TaskStatus) String() string { return TaskStatusStrings[s] }

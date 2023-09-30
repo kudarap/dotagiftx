@@ -60,7 +60,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 			wg.Done()
 			continue
 		}
-		log.Println("task get", task.ID)
+		log.Println("task get", task.ID, task.Type, task.Priority)
 
 		var run func(context.Context, interface{}) error
 		switch task.Type {
@@ -71,8 +71,10 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 		}
 
 		log.Println("task processing...", task.ID, task.Type)
-		if err = run(ctx, task.Payload); err != nil {
-			log.Printf("ERR! running tasks: %d %s", task.Type, err)
+		err = run(ctx, task.Payload)
+		task.ElapsedMs = time.Since(start).Milliseconds()
+		if err != nil {
+			log.Printf("ERR! running tasks: %s %s", task.Type, err)
 			task.Status = core.TaskStatusError
 			task.Note = fmt.Sprintf("err: %s", err)
 			if err = p.queue.Update(ctx, task); err != nil {
@@ -82,8 +84,8 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 			continue
 		}
 
-		log.Println("task done!", task.ID, time.Since(start))
 		task.Status = core.TaskStatusDone
+		log.Println("task done!", task.ID, time.Duration(task.ElapsedMs)*time.Millisecond)
 		if err = p.queue.Update(ctx, task); err != nil {
 			log.Printf("ERR! could not update task: %s", err)
 		}
