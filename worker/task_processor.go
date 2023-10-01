@@ -102,6 +102,9 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 	if market.User == nil || market.Item == nil {
 		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
 	}
+	if market.IsResell() {
+		return nil
+	}
 
 	source := steaminv.InventoryAssetWithCache
 	status, assets, err := verified.Inventory(source, market.User.SteamID, market.Item.Name)
@@ -118,23 +121,23 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 }
 
 func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}) error {
-	var mkt core.Market
-	if err := marshallTaskPayload(data, &mkt); err != nil {
+	var market core.Market
+	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
 	}
 
-	if mkt.User == nil || mkt.Item == nil {
-		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+	if market.User == nil || market.Item == nil {
+		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
 	}
 
 	src := steaminv.InventoryAsset
-	status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+	status, assets, err := verified.Delivery(src, market.User.Name, market.PartnerSteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}
 
 	err = p.deliverySvc.Set(ctx, &core.Delivery{
-		MarketID: mkt.ID,
+		MarketID: market.ID,
 		Status:   status,
 		Assets:   assets,
 	})

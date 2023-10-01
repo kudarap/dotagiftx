@@ -115,7 +115,7 @@ func (s *marketService) Create(ctx context.Context, market *core.Market) error {
 		return err
 	}
 
-	market.SetDefaults()
+	*market = *market.SetDefaults()
 	if err := market.CheckCreate(); err != nil {
 		return err
 	}
@@ -149,9 +149,6 @@ func (s *marketService) Create(ctx context.Context, market *core.Market) error {
 		return err
 	}
 
-	//if err := s.UpdateUserRankScore(market.UserID); err != nil {
-	//	return err
-	//}
 	bench(s.logger, "market create :: UpdateUserRankScore", func() {
 		if err := s.UpdateUserRankScore(market.UserID); err != nil {
 			s.logger.Errorf("could not update user rank %s: %s", market.UserID, err)
@@ -177,8 +174,12 @@ func (s *marketService) Create(ctx context.Context, market *core.Market) error {
 
 		market.User = user
 		market.Item = item
-		if _, err = s.taskProc.Queue(ctx, user.TaskPriorityQueue(), core.TaskTypeVerifyInventory, market); err != nil {
-			s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
+
+		// Resells should not verify items.
+		if !market.IsResell() {
+			if _, err = s.taskProc.Queue(ctx, user.TaskPriorityQueue(), core.TaskTypeVerifyInventory, market); err != nil {
+				s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
+			}
 		}
 	}
 
@@ -241,8 +242,11 @@ func (s *marketService) Update(ctx context.Context, market *core.Market) error {
 		priority := user.TaskPriorityQueue()
 		switch market.Status {
 		case core.MarketStatusReserved:
-			if _, err = s.taskProc.Queue(ctx, priority, core.TaskTypeVerifyInventory, market); err != nil {
-				s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
+			// Resells should not verify items.
+			if !market.IsResell() {
+				if _, err = s.taskProc.Queue(ctx, priority, core.TaskTypeVerifyInventory, market); err != nil {
+					s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
+				}
 			}
 		case core.MarketStatusSold:
 			if _, err = s.taskProc.Queue(ctx, priority, core.TaskTypeVerifyDelivery, market); err != nil {

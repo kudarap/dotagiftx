@@ -243,13 +243,19 @@ func (m Market) CheckUpdate() error {
 const defaultCurrency = "USD"
 
 // SetDefaults sets default values for a new market.
-func (m *Market) SetDefaults() {
+func (m Market) SetDefaults() *Market {
 	m.Status = MarketStatusLive
 	m.Currency = defaultCurrency
 	m.Price = priceToTenths(m.Price)
 	if m.Type == 0 {
 		m.Type = MarketTypeAsk
 	}
+	return &m
+}
+
+// IsResell check if the market is re-sell item.
+func (m Market) IsResell() bool {
+	return m.Type == MarketTypeAsk && m.Resell != nil && *m.Resell
 }
 
 // String returns text value of a market status.
