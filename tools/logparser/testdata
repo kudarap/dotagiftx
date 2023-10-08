@@ -1,4 +1,1 @@
-[2021-04-05T11:58:22Z]  INFO [md/CbueJVaLZx-040925] "GET http://api.dotagiftx.com/catalogs_trend? HTTP/1.1" from 54.151.84.95 - 200 6400B in 819.564µs
-[2021-04-05T11:58:24Z]  INFO [md/CbueJVaLZx-040934] "GET http://api.dotagiftx.com/catalogs_trend? HTTP/1.1" from 54.151.84.95 - 200 6400B in 424.835µs
-[2021-04-05T12:00:31Z]  INFO [md/CbueJVaLZx-040979] "GET http://api.dotagiftx.com/catalogs_trend? HTTP/1.1" from 54.151.84.95 - 200 6400B in 599.45µs
-[2021-04-05T12:00:50Z]  INFO [md/CbueJVaLZx-041021] "GET http://api.dotagiftx.com/markets HTTP/1.1" from 54.151.84.95 - 200 6400B in 456.155µs
+time="2023-10-07T02:09:37Z" level=info msg="[c35dd438f6c4/3LaxlAhiHI-1019965] "OPTIONS http://api.dotagiftx.com/catalogs?sort=popular&page=1&origin=The%20International%202015%20Collector%27s%20Cache HTTP/1.1" from 103.105.213.190 - 200 0B in 7.28µs"
