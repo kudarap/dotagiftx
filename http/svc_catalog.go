@@ -49,6 +49,8 @@ func handleMarketCatalogList(
 			respondError(w, err)
 			return
 		}
+		// EXPERIMENTAL
+		opts.IndexKey = "item_id"
 
 		go func() {
 			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
@@ -105,6 +107,8 @@ func handleMarketCatalogDetail(svc core.MarketService, cache core.Cache, logger 
 			respondError(w, err)
 			return
 		}
+		// EXPERIMENTAL
+		opts.IndexKey = "item_id"
 
 		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"), opts)
 		if err != nil {

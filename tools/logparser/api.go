@@ -162,7 +162,7 @@ func parseLog(raw string) []ApiLog {
 		surl := strings.TrimPrefix(parts[1], "http://api.dotagiftx.com")
 		purl, _ := url.Parse(surl)
 
-		entry.Endpoint = parts[0] + " " + purl.Path
+		entry.Endpoint = parts[0] + " " + purl.String()
 
 		entry.Status, _ = strconv.Atoi(parts[6])
 		entry.Elapse, _ = time.ParseDuration(parts[9])
