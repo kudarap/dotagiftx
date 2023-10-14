@@ -72,7 +72,7 @@ func NewQueue(c *Client) *taskStorage {
 		log.Fatalf("could not create %s table: %s", tableTask, err)
 	}
 
-	if err := c.autoIndex(tableTask, core.Track{}); err != nil {
+	if err := c.autoIndex(tableTask, core.Task{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableTask, err)
 	}
 

@@ -49,10 +49,10 @@ type (
 	// User represents user information.
 	User struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
-		SteamID   string     `json:"steam_id"   db:"steam_id,omitempty"    valid:"required"`
-		Name      string     `json:"name"       db:"name,omitempty"        valid:"required"`
-		URL       string     `json:"url"        db:"url,omitempty"         valid:"required"`
-		Avatar    string     `json:"avatar"     db:"avatar,omitempty"      valid:"required"`
+		SteamID   string     `json:"steam_id"   db:"steam_id,indexed,omitempty" valid:"required"`
+		Name      string     `json:"name"       db:"name,omitempty"             valid:"required"`
+		URL       string     `json:"url"        db:"url,omitempty"              valid:"required"`
+		Avatar    string     `json:"avatar"     db:"avatar,omitempty"           valid:"required"`
 		Status    UserStatus `json:"status"     db:"status,omitempty"`
 		Notes     string     `json:"notes"      db:"notes,omitempty"`
 		Donation  float64    `json:"donation"   db:"donation,omitempty"`

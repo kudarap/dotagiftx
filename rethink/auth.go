@@ -18,6 +18,10 @@ func NewAuth(c *Client) *authStorage {
 		log.Fatalf("could not create %s table: %s", tableAuth, err)
 	}
 
+	if err := c.autoIndex(tableAuth, core.Auth{}); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableAuth, err)
+	}
+
 	return &authStorage{c}
 }
 

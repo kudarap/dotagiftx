@@ -22,7 +22,7 @@ func NewUser(c *Client) core.UserStorage {
 		log.Fatalf("could not create %s table: %s", tableUser, err)
 	}
 
-	if err := c.createIndex(tableUser, userFieldSteamID); err != nil {
+	if err := c.autoIndex(tableUser, core.User{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableUser, err)
 	}
 
