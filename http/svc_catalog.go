@@ -148,6 +148,51 @@ func rehydrateCatalogTrend(cacheKey string, svc core.MarketService, cache core.C
 	logger.Infoln("REHYDRATED", d.ResultCount)
 }
 
+func hydrateX(cacheKey string, svc core.MarketService, cache core.Cache, logger *logrus.Logger) {
+	logger.Infoln("REHYDRATING EXP...")
+	list, _, err := svc.TrendingCatalog(core.FindOpts{})
+	if err != nil {
+		logger.Errorf("could not get catalog trend list: %s", err)
+		return
+	}
+
+	trend := newDataWithMeta(list, &core.FindMetadata{len(list), 10})
+	if err = cache.Set(cacheKey, trend, 0); err != nil {
+		logger.Errorf("could not save cache on catalog trend list: %s", err)
+		return
+	}
+	logger.Infoln("REHYDRATED EXP", trend.ResultCount)
+}
+
+func handleMarketCatalogTrendListX(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
+	const cacheKeyX = "catalog_trend_exp"
+
+	go func() {
+		t := time.NewTicker(catalogTrendRehydrationDur)
+		for {
+			<-t.C
+			hydrateX(cacheKeyX, svc, cache, logger)
+		}
+	}()
+
+	if hit, _ := cache.Get(cacheKeyX); hit == "" {
+		logger.Infoln("no cached catalog trend")
+		go hydrateX(cacheKeyX, svc, cache, logger)
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		hit, _ := cache.Get(cacheKeyX)
+		if hit == "" {
+			hit = `{
+    "data": null,
+    "result_count": 0,
+    "total_count": 10
+}`
+		}
+		respondOK(w, hit)
+	}
+}
+
 func handleMarketCatalogTrendList(svc core.MarketService, cache core.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var noCache bool

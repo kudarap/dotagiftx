@@ -110,14 +110,14 @@ func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, e
 }
 
 func (s *marketStorage) RevalidateDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
-	now := time.Now()
+	n := time.Now()
 	q := r.Table(tableMarket)
 	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
 	q = q.Filter(func(t r.Term) r.Term {
 		return t.Field(marketFieldStatus).Eq(core.MarketStatusSold).
-			And(t.Field(marketFieldUpdatedAt).Year().Eq(int(now.Year())).
-				And(t.Field(marketFieldUpdatedAt).Month().Eq(int(now.Month())).
-					And(t.Field(marketFieldUpdatedAt).Day().Eq(int(now.Day()))))).
+			And(t.Field(marketFieldUpdatedAt).Year().Eq(n.Year()).
+				And(t.Field(marketFieldUpdatedAt).Month().Eq(n.Month()).
+					And(t.Field(marketFieldUpdatedAt).Day().Eq(n.Day())))).
 			And(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit).
 				Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusPrivate)))
 	})
