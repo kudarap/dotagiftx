@@ -49,9 +49,11 @@ func New(c Config) (*Client, error) {
 		log.Fatal("could not get table:", err)
 	}
 
-	rc := &Client{sess, ts, nil}
-	rc.tracing = tracing.NewTracer(NewSpan(rc))
-	return rc, nil
+	return &Client{sess, ts, nil}, nil
+}
+
+func (c *Client) SetTracer(t *tracing.Tracer) {
+	c.tracing = t
 }
 
 // Close ends rethink database session.

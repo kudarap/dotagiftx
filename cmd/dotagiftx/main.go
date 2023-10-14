@@ -84,6 +84,8 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
+	traceSpan := tracing.NewTracer(app.config.SpanEnabled, rethink.NewSpan(rethinkClient))
+	rethinkClient.SetTracer(traceSpan)
 
 	// External services setup.
 	logSvc.Println("setting up external services...")
@@ -110,8 +112,6 @@ func (app *application) setup() error {
 	reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
-
-	traceSpan := tracing.NewTracer(rethink.NewSpan(rethinkClient))
 
 	// Service inits.
 	logSvc.Println("setting up services...")

@@ -10,11 +10,12 @@ import (
 )
 
 type Tracer struct {
-	store spanStore
+	enabled bool
+	store   spanStore
 }
 
-func NewTracer(s spanStore) *Tracer {
-	return &Tracer{s}
+func NewTracer(enabled bool, s spanStore) *Tracer {
+	return &Tracer{enabled, s}
 }
 
 type spanStore interface {
@@ -28,10 +29,16 @@ type Span struct {
 }
 
 func (s *Span) End() {
+	if s.store == nil {
+		return
+	}
 	s.store.Add(s.name, time.Since(s.start).Milliseconds(), s.start)
 }
 
 func (t *Tracer) StartSpan(name string) *Span {
+	if !t.enabled {
+		return &Span{}
+	}
 	return &Span{store: t.store, name: name, start: time.Now()}
 }
 
@@ -43,9 +50,9 @@ func (t *Tracer) Middleware(next http.Handler) http.Handler {
 			return
 		}
 
-		s := t.StartSpan("tbd")
+		s := t.StartSpan("server tbd")
 		defer func() {
-			s.name = fmt.Sprintf("%s %s", r.Method, chi.RouteContext(r.Context()).RoutePattern())
+			s.name = fmt.Sprintf("server %s %s", r.Method, chi.RouteContext(r.Context()).RoutePattern())
 			s.End()
 		}()
 		next.ServeHTTP(w, r)

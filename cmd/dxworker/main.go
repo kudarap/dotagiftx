@@ -13,6 +13,7 @@ import (
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
+	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/sirupsen/logrus"
 )
@@ -83,6 +84,8 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
+	traceSpan := tracing.NewTracer(app.config.SpanEnabled, rethink.NewSpan(rethinkClient))
+	rethinkClient.SetTracer(traceSpan)
 
 	// External services setup.
 	logSvc.Println("setting up external services...")

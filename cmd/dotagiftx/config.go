@@ -9,12 +9,13 @@ import (
 )
 
 type Config struct {
-	SigKey  string
-	Prod    bool
-	Addr    string
-	AppHost string
-	ApiHost string
-	Upload  struct {
+	SigKey      string
+	Prod        bool
+	Addr        string
+	AppHost     string
+	ApiHost     string
+	SpanEnabled bool `envconfig:"SPAN_ENABLED"`
+	Upload      struct {
 		Path  string
 		Size  int
 		Types []string
