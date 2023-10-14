@@ -318,7 +318,7 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 		return
 	}
 
-	// Get highest bid price on the market by item ID.
+	// Get the highest bid price on the market by item ID.
 	q = buyOrder.Max(marketFieldPrice).Field(marketFieldPrice).Default(0)
 	if err = s.db.one(q, &max); err != nil {
 		err = fmt.Errorf("could not get highest bid price: %s", err)

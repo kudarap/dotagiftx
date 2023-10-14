@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kudarap/dotagiftx/tracing"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -24,6 +25,8 @@ type Config struct {
 type Client struct {
 	db     *r.Session
 	tables []string
+
+	tracing *tracing.Tracer
 }
 
 // New create new rethink database instance.
@@ -46,7 +49,9 @@ func New(c Config) (*Client, error) {
 		log.Fatal("could not get table:", err)
 	}
 
-	return &Client{sess, ts}, nil
+	rc := &Client{sess, ts, nil}
+	rc.tracing = tracing.NewTracer(NewSpan(rc))
+	return rc, nil
 }
 
 // Close ends rethink database session.
@@ -94,11 +99,14 @@ func (c *Client) exec(t r.Term) error {
 }
 
 func (c *Client) list(t r.Term, out interface{}) error {
+	s := c.tracing.StartSpan("rethink list " + t.String())
+	defer s.End()
+
 	res, err := c.run(t)
 	if err != nil {
 		return err
 	}
-	if err := res.All(out); err != nil {
+	if err = res.All(out); err != nil {
 		return err
 	}
 
@@ -106,11 +114,14 @@ func (c *Client) list(t r.Term, out interface{}) error {
 }
 
 func (c *Client) one(t r.Term, out interface{}) error {
+	s := c.tracing.StartSpan("rethink one " + t.String())
+	defer s.End()
+
 	res, err := c.run(t)
 	if err != nil {
 		return err
 	}
-	if err := res.One(out); err != nil {
+	if err = res.One(out); err != nil {
 		return err
 	}
 
