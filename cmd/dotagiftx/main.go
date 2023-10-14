@@ -15,6 +15,7 @@ import (
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
+	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
 )
 
@@ -110,6 +111,8 @@ func (app *application) setup() error {
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
 
+	traceSpan := tracing.NewTracer(rethink.NewSpan(rethinkClient))
+
 	// Service inits.
 	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(app.config)
@@ -159,6 +162,7 @@ func (app *application) setup() error {
 		reportSvc,
 		hammerSvc,
 		steamClient,
+		traceSpan,
 		redisClient,
 		initVer(app.config),
 		logSvc,

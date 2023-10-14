@@ -13,6 +13,7 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 	gokitMw "github.com/kudarap/dotagiftx/gokit/http/middleware"
 	"github.com/kudarap/dotagiftx/gokit/version"
+	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
 )
 
@@ -35,6 +36,7 @@ func NewServer(
 	rs core.ReportService,
 	hs core.HammerService,
 	sc core.SteamClient,
+	t *tracing.Tracer,
 	c core.Cache,
 	v *version.Version,
 	l *logrus.Logger,
@@ -51,6 +53,7 @@ func NewServer(
 		reportSvc: rs,
 		hammerSvc: hs,
 		steam:     sc,
+		tracing:   t,
 		cache:     c,
 		logger:    l,
 		version:   v,
@@ -74,6 +77,7 @@ type Server struct {
 	hammerSvc core.HammerService
 	steam     core.SteamClient
 
+	tracing *tracing.Tracer
 	cache   core.Cache
 	logger  *logrus.Logger
 	version *version.Version
@@ -83,6 +87,7 @@ func (s *Server) setup() {
 	r := chi.NewRouter()
 
 	// A good base middleware stack
+	r.Use(s.tracing.Middleware)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(NewStructuredLogger(s.logger))
