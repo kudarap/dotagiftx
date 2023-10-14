@@ -73,7 +73,8 @@ func (s *userService) Update(ctx context.Context, u *core.User) error {
 }
 
 func (s *userService) SteamSync(sp *core.SteamPlayer) (*core.User, error) {
-	res, err := s.userStg.Find(core.FindOpts{Filter: core.User{SteamID: sp.ID}})
+	opts := core.FindOpts{Filter: core.User{SteamID: sp.ID}, IndexKey: "steam_id"}
+	res, err := s.userStg.Find(opts)
 	if err != nil {
 		return nil, err
 	}

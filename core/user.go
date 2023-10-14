@@ -53,7 +53,7 @@ type (
 		Name      string     `json:"name"       db:"name,omitempty"             valid:"required"`
 		URL       string     `json:"url"        db:"url,omitempty"              valid:"required"`
 		Avatar    string     `json:"avatar"     db:"avatar,omitempty"           valid:"required"`
-		Status    UserStatus `json:"status"     db:"status,omitempty"`
+		Status    UserStatus `json:"status"     db:"status,indexed,omitempty"`
 		Notes     string     `json:"notes"      db:"notes,omitempty"`
 		Donation  float64    `json:"donation"   db:"donation,omitempty"`
 		DonatedAt *time.Time `json:"donated_at" db:"donated_at,omitempty"`
@@ -64,7 +64,7 @@ type (
 		RankScore   int               `json:"rank_score" db:"rank_score,omitempty"`
 
 		// NOTE! Experimental subscription flag
-		Subscription UserSubscription `json:"subscription"  db:"subscription,omitempty"`
+		Subscription UserSubscription `json:"subscription"  db:"subscription,indexed,omitempty"`
 		SubscribedAt *time.Time       `json:"subscribed_at" db:"subscribed_at,omitempty"`
 		Boons        []string         `json:"boons"         db:"boons,omitempty"`
 		Hammer       bool             `json:"hammer"        db:"hammer,omitempty"`

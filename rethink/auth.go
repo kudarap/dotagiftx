@@ -10,7 +10,11 @@ import (
 	"dario.cat/mergo"
 )
 
-const tableAuth = "auth"
+const (
+	tableAuth             = "auth"
+	authFieldUsername     = "username"
+	authFieldRefreshToken = "refresh_token"
+)
 
 // NewAuth creates new instance of auth data store.
 func NewAuth(c *Client) *authStorage {
@@ -43,7 +47,13 @@ func (s *authStorage) Get(id string) (*core.Auth, error) {
 }
 
 func (s *authStorage) GetByUsername(username string) (*core.Auth, error) {
-	return s.findOne(core.Auth{Username: username})
+	row := &core.Auth{}
+	q := s.table().GetAllByIndex(authFieldUsername, username)
+	if err := s.db.one(q, row); err != nil {
+		return nil, err
+	}
+
+	return row, nil
 }
 
 func (s *authStorage) GetByUsernameAndPassword(username, password string) (*core.Auth, error) {
@@ -51,7 +61,13 @@ func (s *authStorage) GetByUsernameAndPassword(username, password string) (*core
 }
 
 func (s *authStorage) GetByRefreshToken(refreshToken string) (*core.Auth, error) {
-	return s.findOne(core.Auth{RefreshToken: refreshToken})
+	row := &core.Auth{}
+	q := s.table().GetAllByIndex(authFieldRefreshToken, refreshToken)
+	if err := s.db.one(q, row); err != nil {
+		return nil, err
+	}
+
+	return row, nil
 }
 
 func (s *authStorage) Create(in *core.Auth) error {
