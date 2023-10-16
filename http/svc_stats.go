@@ -1,13 +1,52 @@
 package http
 
 import (
+	"log"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/kudarap/dotagiftx/core"
 )
 
+func hydrateStatsMarketSummaryX(cacheKey string, svc core.StatsService, cache core.Cache) {
+	filter := &core.Market{Type: core.MarketTypeAsk}
+	asks, err := svc.CountMarketStatus(core.FindOpts{Filter: filter})
+	if err != nil {
+		return
+	}
+
+	filter.Type = core.MarketTypeBid
+	bids, err := svc.CountMarketStatus(core.FindOpts{Filter: filter})
+	if err != nil {
+		return
+	}
+
+	res := struct {
+		*core.MarketStatusCount
+		Bids *core.MarketStatusCount `json:"bids"`
+	}{asks, bids}
+
+	if err = cache.Set(cacheKey, res, 0); err != nil {
+		log.Println("Error hydrateStatsMarketSummaryX", err)
+	}
+}
+
 func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.HandlerFunc {
+	const cacheKeyX = "stats_market_summary_exp"
+
+	go func() {
+		t := time.NewTicker(time.Hour / 2)
+		for {
+			<-t.C
+			hydrateStatsMarketSummaryX(cacheKeyX, svc, cache)
+		}
+	}()
+
+	if hit, _ := cache.Get(cacheKeyX); hit == "" {
+		go hydrateStatsMarketSummaryX(cacheKeyX, svc, cache)
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		//cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
@@ -22,6 +61,19 @@ func handleStatsMarketSummary(svc core.StatsService, cache core.Cache) http.Hand
 		f := &core.Market{}
 		if err := findOptsFilter(r.URL, f); err != nil {
 			respondError(w, err)
+			return
+		}
+		// Use hydration when getting all market status
+		if reflect.DeepEqual(f, &core.Market{}) {
+			hit, _ := cache.Get(cacheKeyX)
+			if hit == "" {
+				respondOK(w, struct {
+					*core.MarketStatusCount
+					Bids *core.MarketStatusCount `json:"bids"`
+				}{})
+				return
+			}
+			respondOK(w, hit)
 			return
 		}
 

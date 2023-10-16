@@ -148,7 +148,7 @@ func rehydrateCatalogTrend(cacheKey string, svc core.MarketService, cache core.C
 	logger.Infoln("REHYDRATED", d.ResultCount)
 }
 
-func hydrateX(cacheKey string, svc core.MarketService, cache core.Cache, logger *logrus.Logger) {
+func hydrateCatalogTrendX(cacheKey string, svc core.MarketService, cache core.Cache, logger *logrus.Logger) {
 	logger.Infoln("REHYDRATING EXP...")
 	list, _, err := svc.TrendingCatalog(core.FindOpts{})
 	if err != nil {
@@ -171,13 +171,13 @@ func handleMarketCatalogTrendListX(svc core.MarketService, cache core.Cache, log
 		t := time.NewTicker(catalogTrendRehydrationDur)
 		for {
 			<-t.C
-			hydrateX(cacheKeyX, svc, cache, logger)
+			hydrateCatalogTrendX(cacheKeyX, svc, cache, logger)
 		}
 	}()
 
 	if hit, _ := cache.Get(cacheKeyX); hit == "" {
 		logger.Infoln("no cached catalog trend")
-		go hydrateX(cacheKeyX, svc, cache, logger)
+		go hydrateCatalogTrendX(cacheKeyX, svc, cache, logger)
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
