@@ -67,8 +67,7 @@ func (s *marketStorage) Find(o core.FindOpts) ([]core.Market, error) {
 // inventory status or needs re-processing of re-process error status.
 func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, error) {
 	// Filters out already check or no need to check market
-	q := r.Table(tableMarket)
-	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+	q := newFindOptsQuery(r.Table(tableMarket), o)
 	q = q.
 		// .filter(r.row.hasFields('inventory_status').not().or(r.row('inventory_status').eq(500)))
 		Filter(func(t r.Term) r.Term {
@@ -86,14 +85,16 @@ func (s *marketStorage) PendingInventoryStatus(o core.FindOpts) ([]core.Market, 
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
 
+	for i, rr := range res {
+		res[i].User = s.includeUser(rr.UserID)
+	}
 	return res, nil
 }
 
 // PendingDeliveryStatus returns market entries that is pending for checking
 // delivery status or needs re-processing of re-process error status.
 func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
-	q := r.Table(tableMarket)
-	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+	q := newFindOptsQuery(r.Table(tableMarket), o)
 	q = q.Filter(func(t r.Term) r.Term {
 		return t.HasFields(marketFieldDeliveryStatus).Not().
 			Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError))
@@ -106,13 +107,15 @@ func (s *marketStorage) PendingDeliveryStatus(o core.FindOpts) ([]core.Market, e
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
 
+	for i, rr := range res {
+		res[i].User = s.includeUser(rr.UserID)
+	}
 	return res, nil
 }
 
 func (s *marketStorage) RevalidateDeliveryStatus(o core.FindOpts) ([]core.Market, error) {
 	n := time.Now()
-	q := r.Table(tableMarket)
-	q = baseFindOptsQuery(q, o, s.includeRelatedFields)
+	q := newFindOptsQuery(r.Table(tableMarket), o)
 	q = q.Filter(func(t r.Term) r.Term {
 		return t.Field(marketFieldStatus).Eq(core.MarketStatusSold).
 			And(t.Field(marketFieldUpdatedAt).Year().Eq(n.Year()).
@@ -127,6 +130,9 @@ func (s *marketStorage) RevalidateDeliveryStatus(o core.FindOpts) ([]core.Market
 		return nil, errors.New(core.StorageUncaughtErr, err)
 	}
 
+	for i, rr := range res {
+		res[i].User = s.includeUser(rr.UserID)
+	}
 	return res, nil
 }
 
