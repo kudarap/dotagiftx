@@ -1,4 +1,8 @@
-module.exports = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+module.exports = withBundleAnalyzer({
   // NextJS v12 Rust compiler for minification
   swcMinify: true,
   async rewrites() {
@@ -38,4 +42,4 @@ module.exports = {
     minimumCacheTTL: 31556952, // 1 year
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
   },
-}
+})
