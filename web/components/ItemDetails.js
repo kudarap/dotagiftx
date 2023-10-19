@@ -316,7 +316,7 @@ export default function ItemDetails({
         }}
         onChange={handleBuyerChange}
       />
-      <img src={trackItemViewURL(item.id)} alt="" />
+      <img src={trackItemViewURL(item.id)} height={1} width={1} alt="" />
 
       <Footer />
     </>

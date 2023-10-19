@@ -253,7 +253,7 @@ export default function UserDetails({
           )}
         </Container>
 
-        <img src={trackProfileViewURL(profile.id)} alt="" />
+        <img src={trackProfileViewURL(profile.id)} height={1} width={1} alt="" />
       </main>
 
       <Footer />
