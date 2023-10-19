@@ -77,6 +77,7 @@ export default function ItemImage({
         width={width}
         height={height}
         quality={100}
+        priority
         responsive
         {...other}
       />

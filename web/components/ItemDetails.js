@@ -252,6 +252,15 @@ export default function ItemDetails({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
+
+        {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
+        <link
+          rel="preload"
+          fetchpriority="high"
+          as="image"
+          href="/path/to/hero-image.webp"
+          type="image/webp"
+        />
       </Head>
 
       <Header />
