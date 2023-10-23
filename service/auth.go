@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -34,14 +35,15 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 	// Validates auth and get player details and use SteamID as auth username.
 	steamPlayer, err := s.steamClient.Authenticate(r)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("steam player not found: %s", err)
 	}
 
 	// Check account existence.
 	au, err := s.authStg.GetByUsername(steamPlayer.ID)
 	if err != nil && err != core.AuthErrNotFound {
-		return nil, err
+		return nil, fmt.Errorf("auth not found: %s", err)
 	}
+
 	// Account existed and checks login credentials.
 	if au != nil {
 		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {

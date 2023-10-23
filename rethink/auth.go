@@ -50,6 +50,10 @@ func (s *authStorage) GetByUsername(username string) (*core.Auth, error) {
 	row := &core.Auth{}
 	q := s.table().GetAllByIndex(authFieldUsername, username)
 	if err := s.db.one(q, row); err != nil {
+		if err == r.ErrEmptyResult {
+			return nil, core.AuthErrNotFound
+		}
+
 		return nil, err
 	}
 
