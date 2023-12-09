@@ -206,6 +206,14 @@ func (s *marketService) Update(ctx context.Context, market *core.Market) error {
 		if err != nil {
 			return err
 		}
+
+		u, err := s.userStg.Get(market.UserID)
+		if err != nil {
+			return err
+		}
+		if u.SteamID == market.PartnerSteamID {
+			return fmt.Errorf("delivering items to own account not allowed")
+		}
 	}
 	// Try to find a matching bid and set its status to complete.
 	if cur.Type == core.MarketTypeAsk && market.Status == core.MarketStatusReserved {
@@ -379,6 +387,10 @@ func (s *marketService) checkAskType(ask *core.Market) error {
 	qtyLimit := core.MaxMarketQtyLimitPerFreeUser
 	if user.HasBoon(core.BoonRefresherOrb) {
 		qtyLimit = core.MaxMarketQtyLimitPerPremiumUser
+	}
+
+	if ask.PartnerSteamID != "" && user.SteamID == ask.PartnerSteamID {
+		return fmt.Errorf("pairing to own account not allowed")
 	}
 
 	// Check Item max offer limit.
