@@ -207,7 +207,7 @@ func (s *marketService) Update(ctx context.Context, market *core.Market) error {
 			return err
 		}
 
-		u, err := s.userStg.Get(market.UserID)
+		u, err := s.userStg.Get(cur.UserID)
 		if err != nil {
 			return err
 		}
