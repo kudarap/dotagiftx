@@ -152,12 +152,12 @@ export default function Index({ marketSummary, trendingItems }) {
             style={{
               // background: 'url(/assets/treasure-banner.png) no-repeat top center',
               background:
-                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1702976555905) no-repeat left center',
+                'url(https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react//winter2023/frostivus_2023_logo_en.png) no-repeat center center',
               backgroundColor: '#263238',
-              backgroundSize: 'cover',
-              backgroundPositionY: -90,
+              backgroundSize: 'contain',
+              backgroundPositionY: -25,
               width: '100%',
-              height: '100%',
+              height: '80%',
             }}></div>
         </div>
 
