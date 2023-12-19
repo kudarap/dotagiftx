@@ -8,7 +8,7 @@ import { APP_NAME } from '@/constants/strings'
 import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
-const t = 1697142660
+const t = 1702976555905
 const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${t}`
 // const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/international2022/ti11_collectors_aegis.png`
 
@@ -29,7 +29,7 @@ const useStyles = makeStyles()(theme => ({
     },
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
-    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(7, 21, 32) 100%), url(${dotaHeroImage}) top center`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) top center`,
   },
   list: {
     [theme.breakpoints.down('sm')]: {

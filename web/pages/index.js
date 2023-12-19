@@ -152,7 +152,7 @@ export default function Index({ marketSummary, trendingItems }) {
             style={{
               // background: 'url(/assets/treasure-banner.png) no-repeat top center',
               background:
-                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1697142660) no-repeat center center',
+                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1702976555905) no-repeat left center',
               backgroundColor: '#263238',
               backgroundSize: 'cover',
               backgroundPositionY: -90,
