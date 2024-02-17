@@ -16,7 +16,7 @@ export const isOk = () => {
 
 export const set = data => {
   let opts = null
-  if (navigator.userAgent.indexOf('Safari') === -1) {
+  if (navigator.userAgent.includes('Chrome') || navigator.userAgent.includes('Safari')) {
     opts = { expires: 30, secure: true, sameSite: 'strict' }
   }
 
