@@ -6,7 +6,11 @@ const AUTH_KEY = 'dgAu'
 const userIDKey = 'user_id'
 
 export const get = () => {
-  return Cookies.getJSON(AUTH_KEY) || {}
+  let raw = Cookies.get(AUTH_KEY)
+  if (!raw) {
+    return {}
+  }
+  return JSON.parse(raw)
 }
 
 export const isOk = () => {
@@ -15,7 +19,7 @@ export const isOk = () => {
 }
 
 export const set = data => {
-  Cookies.set(AUTH_KEY, data, { expires: 1000, secure: true, sameSite: 'strict' })
+  Cookies.set(AUTH_KEY, data, { expires: 365, secure: true, sameSite: 'strict' })
 }
 
 export const clear = () => {
