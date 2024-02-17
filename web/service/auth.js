@@ -15,12 +15,7 @@ export const isOk = () => {
 }
 
 export const set = data => {
-  let opts = null
-  if (navigator.userAgent.includes('Chrome') || navigator.userAgent.includes('Safari')) {
-    opts = { expires: 30, secure: true, sameSite: 'strict' }
-  }
-
-  Cookies.set(AUTH_KEY, data, opts)
+  Cookies.set(AUTH_KEY, data, { expires: 500, secure: true, sameSite: 'strict' })
 }
 
 export const clear = () => {
