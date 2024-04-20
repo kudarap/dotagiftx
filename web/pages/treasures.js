@@ -13,6 +13,18 @@ import { APP_NAME } from '@/constants/strings'
 
 const treasures = [
   {
+    name: 'Crownfall Treasure I',
+    image: 'crownfall_treasure_i.png',
+    rarity: 'mythical',
+    items: 12,
+  },
+  {
+    name: 'Crownfall Treasure II',
+    image: 'crownfall_treasure_ii.png',
+    rarity: 'mythical',
+    items: 12,
+  },
+  {
     name: 'Dead Reckoning Chest',
     image: 'dead_reckoning_chest.png',
     rarity: 'mythical',
