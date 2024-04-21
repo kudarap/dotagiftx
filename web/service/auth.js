@@ -19,7 +19,7 @@ export const isOk = () => {
 }
 
 export const set = data => {
-  Cookies.set(AUTH_KEY, data, { expires: 365, secure: true, sameSite: 'strict' })
+  Cookies.set(AUTH_KEY, JSON.stringify(data), { expires: 365, secure: true, sameSite: 'strict' })
 }
 
 export const clear = () => {
