@@ -226,10 +226,11 @@ export default function Treasures() {
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
+            top: -7,
           }}>
           <div
             style={{
-              background: 'url(/assets/treasure-banner.png) no-repeat bottom center',
+              background: 'url(/assets/venge_arcana.png) no-repeat bottom center',
               backgroundPosition: 'center',
               width: '100%',
               height: '100%',
