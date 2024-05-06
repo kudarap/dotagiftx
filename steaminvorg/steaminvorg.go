@@ -107,7 +107,7 @@ func Crawl(steamID string) (status string, err error) {
 	return crawlRes.Status, nil
 }
 
-// Metadata represents reposnse inventory metadata.
+// Metadata represents response inventory metadata.
 type Metadata struct {
 	Status               string
 	Count                int
@@ -131,6 +131,9 @@ func (d Metadata) hasError() error {
 }
 
 func (d Metadata) isCacheFresh() bool {
+	if d.LastUpdated == nil {
+		return false
+	}
 	return time.Now().Before(d.LastUpdated.Add(freshCacheDur))
 }
 
