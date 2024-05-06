@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 )
 
 func TestVerifyInventory(t *testing.T) {
@@ -39,7 +39,7 @@ func TestVerifyInventory(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, assets, err := Inventory(steaminv.InventoryAsset, tt.args.steamID, tt.args.itemName)
+			got, assets, err := Inventory(steaminvorg.InventoryAsset, tt.args.steamID, tt.args.itemName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Inventory() error = %v, wantErr %v", err, tt.wantErr)
 				return

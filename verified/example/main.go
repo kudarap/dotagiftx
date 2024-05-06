@@ -5,12 +5,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
 func main() {
-	assetSrc := steaminv.InventoryAsset
+	assetSrc := steaminvorg.InventoryAsset
 
 	seller := "tuty # aka FUTUX"
 	buyerID := "76561198265102770"

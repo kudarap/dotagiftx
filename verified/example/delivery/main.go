@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
 func main() {
-	assetSrc := steaminv.InventoryAsset
+	assetSrc := steaminvorg.InventoryAsset
 
 	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
 

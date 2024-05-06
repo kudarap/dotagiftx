@@ -1,4 +1,4 @@
-package steaminv
+package steaminvorg
 
 import (
 	"encoding/json"
@@ -49,7 +49,7 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 
 	// crawl request
 	//log.Println(steamID, "sending crawl request...")
-	log.Println("STEAMINV CRAWL REQUEST", steamID)
+	log.Println("STEAMINVORG CRAWL REQUEST", steamID)
 	if _, err = Crawl(steamID); err != nil {
 		return nil, err
 	}

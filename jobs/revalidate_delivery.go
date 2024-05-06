@@ -6,7 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
@@ -44,7 +44,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	src := steaminv.InventoryAsset
+	src := steaminvorg.InventoryAsset
 	for {
 		res, err := rd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 )
 
 func TestVerifyDelivery(t *testing.T) {
@@ -51,7 +51,7 @@ func TestVerifyDelivery(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, assets, err := Delivery(steaminv.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
+			got, assets, err := Delivery(steaminvorg.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Delivery() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -85,7 +85,7 @@ func TestVerifyDeliveryMultiSources(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			stat1, assets1, err1 := Delivery(steaminv.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
+			stat1, assets1, err1 := Delivery(steaminvorg.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
 			stat2, assets2, err2 := Delivery(steam.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
 
 			if err1 != err2 {

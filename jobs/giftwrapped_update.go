@@ -6,7 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
@@ -50,7 +50,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	src := steaminv.InventoryAsset
+	src := steaminvorg.InventoryAsset
 	for {
 		deliveries, err := gw.deliveryStg.ToVerify(opts)
 		if err != nil {

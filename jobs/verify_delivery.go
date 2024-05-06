@@ -6,7 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
@@ -43,7 +43,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts.Limit = 10
 	opts.Page = 0
 
-	src := steaminv.InventoryAsset
+	src := steaminvorg.InventoryAsset
 	for {
 		res, err := vd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {

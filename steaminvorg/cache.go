@@ -1,4 +1,4 @@
-package steaminv
+package steaminvorg
 
 import (
 	"fmt"
@@ -28,7 +28,7 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 		return asset, nil
 	}
 
-	log.Println("STEAMINV NO LOCAL CACHE HIT", steamID)
+	log.Println("STEAMINVORG NO LOCAL CACHE HIT", steamID)
 	asset, err := InventoryAsset(steamID)
 	if err != nil {
 		return nil, err

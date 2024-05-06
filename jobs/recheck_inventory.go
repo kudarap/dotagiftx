@@ -6,7 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/steaminv"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verified"
 )
 
@@ -45,7 +45,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	src := steaminv.InventoryAssetWithCache
+	src := steaminvorg.InventoryAssetWithCache
 	invs, _, err := ri.inventorySvc.Inventories(opts)
 	if err != nil {
 		return err
