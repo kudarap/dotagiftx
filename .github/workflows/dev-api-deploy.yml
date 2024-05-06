@@ -23,14 +23,14 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Compile
         run: make build
 
       - name: Test
         run: |
-          go test -v ./core/...
+          go test -v ./
           go test -v ./gokit/...
           go test -v ./http/...
           go test -v ./steam/...
