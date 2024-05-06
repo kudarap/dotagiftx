@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	maxGetRetries = 5
+	maxGetRetries = 10
 	retrySleepDur = time.Second * 5
 	// freshCacheDur = time.Hour
 	freshCacheDur = time.Minute * 15
@@ -54,7 +54,7 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 		return nil, err
 	}
 
-	// check for meta until processed with 5 reties
+	// check for meta until processed with a little bit of back-off
 	for i := 1; i <= maxGetRetries; i++ {
 		//log.Println(steamID, "checking metadata. retry", i, "...")
 		m, err = GetMeta(steamID)
@@ -64,7 +64,7 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 		if m != nil && m.Status == "success" {
 			break
 		}
-		time.Sleep(retrySleepDur)
+		time.Sleep(retrySleepDur + time.Duration(i)*time.Second)
 	}
 
 	// get inventory
