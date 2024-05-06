@@ -44,6 +44,7 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 		//		log.Println("error invalidating", err)
 		//	}
 		//}()
+		log.Println("STEAMINVORG CACHED", steamID)
 		return Get(steamID)
 	}
 
@@ -72,8 +73,13 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 	}
 
 	// get inventory
-	//log.Println(steamID, "getting inventory...")
-	return Get(steamID)
+	res, err := Get(steamID)
+	if err != nil {
+		log.Println("STEAMINVORG GET ERR", steamID)
+	}
+
+	log.Println("STEAMINVORG GET DONE", steamID)
+	return res, nil
 }
 
 // Get https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory

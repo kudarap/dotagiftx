@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/kudarap/dotagiftx/steaminvorg"
+	"github.com/kudarap/dotagiftx/verifying"
 )
 
 func main() {
