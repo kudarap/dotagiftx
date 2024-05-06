@@ -64,6 +64,10 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 		if m != nil && m.Status == "success" {
 			break
 		}
+
+		if i == maxGetRetries {
+			log.Println("STEAMINVORG TIMED OUT", steamID)
+		}
 		time.Sleep(retrySleepDur + time.Duration(i)*time.Second)
 	}
 
