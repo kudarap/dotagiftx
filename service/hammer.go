@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 )
 
 var ErrHammerNotWeilded = errors.New("user is not weilding a hmmer")
@@ -13,27 +13,27 @@ var ErrHammerNotWeilded = errors.New("user is not weilding a hmmer")
 const markedOfBaal = 10000
 
 // NewHammerService returns a new Ban service.
-func NewHammerService(us core.UserStorage, ms core.MarketStorage) *BanService {
+func NewHammerService(us dotagiftx.UserStorage, ms dotagiftx.MarketStorage) *BanService {
 	return &BanService{us, ms}
 }
 
 type BanService struct {
-	userStg   core.UserStorage
-	marketStg core.MarketStorage
+	userStg   dotagiftx.UserStorage
+	marketStg dotagiftx.MarketStorage
 }
 
-func (s *BanService) Ban(ctx context.Context, p core.HammerParams) (*core.User, error) {
-	return s.hilt(ctx, p, core.UserStatusBanned)
+func (s *BanService) Ban(ctx context.Context, p dotagiftx.HammerParams) (*dotagiftx.User, error) {
+	return s.hilt(ctx, p, dotagiftx.UserStatusBanned)
 }
 
-func (s *BanService) Suspend(ctx context.Context, p core.HammerParams) (*core.User, error) {
-	return s.hilt(ctx, p, core.UserStatusSuspended)
+func (s *BanService) Suspend(ctx context.Context, p dotagiftx.HammerParams) (*dotagiftx.User, error) {
+	return s.hilt(ctx, p, dotagiftx.UserStatusSuspended)
 }
 
 func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings bool) error {
-	au := core.AuthFromContext(ctx)
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return core.AuthErrNoAccess
+		return dotagiftx.AuthErrNoAccess
 	}
 	if err := s.weildingHammer(au.UserID); err != nil {
 		return err
@@ -56,10 +56,10 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 	return s.restoreListings(u.ID)
 }
 
-func (s *BanService) hilt(ctx context.Context, p core.HammerParams, us core.UserStatus) (*core.User, error) {
-	au := core.AuthFromContext(ctx)
+func (s *BanService) hilt(ctx context.Context, p dotagiftx.HammerParams, us dotagiftx.UserStatus) (*dotagiftx.User, error) {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, core.AuthErrNoAccess
+		return nil, dotagiftx.AuthErrNoAccess
 	}
 	if err := s.weildingHammer(au.UserID); err != nil {
 		return nil, err
@@ -88,19 +88,19 @@ func (s *BanService) hilt(ctx context.Context, p core.HammerParams, us core.User
 }
 
 func (s *BanService) cancelListings(userID string) error {
-	return s.sunderListings(userID, core.MarketStatusLive, core.MarketStatusCancelled)
+	return s.sunderListings(userID, dotagiftx.MarketStatusLive, dotagiftx.MarketStatusCancelled)
 }
 
 func (s *BanService) restoreListings(userID string) error {
-	return s.sunderListings(userID, core.MarketStatusCancelled, core.MarketStatusLive)
+	return s.sunderListings(userID, dotagiftx.MarketStatusCancelled, dotagiftx.MarketStatusLive)
 }
 
-func (s *BanService) sunderListings(userID string, from, to core.MarketStatus) error {
-	f := core.Market{
+func (s *BanService) sunderListings(userID string, from, to dotagiftx.MarketStatus) error {
+	f := dotagiftx.Market{
 		UserID: userID,
 		Status: from,
 	}
-	ms, err := s.marketStg.Find(core.FindOpts{Filter: f})
+	ms, err := s.marketStg.Find(dotagiftx.FindOpts{Filter: f})
 	if err != nil {
 		return err
 	}

@@ -6,46 +6,46 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewUser returns a new User service.
-func NewUser(us core.UserStorage, fm core.FileManager, sc subscriptionChecker) core.UserService {
+func NewUser(us dotagiftx.UserStorage, fm dotagiftx.FileManager, sc subscriptionChecker) dotagiftx.UserService {
 	return &userService{us, fm, sc}
 }
 
 type userService struct {
-	userStg     core.UserStorage
-	fileMgr     core.FileManager
+	userStg     dotagiftx.UserStorage
+	fileMgr     dotagiftx.FileManager
 	subsChecker subscriptionChecker
 }
 
-func (s *userService) Users(opts core.FindOpts) ([]core.User, error) {
+func (s *userService) Users(opts dotagiftx.FindOpts) ([]dotagiftx.User, error) {
 	return s.userStg.Find(opts)
 }
 
-func (s *userService) FlaggedUsers(opts core.FindOpts) ([]core.User, error) {
+func (s *userService) FlaggedUsers(opts dotagiftx.FindOpts) ([]dotagiftx.User, error) {
 	return s.userStg.FindFlagged(opts)
 }
 
-func (s *userService) User(id string) (*core.User, error) {
+func (s *userService) User(id string) (*dotagiftx.User, error) {
 	return s.userStg.Get(id)
 }
 
-func (s *userService) UserFromContext(ctx context.Context) (*core.User, error) {
-	au := core.AuthFromContext(ctx)
+func (s *userService) UserFromContext(ctx context.Context) (*dotagiftx.User, error) {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, core.UserErrNotFound
+		return nil, dotagiftx.UserErrNotFound
 	}
 
 	return s.User(au.UserID)
 }
 
-func (s *userService) Create(u *core.User) error {
+func (s *userService) Create(u *dotagiftx.User) error {
 	url, err := s.downloadProfileImage(u.Avatar)
 	if err != nil {
-		return errors.New(core.UserErrProfileImageDL, err)
+		return errors.New(dotagiftx.UserErrProfileImageDL, err)
 	}
 	u.Avatar = url
 
@@ -58,10 +58,10 @@ func (s *userService) Create(u *core.User) error {
 	return s.userStg.Create(u)
 }
 
-func (s *userService) Update(ctx context.Context, u *core.User) error {
-	au := core.AuthFromContext(ctx)
+func (s *userService) Update(ctx context.Context, u *dotagiftx.User) error {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return core.AuthErrNoAccess
+		return dotagiftx.AuthErrNoAccess
 	}
 	u.ID = au.UserID
 
@@ -72,8 +72,8 @@ func (s *userService) Update(ctx context.Context, u *core.User) error {
 	return s.userStg.Update(u)
 }
 
-func (s *userService) SteamSync(sp *core.SteamPlayer) (*core.User, error) {
-	opts := core.FindOpts{Filter: core.User{SteamID: sp.ID}, IndexKey: "steam_id"}
+func (s *userService) SteamSync(sp *dotagiftx.SteamPlayer) (*dotagiftx.User, error) {
+	opts := dotagiftx.FindOpts{Filter: dotagiftx.User{SteamID: sp.ID}, IndexKey: "steam_id"}
 	res, err := s.userStg.Find(opts)
 	if err != nil {
 		return nil, err
@@ -93,10 +93,10 @@ func (s *userService) SteamSync(sp *core.SteamPlayer) (*core.User, error) {
 	return &u, nil
 }
 
-func (s *userService) ProcSubscription(ctx context.Context, subscriptionID string) (*core.User, error) {
-	au := core.AuthFromContext(ctx)
+func (s *userService) ProcSubscription(ctx context.Context, subscriptionID string) (*dotagiftx.User, error) {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, core.AuthErrNoAccess
+		return nil, dotagiftx.AuthErrNoAccess
 	}
 	user, err := s.userStg.Get(au.UserID)
 	if err != nil {
@@ -110,7 +110,7 @@ func (s *userService) ProcSubscription(ctx context.Context, subscriptionID strin
 	if user.SteamID != steamID {
 		return nil, fmt.Errorf("could not validate subscription steam id")
 	}
-	userSubs := core.UserSubscriptionFromString(plan)
+	userSubs := dotagiftx.UserSubscriptionFromString(plan)
 	if userSubs == 0 {
 		return nil, fmt.Errorf("could not validate subscription plan")
 	}

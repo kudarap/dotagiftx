@@ -30,7 +30,7 @@ build-worker-linux:
 	    -o dxworker_amd64 ./cmd/dxworker
 
 generate:
-	go generate ./core
+	go generate .
 
 docker-build:
 	docker build -t $(PROJECTNAME) .

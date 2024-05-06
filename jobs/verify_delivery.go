@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/steaminv"
 	"github.com/kudarap/dotagiftx/verified"
@@ -12,17 +12,17 @@ import (
 
 // VerifyDelivery represents a delivery verification job.
 type VerifyDelivery struct {
-	deliverySvc core.DeliveryService
-	marketStg   core.MarketStorage
+	deliverySvc dotagiftx.DeliveryService
+	marketStg   dotagiftx.MarketStorage
 	logger      log.Logger
 	// job settings
 	name     string
 	interval time.Duration
-	filter   core.Market
+	filter   dotagiftx.Market
 }
 
-func NewVerifyDelivery(ds core.DeliveryService, ms core.MarketStorage, lg log.Logger) *VerifyDelivery {
-	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusSold}
+func NewVerifyDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStorage, lg log.Logger) *VerifyDelivery {
+	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &VerifyDelivery{
 		ds, ms, lg,
 		"verify_delivery", defaultJobInterval, f}
@@ -38,7 +38,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 		vd.logger.Println("VERIFIED DELIVERY BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := core.FindOpts{Filter: vd.filter}
+	opts := dotagiftx.FindOpts{Filter: vd.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
@@ -52,8 +52,8 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 
 		for _, mkt := range res {
 			// Skip verified statuses.
-			if mkt.DeliveryStatus == core.DeliveryStatusNameVerified ||
-				mkt.DeliveryStatus == core.DeliveryStatusSenderVerified {
+			if mkt.DeliveryStatus == dotagiftx.DeliveryStatusNameVerified ||
+				mkt.DeliveryStatus == dotagiftx.DeliveryStatusSenderVerified {
 				continue
 			}
 
@@ -68,7 +68,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			}
 			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
-			err = vd.deliverySvc.Set(ctx, &core.Delivery{
+			err = vd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,

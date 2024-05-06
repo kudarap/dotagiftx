@@ -1,4 +1,4 @@
-package core
+package dotagiftx
 
 const (
 	// StorageUncaughtErr storage error type for un-handled errors.

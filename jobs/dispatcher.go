@@ -3,7 +3,7 @@ package jobs
 import (
 	"fmt"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/sirupsen/logrus"
@@ -13,24 +13,24 @@ import (
 type Dispatcher struct {
 	worker *worker.Worker
 	// Jobs service dependencies
-	deliverySvc  core.DeliveryService
-	inventorySvc core.InventoryService
-	deliveryStg  core.DeliveryStorage
-	marketStg    core.MarketStorage
-	catalogStg   core.CatalogStorage
-	cache        core.Cache
+	deliverySvc  dotagiftx.DeliveryService
+	inventorySvc dotagiftx.InventoryService
+	deliveryStg  dotagiftx.DeliveryStorage
+	marketStg    dotagiftx.MarketStorage
+	catalogStg   dotagiftx.CatalogStorage
+	cache        dotagiftx.Cache
 	logSvc       *logrus.Logger
 }
 
 // NewDispatcher returns an instance dispatcher.
 func NewDispatcher(
 	worker *worker.Worker,
-	deliverySvc core.DeliveryService,
-	inventorySvc core.InventoryService,
-	deliveryStg core.DeliveryStorage,
-	marketStg core.MarketStorage,
-	catalogStg core.CatalogStorage,
-	cache core.Cache,
+	deliverySvc dotagiftx.DeliveryService,
+	inventorySvc dotagiftx.InventoryService,
+	deliveryStg dotagiftx.DeliveryStorage,
+	marketStg dotagiftx.MarketStorage,
+	catalogStg dotagiftx.CatalogStorage,
+	cache dotagiftx.Cache,
 	logSvc *logrus.Logger,
 ) *Dispatcher {
 	return &Dispatcher{
@@ -93,7 +93,7 @@ func (d *Dispatcher) VerifyDelivery(marketID string) {
 	job := NewVerifyDelivery(d.deliverySvc, d.marketStg, ctxLog)
 	job.name = fmt.Sprintf("%s_%s", job.name, marketID)
 	job.interval = 0 // makes the job run-once.
-	job.filter = core.Market{ID: marketID}
+	job.filter = dotagiftx.Market{ID: marketID}
 	d.worker.AddJob(job)
 }
 

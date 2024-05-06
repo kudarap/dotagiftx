@@ -3,7 +3,7 @@ package rethink
 import (
 	"log"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
@@ -21,7 +21,7 @@ func NewTrack(c *Client) *trackStorage {
 		log.Fatalf("could not create %s table: %s", tableTrack, err)
 	}
 
-	if err := c.autoIndex(tableTrack, core.Track{}); err != nil {
+	if err := c.autoIndex(tableTrack, dotagiftx.Track{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
@@ -33,19 +33,19 @@ type trackStorage struct {
 	keywordFields []string
 }
 
-func (s *trackStorage) Find(o core.FindOpts) ([]core.Track, error) {
-	var res []core.Track
+func (s *trackStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Track, error) {
+	var res []dotagiftx.Track
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(core.StorageUncaughtErr, err)
+		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *trackStorage) Count(o core.FindOpts) (num int, err error) {
-	o = core.FindOpts{
+func (s *trackStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
+	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
@@ -55,26 +55,26 @@ func (s *trackStorage) Count(o core.FindOpts) (num int, err error) {
 	return
 }
 
-func (s *trackStorage) Get(id string) (*core.Track, error) {
-	row := &core.Track{}
+func (s *trackStorage) Get(id string) (*dotagiftx.Track, error) {
+	row := &dotagiftx.Track{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, core.TrackErrNotFound
+			return nil, dotagiftx.TrackErrNotFound
 		}
 
-		return nil, errors.New(core.StorageUncaughtErr, err)
+		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *trackStorage) Create(in *core.Track) error {
+func (s *trackStorage) Create(in *dotagiftx.Track) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(core.StorageUncaughtErr, err)
+		return errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -102,7 +102,7 @@ const last7days = 604800
 	   }
 	 })
 */
-func (s *trackStorage) TopKeywords() ([]core.SearchKeywordScore, error) {
+func (s *trackStorage) TopKeywords() ([]dotagiftx.SearchKeywordScore, error) {
 	now := r.Now()
 	q := s.table().Between(now.Sub(last7days), now, r.BetweenOpts{Index: trackFieldCreatedAt}).
 		Filter(map[string]interface{}{"type": "s"}).
@@ -118,7 +118,7 @@ func (s *trackStorage) TopKeywords() ([]core.SearchKeywordScore, error) {
 			}
 		})
 
-	var res []core.SearchKeywordScore
+	var res []dotagiftx.SearchKeywordScore
 	if err := s.db.list(q, &res); err != nil {
 		return nil, err
 	}

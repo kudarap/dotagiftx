@@ -4,20 +4,20 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 )
 
 // NewTrack returns new track service.
-func NewTrack(ts core.TrackStorage, ps core.ItemStorage) core.TrackService {
+func NewTrack(ts dotagiftx.TrackStorage, ps dotagiftx.ItemStorage) dotagiftx.TrackService {
 	return &trackService{ts, ps}
 }
 
 type trackService struct {
-	trackStg core.TrackStorage
-	itemStg  core.ItemStorage
+	trackStg dotagiftx.TrackStorage
+	itemStg  dotagiftx.ItemStorage
 }
 
-func (s *trackService) Tracks(opts core.FindOpts) ([]core.Track, *core.FindMetadata, error) {
+func (s *trackService) Tracks(opts dotagiftx.FindOpts) ([]dotagiftx.Track, *dotagiftx.FindMetadata, error) {
 	res, err := s.trackStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -33,22 +33,22 @@ func (s *trackService) Tracks(opts core.FindOpts) ([]core.Track, *core.FindMetad
 		return nil, nil, err
 	}
 
-	return res, &core.FindMetadata{
+	return res, &dotagiftx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  total,
 	}, nil
 }
 
-func (s *trackService) Track(id string) (*core.Track, error) {
+func (s *trackService) Track(id string) (*dotagiftx.Track, error) {
 	return s.trackStg.Get(id)
 }
 
 func (s *trackService) CreateFromRequest(r *http.Request) error {
-	t := new(core.Track)
+	t := new(dotagiftx.Track)
 	t.SetDefaults(r)
 
 	// Track post view.
-	if t.Type == core.TrackTypeView && t.ItemID != "" {
+	if t.Type == dotagiftx.TrackTypeView && t.ItemID != "" {
 		if err := s.itemStg.AddViewCount(t.ItemID); err != nil {
 			return err
 		}
@@ -67,9 +67,9 @@ func (s *trackService) CreateSearchKeyword(r *http.Request, keyword string) erro
 		return nil
 	}
 
-	t := new(core.Track)
+	t := new(dotagiftx.Track)
 	t.SetDefaults(r)
-	t.Type = core.TrackTypeSearch
+	t.Type = dotagiftx.TrackTypeSearch
 	t.Keyword = keyword
 	return s.trackStg.Create(t)
 }

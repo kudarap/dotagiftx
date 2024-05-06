@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 )
 
-func (s *marketService) Catalog(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
+func (s *marketService) Catalog(opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error) {
 	res, err := s.catalogStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -22,13 +22,13 @@ func (s *marketService) Catalog(opts core.FindOpts) ([]core.Catalog, *core.FindM
 		return nil, nil, err
 	}
 
-	return res, &core.FindMetadata{
+	return res, &dotagiftx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
 	}, nil
 }
 
-func (s *marketService) TrendingCatalog(opts core.FindOpts) ([]core.Catalog, *core.FindMetadata, error) {
+func (s *marketService) TrendingCatalog(opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error) {
 	res, err := s.catalogStg.Trending()
 	if err != nil {
 		return nil, nil, err
@@ -38,19 +38,19 @@ func (s *marketService) TrendingCatalog(opts core.FindOpts) ([]core.Catalog, *co
 		return res, nil, err
 	}
 
-	return res, &core.FindMetadata{
+	return res, &dotagiftx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  10, // Fixed value of top 10
 	}, nil
 }
 
-func (s *marketService) CatalogDetails(slug string, opts core.FindOpts) (*core.Catalog, error) {
+func (s *marketService) CatalogDetails(slug string, opts dotagiftx.FindOpts) (*dotagiftx.Catalog, error) {
 	if slug == "" {
-		return nil, core.CatalogErrNotFound
+		return nil, dotagiftx.CatalogErrNotFound
 	}
 
 	catalog, err := s.catalogStg.Get(slug)
-	if err == core.CatalogErrNotFound {
+	if err == dotagiftx.CatalogErrNotFound {
 		i, err := s.itemStg.GetBySlug(slug)
 		if err != nil {
 			return nil, err
@@ -64,7 +64,7 @@ func (s *marketService) CatalogDetails(slug string, opts core.FindOpts) (*core.C
 	}
 
 	// Override filter to specific item id.
-	filter := opts.Filter.(*core.Market)
+	filter := opts.Filter.(*dotagiftx.Market)
 	filter.ItemID = catalog.ID
 	opts.Filter = filter
 	res, meta, err := s.Markets(context.Background(), opts)

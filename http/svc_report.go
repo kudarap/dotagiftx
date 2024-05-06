@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 )
 
-func handleReportList(svc core.ReportService) http.HandlerFunc {
+func handleReportList(svc dotagiftx.ReportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		opts, err := findOptsFromURL(r.URL, &core.Report{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Report{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -21,7 +21,7 @@ func handleReportList(svc core.ReportService) http.HandlerFunc {
 			return
 		}
 		if list == nil {
-			list = []core.Report{}
+			list = []dotagiftx.Report{}
 		}
 
 		o := newDataWithMeta(list, md)
@@ -29,7 +29,7 @@ func handleReportList(svc core.ReportService) http.HandlerFunc {
 	}
 }
 
-func handleReportDetail(svc core.ReportService) http.HandlerFunc {
+func handleReportDetail(svc dotagiftx.ReportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rep, err := svc.Report(chi.URLParam(r, "id"))
 		if err != nil {
@@ -41,9 +41,9 @@ func handleReportDetail(svc core.ReportService) http.HandlerFunc {
 	}
 }
 
-func handleReportCreate(svc core.ReportService) http.HandlerFunc {
+func handleReportCreate(svc dotagiftx.ReportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rep := new(core.Report)
+		rep := new(dotagiftx.Report)
 		if err := parseForm(r, rep); err != nil {
 			respondError(w, err)
 			return

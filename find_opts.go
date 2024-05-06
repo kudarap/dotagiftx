@@ -1,4 +1,4 @@
-package core
+package dotagiftx
 
 type (
 	// FindOpts represents find options.

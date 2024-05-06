@@ -3,14 +3,14 @@ package http
 import (
 	"net/http"
 
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/assets"
-	"github.com/kudarap/dotagiftx/core"
 	"github.com/sirupsen/logrus"
 )
 
 const pixelImage = "image/pixel.gif"
 
-func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
+func handleTracker(svc dotagiftx.TrackService, logger *logrus.Logger) http.HandlerFunc {
 	image, _ := assets.Content.ReadFile(pixelImage)
 	return func(w http.ResponseWriter, r *http.Request) {
 		go func(r *http.Request) {

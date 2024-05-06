@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/steaminv"
 	"github.com/kudarap/dotagiftx/verified"
@@ -12,17 +12,17 @@ import (
 
 // RevalidateDelivery represents a delivery verification job.
 type RevalidateDelivery struct {
-	deliverySvc core.DeliveryService
-	marketStg   core.MarketStorage
+	deliverySvc dotagiftx.DeliveryService
+	marketStg   dotagiftx.MarketStorage
 	logger      log.Logger
 	// job settings
 	name     string
 	interval time.Duration
-	filter   core.Market
+	filter   dotagiftx.Market
 }
 
-func NewRevalidateDelivery(ds core.DeliveryService, ms core.MarketStorage, lg log.Logger) *RevalidateDelivery {
-	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusSold}
+func NewRevalidateDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStorage, lg log.Logger) *RevalidateDelivery {
+	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &RevalidateDelivery{
 		ds, ms, lg,
 		"revalidate_delivery", time.Hour, f}
@@ -38,7 +38,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 		rd.logger.Println("REVALIDATE DELIVERY BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := core.FindOpts{Filter: rd.filter}
+	opts := dotagiftx.FindOpts{Filter: rd.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
@@ -72,7 +72,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 			}
 			rd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
-			err = rd.deliverySvc.Set(ctx, &core.Delivery{
+			err = rd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,

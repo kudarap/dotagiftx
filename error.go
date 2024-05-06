@@ -1,4 +1,4 @@
-package core
+package dotagiftx
 
 //go:generate stringer -type=Errors -output=errors_string.go
 
