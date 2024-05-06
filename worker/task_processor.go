@@ -10,7 +10,6 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verified"
 )
 
 type TaskProcessor struct {
@@ -107,7 +106,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 	}
 
 	source := steaminvorg.InventoryAssetWithCache
-	status, assets, err := verified.Inventory(source, market.User.SteamID, market.Item.Name)
+	status, assets, err := verifying.Inventory(source, market.User.SteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}
@@ -131,7 +130,7 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 	}
 
 	src := steaminvorg.InventoryAsset
-	status, assets, err := verified.Delivery(src, market.User.Name, market.PartnerSteamID, market.Item.Name)
+	status, assets, err := verifying.Delivery(src, market.User.Name, market.PartnerSteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}

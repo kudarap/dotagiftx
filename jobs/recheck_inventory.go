@@ -7,7 +7,6 @@ import (
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verified"
 )
 
 // RecheckInventory represents a job that rechecks no-hit items.
@@ -66,7 +65,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 			continue
 		}
 
-		status, assets, err := verified.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
+		status, assets, err := verifying.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
 		if err != nil {
 			continue
 		}

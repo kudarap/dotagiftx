@@ -1,4 +1,4 @@
-package verified
+package verifying
 
 import (
 	"strings"

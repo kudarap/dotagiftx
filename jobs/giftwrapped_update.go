@@ -7,7 +7,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verified"
+	"github.com/kudarap/dotagiftx/verifying"
 )
 
 // GiftWrappedUpdate represents a job that will update delivered
@@ -74,7 +74,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+			status, assets, err := verifying.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				gw.logger.Errorf("delivery verification error: %s", err)
 				continue

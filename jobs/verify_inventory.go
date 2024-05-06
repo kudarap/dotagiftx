@@ -7,7 +7,6 @@ import (
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verified"
 )
 
 // VerifyInventory represents inventory verification job.
@@ -65,7 +64,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verified.Inventory(source, mkt.User.SteamID, mkt.Item.Name)
+			status, assets, err := verifying.Inventory(source, mkt.User.SteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}

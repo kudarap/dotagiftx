@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verified"
 )
 
 func main() {
@@ -16,7 +15,7 @@ func main() {
 	buyerID := "76561198265102770"
 	item := "Fissured Flight"
 
-	status, snaps, err := verified.Delivery(assetSrc, seller, buyerID, item)
+	status, snaps, err := verifying.Delivery(assetSrc, seller, buyerID, item)
 	if err != nil {
 		log.Fatal(err)
 	}

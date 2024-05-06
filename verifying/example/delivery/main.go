@@ -10,7 +10,6 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verified"
 )
 
 func main() {
@@ -27,7 +26,7 @@ func main() {
 	items, _ := getDelivered()
 
 	for _, item := range items {
-		status, snaps, err := verified.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
+		status, snaps, err := verifying.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))
