@@ -15,7 +15,7 @@ var fastjson = jsoniter.ConfigFastest
 
 const (
 	localCacheExpr   = time.Hour
-	localCachePrefix = "steaminv"
+	localCachePrefix = "steaminvorg"
 )
 
 // InventoryAssetWithCache returns a compact format from all inventory data with cache.

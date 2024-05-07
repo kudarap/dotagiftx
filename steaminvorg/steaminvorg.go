@@ -129,8 +129,8 @@ type Metadata struct {
 	LastUpdated          *time.Time
 }
 
-func (d Metadata) hasError() error {
-	switch d.Status {
+func (m Metadata) hasError() error {
+	switch m.Status {
 	case "error:403":
 		return steam.ErrInventoryPrivate
 	case "error:404":
@@ -140,11 +140,11 @@ func (d Metadata) hasError() error {
 	return nil
 }
 
-func (d Metadata) isCacheFresh() bool {
-	if d.LastUpdated == nil {
+func (m Metadata) isCacheFresh() bool {
+	if m.LastUpdated == nil {
 		return false
 	}
-	return time.Now().Before(d.LastUpdated.Add(freshCacheDur))
+	return time.Now().Before(m.LastUpdated.Add(freshCacheDur))
 }
 
 type rawMetadata struct {
@@ -190,13 +190,13 @@ func (d *rawMetadata) format() *Metadata {
 		return nil
 	}
 
-	mdi := d.Items[0]
-	m.Status = mdi.Status.S
-	m.AllDescriptionLength, _ = strconv.Atoi(mdi.AllDescriptionLength.N)
-	m.AllInventoryLength, _ = strconv.Atoi(mdi.AllInventoryLength.N)
-	m.QueuedAt = parseStrTime(mdi.QueuedTimestamp.N)
-	m.CrawledAt = parseStrTime(mdi.Timestamp.N)
-	m.LastUpdated = parseStrTime(mdi.IndexTimestamp.N)
+	i := d.Items[0]
+	m.Status = i.Status.S
+	m.AllDescriptionLength, _ = strconv.Atoi(i.AllDescriptionLength.N)
+	m.AllInventoryLength, _ = strconv.Atoi(i.AllInventoryLength.N)
+	m.QueuedAt = parseStrTime(i.QueuedTimestamp.N)
+	m.CrawledAt = parseStrTime(i.Timestamp.N)
+	m.LastUpdated = parseStrTime(i.IndexTimestamp.N)
 	m.Count = d.Count
 	m.ScannedCount = d.ScannedCount
 	return m
@@ -242,6 +242,10 @@ func getRequest(url string, data interface{}) error {
 }
 
 func parseStrTime(ts string) *time.Time {
+	if ts == "" {
+		return nil
+	}
+
 	sec, _ := strconv.ParseInt(ts, 10, 64)
 	t := time.Unix(sec/1000, 0)
 	return &t
