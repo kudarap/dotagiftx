@@ -32,24 +32,15 @@ func InventoryAsset(steamID string) ([]steam.Asset, error) {
 // SWR stale-while-re-invalidating crawled data.
 func SWR(steamID string) (*steam.AllInventory, error) {
 	// check for freshly cached inventory
-	//log.Println(steamID, "checking for fresh cache...")
 	m, err := GetMeta(steamID)
 	if err != nil {
 		return nil, err
 	}
 	if m != nil && m.isCacheFresh() {
-		//log.Println(steamID, "cache is still fresh!", m.LastUpdated)
-		//defer func() {
-		//	if _, err = Crawl(steamID); err != nil {
-		//		log.Println("error invalidating", err)
-		//	}
-		//}()
 		log.Println("STEAMINVORG CACHED", steamID)
 		return Get(steamID)
 	}
 
-	// crawl request
-	//log.Println(steamID, "sending crawl request...")
 	log.Println("STEAMINVORG CRAWL REQUEST", steamID)
 	if _, err = Crawl(steamID); err != nil {
 		return nil, err
@@ -57,7 +48,6 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 
 	// check for meta until processed with a little bit of back-off
 	for i := 1; i <= maxGetRetries; i++ {
-		//log.Println(steamID, "checking metadata. retry", i, "...")
 		m, err = GetMeta(steamID)
 		if err != nil {
 			return nil, err
@@ -72,10 +62,10 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 		time.Sleep(retrySleepDur + time.Duration(i)*time.Second)
 	}
 
-	// get inventory
 	res, err := Get(steamID)
 	if err != nil {
 		log.Println("STEAMINVORG GET ERR", steamID)
+		return nil, err
 	}
 
 	log.Println("STEAMINVORG GET DONE", steamID)
