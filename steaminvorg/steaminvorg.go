@@ -3,7 +3,7 @@ package steaminvorg
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -21,7 +21,7 @@ const (
 
 // InventoryAsset returns a compact format from all inventory data.
 func InventoryAsset(steamID string) ([]steam.Asset, error) {
-	inv, err := SWR(steamID)
+	inv, err := SWR(steamID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -30,10 +30,11 @@ func InventoryAsset(steamID string) ([]steam.Asset, error) {
 }
 
 // SWR stale-while-re-invalidating crawled data.
-func SWR(steamID string) (*steam.AllInventory, error) {
+func SWR(steamID string, strict bool) (*steam.AllInventory, error) {
 	// check for freshly cached inventory
 	m, err := GetMeta(steamID)
-	if err != nil {
+	if err != nil && strict {
+		log.Println("STEAMINVORG META ERR", steamID, err)
 		return nil, err
 	}
 	if m != nil && m.isCacheFresh() {
@@ -43,16 +44,20 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 
 	log.Println("STEAMINVORG CRAWL REQUEST", steamID)
 	if _, err = Crawl(steamID); err != nil {
+		log.Println("STEAMINVORG CRAWL REQUEST ERR", steamID, err)
 		return nil, err
 	}
 
 	// check for meta until processed with a little bit of back-off
 	for i := 1; i <= maxGetRetries; i++ {
+		log.Println("STEAMINVORG TRY", steamID, i)
 		m, err = GetMeta(steamID)
 		if err != nil {
+			log.Println("STEAMINVORG TRY ERR", steamID, err)
 			return nil, err
 		}
 		if m != nil && m.Status == "success" {
+			log.Println("STEAMINVORG TRY SUCCESS", steamID, i)
 			break
 		}
 
@@ -64,12 +69,30 @@ func SWR(steamID string) (*steam.AllInventory, error) {
 
 	res, err := Get(steamID)
 	if err != nil {
-		log.Println("STEAMINVORG GET ERR", steamID)
+		log.Println("STEAMINVORG GET ERR", steamID, err)
 		return nil, err
 	}
 
 	log.Println("STEAMINVORG GET DONE", steamID)
 	return res, nil
+}
+
+// GetMeta https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
+func GetMeta(steamID string) (*Metadata, error) {
+	url := fmt.Sprintf("https://db.steaminventory.org/SteamInventory/%s", steamID)
+	var raw rawMetadata
+	if err := getRequest(url, &raw); err != nil {
+		return nil, err
+	}
+
+	m := raw.format()
+	if m == nil {
+		return nil, nil
+	}
+	if err := m.hasError(); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // Get https://data.steaminventory.org/SteamInventory/76561198264023028 - aggregated inventory
@@ -92,7 +115,8 @@ func Crawl(steamID string) (status string, err error) {
 		return
 	}
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return
 	}
@@ -114,9 +138,9 @@ type Metadata struct {
 	ScannedCount         int
 	AllDescriptionLength int
 	AllInventoryLength   int
-	QueuedAt             *time.Time
-	CrawledAt            *time.Time
-	LastUpdated          *time.Time
+	QueuedAt             time.Time
+	CrawledAt            time.Time
+	LastUpdated          time.Time
 }
 
 func (m Metadata) hasError() error {
@@ -131,7 +155,7 @@ func (m Metadata) hasError() error {
 }
 
 func (m Metadata) isCacheFresh() bool {
-	if m.LastUpdated == nil {
+	if m.LastUpdated.IsZero() {
 		return false
 	}
 	return time.Now().Before(m.LastUpdated.Add(freshCacheDur))
@@ -192,35 +216,18 @@ func (d *rawMetadata) format() *Metadata {
 	return m
 }
 
-// GetMeta https://db.steaminventory.org/SteamInventory/76561198264023028 - check queue state
-func GetMeta(steamID string) (*Metadata, error) {
-	url := fmt.Sprintf("https://db.steaminventory.org/SteamInventory/%s", steamID)
-	raw := &rawMetadata{}
-	if err := getRequest(url, raw); err != nil {
-		return nil, err
-	}
-
-	m := raw.format()
-	if m == nil {
-		return nil, nil
-	}
-	if err := m.hasError(); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func getRequest(url string, data interface{}) error {
 	res, err := http.Get(url)
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
+
 	if res.StatusCode == http.StatusNotFound {
 		return fmt.Errorf("not found")
 	}
 
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -231,12 +238,15 @@ func getRequest(url string, data interface{}) error {
 	return nil
 }
 
-func parseStrTime(ts string) *time.Time {
+func parseStrTime(ts string) time.Time {
 	if ts == "" {
-		return nil
+		return time.Time{}
 	}
 
-	sec, _ := strconv.ParseInt(ts, 10, 64)
-	t := time.Unix(sec/1000, 0)
-	return &t
+	sec, err := strconv.Atoi(ts)
+	if err != nil {
+		return time.Time{}
+	}
+
+	return time.Unix(int64(sec)/1000, 0)
 }

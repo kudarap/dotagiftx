@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	inv, err := steaminvorg.SWR("76561198088587178")
+	inv, err := steaminvorg.SWR("76561198088587178", true)
 	fmt.Println(inv.ToAssets(), err)
 }
