@@ -25,6 +25,12 @@ const treasures = [
     items: 12,
   },
   {
+    name: 'Crownfall Treasure III',
+    image: 'crownfall_treasure_iii.png',
+    rarity: 'mythical',
+    items: 11,
+  },
+  {
     name: 'Dead Reckoning Chest',
     image: 'dead_reckoning_chest.png',
     rarity: 'mythical',
