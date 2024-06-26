@@ -227,6 +227,7 @@ var userSubscriptionBoons = map[UserSubscription][]string{
 	UserSubscriptionPartner: {
 		BoonPartnerBadge,
 		BoonRefresherOrb,
+		BoonRefresherShard,
 		BoonShopKeepersContract,
 		BoonDedicatedPos5,
 	},
