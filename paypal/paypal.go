@@ -2,6 +2,7 @@ package paypal
 
 import (
 	"context"
+	"io"
 	"strings"
 
 	"github.com/plutov/paypal/v4"
@@ -52,6 +53,11 @@ func (c *Client) Subscription(id string) (plan, steamID string, err error) {
 		return
 	}
 	return plan, strings.TrimPrefix(sub.CustomID, customIDPrefix), nil
+}
+
+func (c *Client) IsCancelled(ctx context.Context, r io.ReadCloser) (steamID string, cancelled bool, err error) {
+
+	panic("not implemented")
 }
 
 func (c *Client) planName(ctx context.Context, planID string) (name string, err error) {

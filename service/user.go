@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -129,6 +130,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	user.Subscription = userSubs
 	user.SubscribedAt = &t
 	user.Boons = userSubs.Boons()
+	user.SubscriptionType = "paypal"
 	if err = user.CheckUpdate(); err != nil {
 		return nil, err
 	}
@@ -136,13 +138,87 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	return user, s.userStg.Update(user)
 }
 
-func (s *userService) ProcessManualSubscription(
-	ctx context.Context, p dgx.ManualSubscriptionParam,
-) (*dgx.User, error) {
-	panic("implement me")
+// UpdateSubscriptionFromWebhook manage updates from webhook payload, most often use in incrementing cycles or
+// extending expiration.
+func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r io.ReadCloser) (*dgx.User, error) {
+	// get user by steam id and increment their cycles.
+	steamID, cancelled, err := s.subsChecker.IsCancelled(ctx, r)
+	if err != nil {
+		return nil, fmt.Errorf("checking cancelled subscription: %v", err)
+	}
+	if !cancelled {
+		// ignore if not cancelled.
+		log.Println("ignoring subscription update because its not cancelled:", steamID)
+		return nil, nil
+	}
+
+	log.Println("cancelling subscription", steamID, "by marking expiration")
+	user, err := s.userStg.Get(steamID)
+	if err != nil {
+		return nil, fmt.Errorf("getting user: %v", err)
+	}
+	expiresAt := user.SubscribedAt.AddDate(0, 1, 0)
+	user.SubscriptionEndsAt = &expiresAt
+	if err = s.userStg.Update(user); err != nil {
+		return nil, fmt.Errorf("updating user: %v", err)
+	}
+	return user, nil
 }
 
-// downloadProfileImage saves image file from a url.
+// PurgeSubscription removes subscription status base on its expiration.
+func (s *userService) PurgeSubscription(ctx context.Context) error {
+	// get all users that has subscription
+	// add leeway of 2 days to process recurring payment.
+	// check outstanding days if it's still validate from last payment and skip.
+	withLeeway := time.Now().AddDate(0, 0, -2)
+	users, err := s.userStg.ExpiringSubscribers(ctx, withLeeway)
+	if err != nil {
+		return fmt.Errorf("retrieving subscribers: %w", err)
+	}
+
+	// remove boons and subs status
+	// clear user cache
+	for _, u := range users {
+		if err = s.userStg.PurgeSubscription(ctx, u.ID); err != nil {
+			log.Println(fmt.Errorf("purging subscription: %w", err))
+		}
+	}
+
+	// let the market cleanup and sweeper do the removal of items.
+	return nil
+}
+
+// ProcessManualSubscription process manual subscription such as one-time payments that process manually, normally
+// in bulk and steam items. This function will be used non-recurring payments. ex:
+//
+//		Manual Partner subscription:
+//	    - 3 months (+60% overhead)
+//	    - 6 months (+60% overhead)
+//	    - 12 months (+60% overhead)
+func (s *userService) ProcessManualSubscription(
+	ctx context.Context, param dgx.ManualSubscriptionParam,
+) (*dgx.User, error) {
+	user, err := s.userStg.Get(param.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("getting user: %v", err)
+	}
+
+	subs := dgx.UserSubscriptionFromString(param.Plan)
+	user.Subscription = subs
+	user.Boons = subs.Boons()
+	user.SubscriptionType = "manual"
+
+	now := time.Now()
+	end := now.AddDate(0, param.Cycles, 0)
+	user.SubscribedAt = &now
+	user.SubscriptionEndsAt = &end
+	if err = s.userStg.Update(user); err != nil {
+		return nil, fmt.Errorf("updating user: %v", err)
+	}
+	return user, nil
+}
+
+// downloadProfileImage saves image file from url.
 func (s *userService) downloadProfileImage(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -160,4 +236,5 @@ func (s *userService) downloadProfileImage(url string) (string, error) {
 
 type subscriptionChecker interface {
 	Subscription(id string) (plan, steamID string, err error)
+	IsCancelled(ctx context.Context, r io.ReadCloser) (steamID string, cancelled bool, err error)
 }

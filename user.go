@@ -65,15 +65,16 @@ type (
 
 		Subscription       UserSubscription `json:"subscription"         db:"subscription,indexed,omitempty"`
 		SubscribedAt       *time.Time       `json:"subscribed_at"        db:"subscribed_at,omitempty"`
+		SubscriptionType   string           `json:"subscription_type"    db:"subscription_type"`
 		SubscriptionEndsAt *time.Time       `json:"subscription_ends_at" db:"subscription_ends_at,omitempty"`
 		Boons              []string         `json:"boons"                db:"boons,omitempty"`
 		Hammer             bool             `json:"hammer"               db:"hammer,omitempty"`
 	}
 
 	ManualSubscriptionParam struct {
-		UserID           string
-		UserSubscription UserSubscription
-		Cycles           int
+		UserID string `json:"user_id"`
+		Plan   string `json:"plan"`
+		Cycles int    `json:"cycles"`
 	}
 
 	// UserService provides access to user service.
@@ -122,6 +123,12 @@ type (
 
 		// BaseUpdate persists user changes to data store without updating metadata.
 		BaseUpdate(*User) error
+
+		// ExpiringSubscribers return a list of users that has expiring subscription.
+		ExpiringSubscribers(ctx context.Context, now time.Time) ([]User, error)
+
+		// PurgeSubscription removes subscription data and boons.
+		PurgeSubscription(ctx context.Context, userID string) error
 	}
 )
 
