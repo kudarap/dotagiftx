@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -50,13 +50,13 @@ func main() {
 		}
 
 		switch status {
-		case dotagiftx.DeliveryStatusPrivate:
+		case dgx.DeliveryStatusPrivate:
 			privateCtr++
-		case dotagiftx.DeliveryStatusNoHit:
+		case dgx.DeliveryStatusNoHit:
 			noHitCtr++
-		case dotagiftx.DeliveryStatusNameVerified:
+		case dgx.DeliveryStatusNameVerified:
 			itemCtr++
-		case dotagiftx.DeliveryStatusSenderVerified:
+		case dgx.DeliveryStatusSenderVerified:
 			sellerCtr++
 		}
 
@@ -69,7 +69,7 @@ func main() {
 
 }
 
-func getDelivered() ([]dotagiftx.Market, error) {
+func getDelivered() ([]dgx.Market, error) {
 	resp, err := http.Get("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=1000&status=400")
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func getDelivered() ([]dotagiftx.Market, error) {
 	defer resp.Body.Close()
 
 	data := struct {
-		Data []dotagiftx.Market
+		Data []dgx.Market
 	}{}
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

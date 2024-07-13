@@ -1,7 +1,8 @@
-package dotagiftx
+package dgx
 
 import (
 	"context"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -61,13 +62,20 @@ type (
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 
 		MarketStats MarketStatusCount `json:"market_stats" db:"market_stats,omitempty"`
-		RankScore   int               `json:"rank_score" db:"rank_score,omitempty"`
+		RankScore   int               `json:"rank_score"   db:"rank_score,omitempty"`
 
-		// NOTE! Experimental subscription flag
-		Subscription UserSubscription `json:"subscription"  db:"subscription,indexed,omitempty"`
-		SubscribedAt *time.Time       `json:"subscribed_at" db:"subscribed_at,omitempty"`
-		Boons        []string         `json:"boons"         db:"boons,omitempty"`
-		Hammer       bool             `json:"hammer"        db:"hammer,omitempty"`
+		Subscription       UserSubscription `json:"subscription"         db:"subscription,indexed,omitempty"`
+		SubscribedAt       *time.Time       `json:"subscribed_at"        db:"subscribed_at,omitempty"`
+		SubscriptionType   string           `json:"subscription_type"    db:"subscription_type"`
+		SubscriptionEndsAt *time.Time       `json:"subscription_ends_at" db:"subscription_ends_at,omitempty"`
+		Boons              []string         `json:"boons"                db:"boons,omitempty"`
+		Hammer             bool             `json:"hammer"               db:"hammer,omitempty"`
+	}
+
+	ManualSubscriptionParam struct {
+		UserID string `json:"user_id"`
+		Plan   string `json:"plan"`
+		Cycles int    `json:"cycles"`
 	}
 
 	// UserService provides access to user service.
@@ -93,8 +101,13 @@ type (
 		// SteamSync saves updated steam info.
 		SteamSync(sp *SteamPlayer) (*User, error)
 
-		// ProcSubscription validates and process subscription features.
-		ProcSubscription(ctx context.Context, subscriptionID string) (*User, error)
+		// ProcessSubscription validates and process subscription features.
+		ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error)
+
+		// UpdateSubscriptionFromWebhook handles user subscription updates form http request.
+		UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error)
+
+		ProcessManualSubscription(ctx context.Context, form ManualSubscriptionParam) (*User, error)
 	}
 
 	// UserStorage defines operation for user records.
@@ -116,6 +129,12 @@ type (
 
 		// BaseUpdate persists user changes to data store without updating metadata.
 		BaseUpdate(*User) error
+
+		// ExpiringSubscribers return a list of users that has expiring subscription.
+		ExpiringSubscribers(ctx context.Context, now time.Time) ([]User, error)
+
+		// PurgeSubscription removes subscription data and boons.
+		PurgeSubscription(ctx context.Context, userID string) error
 	}
 )
 

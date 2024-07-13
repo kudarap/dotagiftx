@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -17,15 +17,15 @@ type TaskProcessor struct {
 	queue taskQueue
 	rate  time.Duration
 
-	inventorySvc dotagiftx.InventoryService
-	deliverySvc  dotagiftx.DeliveryService
+	inventorySvc dgx.InventoryService
+	deliverySvc  dgx.DeliveryService
 }
 
 func NewTaskProcessor(
 	rate time.Duration,
 	queue taskQueue,
-	inventorySvc dotagiftx.InventoryService,
-	deliverySvc dotagiftx.DeliveryService,
+	inventorySvc dgx.InventoryService,
+	deliverySvc dgx.DeliveryService,
 ) *TaskProcessor {
 	return &TaskProcessor{
 		queue:        queue,
@@ -54,7 +54,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 		task := *t
 		wg.Add(1)
 
-		task.Status = dotagiftx.TaskStatusProcessing
+		task.Status = dgx.TaskStatusProcessing
 		if err = p.queue.Update(ctx, task); err != nil {
 			log.Printf("ERR! could not process task: %s", err)
 			wg.Done()
@@ -64,9 +64,9 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 
 		var run func(context.Context, interface{}) error
 		switch task.Type {
-		case dotagiftx.TaskTypeVerifyInventory:
+		case dgx.TaskTypeVerifyInventory:
 			run = p.taskVerifyInventory
-		case dotagiftx.TaskTypeVerifyDelivery:
+		case dgx.TaskTypeVerifyDelivery:
 			run = p.taskVerifyDelivery
 		}
 
@@ -75,7 +75,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 		task.ElapsedMs = time.Since(start).Milliseconds()
 		if err != nil {
 			log.Printf("ERR! running tasks: %s %s", task.Type, err)
-			task.Status = dotagiftx.TaskStatusError
+			task.Status = dgx.TaskStatusError
 			task.Note = fmt.Sprintf("err: %s", err)
 			if err = p.queue.Update(ctx, task); err != nil {
 				log.Printf("ERR! could not run task: %s", err)
@@ -84,7 +84,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 			continue
 		}
 
-		task.Status = dotagiftx.TaskStatusDone
+		task.Status = dgx.TaskStatusDone
 		log.Println("task done!", task.ID, time.Duration(task.ElapsedMs)*time.Millisecond)
 		if err = p.queue.Update(ctx, task); err != nil {
 			log.Printf("ERR! could not update task: %s", err)
@@ -94,7 +94,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 }
 
 func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{}) error {
-	var market dotagiftx.Market
+	var market dgx.Market
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 		return err
 	}
 
-	err = p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
+	err = p.inventorySvc.Set(ctx, &dgx.Inventory{
 		MarketID: market.ID,
 		Status:   status,
 		Assets:   assets,
@@ -121,7 +121,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 }
 
 func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}) error {
-	var market dotagiftx.Market
+	var market dgx.Market
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 		return err
 	}
 
-	err = p.deliverySvc.Set(ctx, &dotagiftx.Delivery{
+	err = p.deliverySvc.Set(ctx, &dgx.Delivery{
 		MarketID: market.ID,
 		Status:   status,
 		Assets:   assets,
@@ -145,8 +145,8 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 }
 
 type taskQueue interface {
-	Get(ctx context.Context) (*dotagiftx.Task, error)
-	Update(ctx context.Context, t dotagiftx.Task) error
+	Get(ctx context.Context) (*dgx.Task, error)
+	Update(ctx context.Context, t dgx.Task) error
 }
 
 func marshallTaskPayload(in, out interface{}) error {

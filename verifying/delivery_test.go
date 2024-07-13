@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 )
@@ -18,7 +18,7 @@ func TestVerifyDelivery(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    dotagiftx.DeliveryStatus
+		want    dgx.DeliveryStatus
 		count   int
 		wantErr bool
 	}{
@@ -26,27 +26,27 @@ func TestVerifyDelivery(t *testing.T) {
 			"kudarap",
 			"76561198287849998",
 			"Sylvan Vedette",
-		}, dotagiftx.DeliveryStatusSenderVerified, 1, false},
+		}, dgx.DeliveryStatusSenderVerified, 1, false},
 		{"item verified", args{
 			"Berserk",
 			"76561198355627060",
 			"Shattered Greatsword",
-		}, dotagiftx.DeliveryStatusNameVerified, 1, false},
+		}, dgx.DeliveryStatusNameVerified, 1, false},
 		{"no hit", args{
 			"kudarap",
 			"76561198042690669",
 			"Baby Demon",
-		}, dotagiftx.DeliveryStatusNoHit, 0, false},
+		}, dgx.DeliveryStatusNoHit, 0, false},
 		{"private data", args{
 			"kudarap",
 			"76561198011477544",
 			"Baby Demon",
-		}, dotagiftx.DeliveryStatusPrivate, 0, false},
+		}, dgx.DeliveryStatusPrivate, 0, false},
 		{"bad steam id", args{
 			"kudarap",
 			"76561198011477544_",
 			"Bad Demon",
-		}, dotagiftx.DeliveryStatusError, 0, true},
+		}, dgx.DeliveryStatusError, 0, true},
 	}
 
 	for _, tt := range tests {

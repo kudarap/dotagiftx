@@ -4,20 +4,20 @@ import (
 	"context"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
 // SweepMarket represents setting expiration of a market entry job.
 type SweepMarket struct {
-	marketStg dotagiftx.MarketStorage
+	marketStg dgx.MarketStorage
 	logger    log.Logger
 	// job settings
 	name     string
 	interval time.Duration
 }
 
-func NewSweepMarket(ms dotagiftx.MarketStorage, lg log.Logger) *SweepMarket {
+func NewSweepMarket(ms dgx.MarketStorage, lg log.Logger) *SweepMarket {
 	return &SweepMarket{
 		marketStg: ms,
 		logger:    lg,
@@ -35,18 +35,18 @@ func (cm *SweepMarket) Run(ctx context.Context) error {
 	now := time.Now()
 
 	// Clean up expiring markets.
-	t := now.Add(-dayHours * dotagiftx.MarketSweepExpiredDays)
+	t := now.Add(-dayHours * dgx.MarketSweepExpiredDays)
 	cm.logger.Println("sweeping old expired market", t)
-	if err := cm.marketStg.BulkDeleteByStatus(dotagiftx.MarketStatusExpired, t, limitPerBatch); err != nil {
+	if err := cm.marketStg.BulkDeleteByStatus(dgx.MarketStatusExpired, t, limitPerBatch); err != nil {
 		cm.logger.Errorf("could not clean expired market: %s", err)
 		return err
 	}
 	cm.logger.Println("sweeping old expired market finished!")
 
 	// Clean up removed markets.
-	t = now.Add(-dayHours * dotagiftx.MarketSweepRemovedDays)
+	t = now.Add(-dayHours * dgx.MarketSweepRemovedDays)
 	cm.logger.Println("sweeping old removed market", t)
-	if err := cm.marketStg.BulkDeleteByStatus(dotagiftx.MarketStatusRemoved, t, limitPerBatch); err != nil {
+	if err := cm.marketStg.BulkDeleteByStatus(dgx.MarketStatusRemoved, t, limitPerBatch); err != nil {
 		cm.logger.Errorf("could not clean removed market: %s", err)
 		return err
 	}

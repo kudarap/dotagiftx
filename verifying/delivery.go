@@ -3,7 +3,7 @@ package verifying
 import (
 	"fmt"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
@@ -38,27 +38,27 @@ func Delivery(
 	sellerPersona,
 	buyerSteamID,
 	itemName string,
-) (dotagiftx.DeliveryStatus, []dotagiftx.SteamAsset, error) {
+) (dgx.DeliveryStatus, []dgx.SteamAsset, error) {
 	if sellerPersona == "" || buyerSteamID == "" || itemName == "" {
-		return dotagiftx.DeliveryStatusError, nil, fmt.Errorf("all params are required")
+		return dgx.DeliveryStatusError, nil, fmt.Errorf("all params are required")
 	}
 
 	// Pull inventory data using buyerSteamID.
 	assets, err := source(buyerSteamID)
 	if err != nil {
 		if err == steam.ErrInventoryPrivate {
-			return dotagiftx.DeliveryStatusPrivate, nil, nil
+			return dgx.DeliveryStatusPrivate, nil, nil
 		}
 
-		return dotagiftx.DeliveryStatusError, nil, err
+		return dgx.DeliveryStatusError, nil, err
 	}
 
 	assets = filterByName(assets, itemName)
 	if len(assets) == 0 {
-		return dotagiftx.DeliveryStatusNoHit, assets, nil
+		return dgx.DeliveryStatusNoHit, assets, nil
 	}
 
-	status := dotagiftx.DeliveryStatusNameVerified
+	status := dgx.DeliveryStatusNameVerified
 	// Check asset sender matches the seller persona name.
 	//
 	// NOTE! checking against seller persona name might not be accurate since
@@ -68,7 +68,7 @@ func Delivery(
 		if ss.GiftFrom != sellerPersona {
 			continue
 		}
-		status = dotagiftx.DeliveryStatusSenderVerified
+		status = dgx.DeliveryStatusSenderVerified
 	}
 
 	return status, assets, nil

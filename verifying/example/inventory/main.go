@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -127,7 +127,7 @@ func main2() {
 	}
 }
 
-func getDelivered() ([]dotagiftx.Market, error) {
+func getDelivered() ([]dgx.Market, error) {
 	resp, err := http.Get("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=1000&status=400")
 	if err != nil {
 		return nil, err
@@ -135,7 +135,7 @@ func getDelivered() ([]dotagiftx.Market, error) {
 	defer resp.Body.Close()
 
 	data := struct {
-		Data []dotagiftx.Market
+		Data []dgx.Market
 	}{}
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

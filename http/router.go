@@ -39,6 +39,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		})
 		r.Get("/vanity/{id}", handleVanityProfile(s.userSvc, s.steam, s.cache))
 		r.Get("/blacklists", handleBlacklisted(s.userSvc, s.cache))
+		r.Post("/webhook/paypal", handleUserSubscriptionWebhook(s.userSvc))
 	})
 }
 
@@ -62,5 +63,6 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Post("/hammer/ban", handleHammerBan(s.hammerSvc, s.cache))
 		r.Post("/hammer/suspend", handleHammerSuspend(s.hammerSvc, s.cache))
 		r.Post("/hammer/lift", handleHammerLift(s.hammerSvc, s.cache))
+		r.Post("/subscription", handleUserManualSubscription(s.userSvc, s.cache))
 	})
 }

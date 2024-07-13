@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 	gokitMw "github.com/kudarap/dotagiftx/gokit/http/middleware"
 	"github.com/kudarap/dotagiftx/gokit/version"
@@ -26,18 +26,18 @@ const (
 // NewServer returns new http server.
 func NewServer(
 	sigKey string,
-	us dotagiftx.UserService,
-	au dotagiftx.AuthService,
-	is dotagiftx.ImageService,
-	its dotagiftx.ItemService,
-	ms dotagiftx.MarketService,
-	ts dotagiftx.TrackService,
-	ss dotagiftx.StatsService,
-	rs dotagiftx.ReportService,
-	hs dotagiftx.HammerService,
-	sc dotagiftx.SteamClient,
+	us dgx.UserService,
+	au dgx.AuthService,
+	is dgx.ImageService,
+	its dgx.ItemService,
+	ms dgx.MarketService,
+	ts dgx.TrackService,
+	ss dgx.StatsService,
+	rs dgx.ReportService,
+	hs dgx.HammerService,
+	sc dgx.SteamClient,
 	t *tracing.Tracer,
-	c dotagiftx.Cache,
+	c dgx.Cache,
 	v *version.Version,
 	l *logrus.Logger,
 ) *Server {
@@ -66,19 +66,19 @@ type Server struct {
 	Addr    string
 	handler http.Handler
 	// Service resources.
-	userSvc   dotagiftx.UserService
-	authSvc   dotagiftx.AuthService
-	imageSvc  dotagiftx.ImageService
-	itemSvc   dotagiftx.ItemService
-	marketSvc dotagiftx.MarketService
-	trackSvc  dotagiftx.TrackService
-	statsSvc  dotagiftx.StatsService
-	reportSvc dotagiftx.ReportService
-	hammerSvc dotagiftx.HammerService
-	steam     dotagiftx.SteamClient
+	userSvc   dgx.UserService
+	authSvc   dgx.AuthService
+	imageSvc  dgx.ImageService
+	itemSvc   dgx.ItemService
+	marketSvc dgx.MarketService
+	trackSvc  dgx.TrackService
+	statsSvc  dgx.StatsService
+	reportSvc dgx.ReportService
+	hammerSvc dgx.HammerService
+	steam     dgx.SteamClient
 
 	tracing *tracing.Tracer
-	cache   dotagiftx.Cache
+	cache   dgx.Cache
 	logger  *logrus.Logger
 	version *version.Version
 }

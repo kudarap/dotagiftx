@@ -1,4 +1,4 @@
-r.db('d2g_production').table('user')
+r.db('dotagiftx_production').table('user')
   //.filter({ type: 'p' })
   //.getAll('s', {index: 'type'})
   //.group([r.row('created_at').month(), r.row('created_at').day()])
@@ -7,7 +7,7 @@ r.db('d2g_production').table('user')
   
   
 var lastDays = r.time(2022, 1, 1, 'Z');
-r.db('d2g_production').table('user')
+r.db('dotagiftx_production').table('user')
   .filter(r.row('created_at').gt(lastDays))
 	.group(
     r.expr([r.time(r.row("created_at").year(), r.row("created_at").month(), 1, "Z").toEpochTime(),
@@ -16,7 +16,7 @@ r.db('d2g_production').table('user')
 
 
 var lastDays = r.time(2021, 5, 1, 'Z');
-var db = r.db('d2g_production');
+var db = r.db('dotagiftx_production');
 db.table('market')
   .filter({ type: 10, status: 400, delivery_status: 200 })
   .filter(r.row('created_at').gt(lastDays))

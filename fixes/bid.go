@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
 // GenerateCompletedBid collects delivered items from partner sellers
@@ -15,7 +15,7 @@ import (
 //
 // ./fixgenbids 76561198236673500 - for dryrun
 // ./fixgenbids -commit 76561198236673500 - commit changes
-func GenerateCompletedBid(marketStore dotagiftx.MarketStorage, userStore dotagiftx.UserStorage, marketSvc dotagiftx.MarketService) {
+func GenerateCompletedBid(marketStore dgx.MarketStorage, userStore dgx.UserStorage, marketSvc dgx.MarketService) {
 	if len(os.Args) < 2 {
 		log.Println("steam id argument required")
 		os.Exit(1)
@@ -33,11 +33,11 @@ func GenerateCompletedBid(marketStore dotagiftx.MarketStorage, userStore dotagif
 		log.Fatalln("could not get buyer:", err)
 	}
 
-	f := dotagiftx.Market{
-		Type:           dotagiftx.MarketTypeAsk,
+	f := dgx.Market{
+		Type:           dgx.MarketTypeAsk,
 		PartnerSteamID: buyer.SteamID,
 	}
-	res, err := marketStore.Find(dotagiftx.FindOpts{Filter: f})
+	res, err := marketStore.Find(dgx.FindOpts{Filter: f})
 	if err != nil {
 		log.Println("err", err)
 		return
@@ -47,7 +47,7 @@ func GenerateCompletedBid(marketStore dotagiftx.MarketStorage, userStore dotagif
 		log.Println("===============================================")
 		log.Println("generating market bid")
 
-		if ask.Status != dotagiftx.MarketStatusReserved && ask.Status != dotagiftx.MarketStatusSold {
+		if ask.Status != dgx.MarketStatusReserved && ask.Status != dgx.MarketStatusSold {
 			log.Println("skipping status of", ask.Status)
 			continue
 		}
@@ -57,11 +57,11 @@ func GenerateCompletedBid(marketStore dotagiftx.MarketStorage, userStore dotagif
 			log.Fatalln("could not get seller:", err)
 		}
 
-		bid := new(dotagiftx.Market)
+		bid := new(dgx.Market)
 		bid.UserID = buyer.ID
-		bid.Type = dotagiftx.MarketTypeBid
+		bid.Type = dgx.MarketTypeBid
 		bid.PartnerSteamID = seller.SteamID
-		bid.Status = dotagiftx.MarketStatusBidCompleted
+		bid.Status = dgx.MarketStatusBidCompleted
 		bid.Price = ask.Price
 		bid.ItemID = ask.ItemID
 		bid.Notes = "test"
@@ -77,7 +77,7 @@ func GenerateCompletedBid(marketStore dotagiftx.MarketStorage, userStore dotagif
 		if !commit {
 			continue
 		}
-		ctx := dotagiftx.AuthToContext(context.TODO(), &dotagiftx.Auth{UserID: bid.UserID})
+		ctx := dgx.AuthToContext(context.TODO(), &dgx.Auth{UserID: bid.UserID})
 		if err := marketSvc.Create(ctx, bid); err != nil {
 			log.Println("could not create bid:", err)
 		}
@@ -92,13 +92,13 @@ func GenerateCompletedBid(marketStore dotagiftx.MarketStorage, userStore dotagif
 }
 
 // AutoCompleteBid searches for exiting reservations that has buy order and resolve it.
-func AutoCompleteBid(marketSvc dotagiftx.MarketService) {
+func AutoCompleteBid(marketSvc dgx.MarketService) {
 	ctx := context.Background()
-	f := dotagiftx.Market{
-		Type:   dotagiftx.MarketTypeAsk,
-		Status: dotagiftx.MarketStatusReserved,
+	f := dgx.Market{
+		Type:   dgx.MarketTypeAsk,
+		Status: dgx.MarketStatusReserved,
 	}
-	res, _, err := marketSvc.Markets(ctx, dotagiftx.FindOpts{Filter: f})
+	res, _, err := marketSvc.Markets(ctx, dgx.FindOpts{Filter: f})
 	if err != nil {
 		log.Println("err", err)
 		return
@@ -114,8 +114,8 @@ func AutoCompleteBid(marketSvc dotagiftx.MarketService) {
 	}
 }
 
-func ResolveCompletedBidSteamID(store dotagiftx.MarketStorage, steam dotagiftx.SteamClient) {
-	o := dotagiftx.FindOpts{Filter: dotagiftx.Market{Status: dotagiftx.MarketStatusBidCompleted}}
+func ResolveCompletedBidSteamID(store dgx.MarketStorage, steam dgx.SteamClient) {
+	o := dgx.FindOpts{Filter: dgx.Market{Status: dgx.MarketStatusBidCompleted}}
 	res, err := store.Find(o)
 	if err != nil {
 		log.Println("err", err)

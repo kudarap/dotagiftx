@@ -6,29 +6,29 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
 type TaskProcessor interface {
-	Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload interface{}) (id string, err error)
+	Queue(ctx context.Context, p dgx.TaskPriority, t dgx.TaskType, payload interface{}) (id string, err error)
 }
 
 // NewMarket returns new Market service.
 func NewMarket(
-	ss dotagiftx.MarketStorage,
-	us dotagiftx.UserStorage,
-	is dotagiftx.ItemStorage,
-	ts dotagiftx.TrackStorage,
-	cs dotagiftx.CatalogStorage,
-	st dotagiftx.StatsStorage,
-	vd dotagiftx.DeliveryService,
-	vi dotagiftx.InventoryService,
-	sc dotagiftx.SteamClient,
+	ss dgx.MarketStorage,
+	us dgx.UserStorage,
+	is dgx.ItemStorage,
+	ts dgx.TrackStorage,
+	cs dgx.CatalogStorage,
+	st dgx.StatsStorage,
+	vd dgx.DeliveryService,
+	vi dgx.InventoryService,
+	sc dgx.SteamClient,
 	tp TaskProcessor,
 	lg log.Logger,
-) dotagiftx.MarketService {
+) dgx.MarketService {
 	return &marketService{
 		ss, us,
 		is,
@@ -44,22 +44,22 @@ func NewMarket(
 }
 
 type marketService struct {
-	marketStg    dotagiftx.MarketStorage
-	userStg      dotagiftx.UserStorage
-	itemStg      dotagiftx.ItemStorage
-	trackStg     dotagiftx.TrackStorage
-	catalogStg   dotagiftx.CatalogStorage
-	statsStg     dotagiftx.StatsStorage
-	deliverySvc  dotagiftx.DeliveryService
-	inventorySvc dotagiftx.InventoryService
-	steam        dotagiftx.SteamClient
+	marketStg    dgx.MarketStorage
+	userStg      dgx.UserStorage
+	itemStg      dgx.ItemStorage
+	trackStg     dgx.TrackStorage
+	catalogStg   dgx.CatalogStorage
+	statsStg     dgx.StatsStorage
+	deliverySvc  dgx.DeliveryService
+	inventorySvc dgx.InventoryService
+	steam        dgx.SteamClient
 	taskProc     TaskProcessor
 	logger       log.Logger
 }
 
-func (s *marketService) Markets(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Market, *dotagiftx.FindMetadata, error) {
+func (s *marketService) Markets(ctx context.Context, opts dgx.FindOpts) ([]dgx.Market, *dgx.FindMetadata, error) {
 	// Set market owner result.
-	if au := dotagiftx.AuthFromContext(ctx); au != nil {
+	if au := dgx.AuthFromContext(ctx); au != nil {
 		opts.UserID = au.UserID
 	}
 
@@ -83,31 +83,31 @@ func (s *marketService) Markets(ctx context.Context, opts dotagiftx.FindOpts) ([
 		return nil, nil, err
 	}
 
-	return res, &dotagiftx.FindMetadata{
+	return res, &dgx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
 	}, nil
 }
 
-func (s *marketService) Market(ctx context.Context, id string) (*dotagiftx.Market, error) {
+func (s *marketService) Market(ctx context.Context, id string) (*dgx.Market, error) {
 	mkt, err := s.marketStg.Get(id)
 	if err != nil {
 		return nil, err
 	}
 
 	// Check market ownership.
-	if au := dotagiftx.AuthFromContext(ctx); au != nil && mkt.UserID != au.UserID {
-		return nil, dotagiftx.MarketErrNotFound
+	if au := dgx.AuthFromContext(ctx); au != nil && mkt.UserID != au.UserID {
+		return nil, dgx.MarketErrNotFound
 	}
 
 	return mkt, nil
 }
 
-func (s *marketService) Create(ctx context.Context, market *dotagiftx.Market) error {
+func (s *marketService) Create(ctx context.Context, market *dgx.Market) error {
 	// Set market ownership.
-	au := dotagiftx.AuthFromContext(ctx)
+	au := dgx.AuthFromContext(ctx)
 	if au == nil {
-		return dotagiftx.AuthErrNoAccess
+		return dgx.AuthErrNoAccess
 	}
 	market.UserID = au.UserID
 	// Prevents access to create new market when account is flagged.
@@ -123,13 +123,13 @@ func (s *marketService) Create(ctx context.Context, market *dotagiftx.Market) er
 	// Check Item existence.
 	item, _ := s.itemStg.Get(market.ItemID)
 	if item == nil || !item.IsActive() {
-		return dotagiftx.ItemErrNotFound
+		return dgx.ItemErrNotFound
 	}
 	market.ItemID = item.ID
 
 	// Check market details by type.
 	switch market.Type {
-	case dotagiftx.MarketTypeAsk:
+	case dgx.MarketTypeAsk:
 		if err := s.checkAskType(market); err != nil {
 			return err
 		}
@@ -139,7 +139,7 @@ func (s *marketService) Create(ctx context.Context, market *dotagiftx.Market) er
 			return err
 		}
 		market = m
-	case dotagiftx.MarketTypeBid:
+	case dgx.MarketTypeBid:
 		if err := s.checkBidType(market); err != nil {
 			return fmt.Errorf("could not check bid type: %s", err)
 		}
@@ -166,7 +166,7 @@ func (s *marketService) Create(ctx context.Context, market *dotagiftx.Market) er
 	})
 
 	// Queueing tasks for verifying post to prepare task payload.
-	if market.Type == dotagiftx.MarketTypeAsk {
+	if market.Type == dgx.MarketTypeAsk {
 		user, err := s.userStg.Get(market.UserID)
 		if err != nil {
 			return err
@@ -177,7 +177,7 @@ func (s *marketService) Create(ctx context.Context, market *dotagiftx.Market) er
 
 		// Resells should not verify items.
 		if !market.IsResell() {
-			if _, err = s.taskProc.Queue(ctx, user.TaskPriorityQueue(), dotagiftx.TaskTypeVerifyInventory, market); err != nil {
+			if _, err = s.taskProc.Queue(ctx, user.TaskPriorityQueue(), dgx.TaskTypeVerifyInventory, market); err != nil {
 				s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
 			}
 		}
@@ -186,7 +186,7 @@ func (s *marketService) Create(ctx context.Context, market *dotagiftx.Market) er
 	return nil
 }
 
-func (s *marketService) Update(ctx context.Context, market *dotagiftx.Market) error {
+func (s *marketService) Update(ctx context.Context, market *dgx.Market) error {
 	cur, err := s.checkOwnership(ctx, market.ID)
 	if err != nil {
 		return err
@@ -216,7 +216,7 @@ func (s *marketService) Update(ctx context.Context, market *dotagiftx.Market) er
 		}
 	}
 	// Try to find a matching bid and set its status to complete.
-	if cur.Type == dotagiftx.MarketTypeAsk && market.Status == dotagiftx.MarketStatusReserved {
+	if cur.Type == dgx.MarketTypeAsk && market.Status == dgx.MarketStatusReserved {
 		if err = s.AutoCompleteBid(ctx, *cur, market.PartnerSteamID); err != nil {
 			return err
 		}
@@ -235,7 +235,7 @@ func (s *marketService) Update(ctx context.Context, market *dotagiftx.Market) er
 	}
 
 	// Queueing tasks for verifications on inventory and delivery to prepare task payload.
-	if market.Type == dotagiftx.MarketTypeAsk {
+	if market.Type == dgx.MarketTypeAsk {
 		user, err := s.userStg.Get(market.UserID)
 		if err != nil {
 			return err
@@ -249,15 +249,15 @@ func (s *marketService) Update(ctx context.Context, market *dotagiftx.Market) er
 		market.Item = item
 		priority := user.TaskPriorityQueue()
 		switch market.Status {
-		case dotagiftx.MarketStatusReserved:
+		case dgx.MarketStatusReserved:
 			// Resells should not verify items.
 			if !market.IsResell() {
-				if _, err = s.taskProc.Queue(ctx, priority, dotagiftx.TaskTypeVerifyInventory, market); err != nil {
+				if _, err = s.taskProc.Queue(ctx, priority, dgx.TaskTypeVerifyInventory, market); err != nil {
 					s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
 				}
 			}
-		case dotagiftx.MarketStatusSold:
-			if _, err = s.taskProc.Queue(ctx, priority, dotagiftx.TaskTypeVerifyDelivery, market); err != nil {
+		case dgx.MarketStatusSold:
+			if _, err = s.taskProc.Queue(ctx, priority, dgx.TaskTypeVerifyDelivery, market); err != nil {
 				s.logger.Errorf("could not queue task: market id %s: %s", market.ID, err)
 			}
 		}
@@ -292,7 +292,7 @@ func (s *marketService) UpdateUserRankScore(userID string) error {
 	}
 
 	benchS := time.Now()
-	u := &dotagiftx.User{ID: userID, MarketStats: *stats}
+	u := &dgx.User{ID: userID, MarketStats: *stats}
 	u = u.CalcRankScore(*stats)
 	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
 		return err
@@ -303,7 +303,7 @@ func (s *marketService) UpdateUserRankScore(userID string) error {
 
 // AutoCompleteBid detects if there's matching reservation on buy order and automatically
 // resolve it by setting complete-bid status.
-func (s *marketService) AutoCompleteBid(_ context.Context, ask dotagiftx.Market, partnerSteamID string) error {
+func (s *marketService) AutoCompleteBid(_ context.Context, ask dgx.Market, partnerSteamID string) error {
 	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
 		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
 	}
@@ -315,10 +315,10 @@ func (s *marketService) AutoCompleteBid(_ context.Context, ask dotagiftx.Market,
 	}
 
 	// Find matching bid market to update status.
-	fo := dotagiftx.FindOpts{
-		Filter: dotagiftx.Market{
-			Type:   dotagiftx.MarketTypeBid,
-			Status: dotagiftx.MarketStatusLive,
+	fo := dgx.FindOpts{
+		Filter: dgx.Market{
+			Type:   dgx.MarketTypeBid,
+			Status: dgx.MarketStatusLive,
 			ItemID: ask.ItemID,
 			UserID: buyer.ID,
 		},
@@ -334,7 +334,7 @@ func (s *marketService) AutoCompleteBid(_ context.Context, ask dotagiftx.Market,
 		return err
 	}
 	b := bids[0]
-	b.Status = dotagiftx.MarketStatusBidCompleted
+	b.Status = dgx.MarketStatusBidCompleted
 	b.PartnerSteamID = seller.SteamID
 	return s.marketStg.Update(&b)
 }
@@ -351,7 +351,7 @@ func (s *marketService) checkFlaggedUser(userID string) error {
 	return nil
 }
 
-func (s *marketService) processShopkeepersContract(m *dotagiftx.Market) (*dotagiftx.Market, error) {
+func (s *marketService) processShopkeepersContract(m *dgx.Market) (*dgx.Market, error) {
 	user, err := s.userStg.Get(m.UserID)
 	if err != nil {
 		return nil, err
@@ -360,7 +360,7 @@ func (s *marketService) processShopkeepersContract(m *dotagiftx.Market) (*dotagi
 	if strings.TrimSpace(m.SellerSteamID) == "" {
 		return m, nil
 	}
-	if !user.HasBoon(dotagiftx.BoonShopKeepersContract) {
+	if !user.HasBoon(dgx.BoonShopKeepersContract) {
 		return nil, fmt.Errorf("could not find BoonShopKeepersContract")
 	}
 
@@ -371,11 +371,11 @@ func (s *marketService) processShopkeepersContract(m *dotagiftx.Market) (*dotagi
 	truePtr := true
 	m.Resell = &truePtr
 	m.SellerSteamID = ssid
-	m.InventoryStatus = dotagiftx.InventoryStatusVerified // Override verification by reseller
+	m.InventoryStatus = dgx.InventoryStatusVerified // Override verification by reseller
 	return m, nil
 }
 
-func (s *marketService) checkAskType(ask *dotagiftx.Market) error {
+func (s *marketService) checkAskType(ask *dgx.Market) error {
 	//if err := s.restrictMatchingPriceValue(ask); err != nil {
 	//	return err
 	//}
@@ -384,9 +384,9 @@ func (s *marketService) checkAskType(ask *dotagiftx.Market) error {
 	if err != nil {
 		return err
 	}
-	qtyLimit := dotagiftx.MaxMarketQtyLimitPerFreeUser
-	if user.HasBoon(dotagiftx.BoonRefresherOrb) {
-		qtyLimit = dotagiftx.MaxMarketQtyLimitPerPremiumUser
+	qtyLimit := dgx.MaxMarketQtyLimitPerFreeUser
+	if user.HasBoon(dgx.BoonRefresherOrb) {
+		qtyLimit = dgx.MaxMarketQtyLimitPerPremiumUser
 	}
 
 	if ask.PartnerSteamID != "" && user.SteamID == ask.PartnerSteamID {
@@ -394,11 +394,11 @@ func (s *marketService) checkAskType(ask *dotagiftx.Market) error {
 	}
 
 	// Check Item max offer limit.
-	qty, err := s.marketStg.Count(dotagiftx.FindOpts{
-		Filter: dotagiftx.Market{
+	qty, err := s.marketStg.Count(dgx.FindOpts{
+		Filter: dgx.Market{
 			ItemID: ask.ItemID,
-			Type:   dotagiftx.MarketTypeAsk,
-			Status: dotagiftx.MarketStatusLive,
+			Type:   dgx.MarketTypeAsk,
+			Status: dgx.MarketStatusLive,
 		},
 		UserID: ask.UserID,
 	})
@@ -412,17 +412,17 @@ func (s *marketService) checkAskType(ask *dotagiftx.Market) error {
 	return nil
 }
 
-func (s *marketService) checkBidType(bid *dotagiftx.Market) error {
+func (s *marketService) checkBidType(bid *dgx.Market) error {
 	//if err := s.restrictMatchingPriceValue(bid); err != nil {
 	//	return err
 	//}
 
 	// Remove existing buy order if exists.
-	res, err := s.marketStg.Find(dotagiftx.FindOpts{
-		Filter: dotagiftx.Market{
+	res, err := s.marketStg.Find(dgx.FindOpts{
+		Filter: dgx.Market{
 			ItemID: bid.ItemID,
-			Type:   dotagiftx.MarketTypeBid,
-			Status: dotagiftx.MarketStatusLive,
+			Type:   dgx.MarketTypeBid,
+			Status: dgx.MarketStatusLive,
 		},
 		UserID: bid.UserID,
 	})
@@ -430,7 +430,7 @@ func (s *marketService) checkBidType(bid *dotagiftx.Market) error {
 		return err
 	}
 	for _, m := range res {
-		m.Status = dotagiftx.MarketStatusRemoved
+		m.Status = dgx.MarketStatusRemoved
 		if err = s.marketStg.Update(&m); err != nil {
 			return err
 		}
@@ -446,54 +446,54 @@ func (s *marketService) checkBidType(bid *dotagiftx.Market) error {
 // with desired price value.
 // Update 2021/03/08: It turns out some users are picky on which user they
 // want to get the item from, which is very reasonable, and will disable this restriction for now.
-func (s *marketService) restrictMatchingPriceValue(mkt *dotagiftx.Market) error {
+func (s *marketService) restrictMatchingPriceValue(mkt *dgx.Market) error {
 	switch mkt.Type {
-	case dotagiftx.MarketTypeAsk:
+	case dgx.MarketTypeAsk:
 		bid, err := s.catalogStg.Index(mkt.ItemID)
 		if err != nil {
 			return err
 		}
 		if bid.Quantity != 0 && bid.HighestBid > mkt.Price {
-			return dotagiftx.MarketErrInvalidAskPrice
+			return dgx.MarketErrInvalidAskPrice
 		}
-	case dotagiftx.MarketTypeBid:
+	case dgx.MarketTypeBid:
 		ask, err := s.catalogStg.Index(mkt.ItemID)
 		if err != nil {
 			return err
 		}
 		if ask.Quantity != 0 && ask.LowestAsk < mkt.Price {
-			return dotagiftx.MarketErrInvalidBidPrice
+			return dgx.MarketErrInvalidBidPrice
 		}
 	}
 
 	return nil
 }
 
-func (s *marketService) checkOwnership(ctx context.Context, id string) (*dotagiftx.Market, error) {
-	au := dotagiftx.AuthFromContext(ctx)
+func (s *marketService) checkOwnership(ctx context.Context, id string) (*dgx.Market, error) {
+	au := dgx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, dotagiftx.AuthErrNoAccess
+		return nil, dgx.AuthErrNoAccess
 	}
 
 	mkt, err := s.userMarket(au.UserID, id)
 	if err != nil {
-		return nil, errors.New(dotagiftx.AuthErrForbidden, err)
+		return nil, errors.New(dgx.AuthErrForbidden, err)
 	}
 
 	if mkt == nil {
-		return nil, errors.New(dotagiftx.AuthErrForbidden, dotagiftx.MarketErrNotFound)
+		return nil, errors.New(dgx.AuthErrForbidden, dgx.MarketErrNotFound)
 	}
 
 	return mkt, nil
 }
 
-func (s *marketService) userMarket(userID, id string) (*dotagiftx.Market, error) {
+func (s *marketService) userMarket(userID, id string) (*dgx.Market, error) {
 	cur, err := s.marketStg.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	if cur.UserID != userID {
-		return nil, dotagiftx.MarketErrNotFound
+		return nil, dgx.MarketErrNotFound
 	}
 
 	return cur, nil

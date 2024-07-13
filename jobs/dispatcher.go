@@ -3,7 +3,7 @@ package jobs
 import (
 	"fmt"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/sirupsen/logrus"
@@ -13,24 +13,26 @@ import (
 type Dispatcher struct {
 	worker *worker.Worker
 	// Jobs service dependencies
-	deliverySvc  dotagiftx.DeliveryService
-	inventorySvc dotagiftx.InventoryService
-	deliveryStg  dotagiftx.DeliveryStorage
-	marketStg    dotagiftx.MarketStorage
-	catalogStg   dotagiftx.CatalogStorage
-	cache        dotagiftx.Cache
+	deliverySvc  dgx.DeliveryService
+	inventorySvc dgx.InventoryService
+	deliveryStg  dgx.DeliveryStorage
+	marketStg    dgx.MarketStorage
+	catalogStg   dgx.CatalogStorage
+	userStg      dgx.UserStorage
+	cache        dgx.Cache
 	logSvc       *logrus.Logger
 }
 
 // NewDispatcher returns an instance dispatcher.
 func NewDispatcher(
 	worker *worker.Worker,
-	deliverySvc dotagiftx.DeliveryService,
-	inventorySvc dotagiftx.InventoryService,
-	deliveryStg dotagiftx.DeliveryStorage,
-	marketStg dotagiftx.MarketStorage,
-	catalogStg dotagiftx.CatalogStorage,
-	cache dotagiftx.Cache,
+	deliverySvc dgx.DeliveryService,
+	inventorySvc dgx.InventoryService,
+	deliveryStg dgx.DeliveryStorage,
+	marketStg dgx.MarketStorage,
+	catalogStg dgx.CatalogStorage,
+	userStg dgx.UserStorage,
+	cache dgx.Cache,
 	logSvc *logrus.Logger,
 ) *Dispatcher {
 	return &Dispatcher{
@@ -40,6 +42,7 @@ func NewDispatcher(
 		deliveryStg,
 		marketStg,
 		catalogStg,
+		userStg,
 		cache,
 		logSvc,
 	}
@@ -73,6 +76,11 @@ func (d *Dispatcher) RegisterJobs() {
 		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_revalidate_delivery"),
 	))
+	d.worker.AddJob(NewExpiringSubscription(
+		d.userStg,
+		d.cache,
+		log.WithPrefix(d.logSvc, "job_expiring_subscription"),
+	))
 	d.worker.AddJob(NewExpiringMarket(
 		d.marketStg,
 		d.catalogStg,
@@ -93,7 +101,7 @@ func (d *Dispatcher) VerifyDelivery(marketID string) {
 	job := NewVerifyDelivery(d.deliverySvc, d.marketStg, ctxLog)
 	job.name = fmt.Sprintf("%s_%s", job.name, marketID)
 	job.interval = 0 // makes the job run-once.
-	job.filter = dotagiftx.Market{ID: marketID}
+	job.filter = dgx.Market{ID: marketID}
 	d.worker.AddJob(job)
 }
 

@@ -6,15 +6,15 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
 const userCacheExpr = time.Minute * 5
 
-func handleProfile(svc dotagiftx.UserService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleProfile(svc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -34,10 +34,10 @@ func handleProfile(svc dotagiftx.UserService, cache dotagiftx.Cache) http.Handle
 	}
 }
 
-func handlePublicProfile(svc dotagiftx.UserService, cache dotagiftx.Cache) http.HandlerFunc {
+func handlePublicProfile(svc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -58,7 +58,7 @@ func handlePublicProfile(svc dotagiftx.UserService, cache dotagiftx.Cache) http.
 	}
 }
 
-func handleProcSubscription(svc dotagiftx.UserService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleProcSubscription(svc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			SubscriptionID string `json:"subscription_id"`
@@ -68,7 +68,7 @@ func handleProcSubscription(svc dotagiftx.UserService, cache dotagiftx.Cache) ht
 			return
 		}
 
-		u, err := svc.ProcSubscription(r.Context(), form.SubscriptionID)
+		u, err := svc.ProcessSubscription(r.Context(), form.SubscriptionID)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -82,10 +82,10 @@ func handleProcSubscription(svc dotagiftx.UserService, cache dotagiftx.Cache) ht
 	}
 }
 
-func handleBlacklisted(svc dotagiftx.UserService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleBlacklisted(svc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -93,7 +93,7 @@ func handleBlacklisted(svc dotagiftx.UserService, cache dotagiftx.Cache) http.Ha
 			}
 		}
 
-		opts, err := findOptsFromURL(r.URL, &dotagiftx.Item{})
+		opts, err := findOptsFromURL(r.URL, &dgx.Item{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -104,7 +104,7 @@ func handleBlacklisted(svc dotagiftx.UserService, cache dotagiftx.Cache) http.Ha
 			return
 		}
 		if list == nil {
-			list = []dotagiftx.User{}
+			list = []dgx.User{}
 		}
 
 		go cache.Set(cacheKey, list, time.Hour*24)
@@ -116,7 +116,7 @@ func handleBlacklisted(svc dotagiftx.UserService, cache dotagiftx.Cache) http.Ha
 const userVanityCacheExpr = time.Hour
 
 type vanityUserResp struct {
-	dotagiftx.User
+	dgx.User
 
 	IsRegistered  bool      `json:"is_registered"`
 	SteamAvatar   string    `json:"steam_avatar"`
@@ -124,10 +124,10 @@ type vanityUserResp struct {
 }
 
 // TODO this should be place on service
-func handleVanityProfile(svc dotagiftx.UserService, steam dotagiftx.SteamClient, cache dotagiftx.Cache) http.HandlerFunc {
+func handleVanityProfile(svc dgx.UserService, steam dgx.SteamClient, cache dgx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -167,5 +167,42 @@ func handleVanityProfile(svc dotagiftx.UserService, steam dotagiftx.SteamClient,
 
 		go cache.Set(cacheKey, vUser, userVanityCacheExpr)
 		respondOK(w, vUser)
+	}
+}
+
+func handleUserSubscriptionWebhook(svc dgx.UserService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if _, err := svc.UpdateSubscriptionFromWebhook(r.Context(), r); err != nil {
+			respondError(w, err)
+			return
+		}
+		respondOK(w, nil)
+	}
+}
+
+func handleUserManualSubscription(svc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := isItemKeyValid(r); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		var form dgx.ManualSubscriptionParam
+		if err := parseForm(r, &form); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		u, err := svc.ProcessManualSubscription(r.Context(), form)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		go func() {
+			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
+			cache.BulkDel(marketCacheKeyPrefix)
+		}()
+		respondOK(w, u)
 	}
 }

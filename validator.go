@@ -1,4 +1,4 @@
-package dotagiftx
+package dgx
 
 import v "github.com/go-playground/validator/v10"
 

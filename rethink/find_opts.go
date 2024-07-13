@@ -5,18 +5,18 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-type findOpts dotagiftx.FindOpts
+type findOpts dgx.FindOpts
 
-func newFindOptsQuery(q r.Term, o dotagiftx.FindOpts) r.Term {
+func newFindOptsQuery(q r.Term, o dgx.FindOpts) r.Term {
 	//return findOpts(o).parseOpts(q, nil)
 	return baseFindOptsQuery(q, o, nil)
 }
 
-func baseFindOptsQuery(q r.Term, o dotagiftx.FindOpts, hookFn func(r.Term) r.Term) r.Term {
+func baseFindOptsQuery(q r.Term, o dgx.FindOpts, hookFn func(r.Term) r.Term) r.Term {
 	return findOpts(o).parseOpts(q, hookFn)
 }
 

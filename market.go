@@ -1,4 +1,4 @@
-package dotagiftx
+package dgx
 
 import (
 	"context"
@@ -188,6 +188,8 @@ type (
 		UpdateExpiring(t MarketType, b UserBoon, expiration time.Time) (itemIDs []string, err error)
 
 		BulkDeleteByStatus(ms MarketStatus, cutOff time.Time, limit int) error
+
+		UpdateExpiringResell(b UserBoon) (itemIDs []string, err error)
 	}
 )
 
