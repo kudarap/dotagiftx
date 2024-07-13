@@ -1,7 +1,10 @@
 package rethink
 
 import (
+	"context"
+	"fmt"
 	"log"
+	"time"
 
 	"dario.cat/mergo"
 	dgx "github.com/kudarap/dotagiftx"
@@ -135,6 +138,41 @@ func (s *userStorage) BaseUpdate(in *dgx.User) error {
 		return errors.New(dgx.StorageMergeErr, err)
 	}
 
+	return nil
+}
+
+// ExpiringSubscribers return expiring subscribers on given t time.
+func (s *userStorage) ExpiringSubscribers(ctx context.Context, t time.Time) ([]dgx.User, error) {
+	var res []dgx.User
+	q := s.table().HasFields("subscription_ends_at")
+	if err := s.db.list(q, &res); err != nil {
+		return nil, errors.New(dgx.StorageUncaughtErr, err)
+	}
+
+	var expiring []dgx.User
+	for _, u := range res {
+		if u.SubscriptionEndsAt.After(t) {
+			continue
+		}
+		expiring = append(expiring, u)
+	}
+	return expiring, nil
+}
+
+// PurgeSubscription clears subscription data.
+func (s *userStorage) PurgeSubscription(ctx context.Context, userID string) error {
+	t := time.Now()
+	err := s.db.update(s.table().Get(userID).Update(map[string]interface{}{
+		"boons":                r.Literal(),
+		"subscription":         r.Literal(),
+		"subscribed_at":        r.Literal(),
+		"subscription_ends_at": r.Literal(),
+		"subscription_notes":   fmt.Sprintf("purged at %s", t),
+		"updated_at":           t,
+	}))
+	if err != nil {
+		return errors.New(dgx.StorageUncaughtErr, err)
+	}
 	return nil
 }
 

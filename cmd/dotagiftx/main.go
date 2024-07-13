@@ -208,7 +208,7 @@ func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
 }
 
 func setupPaypal(cfg paypal.Config) (*paypal.Client, error) {
-	c, err := paypal.New(cfg.ClientID, cfg.Secret, cfg.Live)
+	c, err := paypal.New(cfg.ClientID, cfg.Secret, cfg.WebhookID, cfg.Live)
 	if err != nil {
 		return nil, fmt.Errorf("could not setup paypal client: %s", err)
 	}

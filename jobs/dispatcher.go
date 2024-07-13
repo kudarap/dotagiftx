@@ -18,6 +18,7 @@ type Dispatcher struct {
 	deliveryStg  dgx.DeliveryStorage
 	marketStg    dgx.MarketStorage
 	catalogStg   dgx.CatalogStorage
+	userStg      dgx.UserStorage
 	cache        dgx.Cache
 	logSvc       *logrus.Logger
 }
@@ -30,6 +31,7 @@ func NewDispatcher(
 	deliveryStg dgx.DeliveryStorage,
 	marketStg dgx.MarketStorage,
 	catalogStg dgx.CatalogStorage,
+	userStg dgx.UserStorage,
 	cache dgx.Cache,
 	logSvc *logrus.Logger,
 ) *Dispatcher {
@@ -40,6 +42,7 @@ func NewDispatcher(
 		deliveryStg,
 		marketStg,
 		catalogStg,
+		userStg,
 		cache,
 		logSvc,
 	}
@@ -72,6 +75,10 @@ func (d *Dispatcher) RegisterJobs() {
 		d.deliverySvc,
 		d.marketStg,
 		log.WithPrefix(d.logSvc, "job_revalidate_delivery"),
+	))
+	d.worker.AddJob(NewExpiringSubscription(
+		d.userStg,
+		log.WithPrefix(d.logSvc, "job_expiring_subscription"),
 	))
 	d.worker.AddJob(NewExpiringMarket(
 		d.marketStg,

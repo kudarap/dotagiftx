@@ -169,3 +169,13 @@ func handleVanityProfile(svc dgx.UserService, steam dgx.SteamClient, cache dgx.C
 		respondOK(w, vUser)
 	}
 }
+
+func handleUserSubscriptionWebhook(svc dgx.UserService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if _, err := svc.UpdateSubscriptionFromWebhook(r.Context(), r); err != nil {
+			respondError(w, err)
+			return
+		}
+		respondOK(w, nil)
+	}
+}

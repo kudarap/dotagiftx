@@ -96,6 +96,7 @@ func (app *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
+	userStg := rethink.NewUser(rethinkClient)
 	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
@@ -115,6 +116,7 @@ func (app *application) setup() error {
 		deliveryStg,
 		marketStg,
 		catalogStg,
+		userStg,
 		redisClient,
 		logger,
 	)

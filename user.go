@@ -2,6 +2,7 @@ package dgx
 
 import (
 	"context"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -102,6 +103,9 @@ type (
 
 		// ProcessSubscription validates and process subscription features.
 		ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error)
+
+		// UpdateSubscriptionFromWebhook handles user subscription updates form http request.
+		UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error)
 	}
 
 	// UserStorage defines operation for user records.

@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"time"
@@ -140,7 +139,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 
 // UpdateSubscriptionFromWebhook manage updates from webhook payload, most often use in incrementing cycles or
 // extending expiration.
-func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r io.ReadCloser) (*dgx.User, error) {
+func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*dgx.User, error) {
 	// get user by steam id and increment their cycles.
 	steamID, cancelled, err := s.subsChecker.IsCancelled(ctx, r)
 	if err != nil {
@@ -163,29 +162,6 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r io.Re
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
 	return user, nil
-}
-
-// PurgeSubscription removes subscription status base on its expiration.
-func (s *userService) PurgeSubscription(ctx context.Context) error {
-	// get all users that has subscription
-	// add leeway of 2 days to process recurring payment.
-	// check outstanding days if it's still validate from last payment and skip.
-	withLeeway := time.Now().AddDate(0, 0, -2)
-	users, err := s.userStg.ExpiringSubscribers(ctx, withLeeway)
-	if err != nil {
-		return fmt.Errorf("retrieving subscribers: %w", err)
-	}
-
-	// remove boons and subs status
-	// clear user cache
-	for _, u := range users {
-		if err = s.userStg.PurgeSubscription(ctx, u.ID); err != nil {
-			log.Println(fmt.Errorf("purging subscription: %w", err))
-		}
-	}
-
-	// let the market cleanup and sweeper do the removal of items.
-	return nil
 }
 
 // ProcessManualSubscription process manual subscription such as one-time payments that process manually, normally
@@ -236,5 +212,5 @@ func (s *userService) downloadProfileImage(url string) (string, error) {
 
 type subscriptionChecker interface {
 	Subscription(id string) (plan, steamID string, err error)
-	IsCancelled(ctx context.Context, r io.ReadCloser) (steamID string, cancelled bool, err error)
+	IsCancelled(ctx context.Context, r *http.Request) (steamID string, cancelled bool, err error)
 }
