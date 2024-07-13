@@ -10,18 +10,22 @@ import (
 )
 
 type ExpiringSubscription struct {
-	userStg  dgx.UserStorage
+	userStg dgx.UserStorage
+	cache   dgx.Cache
+	logger  log.Logger
+	// job settings
 	name     string
 	interval time.Duration
-	logger   log.Logger
 }
 
 func NewExpiringSubscription(
 	us dgx.UserStorage,
+	cache dgx.Cache,
 	lg log.Logger,
 ) *ExpiringSubscription {
 	return &ExpiringSubscription{
 		userStg:  us,
+		cache:    cache,
 		name:     "expiring_subscription",
 		interval: defaultJobInterval,
 		logger:   lg,
@@ -50,6 +54,12 @@ func (s *ExpiringSubscription) Run(ctx context.Context) error {
 		if err = s.userStg.PurgeSubscription(ctx, u.ID); err != nil {
 			s.logger.Errorf("purging subscription: %w", err)
 		}
+
+		go func() {
+			if err := s.cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID)); err != nil {
+				s.logger.Errorf("invalidate user cache: %w", err)
+			}
+		}()
 	}
 
 	return nil

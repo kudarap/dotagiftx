@@ -78,6 +78,7 @@ func (d *Dispatcher) RegisterJobs() {
 	))
 	d.worker.AddJob(NewExpiringSubscription(
 		d.userStg,
+		d.cache,
 		log.WithPrefix(d.logSvc, "job_expiring_subscription"),
 	))
 	d.worker.AddJob(NewExpiringMarket(
