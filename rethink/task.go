@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
@@ -19,7 +19,7 @@ type taskStorage struct {
 	db *Client
 }
 
-func (s *taskStorage) Get(ctx context.Context) (*dotagiftx.Task, error) {
+func (s *taskStorage) Get(ctx context.Context) (*dgx.Task, error) {
 	res, err := s.List(ctx, 1)
 	if err != nil {
 		return nil, err
@@ -30,30 +30,30 @@ func (s *taskStorage) Get(ctx context.Context) (*dotagiftx.Task, error) {
 	return &res[0], nil
 }
 
-func (s *taskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, error) {
-	q := s.table().GetAllByIndex(tableTaskFieldStatus, dotagiftx.TaskStatusPending).
+func (s *taskStorage) List(ctx context.Context, limit int) ([]dgx.Task, error) {
+	q := s.table().GetAllByIndex(tableTaskFieldStatus, dgx.TaskStatusPending).
 		OrderBy(tableTaskFieldPriority).Limit(limit)
 
-	var res []dotagiftx.Task
+	var res []dgx.Task
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, errors.New(dgx.StorageUncaughtErr, err)
 	}
 	return res, nil
 }
 
-func (s *taskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
+func (s *taskStorage) Update(ctx context.Context, in dgx.Task) error {
 	in.Retry++
 	err := s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return errors.New(dgx.StorageUncaughtErr, err)
 	}
 
 	return nil
 }
 
-func (s *taskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload interface{}) (id string, err error) {
+func (s *taskStorage) Queue(ctx context.Context, p dgx.TaskPriority, t dgx.TaskType, payload interface{}) (id string, err error) {
 	n := now()
-	id, err = s.db.insert(s.table().Insert(dotagiftx.Task{
+	id, err = s.db.insert(s.table().Insert(dgx.Task{
 		Status:    0,
 		Priority:  p,
 		Type:      t,
@@ -72,7 +72,7 @@ func NewQueue(c *Client) *taskStorage {
 		log.Fatalf("could not create %s table: %s", tableTask, err)
 	}
 
-	if err := c.autoIndex(tableTask, dotagiftx.Task{}); err != nil {
+	if err := c.autoIndex(tableTask, dgx.Task{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableTask, err)
 	}
 

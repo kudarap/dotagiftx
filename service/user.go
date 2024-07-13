@@ -3,49 +3,50 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewUser returns a new User service.
-func NewUser(us dotagiftx.UserStorage, fm dotagiftx.FileManager, sc subscriptionChecker) dotagiftx.UserService {
+func NewUser(us dgx.UserStorage, fm dgx.FileManager, sc subscriptionChecker) dgx.UserService {
 	return &userService{us, fm, sc}
 }
 
 type userService struct {
-	userStg     dotagiftx.UserStorage
-	fileMgr     dotagiftx.FileManager
+	userStg     dgx.UserStorage
+	fileMgr     dgx.FileManager
 	subsChecker subscriptionChecker
 }
 
-func (s *userService) Users(opts dotagiftx.FindOpts) ([]dotagiftx.User, error) {
+func (s *userService) Users(opts dgx.FindOpts) ([]dgx.User, error) {
 	return s.userStg.Find(opts)
 }
 
-func (s *userService) FlaggedUsers(opts dotagiftx.FindOpts) ([]dotagiftx.User, error) {
+func (s *userService) FlaggedUsers(opts dgx.FindOpts) ([]dgx.User, error) {
 	return s.userStg.FindFlagged(opts)
 }
 
-func (s *userService) User(id string) (*dotagiftx.User, error) {
+func (s *userService) User(id string) (*dgx.User, error) {
 	return s.userStg.Get(id)
 }
 
-func (s *userService) UserFromContext(ctx context.Context) (*dotagiftx.User, error) {
-	au := dotagiftx.AuthFromContext(ctx)
+func (s *userService) UserFromContext(ctx context.Context) (*dgx.User, error) {
+	au := dgx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, dotagiftx.UserErrNotFound
+		return nil, dgx.UserErrNotFound
 	}
 
 	return s.User(au.UserID)
 }
 
-func (s *userService) Create(u *dotagiftx.User) error {
+func (s *userService) Create(u *dgx.User) error {
 	url, err := s.downloadProfileImage(u.Avatar)
 	if err != nil {
-		return errors.New(dotagiftx.UserErrProfileImageDL, err)
+		return errors.New(dgx.UserErrProfileImageDL, err)
 	}
 	u.Avatar = url
 
@@ -53,15 +54,20 @@ func (s *userService) Create(u *dotagiftx.User) error {
 		return err
 	}
 
-	go pingGoogleSitemap()
+	go func() {
+		err := pingGoogleSitemap()
+		if err != nil {
+			log.Println("pingGoogleSitemap err:", err)
+		}
+	}()
 
 	return s.userStg.Create(u)
 }
 
-func (s *userService) Update(ctx context.Context, u *dotagiftx.User) error {
-	au := dotagiftx.AuthFromContext(ctx)
+func (s *userService) Update(ctx context.Context, u *dgx.User) error {
+	au := dgx.AuthFromContext(ctx)
 	if au == nil {
-		return dotagiftx.AuthErrNoAccess
+		return dgx.AuthErrNoAccess
 	}
 	u.ID = au.UserID
 
@@ -72,8 +78,8 @@ func (s *userService) Update(ctx context.Context, u *dotagiftx.User) error {
 	return s.userStg.Update(u)
 }
 
-func (s *userService) SteamSync(sp *dotagiftx.SteamPlayer) (*dotagiftx.User, error) {
-	opts := dotagiftx.FindOpts{Filter: dotagiftx.User{SteamID: sp.ID}, IndexKey: "steam_id"}
+func (s *userService) SteamSync(sp *dgx.SteamPlayer) (*dgx.User, error) {
+	opts := dgx.FindOpts{Filter: dgx.User{SteamID: sp.ID}, IndexKey: "steam_id"}
 	res, err := s.userStg.Find(opts)
 	if err != nil {
 		return nil, err
@@ -93,10 +99,10 @@ func (s *userService) SteamSync(sp *dotagiftx.SteamPlayer) (*dotagiftx.User, err
 	return &u, nil
 }
 
-func (s *userService) ProcSubscription(ctx context.Context, subscriptionID string) (*dotagiftx.User, error) {
-	au := dotagiftx.AuthFromContext(ctx)
+func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID string) (*dgx.User, error) {
+	au := dgx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, dotagiftx.AuthErrNoAccess
+		return nil, dgx.AuthErrNoAccess
 	}
 	user, err := s.userStg.Get(au.UserID)
 	if err != nil {
@@ -110,7 +116,7 @@ func (s *userService) ProcSubscription(ctx context.Context, subscriptionID strin
 	if user.SteamID != steamID {
 		return nil, fmt.Errorf("could not validate subscription steam id")
 	}
-	userSubs := dotagiftx.UserSubscriptionFromString(plan)
+	userSubs := dgx.UserSubscriptionFromString(plan)
 	if userSubs == 0 {
 		return nil, fmt.Errorf("could not validate subscription plan")
 	}
@@ -128,6 +134,12 @@ func (s *userService) ProcSubscription(ctx context.Context, subscriptionID strin
 	}
 
 	return user, s.userStg.Update(user)
+}
+
+func (s *userService) ProcessManualSubscription(
+	ctx context.Context, p dgx.ManualSubscriptionParam,
+) (*dgx.User, error) {
+	panic("implement me")
 }
 
 // downloadProfileImage saves image file from a url.

@@ -5,22 +5,22 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewAuth returns a new Auth service.
-func NewAuth(sc dotagiftx.SteamClient, as dotagiftx.AuthStorage, us dotagiftx.UserService) dotagiftx.AuthService {
+func NewAuth(sc dgx.SteamClient, as dgx.AuthStorage, us dgx.UserService) dgx.AuthService {
 	return &authService{sc, as, us}
 }
 
 type authService struct {
-	steamClient dotagiftx.SteamClient
-	authStg     dotagiftx.AuthStorage
-	userSvc     dotagiftx.UserService
+	steamClient dgx.SteamClient
+	authStg     dgx.AuthStorage
+	userSvc     dgx.UserService
 }
 
-func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotagiftx.Auth, error) {
+func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dgx.Auth, error) {
 	// Handle authorization redirect.
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := s.steamClient.AuthorizeURL(r)
@@ -40,14 +40,14 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 
 	// Check account existence.
 	au, err := s.authStg.GetByUsername(steamPlayer.ID)
-	if err != nil && err != dotagiftx.AuthErrNotFound {
+	if err != nil && err != dgx.AuthErrNotFound {
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
 
 	// Account existed and checks login credentials.
 	if au != nil {
 		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {
-			return nil, dotagiftx.AuthErrLogin
+			return nil, dgx.AuthErrLogin
 		}
 
 		u, _ := s.userSvc.User(au.UserID)
@@ -56,7 +56,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 		}
 
 		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
-			return nil, errors.New(dotagiftx.UserErrSteamSync, err)
+			return nil, errors.New(dgx.UserErrSteamSync, err)
 		}
 
 		return au, nil
@@ -71,14 +71,14 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 	return au, nil
 }
 
-func (s *authService) RenewToken(refreshToken string) (*dotagiftx.Auth, error) {
+func (s *authService) RenewToken(refreshToken string) (*dgx.Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
-		return nil, dotagiftx.AuthErrRefreshToken
+		return nil, dgx.AuthErrRefreshToken
 	}
 
 	au, err := s.authStg.GetByRefreshToken(refreshToken)
 	if err != nil {
-		return nil, errors.New(dotagiftx.AuthErrRefreshToken, err)
+		return nil, errors.New(dgx.AuthErrRefreshToken, err)
 	}
 
 	return au, nil
@@ -86,7 +86,7 @@ func (s *authService) RenewToken(refreshToken string) (*dotagiftx.Auth, error) {
 
 func (s *authService) RevokeRefreshToken(refreshToken string) error {
 	if strings.TrimSpace(refreshToken) == "" {
-		return dotagiftx.AuthErrRefreshToken
+		return dgx.AuthErrRefreshToken
 	}
 
 	au, err := s.RenewToken(refreshToken)
@@ -98,17 +98,17 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 	return s.authStg.Update(au)
 }
 
-func (s *authService) Auth(id string) (*dotagiftx.Auth, error) {
+func (s *authService) Auth(id string) (*dgx.Auth, error) {
 	u, err := s.authStg.Get(id)
 	if err != nil {
-		return nil, errors.New(dotagiftx.AuthErrNotFound, err)
+		return nil, errors.New(dgx.AuthErrNotFound, err)
 	}
 
 	return u, nil
 }
 
-func (s *authService) createAccountFromSteam(sp *dotagiftx.SteamPlayer) (*dotagiftx.Auth, error) {
-	u := &dotagiftx.User{
+func (s *authService) createAccountFromSteam(sp *dgx.SteamPlayer) (*dgx.Auth, error) {
+	u := &dgx.User{
 		SteamID: sp.ID,
 		Name:    sp.Name,
 		URL:     sp.URL,
@@ -118,7 +118,7 @@ func (s *authService) createAccountFromSteam(sp *dotagiftx.SteamPlayer) (*dotagi
 		return nil, err
 	}
 
-	au := &dotagiftx.Auth{UserID: u.ID, Username: sp.ID}
+	au := &dgx.Auth{UserID: u.ID, Username: sp.ID}
 	au.SetDefaults()
 	au.Password = au.ComposePassword(sp.ID, u.ID)
 	if err := s.authStg.Create(au); err != nil {

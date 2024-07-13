@@ -4,12 +4,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
-func MarketSetRankingScores(userSvc dotagiftx.UserService, marketSvc dotagiftx.MarketService) {
-	users, err := userSvc.Users(dotagiftx.FindOpts{})
+func MarketSetRankingScores(userSvc dgx.UserService, marketSvc dgx.MarketService) {
+	users, err := userSvc.Users(dgx.FindOpts{})
 	if err != nil {
 		panic(err)
 	}
@@ -26,8 +26,8 @@ func MarketSetRankingScores(userSvc dotagiftx.UserService, marketSvc dotagiftx.M
 	log.Println("market user score done!")
 }
 
-func MarketIndexRebuild(marketStg dotagiftx.MarketStorage) {
-	res, _ := marketStg.Find(dotagiftx.FindOpts{})
+func MarketIndexRebuild(marketStg dgx.MarketStorage) {
+	res, _ := marketStg.Find(dgx.FindOpts{})
 
 	for _, rr := range res {
 		if _, err := marketStg.Index(rr.ID); err != nil {
@@ -43,19 +43,19 @@ func MarketIndexRebuild(marketStg dotagiftx.MarketStorage) {
 
 // MarketExtractProfileURLFromNotes WARNING! only use these once and just keeping for reference.
 func MarketExtractProfileURLFromNotes(
-	marketStg dotagiftx.MarketStorage,
-	steamClient dotagiftx.SteamClient,
+	marketStg dgx.MarketStorage,
+	steamClient dgx.SteamClient,
 ) {
-	var updates []dotagiftx.Market
+	var updates []dgx.Market
 
-	rsvd, _ := marketStg.Find(dotagiftx.FindOpts{
-		Filter: dotagiftx.Market{Status: dotagiftx.MarketStatusReserved},
+	rsvd, _ := marketStg.Find(dgx.FindOpts{
+		Filter: dgx.Market{Status: dgx.MarketStatusReserved},
 	})
-	sold, _ := marketStg.Find(dotagiftx.FindOpts{
-		Filter: dotagiftx.Market{Status: dotagiftx.MarketStatusSold},
+	sold, _ := marketStg.Find(dgx.FindOpts{
+		Filter: dgx.Market{Status: dgx.MarketStatusSold},
 	})
-	cnld, _ := marketStg.Find(dotagiftx.FindOpts{
-		Filter: dotagiftx.Market{Status: dotagiftx.MarketStatusCancelled},
+	cnld, _ := marketStg.Find(dgx.FindOpts{
+		Filter: dgx.Market{Status: dgx.MarketStatusCancelled},
 	})
 
 	for _, m := range append(append(rsvd, sold...), cnld...) {
@@ -72,7 +72,7 @@ func MarketExtractProfileURLFromNotes(
 		}
 
 		// Queue for market update.
-		updates = append(updates, dotagiftx.Market{
+		updates = append(updates, dgx.Market{
 			ID:             m.ID,
 			UpdatedAt:      m.UpdatedAt, // Skips the time update
 			PartnerSteamID: steamID,

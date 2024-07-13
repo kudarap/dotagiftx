@@ -1,4 +1,4 @@
-package dotagiftx
+package dgx
 
 type (
 	// FindOpts represents find options.

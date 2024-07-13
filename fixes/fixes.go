@@ -6,14 +6,14 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
 func ReIndexAll(
-	itemStg dotagiftx.ItemStorage,
-	catalogStg dotagiftx.CatalogStorage,
+	itemStg dgx.ItemStorage,
+	catalogStg dgx.CatalogStorage,
 ) {
-	ii, _ := itemStg.Find(dotagiftx.FindOpts{})
+	ii, _ := itemStg.Find(dgx.FindOpts{})
 	for _, item := range ii {
 		if _, err := catalogStg.Index(item.ID); err != nil {
 			log.Println("err", err)
@@ -23,31 +23,31 @@ func ReIndexAll(
 }
 
 func GenerateFakeMarket(
-	itemStg dotagiftx.ItemStorage,
-	userStg dotagiftx.UserStorage,
-	marketSvc dotagiftx.MarketService,
+	itemStg dgx.ItemStorage,
+	userStg dgx.UserStorage,
+	marketSvc dgx.MarketService,
 ) {
 
 	ctx := context.Background()
-	ii, _ := itemStg.Find(dotagiftx.FindOpts{})
-	uu, _ := userStg.Find(dotagiftx.FindOpts{})
+	ii, _ := itemStg.Find(dgx.FindOpts{})
+	uu, _ := userStg.Find(dgx.FindOpts{})
 	for _, item := range ii {
 		for _, user := range uu {
-			m := &dotagiftx.Market{
+			m := &dgx.Market{
 				ItemID: item.ID,
 				Price:  float64(rand.Intn(1000)) / 10,
 			}
-			auc := dotagiftx.AuthToContext(ctx, &dotagiftx.Auth{UserID: user.ID})
+			auc := dgx.AuthToContext(ctx, &dgx.Auth{UserID: user.ID})
 			marketSvc.Create(auc, m)
 		}
 	}
 }
 
-func ImageFileExtJPG(itemStg dotagiftx.ItemStorage, userStg dotagiftx.UserStorage) {
+func ImageFileExtJPG(itemStg dgx.ItemStorage, userStg dgx.UserStorage) {
 	const suf = ".jpe"
 	const newSuf = ".jpg"
 
-	items, _ := itemStg.Find(dotagiftx.FindOpts{})
+	items, _ := itemStg.Find(dgx.FindOpts{})
 	for _, ii := range items {
 		if strings.HasSuffix(ii.Image, suf) {
 			ii.Image = strings.Replace(ii.Image, suf, newSuf, 1)
@@ -56,7 +56,7 @@ func ImageFileExtJPG(itemStg dotagiftx.ItemStorage, userStg dotagiftx.UserStorag
 		}
 	}
 
-	users, _ := userStg.Find(dotagiftx.FindOpts{})
+	users, _ := userStg.Find(dgx.FindOpts{})
 	for _, uu := range users {
 		if strings.HasSuffix(uu.Avatar, suf) {
 			uu.Avatar = strings.Replace(uu.Avatar, suf, newSuf, 1)

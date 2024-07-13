@@ -3,7 +3,7 @@ package http
 import (
 	"net/url"
 
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
 type httpMsg struct {
@@ -31,7 +31,7 @@ type dataWithMeta struct {
 	TotalCount  int         `json:"total_count"`
 }
 
-func newDataWithMeta(data interface{}, md *dotagiftx.FindMetadata) dataWithMeta {
+func newDataWithMeta(data interface{}, md *dgx.FindMetadata) dataWithMeta {
 	return dataWithMeta{data, md.ResultCount, md.TotalCount}
 }
 

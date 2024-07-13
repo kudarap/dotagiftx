@@ -1,12 +1,12 @@
 # careful using this
 
 # ban
-var testDB = r.db('d2g_production');
+var testDB = r.db('dotagiftx_production');
 testDB.table('user')
   .filter({ steam_id: 'XXXXXXXXXX' })
   .update({ status: 400, updated_at: r.now(), notes: 'involve scam incident' })
 # cancel items
-var testDB = r.db('d2g_production');
+var testDB = r.db('dotagiftx_production');
 testDB.table('market')
   .filter({ user_id: '387e41d0-5da0-45f6-93c9-aebe65caf23e', status: 200 })
   .update({ status: 600 })
@@ -17,19 +17,19 @@ testDB.table('user')
   .update({ donation: 2, donated_at: r.now() })
 
 # new user count monthly
-r.db('d2g_production').table('user')
+r.db('dotagiftx_production').table('user')
   .filter(r.row('created_at').date().gt(r.time(2022, 1, 1, 'Z')))
   .group(r.row('created_at').month())
   .count()
 
 # active user count monthly
-r.db('d2g_production').table('user')
+r.db('dotagiftx_production').table('user')
   .filter(r.row('updated_at').date().gt(r.time(2022, 1, 1, 'Z')))
   .group(r.row('updated_at').month())
   .count()
 
 # re verify delivery
-r.db('d2g_production')
+r.db('dotagiftx_production')
   .table('market')
   .filter({ type: 10, status: 400 })
   .filter(r.row('delivery_status').eq(100).or(r.row('delivery_status').eq(400)))
@@ -38,7 +38,7 @@ r.db('d2g_production')
   //.update({ delivery: r.literal(), delivery_status: r.literal() })
 
 # top search
-r.db('d2g_production')
+r.db('dotagiftx_production')
   .table('track')
   .orderBy({ index: r.desc('created_at') })
   .between(r.now().sub(604800), r.now(), {index: 'created_at'})

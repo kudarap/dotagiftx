@@ -1,4 +1,4 @@
-package dotagiftx
+package dgx
 
 import (
 	"context"
@@ -61,13 +61,19 @@ type (
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 
 		MarketStats MarketStatusCount `json:"market_stats" db:"market_stats,omitempty"`
-		RankScore   int               `json:"rank_score" db:"rank_score,omitempty"`
+		RankScore   int               `json:"rank_score"   db:"rank_score,omitempty"`
 
-		// NOTE! Experimental subscription flag
-		Subscription UserSubscription `json:"subscription"  db:"subscription,indexed,omitempty"`
-		SubscribedAt *time.Time       `json:"subscribed_at" db:"subscribed_at,omitempty"`
-		Boons        []string         `json:"boons"         db:"boons,omitempty"`
-		Hammer       bool             `json:"hammer"        db:"hammer,omitempty"`
+		Subscription       UserSubscription `json:"subscription"         db:"subscription,indexed,omitempty"`
+		SubscribedAt       *time.Time       `json:"subscribed_at"        db:"subscribed_at,omitempty"`
+		SubscriptionEndsAt *time.Time       `json:"subscription_ends_at" db:"subscription_ends_at,omitempty"`
+		Boons              []string         `json:"boons"                db:"boons,omitempty"`
+		Hammer             bool             `json:"hammer"               db:"hammer,omitempty"`
+	}
+
+	ManualSubscriptionParam struct {
+		UserID           string
+		UserSubscription UserSubscription
+		Cycles           int
 	}
 
 	// UserService provides access to user service.
@@ -93,8 +99,8 @@ type (
 		// SteamSync saves updated steam info.
 		SteamSync(sp *SteamPlayer) (*User, error)
 
-		// ProcSubscription validates and process subscription features.
-		ProcSubscription(ctx context.Context, subscriptionID string) (*User, error)
+		// ProcessSubscription validates and process subscription features.
+		ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error)
 	}
 
 	// UserStorage defines operation for user records.

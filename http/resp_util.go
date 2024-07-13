@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/kudarap/dotagiftx"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
@@ -42,9 +42,9 @@ func respondError(w http.ResponseWriter, err error) {
 	if ok {
 		if cErr.Fatal {
 			status = http.StatusInternalServerError
-		} else if cErr.IsEqual(dotagiftx.AuthErrNoAccess) {
+		} else if cErr.IsEqual(dgx.AuthErrNoAccess) {
 			status = http.StatusUnauthorized
-		} else if cErr.IsEqual(dotagiftx.AuthErrForbidden) {
+		} else if cErr.IsEqual(dgx.AuthErrForbidden) {
 			status = http.StatusForbidden
 		}
 
