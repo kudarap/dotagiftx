@@ -106,6 +106,8 @@ type (
 
 		// UpdateSubscriptionFromWebhook handles user subscription updates form http request.
 		UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error)
+
+		ProcessManualSubscription(ctx context.Context, form ManualSubscriptionParam) (*User, error)
 	}
 
 	// UserStorage defines operation for user records.

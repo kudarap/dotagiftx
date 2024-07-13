@@ -63,5 +63,6 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Post("/hammer/ban", handleHammerBan(s.hammerSvc, s.cache))
 		r.Post("/hammer/suspend", handleHammerSuspend(s.hammerSvc, s.cache))
 		r.Post("/hammer/lift", handleHammerLift(s.hammerSvc, s.cache))
+		r.Post("/subscription", handleUserManualSubscription(s.userSvc, s.cache))
 	})
 }

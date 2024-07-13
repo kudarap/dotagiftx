@@ -179,3 +179,30 @@ func handleUserSubscriptionWebhook(svc dgx.UserService) http.HandlerFunc {
 		respondOK(w, nil)
 	}
 }
+
+func handleUserManualSubscription(svc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := isItemKeyValid(r); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		var form dgx.ManualSubscriptionParam
+		if err := parseForm(r, &form); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		u, err := svc.ProcessManualSubscription(r.Context(), form)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		go func() {
+			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
+			cache.BulkDel(marketCacheKeyPrefix)
+		}()
+		respondOK(w, u)
+	}
+}
