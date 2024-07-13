@@ -67,7 +67,8 @@ export default function About() {
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; author
             <br />
-            Feel free to contact me if you have issues or suggestions.
+            Feel free to contact <strike>me</strike> us on Discord if you have issues or
+            suggestions.
           </Typography>
           <Button
             startIcon={<DiscordIcon />}
@@ -77,15 +78,6 @@ export default function About() {
             rel="noreferrer noopener"
             href="https://discord.gg/UFt9Ny42kM">
             Discord
-          </Button>
-          <Button
-            startIcon={<RedditIcon />}
-            size="large"
-            component={Link}
-            target="_blank"
-            rel="noreferrer noopener"
-            href="https://www.reddit.com/message/compose/?to=kudarap">
-            Reddit
           </Button>
           {/* <Button
             startIcon={<SteamIcon />}
