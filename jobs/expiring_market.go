@@ -62,6 +62,16 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	itemIDs = append(itemIDs, ids...)
 	em.logger.Println("updating expiring asks finished!")
 
+	// Process expiring resells.
+	em.logger.Println("updating expiring resells", askExpr)
+	ids, err = em.marketStg.UpdateExpiringResell(dgx.BoonShopKeepersContract)
+	if err != nil {
+		em.logger.Errorf("could not update expiring resells: %s", err)
+		return err
+	}
+	itemIDs = append(itemIDs, ids...)
+	em.logger.Println("updating expiring resells finished!")
+
 	// Re-index affected items.
 	em.logger.Println("indexing affected expire items...", len(itemIDs))
 	itemIndexed := map[string]struct{}{}

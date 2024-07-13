@@ -337,6 +337,44 @@ func (s *marketStorage) UpdateExpiring(t dgx.MarketType, b dgx.UserBoon, cutOff 
 	return itemIDs, nil
 }
 
+func (s *marketStorage) UpdateExpiringResell(b dgx.UserBoon) (ids []string, err error) {
+	// Collects exempted users ids.
+	q := r.Table(tableUser).
+		HasFields("boons").
+		Filter(r.Row.Field("boons").Contains(b)).
+		Field("id")
+	var exemptedUserIDs []string
+	if err = s.db.list(q, &exemptedUserIDs); err != nil {
+		return nil, fmt.Errorf("could not get users: %s", err)
+	}
+
+	// Sets expired entry state immediately.
+	now := time.Now()
+	resell := true
+	q = s.table().GetAllByIndex("status", dgx.MarketStatusLive).
+		Filter(dgx.Market{Type: dgx.MarketTypeAsk, Resell: &resell}).
+		Filter(func(entry r.Term) r.Term {
+			return r.Expr(exemptedUserIDs).Contains(entry.Field(marketFieldUserID)).Not()
+		}).
+		Update(dgx.Market{
+			Status: dgx.MarketStatusExpired, UpdatedAt: &now,
+		})
+	if err = s.db.update(q); err != nil {
+		return nil, fmt.Errorf("could not update expiring markets: %s", err)
+	}
+
+	// Collect and return affected item ids.
+	q = s.table().GetAllByIndex("status", dgx.MarketStatusExpired).Filter(dgx.Market{UpdatedAt: &now}).
+		Group(marketFieldItemID).Count().Ungroup().
+		Field("group")
+	var itemIDs []string
+	if err = s.db.list(q, &itemIDs); err != nil {
+		return nil, fmt.Errorf("could not get affected markets: %s", err)
+	}
+
+	return itemIDs, nil
+}
+
 func (s *marketStorage) BulkDeleteByStatus(ms dgx.MarketStatus, cutOff time.Time, limit int) error {
 	if ms != dgx.MarketStatusRemoved && ms != dgx.MarketStatusExpired {
 		return fmt.Errorf("market status %s not allowed to bulk delete", ms)
