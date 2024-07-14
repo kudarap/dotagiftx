@@ -186,6 +186,14 @@ export default function Header() {
               Bans
               <LatestBan />
             </Link>
+            <Link
+              className={classes.nav}
+              href="https://discord.gg/UFt9Ny42kM"
+              target="_blank"
+              rel="noreferrer noopener"
+              underline="none">
+              Discord
+            </Link>
             <MoreMenu />
 
             <NoSsr>
@@ -336,7 +344,7 @@ function MoreMenu() {
           </MenuItem>
         ))}
 
-        <MenuItem
+        {/* <MenuItem
           onClick={popupState.close}
           component={Link}
           href="https://discord.gg/UFt9Ny42kM"
@@ -344,7 +352,7 @@ function MoreMenu() {
           rel="noreferrer noopener"
           disableUnderline>
           Discord
-        </MenuItem>
+        </MenuItem> */}
         {/* <MenuItem onClick={popupState.close} component={Link} href="/plus" disableUnderline>
           Dotagift<span style={{ fontSize: 20 }}>+</span>
         </MenuItem> */}
