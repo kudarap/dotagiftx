@@ -2,11 +2,14 @@ package service
 
 import (
 	"context"
+	"strings"
 
 	dgx "github.com/kudarap/dotagiftx"
 )
 
 func (s *marketService) Catalog(opts dgx.FindOpts) ([]dgx.Catalog, *dgx.FindMetadata, error) {
+	opts.Keyword = strings.ReplaceAll(opts.Keyword, `\`, "")
+
 	res, err := s.catalogStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
