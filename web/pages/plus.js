@@ -88,7 +88,7 @@ export default function Plus() {
               color="secondary">
               Dotagift Plus
             </Typography>
-            <Typography variant="h6">
+            <Typography variant="h6" sx={{ mb: 2 }}>
               Help support DotagiftX and get exclusive feature access, dedicated support, and
               profile badge.
             </Typography>
@@ -216,7 +216,7 @@ export default function Plus() {
             dashboard.
           </Typography>
 
-          <Box sx={{ mt: 5 }}>
+          <Box>
             <Typography variant="h6" sx={{ mb: 2 }} id="exclusive-features">
               Exclusive Features
             </Typography>
