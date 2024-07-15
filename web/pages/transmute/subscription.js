@@ -185,7 +185,16 @@ export default function Subscription({ data }) {
                   rel="noreferrer noopener"
                   href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key">
                   TF2 Keys
-                </Link>{' '}
+                </Link>
+                {' '}or{' '}
+                <Link
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  href="https://steamcommunity.com/market/listings/570/Fractal%20Horns%20of%20Inner%20Abysm">
+                  TB Arcanas
+                </Link>
+                {' '}
                 with minimum of {minimumSubscriptionCycle} months and +{manualPriceOverhead * 100}% overhead for steam
                 community market conversion and manual processing fees.
               </Typography>
@@ -207,7 +216,7 @@ export default function Subscription({ data }) {
               <Box textAlign="left">
                 <ol>
                   <li>
-                    Acquire your TF2 keys and total should equate to{' '}
+                    Acquire your TF2 keys or TB Arcanas and total should equal to{' '}
                     <strong>
                       ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
                     </strong>
