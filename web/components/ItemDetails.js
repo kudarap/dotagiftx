@@ -258,8 +258,8 @@ export default function ItemDetails({
           rel="preload"
           fetchpriority="high"
           as="image"
-          href="/path/to/hero-image.webp"
-          type="image/webp"
+          href={`${CDN_URL}/${item.image}`}
+          type="image/png"
         />
       </Head>
 
