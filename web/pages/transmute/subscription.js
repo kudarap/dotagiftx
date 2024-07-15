@@ -87,8 +87,8 @@ const priceTable = {
 }
 
 const minimumCycle = {
-  partner: 3,
-  trader: 6,
+  partner: 6,
+  trader: 12,
   supporter: 12,
 }
 
