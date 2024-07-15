@@ -2,7 +2,8 @@ package steam
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -105,11 +106,12 @@ func (id *OpenId) ValidateAndGetId() (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-	content, err := ioutil.ReadAll(resp.Body)
+	content, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
+	slog.Info("[DEBUG] ValidateAndGetId", "content", string(content))
 	response := strings.Split(string(content), "\n")
 	if response[0] != "ns:"+openidNs {
 		return "", errors.New("Wrong ns in the response.")

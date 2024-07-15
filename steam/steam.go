@@ -2,6 +2,7 @@ package steam
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -43,6 +44,8 @@ func (c *Client) Authenticate(r *http.Request) (*dgx.SteamPlayer, error) {
 	if m == "cancel" {
 		return nil, fmt.Errorf("authorization cancelled")
 	}
+
+	slog.Info("[DEBUG]", "oid", oid, "config", c.config)
 
 	id, err := oid.ValidateAndGetId()
 	if err != nil {
