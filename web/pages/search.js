@@ -98,6 +98,7 @@ export default function Search({ catalogs: initialCatalogs, marketSummary, filte
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
         <link rel="canonical" href={canonicalURL} />

@@ -55,6 +55,7 @@ export default function Middlemen() {
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Middlemen</title>
       </Head>
 

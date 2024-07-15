@@ -107,6 +107,7 @@ export default function About() {
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Feedback and Report</title>
       </Head>
 

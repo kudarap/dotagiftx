@@ -88,6 +88,7 @@ export default function Blacklist() {
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Banned users</title>
       </Head>
 

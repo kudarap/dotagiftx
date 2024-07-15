@@ -24,6 +24,7 @@ export default function About() {
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Post Item</title>
       </Head>
 

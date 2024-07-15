@@ -96,6 +96,7 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
       <Header />
 
       <Head>
+        <meta charset="UTF-8" />
         <title>{`${APP_NAME} :: ${profile.name} reserved items`}</title>
         <meta name="description" content={`${profile.name}'s on-reserved Giftable items`} />
         <link rel="canonical" href={canonicalURL} />

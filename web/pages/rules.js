@@ -32,6 +32,7 @@ export default function Version() {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Rules</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>

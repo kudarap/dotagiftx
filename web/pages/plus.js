@@ -64,6 +64,7 @@ export default function Plus() {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Plus</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>

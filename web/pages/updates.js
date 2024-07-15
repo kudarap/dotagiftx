@@ -24,6 +24,7 @@ export default function Updates() {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Updates</title>
       </Head>
 

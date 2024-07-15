@@ -23,6 +23,7 @@ export default function Privacy() {
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Privacy Policy</title>
       </Head>
 
