@@ -3,7 +3,6 @@ package steam
 import (
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 
 	jsoniter "github.com/json-iterator/go"
@@ -36,8 +35,6 @@ type PlayerSummaries struct {
 }
 
 func GetPlayerSummaries(steamId, apiKey string) (*PlayerSummaries, error) {
-	slog.Info("[DEBUG]  GetPlayerSummaries", "steamId", steamId, "apiKey", apiKey)
-
 	url := fmt.Sprintf("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=%s&steamids=%s", apiKey, steamId)
 	resp, err := http.Get(url)
 	if err != nil {

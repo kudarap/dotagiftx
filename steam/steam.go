@@ -2,7 +2,6 @@ package steam
 
 import (
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -45,14 +44,11 @@ func (c *Client) Authenticate(r *http.Request) (*dgx.SteamPlayer, error) {
 		return nil, fmt.Errorf("authorization cancelled")
 	}
 
-	slog.Info("[DEBUG] Authenticate ValidateAndGetId", "oid", oid, "config", c.config)
-
 	id, err := oid.ValidateAndGetId()
 	if err != nil {
 		return nil, fmt.Errorf("could not validate player: %s", err)
 	}
 
-	slog.Info("[DEBUG] Authenticate Player", "oid", oid, "config", c.config)
 	p, err := c.Player(id)
 	if err != nil {
 		return nil, fmt.Errorf("could not get player: %s", err)

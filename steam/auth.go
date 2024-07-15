@@ -3,7 +3,6 @@ package steam
 import (
 	"errors"
 	"io"
-	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -112,7 +111,6 @@ func (id *OpenId) ValidateAndGetId() (string, error) {
 	}
 
 	response := strings.Split(string(content), "\n")
-	slog.Info("[DEBUG] ValidateAndGetId", "response", response)
 	if response[0] != "ns:"+openidNs {
 		return "", errors.New("Wrong ns in the response.")
 	}
