@@ -79,28 +79,21 @@ func (s *userService) Update(ctx context.Context, u *dgx.User) error {
 }
 
 func (s *userService) SteamSync(sp *dgx.SteamPlayer) (*dgx.User, error) {
-	opts := dgx.FindOpts{Filter: dgx.User{SteamID: sp.ID}, IndexKey: "steam_id"}
-	res, err := s.userStg.Find(opts)
+	u, err := s.userStg.Get(sp.ID)
 	if err != nil {
 		return nil, err
 	}
-	if len(res) == 0 {
-		return nil, dgx.UserErrNotFound
-	}
 
-	u := res[0]
 	u.Name = sp.Name
 	u.URL = sp.URL
 	u.Avatar, err = s.downloadProfileImage(sp.Avatar)
 	if err != nil {
 		return nil, err
 	}
-
-	if err = s.userStg.Update(&u); err != nil {
+	if err = s.userStg.Update(u); err != nil {
 		return nil, err
 	}
-
-	return &u, nil
+	return u, nil
 }
 
 func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID string) (*dgx.User, error) {
