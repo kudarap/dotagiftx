@@ -84,6 +84,10 @@ func (s *userService) SteamSync(sp *dgx.SteamPlayer) (*dgx.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(res) == 0 {
+		return nil, dgx.UserErrNotFound
+	}
+
 	u := res[0]
 	u.Name = sp.Name
 	u.URL = sp.URL

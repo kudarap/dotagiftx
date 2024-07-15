@@ -111,8 +111,8 @@ func (id *OpenId) ValidateAndGetId() (string, error) {
 		return "", err
 	}
 
-	slog.Info("[DEBUG] ValidateAndGetId", "content", string(content))
 	response := strings.Split(string(content), "\n")
+	slog.Info("[DEBUG] ValidateAndGetId", "response", response)
 	if response[0] != "ns:"+openidNs {
 		return "", errors.New("Wrong ns in the response.")
 	}

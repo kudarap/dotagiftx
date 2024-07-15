@@ -45,14 +45,19 @@ func (c *Client) Authenticate(r *http.Request) (*dgx.SteamPlayer, error) {
 		return nil, fmt.Errorf("authorization cancelled")
 	}
 
-	slog.Info("[DEBUG]", "oid", oid, "config", c.config)
+	slog.Info("[DEBUG] Authenticate ValidateAndGetId", "oid", oid, "config", c.config)
 
 	id, err := oid.ValidateAndGetId()
 	if err != nil {
 		return nil, fmt.Errorf("could not validate player: %s", err)
 	}
 
-	return c.Player(id)
+	slog.Info("[DEBUG] Authenticate Player", "oid", oid, "config", c.config)
+	p, err := c.Player(id)
+	if err != nil {
+		return nil, fmt.Errorf("could not get player: %s", err)
+	}
+	return p, nil
 }
 
 func (c *Client) Player(steamID string) (*dgx.SteamPlayer, error) {
