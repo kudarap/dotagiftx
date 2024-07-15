@@ -199,7 +199,7 @@ export default function Subscription({ data }) {
                   {Math.round((subscriptionPrice * minimumSubscriptionCycle) * manualPriceOverhead)}
                   <br />
                   <strong>
-                    Total = ${Math.round(subscriptionPrice * minimumSubscriptionCycle * 1 + manualPriceOverhead)}
+                    Total = ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
                   </strong>
                 </Typography>
               </Box>
@@ -209,7 +209,7 @@ export default function Subscription({ data }) {
                   <li>
                     Acquire your TF2 keys and total should equate to{' '}
                     <strong>
-                      ${Math.round(subscriptionPrice * minimumSubscriptionCycle * 1 + manualPriceOverhead)}
+                      ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
                     </strong>
                     .
                   </li>
