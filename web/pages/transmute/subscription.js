@@ -92,6 +92,8 @@ const minimumCycle = {
   supporter: 12,
 }
 
+const manualPriceOverhead = 0.6
+
 export default function Subscription({ data }) {
   const { currentAuth } = useContext(AppContext)
 
@@ -184,7 +186,7 @@ export default function Subscription({ data }) {
                   href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key">
                   TF2 Keys
                 </Link>{' '}
-                with minimum of {minimumSubscriptionCycle} months and +70% overhead for steam
+                with minimum of {minimumSubscriptionCycle} months and +{manualPriceOverhead * 100}% overhead for steam
                 community market conversion and manual processing fees.
               </Typography>
 
@@ -193,14 +195,11 @@ export default function Subscription({ data }) {
                   <br />${subscriptionPrice} x {minimumSubscriptionCycle} months = $
                   {subscriptionPrice * minimumSubscriptionCycle}
                   <br />
-                  +60% SCM conversion = $
-                  {Math.round(subscriptionPrice * minimumSubscriptionCycle * 0.6)}
-                  <br />
-                  +10% processing fee = $
-                  {Math.round(subscriptionPrice * minimumSubscriptionCycle * 0.1)}
+                  +10% SCM overhead fee = $
+                  {Math.round(subscriptionPrice * minimumSubscriptionCycle * manualPriceOverhead)}
                   <br />
                   <strong>
-                    Total = ${Math.round(subscriptionPrice * minimumSubscriptionCycle * 1.7)}
+                    Total = ${Math.round(subscriptionPrice * minimumSubscriptionCycle * 1 + manualPriceOverhead)}
                   </strong>
                 </Typography>
               </Box>
@@ -210,7 +209,7 @@ export default function Subscription({ data }) {
                   <li>
                     Acquire your TF2 keys and total should equate to{' '}
                     <strong>
-                      ${Math.round(subscriptionPrice * minimumSubscriptionCycle * 1.7)}
+                      ${Math.round(subscriptionPrice * minimumSubscriptionCycle * 1 + manualPriceOverhead)}
                     </strong>
                     .
                   </li>
