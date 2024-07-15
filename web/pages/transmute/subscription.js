@@ -173,7 +173,7 @@ export default function Subscription({ data }) {
           <Divider sx={{ mt: 5, mb: 5 }} />
 
           {isReady && (
-            <Box sx={{ maxWidth: 500, m: 'auto' }} textAlign="center">
+            <Box sx={{ maxWidth: 600, m: 'auto' }} textAlign="center">
               <Typography variant="h6" sx={{ mb: 1 }}>
                 Paypal is not supported in your country?
               </Typography>
@@ -216,7 +216,7 @@ export default function Subscription({ data }) {
               <Box textAlign="left">
                 <ol>
                   <li>
-                    Acquire your TF2 keys or TB Arcanas and total should equal to{' '}
+                    Acquire your TF2 keys and/or TB Arcanas and total should equal to{' '}
                     <strong>
                       ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
                     </strong>
