@@ -196,7 +196,7 @@ export default function Subscription({ data }) {
                   {subscriptionPrice * minimumSubscriptionCycle}
                   <br />
                   +{manualPriceOverhead * 100}% SCM overhead fee = $
-                  {Math.round(subscriptionPrice * minimumSubscriptionCycle * manualPriceOverhead)}
+                  {Math.round((subscriptionPrice * minimumSubscriptionCycle) * manualPriceOverhead)}
                   <br />
                   <strong>
                     Total = ${Math.round(subscriptionPrice * minimumSubscriptionCycle * 1 + manualPriceOverhead)}
