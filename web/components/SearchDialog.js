@@ -44,7 +44,7 @@ function SearchDialog({ open, onClose }) {
             sx={{ fontSize: '1.1em' }}
             startAdornment={<SearchIcon sx={{ mr: 2, fontSize: '1.1em' }} />}
             endAdornment={<DialogCloseButton sx={{ fontSize: '1.1em' }} onClick={onClose} />}
-            placeholder="Search..."
+            placeholder="Search for item, hero, or treasure"
             onChange={e => setKeyword(e.target.value)}
           />
         </DialogTitle>
