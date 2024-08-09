@@ -13,10 +13,76 @@ import { APP_NAME } from '@/constants/strings'
 
 const treasures = [
   {
+    name: "Crownfall 2024 Collector's Cache",
+    image: 'crownfall_2024_collect_s_cache.png',
+    rarity: 'mythical',
+    items: 16,
+  },
+  {
+    name: 'Crownfall Treasure I',
+    image: 'crownfall_treasure_i.png',
+    rarity: 'mythical',
+    items: 12,
+  },
+  {
+    name: 'Crownfall Treasure II',
+    image: 'crownfall_treasure_ii.png',
+    rarity: 'mythical',
+    items: 12,
+  },
+  {
+    name: 'Crownfall Treasure III',
+    image: 'crownfall_treasure_iii.png',
+    rarity: 'mythical',
+    items: 11,
+  },
+  {
+    name: 'Dead Reckoning Chest',
+    image: 'dead_reckoning_chest.png',
+    rarity: 'mythical',
+    items: 14,
+  },
+  {
+    name: "August 2023 Collector's Cache",
+    image: 'august_2023_collector_s_cache.png',
+    rarity: 'mythical',
+    items: 16,
+  },
+  {
+    name: "Diretide 2022 Collector's Cache II",
+    image: 'diretide_2022_collector_s_cache_ii.png',
+    rarity: 'immortal',
+    items: 17,
+  },
+  {
+    name: "Diretide 2022 Collector's Cache",
+    image: 'diretide_2022_collector_s_cache.png',
+    rarity: 'immortal',
+    items: 18,
+  },
+  {
     name: 'Immortal Treasure I 2022',
     image: 'immortal_treasure_i_2022.png',
     rarity: 'immortal',
     items: 9,
+  },
+  {
+    name: 'Immortal Treasure II 2022',
+    image: 'immortal_treasure_ii_2022.png',
+    rarity: 'immortal',
+    items: 9,
+  },
+  {
+    name: 'The Battle Pass Collection 2022',
+    image: 'the_battle_pass_collection_2022.png',
+    rarity: 'immortal',
+    items: 8,
+  },
+  {
+    name: 'Ageless Heirlooms 2022',
+    image: 'ageless_heirlooms_2022.png',
+    rarity: 'immortal',
+    items: 10,
   },
   {
     name: "Aghanim's 2021 Collector's Cache",
@@ -157,6 +223,7 @@ export default function Treasures() {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: All Giftable Treasures</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -169,12 +236,15 @@ export default function Treasures() {
             width: '100%',
             height: 500,
             maskImage: 'linear-gradient(to top, transparent 25%, black 100%)',
+            WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
+            top: -7,
           }}>
           <div
             style={{
-              background: 'url(/assets/treasure-banner.png) no-repeat top center',
+              background: 'url(/assets/venge_arcana.png) no-repeat bottom center',
+              backgroundPosition: 'center',
               width: '100%',
               height: '100%',
             }}></div>

@@ -9,6 +9,7 @@ import Private from '@mui/icons-material/VisibilityOff'
 // import Private from '@mui/icons-material/Block'
 import Error from '@mui/icons-material/ErrorOutline'
 import ManualCheckIcon from '@mui/icons-material/CheckCircleOutline'
+import PendingIcon from '@mui/icons-material/Pending'
 
 const iconStyle = {
   style: {
@@ -28,10 +29,15 @@ const resellStyle = {
   style: { ...iconStyle.style, color: 'aqua' },
 }
 
+const pendingStyle = {
+  style: { ...iconStyle.style, color: 'grey' },
+}
+
 const ultraStyle = {
   style: { ...iconStyle.style, color: 'gold' },
 }
 
+export const VERIFIED_INVENTORY_PENDING = 0
 export const VERIFIED_INVENTORY_NOHIT = 100
 export const VERIFIED_INVENTORY_VERIFIED = 200
 export const VERIFIED_INVENTORY_VERIFIED_RESELL = 201
@@ -52,6 +58,7 @@ export const VERIFIED_INVENTORY_MAP_TEXT = {
 }
 
 export const VERIFIED_INVENTORY_MAP_ICON = {
+  [VERIFIED_INVENTORY_PENDING]: <PendingIcon {...pendingStyle} />,
   [VERIFIED_INVENTORY_NOHIT]: <NoHitIcon {...iconStyle} />,
   [VERIFIED_INVENTORY_VERIFIED]: <CheckIcon {...rareStyle} />,
   [VERIFIED_INVENTORY_VERIFIED_RESELL]: <ManualCheckIcon {...resellStyle} />,

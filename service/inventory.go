@@ -4,22 +4,22 @@ import (
 	"context"
 	"log"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewInventory returns new Inventory service.
-func NewInventory(rs core.InventoryStorage, ms core.MarketStorage, cs core.CatalogStorage) core.InventoryService {
+func NewInventory(rs dgx.InventoryStorage, ms dgx.MarketStorage, cs dgx.CatalogStorage) dgx.InventoryService {
 	return &InventoryService{rs, ms, cs}
 }
 
 type InventoryService struct {
-	inventoryStg core.InventoryStorage
-	marketStg    core.MarketStorage
-	catalogStg   core.CatalogStorage
+	inventoryStg dgx.InventoryStorage
+	marketStg    dgx.MarketStorage
+	catalogStg   dgx.CatalogStorage
 }
 
-func (s *InventoryService) Inventories(opts core.FindOpts) ([]core.Inventory, *core.FindMetadata, error) {
+func (s *InventoryService) Inventories(opts dgx.FindOpts) ([]dgx.Inventory, *dgx.FindMetadata, error) {
 	res, err := s.inventoryStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -35,15 +35,15 @@ func (s *InventoryService) Inventories(opts core.FindOpts) ([]core.Inventory, *c
 		return nil, nil, err
 	}
 
-	return res, &core.FindMetadata{
+	return res, &dgx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
 	}, nil
 }
 
-func (s *InventoryService) Inventory(id string) (*core.Inventory, error) {
+func (s *InventoryService) Inventory(id string) (*dgx.Inventory, error) {
 	inv, err := s.inventoryStg.Get(id)
-	if err != nil && err != core.InventoryErrNotFound {
+	if err != nil && err != dgx.InventoryErrNotFound {
 		return nil, err
 	}
 	if inv != nil {
@@ -54,13 +54,13 @@ func (s *InventoryService) Inventory(id string) (*core.Inventory, error) {
 	return s.inventoryStg.GetByMarketID(id)
 }
 
-func (s *InventoryService) InventoryByMarketID(marketID string) (*core.Inventory, error) {
+func (s *InventoryService) InventoryByMarketID(marketID string) (*dgx.Inventory, error) {
 	return s.inventoryStg.GetByMarketID(marketID)
 }
 
-func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {
+func (s *InventoryService) Set(_ context.Context, inv *dgx.Inventory) error {
 	if err := inv.CheckCreate(); err != nil {
-		return errors.New(core.InventoryErrRequiredFields, err)
+		return errors.New(dgx.InventoryErrRequiredFields, err)
 	}
 
 	defer func() {
@@ -74,7 +74,7 @@ func (s *InventoryService) Set(_ context.Context, inv *core.Inventory) error {
 	}()
 
 	// Update market Inventory status.
-	if err := s.marketStg.BaseUpdate(&core.Market{
+	if err := s.marketStg.BaseUpdate(&dgx.Market{
 		ID:              inv.MarketID,
 		InventoryStatus: inv.Status,
 	}); err != nil {

@@ -22,12 +22,14 @@ const marketReservedFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_RESERVED,
   sort: 'updated_at:desc',
+  index: 'item_id',
 }
 
 const marketDeliveredFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_SOLD,
   sort: 'updated_at:desc',
+  index: 'item_id',
 }
 
 const ItemGraph = ({ itemId = '', itemName = '' }) => {

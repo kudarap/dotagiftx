@@ -4,7 +4,7 @@ Market place for giftable Dota 2 items
 
 ### Tech Stack
 
-- Go 1.19
+- Go 1.22
 - RethinkDB 2.4
 - Redis 6.0
 - Docker 20

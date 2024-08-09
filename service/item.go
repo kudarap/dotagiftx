@@ -8,22 +8,22 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	"gopkg.in/yaml.v3"
 )
 
 // NewItem returns new Item service.
-func NewItem(is core.ItemStorage, fm core.FileManager) core.ItemService {
+func NewItem(is dgx.ItemStorage, fm dgx.FileManager) dgx.ItemService {
 	return &itemService{is, fm}
 }
 
 type itemService struct {
-	itemStg core.ItemStorage
-	fileMgr core.FileManager
+	itemStg dgx.ItemStorage
+	fileMgr dgx.FileManager
 }
 
-func (s *itemService) Items(opts core.FindOpts) ([]core.Item, *core.FindMetadata, error) {
+func (s *itemService) Items(opts dgx.FindOpts) ([]dgx.Item, *dgx.FindMetadata, error) {
 	res, err := s.itemStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -39,18 +39,18 @@ func (s *itemService) Items(opts core.FindOpts) ([]core.Item, *core.FindMetadata
 		return nil, nil, err
 	}
 
-	return res, &core.FindMetadata{
+	return res, &dgx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
 	}, nil
 }
 
-func (s *itemService) Item(id string) (*core.Item, error) {
+func (s *itemService) Item(id string) (*dgx.Item, error) {
 	return s.itemStg.Get(id)
 }
 
 func (s *itemService) TopOrigins() ([]string, error) {
-	items, err := s.itemStg.Find(core.FindOpts{})
+	items, err := s.itemStg.Find(dgx.FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (s *itemService) TopOrigins() ([]string, error) {
 }
 
 func (s *itemService) TopHeroes() ([]string, error) {
-	items, err := s.itemStg.Find(core.FindOpts{})
+	items, err := s.itemStg.Find(dgx.FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -85,11 +85,11 @@ func (s *itemService) TopHeroes() ([]string, error) {
 	return ph, nil
 }
 
-func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
+func (s *itemService) Create(ctx context.Context, itm *dgx.Item) error {
 	// TODO check moderator/contributors
-	au := core.AuthFromContext(ctx)
+	au := dgx.AuthFromContext(ctx)
 	if au == nil {
-		return core.AuthErrNoAccess
+		return dgx.AuthErrNoAccess
 	}
 	itm.Contributors = []string{au.UserID}
 
@@ -98,7 +98,7 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 	itm.Rarity = strings.ToLower(itm.Rarity)
 	itm = itm.SetDefaults()
 	if err := itm.CheckCreate(); err != nil {
-		return errors.New(core.ItemErrRequiredFields, err)
+		return errors.New(dgx.ItemErrRequiredFields, err)
 	}
 
 	if err := s.itemStg.IsItemExist(itm.Name); err != nil {
@@ -119,15 +119,15 @@ func (s *itemService) Create(ctx context.Context, itm *core.Item) error {
 	return s.itemStg.Create(itm)
 }
 
-func (s *itemService) Update(ctx context.Context, itm *core.Item) error {
+func (s *itemService) Update(ctx context.Context, itm *dgx.Item) error {
 	// TODO check moderator/contributors
-	au := core.AuthFromContext(ctx)
+	au := dgx.AuthFromContext(ctx)
 	if au == nil {
-		return core.AuthErrNoAccess
+		return dgx.AuthErrNoAccess
 	}
 
 	if itm.ID == "" {
-		return core.ItemErrRequiredID
+		return dgx.ItemErrRequiredID
 	}
 
 	itm.Name = strings.TrimSpace(itm.Name)
@@ -156,22 +156,22 @@ type yamlFile struct {
 	} `yaml:"items"`
 }
 
-func (s *itemService) Import(ctx context.Context, f io.Reader) (core.ItemImportResult, error) {
-	res := core.ItemImportResult{}
+func (s *itemService) Import(ctx context.Context, f io.Reader) (dgx.ItemImportResult, error) {
+	res := dgx.ItemImportResult{}
 
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
-		return res, errors.New(core.ItemErrImport, err)
+		return res, errors.New(dgx.ItemErrImport, err)
 	}
 
 	yf := &yamlFile{}
 	if err := yaml.Unmarshal(b, yf); err != nil {
-		return res, errors.New(core.ItemErrImport, err)
+		return res, errors.New(dgx.ItemErrImport, err)
 	}
 
 	res.Total = len(yf.Items)
 	for _, ii := range yf.Items {
-		itm := &core.Item{
+		itm := &dgx.Item{
 			Origin: yf.Origin,
 			Name:   ii.Name,
 			Hero:   ii.Hero,
@@ -200,14 +200,14 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (core.ItemImportR
 	return res, nil
 }
 
-func (s *itemService) getItemByName(name string) (*core.Item, error) {
-	itm, err := s.itemStg.Find(core.FindOpts{Filter: core.Item{Name: name}})
+func (s *itemService) getItemByName(name string) (*dgx.Item, error) {
+	itm, err := s.itemStg.Find(dgx.FindOpts{Filter: dgx.Item{Name: name}})
 	if err != nil {
 		return nil, err
 	}
 
 	if len(itm) == 0 {
-		return nil, core.ItemErrNotFound
+		return nil, dgx.ItemErrNotFound
 	}
 
 	return &itm[0], nil

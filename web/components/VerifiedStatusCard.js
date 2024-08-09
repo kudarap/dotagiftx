@@ -19,6 +19,7 @@ import {
   VERIFIED_DELIVERY_MAP_TEXT,
   VERIFIED_INVENTORY_MAP_LABEL,
   VERIFIED_INVENTORY_MAP_TEXT,
+  VERIFIED_INVENTORY_PENDING,
 } from '@/constants/verified'
 import { dateFromNow } from '@/lib/format'
 import Link from '@/components/Link'
@@ -61,6 +62,11 @@ export default function VerifiedStatusCard({ market, ...other }) {
   }
 
   const { inventory, delivery } = market
+
+  if (market.inventory_status == VERIFIED_INVENTORY_PENDING) {
+    return <PendingCard data={market} />
+  }
+
   let inventoryURL = getInventoryURL(market.user.steam_id)
   let source = inventory
   let mapLabel = VERIFIED_INVENTORY_MAP_LABEL
@@ -233,6 +239,21 @@ function ResellCard({ data }) {
         </Typography>
         <Typography component="p">
           Item manually verified by seller from partner&apos;s inventory
+        </Typography>
+      </CardContent>
+    </CardX>
+  )
+}
+
+function PendingCard({ data }) {
+  return (
+    <CardX>
+      <CardContent>
+        <Typography variant="h5" component="h2">
+          Pending
+        </Typography>
+        <Typography color="textSecondary" variant="body2" component="p">
+          Posted {dateFromNow(data.created_at)} and processing for verification
         </Typography>
       </CardContent>
     </CardX>

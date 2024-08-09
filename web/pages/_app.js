@@ -9,6 +9,7 @@ import theme from '@/lib/theme'
 import createEmotionCache from '@/lib/createEmotionCache'
 import Root from '@/components/Root'
 import '@/components/Avatar.css'
+import { Analytics } from '@vercel/analytics/react'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache
@@ -19,6 +20,7 @@ export default function MyApp(props) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Dota 2 Giftables Community Market</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
         {/* <meta */}
@@ -32,6 +34,7 @@ export default function MyApp(props) {
 
         <Root>
           <Component {...pageProps} />
+          <Analytics />
         </Root>
       </ThemeProvider>
     </CacheProvider>

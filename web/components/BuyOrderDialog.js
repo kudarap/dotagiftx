@@ -20,6 +20,15 @@ import { MARKET_NOTES_MAX_LEN, MARKET_TYPE_BID, MARKET_BID_EXPR_DAYS } from '@/c
 import { itemRarityColorMap } from '@/constants/palette'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import Button from '@/components/Button'
+import { Paper } from '@mui/material'
+import {
+  USER_SUBSCRIPTION_MAP_COLOR,
+  USER_SUBSCRIPTION_PARTNER,
+  USER_SUBSCRIPTION_SUPPORTER,
+  USER_SUBSCRIPTION_TRADER,
+} from '@/constants/user'
+import RefresherOrbBoon from './RefresherOrbBoon'
+import RefresherShardBoon from './RefresherShardBoon'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -78,6 +87,7 @@ export default function BuyOrderDialog(props) {
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
+  const [subscription, setSubscription] = React.useState(null)
   const [boons, setBoons] = React.useState([])
   useEffect(() => {
     if (!isLoggedIn) {
@@ -86,8 +96,9 @@ export default function BuyOrderDialog(props) {
 
     ;(async () => {
       const user = await myProfile.GET(true)
-      console.log(user.boons)
-      setBoons(user.boons || [])
+      const boons = [...(user?.boons || [])]
+      setSubscription(user?.subscription || null)
+      setBoons(boons)
     })()
   }, [isLoggedIn])
 
@@ -154,6 +165,12 @@ export default function BuyOrderDialog(props) {
 
   const isInputDisabled = loading || Boolean(market) || !isLoggedIn
 
+  const subscribersColor = USER_SUBSCRIPTION_MAP_COLOR[subscription]
+
+  const refresherOrbOnly =
+    (boons.indexOf('REFRESHER_ORB') !== -1 && boons.indexOf('REFRESHER_SHARD') !== -1) ||
+    boons.indexOf('REFRESHER_ORB') !== -1
+
   return (
     <Dialog
       fullScreen={isMobile}
@@ -161,7 +178,14 @@ export default function BuyOrderDialog(props) {
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
-      <form onSubmit={handleSubmit}>
+      <Paper
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          transition: `box-shadow .5s ease-in-out, border .2s`,
+          borderTop: subscribersColor ? `5px solid ${subscribersColor}` : null,
+          boxShadow: subscribersColor ? `0 0 15px ${subscribersColor}` : null,
+        }}>
         <DialogTitle id="alert-dialog-title">
           <DialogCloseButton onClick={handleClose} />
           Buy - {catalog.name}
@@ -276,26 +300,18 @@ export default function BuyOrderDialog(props) {
             </Button>
           )}
 
-          {boons &&
-            boons.indexOf('REFRESHER_ORB') === -1 &&
-            boons.indexOf('REFRESHER_SHARD') === -1 && (
-              <div align="center">
-                <Typography
-                  sx={{ color: 'salmon' }}
-                  component={Link}
-                  variant="body2"
-                  href="/expiring-posts">
-                  This buy order will expires in {MARKET_BID_EXPR_DAYS} days -{' '}
-                  {moment().add(MARKET_BID_EXPR_DAYS, 'days').calendar()}
-                </Typography>
-              </div>
-            )}
+          {refresherOrbOnly ? (
+            <RefresherOrbBoon boons={boons} />
+          ) : (
+            <RefresherShardBoon boons={boons} />
+          )}
 
           <div style={{ marginTop: 2 }}>
             {Boolean(market) && (
               <Alert
                 severity="success"
                 variant="filled"
+                sx={{ color: 'primary.main' }}
                 action={
                   <Button color="inherit" size="small" onClick={handleDone}>
                     Done
@@ -348,7 +364,7 @@ export default function BuyOrderDialog(props) {
             </ul>
           </Typography>
         </DialogContent>
-      </form>
+      </Paper>
     </Dialog>
   )
 }

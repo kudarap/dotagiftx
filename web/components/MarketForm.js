@@ -7,9 +7,9 @@ import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import SubmitIcon from '@mui/icons-material/Check'
 import Alert from '@mui/material/Alert'
-import moment from 'moment'
 import { catalog, myMarket, myProfile } from '@/service/api'
 import { APP_NAME } from '@/constants/strings'
+import { USER_SUBSCRIPTION_MAP_COLOR } from '@/constants/user'
 import { itemRarityColorMap } from '@/constants/palette'
 import * as format from '@/lib/format'
 import * as url from '@/lib/url'
@@ -17,10 +17,11 @@ import Button from '@/components/Button'
 import ItemAutoComplete from '@/components/ItemAutoComplete'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
-import { MARKET_ASK_EXPR_DAYS, MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
+import { MARKET_NOTES_MAX_LEN, MARKET_QTY_LIMIT } from '@/constants/market'
 import { VERIFIED_INVENTORY_VERIFIED, VERIFIED_DELIVERY_MAP_ICON } from '@/constants/verified'
 import AppContext from '@/components/AppContext'
 import ReSellInput from './ReSellerInput'
+import RefresherOrbBoon from './RefresherOrbBoon'
 
 const useStyles = makeStyles()(theme => ({
   root: {
@@ -92,6 +93,7 @@ export default function MarketForm() {
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
+  const [subscription, setSubscription] = React.useState(null)
   const [boons, setBoons] = React.useState([])
   useEffect(() => {
     if (!isLoggedIn) {
@@ -100,8 +102,8 @@ export default function MarketForm() {
 
     ;(async () => {
       const user = await myProfile.GET(true)
-      console.log(user.boons)
-      setBoons(user.boons || [])
+      setSubscription(user?.subscription || null)
+      setBoons(user?.boons || [])
     })()
   }, [isLoggedIn])
 
@@ -208,6 +210,8 @@ export default function MarketForm() {
     setPayload({ ...payload, qty })
   }
 
+  const subscribersColor = USER_SUBSCRIPTION_MAP_COLOR[subscription]
+
   return (
     <>
       {!isLoggedIn && (
@@ -219,7 +223,15 @@ export default function MarketForm() {
         </>
       )}
 
-      <Paper component="form" className={classes.root} onSubmit={handleSubmit}>
+      <Paper
+        component="form"
+        className={classes.root}
+        sx={{
+          transition: `box-shadow .5s ease-in-out, border .2s`,
+          borderTop: subscribersColor ? `5px solid ${subscribersColor}` : null,
+          boxShadow: subscribersColor ? `0 0 15px ${subscribersColor}` : null,
+        }}
+        onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1">
           Post your item on {APP_NAME}
         </Typography>
@@ -368,24 +380,12 @@ export default function MarketForm() {
           </Button>
         )}
 
-        {boons && boons.indexOf('REFRESHER_ORB') === -1 && (
-          <div align="center">
-            <Typography
-              sx={{ color: 'salmon' }}
-              component={Link}
-              variant="body2"
-              href="/expiring-posts">
-              This listing will expires in {MARKET_ASK_EXPR_DAYS} days -{' '}
-              {moment().add(MARKET_ASK_EXPR_DAYS, 'days').calendar()}
-            </Typography>
-          </div>
-        )}
-
-        <div style={{ marginTop: 2 }}>
+        <div style={{ marginTop: 1 }}>
           {newMarketID && (
             <Alert
               severity="success"
               variant="filled"
+              sx={{ color: 'primary.main' }}
               action={
                 <Button color="inherit" size="small" onClick={handleFormReset}>
                   Post More
@@ -404,6 +404,9 @@ export default function MarketForm() {
             </Typography>
           )}
         </div>
+
+        <RefresherOrbBoon boons={boons} />
+
         <br />
 
         <Typography variant="body2" color="textSecondary" component="div">

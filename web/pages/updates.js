@@ -8,6 +8,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Divider from '@mui/material/Divider'
 import Link from '@/components/Link'
+import LaunchIcon from '@mui/icons-material/Launch'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -24,6 +25,7 @@ export default function Updates() {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Updates</title>
       </Head>
 
@@ -31,6 +33,53 @@ export default function Updates() {
 
       <main className={classes.main}>
         <Container>
+          <Typography variant="h5" gutterBottom>
+            Jul 21, 2024
+          </Typography>
+          <Link
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.21.0">
+            {' '}
+            v0.21.0: Auto Subscription Crackdown and Crownfall Treasure{' '}
+            <LaunchIcon fontSize="relative" />
+          </Link>
+          <br />
+          <br />
+          <Divider />
+          <br />
+
+          <Typography variant="h5" gutterBottom>
+            May 6, 2024
+          </Typography>
+          <Link
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.20.0">
+            {' '}
+            v0.20.0: Span tracing, Task Queue, and Optimizations <LaunchIcon fontSize="relative" />
+          </Link>
+          <br />
+          <br />
+          <Divider />
+          <br />
+
+          <Typography variant="h5" gutterBottom>
+            Sep 27, 2023
+          </Typography>
+          <Link
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.19.0">
+            {' '}
+            v0.19.0: Task verification + bunch of fixes and optimizations{' '}
+            <LaunchIcon fontSize="relative" />
+          </Link>
+          <br />
+          <br />
+          <Divider />
+          <br />
+
           <Typography variant="h5" gutterBottom>
             October 8, 2022
           </Typography>

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -91,11 +91,14 @@ export default function Search({ catalogs: initialCatalogs, marketSummary, filte
 
   const isBidType = filter.sort === 'recent-bid'
 
-  const description = `Search on ${marketSummary.live} Giftable items`
+  const handleSearchSubmit = keyword => {
+    Router.push(`/search?q=${keyword}`)
+  }
 
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
         <link rel="canonical" href={canonicalURL} />
@@ -104,7 +107,7 @@ export default function Search({ catalogs: initialCatalogs, marketSummary, filte
 
       <main className={classes.main}>
         <Container>
-          <SearchInput label="" />
+          <SearchInput value={searchTerm} onSubmit={handleSearchSubmit} label="" />
 
           <div className={classes.searchBar}>
             {searchTerm && (

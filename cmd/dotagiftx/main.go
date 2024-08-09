@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/http"
-	"github.com/kudarap/dotagiftx/jobs"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
-	"github.com/kudarap/dotagiftx/worker"
+	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
 )
 
@@ -51,7 +51,6 @@ func main() {
 type application struct {
 	config Config
 	server *http.Server
-	worker *worker.Worker
 	logger *logrus.Logger
 
 	closerFn func()
@@ -85,6 +84,8 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
+	traceSpan := tracing.NewTracer(app.config.SpanEnabled, rethink.NewSpan(rethinkClient))
+	rethinkClient.SetTracer(traceSpan)
 
 	// External services setup.
 	logSvc.Println("setting up external services...")
@@ -96,12 +97,7 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
-
-	// Setup application worker
-	app.worker = worker.New()
-	app.worker.SetLogger(app.contextLog("worker"))
-	// NOTE! this is shade I don't like this one bit
-	dispatcher := new(jobs.Dispatcher)
+	discordClient := discord.New(app.config.DiscordWebhookURL)
 
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
@@ -112,7 +108,7 @@ func (app *application) setup() error {
 	marketStg := rethink.NewMarket(rethinkClient)
 	trackStg := rethink.NewTrack(rethinkClient)
 
-	statsStg := rethink.NewStats(rethinkClient)
+	statsStg := rethink.NewStats(rethinkClient, app.contextLog("storage_stats"))
 	reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
@@ -136,26 +132,13 @@ func (app *application) setup() error {
 		deliverySvc,
 		inventorySvc,
 		steamClient,
-		dispatcher,
+		rethink.NewQueue(rethinkClient),
 		app.contextLog("service_market"),
 	)
 	trackSvc := service.NewTrack(trackStg, itemStg)
-	reportSvc := service.NewReport(reportStg)
+	reportSvc := service.NewReport(reportStg, discordClient)
 	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
-
-	// Register job on the worker.
-	*dispatcher = *jobs.NewDispatcher(
-		app.worker,
-		deliverySvc,
-		inventorySvc,
-		deliveryStg,
-		marketStg,
-		catalogStg,
-		redisClient,
-		logger,
-	)
-	dispatcher.RegisterJobs()
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
@@ -179,6 +162,7 @@ func (app *application) setup() error {
 		reportSvc,
 		hammerSvc,
 		steamClient,
+		traceSpan,
 		redisClient,
 		initVer(app.config),
 		logSvc,
@@ -188,9 +172,6 @@ func (app *application) setup() error {
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
-		if err = app.worker.Stop(); err != nil {
-			logSvc.Fatal("could not stop worker", err)
-		}
 		if err = redisClient.Close(); err != nil {
 			logSvc.Fatal("could not close redis client", err)
 		}
@@ -204,9 +185,6 @@ func (app *application) setup() error {
 
 func (app *application) run() error {
 	defer app.closerFn()
-
-	go app.worker.Start()
-
 	return app.server.Run()
 }
 
@@ -230,7 +208,7 @@ func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
 }
 
 func setupPaypal(cfg paypal.Config) (*paypal.Client, error) {
-	c, err := paypal.New(cfg.ClientID, cfg.Secret, cfg.Live)
+	c, err := paypal.New(cfg.ClientID, cfg.Secret, cfg.WebhookID, cfg.Live)
 	if err != nil {
 		return nil, fmt.Errorf("could not setup paypal client: %s", err)
 	}

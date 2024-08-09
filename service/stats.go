@@ -1,33 +1,35 @@
 package service
 
-import "github.com/kudarap/dotagiftx/core"
+import (
+	dgx "github.com/kudarap/dotagiftx"
+)
 
 // NewStats returns new Stats service.
-func NewStats(ss core.StatsStorage, ts core.TrackStorage) core.StatsService {
+func NewStats(ss dgx.StatsStorage, ts dgx.TrackStorage) dgx.StatsService {
 	return &statsService{ss, ts}
 }
 
 type statsService struct {
-	statsStg core.StatsStorage
-	trackStg core.TrackStorage
+	statsStg dgx.StatsStorage
+	trackStg dgx.TrackStorage
 }
 
-func (s *statsService) CountMarketStatus(opts core.FindOpts) (*core.MarketStatusCount, error) {
+func (s *statsService) CountMarketStatus(opts dgx.FindOpts) (*dgx.MarketStatusCount, error) {
 	return s.statsStg.CountMarketStatus(opts)
 }
 
-func (s *statsService) CountTotalMarketStatus() (*core.MarketStatusCount, error) {
-	return s.statsStg.CountMarketStatus(core.FindOpts{})
+func (s *statsService) CountTotalMarketStatus() (*dgx.MarketStatusCount, error) {
+	return s.statsStg.CountMarketStatus(dgx.FindOpts{})
 }
 
-func (s *statsService) CountUserMarketStatus(userID string) (*core.MarketStatusCount, error) {
+func (s *statsService) CountUserMarketStatus(userID string) (*dgx.MarketStatusCount, error) {
 	return s.statsStg.CountUserMarketStatus(userID)
 }
 
-func (s *statsService) GraphMarketSales(opts core.FindOpts) ([]core.MarketSalesGraph, error) {
+func (s *statsService) GraphMarketSales(opts dgx.FindOpts) ([]dgx.MarketSalesGraph, error) {
 	return s.statsStg.GraphMarketSales(opts)
 }
 
-func (s *statsService) TopKeywords() ([]core.SearchKeywordScore, error) {
+func (s *statsService) TopKeywords() ([]dgx.SearchKeywordScore, error) {
 	return s.trackStg.TopKeywords()
 }

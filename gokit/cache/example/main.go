@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/cache"
 )
 
@@ -13,7 +13,7 @@ func main() {
 
 	log.Println(cache.Get(testkey))
 	t := time.Now()
-	log.Println(cache.Set(testkey, core.Auth{
+	log.Println(cache.Set(testkey, dgx.Auth{
 		ID:        "100id",
 		UserID:    "userid299",
 		Username:  "akoko",

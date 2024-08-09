@@ -64,10 +64,10 @@ export default function ContactDialog(props) {
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>
 
-          <Typography variant="body2" color="textSecondary" component="div">
+          <Typography variant="body2" color="textSecondary">
             <br />
             Guides for buying Giftables
-            <ul>
+            <ul style={{ lineHeight: 1.7 }}>
               <li>
                 Always check the item or set availability on seller&apos;s Dota 2 {` `}
                 <Link
@@ -78,6 +78,25 @@ export default function ContactDialog(props) {
                   inventory
                 </Link>
                 .
+              </li>
+              <li>
+                Ask seller to{' '}
+                <Typography variant="inherit" component="span" color="white">
+                  Reserve
+                </Typography>{' '}
+                the item to your profile. This can be use later for{' '}
+                <Typography variant="inherit" component="span" color="white">
+                  Scam Report
+                </Typography>{' '}
+                and{' '}
+                <Link style={{ textDecoration: 'underline' }} href="/my-orders">
+                  order details
+                </Link>{' '}
+                to avoid{' '}
+                <Typography variant="inherit" component="span" color="white">
+                  impersonation
+                </Typography>
+                .<sup style={{ color: 'yellowgreen' }}>NEW</sup>
               </li>
               <li>
                 Dota 2 Giftables transaction only viable if the two steam user parties have been

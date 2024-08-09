@@ -6,7 +6,11 @@ const AUTH_KEY = 'dgAu'
 const userIDKey = 'user_id'
 
 export const get = () => {
-  return Cookies.getJSON(AUTH_KEY) || {}
+  let raw = Cookies.get(AUTH_KEY)
+  if (!raw) {
+    return {}
+  }
+  return JSON.parse(raw)
 }
 
 export const isOk = () => {
@@ -15,12 +19,7 @@ export const isOk = () => {
 }
 
 export const set = data => {
-  let opts = null
-  if (navigator.userAgent.indexOf('Safari') === -1) {
-    opts = { expires: 30, secure: true, sameSite: 'strict' }
-  }
-
-  Cookies.set(AUTH_KEY, data, opts)
+  Cookies.set(AUTH_KEY, JSON.stringify(data), { expires: 365, secure: true, sameSite: 'strict' })
 }
 
 export const clear = () => {

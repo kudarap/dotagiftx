@@ -6,14 +6,14 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
 func ReIndexAll(
-	itemStg core.ItemStorage,
-	catalogStg core.CatalogStorage,
+	itemStg dgx.ItemStorage,
+	catalogStg dgx.CatalogStorage,
 ) {
-	ii, _ := itemStg.Find(core.FindOpts{})
+	ii, _ := itemStg.Find(dgx.FindOpts{})
 	for _, item := range ii {
 		if _, err := catalogStg.Index(item.ID); err != nil {
 			log.Println("err", err)
@@ -23,31 +23,31 @@ func ReIndexAll(
 }
 
 func GenerateFakeMarket(
-	itemStg core.ItemStorage,
-	userStg core.UserStorage,
-	marketSvc core.MarketService,
+	itemStg dgx.ItemStorage,
+	userStg dgx.UserStorage,
+	marketSvc dgx.MarketService,
 ) {
 
 	ctx := context.Background()
-	ii, _ := itemStg.Find(core.FindOpts{})
-	uu, _ := userStg.Find(core.FindOpts{})
+	ii, _ := itemStg.Find(dgx.FindOpts{})
+	uu, _ := userStg.Find(dgx.FindOpts{})
 	for _, item := range ii {
 		for _, user := range uu {
-			m := &core.Market{
+			m := &dgx.Market{
 				ItemID: item.ID,
 				Price:  float64(rand.Intn(1000)) / 10,
 			}
-			auc := core.AuthToContext(ctx, &core.Auth{UserID: user.ID})
+			auc := dgx.AuthToContext(ctx, &dgx.Auth{UserID: user.ID})
 			marketSvc.Create(auc, m)
 		}
 	}
 }
 
-func ImageFileExtJPG(itemStg core.ItemStorage, userStg core.UserStorage) {
+func ImageFileExtJPG(itemStg dgx.ItemStorage, userStg dgx.UserStorage) {
 	const suf = ".jpe"
 	const newSuf = ".jpg"
 
-	items, _ := itemStg.Find(core.FindOpts{})
+	items, _ := itemStg.Find(dgx.FindOpts{})
 	for _, ii := range items {
 		if strings.HasSuffix(ii.Image, suf) {
 			ii.Image = strings.Replace(ii.Image, suf, newSuf, 1)
@@ -56,7 +56,7 @@ func ImageFileExtJPG(itemStg core.ItemStorage, userStg core.UserStorage) {
 		}
 	}
 
-	users, _ := userStg.Find(core.FindOpts{})
+	users, _ := userStg.Find(dgx.FindOpts{})
 	for _, uu := range users {
 		if strings.HasSuffix(uu.Avatar, suf) {
 			uu.Avatar = strings.Replace(uu.Avatar, suf, newSuf, 1)

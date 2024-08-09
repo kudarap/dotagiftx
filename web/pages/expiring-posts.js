@@ -13,6 +13,7 @@ export default function ThanksSubscriber() {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Expiring posts</title>
       </Head>
 

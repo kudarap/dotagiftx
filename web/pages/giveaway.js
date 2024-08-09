@@ -18,6 +18,7 @@ export default function Giveaway() {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>Giveaway</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>

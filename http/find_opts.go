@@ -6,13 +6,13 @@ import (
 	"strings"
 
 	"github.com/gorilla/schema"
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
 const defaultPageLimit = 10
 
-func findOptsFromURL(u *url.URL, filter interface{}) (core.FindOpts, error) {
-	opts := core.FindOpts{}
+func findOptsFromURL(u *url.URL, filter interface{}) (dgx.FindOpts, error) {
+	opts := dgx.FindOpts{}
 	get := u.Query().Get
 
 	// Set keyword
@@ -30,11 +30,12 @@ func findOptsFromURL(u *url.URL, filter interface{}) (core.FindOpts, error) {
 
 	// Set filter.
 	if err := findOptsFilter(u, filter); err != nil {
-		return core.FindOpts{}, err
+		return dgx.FindOpts{}, err
 	}
 	opts.Filter = filter
 	opts.WithMeta = true
 
+	opts.IndexKey = get("index")
 	return opts, nil
 }
 

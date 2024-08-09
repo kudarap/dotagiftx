@@ -10,22 +10,23 @@ import (
 
 // Worker represents worker handling and running tasks.
 type Worker struct {
-	wg     sync.WaitGroup
-	quit   chan struct{}
-	queue  chan Job
-	jobs   []Job
-	closed bool
+	wg       sync.WaitGroup
+	quit     chan struct{}
+	queue    chan Job
+	jobs     []Job
+	closed   bool
+	taskProc *TaskProcessor
 
 	logger log.Logger
 }
 
 // New create new instance of a worker with a given jobs.
-func New(jobs ...Job) *Worker {
+func New(tp *TaskProcessor, jobs ...Job) *Worker {
 	w := &Worker{}
 	w.queue = make(chan Job, len(jobs))
 	w.quit = make(chan struct{})
 	w.jobs = jobs
-
+	w.taskProc = tp
 	w.logger = log.Default()
 	return w
 }
@@ -39,7 +40,10 @@ func (w *Worker) SetLogger(l log.Logger) {
 //
 // All assigned jobs will be run concurrently.
 func (w *Worker) Start() {
-	w.logger.Infof("running %d jobs...", len(w.jobs))
+	w.logger.Infof("running task processor...")
+	go w.taskProc.Run(&w.wg)
+
+	w.logger.Infof("running jobs...")
 
 	ctx := context.Background()
 
@@ -51,8 +55,7 @@ func (w *Worker) Start() {
 	// Handles job queueing and termination.
 	for {
 		select {
-		// Waits the running job to finish and stops the
-		// worker and skip all queued jobs.
+		// Waits the running job to finish and stops the worker and skip all queued jobs.
 		case <-w.quit:
 			return
 		case job := <-w.queue:
@@ -61,11 +64,10 @@ func (w *Worker) Start() {
 				continue
 			}
 
-			// Runner will block until its done making it
-			// a single tasking worker.
+			// Runner will block until done making it a single tasking worker.
 			w.runner(ctx, job)
 
-			// Enable this of you want multi-tasking worker.
+			// Enable this of you want multitasking worker.
 			//go w.runner(ctx, job, false)
 		}
 	}

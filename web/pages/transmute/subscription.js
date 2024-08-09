@@ -8,6 +8,8 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import AppContext from '@/components/AppContext'
+import { Divider } from '@mui/material'
+import Link from '@/components/Link'
 
 const isPaypalLive = process.env.NEXT_PUBLIC_API_URL.startsWith('https://api.dotagiftx.com')
 
@@ -78,12 +80,28 @@ const FeatureList = styled('ul')(({ theme }) => ({
   paddingLeft: 0,
 }))
 
+const priceTable = {
+  partner: 20,
+  trader: 3,
+  supporter: 1,
+}
+
+const minimumCycle = {
+  partner: 6,
+  trader: 12,
+  supporter: 12,
+}
+
+const manualPriceOverhead = 0.6
+
 export default function Subscription({ data }) {
   const { currentAuth } = useContext(AppContext)
 
   const router = useRouter()
   const { query } = router
-  const [subscription, setSubscription] = useState(null)
+  const [subscription, setSubscription] = useState()
+  const [minimumSubscriptionCycle, setMinimumSubscriptionCycle] = useState()
+  const [subscriptionPrice, setSubscriptionPrice] = useState()
   useEffect(() => {
     if (!query.id) {
       return
@@ -94,6 +112,8 @@ export default function Subscription({ data }) {
     }
 
     setSubscription(subscriptions[query.id])
+    setMinimumSubscriptionCycle(minimumCycle[query.id])
+    setSubscriptionPrice(priceTable[query.id])
   }, [query.id, currentAuth.user_id])
 
   const handleSuccess = data => {
@@ -111,12 +131,25 @@ export default function Subscription({ data }) {
       <main>
         <Container>
           <Box sx={{ mt: 8, mb: 4, textAlign: 'center' }}>
-            <Typography variant="h4" component="h1" fontWeight="bold">
+            <Typography
+              sx={{ mt: 8 }}
+              style={{
+                background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: 3,
+                // textTransform: 'uppercase',
+              }}
+              variant="h3"
+              component="h1"
+              fontWeight="bold"
+              color="secondary">
               Dotagift Plus
             </Typography>
             {isReady && (
               <>
                 <Typography variant="h6">{subscription.name} Subscription</Typography>
+                <Typography color="textSecondary">${subscriptionPrice} monthly</Typography>
                 <FeatureList>
                   {subscription.features.map(v => (
                     <li key={v}>{v}</li>
@@ -126,7 +159,7 @@ export default function Subscription({ data }) {
             )}
           </Box>
 
-          <Box sx={{ textAlign: 'center' }}>
+          <Box sx={{ maxWidth: 500, m: '0 auto' }}>
             {isReady && (
               <ButtonWrapper
                 type="subscription"
@@ -136,6 +169,85 @@ export default function Subscription({ data }) {
               />
             )}
           </Box>
+
+          <Divider sx={{ mt: 5, mb: 5 }} />
+
+          {isReady && (
+            <Box sx={{ maxWidth: 600, m: 'auto' }} textAlign="center">
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Paypal is not supported in your country?
+              </Typography>
+              <Typography>
+                You can pay one-time via{' '}
+                <Link
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key">
+                  TF2 Keys
+                </Link>
+                {' '}or{' '}
+                <Link
+                  color="secondary"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  href="https://steamcommunity.com/market/listings/570/Fractal%20Horns%20of%20Inner%20Abysm">
+                  TB Arcanas
+                </Link>
+                {' '}
+                with minimum of {minimumSubscriptionCycle} months and +{manualPriceOverhead * 100}% overhead for steam
+                community market conversion and manual processing fees.
+              </Typography>
+
+              <Box>
+                <Typography>
+                  <br />${subscriptionPrice} x {minimumSubscriptionCycle} months = $
+                  {subscriptionPrice * minimumSubscriptionCycle}
+                  <br />
+                  +{manualPriceOverhead * 100}% SCM overhead fee = $
+                  {Math.round((subscriptionPrice * minimumSubscriptionCycle) * manualPriceOverhead)}
+                  <br />
+                  <strong>
+                    Total = ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
+                  </strong>
+                </Typography>
+              </Box>
+
+              <Box textAlign="left">
+                <ol>
+                  <li>
+                    Acquire your TF2 keys and/or TB Arcanas and total should equal to{' '}
+                    <strong>
+                      ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
+                    </strong>
+                    .
+                  </li>
+                  <li>
+                    Send{' '}
+                    <Link
+                      color="secondary"
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW">
+                      trade offer
+                    </Link>{' '}
+                    and indicate your subscription plan.
+                  </li>
+                  <li>
+                    Notify us on our{' '}
+                    <Link
+                      color="secondary"
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      href="https://discord.gg/3JVU2EumRw">
+                      Discord
+                    </Link>{' '}
+                    that you made a trade offer and allow us to process in 2-3 days.
+                  </li>
+                </ol>
+              </Box>
+            </Box>
+          )}
         </Container>
       </main>
 

@@ -8,22 +8,22 @@ import (
 	"github.com/kudarap/dotagiftx/steam"
 )
 
-type (
-	Config struct {
-		SigKey  string
-		Prod    bool
-		Addr    string
-		AppHost string
-		ApiHost string
-		Upload  struct {
-			Path  string
-			Size  int
-			Types []string
-		}
-		Rethink rethink.Config
-		Redis   redis.Config
-		Steam   steam.Config
-		Paypal  paypal.Config
-		Log     log.Config
+type Config struct {
+	SigKey      string
+	Prod        bool
+	Addr        string
+	AppHost     string
+	ApiHost     string
+	SpanEnabled bool `envconfig:"SPAN_ENABLED"`
+	Upload      struct {
+		Path  string
+		Size  int
+		Types []string
 	}
-)
+	Rethink           rethink.Config
+	Redis             redis.Config
+	Steam             steam.Config
+	Paypal            paypal.Config
+	Log               log.Config
+	DiscordWebhookURL string `envconfig:"DISCORD_WEBHOOK_URL"`
+}

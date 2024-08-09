@@ -3,14 +3,15 @@ package http
 import (
 	"net/http"
 
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/assets"
-	"github.com/kudarap/dotagiftx/core"
 	"github.com/sirupsen/logrus"
 )
 
 const pixelImage = "image/pixel.gif"
 
-func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFunc {
+func handleTracker(svc dgx.TrackService, logger *logrus.Logger) http.HandlerFunc {
+	image, _ := assets.Content.ReadFile(pixelImage)
 	return func(w http.ResponseWriter, r *http.Request) {
 		go func(r *http.Request) {
 			if err := svc.CreateFromRequest(r); err != nil {
@@ -29,7 +30,6 @@ func handleTracker(svc core.TrackService, logger *logrus.Logger) http.HandlerFun
 		w.Header().Set("Expires", "0")
 
 		// output image
-		image, _ := assets.Content.ReadFile(pixelImage)
 		w.Header().Set("Content-Type", "image/gif")
 		w.Write(image)
 	}

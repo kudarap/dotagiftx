@@ -1,10 +1,17 @@
 // LocalStorage with cache mechanism.
 
-import crypto from 'crypto'
-
 const CACHE_KEY = 'cache'
 
-const hash = data => crypto.createHash('md5').update(data).digest('hex')
+const hash = str => {
+  str = JSON.stringify(str)
+  let hash = 0
+  for (let i = 0, len = str.length; i < len; i++) {
+    let chr = str.charCodeAt(i)
+    hash = (hash << 5) - hash + chr
+    hash |= 0 // Convert to 32bit integer
+  }
+  return hash
+}
 
 const keyPrefix = key => `${CACHE_KEY}:${String(key).split('/').shift()}`
 

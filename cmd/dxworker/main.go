@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/kudarap/dotagiftx/gokit/envconf"
@@ -11,7 +13,7 @@ import (
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
-	"github.com/kudarap/dotagiftx/steam"
+	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/sirupsen/logrus"
 )
@@ -82,75 +84,43 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
+	traceSpan := tracing.NewTracer(app.config.SpanEnabled, rethink.NewSpan(rethinkClient))
+	rethinkClient.SetTracer(traceSpan)
 
 	// External services setup.
 	logSvc.Println("setting up external services...")
-	//steamClient, err := setupSteam(app.config.Steam, redisClient)
-	//if err != nil {
-	//	return err
-	//}
-
-	// Setup application worker
-	app.worker = worker.New()
-	app.worker.SetLogger(app.contextLog("worker"))
-	// NOTE! this is shade I don't like this one bit
-	dispatcher := new(jobs.Dispatcher)
 
 	// Storage inits.
 	logSvc.Println("setting up data stores...")
-	//userStg := rethink.NewUser(rethinkClient)
-	//authStg := rethink.NewAuth(rethinkClient)
 	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
-	//itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
-	//trackStg := rethink.NewTrack(rethinkClient)
-	//statsStg := rethink.NewStats(rethinkClient)
-	//reportStg := rethink.NewReport(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
+	userStg := rethink.NewUser(rethinkClient)
+	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
 	logSvc.Println("setting up services...")
-	//fileMgr := setupFileManager(app.config)
-	//userSvc := service.NewUser(userStg, fileMgr)
-	//authSvc := service.NewAuth(steamClient, authStg, userSvc)
-	//imageSvc := service.NewImage(fileMgr)
-	//itemSvc := service.NewItem(itemStg, fileMgr)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
-	//marketSvc := service.NewMarket(
-	//	marketStg,
-	//	userStg,
-	//	itemStg,
-	//	trackStg,
-	//	catalogStg,
-	//	deliverySvc,
-	//	inventorySvc,
-	//	steamClient,
-	//	dispatcher,
-	//	app.contextLog("service_market"),
-	//)
-	//trackSvc := service.NewTrack(trackStg, itemStg)
-	//statsSvc := service.NewStats(statsStg)
-	//reportSvc := service.NewReport(reportStg)
 
+	// Setup application worker
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc)
+	app.worker = worker.New(tp)
+	app.worker.SetLogger(app.contextLog("worker"))
 	// Register job on the worker.
-	*dispatcher = *jobs.NewDispatcher(
+	dispatcher := jobs.NewDispatcher(
 		app.worker,
 		deliverySvc,
 		inventorySvc,
 		deliveryStg,
 		marketStg,
+		catalogStg,
+		userStg,
+		redisClient,
 		logger,
 	)
 	dispatcher.RegisterJobs()
-
-	// NOTE! this is for run-once scripts
-	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
-	//fixes.ReIndexAll(itemStg, catalogStg)
-	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	//fixes.MarketIndexRebuild(marketStg)
-	//redisClient.BulkDel("")
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
@@ -171,7 +141,13 @@ func (app *application) setup() error {
 func (app *application) run() error {
 	defer app.closerFn()
 
-	app.worker.Start()
+	// Handle quit on SIGINT (CTRL-C).
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+
+	go app.worker.Start()
+
+	<-quit
 	return nil
 }
 
@@ -183,15 +159,6 @@ func newApp() *application {
 	a := &application{}
 	a.closerFn = func() {}
 	return a
-}
-
-func setupSteam(cfg steam.Config, rc *redis.Client) (*steam.Client, error) {
-	c, err := steam.New(cfg, rc)
-	if err != nil {
-		return nil, fmt.Errorf("could not setup steam client: %s", err)
-	}
-
-	return c, nil
 }
 
 func setupRethink(cfg rethink.Config) (c *rethink.Client, err error) {
@@ -246,8 +213,3 @@ func connRetry(name string, fn func() error) error {
 
 // version details used by ldflags.
 var tag, commit, built string
-
-func initVer(cfg Config) *version.Version {
-	v := version.New(cfg.Prod, tag, commit, built)
-	return v
-}

@@ -5,22 +5,33 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-type findOpts core.FindOpts
+type findOpts dgx.FindOpts
 
-func newFindOptsQuery(q r.Term, o core.FindOpts) r.Term {
+func newFindOptsQuery(q r.Term, o dgx.FindOpts) r.Term {
 	//return findOpts(o).parseOpts(q, nil)
 	return baseFindOptsQuery(q, o, nil)
 }
 
-func baseFindOptsQuery(q r.Term, o core.FindOpts, hookFn func(r.Term) r.Term) r.Term {
+func baseFindOptsQuery(q r.Term, o dgx.FindOpts, hookFn func(r.Term) r.Term) r.Term {
 	return findOpts(o).parseOpts(q, hookFn)
 }
 
 func (o findOpts) parseOpts(q r.Term, hookFn func(r.Term) r.Term) r.Term {
+	// Use index query instead of filter if available and disable indexed sorting.
+	filter := o.parseFilter()
+	if o.IndexKey != "" {
+		v, ok := filter[o.IndexKey]
+		if ok {
+			q = q.GetAllByIndex(o.IndexKey, v)
+			delete(filter, o.IndexKey)
+			o.IndexSorting = false
+		}
+	}
+
 	if o.IndexSorting && o.Sort != "" {
 		q = q.OrderBy(r.OrderByOpts{Index: o.parseOrder()})
 	}
@@ -34,7 +45,7 @@ func (o findOpts) parseOpts(q r.Term, hookFn func(r.Term) r.Term) r.Term {
 	}
 
 	if o.Filter != nil {
-		q = q.Filter(o.parseFilter())
+		q = q.Filter(filter)
 	}
 
 	if o.UserID != "" {

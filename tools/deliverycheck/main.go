@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kudarap/dotagiftx/steaminv"
-	"github.com/kudarap/dotagiftx/verified"
+	"github.com/kudarap/dotagiftx/steaminvorg"
+	"github.com/kudarap/dotagiftx/verifying"
 )
 
 func main() {
-	assetSrc := steaminv.InventoryAsset
+	assetSrc := steaminvorg.InventoryAsset
 
 	var sellerName string
 	var buyerSteamID string
@@ -20,7 +20,7 @@ func main() {
 	flag.StringVar(&itemName, "i", "", "item name")
 	flag.Parse()
 
-	status, snaps, err := verified.Delivery(assetSrc, sellerName, buyerSteamID, itemName)
+	status, snaps, err := verifying.Delivery(assetSrc, sellerName, buyerSteamID, itemName)
 	fmt.Println(strings.Repeat("-", 70))
 	fmt.Println(fmt.Sprintf("%s -> %s (%s)", sellerName, buyerSteamID, itemName))
 	fmt.Println(strings.Repeat("-", 70))

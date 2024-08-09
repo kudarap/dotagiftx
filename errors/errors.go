@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
 // Errors represents application's errors.
 type Errors struct {
-	Type  core.Errors
+	Type  dgx.Errors
 	Err   error
 	Fatal bool
 }
@@ -20,21 +20,21 @@ func (e *Errors) Error() string {
 }
 
 // IsEqual checks errors with same Error Type.
-func (e *Errors) IsEqual(t core.Errors) bool {
+func (e *Errors) IsEqual(t dgx.Errors) bool {
 	return e.Type == t
 }
 
-func create(t core.Errors, e error, f bool) error {
+func create(t dgx.Errors, e error, f bool) error {
 	return &Errors{t, e, f}
 }
 
 // New wraps error into an Errors with Type.
-func New(t core.Errors, e error) error {
+func New(t dgx.Errors, e error) error {
 	return create(t, e, false)
 }
 
 // Fatal creates a fatal flagged error.
-func Fatal(t core.Errors, e error) error {
+func Fatal(t dgx.Errors, e error) error {
 	return create(t, e, true)
 }
 
@@ -51,7 +51,7 @@ func Parse(err error) (e *Errors, ok bool) {
 	// Try core error assertion as type.
 	// handles un-packaged error with valid type that
 	// can be use to check typed errors.
-	t, ok := err.(core.Errors)
+	t, ok := err.(dgx.Errors)
 	if ok {
 		// Error with no details.
 		return &Errors{t, errors.New(""), false}, true

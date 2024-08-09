@@ -161,6 +161,7 @@ export default function ItemDetails({
         ...initialFilter,
         sort: sortValue === 'price' ? 'lowest' : sortValue,
         page: pageValue,
+        index: 'item_id',
       })
       setOffers(res)
     } catch (e) {
@@ -175,6 +176,7 @@ export default function ItemDetails({
         ...marketBuyOrderFilter,
         sort: sortValue === 'price' ? 'highest' : sortValue,
         item_id: item.id,
+        index: 'item_id',
       })
       res.loaded = true
       setOrders(res)
@@ -229,6 +231,7 @@ export default function ItemDetails({
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
         <link rel="canonical" href={canonicalURL} />
@@ -249,6 +252,15 @@ export default function ItemDetails({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
+        />
+
+        {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
+        <link
+          rel="preload"
+          fetchpriority="high"
+          as="image"
+          href={`${CDN_URL}/${item.image}`}
+          type="image/png"
         />
       </Head>
 
@@ -314,7 +326,7 @@ export default function ItemDetails({
         }}
         onChange={handleBuyerChange}
       />
-      <img src={trackItemViewURL(item.id)} alt="" />
+      <img src={trackItemViewURL(item.id)} height={1} width={1} alt="" />
 
       <Footer />
     </>

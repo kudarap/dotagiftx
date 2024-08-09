@@ -7,12 +7,13 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/kudarap/dotagiftx/core"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 	gokitMw "github.com/kudarap/dotagiftx/gokit/http/middleware"
 	"github.com/kudarap/dotagiftx/gokit/version"
+	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
 )
 
@@ -25,17 +26,18 @@ const (
 // NewServer returns new http server.
 func NewServer(
 	sigKey string,
-	us core.UserService,
-	au core.AuthService,
-	is core.ImageService,
-	its core.ItemService,
-	ms core.MarketService,
-	ts core.TrackService,
-	ss core.StatsService,
-	rs core.ReportService,
-	hs core.HammerService,
-	sc core.SteamClient,
-	c core.Cache,
+	us dgx.UserService,
+	au dgx.AuthService,
+	is dgx.ImageService,
+	its dgx.ItemService,
+	ms dgx.MarketService,
+	ts dgx.TrackService,
+	ss dgx.StatsService,
+	rs dgx.ReportService,
+	hs dgx.HammerService,
+	sc dgx.SteamClient,
+	t *tracing.Tracer,
+	c dgx.Cache,
 	v *version.Version,
 	l *logrus.Logger,
 ) *Server {
@@ -51,6 +53,7 @@ func NewServer(
 		reportSvc: rs,
 		hammerSvc: hs,
 		steam:     sc,
+		tracing:   t,
 		cache:     c,
 		logger:    l,
 		version:   v,
@@ -63,18 +66,19 @@ type Server struct {
 	Addr    string
 	handler http.Handler
 	// Service resources.
-	userSvc   core.UserService
-	authSvc   core.AuthService
-	imageSvc  core.ImageService
-	itemSvc   core.ItemService
-	marketSvc core.MarketService
-	trackSvc  core.TrackService
-	statsSvc  core.StatsService
-	reportSvc core.ReportService
-	hammerSvc core.HammerService
-	steam     core.SteamClient
+	userSvc   dgx.UserService
+	authSvc   dgx.AuthService
+	imageSvc  dgx.ImageService
+	itemSvc   dgx.ItemService
+	marketSvc dgx.MarketService
+	trackSvc  dgx.TrackService
+	statsSvc  dgx.StatsService
+	reportSvc dgx.ReportService
+	hammerSvc dgx.HammerService
+	steam     dgx.SteamClient
 
-	cache   core.Cache
+	tracing *tracing.Tracer
+	cache   dgx.Cache
 	logger  *logrus.Logger
 	version *version.Version
 }
@@ -83,6 +87,7 @@ func (s *Server) setup() {
 	r := chi.NewRouter()
 
 	// A good base middleware stack
+	r.Use(s.tracing.Middleware)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(NewStructuredLogger(s.logger))

@@ -1,25 +1,26 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewAuth returns a new Auth service.
-func NewAuth(sc core.SteamClient, as core.AuthStorage, us core.UserService) core.AuthService {
+func NewAuth(sc dgx.SteamClient, as dgx.AuthStorage, us dgx.UserService) dgx.AuthService {
 	return &authService{sc, as, us}
 }
 
 type authService struct {
-	steamClient core.SteamClient
-	authStg     core.AuthStorage
-	userSvc     core.UserService
+	steamClient dgx.SteamClient
+	authStg     dgx.AuthStorage
+	userSvc     dgx.UserService
 }
 
-func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.Auth, error) {
+func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dgx.Auth, error) {
 	// Handle authorization redirect.
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := s.steamClient.AuthorizeURL(r)
@@ -34,18 +35,19 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 	// Validates auth and get player details and use SteamID as auth username.
 	steamPlayer, err := s.steamClient.Authenticate(r)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("steam player not found: %s", err)
 	}
 
 	// Check account existence.
 	au, err := s.authStg.GetByUsername(steamPlayer.ID)
-	if err != nil && err != core.AuthErrNotFound {
-		return nil, err
+	if err != nil && err != dgx.AuthErrNotFound {
+		return nil, fmt.Errorf("auth not found: %s", err)
 	}
+
 	// Account existed and checks login credentials.
 	if au != nil {
 		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {
-			return nil, core.AuthErrLogin
+			return nil, dgx.AuthErrLogin
 		}
 
 		u, _ := s.userSvc.User(au.UserID)
@@ -54,7 +56,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 		}
 
 		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
-			return nil, errors.New(core.UserErrSteamSync, err)
+			return nil, errors.New(dgx.UserErrSteamSync, err)
 		}
 
 		return au, nil
@@ -69,14 +71,14 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*core.
 	return au, nil
 }
 
-func (s *authService) RenewToken(refreshToken string) (*core.Auth, error) {
+func (s *authService) RenewToken(refreshToken string) (*dgx.Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
-		return nil, core.AuthErrRefreshToken
+		return nil, dgx.AuthErrRefreshToken
 	}
 
 	au, err := s.authStg.GetByRefreshToken(refreshToken)
 	if err != nil {
-		return nil, errors.New(core.AuthErrRefreshToken, err)
+		return nil, errors.New(dgx.AuthErrRefreshToken, err)
 	}
 
 	return au, nil
@@ -84,7 +86,7 @@ func (s *authService) RenewToken(refreshToken string) (*core.Auth, error) {
 
 func (s *authService) RevokeRefreshToken(refreshToken string) error {
 	if strings.TrimSpace(refreshToken) == "" {
-		return core.AuthErrRefreshToken
+		return dgx.AuthErrRefreshToken
 	}
 
 	au, err := s.RenewToken(refreshToken)
@@ -96,17 +98,17 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 	return s.authStg.Update(au)
 }
 
-func (s *authService) Auth(id string) (*core.Auth, error) {
+func (s *authService) Auth(id string) (*dgx.Auth, error) {
 	u, err := s.authStg.Get(id)
 	if err != nil {
-		return nil, errors.New(core.AuthErrNotFound, err)
+		return nil, errors.New(dgx.AuthErrNotFound, err)
 	}
 
 	return u, nil
 }
 
-func (s *authService) createAccountFromSteam(sp *core.SteamPlayer) (*core.Auth, error) {
-	u := &core.User{
+func (s *authService) createAccountFromSteam(sp *dgx.SteamPlayer) (*dgx.Auth, error) {
+	u := &dgx.User{
 		SteamID: sp.ID,
 		Name:    sp.Name,
 		URL:     sp.URL,
@@ -116,7 +118,7 @@ func (s *authService) createAccountFromSteam(sp *core.SteamPlayer) (*core.Auth, 
 		return nil, err
 	}
 
-	au := &core.Auth{UserID: u.ID, Username: sp.ID}
+	au := &dgx.Auth{UserID: u.ID, Username: sp.ID}
 	au.SetDefaults()
 	au.Password = au.ComposePassword(sp.ID, u.ID)
 	if err := s.authStg.Create(au); err != nil {

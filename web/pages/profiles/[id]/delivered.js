@@ -96,6 +96,7 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
       <Header />
 
       <Head>
+        <meta charset="UTF-8" />
         <title>{`${APP_NAME} :: ${profile.name} delivered items`}</title>
         <meta name="description" content={`${profile.name}'s delivered Giftable items`} />
         <link rel="canonical" href={canonicalURL} />

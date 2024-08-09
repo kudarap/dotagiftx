@@ -10,6 +10,7 @@ export default function Version({ data }) {
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>Version</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>

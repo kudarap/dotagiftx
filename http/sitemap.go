@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 )
 
-func buildSitemap(items []core.Item, users []core.User, vanities []string) *stm.Sitemap {
+func buildSitemap(items []dgx.Item, users []dgx.User, vanities []string) *stm.Sitemap {
 	sitemap := stm.NewSitemap(1)
 	//sitemap.SetVerbose(false)
 	sitemap.SetDefaultHost("https://dotagiftx.com")
@@ -64,10 +64,10 @@ const (
 	sitemapCacheExpr = time.Hour
 )
 
-func handleSitemap(itemSvc core.ItemService, userSvc core.UserService, cache core.Cache) http.HandlerFunc {
+func handleSitemap(itemSvc dgx.ItemService, userSvc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		items, _, _ := itemSvc.Items(core.FindOpts{})
-		users, _ := userSvc.Users(core.FindOpts{
+		items, _, _ := itemSvc.Items(dgx.FindOpts{})
+		users, _ := userSvc.Users(dgx.FindOpts{
 			Limit: 0,
 		})
 

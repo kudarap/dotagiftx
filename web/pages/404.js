@@ -22,6 +22,7 @@ export default function Custom404({ children }) {
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: 404 - Page Not Found</title>
       </Head>
 

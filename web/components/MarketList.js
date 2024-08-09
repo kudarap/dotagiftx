@@ -31,7 +31,6 @@ import AppContext from '@/components/AppContext'
 import SellButton from '@/components/SellButton'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import Avatar from '@/components/Avatar'
-import DonatorBadge from '@/components/DonatorBadge'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
 import { getUserBadgeFromBoons } from '@/lib/badge'
@@ -374,16 +373,18 @@ function baseTable(Component) {
                       <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
                       </Typography>
-                      <span
-                        aria-owns={popoverElementID}
-                        aria-haspopup="true"
-                        data-index={idx}
-                        onMouseLeave={debouncePopoverClose}
-                        onMouseEnter={handlePopoverOpen}>
-                        {market.resell
-                          ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
-                          : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
-                      </span>
+                      {!bidMode && (
+                        <span
+                          aria-owns={popoverElementID}
+                          aria-haspopup="true"
+                          data-index={idx}
+                          onMouseLeave={debouncePopoverClose}
+                          onMouseEnter={handlePopoverOpen}>
+                          {market.resell
+                            ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
+                            : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>

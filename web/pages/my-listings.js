@@ -51,7 +51,7 @@ export default function MyListings() {
 
   React.useEffect(() => {
     ;(async () => {
-      const res = await statsMarketSummary({ user_id: currentAuth.user_id })
+      const res = await statsMarketSummary({ user_id: currentAuth.user_id, index: 'user_id' })
       setMarketStats(res)
     })()
   }, [tick])
@@ -118,6 +118,7 @@ Tabs.propTypes = {
 
 const datatableBaseFilter = {
   type: MARKET_TYPE_ASK,
+  index: 'user_id',
 }
 
 const LiveTable = withDatatableFetch(MyMarketList, {

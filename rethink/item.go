@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/imdario/mergo"
-	"github.com/kudarap/dotagiftx/core"
+	"dario.cat/mergo"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
@@ -19,7 +19,7 @@ const (
 var itemSearchFields = []string{"name", "hero", "origin", "rarity"}
 
 // NewItem creates new instance of item data store.
-func NewItem(c *Client) core.ItemStorage {
+func NewItem(c *Client) dgx.ItemStorage {
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
@@ -36,19 +36,19 @@ type itemStorage struct {
 	keywordFields []string
 }
 
-func (s *itemStorage) Find(o core.FindOpts) ([]core.Item, error) {
-	var res []core.Item
+func (s *itemStorage) Find(o dgx.FindOpts) ([]dgx.Item, error) {
+	var res []dgx.Item
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(core.StorageUncaughtErr, err)
+		return nil, errors.New(dgx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
-	o = core.FindOpts{
+func (s *itemStorage) Count(o dgx.FindOpts) (num int, err error) {
+	o = dgx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
@@ -59,53 +59,53 @@ func (s *itemStorage) Count(o core.FindOpts) (num int, err error) {
 	return
 }
 
-func (s *itemStorage) Get(id string) (*core.Item, error) {
+func (s *itemStorage) Get(id string) (*dgx.Item, error) {
 	row, _ := s.GetBySlug(id)
 	if row != nil {
 		return row, nil
 	}
 
-	row = &core.Item{}
+	row = &dgx.Item{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, core.ItemErrNotFound
+			return nil, dgx.ItemErrNotFound
 		}
 
-		return nil, errors.New(core.StorageUncaughtErr, err)
+		return nil, errors.New(dgx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *itemStorage) GetBySlug(slug string) (*core.Item, error) {
-	row := &core.Item{}
+func (s *itemStorage) GetBySlug(slug string) (*dgx.Item, error) {
+	row := &dgx.Item{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, core.ItemErrNotFound
+			return nil, dgx.ItemErrNotFound
 		}
 
-		return nil, errors.New(core.StorageUncaughtErr, err)
+		return nil, errors.New(dgx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *itemStorage) Create(in *core.Item) error {
+func (s *itemStorage) Create(in *dgx.Item) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(core.StorageUncaughtErr, err)
+		return errors.New(dgx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
 	return nil
 }
 
-func (s *itemStorage) Update(in *core.Item) error {
+func (s *itemStorage) Update(in *dgx.Item) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
@@ -114,11 +114,11 @@ func (s *itemStorage) Update(in *core.Item) error {
 	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return errors.New(core.StorageUncaughtErr, err)
+		return errors.New(dgx.StorageUncaughtErr, err)
 	}
 
 	if err := mergo.Merge(in, cur); err != nil {
-		return errors.New(core.StorageMergeErr, err)
+		return errors.New(dgx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -136,11 +136,11 @@ func (s *itemStorage) IsItemExist(name string) error {
 	})
 	var n int
 	if err := s.db.one(q.Count(), &n); err != nil {
-		return errors.New(core.StorageUncaughtErr, err)
+		return errors.New(dgx.StorageUncaughtErr, err)
 	}
 
 	if n != 0 {
-		return core.ItemErrCreateItemExists
+		return dgx.ItemErrCreateItemExists
 	}
 
 	return nil
@@ -165,7 +165,7 @@ func (s *itemStorage) AddViewCount(id string) error {
 }
 
 func (s *itemStorage) updateCatalogViewCount(itemID string, viewCount int) error {
-	q := r.Table(tableCatalog).Get(itemID).Update(&core.Catalog{ViewCount: viewCount})
+	q := r.Table(tableCatalog).Get(itemID).Update(&dgx.Catalog{ViewCount: viewCount})
 	return s.db.update(q)
 }
 

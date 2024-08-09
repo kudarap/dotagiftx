@@ -36,6 +36,7 @@ import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
+import { Alert } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -146,6 +147,7 @@ export default function UserDetails({
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
         <link rel="canonical" href={canonicalURL} />
@@ -168,6 +170,25 @@ export default function UserDetails({
 
       <main className={classes.main}>
         <Container>
+          {isProfileReported && (
+            <>
+              <Alert
+                severity="error"
+                variant="outlined"
+                sx={{
+                  fontSize: '1rem',
+                  borderColor: '#c13830',
+                  borderWidth: 2,
+                }}>
+                This is user has been flagged as <strong>BANNED</strong> or{' '}
+                <strong>SUSPENDED</strong>. <br />
+                Website is not liable for any lost in-game items and money and should avoid any
+                transaction.
+              </Alert>
+              <br />
+            </>
+          )}
+
           <div
             className={classes.details}
             style={
@@ -253,7 +274,7 @@ export default function UserDetails({
           )}
         </Container>
 
-        <img src={trackProfileViewURL(profile.id)} alt="" />
+        <img src={trackProfileViewURL(profile.id)} height={1} width={1} alt="" />
       </main>
 
       <Footer />
@@ -280,6 +301,7 @@ const marketSearchFilter = {
   type: MARKET_TYPE_ASK,
   status: MARKET_STATUS_LIVE,
   sort: 'created_at:desc',
+  index: 'user_id',
 }
 
 // This gets called on every request

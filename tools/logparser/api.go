@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -139,6 +140,40 @@ func generateReport(logs []ApiLog) []Report {
 }
 
 func parseLog(raw string) []ApiLog {
+	var logs []ApiLog
+	for _, raw := range strings.Split(raw, "\n") {
+		var entry ApiLog
+
+		body := strings.Split(raw, `" level=info msg="`)
+		if len(body) < 2 {
+			continue
+		}
+		head, tail := body[0], body[1]
+		entry.Stamp, _ = time.Parse(time.RFC3339, strings.TrimPrefix(head, `time="`))
+
+		ts := strings.Split(tail, `] "`)
+		if len(ts) < 2 {
+			continue
+		}
+
+		tail = strings.TrimRight(ts[1], `"`)
+		parts := strings.Split(tail, " ")
+
+		surl := strings.TrimPrefix(parts[1], "http://api.dotagiftx.com")
+		purl, _ := url.Parse(surl)
+
+		entry.Endpoint = parts[0] + " " + purl.String()
+
+		entry.Status, _ = strconv.Atoi(parts[6])
+		entry.Elapse, _ = time.ParseDuration(parts[9])
+
+		logs = append(logs, entry)
+	}
+
+	return logs
+}
+
+func parseLog0(raw string) []ApiLog {
 	var logs []ApiLog
 	for _, i := range strings.Split(raw, "\n") {
 		parts := strings.Split(i, " ")

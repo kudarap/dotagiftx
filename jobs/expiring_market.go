@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
 )
 
@@ -12,16 +12,16 @@ const dayHours = time.Hour * 24
 
 // ExpiringMarket represents setting expiration of a market entry job.
 type ExpiringMarket struct {
-	marketStg  core.MarketStorage
-	catalogStg core.CatalogStorage
-	cache      core.Cache
+	marketStg  dgx.MarketStorage
+	catalogStg dgx.CatalogStorage
+	cache      dgx.Cache
 	logger     log.Logger
 	// job settings
 	name     string
 	interval time.Duration
 }
 
-func NewExpiringMarket(ms core.MarketStorage, cs core.CatalogStorage, cc core.Cache, lg log.Logger) *ExpiringMarket {
+func NewExpiringMarket(ms dgx.MarketStorage, cs dgx.CatalogStorage, cc dgx.Cache, lg log.Logger) *ExpiringMarket {
 	return &ExpiringMarket{
 		marketStg:  ms,
 		catalogStg: cs,
@@ -41,9 +41,9 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	now := time.Now()
 
 	// Process expiring bids.
-	bidExpr := now.Add(-dayHours * core.MarketBidExpirationDays)
+	bidExpr := now.Add(-dayHours * dgx.MarketBidExpirationDays)
 	em.logger.Println("updating expiring bids", bidExpr)
-	ids, err := em.marketStg.UpdateExpiring(core.MarketTypeBid, core.BoonRefresherShard, bidExpr)
+	ids, err := em.marketStg.UpdateExpiring(dgx.MarketTypeBid, dgx.BoonRefresherShard, bidExpr)
 	if err != nil {
 		em.logger.Errorf("could not update expiring bids: %s", err)
 		return err
@@ -52,15 +52,25 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	em.logger.Println("updating expiring bids finished!")
 
 	// Process expiring asks.
-	askExpr := now.Add(-dayHours * core.MarketAskExpirationDays)
+	askExpr := now.Add(-dayHours * dgx.MarketAskExpirationDays)
 	em.logger.Println("updating expiring asks", askExpr)
-	ids, err = em.marketStg.UpdateExpiring(core.MarketTypeAsk, core.BoonRefresherOrb, askExpr)
+	ids, err = em.marketStg.UpdateExpiring(dgx.MarketTypeAsk, dgx.BoonRefresherOrb, askExpr)
 	if err != nil {
 		em.logger.Errorf("could not update expiring asks: %s", err)
 		return err
 	}
 	itemIDs = append(itemIDs, ids...)
 	em.logger.Println("updating expiring asks finished!")
+
+	// Process expiring resells.
+	em.logger.Println("updating expiring resells", askExpr)
+	ids, err = em.marketStg.UpdateExpiringResell(dgx.BoonShopKeepersContract)
+	if err != nil {
+		em.logger.Errorf("could not update expiring resells: %s", err)
+		return err
+	}
+	itemIDs = append(itemIDs, ids...)
+	em.logger.Println("updating expiring resells finished!")
 
 	// Re-index affected items.
 	em.logger.Println("indexing affected expire items...", len(itemIDs))

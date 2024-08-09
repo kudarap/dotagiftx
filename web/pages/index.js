@@ -34,12 +34,7 @@ const Link = dynamic(() => import('@/components/Link'))
 const Footer = dynamic(() => import('@/components/Footer'))
 
 const useStyles = makeStyles()(theme => ({
-  main: {
-    [theme.breakpoints.down('md')]: {
-      marginTop: theme.spacing(1),
-    },
-    marginTop: theme.spacing(4),
-  },
+  main: {},
   searchBar: {
     margin: '0 auto',
     marginBottom: theme.spacing(4),
@@ -50,19 +45,16 @@ const useStyles = makeStyles()(theme => ({
     },
     margin: theme.spacing(0, 0, 2, 0),
     padding: theme.spacing(1.5),
-    // TI 2022 event theme
-    border: '1px solid #ea695357',
-    background: theme.palette.background.paper,
-    // border: '1px solid #52564e',
-    // background: '#2d3431',
+    border: '1px solid #52564e',
+    background: '#2d3431',
     borderRadius: 4,
   },
   bannerHighlight: {
     background: '-webkit-linear-gradient(#EBCF87 10%, #EA6953 90%)',
-    'background-clip': 'border-box',
-    'background-clip': 'text',
-    '-webkit-background-clip': 'text',
-    '-webkit-text-fill-color': 'transparent',
+    backgroundClip: 'border-box',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
     filter: 'drop-shadow(0px 0px 5px #e1261c)',
   },
   bannerText: {
@@ -125,6 +117,7 @@ export default function Index({ marketSummary, trendingItems }) {
   return (
     <>
       <Head>
+        <meta charset="UTF-8" />
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
         <link rel="canonical" href={APP_URL} />
@@ -146,8 +139,37 @@ export default function Index({ marketSummary, trendingItems }) {
       <Header disableSearch />
 
       <main className={classes.main}>
-        <Container>
-          <div className={classes.banner}>
+        <div
+          style={{
+            width: '100%',
+            height: 340,
+            marginBottom: 500 - 340,
+            maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
+            WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
+            position: 'relative',
+            zIndex: 0,
+          }}>
+          <div
+            style={{
+              background: 'url(/assets/crownfall_banner.png) no-repeat top center',
+              // background: 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1707590035909) no-repeat left center',
+              backgroundColor: '#263238',
+              backgroundSize: 'cover',
+              backgroundPositionY: -50,
+              width: '100%',
+              height: '100%',
+            }}></div>
+        </div>
+
+        <Container
+          sx={{
+            mt: {
+              md: -35,
+              xs: -61,
+            },
+            position: 'relative',
+          }}>
+          <div className={classes.banner} hidden>
             <Typography
               className={classes.bannerText}
               component="h1"

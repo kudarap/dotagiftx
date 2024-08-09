@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 )
 
@@ -18,7 +18,7 @@ type authResp struct {
 	ExpiresAt    time.Time `json:"expires_at,omitempty"`
 }
 
-func handleAuthSteam(svc core.AuthService) http.HandlerFunc {
+func handleAuthSteam(svc dgx.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Handle steam auth.
 		au, err := svc.SteamLogin(w, r)
@@ -43,7 +43,7 @@ func handleAuthSteam(svc core.AuthService) http.HandlerFunc {
 	}
 }
 
-func handleAuthRenew(svc core.AuthService) http.HandlerFunc {
+func handleAuthRenew(svc dgx.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := new(struct {
 			RefreshToken string `json:"refresh_token"`
@@ -70,7 +70,7 @@ func handleAuthRenew(svc core.AuthService) http.HandlerFunc {
 	}
 }
 
-func handleAuthRevoke(svc core.AuthService) http.HandlerFunc {
+func handleAuthRevoke(svc dgx.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := new(struct {
 			RefreshToken string `json:"refresh_token"`
@@ -93,7 +93,7 @@ func handleAuthRevoke(svc core.AuthService) http.HandlerFunc {
 	}
 }
 
-func newAuth(au *core.Auth) (*authResp, error) {
+func newAuth(au *dgx.Auth) (*authResp, error) {
 	a, err := refreshJWT(au)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func newAuth(au *core.Auth) (*authResp, error) {
 
 const noLevel = ""
 
-func refreshJWT(au *core.Auth) (*authResp, error) {
+func refreshJWT(au *dgx.Auth) (*authResp, error) {
 	a := &authResp{}
 	a.ExpiresAt = time.Now().Add(defaultTokenExpiration)
 

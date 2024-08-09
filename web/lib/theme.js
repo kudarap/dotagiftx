@@ -14,7 +14,7 @@ const baseThemeOpts = {
       dark: grey[400],
     },
     secondary: {
-      main: '#ea7653',
+      main: '#C79123',
     },
     bid: {
       main: teal[300],
@@ -23,8 +23,8 @@ const baseThemeOpts = {
       main: teal.A200,
     },
     background: {
-      default: '#201d1d',
-      paper: '#2d2928',
+      default: '#263238',
+      paper: '#2e3d44',
     },
     // App specific colors.
     app: {
@@ -77,6 +77,16 @@ const baseThemeOpts = {
     },
     MuiPaper: {
       styleOverrides: { root: { backgroundImage: 'unset' } },
+    },
+    MuiAlert: {
+      variants: [
+        {
+          props: { variant: 'filled' },
+          style: {
+            color: 'white',
+          },
+        },
+      ],
     },
   },
 }

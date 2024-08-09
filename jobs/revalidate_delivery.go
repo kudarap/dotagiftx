@@ -2,85 +2,83 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"time"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/steaminv"
-	"github.com/kudarap/dotagiftx/verified"
+	"github.com/kudarap/dotagiftx/steaminvorg"
+	"github.com/kudarap/dotagiftx/verifying"
 )
 
 // RevalidateDelivery represents a delivery verification job.
 type RevalidateDelivery struct {
-	deliverySvc core.DeliveryService
-	marketStg   core.MarketStorage
+	deliverySvc dgx.DeliveryService
+	marketStg   dgx.MarketStorage
 	logger      log.Logger
 	// job settings
 	name     string
 	interval time.Duration
-	filter   core.Market
+	filter   dgx.Market
 }
 
-func NewRevalidateDelivery(ds core.DeliveryService, ms core.MarketStorage, lg log.Logger) *RevalidateDelivery {
-	f := core.Market{Type: core.MarketTypeAsk, Status: core.MarketStatusSold}
+func NewRevalidateDelivery(ds dgx.DeliveryService, ms dgx.MarketStorage, lg log.Logger) *RevalidateDelivery {
+	f := dgx.Market{Type: dgx.MarketTypeAsk, Status: dgx.MarketStatusSold}
 	return &RevalidateDelivery{
 		ds, ms, lg,
 		"revalidate_delivery", time.Hour, f}
 }
 
-func (vd *RevalidateDelivery) String() string { return vd.name }
+func (rd *RevalidateDelivery) String() string { return rd.name }
 
-func (vd *RevalidateDelivery) Interval() time.Duration { return vd.interval }
+func (rd *RevalidateDelivery) Interval() time.Duration { return rd.interval }
 
-func (vd *RevalidateDelivery) Run(ctx context.Context) error {
+func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		fmt.Println("======== REVALIDATE DELIVERY BENCHMARK TIME =========")
-		fmt.Println(time.Since(bs))
-		fmt.Println("====================================================")
+		rd.logger.Println("REVALIDATE DELIVERY BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := core.FindOpts{Filter: vd.filter}
+	opts := dgx.FindOpts{Filter: rd.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
+	opts.IndexKey = "status"
 
-	src := steaminv.InventoryAsset
+	src := steaminvorg.InventoryAsset
 	for {
-		res, err := vd.marketStg.PendingDeliveryStatus(opts)
+		res, err := rd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {
 			return err
 		}
 
 		for _, mkt := range res {
 			if mkt.User == nil || mkt.Item == nil {
-				vd.logger.Debug("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				rd.logger.Debug("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
 			}
 
 			if mkt.Delivery == nil {
-				vd.logger.Debug("skipped process! no delivery data")
+				rd.logger.Debug("skipped process! no delivery data")
 				continue
 			}
 			if mkt.Delivery.Retries > 10 {
-				vd.logger.Debug("skipped process! max retries reached")
+				rd.logger.Debug("skipped process! max retries reached")
 				continue
 			}
 
-			status, assets, err := verified.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+			status, assets, err := verifying.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}
-			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
+			rd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
-			err = vd.deliverySvc.Set(ctx, &core.Delivery{
+			err = rd.deliverySvc.Set(ctx, &dgx.Delivery{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,
 			})
 			if err != nil {
-				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				rd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
 			}
 
 			//rest(5)

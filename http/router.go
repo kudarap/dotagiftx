@@ -1,6 +1,6 @@
 package http
 
-import "github.com/go-chi/chi"
+import "github.com/go-chi/chi/v5"
 
 func (s *Server) publicRouter(r chi.Router) {
 	r.Group(func(r chi.Router) {
@@ -22,7 +22,7 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.cache, s.logger))
 			r.Get("/{id}", handleMarketDetail(s.marketSvc, s.cache, s.logger))
 		})
-		r.Get("/catalogs_trend", handleMarketCatalogTrendList(s.marketSvc, s.cache, s.logger))
+		r.Get("/catalogs_trend", handleMarketCatalogTrendListX(s.marketSvc, s.cache, s.logger))
 		r.Get("/catalogs", handleMarketCatalogList(s.marketSvc, s.trackSvc, s.cache, s.logger))
 		r.Get("/catalogs/{slug}", handleMarketCatalogDetail(s.marketSvc, s.cache, s.logger))
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc, s.cache))
@@ -39,6 +39,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		})
 		r.Get("/vanity/{id}", handleVanityProfile(s.userSvc, s.steam, s.cache))
 		r.Get("/blacklists", handleBlacklisted(s.userSvc, s.cache))
+		r.Post("/webhook/paypal", handleUserSubscriptionWebhook(s.userSvc))
 	})
 }
 
@@ -62,5 +63,6 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Post("/hammer/ban", handleHammerBan(s.hammerSvc, s.cache))
 		r.Post("/hammer/suspend", handleHammerSuspend(s.hammerSvc, s.cache))
 		r.Post("/hammer/lift", handleHammerLift(s.hammerSvc, s.cache))
+		r.Post("/subscription", handleUserManualSubscription(s.userSvc, s.cache))
 	})
 }

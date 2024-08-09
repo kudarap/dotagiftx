@@ -1,6 +1,6 @@
 // Copy records from production
-var testDB = r.db('d2g');
-var productionDB = r.db('d2g_production');
+var testDB = r.db('dotagiftx_dev');
+var productionDB = r.db('dotagiftx_production');
 
 testDB.table('auth').delete();
 testDB.table('catalog').delete();
@@ -16,6 +16,6 @@ testDB.table('catalog').insert(productionDB.table('catalog'));
 testDB.table('item').insert(productionDB.table('item'));
 testDB.table('market').insert(productionDB.table('market'));
 testDB.table('user').insert(productionDB.table('user'));
-testDB.table('delivery').insert(productionDB.table('delivery'));
+testDB.table('inventory').insert(productionDB.table('inventory'));
 testDB.table('delivery').insert(productionDB.table('delivery'));
 testDB.table('track').insert(productionDB.table('track').limit(100));

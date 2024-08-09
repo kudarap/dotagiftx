@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"github.com/kudarap/dotagiftx/core"
+	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 )
@@ -13,7 +13,7 @@ func (s *Server) authorizer(next http.Handler) http.Handler {
 		// Validate token from header.
 		c, err := jwt.ParseFromHeader(r.Header)
 		if err != nil {
-			respondError(w, errors.New(core.AuthErrNoAccess, err))
+			respondError(w, errors.New(dgx.AuthErrNoAccess, err))
 			return
 		}
 
@@ -21,7 +21,7 @@ func (s *Server) authorizer(next http.Handler) http.Handler {
 
 		// Inject auth details to context that will later be use as
 		// context user and authorizer level.
-		ctx := core.AuthToContext(r.Context(), &core.Auth{
+		ctx := dgx.AuthToContext(r.Context(), &dgx.Auth{
 			UserID: c.UserID,
 		})
 

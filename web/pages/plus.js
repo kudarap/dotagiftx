@@ -1,5 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Head from 'next/head'
+import { USER_SUBSCRIPTION_MAP_COLOR, USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
+import AppContext from '@/components/AppContext'
+import { myProfile } from '@/service/api'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -17,6 +20,8 @@ import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import { APP_NAME } from '@/constants/strings'
 import Link from '@/components/Link'
+import { Alert } from '@mui/material'
+import { dateCalendar } from '@/lib/format'
 
 const FeatureList = styled('ul')(({ theme }) => ({
   listStyle: 'none',
@@ -27,10 +32,39 @@ const FeatureList = styled('ul')(({ theme }) => ({
   paddingLeft: 0,
 }))
 
+const defaultProfile = {
+  subscription: null,
+  subscription_type: '',
+  subscription_ends_at: null,
+  // runtime props
+  subscriptionLabel: '',
+  subscriptionColor: '',
+}
+
 export default function Plus() {
+  const { isLoggedIn } = useContext(AppContext)
+
+  // load subscription data if logged in.
+  const [profile, setProfile] = React.useState(defaultProfile)
+  React.useEffect(() => {
+    ;(async () => {
+      if (!isLoggedIn) {
+        return
+      }
+
+      const res = await myProfile.GET()
+      setProfile({
+        ...res,
+        subscriptionLabel: USER_SUBSCRIPTION_MAP_LABEL[res.subscription],
+        subscriptionColor: USER_SUBSCRIPTION_MAP_COLOR[res.subscription],
+      })
+    })()
+  }, [])
+
   return (
     <div className="container">
       <Head>
+        <meta charset="UTF-8" />
         <title>{APP_NAME} :: Plus</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -44,8 +78,8 @@ export default function Plus() {
               sx={{ mt: 8 }}
               style={{
                 background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
-                '-webkit-background-clip': 'text',
-                '-webkit-text-fill-color': 'transparent',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
                 letterSpacing: 3,
                 // textTransform: 'uppercase',
               }}
@@ -55,10 +89,30 @@ export default function Plus() {
               color="secondary">
               Dotagift Plus
             </Typography>
-            <Typography variant="h6">
+            <Typography variant="h6" sx={{ mb: 2 }}>
               Help support DotagiftX and get exclusive feature access, dedicated support, and
               profile badge.
             </Typography>
+            {profile.subscription ? (
+              <Alert
+                variant="filled"
+                sx={{
+                  mt: 1,
+                  background: profile.subscriptionColor,
+                  transition: `box-shadow .5s ease-in-out, border .2s`,
+                  borderTop: `0 solid ${profile.subscriptionColor}`,
+                  boxShadow: `0 0 10px ${profile.subscriptionColor}`,
+                }}>
+                <strong>
+                  You have an active {profile.subscriptionLabel} subscription in{' '}
+                  {profile.subscription_type}{' '}
+                  {profile.subscription_ends_at
+                    ? `ends on ${dateCalendar(profile.subscription_ends_at)}`
+                    : 'automatically'}
+                  .
+                </strong>
+              </Alert>
+            ) : null}
           </Box>
 
           <Grid container spacing={2} sx={{ mt: 0 }}>
@@ -148,11 +202,11 @@ export default function Plus() {
                   fullWidth
                   sx={{ bgcolor: 'rgb(197, 144, 35)' }}
                   component={Link}
-                  // href="/transmute/subscription?id=partner">
-                  href="/about">
+                  href="/transmute/subscription?id=partner">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
-                    Contact us
+                    $20
                   </Typography>
+                  /mo
                 </Button>
               </Box>
             </Grid>
@@ -163,7 +217,7 @@ export default function Plus() {
             dashboard.
           </Typography>
 
-          <Box sx={{ mt: 5 }}>
+          <Box>
             <Typography variant="h6" sx={{ mb: 2 }} id="exclusive-features">
               Exclusive Features
             </Typography>
