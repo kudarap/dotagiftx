@@ -93,7 +93,7 @@ export default function Plus() {
               Help support DotagiftX and get exclusive feature access, dedicated support, and
               profile badge.
             </Typography>
-            {profile.subscription && (
+            {profile.subscription ? (
               <Alert
                 variant="filled"
                 sx={{
@@ -112,7 +112,7 @@ export default function Plus() {
                   .
                 </strong>
               </Alert>
-            )}
+            ) : null}
           </Box>
 
           <Grid container spacing={2} sx={{ mt: 0 }}>
