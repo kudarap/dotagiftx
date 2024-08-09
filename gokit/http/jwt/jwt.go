@@ -7,23 +7,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
-// SigKey JWT signature key and you need to set your own!
+// SigKey JWT signature key, you need to set your own!
 var SigKey = "mal3d1ct10n"
 
 // Claims represents JWT payload.
 type Claims struct {
 	UserID string
 	Level  string
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 // New creates new JWT with claims payload.
 func New(userID, level string, expiration time.Time) (token string, err error) {
 	c := Claims{UserID: userID, Level: level}
-	c.ExpiresAt = expiration.Unix()
+	c.ExpiresAt = jwt.NewNumericDate(expiration)
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	return t.SignedString([]byte(SigKey))
 }
