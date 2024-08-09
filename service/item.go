@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"sort"
 	"strings"
@@ -159,7 +158,7 @@ type yamlFile struct {
 func (s *itemService) Import(ctx context.Context, f io.Reader) (dgx.ItemImportResult, error) {
 	res := dgx.ItemImportResult{}
 
-	b, err := ioutil.ReadAll(f)
+	b, err := io.ReadAll(f)
 	if err != nil {
 		return res, errors.New(dgx.ItemErrImport, err)
 	}

@@ -180,9 +180,9 @@ func handleUserSubscriptionWebhook(svc dgx.UserService) http.HandlerFunc {
 	}
 }
 
-func handleUserManualSubscription(svc dgx.UserService, cache dgx.Cache) http.HandlerFunc {
+func handleUserManualSubscription(svc dgx.UserService, cache dgx.Cache, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := isItemKeyValid(r); err != nil {
+		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
 			return
 		}

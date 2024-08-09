@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	SigKey      string
+	DivineKey   string
 	Prod        bool
 	Addr        string
 	AppHost     string
