@@ -14,7 +14,7 @@ const baseThemeOpts = {
       dark: grey[400],
     },
     secondary: {
-      main: '#C79123',
+      main: '#7fbc8b',
     },
     bid: {
       main: teal[300],
