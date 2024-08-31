@@ -34,5 +34,5 @@ func (s *SpanStorage) Add(name string, elapsedMs int64, t time.Time) {
 var spanUUID = regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
 
 func spanCleanUUIDs(s string) string {
-	return spanUUID.ReplaceAllString(s, "{UUID}")
+	return spanUUID.ReplaceAllString(s, "<uuid>")
 }

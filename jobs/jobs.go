@@ -13,7 +13,7 @@ import (
 )
 
 // const defaultJobInterval = time.Hour * 24
-const defaultJobInterval = time.Hour * 1
+const defaultJobInterval = time.Hour * 6
 
 // Dispatcher represents the handling of custom jobs.
 type Dispatcher struct {
