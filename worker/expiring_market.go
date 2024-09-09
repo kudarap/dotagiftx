@@ -1,4 +1,4 @@
-package jobs
+package worker
 
 import (
 	"context"
@@ -28,7 +28,7 @@ func NewExpiringMarket(ms dgx.MarketStorage, cs dgx.CatalogStorage, cc dgx.Cache
 		cache:      cc,
 		logger:     lg,
 		name:       "expiring_market",
-		interval:   defaultJobInterval,
+		interval:   time.Hour * 24,
 	}
 }
 

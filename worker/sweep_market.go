@@ -1,4 +1,4 @@
-package jobs
+package worker
 
 import (
 	"context"
@@ -22,7 +22,7 @@ func NewSweepMarket(ms dgx.MarketStorage, lg log.Logger) *SweepMarket {
 		marketStg: ms,
 		logger:    lg,
 		name:      "clean_market",
-		interval:  defaultJobInterval,
+		interval:  time.Hour * 24,
 	}
 }
 

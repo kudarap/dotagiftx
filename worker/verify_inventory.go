@@ -1,4 +1,4 @@
-package jobs
+package worker
 
 import (
 	"context"
@@ -25,7 +25,7 @@ func NewVerifyInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg log.Lo
 	f := dgx.Market{}
 	return &VerifyInventory{
 		is, ms, lg,
-		"verify_inventory", defaultJobInterval, f}
+		"verify_inventory", time.Hour * 24, f}
 }
 
 func (vi *VerifyInventory) String() string { return vi.name }

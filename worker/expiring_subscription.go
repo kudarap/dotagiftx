@@ -1,4 +1,4 @@
-package jobs
+package worker
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func NewExpiringSubscription(
 		userStg:  us,
 		cache:    cache,
 		name:     "expiring_subscription",
-		interval: defaultJobInterval,
+		interval: time.Hour * 24,
 		logger:   lg,
 	}
 }

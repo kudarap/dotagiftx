@@ -9,7 +9,6 @@ import (
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
-	"github.com/kudarap/dotagiftx/jobs"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
@@ -108,19 +107,44 @@ func (app *application) setup() error {
 	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
-	// Register job on the worker.
-	dispatcher := jobs.NewDispatcher(
-		app.worker,
-		deliverySvc,
+	app.worker.AddJob(worker.NewRecheckInventory(
+		inventorySvc, marketStg, log.WithPrefix(logger, "job_recheck_inventory"),
+	))
+	app.worker.AddJob(worker.NewVerifyInventory(
 		inventorySvc,
+		marketStg,
+		log.WithPrefix(logger, "job_verify_inventory"),
+	))
+	app.worker.AddJob(worker.NewVerifyDelivery(
+		deliverySvc,
+		marketStg,
+		log.WithPrefix(logger, "job_verify_delivery"),
+	))
+	app.worker.AddJob(worker.NewGiftWrappedUpdate(
+		deliverySvc,
 		deliveryStg,
 		marketStg,
-		catalogStg,
+		log.WithPrefix(logger, "job_giftwrapped_update"),
+	))
+	app.worker.AddJob(worker.NewRevalidateDelivery(
+		deliverySvc,
+		marketStg,
+		log.WithPrefix(logger, "job_revalidate_delivery"),
+	))
+	app.worker.AddJob(worker.NewExpiringSubscription(
 		userStg,
 		redisClient,
-		logger,
-	)
-	dispatcher.RegisterJobs()
+		log.WithPrefix(logger, "job_expiring_subscription"),
+	))
+	app.worker.AddJob(worker.NewExpiringMarket(
+		marketStg,
+		catalogStg,
+		redisClient,
+		log.WithPrefix(logger, "job_expiring_market"),
+	))
+	app.worker.AddJob(worker.NewSweepMarket(
+		marketStg, log.WithPrefix(logger, "job_sweep_market"),
+	))
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
