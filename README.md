@@ -6,7 +6,7 @@ Market place for giftable Dota 2 items
 
 - Go 1.23
 - RethinkDB 2.4
-- Redis 6.0
+- Redis 6.2
 - Docker 20
 
 ### Architecture
