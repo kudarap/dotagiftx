@@ -102,8 +102,10 @@ func (c *Client) exec(t r.Term) error {
 }
 
 func (c *Client) list(t r.Term, out interface{}) error {
-	s := c.tracing.StartSpan("rethink list " + t.String())
-	defer s.End()
+	if c.tracing != nil {
+		s := c.tracing.StartSpan("rethink list " + t.String())
+		defer s.End()
+	}
 
 	res, err := c.run(t)
 	if err != nil {
@@ -117,8 +119,10 @@ func (c *Client) list(t r.Term, out interface{}) error {
 }
 
 func (c *Client) one(t r.Term, out interface{}) error {
-	s := c.tracing.StartSpan("rethink one " + t.String())
-	defer s.End()
+	if c.tracing != nil {
+		s := c.tracing.StartSpan("rethink one " + t.String())
+		defer s.End()
+	}
 
 	res, err := c.run(t)
 	if err != nil {

@@ -2,23 +2,34 @@ package rethink
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"time"
 
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
+const tableSpan = "span"
+
 type SpanStorage struct {
 	db *Client
 }
 
 type span struct {
-	Name      string    `db:"name"`
-	ElapsedMs int64     `db:"elapsed_ms"`
-	CreatedAt time.Time `db:"created_at"`
+	Name      string    `db:"name,index"`
+	ElapsedMs int64     `db:"elapsed_ms,index"`
+	CreatedAt time.Time `db:"created_at,index"`
 }
 
 func NewSpan(c *Client) *SpanStorage {
+	if err := c.autoMigrate(tableSpan); err != nil {
+		log.Fatalf("could not create %s table: %s", tableSpan, err)
+	}
+
+	if err := c.autoIndex(tableSpan, span{}); err != nil {
+		log.Fatalf("could not create index on %s table: %s", tableSpan, err)
+	}
+
 	return &SpanStorage{c}
 }
 
