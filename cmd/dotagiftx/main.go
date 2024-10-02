@@ -151,8 +151,8 @@ func (app *application) setup() error {
 	// Server setup.
 	logSvc.Println("setting up http server...")
 	srv := http.NewServer(
-		app.config.DivineKey,
 		app.config.SigKey,
+		app.config.DivineKey,
 		userSvc,
 		authSvc,
 		imageSvc,
