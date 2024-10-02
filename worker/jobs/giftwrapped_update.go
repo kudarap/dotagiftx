@@ -1,4 +1,4 @@
-package worker
+package jobs
 
 import (
 	"context"
@@ -31,7 +31,7 @@ func NewGiftWrappedUpdate(ds dgx.DeliveryService, dstg dgx.DeliveryStorage, ms d
 	}
 	return &GiftWrappedUpdate{
 		ds, dstg, ms, lg,
-		"giftwrapped_update", time.Hour, f}
+		"giftwrapped_update", time.Hour / 2, f}
 }
 
 func (gw *GiftWrappedUpdate) String() string { return gw.name }

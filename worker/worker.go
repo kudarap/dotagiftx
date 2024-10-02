@@ -2,10 +2,12 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/kudarap/dotagiftx/gokit/log"
+	"github.com/kudarap/dotagiftx/tracing"
 )
 
 // Worker represents worker handling and running tasks.
@@ -18,6 +20,7 @@ type Worker struct {
 	taskProc *TaskProcessor
 
 	logger log.Logger
+	tracer *tracing.Tracer
 }
 
 // JobID represents identification for a Job.
@@ -101,6 +104,13 @@ func (w *Worker) AddJob(j Job) {
 
 // runner process the job and will re-queue them when recurring job.
 func (w *Worker) runner(ctx context.Context, job Job) {
+	if w.tracer != nil {
+		span := w.tracer.StartSpan(fmt.Sprintf("job-%s", job))
+		defer func() {
+			span.End()
+		}()
+	}
+
 	w.logger.Infof("RUNN job:%s", job)
 	w.wg.Add(1)
 
@@ -121,7 +131,7 @@ func (w *Worker) runner(ctx context.Context, job Job) {
 		return
 	}
 
-	// Job that has non-zero interval value means its a recurring job
+	// Job that has non-zero interval value means it's a recurring job
 	// and will be re-queued after its rest duration
 	w.logger.Infof("REST job:%s will re-queue in %s", job, rest)
 	w.queueJob(job, false)
@@ -172,4 +182,8 @@ func (w *Worker) Stop() error {
 // DEPRECATED
 func (w *Worker) RunOnce(j Job) {
 	w.queueJob(j, true)
+}
+
+func (w *Worker) SetTracer(t *tracing.Tracer) {
+	w.tracer = t
 }

@@ -1,4 +1,4 @@
-package worker
+package jobs
 
 import (
 	"context"
@@ -25,7 +25,7 @@ func NewRevalidateDelivery(ds dgx.DeliveryService, ms dgx.MarketStorage, lg log.
 	f := dgx.Market{Type: dgx.MarketTypeAsk, Status: dgx.MarketStatusSold}
 	return &RevalidateDelivery{
 		ds, ms, lg,
-		"revalidate_delivery", time.Hour, f}
+		"revalidate_delivery", time.Hour * 24, f}
 }
 
 func (rd *RevalidateDelivery) String() string { return rd.name }

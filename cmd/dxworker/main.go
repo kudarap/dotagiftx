@@ -14,6 +14,7 @@ import (
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/kudarap/dotagiftx/worker"
+	"github.com/kudarap/dotagiftx/worker/jobs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -107,42 +108,42 @@ func (app *application) setup() error {
 	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
-	app.worker.AddJob(worker.NewRecheckInventory(
+	app.worker.AddJob(jobs.NewRecheckInventory(
 		inventorySvc, marketStg, log.WithPrefix(logger, "job_recheck_inventory"),
 	))
-	app.worker.AddJob(worker.NewVerifyInventory(
+	app.worker.AddJob(jobs.NewVerifyInventory(
 		inventorySvc,
 		marketStg,
 		log.WithPrefix(logger, "job_verify_inventory"),
 	))
-	app.worker.AddJob(worker.NewVerifyDelivery(
+	app.worker.AddJob(jobs.NewVerifyDelivery(
 		deliverySvc,
 		marketStg,
 		log.WithPrefix(logger, "job_verify_delivery"),
 	))
-	app.worker.AddJob(worker.NewGiftWrappedUpdate(
+	app.worker.AddJob(jobs.NewGiftWrappedUpdate(
 		deliverySvc,
 		deliveryStg,
 		marketStg,
 		log.WithPrefix(logger, "job_giftwrapped_update"),
 	))
-	app.worker.AddJob(worker.NewRevalidateDelivery(
+	app.worker.AddJob(jobs.NewRevalidateDelivery(
 		deliverySvc,
 		marketStg,
 		log.WithPrefix(logger, "job_revalidate_delivery"),
 	))
-	app.worker.AddJob(worker.NewExpiringSubscription(
+	app.worker.AddJob(jobs.NewExpiringSubscription(
 		userStg,
 		redisClient,
 		log.WithPrefix(logger, "job_expiring_subscription"),
 	))
-	app.worker.AddJob(worker.NewExpiringMarket(
+	app.worker.AddJob(jobs.NewExpiringMarket(
 		marketStg,
 		catalogStg,
 		redisClient,
 		log.WithPrefix(logger, "job_expiring_market"),
 	))
-	app.worker.AddJob(worker.NewSweepMarket(
+	app.worker.AddJob(jobs.NewSweepMarket(
 		marketStg, log.WithPrefix(logger, "job_sweep_market"),
 	))
 
