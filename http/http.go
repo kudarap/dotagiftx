@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	jsoniter "github.com/json-iterator/go"
 	dgx "github.com/kudarap/dotagiftx"
@@ -10,6 +11,40 @@ import (
 )
 
 var json = jsoniter.ConfigFastest
+
+type httpMsg struct {
+	Error bool   `json:"error,omitempty"`
+	Typ   string `json:"type,omitempty"`
+	Msg   string `json:"msg"`
+}
+
+func newMsg(msg string) httpMsg {
+	m := httpMsg{}
+	m.Msg = msg
+	return m
+}
+
+func newError(err error) interface{} {
+	m := httpMsg{}
+	m.Error = true
+	m.Msg = err.Error()
+	return m
+}
+
+type dataWithMeta struct {
+	Data        interface{} `json:"data"`
+	ResultCount int         `json:"result_count"`
+	TotalCount  int         `json:"total_count"`
+}
+
+func newDataWithMeta(data interface{}, md *dgx.FindMetadata) dataWithMeta {
+	return dataWithMeta{data, md.ResultCount, md.TotalCount}
+}
+
+func hasQueryField(url *url.URL, key string) bool {
+	_, ok := url.Query()[key]
+	return ok
+}
 
 func respond(w http.ResponseWriter, code int, body interface{}) {
 	w.Header().Set("Content-Type", "application/json")

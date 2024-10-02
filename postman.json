@@ -1,8 +1,9 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftx v0.20.0",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "name": "dotagiftx v0.21.1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "165139"
   },
   "item": [
     {
@@ -96,13 +97,13 @@
               }
             },
             "url": {
-              "raw": "{{host}}/items?key=item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8",
+              "raw": "{{host}}/items?key={{item_key}}",
               "host": ["{{host}}"],
               "path": ["items"],
               "query": [
                 {
                   "key": "key",
-                  "value": "item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8"
+                  "value": "{{item_key}}"
                 }
               ]
             }
@@ -186,7 +187,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"item_id\": \"a13a01b4-1c3a-489e-853b-6b07005fee7c\",\n\t\"price\": 9.99\n}",
+              "raw": "{\n\t\"item_id\": \"visions-of-the-lifted-veil-phantom-assassin\",\n\t\"price\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -298,6 +299,44 @@
           "response": []
         },
         {
+          "name": "manual subscription",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user_id\": \"x\",\n    \"plan\": \"partner\",\n    \"cycles\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/subscription?key={{item_key}}",
+              "host": ["{{host}}"],
+              "path": ["subscription"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{item_key}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "item import",
           "request": {
             "auth": {
@@ -318,7 +357,7 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "src": "/Volumes/Xtension/Dropbox/DotagiftX/item imports/cache 2016.yml"
+                  "src": "/Users/kudarap/Dropbox/DotagiftX/item imports/crownfall 2024 collector's cache ii.yml"
                 }
               ]
             },
@@ -390,7 +429,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"steam_id\": \"76561198049332788\",\n    \"reason\": \"scammed paid SF's Souls Tyrant reported by 76561198171142718\"\n}",
+              "raw": "{\n\t\"steam_id\": \"76561199169838395\",\n    \"reason\": \"scamming ungiftable arcana reported by 76561198041583154 and 76561199383755597 https://imgur.com/a/qVtWPVQ\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -407,6 +446,16 @@
         },
         {
           "name": "suspend account",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -422,7 +471,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"steam_id\": \"76561198453345664\",\n    \"reason\": \"Account suspended: misleading post\"\n}",
+              "raw": "{\n\t\"steam_id\": \"76561198148783419\",\n    \"reason\": \"Deleted reservation without any notification, fake listing, ignore buyer after deposting; Victim: sw3ar (discord), suspended hammer by Justin Timbersaw; https://imgur.com/a/dotagiftx-rat-W1w2LQY\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -454,7 +503,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"steam_id\": \"76561198453345664\",\n    \"restore_listings\": false\n}",
+              "raw": "{\n\t\"steam_id\": \"76561198453345664\",\n    \"restore_listings\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -535,12 +584,26 @@
     },
     {
       "name": "auth renew",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.environment.set(\"jwt\", jsonData.token);",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"refresh_token\":\"54bb5b2adf9726a244fd9238a5efbafbc1bb9212\"\n}",
+          "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -562,7 +625,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"refresh_token\": \"7e9103ba417ded40182940af395ab931d7a6b80a\"\n}",
+          "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
           "options": {
             "raw": {
               "language": "json"

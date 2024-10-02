@@ -2,6 +2,8 @@ package http
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,6 +28,7 @@ const (
 // NewServer returns new http server.
 func NewServer(
 	sigKey string,
+	divineKey string,
 	us dgx.UserService,
 	au dgx.AuthService,
 	is dgx.ImageService,
@@ -43,6 +46,7 @@ func NewServer(
 ) *Server {
 	jwt.SigKey = sigKey
 	return &Server{
+		divineKey: divineKey,
 		userSvc:   us,
 		authSvc:   au,
 		imageSvc:  is,
@@ -81,6 +85,10 @@ type Server struct {
 	cache   dgx.Cache
 	logger  *logrus.Logger
 	version *version.Version
+
+	// divineKey is a special access key for importing and creating items and
+	// managing manual subscriptions. This key is used as temporary admin access key.
+	divineKey string
 }
 
 func (s *Server) setup() {
@@ -124,7 +132,7 @@ func (s *Server) Run() error {
 	errCh := make(chan error, 1)
 	go func() {
 		s.logger.Infoln("server running on", s.Addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
 	}()
@@ -152,4 +160,11 @@ func (s *Server) Run() error {
 
 func NewStructuredLogger(logger *logrus.Logger) func(next http.Handler) http.Handler {
 	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger})
+}
+
+func isValidDivineKey(r *http.Request, divineKey string) error {
+	if r.URL.Query().Get("key") == divineKey {
+		return nil
+	}
+	return fmt.Errorf("divine key does not exist or invalid")
 }

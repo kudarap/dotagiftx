@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -143,7 +143,7 @@ func postMarket(p Payload) error {
 		return err
 	}
 	defer res.Body.Close()
-	str, err := ioutil.ReadAll(res.Body)
+	str, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

@@ -11,9 +11,6 @@ import (
 )
 
 const (
-	// itemKey use for accessing this item related endpoint like import and item creation.
-	itemKey = "item_key_E3tTNn9y7evBrFhZC8JEhQf27VqgL8"
-
 	itemImportFileType = "text/yaml"
 
 	itemCacheKeyPrefix = "svc_item"
@@ -93,9 +90,9 @@ func handleItemDetail(svc dgx.ItemService, cache dgx.Cache, logger *logrus.Logge
 	}
 }
 
-func handleItemCreate(svc dgx.ItemService, cache dgx.Cache) http.HandlerFunc {
+func handleItemCreate(svc dgx.ItemService, cache dgx.Cache, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := isItemKeyValid(r); err != nil {
+		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
 			return
 		}
@@ -117,9 +114,9 @@ func handleItemCreate(svc dgx.ItemService, cache dgx.Cache) http.HandlerFunc {
 	}
 }
 
-func handleItemImport(svc dgx.ItemService, cache dgx.Cache) http.HandlerFunc {
+func handleItemImport(svc dgx.ItemService, cache dgx.Cache, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := isItemKeyValid(r); err != nil {
+		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
 			return
 		}
@@ -149,11 +146,4 @@ func handleItemImport(svc dgx.ItemService, cache dgx.Cache) http.HandlerFunc {
 
 		respondOK(w, res)
 	}
-}
-
-func isItemKeyValid(r *http.Request) error {
-	if r.URL.Query().Get("key") == itemKey {
-		return nil
-	}
-	return fmt.Errorf("item key does not exist or invalid")
 }

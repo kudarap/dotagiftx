@@ -2,10 +2,12 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/kudarap/dotagiftx/gokit/log"
+	"github.com/kudarap/dotagiftx/tracing"
 )
 
 // Worker represents worker handling and running tasks.
@@ -18,6 +20,27 @@ type Worker struct {
 	taskProc *TaskProcessor
 
 	logger log.Logger
+	tracer *tracing.Tracer
+}
+
+// JobID represents identification for a Job.
+type JobID string
+
+// Job provides process and information for the job.
+type Job interface {
+	// String returns job reference or name.
+	String() string
+
+	// Interval returns sleep duration before re-queueing.
+	//
+	// Returning a zero value will consider run-once job
+	// and will NOT be re-queued.
+	Interval() time.Duration
+
+	// Run process the task of the job.
+	//
+	// Recurring Job will not stop when an error occurred.
+	Run(context.Context) error
 }
 
 // New create new instance of a worker with a given jobs.
@@ -81,6 +104,13 @@ func (w *Worker) AddJob(j Job) {
 
 // runner process the job and will re-queue them when recurring job.
 func (w *Worker) runner(ctx context.Context, job Job) {
+	if w.tracer != nil {
+		span := w.tracer.StartSpan(fmt.Sprintf("job-%s", job))
+		defer func() {
+			span.End()
+		}()
+	}
+
 	w.logger.Infof("RUNN job:%s", job)
 	w.wg.Add(1)
 
@@ -101,7 +131,7 @@ func (w *Worker) runner(ctx context.Context, job Job) {
 		return
 	}
 
-	// Job that has non-zero interval value means its a recurring job
+	// Job that has non-zero interval value means it's a recurring job
 	// and will be re-queued after its rest duration
 	w.logger.Infof("REST job:%s will re-queue in %s", job, rest)
 	w.queueJob(job, false)
@@ -152,4 +182,8 @@ func (w *Worker) Stop() error {
 // DEPRECATED
 func (w *Worker) RunOnce(j Job) {
 	w.queueJob(j, true)
+}
+
+func (w *Worker) SetTracer(t *tracing.Tracer) {
+	w.tracer = t
 }

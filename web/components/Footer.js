@@ -8,10 +8,10 @@ import { APP_NAME } from '@/constants/strings'
 import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
-const t = 1707590035909
-//const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${t}`
-const dotaHeroImage =
-  'https://clan.cloudflare.steamstatic.com/images/3703047/ba80108f618e691d184e7eb5579e56c33b9a811b.jpg'
+const t = 1724395576617
+const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${t}`
+// const dotaHeroImage =
+;('https://clan.cloudflare.steamstatic.com/images/3703047/ba80108f618e691d184e7eb5579e56c33b9a811b.jpg')
 
 // const heroImage = '/assets/bg_hero.png'
 
@@ -30,7 +30,7 @@ const useStyles = makeStyles()(theme => ({
     },
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
-    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -100px`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -50px`,
   },
   list: {
     [theme.breakpoints.down('sm')]: {
@@ -64,7 +64,8 @@ const useStyles = makeStyles()(theme => ({
     marginTop: theme.spacing(4),
   },
   highlight: {
-    background: '-webkit-linear-gradient(#EBCF87 10%, #C79123 90%)',
+    // background: '-webkit-linear-gradient(#EBCF87 10%, #C79123 90%)',
+    background: '-webkit-linear-gradient(#EBCF87 10%, #A9EFAA, #7FBC8B)',
     backgroundClip: 'border-box',
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',

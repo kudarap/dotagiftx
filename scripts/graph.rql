@@ -1,0 +1,38 @@
+const millisec = 1000;
+const perfStats = (jobs = [], percentiles = []) => {
+  var result = [];
+  for (var i = jobs.length - 1; i >= 0; i--) {
+    let job = 'job-' + jobs[i];
+    let samples = r.db('dotagiftx_production').table('span')
+      .getAll(job, {index: 'name'}).count();
+    let pcts = {};
+    for (var j = percentiles.length - 1; j >= 0; j--) {
+      let percentile = percentiles[j];
+      let p = r.db('dotagiftx_production').table('span')
+        .getAll(job, {index: 'name'})
+        .orderBy(r.desc('elapsed_ms'))
+        .pluck('elapsed_ms')
+        .map(d => d('elapsed_ms'))
+        .slice(0, samples.mul(1 - percentile / 100).floor()).avg();
+      pcts['p'+percentile] = r.expr(p.div(millisec)).ceil();
+    }
+    result.push({
+      job,
+      samples,
+      ...pcts,
+      unit: 'second',
+    });
+  }
+  return result;
+};
+
+r.expr(perfStats([
+  'expiring_market',
+  'expiring_subscription',
+  'giftwrapped_update',
+  'recheck_inventory',
+  'revalidate_delivery',
+  'clean_market',
+  'verify_delivery',
+  'verify_inventory',
+], [50, 90]))

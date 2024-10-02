@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -141,7 +140,7 @@ func Inventory(steamID string) (*RawInventory, error) {
 
 func inventoryParser(r io.Reader) (*RawInventory, error) {
 	raw := &RawInventory{}
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}

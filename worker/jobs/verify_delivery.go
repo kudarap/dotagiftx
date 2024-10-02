@@ -25,7 +25,7 @@ func NewVerifyDelivery(ds dgx.DeliveryService, ms dgx.MarketStorage, lg log.Logg
 	f := dgx.Market{Type: dgx.MarketTypeAsk, Status: dgx.MarketStatusSold}
 	return &VerifyDelivery{
 		ds, ms, lg,
-		"verify_delivery", defaultJobInterval, f}
+		"verify_delivery", time.Hour * 24, f}
 }
 
 func (vd *VerifyDelivery) String() string { return vd.name }

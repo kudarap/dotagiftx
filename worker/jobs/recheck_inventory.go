@@ -11,7 +11,7 @@ import (
 )
 
 // RecheckInventory represents a job that rechecks no-hit items.
-// Crawling from SteamInventory.org tends to fail some times.
+// Crawling from SteamInventory.org tends to fail sometimes.
 type RecheckInventory struct {
 	inventorySvc dgx.InventoryService
 	marketStg    dgx.MarketStorage
@@ -26,7 +26,7 @@ func NewRecheckInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg log.L
 	f := dgx.Inventory{Status: dgx.InventoryStatusNoHit}
 	return &RecheckInventory{
 		is, ms, lg,
-		"recheck_inventory", time.Hour * 12, f}
+		"recheck_inventory", time.Hour, f}
 }
 
 func (ri *RecheckInventory) String() string { return ri.name }
