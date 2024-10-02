@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftx v0.21.0",
+    "name": "dotagiftx v0.21.1",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "165139"
   },
@@ -357,7 +357,7 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "src": "/Users/kudarap/Dropbox/DotagiftX/item imports/immortal 2022 1.yml"
+                  "src": "/Users/kudarap/Dropbox/DotagiftX/item imports/crownfall 2024 collector's cache ii.yml"
                 }
               ]
             },
@@ -446,6 +446,16 @@
         },
         {
           "name": "suspend account",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -461,7 +471,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n\t\"steam_id\": \"76561198453345664\",\n    \"reason\": \"Account suspended: misleading post\"\n}",
+              "raw": "{\n\t\"steam_id\": \"76561198148783419\",\n    \"reason\": \"Deleted reservation without any notification, fake listing, ignore buyer after deposting; Victim: sw3ar (discord), suspended hammer by Justin Timbersaw; https://imgur.com/a/dotagiftx-rat-W1w2LQY\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -574,12 +584,26 @@
     },
     {
       "name": "auth renew",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.environment.set(\"jwt\", jsonData.token);",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"refresh_token\": {{refresh_token}}\n}",
+          "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -601,7 +625,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"refresh_token\": {{refresh_token}}\n}",
+          "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
