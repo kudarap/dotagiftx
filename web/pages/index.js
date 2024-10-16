@@ -151,11 +151,12 @@ export default function Index({ marketSummary, trendingItems }) {
           }}>
           <div
             style={{
-              background: 'url(/assets/ti_ringmaster_banner.png) no-repeat center center',
-              // background: 'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/international2024/esports_site/footer_bg01.png) no-repeat center center',
+              // background: 'url(/assets/ti_ringmaster_banner.png) no-repeat center center',
+              background:
+                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               backgroundColor: '#263238',
               backgroundSize: 'cover',
-              backgroundPositionY: -120,
+              backgroundPositionY: -40,
               width: '100%',
               height: '100%',
             }}></div>
