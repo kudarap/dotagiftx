@@ -64,8 +64,8 @@ const useStyles = makeStyles()(theme => ({
     marginTop: theme.spacing(4),
   },
   highlight: {
-    // background: '-webkit-linear-gradient(#EBCF87 10%, #C79123 90%)',
-    background: '-webkit-linear-gradient(#EBCF87 10%, #A9EFAA, #7FBC8B)',
+    background: '-webkit-linear-gradient(#EBCF87 10%, #C79123 90%)',
+    // background: '-webkit-linear-gradient(#EBCF87 10%, #A9EFAA, #7FBC8B)',
     backgroundClip: 'border-box',
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',
