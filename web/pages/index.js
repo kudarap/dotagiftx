@@ -151,9 +151,10 @@ export default function Index({ marketSummary, trendingItems }) {
           }}>
           <div
             style={{
-              // background: 'url(/assets/ti_ringmaster_banner.png) no-repeat center center',
+              // background:
+              //   'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
-                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
+                'url(https://clan.cloudflare.steamstatic.com/images//3703047/2bf8a24917d425169d6c9b541482de91c28f5290.png) no-repeat center center',
               backgroundColor: '#263238',
               backgroundSize: 'cover',
               backgroundPositionY: -40,
