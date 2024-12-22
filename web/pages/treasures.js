@@ -235,7 +235,7 @@ export default function Treasures() {
   return (
     <div className="container">
       <Head>
-        <meta charset="UTF-8" />
+        <meta charSet="UTF-8" />
         <title>{APP_NAME} :: All Giftable Treasures</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>

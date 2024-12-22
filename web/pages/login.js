@@ -102,7 +102,7 @@ export default function Login() {
   return (
     <>
       <Head>
-        <meta charset="UTF-8" />
+        <meta charSet="UTF-8" />
         <title>{APP_NAME} :: Sign In</title>
       </Head>
 
