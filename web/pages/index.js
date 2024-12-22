@@ -154,10 +154,10 @@ export default function Index({ marketSummary, trendingItems }) {
               // background:
               //   'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
-                'url(https://clan.cloudflare.steamstatic.com/images//3703047/2bf8a24917d425169d6c9b541482de91c28f5290.png) no-repeat center center',
+                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/crownfall/act4_ascension_night/english/000.webp) no-repeat center center',
               backgroundColor: '#263238',
               backgroundSize: 'cover',
-              backgroundPositionY: -40,
+              backgroundPositionY: -60,
               width: '100%',
               height: '100%',
             }}></div>

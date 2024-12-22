@@ -251,11 +251,12 @@ export default function Treasures() {
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
-            top: -7,
+            top: -25,
           }}>
           <div
             style={{
-              background: 'url(/assets/venge_arcana.png) no-repeat bottom center',
+              background:
+                'url(https://clan.cloudflare.steamstatic.com/images//3703047/2bf8a24917d425169d6c9b541482de91c28f5290.png) repeat-y bottom center',
               backgroundPosition: 'center',
               width: '100%',
               height: '100%',
