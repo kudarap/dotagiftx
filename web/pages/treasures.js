@@ -256,7 +256,7 @@ export default function Treasures() {
           <div
             style={{
               background:
-                'url(https://clan.cloudflare.steamstatic.com/images//3703047/2bf8a24917d425169d6c9b541482de91c28f5290.png) repeat-y bottom center',
+                'url(https://clan.cloudflare.steamstatic.com/images//3703047/2bf8a24917d425169d6c9b541482de91c28f5290.png) repeat-x bottom center',
               backgroundPosition: 'center',
               width: '100%',
               height: '100%',
@@ -271,7 +271,7 @@ export default function Treasures() {
           <Grid container spacing={1}>
             {treasures.map(treasure => {
               return (
-                <Grid item xs={6} md={3}>
+                <Grid item xs={6} md={3} key={treasure.name}>
                   <Link href={`/search?origin=${treasure.name}`} underline="none">
                     <Item style={{ borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}` }}>
                       <div>
