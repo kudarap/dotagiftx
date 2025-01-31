@@ -29,12 +29,12 @@ func New(saveDir string, sizeLimit int, allowedTypes []string) *Local {
 	return &Local{saveDir, int64(sizeLimit), allowedTypes}
 }
 
-// Save saves bytes into file with pre-defined name.
+// SaveWithName saves bytes into file with pre-defined name.
 func (l *Local) SaveWithName(r io.Reader, baseName string) (name string, err error) {
 	return l.baseSave(r, baseName)
 }
 
-// Save saves bytes into file and returns an unique filename.
+// Save saves bytes into file and returns a unique filename.
 func (l *Local) Save(r io.Reader) (name string, err error) {
 	return l.baseSave(r, generateSha1Name())
 }

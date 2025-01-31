@@ -13,6 +13,12 @@ import { APP_NAME } from '@/constants/strings'
 
 const treasures = [
   {
+    name: 'The Charms of the Snake',
+    image: 'the_charms_of_the_snake.png',
+    rarity: 'mythical',
+    items: 9,
+  },
+  {
     name: "Winter 2024 Heroes' Hoard",
     image: 'winter_2024_heroes_hoard.png',
     rarity: 'mythical',
