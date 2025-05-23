@@ -37,7 +37,7 @@ func assetParser(r io.Reader) ([]Asset, error) {
 		return nil, ErrInventoryPrivate
 	}
 	if raw.Error != "" {
-		return nil, fmt.Errorf(raw.Error)
+		return nil, errors.New(raw.Error)
 	}
 
 	return raw.ToAssets(), nil

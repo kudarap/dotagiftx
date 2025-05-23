@@ -38,10 +38,10 @@ func buildSitemap(items []dgx.Item, users []dgx.User, vanities []string) *stm.Si
 		heroes[ii.Hero] = struct{}{}
 	}
 	// Add item origin and heroes.
-	for i, _ := range origins {
+	for i := range origins {
 		sitemap.Add(stm.URL{{"loc", "/search?origin=" + i}})
 	}
-	for i, _ := range heroes {
+	for i := range heroes {
 		sitemap.Add(stm.URL{{"loc", "/search?hero=" + i}})
 	}
 

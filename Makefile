@@ -18,6 +18,15 @@ run: generate build
 run-worker: generate build-worker
 	./dxworker
 
+test:
+	go test -v ./
+	go test -v ./gokit/...
+	go test -v ./http/...
+	go test -v ./steam/...
+
+fmt:
+	gofmt -s -l -e -w .
+
 build:
 	go build -v -ldflags=$(LDFLAGS) -o $(PROJECTNAME) ./cmd/$(PROJECTNAME)
 build-linux:
