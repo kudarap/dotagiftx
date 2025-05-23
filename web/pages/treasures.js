@@ -11,7 +11,16 @@ import Image from 'next/image'
 import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
 
+const stillNewDays = 15
+
 const treasures = [
+  {
+    name: "Spring 2025 Heroes' Hoard",
+    image: 'spring_2024_heroes_hoard.png',
+    rarity: 'mythical',
+    items: 16,
+    release_date: new Date(2025, 5, 23),
+  },
   {
     name: 'The Charms of the Snake',
     image: 'the_charms_of_the_snake.png',
@@ -229,6 +238,20 @@ const rarityColorMap = {
   immortal: '#b28a33',
 }
 
+const isTreasureNew = releaseDate => {
+  if (!releaseDate) {
+    return false
+  }
+
+  const now = new Date()
+  return releaseDate.getDate() < now.getDate() + stillNewDays
+}
+
+export const isRecentTreasureNew = () => {
+  const releaseDate = treasures[0]?.release_date
+  return isTreasureNew(releaseDate)
+}
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#1A2027CC',
   ...theme.typography.body,
@@ -257,13 +280,15 @@ export default function Treasures() {
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
-            top: -25,
           }}>
           <div
             style={{
+              // background:
+              // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
-                'url(https://clan.cloudflare.steamstatic.com/images//3703047/2bf8a24917d425169d6c9b541482de91c28f5290.png) repeat-x bottom center',
-              backgroundPosition: 'center',
+                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/springcleaning2025/treasure/heroes_hoard_spring_2025_backgound.png) repeat-x center top',
+              backgroundColor: '#263238',
+              backgroundSize: 'cover',
               width: '100%',
               height: '100%',
             }}></div>
@@ -279,7 +304,29 @@ export default function Treasures() {
               return (
                 <Grid item xs={6} md={3} key={treasure.name}>
                   <Link href={`/search?origin=${treasure.name}`} underline="none">
-                    <Item style={{ borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}` }}>
+                    <Item
+                      style={{
+                        borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}`,
+                        borderTop: isTreasureNew(treasure?.release_date) ? '2px solid green' : null,
+                        marginTop: isTreasureNew(treasure?.release_date) ? -2 : null,
+                      }}>
+                      {isTreasureNew(treasure?.release_date) && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            zIndex: 10,
+                            background: 'green',
+                            fontWeight: 'bolder',
+                            color: 'white',
+                            padding: '0 8px',
+                            marginTop: -10,
+                            marginLeft: -18,
+                            borderBottomLeftRadius: 4,
+                            borderBottomRightRadius: 4,
+                          }}>
+                          new
+                        </span>
+                      )}
                       <div>
                         <Image
                           src={'/assets/treasures/' + treasure.image}

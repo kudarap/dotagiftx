@@ -142,8 +142,8 @@ export default function Index({ marketSummary, trendingItems }) {
         <div
           style={{
             width: '100%',
-            height: 340,
-            marginBottom: 500 - 340,
+            height: 640,
+            marginBottom: 500 - 640,
             maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
@@ -152,22 +152,31 @@ export default function Index({ marketSummary, trendingItems }) {
           <div
             style={{
               // background:
-              //   'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
+              // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
-                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/crownfall/act4_ascension_night/english/000.webp) no-repeat center center',
+                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/springcleaning2025/header/header_background.jpg) repeat-x center 0',
               backgroundColor: '#263238',
               backgroundSize: 'cover',
-              backgroundPositionY: -60,
+              // backgroundPositionY: -60,
               width: '100%',
               height: '100%',
-            }}></div>
+            }}>
+            <img
+              src="https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react//springcleaning2025/header/header_hero.png"
+              style={{
+                width: '40%',
+                margin: '-10% 30%',
+                position: 'absolute',
+              }}
+            />
+          </div>
         </div>
 
         <Container
           sx={{
             mt: {
-              md: -35,
-              xs: -61,
+              md: -52,
+              xs: -78,
             },
             position: 'relative',
           }}>
