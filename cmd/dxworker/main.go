@@ -25,7 +25,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := dgx.New(false, tag, commit, built)
+	v := dotagiftx.New(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -51,7 +51,7 @@ type application struct {
 	config  Config
 	worker  *worker.Worker
 	logger  *logrus.Logger
-	version *dgx.Version
+	version *dotagiftx.Version
 
 	closerFn func()
 }

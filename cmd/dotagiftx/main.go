@@ -26,7 +26,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := dgx.New(false, tag, commit, built)
+	v := dotagiftx.New(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -275,7 +275,7 @@ func connRetry(name string, fn func() error) error {
 // version details used by ldflags.
 var tag, commit, built string
 
-func initVer(cfg Config) *dgx.Version {
-	v := dgx.New(cfg.Prod, tag, commit, built)
+func initVer(cfg Config) *dotagiftx.Version {
+	v := dotagiftx.New(cfg.Prod, tag, commit, built)
 	return v
 }

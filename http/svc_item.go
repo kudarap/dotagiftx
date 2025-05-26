@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -18,14 +18,14 @@ const (
 )
 
 func handleItemList(
-	svc dgx.ItemService,
-	trackSvc dgx.TrackService,
-	cache dgx.Cache,
+	svc dotagiftx.ItemService,
+	trackSvc dotagiftx.TrackService,
+	cache dotagiftx.Cache,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -33,7 +33,7 @@ func handleItemList(
 			}
 		}
 
-		opts, err := findOptsFromURL(r.URL, &dgx.Item{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Item{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -51,7 +51,7 @@ func handleItemList(
 			return
 		}
 		if list == nil {
-			list = []dgx.Item{}
+			list = []dotagiftx.Item{}
 		}
 
 		o := newDataWithMeta(list, md)
@@ -64,10 +64,10 @@ func handleItemList(
 	}
 }
 
-func handleItemDetail(svc dgx.ItemService, cache dgx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleItemDetail(svc dotagiftx.ItemService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -90,14 +90,14 @@ func handleItemDetail(svc dgx.ItemService, cache dgx.Cache, logger *logrus.Logge
 	}
 }
 
-func handleItemCreate(svc dgx.ItemService, cache dgx.Cache, divineKey string) http.HandlerFunc {
+func handleItemCreate(svc dotagiftx.ItemService, cache dotagiftx.Cache, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		i := new(dgx.Item)
+		i := new(dotagiftx.Item)
 		if err := parseForm(r, i); err != nil {
 			respondError(w, err)
 			return
@@ -114,7 +114,7 @@ func handleItemCreate(svc dgx.ItemService, cache dgx.Cache, divineKey string) ht
 	}
 }
 
-func handleItemImport(svc dgx.ItemService, cache dgx.Cache, divineKey string) http.HandlerFunc {
+func handleItemImport(svc dotagiftx.ItemService, cache dotagiftx.Cache, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)

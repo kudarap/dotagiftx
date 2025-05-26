@@ -6,21 +6,21 @@ import (
 	"log"
 	"strings"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewReport returns new Report service.
-func NewReport(rs dgx.ReportStorage, wp webhookPoster) dgx.ReportService {
+func NewReport(rs dotagiftx.ReportStorage, wp webhookPoster) dotagiftx.ReportService {
 	return &reportService{rs, wp}
 }
 
 type reportService struct {
-	reportStg     dgx.ReportStorage
+	reportStg     dotagiftx.ReportStorage
 	webhookPoster webhookPoster
 }
 
-func (s *reportService) Reports(opts dgx.FindOpts) ([]dgx.Report, *dgx.FindMetadata, error) {
+func (s *reportService) Reports(opts dotagiftx.FindOpts) ([]dotagiftx.Report, *dotagiftx.FindMetadata, error) {
 	res, err := s.reportStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -36,32 +36,32 @@ func (s *reportService) Reports(opts dgx.FindOpts) ([]dgx.Report, *dgx.FindMetad
 		return nil, nil, err
 	}
 
-	return res, &dgx.FindMetadata{
+	return res, &dotagiftx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
 	}, nil
 }
 
-func (s *reportService) Report(id string) (*dgx.Report, error) {
+func (s *reportService) Report(id string) (*dotagiftx.Report, error) {
 	return s.reportStg.Get(id)
 }
 
-func (s *reportService) CreateSurvey(ctx context.Context, rep *dgx.Report) error {
-	rep.Type = dgx.ReportTypeSurvey
+func (s *reportService) CreateSurvey(ctx context.Context, rep *dotagiftx.Report) error {
+	rep.Type = dotagiftx.ReportTypeSurvey
 	return s.Create(ctx, rep)
 }
 
-func (s *reportService) Create(ctx context.Context, rep *dgx.Report) error {
-	au := dgx.AuthFromContext(ctx)
+func (s *reportService) Create(ctx context.Context, rep *dotagiftx.Report) error {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return dgx.AuthErrNoAccess
+		return dotagiftx.AuthErrNoAccess
 	}
 	rep.UserID = au.UserID
 
 	rep.Label = strings.TrimSpace(rep.Label)
 	rep.Text = strings.TrimSpace(rep.Text)
 	if err := rep.CheckCreate(); err != nil {
-		return errors.New(dgx.ReportErrRequiredFields, err)
+		return errors.New(dotagiftx.ReportErrRequiredFields, err)
 	}
 
 	if err := s.reportStg.Create(rep); err != nil {
@@ -78,7 +78,7 @@ func (s *reportService) Create(ctx context.Context, rep *dgx.Report) error {
 }
 
 func (s *reportService) shootToDiscord(reportID string) error {
-	reps, _, err := s.Reports(dgx.FindOpts{Filter: dgx.Report{ID: reportID}})
+	reps, _, err := s.Reports(dotagiftx.FindOpts{Filter: dotagiftx.Report{ID: reportID}})
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package dgx
+package dotagiftx
 
 import "time"
 

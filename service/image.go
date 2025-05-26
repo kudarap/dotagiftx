@@ -4,29 +4,29 @@ import (
 	"context"
 	"io"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	"github.com/kudarap/dotagiftx/file"
 )
 
 // NewAuth returns a new Image service.
-func NewImage(fm dgx.FileManager) dgx.ImageService {
+func NewImage(fm dotagiftx.FileManager) dotagiftx.ImageService {
 	return &imageService{fm}
 }
 
 type imageService struct {
-	fileMgr dgx.FileManager
+	fileMgr dotagiftx.FileManager
 }
 
 func (s *imageService) Upload(ctx context.Context, r io.Reader) (fileID string, err error) {
-	if au := dgx.AuthFromContext(ctx); au == nil {
-		err = dgx.AuthErrNoAccess
+	if au := dotagiftx.AuthFromContext(ctx); au == nil {
+		err = dotagiftx.AuthErrNoAccess
 		return
 	}
 
 	fileID, err = s.fileMgr.Save(r)
 	if err != nil {
-		err = errors.New(dgx.ImageErrUpload, err)
+		err = errors.New(dotagiftx.ImageErrUpload, err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (s *imageService) Thumbnail(fileID string, width, height uint) (path string
 
 	t, err := file.Thumbnail(f, width, height)
 	if err != nil {
-		err = errors.New(dgx.ImageErrThumbnail, err)
+		err = errors.New(dotagiftx.ImageErrThumbnail, err)
 		return
 	}
 
@@ -51,7 +51,7 @@ func (s *imageService) Thumbnail(fileID string, width, height uint) (path string
 func (s *imageService) Image(fileID string) (path string, err error) {
 	path, err = s.fileMgr.Get(fileID)
 	if err != nil {
-		err = errors.New(dgx.ImageErrNotFound, err)
+		err = errors.New(dotagiftx.ImageErrNotFound, err)
 		return
 	}
 
@@ -59,8 +59,8 @@ func (s *imageService) Image(fileID string) (path string, err error) {
 }
 
 func (s *imageService) Delete(ctx context.Context, fileID string) error {
-	if au := dgx.AuthFromContext(ctx); au == nil {
-		return dgx.AuthErrNoAccess
+	if au := dotagiftx.AuthFromContext(ctx); au == nil {
+		return dotagiftx.AuthErrNoAccess
 	}
 
 	return s.fileMgr.Delete(fileID)

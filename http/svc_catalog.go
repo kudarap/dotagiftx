@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,9 +16,9 @@ const (
 )
 
 func handleMarketCatalogList(
-	svc dgx.MarketService,
-	trackSvc dgx.TrackService,
-	cache dgx.Cache,
+	svc dotagiftx.MarketService,
+	trackSvc dotagiftx.TrackService,
+	cache dotagiftx.Cache,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func handleMarketCatalogList(
 		}
 		sortQueryModifier(r)
 
-		opts, err := findOptsFromURL(r.URL, &dgx.Catalog{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Catalog{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -59,7 +59,7 @@ func handleMarketCatalogList(
 		}()
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -73,7 +73,7 @@ func handleMarketCatalogList(
 			return
 		}
 		if list == nil {
-			list = []dgx.Catalog{}
+			list = []dotagiftx.Catalog{}
 		}
 
 		// Save result to cache.
@@ -88,10 +88,10 @@ func handleMarketCatalogList(
 	}
 }
 
-func handleMarketCatalogDetail(svc dgx.MarketService, cache dgx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -102,7 +102,7 @@ func handleMarketCatalogDetail(svc dgx.MarketService, cache dgx.Cache, logger *l
 		// Special query flags with findOpts
 		sortQueryModifier(r)
 
-		opts, err := findOptsFromURL(r.URL, &dgx.Market{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -133,30 +133,30 @@ const catalogTrendRehydrationDur = catalogTrendCacheExpr / 2
 
 var catalogTrendLastUpdated = time.Now().Add(catalogTrendRehydrationDur)
 
-func rehydrateCatalogTrend(cacheKey string, svc dgx.MarketService, cache dgx.Cache, logger *logrus.Logger) {
+func rehydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) {
 	if time.Now().Before(catalogTrendLastUpdated) {
 		return
 	}
 	catalogTrendLastUpdated = time.Now().Add(catalogTrendRehydrationDur)
 
 	logger.Infoln("REHYDRATING...")
-	l, _, _ := svc.TrendingCatalog(dgx.FindOpts{})
-	d := newDataWithMeta(l, &dgx.FindMetadata{len(l), 10})
+	l, _, _ := svc.TrendingCatalog(dotagiftx.FindOpts{})
+	d := newDataWithMeta(l, &dotagiftx.FindMetadata{len(l), 10})
 	if err := cache.Set(cacheKey, d, catalogTrendCacheExpr); err != nil {
 		logger.Errorf("could not save cache on catalog trend list: %s", err)
 	}
 	logger.Infoln("REHYDRATED", d.ResultCount)
 }
 
-func hydrateCatalogTrendX(cacheKey string, svc dgx.MarketService, cache dgx.Cache, logger *logrus.Logger) {
+func hydrateCatalogTrendX(cacheKey string, svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) {
 	logger.Infoln("REHYDRATING EXP...")
-	list, _, err := svc.TrendingCatalog(dgx.FindOpts{})
+	list, _, err := svc.TrendingCatalog(dotagiftx.FindOpts{})
 	if err != nil {
 		logger.Errorf("could not get catalog trend list: %s", err)
 		return
 	}
 
-	trend := newDataWithMeta(list, &dgx.FindMetadata{len(list), 10})
+	trend := newDataWithMeta(list, &dotagiftx.FindMetadata{len(list), 10})
 	if err = cache.Set(cacheKey, trend, 0); err != nil {
 		logger.Errorf("could not save cache on catalog trend list: %s", err)
 		return
@@ -164,7 +164,7 @@ func hydrateCatalogTrendX(cacheKey string, svc dgx.MarketService, cache dgx.Cach
 	logger.Infoln("REHYDRATED EXP", trend.ResultCount)
 }
 
-func handleMarketCatalogTrendListX(svc dgx.MarketService, cache dgx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogTrendListX(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
 	const cacheKeyX = "catalog_trend_exp"
 
 	go func() {
@@ -193,17 +193,17 @@ func handleMarketCatalogTrendListX(svc dgx.MarketService, cache dgx.Cache, logge
 	}
 }
 
-func handleMarketCatalogTrendList(svc dgx.MarketService, cache dgx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var noCache bool
-		opts, err := findOptsFromURL(r.URL, &dgx.Catalog{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Catalog{})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
 		if !noCache {
 			// HOTFIXED! rehydrate before cache expiration.
 			go rehydrateCatalogTrend(cacheKey, svc, cache, logger)
@@ -220,7 +220,7 @@ func handleMarketCatalogTrendList(svc dgx.MarketService, cache dgx.Cache, logger
 			return
 		}
 		if list == nil {
-			list = []dgx.Catalog{}
+			list = []dotagiftx.Catalog{}
 		}
 
 		// Save result to cache.

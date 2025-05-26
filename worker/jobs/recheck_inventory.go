@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
@@ -13,17 +13,17 @@ import (
 // RecheckInventory represents a job that rechecks no-hit items.
 // Crawling from SteamInventory.org tends to fail sometimes.
 type RecheckInventory struct {
-	inventorySvc dgx.InventoryService
-	marketStg    dgx.MarketStorage
+	inventorySvc dotagiftx.InventoryService
+	marketStg    dotagiftx.MarketStorage
 	logger       logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dgx.Inventory
+	filter   dotagiftx.Inventory
 }
 
-func NewRecheckInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg logging.Logger) *RecheckInventory {
-	f := dgx.Inventory{Status: dgx.InventoryStatusNoHit}
+func NewRecheckInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, lg logging.Logger) *RecheckInventory {
+	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}
 	return &RecheckInventory{
 		is, ms, lg,
 		"recheck_inventory", time.Hour, f}
@@ -39,7 +39,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 		ri.logger.Println("RECHECK INVENTORY BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := dgx.FindOpts{Filter: ri.filter}
+	opts := dotagiftx.FindOpts{Filter: ri.filter}
 	opts.Sort = "updated_at:desc"
 	//opts.Limit = 10
 	opts.Page = 0
@@ -72,7 +72,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 		}
 		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
-		err = ri.inventorySvc.Set(ctx, &dgx.Inventory{
+		err = ri.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 			MarketID: mkt.ID,
 			Status:   status,
 			Assets:   assets,
@@ -88,8 +88,8 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	return nil
 }
 
-func (ri *RecheckInventory) market(id string) (*dgx.Market, error) {
-	f := dgx.FindOpts{Filter: dgx.Market{ID: id}}
+func (ri *RecheckInventory) market(id string) (*dotagiftx.Market, error) {
+	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
 	markets, err := ri.marketStg.Find(f)
 	if err != nil {
 		return nil, err

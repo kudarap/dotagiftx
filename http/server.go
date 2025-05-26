@@ -11,7 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
 )
@@ -26,19 +26,19 @@ const (
 func NewServer(
 	sigKey string,
 	divineKey string,
-	us dgx.UserService,
-	au dgx.AuthService,
-	is dgx.ImageService,
-	its dgx.ItemService,
-	ms dgx.MarketService,
-	ts dgx.TrackService,
-	ss dgx.StatsService,
-	rs dgx.ReportService,
-	hs dgx.HammerService,
-	sc dgx.SteamClient,
+	us dotagiftx.UserService,
+	au dotagiftx.AuthService,
+	is dotagiftx.ImageService,
+	its dotagiftx.ItemService,
+	ms dotagiftx.MarketService,
+	ts dotagiftx.TrackService,
+	ss dotagiftx.StatsService,
+	rs dotagiftx.ReportService,
+	hs dotagiftx.HammerService,
+	sc dotagiftx.SteamClient,
 	t *tracing.Tracer,
-	c dgx.Cache,
-	v *dgx.Version,
+	c dotagiftx.Cache,
+	v *dotagiftx.Version,
 	l *logrus.Logger,
 ) *Server {
 	SigKey = sigKey
@@ -67,21 +67,21 @@ type Server struct {
 	Addr    string
 	handler http.Handler
 	// Service resources.
-	userSvc   dgx.UserService
-	authSvc   dgx.AuthService
-	imageSvc  dgx.ImageService
-	itemSvc   dgx.ItemService
-	marketSvc dgx.MarketService
-	trackSvc  dgx.TrackService
-	statsSvc  dgx.StatsService
-	reportSvc dgx.ReportService
-	hammerSvc dgx.HammerService
-	steam     dgx.SteamClient
+	userSvc   dotagiftx.UserService
+	authSvc   dotagiftx.AuthService
+	imageSvc  dotagiftx.ImageService
+	itemSvc   dotagiftx.ItemService
+	marketSvc dotagiftx.MarketService
+	trackSvc  dotagiftx.TrackService
+	statsSvc  dotagiftx.StatsService
+	reportSvc dotagiftx.ReportService
+	hammerSvc dotagiftx.HammerService
+	steam     dotagiftx.SteamClient
 
 	tracing *tracing.Tracer
-	cache   dgx.Cache
+	cache   dotagiftx.Cache
 	logger  *logrus.Logger
-	version *dgx.Version
+	version *dotagiftx.Version
 
 	// divineKey is a special access key for importing and creating items and
 	// managing manual subscriptions. This key is used as temporary admin access key.

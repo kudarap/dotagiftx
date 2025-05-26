@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/cache"
 )
 
@@ -13,7 +13,7 @@ func main() {
 
 	log.Println(cache.Get(testkey))
 	t := time.Now()
-	log.Println(cache.Set(testkey, dgx.Auth{
+	log.Println(cache.Set(testkey, dotagiftx.Auth{
 		ID:        "100id",
 		UserID:    "userid299",
 		Username:  "akoko",

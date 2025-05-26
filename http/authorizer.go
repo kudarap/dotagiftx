@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
@@ -12,7 +12,7 @@ func (s *Server) authorizer(next http.Handler) http.Handler {
 		// Validate token from header.
 		c, err := ParseFromHeader(r.Header)
 		if err != nil {
-			respondError(w, errors.New(dgx.AuthErrNoAccess, err))
+			respondError(w, errors.New(dotagiftx.AuthErrNoAccess, err))
 			return
 		}
 
@@ -20,7 +20,7 @@ func (s *Server) authorizer(next http.Handler) http.Handler {
 
 		// Inject auth details to context that will later be use as
 		// context user and authorizer level.
-		ctx := dgx.AuthToContext(r.Context(), &dgx.Auth{
+		ctx := dotagiftx.AuthToContext(r.Context(), &dotagiftx.Auth{
 			UserID: c.UserID,
 		})
 
