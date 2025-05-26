@@ -47,3 +47,6 @@ docker-run:
 
 web-build:
 	cd ./web && yarn dev && cd ..
+
+local:
+	docker-compose up
