@@ -12,19 +12,16 @@ all: test build build-linux build-worker build-worker-linux
 install:
 	go get ./...
 
-run: generate build
+run: test build
 	./$(PROJECTNAME)
 
-run-worker: generate build-worker
+run-worker: test build-worker
 	./dxworker
 
-test:
+test: generate fmt
 	go test -v ./
 	go test -v ./http/...
 	go test -v ./steam/...
-
-fmt:
-	gofmt -s -l -e -w .
 
 build:
 	go build -v -ldflags=$(LDFLAGS) -o $(PROJECTNAME) ./cmd/$(PROJECTNAME)
@@ -39,6 +36,9 @@ build-worker-linux:
 
 generate:
 	go generate .
+
+fmt:
+	gofmt -s -l -e -w .
 
 docker-build:
 	docker build -t $(PROJECTNAME) .
