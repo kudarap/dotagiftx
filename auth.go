@@ -116,9 +116,3 @@ func AuthFromContext(ctx context.Context) *Auth {
 	}
 	return nil
 }
-
-// DO NOT CHANGE THIS! unless you know what your doing.
-// changing the value of the salt will invalidate all user logins.
-func init() {
-	hash.Salt = "0stari0n"
-}

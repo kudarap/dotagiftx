@@ -7,6 +7,7 @@ import (
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/gokit/envconf"
 	"github.com/kudarap/dotagiftx/gokit/file"
+	"github.com/kudarap/dotagiftx/gokit/hash"
 	"github.com/kudarap/dotagiftx/gokit/log"
 	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/http"
@@ -62,6 +63,7 @@ func (app *application) loadConfig() error {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
+	hash.Salt = app.config.SigKey
 	return nil
 }
 
