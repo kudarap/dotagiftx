@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	log2 "github.com/kudarap/dotagiftx/log"
+	log2 "github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/tracing"
 )
 

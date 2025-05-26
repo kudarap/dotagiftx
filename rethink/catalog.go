@@ -9,14 +9,14 @@ import (
 	"github.com/fatih/structs"
 	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
-func NewCatalog(c *Client, lg log.Logger) dgx.CatalogStorage {
+func NewCatalog(c *Client, lg logging.Logger) dgx.CatalogStorage {
 	if err := c.autoMigrate(tableCatalog); err != nil {
 		lg.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
@@ -31,7 +31,7 @@ func NewCatalog(c *Client, lg log.Logger) dgx.CatalogStorage {
 type catalogStorage struct {
 	db            *Client
 	keywordFields []string
-	logger        log.Logger
+	logger        logging.Logger
 }
 
 func (s *catalogStorage) Trending() ([]dgx.Catalog, error) {

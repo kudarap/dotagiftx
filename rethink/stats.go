@@ -4,18 +4,18 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 // NewStats creates new instance of market data store.
-func NewStats(c *Client, lg log.Logger) dgx.StatsStorage {
+func NewStats(c *Client, lg logging.Logger) dgx.StatsStorage {
 	return &statsStorage{c, lg}
 }
 
 type statsStorage struct {
 	db     *Client
-	logger log.Logger
+	logger logging.Logger
 }
 
 func (s *statsStorage) CountUserMarketStatus(userID string) (*dgx.MarketStatusCount, error) {

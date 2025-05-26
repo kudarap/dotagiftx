@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 )
 
 const dayHours = time.Hour * 24
@@ -15,13 +15,13 @@ type ExpiringMarket struct {
 	marketStg  dgx.MarketStorage
 	catalogStg dgx.CatalogStorage
 	cache      dgx.Cache
-	logger     log.Logger
+	logger     logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
 }
 
-func NewExpiringMarket(ms dgx.MarketStorage, cs dgx.CatalogStorage, cc dgx.Cache, lg log.Logger) *ExpiringMarket {
+func NewExpiringMarket(ms dgx.MarketStorage, cs dgx.CatalogStorage, cc dgx.Cache, lg logging.Logger) *ExpiringMarket {
 	return &ExpiringMarket{
 		marketStg:  ms,
 		catalogStg: cs,

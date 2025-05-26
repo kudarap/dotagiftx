@@ -8,7 +8,7 @@ import (
 	"github.com/kudarap/dotagiftx/envconf"
 	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/http"
-	log2 "github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
@@ -21,7 +21,7 @@ import (
 
 const configPrefix = "DG"
 
-var logger = log2.Default()
+var logger = logging.Default()
 
 func main() {
 	app := newApp()
@@ -68,7 +68,7 @@ func (app *application) loadConfig() error {
 func (app *application) setup() error {
 	// Logs setup.
 	logger.Println("setting up persistent logs...")
-	logSvc, err := log2.New(app.config.Log)
+	logSvc, err := logging.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
@@ -189,8 +189,8 @@ func (app *application) run() error {
 	return app.server.Run()
 }
 
-func (app *application) contextLog(name string) log2.Logger {
-	return log2.WithPrefix(app.logger, name)
+func (app *application) contextLog(name string) logging.Logger {
+	return logging.WithPrefix(app.logger, name)
 }
 
 func newApp() *application {

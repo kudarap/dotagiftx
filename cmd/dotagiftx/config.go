@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
@@ -25,6 +25,6 @@ type Config struct {
 	Redis             redis.Config
 	Steam             steam.Config
 	Paypal            paypal.Config
-	Log               log.Config
+	Log               logging.Config
 	DiscordWebhookURL string `envconfig:"DISCORD_WEBHOOK_URL"`
 }

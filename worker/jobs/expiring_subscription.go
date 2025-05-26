@@ -6,13 +6,13 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 )
 
 type ExpiringSubscription struct {
 	userStg dgx.UserStorage
 	cache   dgx.Cache
-	logger  log.Logger
+	logger  logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -21,7 +21,7 @@ type ExpiringSubscription struct {
 func NewExpiringSubscription(
 	us dgx.UserStorage,
 	cache dgx.Cache,
-	lg log.Logger,
+	lg logging.Logger,
 ) *ExpiringSubscription {
 	return &ExpiringSubscription{
 		userStg:  us,

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx/envconf"
-	log2 "github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
@@ -20,7 +20,7 @@ import (
 
 const configPrefix = "DG"
 
-var logger = log2.Default()
+var logger = logging.Default()
 
 func main() {
 	app := newApp()
@@ -68,7 +68,7 @@ func (app *application) loadConfig() error {
 func (app *application) setup() error {
 	// Logs setup.
 	logger.Println("setting up persistent logs...")
-	logSvc, err := log2.New(app.config.Log)
+	logSvc, err := logging.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
@@ -109,42 +109,42 @@ func (app *application) setup() error {
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
-		inventorySvc, marketStg, log2.WithPrefix(logger, "job_recheck_inventory"),
+		inventorySvc, marketStg, logging.WithPrefix(logger, "job_recheck_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyInventory(
 		inventorySvc,
 		marketStg,
-		log2.WithPrefix(logger, "job_verify_inventory"),
+		logging.WithPrefix(logger, "job_verify_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyDelivery(
 		deliverySvc,
 		marketStg,
-		log2.WithPrefix(logger, "job_verify_delivery"),
+		logging.WithPrefix(logger, "job_verify_delivery"),
 	))
 	app.worker.AddJob(jobs.NewGiftWrappedUpdate(
 		deliverySvc,
 		deliveryStg,
 		marketStg,
-		log2.WithPrefix(logger, "job_giftwrapped_update"),
+		logging.WithPrefix(logger, "job_giftwrapped_update"),
 	))
 	app.worker.AddJob(jobs.NewRevalidateDelivery(
 		deliverySvc,
 		marketStg,
-		log2.WithPrefix(logger, "job_revalidate_delivery"),
+		logging.WithPrefix(logger, "job_revalidate_delivery"),
 	))
 	app.worker.AddJob(jobs.NewExpiringSubscription(
 		userStg,
 		redisClient,
-		log2.WithPrefix(logger, "job_expiring_subscription"),
+		logging.WithPrefix(logger, "job_expiring_subscription"),
 	))
 	app.worker.AddJob(jobs.NewExpiringMarket(
 		marketStg,
 		catalogStg,
 		redisClient,
-		log2.WithPrefix(logger, "job_expiring_market"),
+		logging.WithPrefix(logger, "job_expiring_market"),
 	))
 	app.worker.AddJob(jobs.NewSweepMarket(
-		marketStg, log2.WithPrefix(logger, "job_sweep_market"),
+		marketStg, logging.WithPrefix(logger, "job_sweep_market"),
 	))
 
 	app.closerFn = func() {
@@ -176,8 +176,8 @@ func (app *application) run() error {
 	return nil
 }
 
-func (app *application) contextLog(name string) log2.Logger {
-	return log2.WithPrefix(app.logger, name)
+func (app *application) contextLog(name string) logging.Logger {
+	return logging.WithPrefix(app.logger, name)
 }
 
 func newApp() *application {

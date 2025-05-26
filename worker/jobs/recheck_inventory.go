@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -15,14 +15,14 @@ import (
 type RecheckInventory struct {
 	inventorySvc dgx.InventoryService
 	marketStg    dgx.MarketStorage
-	logger       log.Logger
+	logger       logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
 	filter   dgx.Inventory
 }
 
-func NewRecheckInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg log.Logger) *RecheckInventory {
+func NewRecheckInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg logging.Logger) *RecheckInventory {
 	f := dgx.Inventory{Status: dgx.InventoryStatusNoHit}
 	return &RecheckInventory{
 		is, ms, lg,

@@ -1,4 +1,4 @@
-package log
+package logging
 
 // Logger provides access to logging service.
 type Logger interface {

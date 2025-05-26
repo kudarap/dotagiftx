@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -14,14 +14,14 @@ import (
 type RevalidateDelivery struct {
 	deliverySvc dgx.DeliveryService
 	marketStg   dgx.MarketStorage
-	logger      log.Logger
+	logger      logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
 	filter   dgx.Market
 }
 
-func NewRevalidateDelivery(ds dgx.DeliveryService, ms dgx.MarketStorage, lg log.Logger) *RevalidateDelivery {
+func NewRevalidateDelivery(ds dgx.DeliveryService, ms dgx.MarketStorage, lg logging.Logger) *RevalidateDelivery {
 	f := dgx.Market{Type: dgx.MarketTypeAsk, Status: dgx.MarketStatusSold}
 	return &RevalidateDelivery{
 		ds, ms, lg,

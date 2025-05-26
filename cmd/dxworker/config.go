@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/steam"
@@ -15,5 +15,5 @@ type Config struct {
 	Rethink     rethink.Config
 	Redis       redis.Config
 	Steam       steam.Config
-	Log         log.Config
+	Log         logging.Config
 }

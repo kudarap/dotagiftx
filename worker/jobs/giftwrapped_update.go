@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -16,14 +16,14 @@ type GiftWrappedUpdate struct {
 	deliverySvc dgx.DeliveryService
 	deliveryStg dgx.DeliveryStorage
 	marketStg   dgx.MarketStorage
-	logger      log.Logger
+	logger      logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
 	filter   dgx.Delivery
 }
 
-func NewGiftWrappedUpdate(ds dgx.DeliveryService, dstg dgx.DeliveryStorage, ms dgx.MarketStorage, lg log.Logger) *GiftWrappedUpdate {
+func NewGiftWrappedUpdate(ds dgx.DeliveryService, dstg dgx.DeliveryStorage, ms dgx.MarketStorage, lg logging.Logger) *GiftWrappedUpdate {
 	falsePtr := false
 	f := dgx.Delivery{
 		GiftOpened: &falsePtr,

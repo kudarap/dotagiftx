@@ -8,7 +8,7 @@ import (
 
 	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 )
 
 type TaskProcessor interface {
@@ -27,7 +27,7 @@ func NewMarket(
 	vi dgx.InventoryService,
 	sc dgx.SteamClient,
 	tp TaskProcessor,
-	lg log.Logger,
+	lg logging.Logger,
 ) dgx.MarketService {
 	return &marketService{
 		ss, us,
@@ -54,7 +54,7 @@ type marketService struct {
 	inventorySvc dgx.InventoryService
 	steam        dgx.SteamClient
 	taskProc     TaskProcessor
-	logger       log.Logger
+	logger       logging.Logger
 }
 
 func (s *marketService) Markets(ctx context.Context, opts dgx.FindOpts) ([]dgx.Market, *dgx.FindMetadata, error) {
@@ -499,7 +499,7 @@ func (s *marketService) userMarket(userID, id string) (*dgx.Market, error) {
 	return cur, nil
 }
 
-func bench(l log.Logger, name string, fn func()) {
+func bench(l logging.Logger, name string, fn func()) {
 	s := time.Now()
 	fn()
 	l.Println("BENCH service/market", name, time.Now().Sub(s))

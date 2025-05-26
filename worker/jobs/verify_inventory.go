@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -14,14 +14,14 @@ import (
 type VerifyInventory struct {
 	inventorySvc dgx.InventoryService
 	marketStg    dgx.MarketStorage
-	logger       log.Logger
+	logger       logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
 	filter   dgx.Market
 }
 
-func NewVerifyInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg log.Logger) *VerifyInventory {
+func NewVerifyInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg logging.Logger) *VerifyInventory {
 	f := dgx.Market{}
 	return &VerifyInventory{
 		is, ms, lg,

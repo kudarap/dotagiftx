@@ -5,19 +5,19 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/log"
+	"github.com/kudarap/dotagiftx/logging"
 )
 
 // SweepMarket represents setting expiration of a market entry job.
 type SweepMarket struct {
 	marketStg dgx.MarketStorage
-	logger    log.Logger
+	logger    logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
 }
 
-func NewSweepMarket(ms dgx.MarketStorage, lg log.Logger) *SweepMarket {
+func NewSweepMarket(ms dgx.MarketStorage, lg logging.Logger) *SweepMarket {
 	return &SweepMarket{
 		marketStg: ms,
 		logger:    lg,
