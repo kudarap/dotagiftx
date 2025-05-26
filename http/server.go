@@ -13,7 +13,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/tracing"
-	"github.com/kudarap/dotagiftx/versioning"
 	"github.com/sirupsen/logrus"
 )
 
@@ -39,7 +38,7 @@ func NewServer(
 	sc dgx.SteamClient,
 	t *tracing.Tracer,
 	c dgx.Cache,
-	v *versioning.Version,
+	v *dgx.Version,
 	l *logrus.Logger,
 ) *Server {
 	SigKey = sigKey
@@ -82,7 +81,7 @@ type Server struct {
 	tracing *tracing.Tracer
 	cache   dgx.Cache
 	logger  *logrus.Logger
-	version *versioning.Version
+	version *dgx.Version
 
 	// divineKey is a special access key for importing and creating items and
 	// managing manual subscriptions. This key is used as temporary admin access key.

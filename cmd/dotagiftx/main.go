@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/envconf"
 	"github.com/kudarap/dotagiftx/file"
@@ -15,7 +16,6 @@ import (
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/tracing"
-	"github.com/kudarap/dotagiftx/versioning"
 	"github.com/sirupsen/logrus"
 )
 
@@ -26,7 +26,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := versioning.New(false, tag, commit, built)
+	v := dgx.New(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -275,7 +275,7 @@ func connRetry(name string, fn func() error) error {
 // version details used by ldflags.
 var tag, commit, built string
 
-func initVer(cfg Config) *versioning.Version {
-	v := versioning.New(cfg.Prod, tag, commit, built)
+func initVer(cfg Config) *dgx.Version {
+	v := dgx.New(cfg.Prod, tag, commit, built)
 	return v
 }

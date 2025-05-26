@@ -1,4 +1,4 @@
-package versioning
+package dgx
 
 import (
 	"strconv"
@@ -27,7 +27,7 @@ func New(prod bool, tag, commit, built string) *Version {
 	return v
 }
 
-// formatBuiltDate formats timestamp to human friendly dates.
+// formatBuiltDate format timestamp to human friendly dates.
 func (v *Version) formatBuiltDate() {
 	if strings.TrimSpace(v.Built) == "" {
 		return

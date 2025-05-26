@@ -6,13 +6,13 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/envconf"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/tracing"
-	"github.com/kudarap/dotagiftx/versioning"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/kudarap/dotagiftx/worker/jobs"
 	"github.com/sirupsen/logrus"
@@ -25,7 +25,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := versioning.New(false, tag, commit, built)
+	v := dgx.New(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -51,7 +51,7 @@ type application struct {
 	config  Config
 	worker  *worker.Worker
 	logger  *logrus.Logger
-	version *versioning.Version
+	version *dgx.Version
 
 	closerFn func()
 }
