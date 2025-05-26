@@ -6,7 +6,7 @@ import (
 
 	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/kudarap/dotagiftx/file/image"
+	"github.com/kudarap/dotagiftx/file"
 )
 
 // NewAuth returns a new Image service.
@@ -39,7 +39,7 @@ func (s *imageService) Thumbnail(fileID string, width, height uint) (path string
 		return
 	}
 
-	t, err := image.Thumbnail(f, width, height)
+	t, err := file.Thumbnail(f, width, height)
 	if err != nil {
 		err = errors.New(dgx.ImageErrThumbnail, err)
 		return

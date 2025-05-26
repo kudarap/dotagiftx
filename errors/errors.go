@@ -21,7 +21,7 @@ func (e *Errors) Error() string {
 
 // IsEqual checks errors with same Error Type.
 func (e *Errors) IsEqual(t dgx.Errors) bool {
-	return e.Type == t
+	return errors.Is(t, e.Type)
 }
 
 func create(t dgx.Errors, e error, f bool) error {

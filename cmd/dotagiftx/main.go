@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/discord"
-	"github.com/kudarap/dotagiftx/envconf"
 	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/logging"

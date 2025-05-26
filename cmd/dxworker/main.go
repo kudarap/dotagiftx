@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/envconf"
+	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
