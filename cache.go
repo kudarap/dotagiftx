@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx/gokit/hash"
+	"github.com/kudarap/dotagiftx/hash"
 )
 
 // Cache provides access to cache database.

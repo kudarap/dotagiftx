@@ -6,7 +6,7 @@ import (
 
 	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/kudarap/dotagiftx/gokit/file/image"
+	"github.com/kudarap/dotagiftx/file/image"
 )
 
 // NewAuth returns a new Image service.

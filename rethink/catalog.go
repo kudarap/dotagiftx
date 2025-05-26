@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/kudarap/dotagiftx/gokit/log"
+	"github.com/kudarap/dotagiftx/log"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 

@@ -7,7 +7,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 	"github.com/sirupsen/logrus"
 )
 
@@ -186,7 +185,7 @@ func handleMarketUpdate(svc dgx.MarketService, cache dgx.Cache) http.HandlerFunc
 }
 
 func isReqAuthorized(r *http.Request) bool {
-	c, _ := jwt.ParseFromHeader(r.Header)
+	c, _ := ParseFromHeader(r.Header)
 	if c == nil {
 		return false
 	}

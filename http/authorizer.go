@@ -5,13 +5,12 @@ import (
 
 	dgx "github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
-	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 )
 
 func (s *Server) authorizer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Validate token from header.
-		c, err := jwt.ParseFromHeader(r.Header)
+		c, err := ParseFromHeader(r.Header)
 		if err != nil {
 			respondError(w, errors.New(dgx.AuthErrNoAccess, err))
 			return

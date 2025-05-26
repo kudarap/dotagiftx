@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/cache"
+	"github.com/kudarap/dotagiftx/cache"
 )
 
 func main() {

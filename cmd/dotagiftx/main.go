@@ -5,28 +5,28 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx/discord"
-	"github.com/kudarap/dotagiftx/gokit/envconf"
-	"github.com/kudarap/dotagiftx/gokit/file"
-	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/gokit/version"
+	"github.com/kudarap/dotagiftx/envconf"
+	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/http"
+	log2 "github.com/kudarap/dotagiftx/log"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/tracing"
+	"github.com/kudarap/dotagiftx/versioning"
 	"github.com/sirupsen/logrus"
 )
 
 const configPrefix = "DG"
 
-var logger = log.Default()
+var logger = log2.Default()
 
 func main() {
 	app := newApp()
 
-	v := version.New(false, tag, commit, built)
+	v := versioning.New(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -68,7 +68,7 @@ func (app *application) loadConfig() error {
 func (app *application) setup() error {
 	// Logs setup.
 	logger.Println("setting up persistent logs...")
-	logSvc, err := log.New(app.config.Log)
+	logSvc, err := log2.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
@@ -189,8 +189,8 @@ func (app *application) run() error {
 	return app.server.Run()
 }
 
-func (app *application) contextLog(name string) log.Logger {
-	return log.WithPrefix(app.logger, name)
+func (app *application) contextLog(name string) log2.Logger {
+	return log2.WithPrefix(app.logger, name)
 }
 
 func newApp() *application {
@@ -275,7 +275,7 @@ func connRetry(name string, fn func() error) error {
 // version details used by ldflags.
 var tag, commit, built string
 
-func initVer(cfg Config) *version.Version {
-	v := version.New(cfg.Prod, tag, commit, built)
+func initVer(cfg Config) *versioning.Version {
+	v := versioning.New(cfg.Prod, tag, commit, built)
 	return v
 }

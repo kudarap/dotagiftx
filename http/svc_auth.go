@@ -5,7 +5,6 @@ import (
 	"time"
 
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/http/jwt"
 )
 
 const defaultTokenExpiration = time.Minute * 5
@@ -111,7 +110,7 @@ func refreshJWT(au *dgx.Auth) (*authResp, error) {
 	a := &authResp{}
 	a.ExpiresAt = time.Now().Add(defaultTokenExpiration)
 
-	t, err := jwt.New(au.UserID, noLevel, a.ExpiresAt)
+	t, err := New(au.UserID, noLevel, a.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}

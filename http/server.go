@@ -12,10 +12,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/http/jwt"
-	gokitMw "github.com/kudarap/dotagiftx/gokit/http/middleware"
-	"github.com/kudarap/dotagiftx/gokit/version"
 	"github.com/kudarap/dotagiftx/tracing"
+	"github.com/kudarap/dotagiftx/versioning"
 	"github.com/sirupsen/logrus"
 )
 
@@ -41,10 +39,10 @@ func NewServer(
 	sc dgx.SteamClient,
 	t *tracing.Tracer,
 	c dgx.Cache,
-	v *version.Version,
+	v *versioning.Version,
 	l *logrus.Logger,
 ) *Server {
-	jwt.SigKey = sigKey
+	SigKey = sigKey
 	return &Server{
 		divineKey: divineKey,
 		userSvc:   us,
@@ -84,7 +82,7 @@ type Server struct {
 	tracing *tracing.Tracer
 	cache   dgx.Cache
 	logger  *logrus.Logger
-	version *version.Version
+	version *versioning.Version
 
 	// divineKey is a special access key for importing and creating items and
 	// managing manual subscriptions. This key is used as temporary admin access key.
@@ -99,7 +97,7 @@ func (s *Server) setup() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(NewStructuredLogger(s.logger))
-	r.Use(gokitMw.CORS)
+	r.Use(CORS)
 	r.Use(middleware.Recoverer)
 
 	// Set routes handler.
