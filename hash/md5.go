@@ -9,6 +9,5 @@ import (
 func MD5(s string) string {
 	h := md5.New()
 	h.Write([]byte(s + Salt))
-
 	return hex.EncodeToString(h.Sum(nil))
 }
