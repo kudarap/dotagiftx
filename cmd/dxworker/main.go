@@ -57,8 +57,8 @@ type application struct {
 }
 
 func (app *application) loadConfig() error {
-	envconf.EnvPrefix = configPrefix
-	if err := envconf.Load(&app.config); err != nil {
+	config.EnvPrefix = configPrefix
+	if err := config.Load(&app.config); err != nil {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
