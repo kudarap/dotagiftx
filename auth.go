@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	hash2 "github.com/kudarap/dotagiftx/hash"
+	"github.com/kudarap/dotagiftx/hash"
 )
 
 // Auth error types.
@@ -87,13 +87,13 @@ func (a *Auth) SetDefaults() {
 
 // GenerateRefreshToken generates new refresh token.
 func (a *Auth) GenerateRefreshToken() string {
-	a.RefreshToken = hash2.GenerateSha1()
+	a.RefreshToken = hash.GenerateSha1()
 	return a.RefreshToken
 }
 
 // ComposePassword returns composed password.
 func (Auth) ComposePassword(steamID, userID string) string {
-	return hash2.Sha1(steamID + userID)
+	return hash.Sha1(steamID + userID)
 }
 
 type ctxKey int
@@ -115,10 +115,4 @@ func AuthFromContext(ctx context.Context) *Auth {
 		return au
 	}
 	return nil
-}
-
-// DO NOT CHANGE THIS! unless you know what your doing.
-// changing the value of the salt will invalidate all user logins.
-func init() {
-	hash2.Salt = "0stari0n"
 }

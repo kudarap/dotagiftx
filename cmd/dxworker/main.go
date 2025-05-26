@@ -48,7 +48,7 @@ func main() {
 }
 
 type application struct {
-	config  Config
+	config  config.Config
 	worker  *worker.Worker
 	logger  *logrus.Logger
 	version *dotagiftx.Version

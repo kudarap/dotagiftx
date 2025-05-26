@@ -8,6 +8,7 @@ import (
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/file"
+	"github.com/kudarap/dotagiftx/hash"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
@@ -49,7 +50,7 @@ func main() {
 }
 
 type application struct {
-	config Config
+	config config.Config
 	server *http.Server
 	logger *logrus.Logger
 
@@ -62,6 +63,7 @@ func (app *application) loadConfig() error {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
+	hash.Salt = app.config.SigKey
 	return nil
 }
 
@@ -217,7 +219,7 @@ func setupPaypal(cfg paypal.Config) (*paypal.Client, error) {
 	return c, nil
 }
 
-func setupFileManager(cfg Config) *file.Local {
+func setupFileManager(cfg config.Config) *file.Local {
 	c := cfg.Upload
 	return file.New(c.Path, c.Size, c.Types)
 }
@@ -275,7 +277,7 @@ func connRetry(name string, fn func() error) error {
 // version details used by ldflags.
 var tag, commit, built string
 
-func initVer(cfg Config) *dotagiftx.Version {
+func initVer(cfg config.Config) *dotagiftx.Version {
 	v := dotagiftx.NewVersion(cfg.Prod, tag, commit, built)
 	return v
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/kudarap/dotagiftx/file"
 )
 
-// NewAuth returns a new Image service.
+// NewImage returns a new Image service.
 func NewImage(fm dotagiftx.FileManager) dotagiftx.ImageService {
 	return &imageService{fm}
 }

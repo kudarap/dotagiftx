@@ -19,7 +19,7 @@ func (e *Errors) Error() string {
 	return fmt.Sprintf("%s: %s", e.Type, e.Err)
 }
 
-// IsEqual checks errors with same Error Type.
+// IsEqual checks errors with the same Error Type.
 func (e *Errors) IsEqual(t dotagiftx.Errors) bool {
 	return errors.Is(t, e.Type)
 }
@@ -39,7 +39,7 @@ func Fatal(t dotagiftx.Errors, e error) error {
 }
 
 // Parse returns Errors value if available, else returns nil and ok is false.
-// When error is an core.Error type will create new error with that type
+// When error is a core.Error type will create new error with that type
 // to handle them gracefully. Useful when checking errors types on Parse().
 func Parse(err error) (e *Errors, ok bool) {
 	// Try packaged error assertion.
