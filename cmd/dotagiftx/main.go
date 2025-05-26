@@ -26,7 +26,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := dotagiftx.New(false, tag, commit, built)
+	v := dotagiftx.NewVersion(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -276,6 +276,6 @@ func connRetry(name string, fn func() error) error {
 var tag, commit, built string
 
 func initVer(cfg Config) *dotagiftx.Version {
-	v := dotagiftx.New(cfg.Prod, tag, commit, built)
+	v := dotagiftx.NewVersion(cfg.Prod, tag, commit, built)
 	return v
 }

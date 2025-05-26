@@ -14,8 +14,8 @@ type Version struct {
 	Built      string `json:"built"`
 }
 
-// New returns a formatted version details.
-func New(prod bool, tag, commit, built string) *Version {
+// NewVersion returns a formatted version details.
+func NewVersion(prod bool, tag, commit, built string) *Version {
 	v := &Version{
 		prod,
 		tag,

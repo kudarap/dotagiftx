@@ -25,7 +25,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := dotagiftx.New(false, tag, commit, built)
+	v := dotagiftx.NewVersion(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
