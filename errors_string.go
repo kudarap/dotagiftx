@@ -18,6 +18,12 @@ func _() {
 	_ = x[CatalogErrNotFound-2200]
 	_ = x[CatalogErrRequiredID-2201]
 	_ = x[CatalogErrIndexing-2202]
+	_ = x[DeliveryErrNotFound-6000]
+	_ = x[DeliveryErrRequiredID-6001]
+	_ = x[DeliveryErrRequiredFields-6002]
+	_ = x[InventoryErrNotFound-6100]
+	_ = x[InventoryErrRequiredID-6101]
+	_ = x[InventoryErrRequiredFields-6102]
 	_ = x[ImageErrNotFound-3000]
 	_ = x[ImageErrUpload-3001]
 	_ = x[ImageErrThumbnail-3002]
@@ -49,12 +55,6 @@ func _() {
 	_ = x[UserErrSteamSync-1104]
 	_ = x[UserErrSuspended-1105]
 	_ = x[UserErrBanned-1106]
-	_ = x[DeliveryErrNotFound-6000]
-	_ = x[DeliveryErrRequiredID-6001]
-	_ = x[DeliveryErrRequiredFields-6002]
-	_ = x[InventoryErrNotFound-6100]
-	_ = x[InventoryErrRequiredID-6101]
-	_ = x[InventoryErrRequiredFields-6102]
 }
 
 const _Errors_name = "StorageUncaughtErrStorageMergeErrAuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrForbiddenAuthErrLoginAuthErrRefreshTokenUserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDLUserErrSteamSyncUserErrSuspendedUserErrBannedItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExistsItemErrImportMarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimitMarketErrInvalidPriceMarketErrQtyLimitPerUserMarketErrRequiredPartnerURLMarketErrInvalidBidPriceMarketErrInvalidAskPriceCatalogErrNotFoundCatalogErrRequiredIDCatalogErrIndexingImageErrNotFoundImageErrUploadImageErrThumbnailTrackErrNotFoundReportErrNotFoundReportErrRequiredIDReportErrRequiredFieldsDeliveryErrNotFoundDeliveryErrRequiredIDDeliveryErrRequiredFieldsInventoryErrNotFoundInventoryErrRequiredIDInventoryErrRequiredFields"
