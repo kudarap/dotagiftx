@@ -7,7 +7,7 @@ LDFLAGS="-X main.tag=`cat VERSION` \
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
-all: install build
+all: test build build-linux build-worker build-worker-linux
 
 install:
 	go get ./...
