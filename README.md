@@ -1,6 +1,6 @@
 # DotagiftX
 
-Market place for giftable Dota 2 items
+Marketplace for giftable Dota 2 items
 
 ### Tech Stack
 
