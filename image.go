@@ -44,13 +44,13 @@ type (
 
 	// FileManager defines operation for file on local file system.
 	FileManager interface {
-		// Upload save file and returns a file name.
+		// Save saves file and returns a file name.
 		Save(r io.Reader) (filename string, err error)
 
-		// Upload save file with pre-defined base name.
+		// SaveWithName saves file with pre-defined base name.
 		SaveWithName(r io.Reader, baseName string) (filename string, err error)
 
-		// Get get file path base on file name.
+		// Get return file path base on file name.
 		Get(filename string) (path string, err error)
 
 		// Delete uploaded file base on file name.

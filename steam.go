@@ -66,13 +66,13 @@ func (s *SteamAsset) StillWrapped() bool {
 	return strings.ToUpper(s.Type) == "RARE MYSTERIOUS ITEM"
 }
 
-// Detects the asset if its a golden variant and its a
+// IsGoldenVariant detects the asset if it's a golden variant and its
 // common pattern that starts with string "GOLDEN"
 func (s *SteamAsset) IsGoldenVariant(name string) bool {
 	return strings.EqualFold(s.Name, fmt.Sprintf("GOLDEN %s", strings.TrimSpace(name)))
 }
 
-// Detects the asset if its a bundle variant and its a
+// IsBundledVariant detects the asset if it's a bundle variant and its
 // common pattern that ends with string "GOLDEN"
 func (s *SteamAsset) IsBundledVariant(name string) bool {
 	return strings.EqualFold(s.Name, fmt.Sprintf("%s BUNDLE", strings.TrimSpace(name)))

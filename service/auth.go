@@ -94,7 +94,7 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 		return err
 	}
 
-	au.GenerateRefreshToken()
+	au.RefreshToken = au.GenerateRefreshToken()
 	return s.authStg.Update(au)
 }
 
@@ -119,7 +119,7 @@ func (s *authService) createAccountFromSteam(sp *dotagiftx.SteamPlayer) (*dotagi
 	}
 
 	au := &dotagiftx.Auth{UserID: u.ID, Username: sp.ID}
-	au.SetDefaults()
+	au = au.SetDefaults()
 	au.Password = au.ComposePassword(sp.ID, u.ID)
 	if err := s.authStg.Create(au); err != nil {
 		return nil, err

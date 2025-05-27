@@ -154,9 +154,9 @@ func (i Item) ToCatalog() Catalog {
 	}
 }
 
-var slugR = regexp.MustCompile("[^a-z0-9]+")
+var slugRE = regexp.MustCompile("[^a-z0-9]+")
 
 // makeSlug creates a URL friendly string base on input.
 func makeSlug(s string) string {
-	return strings.Trim(slugR.ReplaceAllString(strings.ToLower(s), "-"), "-")
+	return strings.Trim(slugRE.ReplaceAllString(strings.ToLower(s), "-"), "-")
 }

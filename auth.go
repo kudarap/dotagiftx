@@ -81,14 +81,13 @@ type (
 )
 
 // SetDefaults sets auth default values.
-func (a *Auth) SetDefaults() {
+func (a Auth) SetDefaults() *Auth {
 	a.RefreshToken = a.GenerateRefreshToken()
+	return &a
 }
 
-// GenerateRefreshToken generates new refresh token.
-func (a *Auth) GenerateRefreshToken() string {
-	a.RefreshToken = hash.GenerateSha1()
-	return a.RefreshToken
+func (a Auth) GenerateRefreshToken() string {
+	return hash.GenerateSha1()
 }
 
 // ComposePassword returns composed password.
