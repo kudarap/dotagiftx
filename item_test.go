@@ -1,8 +1,8 @@
-package slug
+package dotagiftx
 
 import "testing"
 
-func TestMake(t *testing.T) {
+func Test_makeSlug(t *testing.T) {
 	tests := []struct {
 		in  string
 		out string
@@ -16,8 +16,8 @@ func TestMake(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.in, func(t *testing.T) {
-			if got := Make(tt.in); got != tt.out {
-				t.Errorf("Make() = %v, want %v", got, tt.out)
+			if got := makeSlug(tt.in); got != tt.out {
+				t.Errorf("makeSlug() = %v, want %v", got, tt.out)
 			}
 		})
 	}
