@@ -11,7 +11,7 @@ import Image from 'next/image'
 import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
 
-const stillNewDays = 15
+const stillNewDays = 30
 
 const treasures = [
   {
