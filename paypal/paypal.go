@@ -63,7 +63,6 @@ func (c *Client) Subscription(id string) (plan, steamID string, err error) {
 }
 
 type subscriptionPayload struct {
-	Summary  string `json:"summary"`
 	Resource struct {
 		ID       string `json:"id"`
 		CustomID string `json:"custom_id"`
@@ -74,10 +73,10 @@ type subscriptionPayload struct {
 func (c *Client) IsCancelled(ctx context.Context, req *http.Request) (steamID string, cancelled bool, err error) {
 	res, err := c.pc.VerifyWebhookSignature(ctx, req, c.webhookID)
 	if err != nil {
-		return "", false, err
+		return "", false, fmt.Errorf("invalid signature: %s", err)
 	}
 	if strings.ToUpper(res.VerificationStatus) != "SUCCESS" {
-		return "", false, fmt.Errorf("webhook signature status: %s", res.VerificationStatus)
+		return "", false, fmt.Errorf("verification failed: %s", res.VerificationStatus)
 	}
 
 	body, err := io.ReadAll(req.Body)

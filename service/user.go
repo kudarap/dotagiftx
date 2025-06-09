@@ -143,7 +143,7 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 		return nil, fmt.Errorf("checking cancelled subscription: %v", err)
 	}
 	if !cancelled {
-		// ignore if not cancelled.
+		// ignore if not canceled.
 		log.Println("ignoring subscription update because its not cancelled:", steamID)
 		return nil, nil
 	}
@@ -155,6 +155,11 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	}
 	expiresAt := user.SubscribedAt.AddDate(0, 1, 0)
 	user.SubscriptionEndsAt = &expiresAt
+	if user.Subscription == dgx.UserSubscriptionPartner {
+		t := time.Now()
+		user.SubscriptionEndsAt = &t
+	}
+
 	if err = s.userStg.Update(user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
@@ -162,7 +167,7 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 }
 
 // ProcessManualSubscription process manual subscription such as one-time payments that process manually, normally
-// in bulk and steam items. This function will be used non-recurring payments. ex:
+// in bulk and steam items. This function will be used for non-recurring payments. ex:
 //
 //		Manual Partner subscription:
 //	    - 3 months (+60% overhead)
