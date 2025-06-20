@@ -5,13 +5,13 @@ services:
       - "28015:28015"
       - "8080:8080"
     volumes:
-      - ./.localdata/postgres:/var/lib/postgresql/data'
+      - ./.localdata/rethinkdb:/data'
 
   redis:
-    image: redis:6.2
+    image: redis:8.0
     ports:
       - "6379:6379"
     environment:
       REDIS_PASSWORD: root
     volumes:
-      - ./.localdata/postgres:/var/lib/postgresql/data'
+      - ./.localdata/redis:/data'
