@@ -5,7 +5,7 @@ go 1.23
 require (
 	dario.cat/mergo v1.0.1
 	github.com/fatih/structs v1.1.0
-	github.com/go-chi/chi/v5 v5.1.0
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/schema v1.4.1
