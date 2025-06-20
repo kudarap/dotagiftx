@@ -3,7 +3,7 @@ services:
     image: kudarap/rethinkdb:2.4
     ports:
       - "28015:28015"
-      - "8080:8080"
+      - "28080:8080"
     volumes:
       - ./.localdata/rethinkdb:/data'
 
