@@ -40,6 +40,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 
 	opts := dotagiftx.FindOpts{Filter: vd.filter}
 	opts.Sort = "updated_at:desc"
+	opts.IndexSorting = true
 	opts.Limit = 10
 	opts.Page = 0
 
