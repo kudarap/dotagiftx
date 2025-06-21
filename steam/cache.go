@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dotagiftx/gokit/cache"
+	"github.com/kudarap/dotagiftx/cache"
 )
 
 const (

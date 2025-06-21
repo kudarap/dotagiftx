@@ -94,10 +94,10 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 	return
 }
 
-// GetFile get file path base on file name and its existence.
+// Get gets file path base on file name and its existence.
 func (l *Local) Get(name string) (path string, err error) {
 	path = filepath.Join(l.Dir(), name)
-	// Check actual file existence.
+	// Check the actual file existence.
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return "", err
 	}

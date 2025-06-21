@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"dario.cat/mergo"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
@@ -19,7 +19,7 @@ const (
 var itemSearchFields = []string{"name", "hero", "origin", "rarity"}
 
 // NewItem creates new instance of item data store.
-func NewItem(c *Client) dgx.ItemStorage {
+func NewItem(c *Client) dotagiftx.ItemStorage {
 	if err := c.autoMigrate(tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
@@ -36,19 +36,19 @@ type itemStorage struct {
 	keywordFields []string
 }
 
-func (s *itemStorage) Find(o dgx.FindOpts) ([]dgx.Item, error) {
-	var res []dgx.Item
+func (s *itemStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Item, error) {
+	var res []dotagiftx.Item
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dgx.StorageUncaughtErr, err)
+		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *itemStorage) Count(o dgx.FindOpts) (num int, err error) {
-	o = dgx.FindOpts{
+func (s *itemStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
+	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
@@ -59,53 +59,53 @@ func (s *itemStorage) Count(o dgx.FindOpts) (num int, err error) {
 	return
 }
 
-func (s *itemStorage) Get(id string) (*dgx.Item, error) {
+func (s *itemStorage) Get(id string) (*dotagiftx.Item, error) {
 	row, _ := s.GetBySlug(id)
 	if row != nil {
 		return row, nil
 	}
 
-	row = &dgx.Item{}
+	row = &dotagiftx.Item{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, dgx.ItemErrNotFound
+			return nil, dotagiftx.ItemErrNotFound
 		}
 
-		return nil, errors.New(dgx.StorageUncaughtErr, err)
+		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *itemStorage) GetBySlug(slug string) (*dgx.Item, error) {
-	row := &dgx.Item{}
+func (s *itemStorage) GetBySlug(slug string) (*dotagiftx.Item, error) {
+	row := &dotagiftx.Item{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(q, row); err != nil {
 		if err == r.ErrEmptyResult {
-			return nil, dgx.ItemErrNotFound
+			return nil, dotagiftx.ItemErrNotFound
 		}
 
-		return nil, errors.New(dgx.StorageUncaughtErr, err)
+		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *itemStorage) Create(in *dgx.Item) error {
+func (s *itemStorage) Create(in *dotagiftx.Item) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(dgx.StorageUncaughtErr, err)
+		return errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
 	return nil
 }
 
-func (s *itemStorage) Update(in *dgx.Item) error {
+func (s *itemStorage) Update(in *dotagiftx.Item) error {
 	cur, err := s.Get(in.ID)
 	if err != nil {
 		return err
@@ -114,11 +114,11 @@ func (s *itemStorage) Update(in *dgx.Item) error {
 	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return errors.New(dgx.StorageUncaughtErr, err)
+		return errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err := mergo.Merge(in, cur); err != nil {
-		return errors.New(dgx.StorageMergeErr, err)
+		return errors.New(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -136,11 +136,11 @@ func (s *itemStorage) IsItemExist(name string) error {
 	})
 	var n int
 	if err := s.db.one(q.Count(), &n); err != nil {
-		return errors.New(dgx.StorageUncaughtErr, err)
+		return errors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if n != 0 {
-		return dgx.ItemErrCreateItemExists
+		return dotagiftx.ItemErrCreateItemExists
 	}
 
 	return nil
@@ -165,7 +165,7 @@ func (s *itemStorage) AddViewCount(id string) error {
 }
 
 func (s *itemStorage) updateCatalogViewCount(itemID string, viewCount int) error {
-	q := r.Table(tableCatalog).Get(itemID).Update(&dgx.Catalog{ViewCount: viewCount})
+	q := r.Table(tableCatalog).Get(itemID).Update(&dotagiftx.Catalog{ViewCount: viewCount})
 	return s.db.update(q)
 }
 

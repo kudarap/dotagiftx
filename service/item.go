@@ -7,22 +7,22 @@ import (
 	"sort"
 	"strings"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 	"gopkg.in/yaml.v3"
 )
 
 // NewItem returns new Item service.
-func NewItem(is dgx.ItemStorage, fm dgx.FileManager) dgx.ItemService {
+func NewItem(is dotagiftx.ItemStorage, fm dotagiftx.FileManager) dotagiftx.ItemService {
 	return &itemService{is, fm}
 }
 
 type itemService struct {
-	itemStg dgx.ItemStorage
-	fileMgr dgx.FileManager
+	itemStg dotagiftx.ItemStorage
+	fileMgr dotagiftx.FileManager
 }
 
-func (s *itemService) Items(opts dgx.FindOpts) ([]dgx.Item, *dgx.FindMetadata, error) {
+func (s *itemService) Items(opts dotagiftx.FindOpts) ([]dotagiftx.Item, *dotagiftx.FindMetadata, error) {
 	res, err := s.itemStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -38,18 +38,18 @@ func (s *itemService) Items(opts dgx.FindOpts) ([]dgx.Item, *dgx.FindMetadata, e
 		return nil, nil, err
 	}
 
-	return res, &dgx.FindMetadata{
+	return res, &dotagiftx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
 	}, nil
 }
 
-func (s *itemService) Item(id string) (*dgx.Item, error) {
+func (s *itemService) Item(id string) (*dotagiftx.Item, error) {
 	return s.itemStg.Get(id)
 }
 
 func (s *itemService) TopOrigins() ([]string, error) {
-	items, err := s.itemStg.Find(dgx.FindOpts{})
+	items, err := s.itemStg.Find(dotagiftx.FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (s *itemService) TopOrigins() ([]string, error) {
 }
 
 func (s *itemService) TopHeroes() ([]string, error) {
-	items, err := s.itemStg.Find(dgx.FindOpts{})
+	items, err := s.itemStg.Find(dotagiftx.FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -84,11 +84,11 @@ func (s *itemService) TopHeroes() ([]string, error) {
 	return ph, nil
 }
 
-func (s *itemService) Create(ctx context.Context, itm *dgx.Item) error {
+func (s *itemService) Create(ctx context.Context, itm *dotagiftx.Item) error {
 	// TODO check moderator/contributors
-	au := dgx.AuthFromContext(ctx)
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return dgx.AuthErrNoAccess
+		return dotagiftx.AuthErrNoAccess
 	}
 	itm.Contributors = []string{au.UserID}
 
@@ -97,7 +97,7 @@ func (s *itemService) Create(ctx context.Context, itm *dgx.Item) error {
 	itm.Rarity = strings.ToLower(itm.Rarity)
 	itm = itm.SetDefaults()
 	if err := itm.CheckCreate(); err != nil {
-		return errors.New(dgx.ItemErrRequiredFields, err)
+		return errors.New(dotagiftx.ItemErrRequiredFields, err)
 	}
 
 	if err := s.itemStg.IsItemExist(itm.Name); err != nil {
@@ -118,15 +118,15 @@ func (s *itemService) Create(ctx context.Context, itm *dgx.Item) error {
 	return s.itemStg.Create(itm)
 }
 
-func (s *itemService) Update(ctx context.Context, itm *dgx.Item) error {
+func (s *itemService) Update(ctx context.Context, itm *dotagiftx.Item) error {
 	// TODO check moderator/contributors
-	au := dgx.AuthFromContext(ctx)
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return dgx.AuthErrNoAccess
+		return dotagiftx.AuthErrNoAccess
 	}
 
 	if itm.ID == "" {
-		return dgx.ItemErrRequiredID
+		return dotagiftx.ItemErrRequiredID
 	}
 
 	itm.Name = strings.TrimSpace(itm.Name)
@@ -155,22 +155,22 @@ type yamlFile struct {
 	} `yaml:"items"`
 }
 
-func (s *itemService) Import(ctx context.Context, f io.Reader) (dgx.ItemImportResult, error) {
-	res := dgx.ItemImportResult{}
+func (s *itemService) Import(ctx context.Context, f io.Reader) (dotagiftx.ItemImportResult, error) {
+	res := dotagiftx.ItemImportResult{}
 
 	b, err := io.ReadAll(f)
 	if err != nil {
-		return res, errors.New(dgx.ItemErrImport, err)
+		return res, errors.New(dotagiftx.ItemErrImport, err)
 	}
 
 	yf := &yamlFile{}
 	if err := yaml.Unmarshal(b, yf); err != nil {
-		return res, errors.New(dgx.ItemErrImport, err)
+		return res, errors.New(dotagiftx.ItemErrImport, err)
 	}
 
 	res.Total = len(yf.Items)
 	for _, ii := range yf.Items {
-		itm := &dgx.Item{
+		itm := &dotagiftx.Item{
 			Origin: yf.Origin,
 			Name:   ii.Name,
 			Hero:   ii.Hero,
@@ -199,14 +199,14 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (dgx.ItemImportRe
 	return res, nil
 }
 
-func (s *itemService) getItemByName(name string) (*dgx.Item, error) {
-	itm, err := s.itemStg.Find(dgx.FindOpts{Filter: dgx.Item{Name: name}})
+func (s *itemService) getItemByName(name string) (*dotagiftx.Item, error) {
+	itm, err := s.itemStg.Find(dotagiftx.FindOpts{Filter: dotagiftx.Item{Name: name}})
 	if err != nil {
 		return nil, err
 	}
 
 	if len(itm) == 0 {
-		return nil, dgx.ItemErrNotFound
+		return nil, dotagiftx.ItemErrNotFound
 	}
 
 	return &itm[0], nil

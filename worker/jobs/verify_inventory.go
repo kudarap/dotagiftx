@@ -4,25 +4,25 @@ import (
 	"context"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/log"
+	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
 
 // VerifyInventory represents inventory verification job.
 type VerifyInventory struct {
-	inventorySvc dgx.InventoryService
-	marketStg    dgx.MarketStorage
-	logger       log.Logger
+	inventorySvc dotagiftx.InventoryService
+	marketStg    dotagiftx.MarketStorage
+	logger       logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dgx.Market
+	filter   dotagiftx.Market
 }
 
-func NewVerifyInventory(is dgx.InventoryService, ms dgx.MarketStorage, lg log.Logger) *VerifyInventory {
-	f := dgx.Market{}
+func NewVerifyInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, lg logging.Logger) *VerifyInventory {
+	f := dotagiftx.Market{}
 	return &VerifyInventory{
 		is, ms, lg,
 		"verify_inventory", time.Hour * 24, f}
@@ -38,7 +38,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 		vi.logger.Println("VERIFIED INVENTORY BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := dgx.FindOpts{Filter: vi.filter}
+	opts := dotagiftx.FindOpts{Filter: vi.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
@@ -52,8 +52,8 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 
 		for _, mkt := range res {
 			// Skip verified statuses.
-			if mkt.InventoryStatus == dgx.InventoryStatusVerified ||
-				mkt.InventoryStatus == dgx.InventoryStatusNoHit {
+			if mkt.InventoryStatus == dotagiftx.InventoryStatusVerified ||
+				mkt.InventoryStatus == dotagiftx.InventoryStatusNoHit {
 
 				// TODO! might remove items
 				//vi.logger.Warnln("batch no need check", opts.Page, mkt.User.SteamID, mkt.Item.Name)
@@ -71,7 +71,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 			}
 			vi.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
-			err = vi.inventorySvc.Set(ctx, &dgx.Inventory{
+			err = vi.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,

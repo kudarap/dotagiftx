@@ -1,11 +1,11 @@
-package dgx
+package dotagiftx
 
 import (
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx/gokit/hash"
+	"github.com/kudarap/dotagiftx/hash"
 )
 
 // Cache provides access to cache database.
@@ -19,9 +19,9 @@ type Cache interface {
 const cacheSkipKey = "nocache"
 
 // CacheKeyFromRequest returns cache key from http request.
-// nocache from request query will return empty string and can be use to skipping cache.
+// nocache from a request query will return empty string and can be use to skipping cache.
 func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
-	// Skip caching when nocache flag exists.
+	// Skip caching when a nocache flag exists.
 	_, noCache = r.URL.Query()[cacheSkipKey]
 	// Set owner user id for scoped requests.
 	var userID string

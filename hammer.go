@@ -1,4 +1,4 @@
-package dgx
+package dotagiftx
 
 import (
 	"context"
@@ -22,12 +22,12 @@ func (p HammerParams) Validate() error {
 
 // HammerService represents operation for banning and suspending accounts.
 type HammerService interface {
-	// Ban updates user sttus to banned and cancels all listings.
+	// Ban updates user status to banned and cancels all listings.
 	//
 	// "Drops the hammer to its eternal doom" its most likely to be permanent.
 	Ban(context.Context, HammerParams) (*User, error)
 
-	// Suspend updates user sttus to suspended and cancels all listings.
+	// Suspend updates user status to suspended and cancels all listings.
 	//
 	// Fits for those light and abusive offenders. might forget to lift if not reminded.
 	Suspend(context.Context, HammerParams) (*User, error)

@@ -4,14 +4,14 @@ import (
 	"log"
 	"strings"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 )
 
 func ReIndexAll(
-	itemStg dgx.ItemStorage,
-	catalogStg dgx.CatalogStorage,
+	itemStg dotagiftx.ItemStorage,
+	catalogStg dotagiftx.CatalogStorage,
 ) {
-	ii, _ := itemStg.Find(dgx.FindOpts{})
+	ii, _ := itemStg.Find(dotagiftx.FindOpts{})
 	for _, item := range ii {
 		if _, err := catalogStg.Index(item.ID); err != nil {
 			log.Println("err", err)
@@ -20,11 +20,11 @@ func ReIndexAll(
 	}
 }
 
-func ImageFileExtJPG(itemStg dgx.ItemStorage, userStg dgx.UserStorage) {
+func ImageFileExtJPG(itemStg dotagiftx.ItemStorage, userStg dotagiftx.UserStorage) {
 	const suf = ".jpe"
 	const newSuf = ".jpg"
 
-	items, _ := itemStg.Find(dgx.FindOpts{})
+	items, _ := itemStg.Find(dotagiftx.FindOpts{})
 	for _, ii := range items {
 		if strings.HasSuffix(ii.Image, suf) {
 			ii.Image = strings.Replace(ii.Image, suf, newSuf, 1)
@@ -33,7 +33,7 @@ func ImageFileExtJPG(itemStg dgx.ItemStorage, userStg dgx.UserStorage) {
 		}
 	}
 
-	users, _ := userStg.Find(dgx.FindOpts{})
+	users, _ := userStg.Find(dotagiftx.FindOpts{})
 	for _, uu := range users {
 		if strings.HasSuffix(uu.Avatar, suf) {
 			uu.Avatar = strings.Replace(uu.Avatar, suf, newSuf, 1)

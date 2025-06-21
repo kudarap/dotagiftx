@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 )
 
 var fastjson = jsoniter.ConfigFastest
@@ -16,7 +16,7 @@ var fastjson = jsoniter.ConfigFastest
 var ErrInventoryPrivate = errors.New("profile inventory is private")
 
 // Asset represents compact inventory base of RawInventory model.
-type Asset = dgx.SteamAsset
+type Asset = dotagiftx.SteamAsset
 
 // InventoryAsset returns a compact format from raw inventory data.
 func InventoryAsset(steamID string) ([]Asset, error) {

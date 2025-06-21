@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/http/jwt"
+	"github.com/kudarap/dotagiftx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,9 +16,9 @@ const (
 )
 
 func handleMarketList(
-	svc dgx.MarketService,
-	trackSvc dgx.TrackService,
-	cache dgx.Cache,
+	svc dotagiftx.MarketService,
+	trackSvc dotagiftx.TrackService,
+	cache dotagiftx.Cache,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +26,7 @@ func handleMarketList(
 		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
@@ -43,7 +42,7 @@ func handleMarketList(
 		// Special query flags with findOpts
 		sortQueryModifier(r)
 
-		opts, err := findOptsFromURL(r.URL, &dgx.Market{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -61,7 +60,7 @@ func handleMarketList(
 			return
 		}
 		if list == nil {
-			list = []dgx.Market{}
+			list = []dotagiftx.Market{}
 		}
 
 		data := newDataWithMeta(list, md)
@@ -99,13 +98,13 @@ func sortQueryModifier(r *http.Request) {
 	r.URL.RawQuery = query.Encode()
 }
 
-func handleMarketDetail(svc dgx.MarketService, cache dgx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
@@ -138,9 +137,9 @@ func handleMarketDetail(svc dgx.MarketService, cache dgx.Cache, logger *logrus.L
 	}
 }
 
-func handleMarketCreate(svc dgx.MarketService, cache dgx.Cache) http.HandlerFunc {
+func handleMarketCreate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		m := new(dgx.Market)
+		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
 			respondError(w, err)
 			return
@@ -161,9 +160,9 @@ func handleMarketCreate(svc dgx.MarketService, cache dgx.Cache) http.HandlerFunc
 	}
 }
 
-func handleMarketUpdate(svc dgx.MarketService, cache dgx.Cache) http.HandlerFunc {
+func handleMarketUpdate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		m := new(dgx.Market)
+		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
 			respondError(w, err)
 			return
@@ -186,7 +185,7 @@ func handleMarketUpdate(svc dgx.MarketService, cache dgx.Cache) http.HandlerFunc
 }
 
 func isReqAuthorized(r *http.Request) bool {
-	c, _ := jwt.ParseFromHeader(r.Header)
+	c, _ := ParseFromHeader(r.Header)
 	if c == nil {
 		return false
 	}
@@ -196,11 +195,11 @@ func isReqAuthorized(r *http.Request) bool {
 
 const redactChar = "█"
 
-func redactBuyers(list []dgx.Market) []dgx.Market {
-	rl := make([]dgx.Market, len(list))
+func redactBuyers(list []dotagiftx.Market) []dotagiftx.Market {
+	rl := make([]dotagiftx.Market, len(list))
 	copy(rl, list)
 	for _, r := range rl {
-		if r.Type != dgx.MarketTypeBid {
+		if r.Type != dotagiftx.MarketTypeBid {
 			continue
 		}
 
@@ -215,9 +214,9 @@ func redactBuyers(list []dgx.Market) []dgx.Market {
 
 func redactBuyersFromCache(hit string) interface{} {
 	d := struct {
-		Data        []dgx.Market `json:"data"`
-		ResultCount int          `json:"result_count"`
-		TotalCount  int          `json:"total_count"`
+		Data        []dotagiftx.Market `json:"data"`
+		ResultCount int                `json:"result_count"`
+		TotalCount  int                `json:"total_count"`
 	}{}
 	if err := json.UnmarshalFromString(hit, &d); err != nil {
 		return nil
@@ -227,16 +226,16 @@ func redactBuyersFromCache(hit string) interface{} {
 	return d
 }
 
-func redactBuyer(m *dgx.Market) *dgx.Market {
+func redactBuyer(m *dotagiftx.Market) *dotagiftx.Market {
 	if m == nil {
 		return nil
 	}
 
-	return &redactBuyers([]dgx.Market{*m})[0]
+	return &redactBuyers([]dotagiftx.Market{*m})[0]
 }
 
-func redactBuyerFromCache(hit string) *dgx.Market {
-	d := &dgx.Market{}
+func redactBuyerFromCache(hit string) *dotagiftx.Market {
+	d := &dotagiftx.Market{}
 	if err := json.UnmarshalFromString(hit, &d); err != nil {
 		return nil
 	}
