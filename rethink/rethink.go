@@ -11,6 +11,8 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
+var logger = log.Default()
+
 const tagName = "db"
 
 // Config represents rethink database config.
@@ -76,7 +78,6 @@ func (c *Client) autoMigrate(table string) error {
 // autoIndex creates table index base model that has tag "index".
 func (c *Client) autoIndex(table string, model interface{}) error {
 	for _, ff := range getModelIndexedFields(model) {
-		fmt.Println("autoIndex", table, ff)
 		if err := c.createIndex(table, ff); err != nil {
 			return fmt.Errorf("could not create %s index on %s table: %s", ff, tableCatalog, err)
 		}
