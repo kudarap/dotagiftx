@@ -1,11 +1,11 @@
-package dgx
+package dotagiftx
 
 import (
 	"context"
 	"io"
+	"regexp"
+	"strings"
 	"time"
-
-	"github.com/kudarap/dotagiftx/gokit/slug"
 )
 
 // Item error types.
@@ -108,7 +108,7 @@ type (
 
 // CheckCreate validates field on creating new item.
 func (i Item) CheckCreate() error {
-	// Check required fields.
+	// Check the required fields.
 	if err := validator.Struct(i); err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (i Item) CheckCreate() error {
 
 // MakeSlug generates item slug.
 func (i Item) MakeSlug() string {
-	return slug.Make(i.Name + " " + i.Hero)
+	return makeSlug(i.Name + " " + i.Hero)
 }
 
 // IsActive determines item is giftable.
@@ -128,17 +128,17 @@ func (i Item) IsActive() bool {
 
 const defaultItemRarity = "regular"
 
-// SetDefault sets default values for a new item.
-func (i *Item) SetDefaults() *Item {
+// SetDefaults sets default values for a new item.
+func (i Item) SetDefaults() *Item {
 	if i.Rarity == "" {
 		i.Rarity = defaultItemRarity
 	}
 
 	i.Slug = i.MakeSlug()
-	return i
+	return &i
 }
 
-func (i *Item) ToCatalog() Catalog {
+func (i Item) ToCatalog() Catalog {
 	return Catalog{
 		ID:           i.ID,
 		Slug:         i.Slug,
@@ -152,4 +152,11 @@ func (i *Item) ToCatalog() Catalog {
 		CreatedAt:    i.CreatedAt,
 		UpdatedAt:    i.UpdatedAt,
 	}
+}
+
+var slugRE = regexp.MustCompile("[^a-z0-9]+")
+
+// makeSlug creates a URL friendly string base on input.
+func makeSlug(s string) string {
+	return strings.Trim(slugRE.ReplaceAllString(strings.ToLower(s), "-"), "-")
 }

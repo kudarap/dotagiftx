@@ -1,4 +1,4 @@
-package version
+package dotagiftx
 
 import (
 	"strconv"
@@ -14,8 +14,8 @@ type Version struct {
 	Built      string `json:"built"`
 }
 
-// New returns a formatted version details.
-func New(prod bool, tag, commit, built string) *Version {
+// NewVersion returns a formatted version details.
+func NewVersion(prod bool, tag, commit, built string) *Version {
 	v := &Version{
 		prod,
 		tag,
@@ -27,7 +27,7 @@ func New(prod bool, tag, commit, built string) *Version {
 	return v
 }
 
-// formatBuiltDate formats timestamp to human friendly dates.
+// formatBuiltDate format timestamp to human friendly dates.
 func (v *Version) formatBuiltDate() {
 	if strings.TrimSpace(v.Built) == "" {
 		return

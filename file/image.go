@@ -1,4 +1,4 @@
-package image
+package file
 
 import (
 	"errors"
@@ -26,7 +26,7 @@ func Thumbnail(path string, width, height uint) (newPath string, err error) {
 		return
 	}
 
-	// Make cache path writable
+	// Make a cache path writable
 	dir, _ := filepath.Split(newPath)
 	if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 		return

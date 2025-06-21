@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 )
 
 // Config represents steam config.
@@ -19,11 +19,11 @@ type Config struct {
 // Client represents steam client.
 type Client struct {
 	config Config
-	cache  dgx.Cache
+	cache  dotagiftx.Cache
 }
 
 // New create new steam client instance.
-func New(c Config, ca dgx.Cache) (*Client, error) {
+func New(c Config, ca dotagiftx.Cache) (*Client, error) {
 	return &Client{c, ca}, nil
 }
 
@@ -37,7 +37,7 @@ func (c *Client) AuthorizeURL(r *http.Request) (redirectURL string, err error) {
 	return oid.AuthUrl(), nil
 }
 
-func (c *Client) Authenticate(r *http.Request) (*dgx.SteamPlayer, error) {
+func (c *Client) Authenticate(r *http.Request) (*dotagiftx.SteamPlayer, error) {
 	oid := NewOpenId(r, c.config)
 	m := oid.Mode()
 	if m == "cancel" {
@@ -56,13 +56,13 @@ func (c *Client) Authenticate(r *http.Request) (*dgx.SteamPlayer, error) {
 	return p, nil
 }
 
-func (c *Client) Player(steamID string) (*dgx.SteamPlayer, error) {
+func (c *Client) Player(steamID string) (*dotagiftx.SteamPlayer, error) {
 	su, err := GetPlayerSummaries(steamID, c.config.Key)
 	if err != nil {
 		return nil, fmt.Errorf("could not get player: %s", err)
 	}
 
-	return &dgx.SteamPlayer{
+	return &dotagiftx.SteamPlayer{
 		ID:     su.SteamId,
 		Name:   su.PersonaName,
 		URL:    su.ProfileUrl,

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	localcache "github.com/kudarap/dotagiftx/gokit/cache"
+	localcache "github.com/kudarap/dotagiftx/cache"
 	"github.com/kudarap/dotagiftx/steam"
 )
 

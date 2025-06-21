@@ -7,46 +7,46 @@ import (
 	"net/http"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewUser returns a new User service.
-func NewUser(us dgx.UserStorage, fm dgx.FileManager, sc subscriptionChecker) dgx.UserService {
+func NewUser(us dotagiftx.UserStorage, fm dotagiftx.FileManager, sc subscriptionChecker) dotagiftx.UserService {
 	return &userService{us, fm, sc}
 }
 
 type userService struct {
-	userStg     dgx.UserStorage
-	fileMgr     dgx.FileManager
+	userStg     dotagiftx.UserStorage
+	fileMgr     dotagiftx.FileManager
 	subsChecker subscriptionChecker
 }
 
-func (s *userService) Users(opts dgx.FindOpts) ([]dgx.User, error) {
+func (s *userService) Users(opts dotagiftx.FindOpts) ([]dotagiftx.User, error) {
 	return s.userStg.Find(opts)
 }
 
-func (s *userService) FlaggedUsers(opts dgx.FindOpts) ([]dgx.User, error) {
+func (s *userService) FlaggedUsers(opts dotagiftx.FindOpts) ([]dotagiftx.User, error) {
 	return s.userStg.FindFlagged(opts)
 }
 
-func (s *userService) User(id string) (*dgx.User, error) {
+func (s *userService) User(id string) (*dotagiftx.User, error) {
 	return s.userStg.Get(id)
 }
 
-func (s *userService) UserFromContext(ctx context.Context) (*dgx.User, error) {
-	au := dgx.AuthFromContext(ctx)
+func (s *userService) UserFromContext(ctx context.Context) (*dotagiftx.User, error) {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, dgx.UserErrNotFound
+		return nil, dotagiftx.UserErrNotFound
 	}
 
 	return s.User(au.UserID)
 }
 
-func (s *userService) Create(u *dgx.User) error {
+func (s *userService) Create(u *dotagiftx.User) error {
 	url, err := s.downloadProfileImage(u.Avatar)
 	if err != nil {
-		return errors.New(dgx.UserErrProfileImageDL, err)
+		return errors.New(dotagiftx.UserErrProfileImageDL, err)
 	}
 	u.Avatar = url
 
@@ -64,10 +64,10 @@ func (s *userService) Create(u *dgx.User) error {
 	return s.userStg.Create(u)
 }
 
-func (s *userService) Update(ctx context.Context, u *dgx.User) error {
-	au := dgx.AuthFromContext(ctx)
+func (s *userService) Update(ctx context.Context, u *dotagiftx.User) error {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return dgx.AuthErrNoAccess
+		return dotagiftx.AuthErrNoAccess
 	}
 	u.ID = au.UserID
 
@@ -78,7 +78,7 @@ func (s *userService) Update(ctx context.Context, u *dgx.User) error {
 	return s.userStg.Update(u)
 }
 
-func (s *userService) SteamSync(sp *dgx.SteamPlayer) (*dgx.User, error) {
+func (s *userService) SteamSync(sp *dotagiftx.SteamPlayer) (*dotagiftx.User, error) {
 	u, err := s.userStg.Get(sp.ID)
 	if err != nil {
 		return nil, err
@@ -96,10 +96,10 @@ func (s *userService) SteamSync(sp *dgx.SteamPlayer) (*dgx.User, error) {
 	return u, nil
 }
 
-func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID string) (*dgx.User, error) {
-	au := dgx.AuthFromContext(ctx)
+func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID string) (*dotagiftx.User, error) {
+	au := dotagiftx.AuthFromContext(ctx)
 	if au == nil {
-		return nil, dgx.AuthErrNoAccess
+		return nil, dotagiftx.AuthErrNoAccess
 	}
 	user, err := s.userStg.Get(au.UserID)
 	if err != nil {
@@ -113,7 +113,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	if user.SteamID != steamID {
 		return nil, fmt.Errorf("could not validate subscription steam id")
 	}
-	userSubs := dgx.UserSubscriptionFromString(plan)
+	userSubs := dotagiftx.UserSubscriptionFromString(plan)
 	if userSubs == 0 {
 		return nil, fmt.Errorf("could not validate subscription plan")
 	}
@@ -136,7 +136,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 
 // UpdateSubscriptionFromWebhook manage updates from webhook payload, most often use in incrementing cycles or
 // extending expiration.
-func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*dgx.User, error) {
+func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*dotagiftx.User, error) {
 	// get user by steam id and increment their cycles.
 	steamID, cancelled, err := s.subsChecker.IsCancelled(ctx, r)
 	if err != nil {
@@ -169,14 +169,14 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 //	    - 6 months (+60% overhead)
 //	    - 12 months (+60% overhead)
 func (s *userService) ProcessManualSubscription(
-	ctx context.Context, param dgx.ManualSubscriptionParam,
-) (*dgx.User, error) {
+	ctx context.Context, param dotagiftx.ManualSubscriptionParam,
+) (*dotagiftx.User, error) {
 	user, err := s.userStg.Get(param.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user: %v", err)
 	}
 
-	subs := dgx.UserSubscriptionFromString(param.Plan)
+	subs := dotagiftx.UserSubscriptionFromString(param.Plan)
 	user.Subscription = subs
 	user.Boons = subs.Boons()
 	user.SubscriptionType = "manual"

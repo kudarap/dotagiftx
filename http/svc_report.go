@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 )
 
-func handleReportList(svc dgx.ReportService) http.HandlerFunc {
+func handleReportList(svc dotagiftx.ReportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		opts, err := findOptsFromURL(r.URL, &dgx.Report{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Report{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -21,7 +21,7 @@ func handleReportList(svc dgx.ReportService) http.HandlerFunc {
 			return
 		}
 		if list == nil {
-			list = []dgx.Report{}
+			list = []dotagiftx.Report{}
 		}
 
 		o := newDataWithMeta(list, md)
@@ -29,7 +29,7 @@ func handleReportList(svc dgx.ReportService) http.HandlerFunc {
 	}
 }
 
-func handleReportDetail(svc dgx.ReportService) http.HandlerFunc {
+func handleReportDetail(svc dotagiftx.ReportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rep, err := svc.Report(chi.URLParam(r, "id"))
 		if err != nil {
@@ -41,9 +41,9 @@ func handleReportDetail(svc dgx.ReportService) http.HandlerFunc {
 	}
 }
 
-func handleReportCreate(svc dgx.ReportService) http.HandlerFunc {
+func handleReportCreate(svc dotagiftx.ReportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rep := new(dgx.Report)
+		rep := new(dotagiftx.Report)
 		if err := parseForm(r, rep); err != nil {
 			respondError(w, err)
 			return

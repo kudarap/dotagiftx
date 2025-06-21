@@ -18,7 +18,6 @@ require (
 	github.com/plutov/paypal/v4 v4.13.0
 	github.com/redis/go-redis/v9 v9.8.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/speps/go-hashids v2.0.0+incompatible
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/rethinkdb/rethinkdb-go.v6 v6.2.2
