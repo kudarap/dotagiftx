@@ -155,7 +155,7 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	}
 	expiresAt := user.SubscribedAt.AddDate(0, 1, 0)
 	user.SubscriptionEndsAt = &expiresAt
-	if user.Subscription == dgx.UserSubscriptionPartner {
+	if user.Subscription == dotagiftx.UserSubscriptionPartner {
 		t := time.Now()
 		user.SubscriptionEndsAt = &t
 	}
