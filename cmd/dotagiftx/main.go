@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/kudarap/dotagiftx"
@@ -70,6 +71,7 @@ func (app *application) loadConfig() error {
 
 func (app *application) setup() error {
 	// Logs setup.
+	slogger := slog.Default()
 	logger.Println("setting up persistent logs...")
 	logSvc, err := logging.New(app.config.Log)
 	if err != nil {
@@ -142,7 +144,7 @@ func (app *application) setup() error {
 	reportSvc := service.NewReport(reportStg, discordClient)
 	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
-	phantasmSvc := phantasm.NewService(app.config.Phantasm)
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)

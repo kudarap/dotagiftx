@@ -1,14 +1,13 @@
-package cache
+package filecache
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 )
 
-const dirname = "gokitcache"
+const dirname = "dgx_filecache"
 
 func init() {
 	// This will create cache dir.
@@ -48,27 +47,13 @@ func Get(key string) (val interface{}, err error) {
 
 func Set(key string, val interface{}, expr time.Duration) error {
 	path := filename(key)
-	fmt.Println("cache set:", path)
-
 	d, err := newData(val, expr)
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(d))
-
-	//if err = os.WriteFile(path, d, 0666); err != nil {
-	//	return err
-	//}
-
-	f, err := os.Create(path)
-	if err != nil {
+	if err = os.WriteFile(path, d, 0666); err != nil {
 		return err
 	}
-	if _, err = f.Write(d); err != nil {
-		return err
-	}
-
-	fmt.Println("WriteFile!")
 	return nil
 }
 
