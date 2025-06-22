@@ -12,6 +12,7 @@ import (
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
@@ -141,6 +142,7 @@ func (app *application) setup() error {
 	reportSvc := service.NewReport(reportStg, discordClient)
 	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
+	phantasmSvc := phantasm.NewService(app.config.Phantasm)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
@@ -165,6 +167,7 @@ func (app *application) setup() error {
 		reportSvc,
 		hammerSvc,
 		steamClient,
+		phantasmSvc,
 		traceSpan,
 		redisClient,
 		initVer(app.config),

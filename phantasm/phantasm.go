@@ -17,15 +17,16 @@ package phantasm
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
+	localcache "github.com/kudarap/dotagiftx/cache"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
-const (
-	cacheExpr   = time.Hour * 24
-	cachePrefix = "phantasm"
-)
+var fastjson = jsoniter.ConfigFastest
 
 type Config struct {
 	Addrs      []string
@@ -35,10 +36,37 @@ type Config struct {
 
 type Service struct {
 	config Config
+
+	cachePrefix string
+	cacheTTL    time.Duration
 }
 
 func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
 	// pull raw data from local cache
-	//
 	return nil, nil
+}
+
+func (s *Service) SaveInventory(ctx context.Context, steamID string, r io.ReadCloser) error {
+	var inventory Inventory
+	if err := fastjson.NewDecoder(r).Decode(&inventory); err != nil {
+		return fmt.Errorf("could not parse json form: %s", err)
+	}
+
+	k := s.cacheKey(steamID)
+	if err := localcache.Set(k, inventory, s.cacheTTL); err != nil {
+		return fmt.Errorf("set cache: %s %s", k, err)
+	}
+	return nil
+}
+
+func (s *Service) cacheKey(steamID string) string {
+	return fmt.Sprintf("%s_%s", s.cachePrefix, steamID)
+}
+
+func NewService(config Config) *Service {
+	return &Service{
+		config:      config,
+		cachePrefix: "phantasm",
+		cacheTTL:    time.Hour,
+	}
 }

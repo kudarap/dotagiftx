@@ -7,10 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	jsoniter "github.com/json-iterator/go"
 )
-
-var fastjson = jsoniter.ConfigFastest
 
 func Test_merge_verify(t *testing.T) {
 	invs, err := parseInventoryFiles("./testdata/inventory_raw.json", "./testdata/inventory_reduced.json")

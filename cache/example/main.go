@@ -22,5 +22,4 @@ func main() {
 	log.Println(cache.Get(testkey))
 	time.Sleep(time.Second * 3)
 	log.Println(cache.Get(testkey))
-
 }
