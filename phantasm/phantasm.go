@@ -46,16 +46,11 @@ func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.A
 	return nil, nil
 }
 
-func (s *Service) SaveInventory(ctx context.Context, steamID string, r io.ReadCloser) error {
+func (s *Service) SaveInventory(ctx context.Context, steamID string, r io.Reader) error {
 	var inventory Inventory
 	if err := fastjson.NewDecoder(r).Decode(&inventory); err != nil {
 		return fmt.Errorf("could not parse json form: %s", err)
 	}
-	defer func() {
-		if err := r.Close(); err != nil {
-			fmt.Printf("phantasm save inventory close reader: %s", err)
-		}
-	}()
 
 	fmt.Printf("saving inventory %s\n", steamID)
 	fmt.Printf("caching prefix %s\n", s.cachePrefix)
