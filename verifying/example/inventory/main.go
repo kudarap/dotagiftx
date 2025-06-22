@@ -2,15 +2,27 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"strings"
 
+	"github.com/joho/godotenv"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		panic("could not load config: " + err.Error())
+	}
+
+	var conf phantasm.Config
+	conf.Path = os.Getenv("DG_PHANTASM_PATH")
+	phantasmSvc := phantasm.NewService(conf, slog.Default())
+
 	assetSrc := steaminvorg.InventoryAssetWithCache
-	//assetSrc = steam.InventoryAssetWithCache
+	assetSrc = phantasmSvc.InventoryAsset
 
 	params := []struct {
 		steamID, item string

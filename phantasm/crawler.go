@@ -60,7 +60,7 @@ func Main(args map[string]interface{}) map[string]interface{} {
 		log.Println("merging inventories...")
 		inventory = merge(inventory, next)
 
-		startAssetID = next.LastAssetid
+		startAssetID = next.LastAssetID
 		if next.MoreItems == 0 {
 			inventoryCount = next.TotalInventoryCount
 			break
@@ -89,7 +89,7 @@ type Inventory struct {
 	Descriptions        []Description `json:"descriptions"`
 	TotalInventoryCount int           `json:"total_inventory_count"`
 
-	LastAssetid string `json:"last_assetid"`
+	LastAssetID string `json:"last_asset_id"`
 	MoreItems   int    `json:"more_items"`
 	Rwgrsn      int    `json:"rwgrsn"`
 	Success     int    `json:"success"`
@@ -97,34 +97,30 @@ type Inventory struct {
 
 type Asset struct {
 	Amount     string `json:"amount"`
-	Appid      int    `json:"appid"`
-	Assetid    string `json:"assetid"`
-	Classid    string `json:"classid"`
-	Contextid  string `json:"contextid"`
-	Instanceid string `json:"instanceid"`
+	AppID      int    `json:"appid"`
+	AssetID    string `json:"assetid"`
+	ClassID    string `json:"classid"`
+	ContextID  string `json:"contextid"`
+	InstanceID string `json:"instanceid"`
 }
 
 type Description struct {
-	Appid           int    `json:"appid"`
-	BackgroundColor string `json:"background_color"`
-	Classid         string `json:"classid"`
-	Commodity       int    `json:"commodity"`
-	Currency        int    `json:"currency"`
-	Descriptions    []struct {
-		Name  string `json:"name"`
-		Type  string `json:"type"`
-		Value string `json:"value"`
-	} `json:"descriptions"`
-	IconURL                     string `json:"icon_url"`
-	IconURLLarge                string `json:"icon_url_large"`
-	Instanceid                  string `json:"instanceid"`
-	MarketHashName              string `json:"market_hash_name"`
-	MarketMarketableRestriction int    `json:"market_marketable_restriction"`
-	MarketName                  string `json:"market_name"`
-	MarketTradableRestriction   int    `json:"market_tradable_restriction"`
-	Marketable                  int    `json:"marketable"`
-	Name                        string `json:"name"`
-	NameColor                   string `json:"name_color"`
+	AppID                       int                `json:"appid"`
+	BackgroundColor             string             `json:"background_color"`
+	ClassID                     string             `json:"classid"`
+	Commodity                   int                `json:"commodity"`
+	Currency                    int                `json:"currency"`
+	Descriptions                []DescriptionAttrs `json:"descriptions"`
+	IconURL                     string             `json:"icon_url"`
+	IconURLLarge                string             `json:"icon_url_large"`
+	InstanceID                  string             `json:"instanceid"`
+	MarketHashName              string             `json:"market_hash_name"`
+	MarketMarketableRestriction int                `json:"market_marketable_restriction"`
+	MarketName                  string             `json:"market_name"`
+	MarketTradableRestriction   int                `json:"market_tradable_restriction"`
+	Marketable                  int                `json:"marketable"`
+	Name                        string             `json:"name"`
+	NameColor                   string             `json:"name_color"`
 	Tags                        []struct {
 		Category              string `json:"category"`
 		Color                 string `json:"color,omitempty"`
@@ -134,6 +130,12 @@ type Description struct {
 	} `json:"tags"`
 	Tradable int    `json:"tradable"`
 	Type     string `json:"type"`
+}
+
+type DescriptionAttrs struct {
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
 }
 
 func merge(res ...*Inventory) *Inventory {
@@ -149,7 +151,7 @@ func merge(res ...*Inventory) *Inventory {
 
 		// map reduced descriptions across Inventory.
 		for _, d := range r.Descriptions {
-			key := d.Classid + "-" + d.Instanceid
+			key := d.ClassID + "-" + d.InstanceID
 			_, ok := classIdx[key]
 			if !ok {
 				classIdx[key] = struct{}{} // mark done

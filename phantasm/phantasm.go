@@ -44,9 +44,54 @@ type Service struct {
 	logger      *slog.Logger
 }
 
-func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
-	// pull raw data from local cache
-	return nil, nil
+func (i *Inventory) compat() steam.AllInventory {
+	assets := make([]steam.RawInventoryAsset, len(i.Assets))
+	for k, v := range i.Assets {
+		assets[k] = v.compat()
+	}
+
+	descs := make(map[string]steam.RawInventoryDesc, len(i.Descriptions))
+	for _, v := range i.Descriptions {
+		descs[fmt.Sprintf("%s_%s", v.ClassID, v.InstanceID)] = v.compat()
+	}
+
+	return steam.AllInventory{assets, descs}
+}
+
+func (a *Asset) compat() steam.RawInventoryAsset {
+	return steam.RawInventoryAsset{
+		ID:         a.AssetID,
+		AssetID:    a.AssetID,
+		ClassID:    a.ClassID,
+		InstanceID: a.InstanceID,
+	}
+}
+
+func (d *Description) compat() steam.RawInventoryDesc {
+	attrs := make(steam.RawInventoryItemDetails, len(d.Descriptions))
+	for i, v := range d.Descriptions {
+		attrs[i].Value = v.Value
+	}
+
+	return steam.RawInventoryDesc{
+		ClassID:      d.ClassID,
+		InstanceID:   d.InstanceID,
+		Name:         d.Name,
+		Image:        d.IconURLLarge,
+		Type:         d.Type,
+		Descriptions: attrs,
+	}
+}
+
+func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
+	ctx := context.Background()
+	raw, err := s.GetInventory(ctx, steamID)
+	if err != nil {
+		return nil, err
+	}
+
+	compat := raw.compat()
+	return compat.ToAssets(), nil
 }
 
 func (s *Service) SaveInventory(ctx context.Context, steamID string, body io.ReadCloser) error {
@@ -79,8 +124,7 @@ func (s *Service) GetInventory(ctx context.Context, steamID string) (*Inventory,
 	if err = fastjson.Unmarshal(file, &inventory); err != nil {
 		return nil, fmt.Errorf("unmarshal: %s", err)
 	}
-
-	return nil, nil
+	return &inventory, nil
 }
 
 func (s *Service) filePath(steamID string) string {

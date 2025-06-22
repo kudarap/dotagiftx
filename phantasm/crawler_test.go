@@ -59,21 +59,25 @@ func Test_merge_pagination(t *testing.T) {
 	}
 }
 
+func Test_asset(t *testing.T) {
+
+}
+
 func checkMissingAssetDesc(inv *Inventory) []string {
 	var missing []string
 	for _, ass := range inv.Assets {
 		var found bool
 		for _, desc := range inv.Descriptions {
-			if ass.Classid == desc.Classid && ass.Instanceid == desc.Instanceid {
+			if ass.ClassID == desc.ClassID && ass.InstanceID == desc.InstanceID {
 				found = true
 				break
 			}
 		}
 		if !found {
-			missing = append(missing, ass.Assetid)
+			missing = append(missing, ass.AssetID)
 			for _, desc := range inv.Descriptions {
-				if ass.Classid == desc.Classid {
-					fmt.Println(ass.Assetid, desc.Name, ass.Classid, ass.Instanceid)
+				if ass.ClassID == desc.ClassID {
+					fmt.Println(ass.AssetID, desc.Name, ass.ClassID, ass.InstanceID)
 					break
 				}
 			}
