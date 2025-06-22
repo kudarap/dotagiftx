@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	log2 "github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/tracing"
 )
 
@@ -19,7 +19,7 @@ type Worker struct {
 	closed   bool
 	taskProc *TaskProcessor
 
-	logger log2.Logger
+	logger logging.Logger
 	tracer *tracing.Tracer
 }
 
@@ -50,12 +50,12 @@ func New(tp *TaskProcessor, jobs ...Job) *Worker {
 	w.quit = make(chan struct{})
 	w.jobs = jobs
 	w.taskProc = tp
-	w.logger = log2.Default()
+	w.logger = logging.Default()
 	return w
 }
 
 // SetLogger overrides default logger.
-func (w *Worker) SetLogger(l log2.Logger) {
+func (w *Worker) SetLogger(l logging.Logger) {
 	w.logger = l
 }
 

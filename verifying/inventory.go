@@ -1,6 +1,7 @@
 package verifying
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/kudarap/dotagiftx"
@@ -17,7 +18,7 @@ func Inventory(source AssetSource, steamID, itemName string) (dotagiftx.Inventor
 
 	assets, err := source(steamID)
 	if err != nil {
-		if err == steam.ErrInventoryPrivate {
+		if errors.Is(err, steam.ErrInventoryPrivate) {
 			return dotagiftx.InventoryStatusPrivate, nil, nil
 		}
 

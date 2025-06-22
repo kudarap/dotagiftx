@@ -12,7 +12,7 @@ const (
 	cachePrefix = "steam"
 )
 
-// InventoryAsset returns a compact format from all
+// InventoryAssetWithCache returns a compact format from all
 // inventory data with cache.
 func InventoryAssetWithCache(steamID string) ([]Asset, error) {
 	hit, err := cache.Get(getCacheKey(steamID))
