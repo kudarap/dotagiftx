@@ -48,7 +48,7 @@ func Main(args map[string]interface{}) map[string]interface{} {
 	var parts int
 	var inventoryCount int
 	var startAssetID string
-	var invs []*inventory
+	var invs []*Inventory
 	for {
 		parts++
 		log.Println("requesting part...", parts)
@@ -84,9 +84,9 @@ func Main(args map[string]interface{}) map[string]interface{} {
 	})
 }
 
-type inventory struct {
-	Assets              []asset       `json:"assets"`
-	Descriptions        []description `json:"descriptions"`
+type Inventory struct {
+	Assets              []Asset       `json:"assets"`
+	Descriptions        []Description `json:"descriptions"`
 	TotalInventoryCount int           `json:"total_inventory_count"`
 
 	LastAssetid string `json:"last_assetid"`
@@ -95,7 +95,7 @@ type inventory struct {
 	Success     int    `json:"success"`
 }
 
-type asset struct {
+type Asset struct {
 	Amount     string `json:"amount"`
 	Appid      int    `json:"appid"`
 	Assetid    string `json:"assetid"`
@@ -104,7 +104,7 @@ type asset struct {
 	Instanceid string `json:"instanceid"`
 }
 
-type description struct {
+type Description struct {
 	Appid           int    `json:"appid"`
 	BackgroundColor string `json:"background_color"`
 	Classid         string `json:"classid"`
@@ -136,8 +136,8 @@ type description struct {
 	Type     string `json:"type"`
 }
 
-func merge(res ...*inventory) *inventory {
-	var inv inventory
+func merge(res ...*Inventory) *Inventory {
+	var inv Inventory
 
 	classIdx := map[string]struct{}{}
 	for _, r := range res {
@@ -147,7 +147,7 @@ func merge(res ...*inventory) *inventory {
 		inv.TotalInventoryCount = r.TotalInventoryCount
 		inv.Assets = append(inv.Assets, r.Assets...)
 
-		// map reduced descriptions across inventory.
+		// map reduced descriptions across Inventory.
 		for _, d := range r.Descriptions {
 			key := d.Classid + "-" + d.Instanceid
 			_, ok := classIdx[key]
@@ -161,7 +161,7 @@ func merge(res ...*inventory) *inventory {
 	return &inv
 }
 
-func get(steamID string, count int, lastAssetID string) (*inventory, int, error) {
+func get(steamID string, count int, lastAssetID string) (*Inventory, int, error) {
 	res, err := http.Get(fmt.Sprintf(steamURL, steamID, count, lastAssetID))
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
@@ -176,14 +176,14 @@ func get(steamID string, count int, lastAssetID string) (*inventory, int, error)
 		return nil, res.StatusCode, fmt.Errorf("%d - %s", res.StatusCode, body)
 	}
 
-	var inv inventory
+	var inv Inventory
 	if err = json.Unmarshal(body, &inv); err != nil {
 		return nil, http.StatusInternalServerError, err
 	}
 	return &inv, http.StatusOK, nil
 }
 
-func post(steamID string, inv *inventory) error {
+func post(steamID string, inv *Inventory) error {
 	b, err := json.Marshal(inv)
 	if err != nil {
 		return err

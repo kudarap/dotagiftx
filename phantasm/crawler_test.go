@@ -25,11 +25,11 @@ func Test_merge_verify(t *testing.T) {
 	}
 	missing := checkMissingAssetDesc(raw)
 	if len(missing) > 0 {
-		t.Fatalf("raw missing asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
+		t.Fatalf("raw missing Asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
 	}
 	missing = checkMissingAssetDesc(reduced)
 	if len(missing) > 0 {
-		t.Fatalf("reduced missing asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
+		t.Fatalf("reduced missing Asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
 	}
 }
 
@@ -49,16 +49,16 @@ func Test_merge_pagination(t *testing.T) {
 	merged := merge(invs[1:]...)
 	missing := checkMissingAssetDesc(merged)
 	if len(missing) > 0 {
-		t.Fatalf("merged missing asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
+		t.Fatalf("merged missing Asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
 	}
 
 	missing = checkMissingAssetDesc(reduced)
 	if len(missing) > 0 {
-		t.Fatalf("reduced missing asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
+		t.Fatalf("reduced missing Asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
 	}
 }
 
-func checkMissingAssetDesc(inv *inventory) []string {
+func checkMissingAssetDesc(inv *Inventory) []string {
 	var missing []string
 	for _, ass := range inv.Assets {
 		var found bool
@@ -81,8 +81,8 @@ func checkMissingAssetDesc(inv *inventory) []string {
 	return missing
 }
 
-func parseInventory(r io.Reader) (*inventory, error) {
-	var raw inventory
+func parseInventory(r io.Reader) (*Inventory, error) {
+	var raw Inventory
 	b, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -93,8 +93,8 @@ func parseInventory(r io.Reader) (*inventory, error) {
 	return &raw, nil
 }
 
-func parseInventoryFiles(paths ...string) ([]*inventory, error) {
-	var invs []*inventory
+func parseInventoryFiles(paths ...string) ([]*Inventory, error) {
+	var invs []*Inventory
 	for _, path := range paths {
 		f, err := os.Open(path)
 		if err != nil {
