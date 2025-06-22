@@ -3,9 +3,12 @@ package phantasm
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -13,11 +16,22 @@ const (
 	queryLimit   = 2000
 	requestDelay = 500 * time.Millisecond
 
+	webhookAuthHeader = "X-Require-Whisk-Auth"
+
+	// ex. https://steamcommunity.com/inventory/76561198088587178/570/2
 	steamURL = "https://steamcommunity.com/inventory/%s/570/2?count=%d&start_assetid=%s"
-	dgxURL   = "https://webhook.site/4528d107-a8e5-44d3-888f-6bc9c23520a0?steam_id=%s"
+)
+
+var (
+	webhookURL string
+	secret     string
 )
 
 func Main(args map[string]interface{}) map[string]interface{} {
+	if err := loadConfig(); err != nil {
+		return resp(http.StatusInternalServerError, err)
+	}
+
 	now := time.Now()
 	id, ok := args["steam_id"]
 	if !ok {
@@ -60,6 +74,7 @@ func Main(args map[string]interface{}) map[string]interface{} {
 		"parts":            parts,
 		"inventory_count":  inventoryCount,
 		"elapsed_sec":      time.Since(now).Seconds(),
+		"webhook_url":      webhookURL,
 	})
 }
 
@@ -164,7 +179,16 @@ func post(steamID string, inv *inventory) error {
 	if err != nil {
 		return err
 	}
-	res, err := http.Post(fmt.Sprintf(dgxURL, steamID), "application/json", bytes.NewReader(b))
+
+	url := strings.TrimRight(webhookURL, "/") + "/" + steamID
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(b))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(webhookAuthHeader, secret)
+
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -181,7 +205,16 @@ func post(steamID string, inv *inventory) error {
 
 func resp(status int, body interface{}) map[string]interface{} {
 	return map[string]interface{}{
-		"status": status,
-		"body":   body,
+		"statusCode": status,
+		"body":       body,
 	}
+}
+
+func loadConfig() error {
+	webhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
+	secret = os.Getenv("DG_PHANTASM_SECRET")
+	if webhookURL == "" || secret == "" {
+		return errors.New("webhookURL and secret required")
+	}
+	return nil
 }

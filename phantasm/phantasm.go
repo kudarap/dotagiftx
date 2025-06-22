@@ -14,3 +14,8 @@
 // 	- publishes raw inventory data to target webhook url.
 
 package phantasm
+
+type Config struct {
+	WebhookURL string `envconfig:"DG_PHANTASM_WEBHOOK_URL"`
+	Secret     string
+}
