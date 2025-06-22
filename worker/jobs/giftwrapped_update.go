@@ -6,6 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -16,6 +17,7 @@ type GiftWrappedUpdate struct {
 	deliverySvc dotagiftx.DeliveryService
 	deliveryStg dotagiftx.DeliveryStorage
 	marketStg   dotagiftx.MarketStorage
+	phantasmSvc *phantasm.Service
 	logger      logging.Logger
 	// job settings
 	name     string
@@ -23,14 +25,14 @@ type GiftWrappedUpdate struct {
 	filter   dotagiftx.Delivery
 }
 
-func NewGiftWrappedUpdate(ds dotagiftx.DeliveryService, dstg dotagiftx.DeliveryStorage, ms dotagiftx.MarketStorage, lg logging.Logger) *GiftWrappedUpdate {
+func NewGiftWrappedUpdate(ds dotagiftx.DeliveryService, dstg dotagiftx.DeliveryStorage, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *GiftWrappedUpdate {
 	falsePtr := false
 	f := dotagiftx.Delivery{
 		GiftOpened: &falsePtr,
 		Status:     dotagiftx.DeliveryStatusSenderVerified,
 	}
 	return &GiftWrappedUpdate{
-		ds, dstg, ms, lg,
+		ds, dstg, ms, ps, lg,
 		"giftwrapped_update", time.Hour / 2, f}
 }
 
@@ -51,6 +53,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	src := steaminvorg.InventoryAsset
+	src = gw.phantasmSvc.InventoryAsset
 	for {
 		deliveries, err := gw.deliveryStg.ToVerify(opts)
 		if err != nil {

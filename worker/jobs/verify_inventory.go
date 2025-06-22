@@ -6,6 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -14,6 +15,7 @@ import (
 type VerifyInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
+	phantasmSvc  *phantasm.Service
 	logger       logging.Logger
 	// job settings
 	name     string
@@ -21,10 +23,10 @@ type VerifyInventory struct {
 	filter   dotagiftx.Market
 }
 
-func NewVerifyInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, lg logging.Logger) *VerifyInventory {
+func NewVerifyInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *VerifyInventory {
 	f := dotagiftx.Market{}
 	return &VerifyInventory{
-		is, ms, lg,
+		is, ms, ps, lg,
 		"verify_inventory", time.Hour * 24, f}
 }
 
@@ -46,6 +48,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 
 	source := steaminvorg.InventoryAssetWithCache
+	source = vi.phantasmSvc.InventoryAsset
 	for {
 		res, err := vi.marketStg.PendingInventoryStatus(opts)
 		if err != nil {

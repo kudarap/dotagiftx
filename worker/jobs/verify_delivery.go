@@ -6,6 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -14,6 +15,7 @@ import (
 type VerifyDelivery struct {
 	deliverySvc dotagiftx.DeliveryService
 	marketStg   dotagiftx.MarketStorage
+	phantasmSvc *phantasm.Service
 	logger      logging.Logger
 	// job settings
 	name     string
@@ -21,10 +23,10 @@ type VerifyDelivery struct {
 	filter   dotagiftx.Market
 }
 
-func NewVerifyDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStorage, lg logging.Logger) *VerifyDelivery {
+func NewVerifyDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *VerifyDelivery {
 	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &VerifyDelivery{
-		ds, ms, lg,
+		ds, ms, ps, lg,
 		"verify_delivery", time.Hour * 24, f}
 }
 
@@ -46,6 +48,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts.Page = 0
 
 	src := steaminvorg.InventoryAsset
+	src = vd.phantasmSvc.InventoryAsset
 	for {
 		res, err := vd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
@@ -103,33 +105,39 @@ func (app *application) setup() error {
 	logSvc.Println("setting up services...")
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
+	slogger := slog.Default()
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
 
 	// Setup application worker
 	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
-		inventorySvc, marketStg, logging.WithPrefix(logger, "job_recheck_inventory"),
+		inventorySvc, marketStg, phantasmSvc, logging.WithPrefix(logger, "job_recheck_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyInventory(
 		inventorySvc,
 		marketStg,
+		phantasmSvc,
 		logging.WithPrefix(logger, "job_verify_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyDelivery(
 		deliverySvc,
 		marketStg,
+		phantasmSvc,
 		logging.WithPrefix(logger, "job_verify_delivery"),
 	))
 	app.worker.AddJob(jobs.NewGiftWrappedUpdate(
 		deliverySvc,
 		deliveryStg,
 		marketStg,
+		phantasmSvc,
 		logging.WithPrefix(logger, "job_giftwrapped_update"),
 	))
 	app.worker.AddJob(jobs.NewRevalidateDelivery(
 		deliverySvc,
 		marketStg,
+		phantasmSvc,
 		logging.WithPrefix(logger, "job_revalidate_delivery"),
 	))
 	app.worker.AddJob(jobs.NewExpiringSubscription(
