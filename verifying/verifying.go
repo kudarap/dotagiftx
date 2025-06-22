@@ -1,6 +1,8 @@
 package verifying
 
 import (
+	"fmt"
+	"log"
 	"strings"
 
 	"github.com/kudarap/dotagiftx/steam"
@@ -9,8 +11,27 @@ import (
 // AssetSource represents inventory asset source provider.
 type AssetSource func(steamID string) ([]steam.Asset, error)
 
+type assetProvider interface {
+	Assets(steamID string) ([]steam.Asset, error)
+}
+
+func MultiAssetSource(steamID string, providers []AssetSource) ([]steam.Asset, error) {
+	for i, provider := range providers {
+		assets, err := provider(steamID)
+		if err != nil {
+			if i == len(providers)-1 {
+				return nil, fmt.Errorf("all providered used: %w", err)
+			}
+			log.Printf("fetching assets for %s: %v", steamID, err)
+			continue
+		}
+		return assets, nil
+	}
+	return nil, fmt.Errorf("no assets found for %s", steamID)
+}
+
 // filterByName filters item that matches the name or in the description
-// that supports un-bundled items.
+// that supports unbundled items.
 func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 	var matches []steam.Asset
 	for _, asset := range a {
@@ -37,7 +58,7 @@ func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 func filterByGiftable(a []steam.Asset) []steam.Asset {
 	var matches []steam.Asset
 	for _, aa := range a {
-		// Is the item is unbundled but giftable?
+		// Is the item unbundled but giftable?
 		//
 		// Is the item immortal and does not say its giftable?
 		// This fixes the removed "Gift once" string on description

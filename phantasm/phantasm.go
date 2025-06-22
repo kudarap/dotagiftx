@@ -32,6 +32,7 @@ import (
 	"github.com/djherbis/times"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx/steam"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 )
 
 var (
@@ -65,7 +66,8 @@ func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
 		return nil, err
 	}
 	if raw == nil {
-		return nil, nil
+		s.logger.InfoContext(ctx, "falling back to steaminvorg", "steamid", steamID)
+		return steaminvorg.InventoryAssetWithCache(steamID)
 	}
 
 	compat := raw.compat()
@@ -112,13 +114,14 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, er
 		}
 	}
 
-	// re-fetch day old file
-	t, err := times.Stat(s.filePath(steamID))
-	if err != nil {
-		return nil, err
+	if raw != nil {
+		// re-fetch day old file
+		t, err := times.Stat(s.filePath(steamID))
+		if err != nil {
+			return nil, err
+		}
+		log.Println(t.ModTime())
 	}
-	log.Println(t.ModTime())
-
 	return raw, nil
 }
 
@@ -212,10 +215,6 @@ func (s *Service) filePath(steamID string) string {
 func NewService(config Config, logger *slog.Logger) *Service {
 	if err := os.MkdirAll(config.Path, 0777); err != nil {
 		panic(err)
-	}
-
-	for i, addr := range config.Addrs {
-		fmt.Println(i, addr)
 	}
 
 	return &Service{
