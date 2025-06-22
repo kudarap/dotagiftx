@@ -1,4 +1,4 @@
-package steaminvcrawler
+package phantasm
 
 import (
 	"reflect"
