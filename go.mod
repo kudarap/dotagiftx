@@ -8,6 +8,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/google/go-cmp v0.7.0
 	github.com/gorilla/schema v1.4.1
 	github.com/guptarohit/asciigraph v0.7.3
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2

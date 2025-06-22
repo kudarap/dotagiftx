@@ -62,7 +62,7 @@ func Main(args map[string]interface{}) map[string]interface{} {
 	}
 
 	// combine data here
-	inv := merge(invs)
+	inv := merge(invs...)
 	if err := post(steamID, inv); err != nil {
 		return resp(http.StatusInternalServerError, err)
 	}
@@ -130,7 +130,7 @@ type description struct {
 	Type     string `json:"type"`
 }
 
-func merge(res []*inventory) *inventory {
+func merge(res ...*inventory) *inventory {
 	var inv inventory
 
 	classIdx := map[string]struct{}{}
@@ -141,9 +141,10 @@ func merge(res []*inventory) *inventory {
 		inv.TotalInventoryCount = r.TotalInventoryCount
 		inv.Assets = append(inv.Assets, r.Assets...)
 		for _, d := range r.Descriptions {
-			_, ok := classIdx[d.Classid]
+			key := d.Classid
+			_, ok := classIdx[key]
 			if !ok {
-				classIdx[d.Classid] = struct{}{} // mark done
+				classIdx[key] = struct{}{} // mark done
 				inv.Descriptions = append(inv.Descriptions, d)
 			}
 		}
