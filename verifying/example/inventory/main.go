@@ -19,6 +19,8 @@ func main() {
 
 	var conf phantasm.Config
 	conf.Path = os.Getenv("DG_PHANTASM_PATH")
+	conf.Addrs = strings.Split(os.Getenv("DG_PHANTASM_ADDRS"), " ")
+	conf.Secret = os.Getenv("DG_PHANTASM_SECRET")
 	phantasmSvc := phantasm.NewService(conf, slog.Default())
 
 	assetSrc := steaminvorg.InventoryAssetWithCache

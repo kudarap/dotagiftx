@@ -4,6 +4,7 @@ go 1.24
 
 require (
 	dario.cat/mergo v1.0.2
+	github.com/djherbis/times v1.6.0
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-playground/validator/v10 v10.26.0
@@ -11,7 +12,6 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/gorilla/schema v1.4.1
 	github.com/guptarohit/asciigraph v0.7.3
-	github.com/hpcloud/tail v1.0.0
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
 	github.com/joho/godotenv v1.5.1
 	github.com/json-iterator/go v1.1.12

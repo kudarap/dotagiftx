@@ -18,7 +18,7 @@ import (
 
 const (
 	queryLimit   = 2000
-	requestDelay = 500 * time.Millisecond
+	requestDelay = 1000 * time.Millisecond
 
 	webhookAuthHeader = "X-Require-Whisk-Auth"
 
