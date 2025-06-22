@@ -46,7 +46,11 @@ func Test_merge_pagination(t *testing.T) {
 	}
 	reduced := invs[0]
 
-	merged := merge(invs[1:]...)
+	var merged *Inventory
+	for _, inv := range invs[1:] {
+		merged = merge(merged, inv)
+	}
+
 	missing := checkMissingAssetDesc(merged)
 	if len(missing) > 0 {
 		t.Fatalf("merged missing Asset desc: %d/%d", len(missing), merged.TotalInventoryCount)

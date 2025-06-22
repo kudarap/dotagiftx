@@ -48,27 +48,27 @@ func Main(args map[string]interface{}) map[string]interface{} {
 	var parts int
 	var inventoryCount int
 	var startAssetID string
-	var invs []*Inventory
+	var inventory *Inventory
 	for {
 		parts++
 		log.Println("requesting part...", parts)
-		res, status, err := get(steamID, queryLimit, startAssetID)
+		next, status, err := get(steamID, queryLimit, startAssetID)
 		if err != nil {
 			return resp(status, err)
 		}
-		startAssetID = res.LastAssetid
-		invs = append(invs, res)
-		if res.MoreItems == 0 {
-			inventoryCount = res.TotalInventoryCount
+
+		log.Println("merging inventories...")
+		inventory = merge(inventory, next)
+
+		startAssetID = next.LastAssetid
+		if next.MoreItems == 0 {
+			inventoryCount = next.TotalInventoryCount
 			break
 		}
 		time.Sleep(requestDelay)
 	}
 
-	// combine data here
-	log.Println("combining inventories...")
-	inv := merge(invs...)
-	if err := post(steamID, inv); err != nil {
+	if err := post(steamID, inventory); err != nil {
 		return resp(http.StatusInternalServerError, err)
 	}
 
@@ -141,7 +141,7 @@ func merge(res ...*Inventory) *Inventory {
 
 	classIdx := map[string]struct{}{}
 	for _, r := range res {
-		if res == nil {
+		if r == nil {
 			continue
 		}
 		inv.TotalInventoryCount = r.TotalInventoryCount
