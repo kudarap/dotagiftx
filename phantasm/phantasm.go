@@ -15,7 +15,30 @@
 
 package phantasm
 
+import (
+	"context"
+	"time"
+
+	"github.com/kudarap/dotagiftx/steam"
+)
+
+const (
+	cacheExpr   = time.Hour * 24
+	cachePrefix = "phantasm"
+)
+
 type Config struct {
-	WebhookURL string `envconfig:"DG_PHANTASM_WEBHOOK_URL"`
+	Addrs      []string
+	WebhookURL string `envconfig:"WEBHOOK_URL"`
 	Secret     string
+}
+
+type Service struct {
+	config Config
+}
+
+func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
+	// pull raw data from local cache
+	//
+	return nil, nil
 }

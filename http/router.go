@@ -40,6 +40,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/vanity/{id}", handleVanityProfile(s.userSvc, s.steam, s.cache))
 		r.Get("/blacklists", handleBlacklisted(s.userSvc, s.cache))
 		r.Post("/webhook/paypal", handleUserSubscriptionWebhook(s.userSvc))
+		r.Post("/webhook/phantasm/{steam_id}", handlePhantasmWebhook())
 	})
 }
 

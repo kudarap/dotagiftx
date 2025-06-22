@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -28,6 +29,7 @@ var (
 )
 
 func Main(args map[string]interface{}) map[string]interface{} {
+	log.Println("starting phantasm...")
 	if err := loadConfig(); err != nil {
 		return resp(http.StatusInternalServerError, err)
 	}
@@ -42,12 +44,14 @@ func Main(args map[string]interface{}) map[string]interface{} {
 		return resp(http.StatusBadRequest, "steam_id is not a string")
 	}
 
+	log.Println("starting requests...")
 	var parts int
 	var inventoryCount int
 	var startAssetID string
 	var invs []*inventory
 	for {
 		parts++
+		log.Println("requesting part...", parts)
 		res, status, err := get(steamID, queryLimit, startAssetID)
 		if err != nil {
 			return resp(status, err)
@@ -62,11 +66,13 @@ func Main(args map[string]interface{}) map[string]interface{} {
 	}
 
 	// combine data here
+	log.Println("combining inventories...")
 	inv := merge(invs...)
 	if err := post(steamID, inv); err != nil {
 		return resp(http.StatusInternalServerError, err)
 	}
 
+	log.Println("done!")
 	return resp(http.StatusOK, map[string]interface{}{
 		"steam_id":         steamID,
 		"query_limit":      queryLimit,

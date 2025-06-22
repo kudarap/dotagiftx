@@ -8,6 +8,7 @@ import (
 	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/steam"
@@ -30,6 +31,7 @@ type Config struct {
 	Steam             steam.Config
 	Paypal            paypal.Config
 	Log               logging.Config
+	Phantasm          phantasm.Config
 	DiscordWebhookURL string `envconfig:"DISCORD_WEBHOOK_URL"`
 }
 
