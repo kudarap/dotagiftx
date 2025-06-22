@@ -24,16 +24,6 @@ func (d *data) isExpired() bool {
 	return time.Now().Unix() > d.Expr
 }
 
-func newData(val interface{}, d time.Duration) ([]byte, error) {
-	t := time.Now().Add(d).Unix()
-	c := &data{val, t}
-	b, err := json.Marshal(c)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
 func Get(key string) (val interface{}, err error) {
 	path := filename(key)
 	b, err := os.ReadFile(path)
@@ -66,7 +56,15 @@ func Set(key string, val interface{}, expr time.Duration) error {
 	}
 	fmt.Println(string(d))
 
-	if err = os.WriteFile(path, d, 0666); err != nil {
+	//if err = os.WriteFile(path, d, 0666); err != nil {
+	//	return err
+	//}
+
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	if _, err = f.Write(d); err != nil {
 		return err
 	}
 
@@ -77,6 +75,16 @@ func Set(key string, val interface{}, expr time.Duration) error {
 func Del(key string) error {
 	path := filename(key)
 	return os.Remove(path)
+}
+
+func newData(val interface{}, d time.Duration) ([]byte, error) {
+	t := time.Now().Add(d).Unix()
+	c := &data{val, t}
+	b, err := json.Marshal(c)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 func filename(key string) string {

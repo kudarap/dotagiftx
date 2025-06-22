@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -11,7 +10,7 @@ import (
 func handlePhantasmWebhook(svc *phantasm.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "steam_id")
-		if err := svc.SaveInventory(context.Background(), id, r.Body); err != nil {
+		if err := svc.SaveInventory(r.Context(), id, r.Body); err != nil {
 			respondError(w, err)
 			return
 		}
