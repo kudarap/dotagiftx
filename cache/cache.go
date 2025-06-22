@@ -2,6 +2,7 @@ package cache
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -23,11 +24,14 @@ func (d *data) isExpired() bool {
 	return time.Now().Unix() > d.Expr
 }
 
-func newData(val interface{}, d time.Duration) []byte {
+func newData(val interface{}, d time.Duration) ([]byte, error) {
 	t := time.Now().Add(d).Unix()
 	c := &data{val, t}
-	b, _ := json.Marshal(c)
-	return b
+	b, err := json.Marshal(c)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 func Get(key string) (val interface{}, err error) {
@@ -54,8 +58,15 @@ func Get(key string) (val interface{}, err error) {
 
 func Set(key string, val interface{}, expr time.Duration) error {
 	path := filename(key)
-	err := os.WriteFile(path, newData(val, expr), 0666)
+	fmt.Println("cache set:", path)
+
+	d, err := newData(val, expr)
 	if err != nil {
+		return err
+	}
+	fmt.Println(string(d))
+
+	if err = os.WriteFile(path, d, 0666); err != nil {
 		return err
 	}
 

@@ -51,6 +51,15 @@ func (s *Service) SaveInventory(ctx context.Context, steamID string, r io.ReadCl
 	if err := fastjson.NewDecoder(r).Decode(&inventory); err != nil {
 		return fmt.Errorf("could not parse json form: %s", err)
 	}
+	defer func() {
+		if err := r.Close(); err != nil {
+			fmt.Printf("phantasm save inventory close reader: %s", err)
+		}
+	}()
+
+	fmt.Printf("saving inventory %s\n", steamID)
+	fmt.Printf("caching prefix %s\n", s.cachePrefix)
+	fmt.Printf("caching ttl %s\n", s.cacheTTL)
 
 	k := s.cacheKey(steamID)
 	if err := localcache.Set(k, inventory, s.cacheTTL); err != nil {
