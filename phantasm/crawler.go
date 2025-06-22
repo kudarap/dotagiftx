@@ -1,3 +1,6 @@
+// Phantasm crawler code block can be paste on serverless function.
+// Warning! Remember to replace package phantasm to package main
+
 package phantasm
 
 import (
@@ -89,7 +92,7 @@ type Inventory struct {
 	Descriptions        []Description `json:"descriptions"`
 	TotalInventoryCount int           `json:"total_inventory_count"`
 
-	LastAssetID string `json:"last_asset_id"`
+	LastAssetID string `json:"last_assetid"`
 	MoreItems   int    `json:"more_items"`
 	Rwgrsn      int    `json:"rwgrsn"`
 	Success     int    `json:"success"`
