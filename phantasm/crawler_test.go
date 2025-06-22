@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/kudarap/dotagiftx/steam"
 )
 
 func Test_merge_verify(t *testing.T) {
@@ -47,6 +48,9 @@ func Test_merge_pagination(t *testing.T) {
 	for _, inv := range invs[1:] {
 		merged = merge(merged, inv)
 	}
+	if merged == nil {
+		t.Fatal("merged is nil")
+	}
 
 	missing := checkMissingAssetDesc(merged)
 	if len(missing) > 0 {
@@ -60,7 +64,39 @@ func Test_merge_pagination(t *testing.T) {
 }
 
 func Test_asset(t *testing.T) {
+	want := steam.Asset{
+		AssetID:      "25849568154",
+		ClassID:      "5085318155",
+		InstanceID:   "782678640",
+		Qty:          1,
+		Name:         "Dirge Amplifier",
+		Image:        "icon_url_large",
+		Type:         "Mythical Bundle",
+		Hero:         "Undying",
+		GiftFrom:     "",
+		Contains:     "",
+		DateReceived: "",
+		Dedication:   "",
+		GiftOnce:     true,
+		NotTradable:  true,
+		Descriptions: []string{
+			"Used By: Undying",
+			" ",
+			"( Not Tradable )",
+			"( This item may be gifted once )",
+		},
+	}
 
+	invs, err := parseInventoryFiles("./testdata/base_model.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	compat := invs[0].compat()
+	assets := compat.ToAssets()
+
+	if diff := cmp.Diff(want, assets[0]); diff != "" {
+		t.Fatalf("mismatch (-want +got):\n%s", diff)
+	}
 }
 
 func checkMissingAssetDesc(inv *Inventory) []string {

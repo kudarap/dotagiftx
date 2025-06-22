@@ -29,6 +29,7 @@ func main() {
 	}{
 		{"76561198088587178", "Tribal Pathways"},
 		{"76561198088587178", "Cannonroar Confessor"},
+		{"76561198088587178", "Dirge Amplifier"},
 		{"76561198088587178", "Chines of the Inquisitor"},
 		{"76561198086152168", "Tribal Pathways"},
 		{"76561198086152168", "Cannonroar Confessor"},
