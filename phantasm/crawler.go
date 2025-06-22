@@ -140,8 +140,10 @@ func merge(res ...*inventory) *inventory {
 		}
 		inv.TotalInventoryCount = r.TotalInventoryCount
 		inv.Assets = append(inv.Assets, r.Assets...)
+
+		// map reduced descriptions across inventory.
 		for _, d := range r.Descriptions {
-			key := d.Classid
+			key := d.Classid + "-" + d.Instanceid
 			_, ok := classIdx[key]
 			if !ok {
 				classIdx[key] = struct{}{} // mark done

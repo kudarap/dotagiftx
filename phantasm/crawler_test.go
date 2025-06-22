@@ -34,7 +34,13 @@ func Test_merge_verify(t *testing.T) {
 }
 
 func Test_merge_pagination(t *testing.T) {
-	invs, err := parseInventoryFiles("./testdata/inventory_raw.json", "./testdata/inventory_reduced.json")
+	invs, err := parseInventoryFiles(
+		"./testdata/inventory_paginated_reduced.json",
+		"./testdata/inventory_paginated_1.json",
+		"./testdata/inventory_paginated_2.json",
+		"./testdata/inventory_paginated_3.json",
+		"./testdata/inventory_paginated_4.json",
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,8 +49,9 @@ func Test_merge_pagination(t *testing.T) {
 	merged := merge(invs[1:]...)
 	missing := checkMissingAssetDesc(merged)
 	if len(missing) > 0 {
-		t.Fatalf("raw missing asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
+		t.Fatalf("merged missing asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
 	}
+
 	missing = checkMissingAssetDesc(reduced)
 	if len(missing) > 0 {
 		t.Fatalf("reduced missing asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
@@ -56,7 +63,7 @@ func checkMissingAssetDesc(inv *inventory) []string {
 	for _, ass := range inv.Assets {
 		var found bool
 		for _, desc := range inv.Descriptions {
-			if ass.Classid == desc.Classid {
+			if ass.Classid == desc.Classid && ass.Instanceid == desc.Instanceid {
 				found = true
 				break
 			}
@@ -65,7 +72,7 @@ func checkMissingAssetDesc(inv *inventory) []string {
 			missing = append(missing, ass.Assetid)
 			for _, desc := range inv.Descriptions {
 				if ass.Classid == desc.Classid {
-					fmt.Println(ass.Assetid, desc.Name)
+					fmt.Println(ass.Assetid, desc.Name, ass.Classid, ass.Instanceid)
 					break
 				}
 			}
