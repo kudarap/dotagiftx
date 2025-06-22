@@ -70,6 +70,7 @@ func Set(key string, val interface{}, expr time.Duration) error {
 		return err
 	}
 
+	fmt.Println("WriteFile!")
 	return nil
 }
 
