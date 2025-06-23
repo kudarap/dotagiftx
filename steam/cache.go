@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dotagiftx/cache"
+	"github.com/kudarap/dotagiftx/filecache"
 )
 
 const (
@@ -12,10 +12,10 @@ const (
 	cachePrefix = "steam"
 )
 
-// InventoryAsset returns a compact format from all
+// InventoryAssetWithCache returns a compact format from all
 // inventory data with cache.
 func InventoryAssetWithCache(steamID string) ([]Asset, error) {
-	hit, err := cache.Get(getCacheKey(steamID))
+	hit, err := filecache.Get(getCacheKey(steamID))
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func InventoryAssetWithCache(steamID string) ([]Asset, error) {
 		return nil, err
 	}
 
-	if err = cache.Set(getCacheKey(steamID), asset, cacheExpr); err != nil {
+	if err = filecache.Set(getCacheKey(steamID), asset, cacheExpr); err != nil {
 		return nil, err
 	}
 

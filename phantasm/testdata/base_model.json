@@ -1,0 +1,89 @@
+{
+  "assets": [
+    {
+      "amount": "1",
+      "appid": 570,
+      "assetid": "25849568154",
+      "classid": "5085318155",
+      "contextid": "2",
+      "instanceid": "782678640"
+    }
+  ],
+  "descriptions": [
+    {
+      "appid": 570,
+      "background_color": "",
+      "classid": "5085318155",
+      "commodity": 0,
+      "currency": 0,
+      "descriptions": [
+        {
+          "name": "attribute",
+          "type": "html",
+          "value": "Used By: Undying"
+        },
+        {
+          "name": "attribute",
+          "type": "html",
+          "value": " "
+        },
+        {
+          "name": "attribute",
+          "type": "html",
+          "value": "( Not Tradable )"
+        },
+        {
+          "name": "attribute",
+          "type": "html",
+          "value": "( This item may be gifted once )"
+        }
+      ],
+      "icon_url": "icon_url",
+      "icon_url_large": "icon_url_large",
+      "instanceid": "782678640",
+      "market_hash_name": "Dirge Amplifier",
+      "market_marketable_restriction": 0,
+      "market_name": "Dirge Amplifier",
+      "market_tradable_restriction": 7,
+      "marketable": 0,
+      "name": "Dirge Amplifier",
+      "name_color": "D2D2D2",
+      "tags": [
+        {
+          "category": "Quality",
+          "color": "D2D2D2",
+          "internal_name": "unique",
+          "localized_category_name": "Quality",
+          "localized_tag_name": "Standard"
+        },
+        {
+          "category": "Rarity",
+          "color": "8847ff",
+          "internal_name": "Rarity_Mythical",
+          "localized_category_name": "Rarity",
+          "localized_tag_name": "Mythical"
+        },
+        {
+          "category": "Type",
+          "internal_name": "bundle",
+          "localized_category_name": "Type",
+          "localized_tag_name": "Bundle"
+        },
+        {
+          "category": "Slot",
+          "internal_name": "none",
+          "localized_category_name": "Slot",
+          "localized_tag_name": "N/A"
+        },
+        {
+          "category": "Hero",
+          "internal_name": "npc_dota_hero_undying",
+          "localized_category_name": "Hero",
+          "localized_tag_name": "Undying"
+        }
+      ],
+      "tradable": 0,
+      "type": "Mythical Bundle"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
 )
@@ -36,6 +37,7 @@ func NewServer(
 	rs dotagiftx.ReportService,
 	hs dotagiftx.HammerService,
 	sc dotagiftx.SteamClient,
+	ps *phantasm.Service,
 	t *tracing.Tracer,
 	c dotagiftx.Cache,
 	v *dotagiftx.Version,
@@ -43,21 +45,22 @@ func NewServer(
 ) *Server {
 	SigKey = sigKey
 	return &Server{
-		divineKey: divineKey,
-		userSvc:   us,
-		authSvc:   au,
-		imageSvc:  is,
-		itemSvc:   its,
-		marketSvc: ms,
-		trackSvc:  ts,
-		statsSvc:  ss,
-		reportSvc: rs,
-		hammerSvc: hs,
-		steam:     sc,
-		tracing:   t,
-		cache:     c,
-		logger:    l,
-		version:   v,
+		divineKey:   divineKey,
+		userSvc:     us,
+		authSvc:     au,
+		imageSvc:    is,
+		itemSvc:     its,
+		marketSvc:   ms,
+		trackSvc:    ts,
+		statsSvc:    ss,
+		reportSvc:   rs,
+		hammerSvc:   hs,
+		steam:       sc,
+		phantasmSvc: ps,
+		tracing:     t,
+		cache:       c,
+		logger:      l,
+		version:     v,
 	}
 }
 
@@ -77,6 +80,8 @@ type Server struct {
 	reportSvc dotagiftx.ReportService
 	hammerSvc dotagiftx.HammerService
 	steam     dotagiftx.SteamClient
+
+	phantasmSvc *phantasm.Service
 
 	tracing *tracing.Tracer
 	cache   dotagiftx.Cache

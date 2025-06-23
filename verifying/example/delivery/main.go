@@ -24,7 +24,7 @@ func main() {
 		fmt.Println(time.Now().Sub(ts))
 	}()
 
-	items, _ := getDelivered()
+	items, _ := getDelivered(1)
 
 	for _, item := range items {
 		status, snaps, err := verifying.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
@@ -69,8 +69,8 @@ func main() {
 
 }
 
-func getDelivered() ([]dotagiftx.Market, error) {
-	resp, err := http.Get("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=1000&status=400")
+func getDelivered(limit int) ([]dotagiftx.Market, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400", limit))
 	if err != nil {
 		return nil, err
 	}

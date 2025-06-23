@@ -6,6 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -15,6 +16,7 @@ import (
 type RecheckInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
+	phantasmSvc  *phantasm.Service
 	logger       logging.Logger
 	// job settings
 	name     string
@@ -22,10 +24,10 @@ type RecheckInventory struct {
 	filter   dotagiftx.Inventory
 }
 
-func NewRecheckInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, lg logging.Logger) *RecheckInventory {
+func NewRecheckInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *RecheckInventory {
 	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}
 	return &RecheckInventory{
-		is, ms, lg,
+		is, ms, ps, lg,
 		"recheck_inventory", time.Hour, f}
 }
 
@@ -46,6 +48,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	src := steaminvorg.InventoryAssetWithCache
+	src = ri.phantasmSvc.InventoryAsset
 	invs, _, err := ri.inventorySvc.Inventories(opts)
 	if err != nil {
 		return err

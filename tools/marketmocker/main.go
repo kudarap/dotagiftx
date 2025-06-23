@@ -4,6 +4,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -148,7 +149,7 @@ func postMarket(p Payload) error {
 		return err
 	}
 	if res.StatusCode >= 400 {
-		err = fmt.Errorf(string(str))
+		err = errors.New(string(str))
 	}
 
 	be := time.Now()
