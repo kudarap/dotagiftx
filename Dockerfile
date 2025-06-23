@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.23-alpine3.20 AS builder
+FROM golang:1.24-alpine AS builder
 WORKDIR /code
 
 RUN apk add --no-cache git make
@@ -19,5 +19,5 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 COPY --from=builder /code/dotagiftx /api
 ENTRYPOINT ./api
-LABEL Name=dotagiftx Version=0.21.1
+LABEL Name=dotagiftx Version=0.22.0
 EXPOSE 80

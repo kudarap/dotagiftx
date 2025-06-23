@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 
+	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/discord"
-	"github.com/kudarap/dotagiftx/gokit/envconf"
-	"github.com/kudarap/dotagiftx/gokit/file"
-	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/gokit/version"
+	"github.com/kudarap/dotagiftx/file"
+	"github.com/kudarap/dotagiftx/hash"
 	"github.com/kudarap/dotagiftx/http"
+	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
@@ -21,12 +24,12 @@ import (
 
 const configPrefix = "DG"
 
-var logger = log.Default()
+var logger = logging.Default()
 
 func main() {
 	app := newApp()
 
-	v := version.New(false, tag, commit, built)
+	v := dotagiftx.NewVersion(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -49,7 +52,7 @@ func main() {
 }
 
 type application struct {
-	config Config
+	config config.Config
 	server *http.Server
 	logger *logrus.Logger
 
@@ -57,18 +60,20 @@ type application struct {
 }
 
 func (app *application) loadConfig() error {
-	envconf.EnvPrefix = configPrefix
-	if err := envconf.Load(&app.config); err != nil {
+	config.EnvPrefix = configPrefix
+	if err := config.Load(&app.config); err != nil {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
+	hash.Salt = app.config.SigKey
 	return nil
 }
 
 func (app *application) setup() error {
 	// Logs setup.
+	slogger := slog.Default()
 	logger.Println("setting up persistent logs...")
-	logSvc, err := log.New(app.config.Log)
+	logSvc, err := logging.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
@@ -139,6 +144,7 @@ func (app *application) setup() error {
 	reportSvc := service.NewReport(reportStg, discordClient)
 	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
@@ -163,6 +169,7 @@ func (app *application) setup() error {
 		reportSvc,
 		hammerSvc,
 		steamClient,
+		phantasmSvc,
 		traceSpan,
 		redisClient,
 		initVer(app.config),
@@ -189,8 +196,8 @@ func (app *application) run() error {
 	return app.server.Run()
 }
 
-func (app *application) contextLog(name string) log.Logger {
-	return log.WithPrefix(app.logger, name)
+func (app *application) contextLog(name string) logging.Logger {
+	return logging.WithPrefix(app.logger, name)
 }
 
 func newApp() *application {
@@ -217,7 +224,7 @@ func setupPaypal(cfg paypal.Config) (*paypal.Client, error) {
 	return c, nil
 }
 
-func setupFileManager(cfg Config) *file.Local {
+func setupFileManager(cfg config.Config) *file.Local {
 	c := cfg.Upload
 	return file.New(c.Path, c.Size, c.Types)
 }
@@ -275,7 +282,7 @@ func connRetry(name string, fn func() error) error {
 // version details used by ldflags.
 var tag, commit, built string
 
-func initVer(cfg Config) *version.Version {
-	v := version.New(cfg.Prod, tag, commit, built)
+func initVer(cfg config.Config) *dotagiftx.Version {
+	v := dotagiftx.NewVersion(cfg.Prod, tag, commit, built)
 	return v
 }

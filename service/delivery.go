@@ -4,21 +4,21 @@ import (
 	"context"
 	"log"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
 // NewDelivery returns new Delivery service.
-func NewDelivery(rs dgx.DeliveryStorage, ms dgx.MarketStorage) dgx.DeliveryService {
+func NewDelivery(rs dotagiftx.DeliveryStorage, ms dotagiftx.MarketStorage) dotagiftx.DeliveryService {
 	return &deliveryService{rs, ms}
 }
 
 type deliveryService struct {
-	deliveryStg dgx.DeliveryStorage
-	marketStg   dgx.MarketStorage
+	deliveryStg dotagiftx.DeliveryStorage
+	marketStg   dotagiftx.MarketStorage
 }
 
-func (s *deliveryService) Deliveries(opts dgx.FindOpts) ([]dgx.Delivery, *dgx.FindMetadata, error) {
+func (s *deliveryService) Deliveries(opts dotagiftx.FindOpts) ([]dotagiftx.Delivery, *dotagiftx.FindMetadata, error) {
 	res, err := s.deliveryStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -34,15 +34,15 @@ func (s *deliveryService) Deliveries(opts dgx.FindOpts) ([]dgx.Delivery, *dgx.Fi
 		return nil, nil, err
 	}
 
-	return res, &dgx.FindMetadata{
+	return res, &dotagiftx.FindMetadata{
 		ResultCount: len(res),
 		TotalCount:  tc,
 	}, nil
 }
 
-func (s *deliveryService) Delivery(id string) (*dgx.Delivery, error) {
+func (s *deliveryService) Delivery(id string) (*dotagiftx.Delivery, error) {
 	inv, err := s.deliveryStg.Get(id)
-	if err != nil && err != dgx.DeliveryErrNotFound {
+	if err != nil && err != dotagiftx.DeliveryErrNotFound {
 		return nil, err
 	}
 	if inv != nil {
@@ -53,13 +53,13 @@ func (s *deliveryService) Delivery(id string) (*dgx.Delivery, error) {
 	return s.deliveryStg.GetByMarketID(id)
 }
 
-func (s *deliveryService) DeliveryByMarketID(marketID string) (*dgx.Delivery, error) {
+func (s *deliveryService) DeliveryByMarketID(marketID string) (*dotagiftx.Delivery, error) {
 	return s.deliveryStg.GetByMarketID(marketID)
 }
 
-func (s *deliveryService) Set(_ context.Context, del *dgx.Delivery) error {
+func (s *deliveryService) Set(_ context.Context, del *dotagiftx.Delivery) error {
 	if err := del.CheckCreate(); err != nil {
-		return errors.New(dgx.DeliveryErrRequiredFields, err)
+		return errors.New(dotagiftx.DeliveryErrRequiredFields, err)
 	}
 
 	defer func() {
@@ -72,7 +72,7 @@ func (s *deliveryService) Set(_ context.Context, del *dgx.Delivery) error {
 	del = del.IsGiftOpened()
 
 	// Update market delivery status.
-	if err := s.marketStg.BaseUpdate(&dgx.Market{
+	if err := s.marketStg.BaseUpdate(&dotagiftx.Market{
 		ID:             del.MarketID,
 		DeliveryStatus: del.Status,
 	}); err != nil {

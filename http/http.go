@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	jsoniter "github.com/json-iterator/go"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/errors"
 )
 
@@ -37,7 +37,7 @@ type dataWithMeta struct {
 	TotalCount  int         `json:"total_count"`
 }
 
-func newDataWithMeta(data interface{}, md *dgx.FindMetadata) dataWithMeta {
+func newDataWithMeta(data interface{}, md *dotagiftx.FindMetadata) dataWithMeta {
 	return dataWithMeta{data, md.ResultCount, md.TotalCount}
 }
 
@@ -77,9 +77,9 @@ func respondError(w http.ResponseWriter, err error) {
 	if ok {
 		if cErr.Fatal {
 			status = http.StatusInternalServerError
-		} else if cErr.IsEqual(dgx.AuthErrNoAccess) {
+		} else if cErr.IsEqual(dotagiftx.AuthErrNoAccess) {
 			status = http.StatusUnauthorized
-		} else if cErr.IsEqual(dgx.AuthErrForbidden) {
+		} else if cErr.IsEqual(dotagiftx.AuthErrForbidden) {
 			status = http.StatusForbidden
 		}
 

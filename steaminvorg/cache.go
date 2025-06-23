@@ -7,7 +7,7 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	localcache "github.com/kudarap/dotagiftx/gokit/cache"
+	"github.com/kudarap/dotagiftx/filecache"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
@@ -21,7 +21,7 @@ const (
 // InventoryAssetWithCache returns a compact format from all inventory data with cache.
 func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 	log.Println("STEAMINVORG CHECK LOCAL CACHE")
-	hit, _ := localcache.Get(getCacheKey(steamID))
+	hit, _ := filecache.Get(getCacheKey(steamID))
 	if hit != nil {
 		log.Println("STEAMINVORG LOCAL CACHE HIT!")
 
@@ -38,7 +38,7 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 		return nil, err
 	}
 
-	if err = localcache.Set(getCacheKey(steamID), asset, getCacheExpr()); err != nil {
+	if err = filecache.Set(getCacheKey(steamID), asset, getCacheExpr()); err != nil {
 		log.Println("STEAMINVORG LOCAL CACHE SET ERROR", steamID, err)
 		return nil, err
 	}

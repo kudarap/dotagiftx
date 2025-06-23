@@ -31,7 +31,7 @@ const useStyles = makeStyles()(theme => ({
 export default function ItemViewCard({ item }) {
   const { classes } = useStyles()
 
-  const wikiLink = `https://dota2.gamepedia.com/${item.name.replace(/ +/gi, '_')}`
+  const wikiLink = `https://liquipedia.net/dota2/${item.name.replace(/ +/gi, '_')}`
   return (
     <Grid container spacing={1.5}>
       <Grid item className={classes.mediaContainer}>

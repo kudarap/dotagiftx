@@ -15,7 +15,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.23
+          go-version: 1.24
 
       #      - name: Install build dependencies
       #        run: go get golang.org/x/tools/cmd/stringer
@@ -26,7 +26,7 @@ jobs:
       - name: Test
         run: |
           go test -v ./
-          go test -v ./gokit/...
           go test -v ./http/...
           go test -v ./steam/...
+          go test -v ./phantasm/...
       #   go test -v ./verified/...

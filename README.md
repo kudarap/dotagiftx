@@ -1,13 +1,13 @@
 # DotagiftX
 
-Market place for giftable Dota 2 items
+Marketplace for giftable Dota 2 items
 
 ### Tech Stack
 
-- Go 1.23
+- Go 1.24
 - RethinkDB 2.4
-- Redis 6.2
-- Docker 20
+- Redis 8.0
+- Docker 28
 
 ### Architecture
 

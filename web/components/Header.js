@@ -29,6 +29,7 @@ import brandImage from '../public/brand_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
+import { isRecentTreasureNew } from 'pages/treasures'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -175,6 +176,20 @@ export default function Header() {
           </Link> */}
             <Link className={classes.nav} href="/treasures" underline="none">
               Treasures
+              {isRecentTreasureNew() && (
+                <span
+                  style={{
+                    color: 'yellowgreen',
+                    padding: '0 8px',
+                    position: 'absolute',
+                    fontSize: '0.6rem',
+                    display: 'block',
+                    marginTop: '-0.24rem',
+                    marginLeft: 1,
+                  }}>
+                  new release
+                </span>
+              )}
             </Link>
             <Link className={classes.nav} href="/plus" underline="none">
               Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>

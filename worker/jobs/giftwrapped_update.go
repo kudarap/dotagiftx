@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/log"
+	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
@@ -13,24 +14,25 @@ import (
 // GiftWrappedUpdate represents a job that will update delivered
 // items that still un-opened
 type GiftWrappedUpdate struct {
-	deliverySvc dgx.DeliveryService
-	deliveryStg dgx.DeliveryStorage
-	marketStg   dgx.MarketStorage
-	logger      log.Logger
+	deliverySvc dotagiftx.DeliveryService
+	deliveryStg dotagiftx.DeliveryStorage
+	marketStg   dotagiftx.MarketStorage
+	phantasmSvc *phantasm.Service
+	logger      logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dgx.Delivery
+	filter   dotagiftx.Delivery
 }
 
-func NewGiftWrappedUpdate(ds dgx.DeliveryService, dstg dgx.DeliveryStorage, ms dgx.MarketStorage, lg log.Logger) *GiftWrappedUpdate {
+func NewGiftWrappedUpdate(ds dotagiftx.DeliveryService, dstg dotagiftx.DeliveryStorage, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *GiftWrappedUpdate {
 	falsePtr := false
-	f := dgx.Delivery{
+	f := dotagiftx.Delivery{
 		GiftOpened: &falsePtr,
-		Status:     dgx.DeliveryStatusSenderVerified,
+		Status:     dotagiftx.DeliveryStatusSenderVerified,
 	}
 	return &GiftWrappedUpdate{
-		ds, dstg, ms, lg,
+		ds, dstg, ms, ps, lg,
 		"giftwrapped_update", time.Hour / 2, f}
 }
 
@@ -44,13 +46,14 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 		gw.logger.Println("GIFT WRAPPED UPDATE BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := dgx.FindOpts{Filter: gw.filter}
+	opts := dotagiftx.FindOpts{Filter: gw.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
 	opts.IndexKey = "status"
 
 	src := steaminvorg.InventoryAsset
+	src = gw.phantasmSvc.InventoryAsset
 	for {
 		deliveries, err := gw.deliveryStg.ToVerify(opts)
 		if err != nil {
@@ -81,7 +84,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 			}
 			gw.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
-			err = gw.deliverySvc.Set(ctx, &dgx.Delivery{
+			err = gw.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,
@@ -101,8 +104,8 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	}
 }
 
-func (gw *GiftWrappedUpdate) market(id string) (*dgx.Market, error) {
-	f := dgx.FindOpts{Filter: dgx.Market{ID: id}}
+func (gw *GiftWrappedUpdate) market(id string) (*dotagiftx.Market, error) {
+	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
 	markets, err := gw.marketStg.Find(f)
 	if err != nil {
 		return nil, err

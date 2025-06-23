@@ -6,25 +6,25 @@ import (
 	"reflect"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 )
 
-func hydrateStatsMarketSummaryX(cacheKey string, svc dgx.StatsService, cache dgx.Cache) {
-	filter := &dgx.Market{Type: dgx.MarketTypeAsk}
-	asks, err := svc.CountMarketStatus(dgx.FindOpts{Filter: filter})
+func hydrateStatsMarketSummaryX(cacheKey string, svc dotagiftx.StatsService, cache dotagiftx.Cache) {
+	filter := &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}
+	asks, err := svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter})
 	if err != nil {
 		return
 	}
 
-	filter.Type = dgx.MarketTypeBid
-	bids, err := svc.CountMarketStatus(dgx.FindOpts{Filter: filter})
+	filter.Type = dotagiftx.MarketTypeBid
+	bids, err := svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter})
 	if err != nil {
 		return
 	}
 
 	res := struct {
-		*dgx.MarketStatusCount
-		Bids *dgx.MarketStatusCount `json:"bids"`
+		*dotagiftx.MarketStatusCount
+		Bids *dotagiftx.MarketStatusCount `json:"bids"`
 	}{asks, bids}
 
 	if err = cache.Set(cacheKey, res, 0); err != nil {
@@ -32,7 +32,7 @@ func hydrateStatsMarketSummaryX(cacheKey string, svc dgx.StatsService, cache dgx
 	}
 }
 
-func handleStatsMarketSummary(svc dgx.StatsService, cache dgx.Cache) http.HandlerFunc {
+func handleStatsMarketSummary(svc dotagiftx.StatsService, cache dotagiftx.Cache) http.HandlerFunc {
 	const cacheKeyX = "stats_market_summary_exp"
 
 	go func() {
@@ -50,7 +50,7 @@ func handleStatsMarketSummary(svc dgx.StatsService, cache dgx.Cache) http.Handle
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		//cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
-		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -58,18 +58,18 @@ func handleStatsMarketSummary(svc dgx.StatsService, cache dgx.Cache) http.Handle
 			}
 		}
 
-		f := &dgx.Market{}
+		f := &dotagiftx.Market{}
 		if err := findOptsFilter(r.URL, f); err != nil {
 			respondError(w, err)
 			return
 		}
 		// Use hydration when getting all market status
-		if reflect.DeepEqual(f, &dgx.Market{}) {
+		if reflect.DeepEqual(f, &dotagiftx.Market{}) {
 			hit, _ := cache.Get(cacheKeyX)
 			if hit == "" {
 				respondOK(w, struct {
-					*dgx.MarketStatusCount
-					Bids *dgx.MarketStatusCount `json:"bids"`
+					*dotagiftx.MarketStatusCount
+					Bids *dotagiftx.MarketStatusCount `json:"bids"`
 				}{})
 				return
 			}
@@ -78,8 +78,8 @@ func handleStatsMarketSummary(svc dgx.StatsService, cache dgx.Cache) http.Handle
 		}
 
 		var err error
-		var asks *dgx.MarketStatusCount
-		var bids *dgx.MarketStatusCount
+		var asks *dotagiftx.MarketStatusCount
+		var bids *dotagiftx.MarketStatusCount
 
 		// check for user mode
 		if f.UserID != "" {
@@ -89,19 +89,19 @@ func handleStatsMarketSummary(svc dgx.StatsService, cache dgx.Cache) http.Handle
 				return
 			}
 			asks = stats
-			bids = &dgx.MarketStatusCount{
+			bids = &dotagiftx.MarketStatusCount{
 				BidLive:      stats.BidLive,
 				BidCompleted: stats.BidCompleted,
 			}
 		} else {
-			f.Type = dgx.MarketTypeAsk
-			asks, err = svc.CountMarketStatus(dgx.FindOpts{Filter: f})
+			f.Type = dotagiftx.MarketTypeAsk
+			asks, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: f})
 			if err != nil {
 				respondError(w, err)
 				return
 			}
-			f.Type = dgx.MarketTypeBid
-			bids, err = svc.CountMarketStatus(dgx.FindOpts{Filter: f})
+			f.Type = dotagiftx.MarketTypeBid
+			bids, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: f})
 			if err != nil {
 				respondError(w, err)
 				return
@@ -109,8 +109,8 @@ func handleStatsMarketSummary(svc dgx.StatsService, cache dgx.Cache) http.Handle
 		}
 
 		res := struct {
-			*dgx.MarketStatusCount
-			Bids *dgx.MarketStatusCount `json:"bids"`
+			*dotagiftx.MarketStatusCount
+			Bids *dotagiftx.MarketStatusCount `json:"bids"`
 		}{asks, bids}
 
 		go cache.Set(cacheKey, res, time.Hour)
@@ -118,11 +118,11 @@ func handleStatsMarketSummary(svc dgx.StatsService, cache dgx.Cache) http.Handle
 	}
 }
 
-func handleGraphMarketSales(svc dgx.StatsService, cache dgx.Cache) http.HandlerFunc {
+func handleGraphMarketSales(svc dotagiftx.StatsService, cache dotagiftx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		//cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
-		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -130,13 +130,13 @@ func handleGraphMarketSales(svc dgx.StatsService, cache dgx.Cache) http.HandlerF
 			}
 		}
 
-		f := &dgx.Market{}
+		f := &dotagiftx.Market{}
 		if err := findOptsFilter(r.URL, f); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		res, err := svc.GraphMarketSales(dgx.FindOpts{Filter: f})
+		res, err := svc.GraphMarketSales(dotagiftx.FindOpts{Filter: f})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -150,18 +150,18 @@ func handleGraphMarketSales(svc dgx.StatsService, cache dgx.Cache) http.HandlerF
 
 const statsCacheExpr = time.Hour
 
-func handleStatsTopOrigins(itemSvc dgx.ItemService, cache dgx.Cache) http.HandlerFunc {
+func handleStatsTopOrigins(itemSvc dotagiftx.ItemService, cache dotagiftx.Cache) http.HandlerFunc {
 	return topStatsBaseHandler(itemSvc.TopOrigins, cache)
 }
 
-func handleStatsTopHeroes(itemSvc dgx.ItemService, cache dgx.Cache) http.HandlerFunc {
+func handleStatsTopHeroes(itemSvc dotagiftx.ItemService, cache dotagiftx.Cache) http.HandlerFunc {
 	return topStatsBaseHandler(itemSvc.TopHeroes, cache)
 }
 
-func handleStatsTopKeywords(statsSvc dgx.StatsService, cache dgx.Cache) http.HandlerFunc {
+func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache dotagiftx.Cache) http.HandlerFunc {
 	const expiration = time.Hour * 12
 	return func(w http.ResponseWriter, r *http.Request) {
-		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -180,10 +180,10 @@ func handleStatsTopKeywords(statsSvc dgx.StatsService, cache dgx.Cache) http.Han
 	}
 }
 
-func topStatsBaseHandler(fn func() ([]string, error), cache dgx.Cache) http.HandlerFunc {
+func topStatsBaseHandler(fn func() ([]string, error), cache dotagiftx.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dgx.CacheKeyFromRequest(r)
+		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)

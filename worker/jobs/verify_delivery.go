@@ -4,27 +4,29 @@ import (
 	"context"
 	"time"
 
-	dgx "github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/gokit/log"
+	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
 
 // VerifyDelivery represents a delivery verification job.
 type VerifyDelivery struct {
-	deliverySvc dgx.DeliveryService
-	marketStg   dgx.MarketStorage
-	logger      log.Logger
+	deliverySvc dotagiftx.DeliveryService
+	marketStg   dotagiftx.MarketStorage
+	phantasmSvc *phantasm.Service
+	logger      logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dgx.Market
+	filter   dotagiftx.Market
 }
 
-func NewVerifyDelivery(ds dgx.DeliveryService, ms dgx.MarketStorage, lg log.Logger) *VerifyDelivery {
-	f := dgx.Market{Type: dgx.MarketTypeAsk, Status: dgx.MarketStatusSold}
+func NewVerifyDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *VerifyDelivery {
+	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &VerifyDelivery{
-		ds, ms, lg,
+		ds, ms, ps, lg,
 		"verify_delivery", time.Hour * 24, f}
 }
 
@@ -38,12 +40,15 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 		vd.logger.Println("VERIFIED DELIVERY BENCHMARK TIME", time.Since(bs))
 	}()
 
-	opts := dgx.FindOpts{Filter: vd.filter}
-	opts.Sort = "updated_at:desc"
+	opts := dotagiftx.FindOpts{Filter: vd.filter}
+	opts.IndexSorting = true
+	opts.Sort = "updated_at"
+	opts.Desc = true
 	opts.Limit = 10
 	opts.Page = 0
 
 	src := steaminvorg.InventoryAsset
+	src = vd.phantasmSvc.InventoryAsset
 	for {
 		res, err := vd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {
@@ -52,8 +57,8 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 
 		for _, mkt := range res {
 			// Skip verified statuses.
-			if mkt.DeliveryStatus == dgx.DeliveryStatusNameVerified ||
-				mkt.DeliveryStatus == dgx.DeliveryStatusSenderVerified {
+			if mkt.DeliveryStatus == dotagiftx.DeliveryStatusNameVerified ||
+				mkt.DeliveryStatus == dotagiftx.DeliveryStatusSenderVerified {
 				continue
 			}
 
@@ -68,7 +73,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			}
 			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
-			err = vd.deliverySvc.Set(ctx, &dgx.Delivery{
+			err = vd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID: mkt.ID,
 				Status:   status,
 				Assets:   assets,

@@ -8,15 +8,15 @@ import (
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
-	dgx "github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx"
 )
 
 var fastjson = jsoniter.ConfigFastest
 
 var ErrInventoryPrivate = errors.New("profile inventory is private")
 
-// Asset represents compact inventory base of RawInventory model.
-type Asset = dgx.SteamAsset
+// Asset represents a compact inventory base of RawInventory model.
+type Asset = dotagiftx.SteamAsset
 
 // InventoryAsset returns a compact format from raw inventory data.
 func InventoryAsset(steamID string) ([]Asset, error) {
@@ -37,7 +37,7 @@ func assetParser(r io.Reader) ([]Asset, error) {
 		return nil, ErrInventoryPrivate
 	}
 	if raw.Error != "" {
-		return nil, fmt.Errorf(raw.Error)
+		return nil, errors.New(raw.Error)
 	}
 
 	return raw.ToAssets(), nil
@@ -57,25 +57,27 @@ type assetIDQty struct {
 func (i *AllInventory) ToAssets() []Asset {
 	// Collate asset and instance ids for qty reference later.
 	assetIDs := map[string]assetIDQty{}
-	for _, aa := range i.AllInvs {
-		row, ok := assetIDs[aa.ClassID]
+	for _, asset := range i.AllInvs {
+		key := asset.ClassID + "-" + asset.InstanceID
+
+		row, ok := assetIDs[key]
 		if !ok {
-			assetIDs[aa.ClassID] = assetIDQty{
-				aa.AssetID, []string{aa.InstanceID},
+			assetIDs[key] = assetIDQty{
+				asset.AssetID, []string{asset.InstanceID},
 			}
 			continue
 		}
 
 		// add new instance id
-		row.InstanceIDs = append(row.InstanceIDs, aa.InstanceID)
-		assetIDs[aa.ClassID] = row
+		row.InstanceIDs = append(row.InstanceIDs, asset.InstanceID)
+		assetIDs[key] = row
 	}
 
 	// Composes and collect inventory on flat format.
 	var assets []Asset
-	for _, dd := range i.AllDescs {
-		ids := assetIDs[dd.ClassID]
-		a := dd.ToAsset()
+	for _, desc := range i.AllDescs {
+		ids := assetIDs[desc.ClassID+"-"+desc.InstanceID]
+		a := desc.ToAsset()
 		a.AssetID = ids.AssetID
 		a.Qty = len(ids.InstanceIDs)
 		assets = append(assets, a)

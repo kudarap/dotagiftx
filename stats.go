@@ -1,9 +1,9 @@
-package dgx
+package dotagiftx
 
 import "time"
 
 type (
-	// MarketStatusCount represents total number of records per status.
+	// MarketStatusCount represents the total number of records per status.
 	MarketStatusCount struct {
 		Pending   int `json:"pending"   db:"pending"`
 		Live      int `json:"live"      db:"live"`

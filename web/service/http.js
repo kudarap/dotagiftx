@@ -14,7 +14,7 @@ const defaultRequestOpts = {
   mode: 'cors',
   // signal: controller.signal,
   headers: {
-    'Content-Type': 'application/json; charset=utf-8',
+    'Content-Type': 'application/json; charSet=utf-8',
   },
 }
 

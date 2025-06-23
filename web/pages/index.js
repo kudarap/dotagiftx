@@ -117,7 +117,7 @@ export default function Index({ marketSummary, trendingItems }) {
   return (
     <>
       <Head>
-        <meta charset="UTF-8" />
+        <meta charSet="UTF-8" />
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
         <link rel="canonical" href={APP_URL} />
@@ -142,8 +142,8 @@ export default function Index({ marketSummary, trendingItems }) {
         <div
           style={{
             width: '100%',
-            height: 340,
-            marginBottom: 500 - 340,
+            height: 640,
+            marginBottom: 500 - 640,
             maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
@@ -151,21 +151,32 @@ export default function Index({ marketSummary, trendingItems }) {
           }}>
           <div
             style={{
-              background: 'url(/assets/ti_ringmaster_banner.png) no-repeat center center',
-              // background: 'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/international2024/esports_site/footer_bg01.png) no-repeat center center',
+              // background:
+              // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
+              background:
+                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/springcleaning2025/header/header_background.jpg) repeat-x center 0',
               backgroundColor: '#263238',
               backgroundSize: 'cover',
-              backgroundPositionY: -120,
+              // backgroundPositionY: -60,
               width: '100%',
               height: '100%',
-            }}></div>
+            }}>
+            <img
+              src="https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react//springcleaning2025/header/header_hero.png"
+              style={{
+                width: '40%',
+                margin: '-10% 30%',
+                position: 'absolute',
+              }}
+            />
+          </div>
         </div>
 
         <Container
           sx={{
             mt: {
-              md: -35,
-              xs: -61,
+              md: -52,
+              xs: -78,
             },
             position: 'relative',
           }}>

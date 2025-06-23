@@ -7,16 +7,22 @@ LDFLAGS="-X main.tag=`cat VERSION` \
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
-all: install build
+all: test build build-linux build-worker build-worker-linux
 
 install:
 	go get ./...
 
-run: generate build
+run: test build
 	./$(PROJECTNAME)
 
-run-worker: generate build-worker
+run-worker: test build-worker
 	./dxworker
+
+test: generate fmt
+	go test -v ./
+	go test -v ./http/...
+	go test -v ./steam/...
+	go test -v ./phantasm/...
 
 build:
 	go build -v -ldflags=$(LDFLAGS) -o $(PROJECTNAME) ./cmd/$(PROJECTNAME)
@@ -32,6 +38,9 @@ build-worker-linux:
 generate:
 	go generate .
 
+fmt:
+	gofmt -s -l -e -w .
+
 docker-build:
 	docker build -t $(PROJECTNAME) .
 docker-run:
@@ -39,3 +48,6 @@ docker-run:
 
 web-build:
 	cd ./web && yarn dev && cd ..
+
+local:
+	docker-compose up

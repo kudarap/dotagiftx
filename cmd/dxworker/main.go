@@ -2,13 +2,15 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/kudarap/dotagiftx/gokit/envconf"
-	"github.com/kudarap/dotagiftx/gokit/log"
-	"github.com/kudarap/dotagiftx/gokit/version"
+	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/config"
+	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
@@ -20,12 +22,12 @@ import (
 
 const configPrefix = "DG"
 
-var logger = log.Default()
+var logger = logging.Default()
 
 func main() {
 	app := newApp()
 
-	v := version.New(false, tag, commit, built)
+	v := dotagiftx.NewVersion(false, tag, commit, built)
 	logger.Println("version:", v.Tag)
 	logger.Println("hash:", v.Commit)
 	logger.Println("built:", v.Built)
@@ -48,17 +50,17 @@ func main() {
 }
 
 type application struct {
-	config  Config
+	config  config.Config
 	worker  *worker.Worker
 	logger  *logrus.Logger
-	version *version.Version
+	version *dotagiftx.Version
 
 	closerFn func()
 }
 
 func (app *application) loadConfig() error {
-	envconf.EnvPrefix = configPrefix
-	if err := envconf.Load(&app.config); err != nil {
+	config.EnvPrefix = configPrefix
+	if err := config.Load(&app.config); err != nil {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
@@ -68,7 +70,7 @@ func (app *application) loadConfig() error {
 func (app *application) setup() error {
 	// Logs setup.
 	logger.Println("setting up persistent logs...")
-	logSvc, err := log.New(app.config.Log)
+	logSvc, err := logging.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
 	}
@@ -103,48 +105,54 @@ func (app *application) setup() error {
 	logSvc.Println("setting up services...")
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
+	slogger := slog.Default()
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
 
 	// Setup application worker
-	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc)
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, phantasmSvc)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
-		inventorySvc, marketStg, log.WithPrefix(logger, "job_recheck_inventory"),
+		inventorySvc, marketStg, phantasmSvc, logging.WithPrefix(logger, "job_recheck_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyInventory(
 		inventorySvc,
 		marketStg,
-		log.WithPrefix(logger, "job_verify_inventory"),
+		phantasmSvc,
+		logging.WithPrefix(logger, "job_verify_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyDelivery(
 		deliverySvc,
 		marketStg,
-		log.WithPrefix(logger, "job_verify_delivery"),
+		phantasmSvc,
+		logging.WithPrefix(logger, "job_verify_delivery"),
 	))
 	app.worker.AddJob(jobs.NewGiftWrappedUpdate(
 		deliverySvc,
 		deliveryStg,
 		marketStg,
-		log.WithPrefix(logger, "job_giftwrapped_update"),
+		phantasmSvc,
+		logging.WithPrefix(logger, "job_giftwrapped_update"),
 	))
 	app.worker.AddJob(jobs.NewRevalidateDelivery(
 		deliverySvc,
 		marketStg,
-		log.WithPrefix(logger, "job_revalidate_delivery"),
+		phantasmSvc,
+		logging.WithPrefix(logger, "job_revalidate_delivery"),
 	))
 	app.worker.AddJob(jobs.NewExpiringSubscription(
 		userStg,
 		redisClient,
-		log.WithPrefix(logger, "job_expiring_subscription"),
+		logging.WithPrefix(logger, "job_expiring_subscription"),
 	))
 	app.worker.AddJob(jobs.NewExpiringMarket(
 		marketStg,
 		catalogStg,
 		redisClient,
-		log.WithPrefix(logger, "job_expiring_market"),
+		logging.WithPrefix(logger, "job_expiring_market"),
 	))
 	app.worker.AddJob(jobs.NewSweepMarket(
-		marketStg, log.WithPrefix(logger, "job_sweep_market"),
+		marketStg, logging.WithPrefix(logger, "job_sweep_market"),
 	))
 
 	app.closerFn = func() {
@@ -176,8 +184,8 @@ func (app *application) run() error {
 	return nil
 }
 
-func (app *application) contextLog(name string) log.Logger {
-	return log.WithPrefix(app.logger, name)
+func (app *application) contextLog(name string) logging.Logger {
+	return logging.WithPrefix(app.logger, name)
 }
 
 func newApp() *application {

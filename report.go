@@ -1,4 +1,4 @@
-package dgx
+package dotagiftx
 
 import (
 	"context"
@@ -35,11 +35,10 @@ const (
 )
 
 type (
-	// Represents report types.
+	// ReportType report types.
 	ReportType uint
 
-	// Report represents feedback from user or system that can
-	// be use on survey and bug reporting.
+	// Report represents feedback from user or system that can be used on survey and bug reporting.
 	Report struct {
 		ID        string     `json:"id"         db:"id,omitempty"`
 		UserID    string     `json:"user_id"    db:"user_id,omitempty"`
