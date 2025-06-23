@@ -57,6 +57,8 @@ type Service struct {
 
 	electedCrawlerID int
 	retryAfter       map[string]time.Time
+	crawlerCoolAfter map[string]time.Time
+	crawlerCooldown  time.Duration
 }
 
 func NewService(config Config, logger *slog.Logger) *Service {
@@ -65,12 +67,14 @@ func NewService(config Config, logger *slog.Logger) *Service {
 	}
 
 	return &Service{
-		config:      config,
-		cachePrefix: "phantasm",
-		cacheTTL:    time.Hour,
-		maxAge:      time.Hour * 12,
-		logger:      logger,
-		retryAfter:  map[string]time.Time{},
+		config:           config,
+		cachePrefix:      "phantasm",
+		cacheTTL:         time.Hour,
+		maxAge:           time.Hour * 12,
+		logger:           logger,
+		retryAfter:       map[string]time.Time{},
+		crawlerCoolAfter: map[string]time.Time{},
+		crawlerCooldown:  time.Minute,
 	}
 }
 
@@ -103,6 +107,8 @@ func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, bod
 }
 
 func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
+	s.logger.Info("status", "retryAfter", s.retryAfter, "crawlerCoolAfter", s.crawlerCoolAfter)
+
 	ctx := context.Background()
 	raw, err := s.autoRetry(ctx, steamID)
 	if err != nil {
@@ -142,7 +148,7 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, er
 		for i := range 5 {
 			wait := time.Duration(i+1) * time.Second
 			time.Sleep(wait)
-			s.logger.Info("retrying steam", "attempt", i, "steamid", steamID, "waiting", wait)
+			s.logger.Info("retrying steam", "attempt", i+1, "steamid", steamID, "waiting", wait)
 			inventory, err = s.rawInventory(ctx, steamID)
 			if err != nil && !errors.Is(err, errFileNotFound) {
 				return nil, err
@@ -154,28 +160,48 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, er
 	if err != nil {
 		return nil, err
 	}
+
+	// clear retry
+	crawlerURL := s.config.Addrs[s.electedCrawlerID]
+	crawlerID := crawlerName(crawlerURL)
+	retryID := crawlerID + "-" + steamID
+	delete(s.retryAfter, retryID)
 	return inventory, nil
 }
 
-func crawlerName(addr string) string {
-	ss := strings.Split(addr, "/")
-	return ss[len(ss)-1]
+func (s *Service) electNewCrawler() {
+	current := s.config.Addrs[s.electedCrawlerID]
+	id := crawlerName(current)
+	if _, ok := s.crawlerCoolAfter[id]; !ok {
+		s.crawlerCoolAfter[id] = time.Now().Add(s.crawlerCooldown)
+		s.electedCrawlerID++
+		if s.electedCrawlerID >= len(s.config.Addrs) {
+			s.electedCrawlerID = 0
+		}
+	}
 }
 
 func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
+	timeNow := time.Now()
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
 	crawlerID := crawlerName(crawlerURL)
 	s.logger.InfoContext(ctx, "elected crawler", "crawler", crawlerID, "steamID", steamID)
+
+	// check if crawler is ready
+	cd, ok := s.crawlerCoolAfter[crawlerID]
+	if ok && cd.After(timeNow) {
+		return fmt.Errorf("crawler %s is on all cooldown", crawlerID)
+	}
 
 	// check if there's existing requests
 	fmt.Println("retry after", s.retryAfter)
 	retryID := crawlerID + "-" + steamID
 	lastReq, ok := s.retryAfter[retryID]
-	if ok && time.Since(lastReq) < s.cacheTTL {
+	if ok && lastReq.After(timeNow) {
 		s.logger.InfoContext(ctx, "skipping crawling, please wait after", "last_req", lastReq, "ttl", s.cacheTTL)
 		return errFileWaiting
 	}
-	s.retryAfter[retryID] = time.Now()
+	s.retryAfter[retryID] = timeNow.Add(s.cacheTTL)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, crawlerURL+"?steam_id="+steamID, nil)
 	if err != nil {
@@ -195,6 +221,11 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 		}
 	}()
 	if res.StatusCode > 299 {
+		// only elect new crawler when not found and too much request
+		if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusTooManyRequests {
+			s.electNewCrawler()
+		}
+
 		body, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("%d - %s", res.StatusCode, body)
 	}
@@ -216,7 +247,7 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 		return err
 	}
 
-	delete(s.retryAfter, retryID)
+	//delete(s.retryAfter, retryID)
 	s.logger.Info("fetch raw inventory",
 		"steam_id", steamID,
 		"count", data.InventoryCount,
@@ -286,4 +317,9 @@ func (d *Description) compat() steam.RawInventoryDesc {
 		Type:         d.Type,
 		Descriptions: attrs,
 	}
+}
+
+func crawlerName(addr string) string {
+	ss := strings.Split(addr, "/")
+	return ss[len(ss)-1]
 }
