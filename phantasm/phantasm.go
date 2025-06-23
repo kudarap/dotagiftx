@@ -34,6 +34,12 @@ import (
 	"github.com/kudarap/dotagiftx/steaminvorg"
 )
 
+const (
+	defaultMaxAge        = time.Hour * 12
+	defaultRetryCooldown = time.Hour
+	defaultCrawlCooldown = time.Minute
+)
+
 var (
 	errFileNotFound = fmt.Errorf("raw file not found")
 	errFileWaiting  = fmt.Errorf("waiting for file")
@@ -49,11 +55,11 @@ type Config struct {
 }
 
 type Service struct {
-	config      Config
-	cachePrefix string
-	cacheTTL    time.Duration
-	maxAge      time.Duration
-	logger      *slog.Logger
+	config        Config
+	cachePrefix   string
+	retryCooldown time.Duration
+	maxAge        time.Duration
+	logger        *slog.Logger
 
 	electedCrawlerID int
 	retryAfter       map[string]time.Time
@@ -69,12 +75,12 @@ func NewService(config Config, logger *slog.Logger) *Service {
 	return &Service{
 		config:           config,
 		cachePrefix:      "phantasm",
-		cacheTTL:         time.Hour,
-		maxAge:           time.Hour * 12,
+		maxAge:           defaultMaxAge,
 		logger:           logger,
 		retryAfter:       map[string]time.Time{},
+		retryCooldown:    defaultRetryCooldown,
 		crawlerCoolAfter: map[string]time.Time{},
-		crawlerCooldown:  time.Minute,
+		crawlerCooldown:  defaultCrawlCooldown,
 	}
 }
 
@@ -194,14 +200,15 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	}
 
 	// check if there's existing requests
-	fmt.Println("retry after", s.retryAfter)
 	retryID := crawlerID + "-" + steamID
 	lastReq, ok := s.retryAfter[retryID]
 	if ok && lastReq.After(timeNow) {
-		s.logger.InfoContext(ctx, "skipping crawling, please wait after", "last_req", lastReq, "ttl", s.cacheTTL)
+		s.logger.InfoContext(ctx, "skipping crawling, please wait after",
+			"last_req", lastReq, "ttl", s.retryCooldown,
+		)
 		return errFileWaiting
 	}
-	s.retryAfter[retryID] = timeNow.Add(s.cacheTTL)
+	s.retryAfter[retryID] = timeNow.Add(s.retryCooldown)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, crawlerURL+"?steam_id="+steamID, nil)
 	if err != nil {
