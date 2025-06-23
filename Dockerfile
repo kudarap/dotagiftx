@@ -19,5 +19,5 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 COPY --from=builder /code/dotagiftx /api
 ENTRYPOINT ./api
-LABEL Name=dotagiftx Version=0.21.1
+LABEL Name=dotagiftx Version=0.22.0
 EXPOSE 80

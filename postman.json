@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "39a0c458-e340-4f17-a858-16fc372bc91b",
-    "name": "dotagiftx v0.21.1",
+    "name": "dotagiftx v0.22.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "165139"
   },
@@ -357,7 +357,7 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "src": "/Users/kudarap/Dropbox/DotagiftX/item imports/crownfall 2024 collector's cache ii.yml"
+                  "src": "/Users/kudarap/Dropbox/DotagiftX/item imports/the charms of the snake.yml"
                 }
               ]
             },
@@ -1398,6 +1398,76 @@
           "raw": "{{host}}/blacklists",
           "host": ["{{host}}"],
           "path": ["blacklists"],
+          "query": [
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "webhook paypal",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host}}/webhook/paypal",
+          "host": ["{{host}}"],
+          "path": ["webhook", "paypal"],
+          "query": [
+            {
+              "key": "nocache",
+              "value": "1",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "webhook phantasm",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Require-Whisk-Auth",
+            "value": "{{phantasm_secret}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"assets\": [],\n    \"descriptions\": [],\n    \"total_inventory_count\": 1338,\n    \"last_assetid\": \"\",\n    \"more_items\": 0,\n    \"rwgrsn\": 0,\n    \"success\": 0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host}}/webhook/phantasm/76561198088587178",
+          "host": ["{{host}}"],
+          "path": ["webhook", "phantasm", "76561198088587178"],
           "query": [
             {
               "key": "nocache",
