@@ -4,17 +4,33 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verifying"
 )
 
 func main() {
-	assetSrc := steaminvorg.InventoryAsset
+	if err := godotenv.Load(); err != nil {
+		panic("could not load config: " + err.Error())
+	}
+
+	var conf phantasm.Config
+	conf.Path = os.Getenv("DG_PHANTASM_PATH")
+	conf.Addrs = strings.Split(os.Getenv("DG_PHANTASM_ADDRS"), ",")
+	conf.Secret = os.Getenv("DG_PHANTASM_SECRET")
+	conf.WebhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
+	phantasmSvc := phantasm.NewService(conf, slog.Default())
+
+	assetSrc := steaminvorg.InventoryAssetWithCache
+	assetSrc = phantasmSvc.InventoryAsset
 
 	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
 
