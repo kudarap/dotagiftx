@@ -20,7 +20,7 @@ const (
 	queryLimit   = 2000
 	requestDelay = 1000 * time.Millisecond
 
-	webhookAuthHeader = "X-Require-Whisk-Auth"
+	WebhookAuthHeader = "X-Require-Whisk-Auth"
 
 	// ex. https://steamcommunity.com/inventory/76561198088587178/570/2
 	steamURL = "https://steamcommunity.com/inventory/%s/570/2?count=%d&start_assetid=%s"
@@ -200,7 +200,7 @@ func post(steamID string, inv *Inventory) error {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set(webhookAuthHeader, secret)
+	req.Header.Set(WebhookAuthHeader, secret)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {

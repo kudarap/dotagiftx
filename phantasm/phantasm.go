@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -53,28 +52,33 @@ type Service struct {
 	config      Config
 	cachePrefix string
 	cacheTTL    time.Duration
+	maxAge      time.Duration
 	logger      *slog.Logger
 
 	electedCrawlerID int
 	retryAfter       map[string]time.Time
 }
 
-func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
-	ctx := context.Background()
-	raw, err := s.autoRetry(ctx, steamID)
-	if err != nil {
-		return nil, err
-	}
-	if raw == nil {
-		s.logger.InfoContext(ctx, "falling back to steaminvorg", "steamid", steamID)
-		return steaminvorg.InventoryAssetWithCache(steamID)
+func NewService(config Config, logger *slog.Logger) *Service {
+	if err := os.MkdirAll(config.Path, 0777); err != nil {
+		panic(err)
 	}
 
-	compat := raw.compat()
-	return compat.ToAssets(), nil
+	return &Service{
+		config:      config,
+		cachePrefix: "phantasm",
+		cacheTTL:    time.Hour,
+		maxAge:      time.Hour * 12,
+		logger:      logger,
+		retryAfter:  map[string]time.Time{},
+	}
 }
 
-func (s *Service) SaveInventory(ctx context.Context, steamID string, body io.ReadCloser) error {
+func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, body io.ReadCloser) error {
+	if secret != s.config.Secret {
+		return fmt.Errorf("secret mismatch")
+	}
+
 	file, err := os.Create(s.filePath(steamID))
 	if err != nil {
 		return fmt.Errorf("open file: %s", err)
@@ -94,35 +98,59 @@ func (s *Service) SaveInventory(ctx context.Context, steamID string, body io.Rea
 	return nil
 }
 
+func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
+	ctx := context.Background()
+	raw, err := s.autoRetry(ctx, steamID)
+	if err != nil {
+		s.logger.InfoContext(ctx, "falling back to steaminvorg", "steamid", steamID, "err", err)
+		return steaminvorg.InventoryAssetWithCache(steamID)
+	}
+
+	compat := raw.compat()
+	return compat.ToAssets(), nil
+}
+
 func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, error) {
-	raw, err := s.rawInventory(ctx, steamID)
+	inventory, err := s.rawInventory(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileNotFound) {
 		return nil, err
 	}
-
-	err = s.crawlInventory(ctx, steamID)
-	if err != nil && !errors.Is(err, errFileWaiting) {
-		return nil, err
-	}
-
-	for i := range 5 {
-		time.Sleep(time.Duration(i+5) * time.Second)
-		s.logger.Info("retrying steam", "attempt", i)
-		raw, err = s.rawInventory(ctx, steamID)
-		if err != nil && !errors.Is(err, errFileNotFound) {
-			return nil, err
-		}
-	}
-
-	if raw != nil {
+	if inventory != nil {
 		// re-fetch day old file
 		t, err := times.Stat(s.filePath(steamID))
 		if err != nil {
 			return nil, err
 		}
-		log.Println(t.ModTime())
+		age := time.Since(t.ModTime())
+		if age < s.maxAge {
+			return inventory, nil
+		}
+		s.logger.Info("max age reached, recrawl", "steamid", steamID, "age", age, "max-age", s.maxAge)
 	}
-	return raw, nil
+
+	err = s.crawlInventory(ctx, steamID)
+	// don't retry if it's not on waiting state.
+	if err != nil && !errors.Is(err, errFileWaiting) {
+		return nil, err
+	}
+	// retry if its on waiting state.
+	if errors.Is(err, errFileWaiting) {
+		for i := range 5 {
+			wait := time.Duration(i+1) * time.Second
+			time.Sleep(wait)
+			s.logger.Info("retrying steam", "attempt", i, "steamid", steamID, "waiting", wait)
+			inventory, err = s.rawInventory(ctx, steamID)
+			if err != nil && !errors.Is(err, errFileNotFound) {
+				return nil, err
+			}
+		}
+	}
+	// check raw inventory again but what error you have you need to go.
+	inventory, err = s.rawInventory(ctx, steamID)
+	if err != nil {
+		return nil, err
+	}
+	return inventory, nil
 }
 
 func crawlerName(addr string) string {
@@ -133,14 +161,18 @@ func crawlerName(addr string) string {
 func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
 	crawlerID := crawlerName(crawlerURL)
+	s.logger.InfoContext(ctx, "elected crawler", "crawler", crawlerID, "steamID", steamID)
 
-	lastReq, ok := s.retryAfter[crawlerID]
+	// check if there's existing requests
+	fmt.Println("retry after", s.retryAfter)
+	retryID := crawlerID + "-" + steamID
+	lastReq, ok := s.retryAfter[retryID]
 	if ok && time.Since(lastReq) < s.cacheTTL {
+		s.logger.InfoContext(ctx, "skipping crawling, please wait after", "last_req", lastReq, "ttl", s.cacheTTL)
 		return errFileWaiting
 	}
-	s.retryAfter[crawlerID] = time.Now()
+	s.retryAfter[retryID] = time.Now()
 
-	s.logger.InfoContext(ctx, "elected crawler", "crawler", crawlerID, "steamID", steamID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, crawlerURL+"?steam_id="+steamID, nil)
 	if err != nil {
 		return err
@@ -180,6 +212,7 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 		return err
 	}
 
+	delete(s.retryAfter, retryID)
 	s.logger.Info("fetch raw inventory",
 		"steam_id", steamID,
 		"count", data.InventoryCount,
@@ -210,20 +243,6 @@ func (s *Service) rawInventory(ctx context.Context, steamID string) (*Inventory,
 
 func (s *Service) filePath(steamID string) string {
 	return filepath.Join(s.config.Path, fmt.Sprintf("%s.json", steamID))
-}
-
-func NewService(config Config, logger *slog.Logger) *Service {
-	if err := os.MkdirAll(config.Path, 0777); err != nil {
-		panic(err)
-	}
-
-	return &Service{
-		config:      config,
-		cachePrefix: "phantasm",
-		cacheTTL:    time.Hour,
-		logger:      logger,
-		retryAfter:  map[string]time.Time{},
-	}
 }
 
 func (i *Inventory) compat() steam.AllInventory {

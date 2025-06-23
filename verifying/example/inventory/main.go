@@ -21,6 +21,7 @@ func main() {
 	conf.Path = os.Getenv("DG_PHANTASM_PATH")
 	conf.Addrs = strings.Split(os.Getenv("DG_PHANTASM_ADDRS"), ",")
 	conf.Secret = os.Getenv("DG_PHANTASM_SECRET")
+	conf.WebhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
 	phantasmSvc := phantasm.NewService(conf, slog.Default())
 
 	assetSrc := steaminvorg.InventoryAssetWithCache

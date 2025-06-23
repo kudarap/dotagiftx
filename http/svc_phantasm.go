@@ -10,7 +10,8 @@ import (
 func handlePhantasmWebhook(svc *phantasm.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "steam_id")
-		if err := svc.SaveInventory(r.Context(), id, r.Body); err != nil {
+		secret := r.Header.Get(phantasm.WebhookAuthHeader)
+		if err := svc.SaveInventory(r.Context(), id, secret, r.Body); err != nil {
 			respondError(w, err)
 			return
 		}

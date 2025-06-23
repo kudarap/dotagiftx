@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/steaminvorg"
+	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/verifying"
 )
 
@@ -19,6 +19,7 @@ type TaskProcessor struct {
 
 	inventorySvc dotagiftx.InventoryService
 	deliverySvc  dotagiftx.DeliveryService
+	phantasmSvc  *phantasm.Service
 }
 
 func NewTaskProcessor(
@@ -26,12 +27,14 @@ func NewTaskProcessor(
 	queue taskQueue,
 	inventorySvc dotagiftx.InventoryService,
 	deliverySvc dotagiftx.DeliveryService,
+	phantasmSvc *phantasm.Service,
 ) *TaskProcessor {
 	return &TaskProcessor{
 		queue:        queue,
 		rate:         rate,
 		inventorySvc: inventorySvc,
 		deliverySvc:  deliverySvc,
+		phantasmSvc:  phantasmSvc,
 	}
 }
 
@@ -106,8 +109,8 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 		return nil
 	}
 
-	source := steaminvorg.InventoryAssetWithCache
-	status, assets, err := verifying.Inventory(source, market.User.SteamID, market.Item.Name)
+	src := p.phantasmSvc.InventoryAsset
+	status, assets, err := verifying.Inventory(src, market.User.SteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}
@@ -130,7 +133,7 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
 	}
 
-	src := steaminvorg.InventoryAsset
+	src := p.phantasmSvc.InventoryAsset
 	status, assets, err := verifying.Delivery(src, market.User.Name, market.PartnerSteamID, market.Item.Name)
 	if err != nil {
 		return err
