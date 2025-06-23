@@ -313,7 +313,7 @@ func (a *Asset) compat() steam.RawInventoryAsset {
 func (d *Description) compat() steam.RawInventoryDesc {
 	attrs := make(steam.RawInventoryItemDetails, len(d.Descriptions))
 	for i, v := range d.Descriptions {
-		attrs[i].Value = v.Value
+		attrs[i].Value = strings.TrimPrefix(v.Value, "\n")
 	}
 
 	return steam.RawInventoryDesc{

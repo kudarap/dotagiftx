@@ -1,6 +1,7 @@
 package verifying
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/kudarap/dotagiftx"
@@ -46,10 +47,9 @@ func Delivery(
 	// Pull inventory data using buyerSteamID.
 	assets, err := source(buyerSteamID)
 	if err != nil {
-		if err == steam.ErrInventoryPrivate {
+		if errors.Is(err, steam.ErrInventoryPrivate) {
 			return dotagiftx.DeliveryStatusPrivate, nil, nil
 		}
-
 		return dotagiftx.DeliveryStatusError, nil, err
 	}
 
@@ -62,7 +62,7 @@ func Delivery(
 	// Check asset sender matches the seller persona name.
 	//
 	// NOTE! checking against seller persona name might not be accurate since
-	// buyer can clear gift information that's why it need to snapshot
+	// a buyer can clear gift information that's why it need to snapshot
 	// buyer inventory immediately.
 	for _, ss := range assets {
 		if ss.GiftFrom != sellerPersona {
