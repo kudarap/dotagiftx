@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -40,8 +39,6 @@ var (
 	errFileWaiting  = fmt.Errorf("waiting for file")
 
 	fastjson = jsoniter.ConfigFastest
-
-	steamIDFormat = regexp.MustCompile("[0-9]+")
 )
 
 type Config struct {
@@ -78,8 +75,9 @@ func NewService(config Config, logger *slog.Logger) *Service {
 }
 
 func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, body io.ReadCloser) error {
-	if steamID == "" && !steamIDFormat.MatchString(steamID) {
-		return fmt.Errorf("invalid steam id")
+	// ensure that the filename has no path separators or parent directory references
+	if steamID == "" || strings.Contains(steamID, "/") || strings.Contains(steamID, "\\") || strings.Contains(steamID, "..") {
+		return errors.New("invalid steam id")
 	}
 	if secret != s.config.Secret {
 		return fmt.Errorf("invalid secret")
