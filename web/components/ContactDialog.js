@@ -5,12 +5,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import ChipLink from '@/components/ChipLink'
-import {
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
@@ -45,22 +40,6 @@ export default function ContactDialog(props) {
         </DialogTitle>
         <DialogContent>
           <ProfileCard user={market.user}>
-            {/* <Typography color="textSecondary" component="span"> */}
-            {/*  {`Links: `} */}
-            {/* </Typography> */}
-            {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
-            {/* &nbsp; */}
-            <ChipLink
-              label="SteamRep"
-              href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
-            />
-            &nbsp;
-            <ChipLink
-              label="Dotabuff"
-              href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
-            />
-            &nbsp;
-            <ChipLink label="Steam Inventory" href={dota2Inventory} />
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>
 
@@ -96,7 +75,7 @@ export default function ContactDialog(props) {
                 <Typography variant="inherit" component="span" color="white">
                   impersonation
                 </Typography>
-                .<sup style={{ color: 'yellowgreen' }}>NEW</sup>
+                .
               </li>
               <li>
                 Dota 2 Giftables transaction only viable if the two steam user parties have been
@@ -123,7 +102,7 @@ export default function ContactDialog(props) {
 
               <li>
                 If you need a middleman, I only suggest you get{' '}
-                <Link href="/middlemen" target="_blank" color="secondary">
+                <Link href="/middleman" target="_blank" color="secondary">
                   Middleman here
                 </Link>
                 .

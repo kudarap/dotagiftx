@@ -6,10 +6,17 @@ import Avatar from '@/components/Avatar'
 import { USER_STATUS_BANNED, USER_STATUS_MAP_TEXT, USER_STATUS_SUSPENDED } from '@/constants/user'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
+import ChipLink from '@/components/ChipLink'
+import {
+  DOTABUFF_PROFILE_BASE_URL,
+  STEAM_PROFILE_BASE_URL,
+  STEAMREP_PROFILE_BASE_URL,
+} from '@/constants/strings'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from './SubscriberBadge'
-import { getUserBadgeFromBoons } from '@/lib/badge'
+import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
+import ExclusiveChip from '@/components/ExclusiveChip'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -42,13 +49,15 @@ export default function ProfileCard({ user, loading, ...other }) {
   const { isMobile } = useContext(AppContext)
 
   const storeProfile = `/profiles/${user.steam_id}`
+  const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${user.steam_id}`
+  const dota2Inventory = `${steamProfileURL}/inventory#570`
   const marketSummary = user.market_stats
 
   const isProfileReported =
     user.status === USER_STATUS_SUSPENDED || user.status === USER_STATUS_BANNED
 
   const userBadge = getUserBadgeFromBoons(user.boons)
-
+  const userTag = getUserTagFromBoons(user.boons)
   return (
     <div
       className={classes.details}
@@ -111,7 +120,20 @@ export default function ProfileCard({ user, loading, ...other }) {
         </Typography>
 
         <br />
-        <Typography gutterBottom>{other.children}</Typography>
+        <Typography gutterBottom>
+          {userTag && (
+            <>
+              <ExclusiveChip tag={userTag} />
+              &nbsp;
+            </>
+          )}
+          <ChipLink label="Steam Inventory" href={dota2Inventory} />
+          &nbsp;
+          <ChipLink label="SteamRep" href={`${STEAMREP_PROFILE_BASE_URL}/${user.steam_id}`} />
+          &nbsp;
+          <ChipLink label="Dotabuff" href={`${DOTABUFF_PROFILE_BASE_URL}/${user.steam_id}`} />
+          {other.children}
+        </Typography>
       </Typography>
     </div>
   )

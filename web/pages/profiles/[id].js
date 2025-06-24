@@ -4,8 +4,8 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
-import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import {
   APP_NAME,
   APP_URL,
@@ -23,7 +23,9 @@ import {
   user,
   vanity,
 } from '@/service/api'
-import { getUserBadgeFromBoons } from '@/lib/badge'
+import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
+import Avatar from '@/components/Avatar'
+import ExclusiveChip from '@/components/ExclusiveChip'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -36,7 +38,6 @@ import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
-import { Alert } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -143,6 +144,7 @@ export default function UserDetails({
   const isProfileReported = Boolean(profile.status)
 
   const userBadge = getUserBadgeFromBoons(profile.boons)
+  const userTag = getUserTagFromBoons(profile.boons)
 
   return (
     <>
@@ -237,10 +239,14 @@ export default function UserDetails({
                   </Link>
                 </Typography>
                 <br />
+                {userTag && (
+                  <>
+                    <ExclusiveChip tag={userTag} />
+                    &nbsp;
+                  </>
+                )}
                 <ChipLink label="Steam Profile" href={profileURL} />
                 &nbsp;
-                {/* <ChipLink label="Steam Inventory" href={`${profileURL}/inventory`} /> */}
-                {/* &nbsp; */}
                 <ChipLink label="SteamRep" href={steamRepURL} />
                 &nbsp;
                 <ChipLink label="Dotabuff" href={dotabuffURL} />
