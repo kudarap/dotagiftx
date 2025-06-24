@@ -2,12 +2,12 @@
 
 DotagiftX web user interface
 
-### Tech Stack
+### Stack
 
-- NodeJS 14
+- NodeJS 20
 - React 17
-- Next 10
-- Material UI 4
+- Next 12
+- Material UI 5
 
 ### Features
 
