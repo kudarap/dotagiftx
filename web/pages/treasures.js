@@ -19,7 +19,7 @@ const treasures = [
     image: 'spring_2024_heroes_hoard.png',
     rarity: 'mythical',
     items: 16,
-    release_date: new Date(2025, 5, 23),
+    release_date: new Date(2025, 4, 23),
   },
   {
     name: 'The Charms of the Snake',
@@ -244,7 +244,8 @@ const isTreasureNew = releaseDate => {
   }
 
   const now = new Date()
-  return releaseDate.getDate() < now.getDate() + stillNewDays
+  const diff = (now - releaseDate) / (1000 * 3600 * 24)
+  return diff < stillNewDays
 }
 
 export const isRecentTreasureNew = () => {
@@ -253,9 +254,10 @@ export const isRecentTreasureNew = () => {
 }
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#1A2027CC',
+  backgroundColor: '#1A20278C',
   ...theme.typography.body,
   padding: theme.spacing(1),
+  paddingTop: theme.spacing(2),
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }))
@@ -295,7 +297,7 @@ export default function Treasures() {
         </div>
 
         <Container style={{ position: 'relative' }}>
-          <Typography variant="h4" component="h1" sx={{ mt: -35, mb: 4 }}>
+          <Typography variant="h4" component="h1" sx={{ mt: -59, mb: 4 }}>
             All Giftable Treasures
           </Typography>
 
@@ -319,7 +321,7 @@ export default function Treasures() {
                             fontWeight: 'bolder',
                             color: 'white',
                             padding: '0 8px',
-                            marginTop: -10,
+                            marginTop: -16,
                             marginLeft: -18,
                             borderBottomLeftRadius: 4,
                             borderBottomRightRadius: 4,
