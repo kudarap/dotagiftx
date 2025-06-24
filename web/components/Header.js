@@ -321,7 +321,7 @@ const moreMenuLinks = [
   ['Guides', '/guides'],
   ['FAQs', '/faqs'],
   ['Updates', '/updates'],
-  ['Middleman', '/middlemen'],
+  ['Middleman', '/middleman'],
 ].map(n => ({ label: n[0], path: n[1] }))
 
 function MoreMenu() {

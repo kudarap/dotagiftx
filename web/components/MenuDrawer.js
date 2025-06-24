@@ -22,7 +22,7 @@ const secondaryLinks = [
   ['Guides', '/guides'],
   ['FAQs', '/faqs'],
   ['Updates', '/updates'],
-  ['Middleman', '/middlemen'],
+  ['Middleman', '/middleman'],
 ].map(convertToNav)
 
 function MenuDrawer({ profile, open, onClose }) {

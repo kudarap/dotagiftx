@@ -39,7 +39,7 @@ export default function ContactDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <ProfileCard user={market.user}>
+          <ProfileCard user={market.user} hideSteamProfile>
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>
 
@@ -107,18 +107,6 @@ export default function ContactDialog(props) {
                 </Link>
                 .
               </li>
-
-              {/* <li> */}
-              {/*  Official SteamRep middleman may assist in middle manning for the trade, or{' '} */}
-              {/*  <Link */}
-              {/*    style={{ textDecoration: 'underline' }} */}
-              {/*    href="https://www.reddit.com/r/dota2trade/" */}
-              {/*    target="_blank" */}
-              {/*    rel="noreferrer noopener"> */}
-              {/*    r/Dota2Trade */}
-              {/*  </Link>{' '} */}
-              {/*  mod may assist as well in this. */}
-              {/* </li> */}
             </ul>
           </Typography>
         </DialogContent>

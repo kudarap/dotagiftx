@@ -42,7 +42,7 @@ export default function ContactBuyerDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <ProfileCard user={market.user}>
+          <ProfileCard user={market.user} hideSteamProfile>
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>
 

@@ -43,7 +43,7 @@ const useStyles = makeStyles()(theme => ({
   badge: {},
 }))
 
-export default function ProfileCard({ user, loading, ...other }) {
+export default function ProfileCard({ user, loading, hideSteamProfile, hideInventory, ...other }) {
   const { classes } = useStyles()
 
   const { isMobile } = useContext(AppContext)
@@ -127,8 +127,18 @@ export default function ProfileCard({ user, loading, ...other }) {
               &nbsp;
             </>
           )}
-          <ChipLink label="Steam Inventory" href={dota2Inventory} />
-          &nbsp;
+          {!hideSteamProfile && (
+            <>
+              <ChipLink label="Steam Profile" href={steamProfileURL} />
+              &nbsp;
+            </>
+          )}
+          {!hideInventory && (
+            <>
+              <ChipLink label="Steam Inventory" href={dota2Inventory} />
+              &nbsp;
+            </>
+          )}
           <ChipLink label="SteamRep" href={`${STEAMREP_PROFILE_BASE_URL}/${user.steam_id}`} />
           &nbsp;
           <ChipLink label="Dotabuff" href={`${DOTABUFF_PROFILE_BASE_URL}/${user.steam_id}`} />
@@ -142,9 +152,13 @@ ProfileCard.propTypes = {
   user: PropTypes.object,
   marketSummary: PropTypes.object,
   loading: PropTypes.bool,
+  hideSteamProfile: PropTypes.bool,
+  hideInventory: PropTypes.bool,
 }
 ProfileCard.defaultProps = {
   user: {},
   marketSummary: null,
   loading: false,
+  hideSteamProfile: false,
+  hideInventory: false,
 }
