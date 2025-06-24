@@ -23,11 +23,11 @@ func Test_merge_verify(t *testing.T) {
 	}
 	missing := checkMissingAssetDesc(raw)
 	if len(missing) > 0 {
-		t.Fatalf("raw missing Asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
+		t.Fatalf("raw missing asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
 	}
 	missing = checkMissingAssetDesc(reduced)
 	if len(missing) > 0 {
-		t.Fatalf("reduced missing Asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
+		t.Fatalf("reduced missing asset desc: %d/%d", len(missing), raw.TotalInventoryCount)
 	}
 }
 
@@ -44,7 +44,7 @@ func Test_merge_pagination(t *testing.T) {
 	}
 	reduced := invs[0]
 
-	var merged *Inventory
+	var merged *inventory
 	for _, inv := range invs[1:] {
 		merged = merge(merged, inv)
 	}
@@ -54,12 +54,12 @@ func Test_merge_pagination(t *testing.T) {
 
 	missing := checkMissingAssetDesc(merged)
 	if len(missing) > 0 {
-		t.Fatalf("merged missing Asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
+		t.Fatalf("merged missing asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
 	}
 
 	missing = checkMissingAssetDesc(reduced)
 	if len(missing) > 0 {
-		t.Fatalf("reduced missing Asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
+		t.Fatalf("reduced missing asset desc: %d/%d", len(missing), merged.TotalInventoryCount)
 	}
 }
 
@@ -99,7 +99,7 @@ func Test_asset(t *testing.T) {
 	}
 }
 
-func checkMissingAssetDesc(inv *Inventory) []string {
+func checkMissingAssetDesc(inv *inventory) []string {
 	var missing []string
 	for _, ass := range inv.Assets {
 		var found bool
@@ -122,8 +122,8 @@ func checkMissingAssetDesc(inv *Inventory) []string {
 	return missing
 }
 
-func parseInventory(r io.Reader) (*Inventory, error) {
-	var raw Inventory
+func parseInventory(r io.Reader) (*inventory, error) {
+	var raw inventory
 	b, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -134,8 +134,8 @@ func parseInventory(r io.Reader) (*Inventory, error) {
 	return &raw, nil
 }
 
-func parseInventoryFiles(paths ...string) ([]*Inventory, error) {
-	var invs []*Inventory
+func parseInventoryFiles(paths ...string) ([]*inventory, error) {
+	var invs []*inventory
 	for _, path := range paths {
 		f, err := os.Open(path)
 		if err != nil {

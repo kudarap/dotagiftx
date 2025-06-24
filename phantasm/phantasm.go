@@ -6,12 +6,12 @@
 // "Summons several phantasmal copies of the Chaos Knight from alternate dimensions. The phantasms are illusions that
 // deal 100% damage, but take 350% damage."
 //
-// Phantasm crawls Inventory for item and delivery tracking. Hopefully, by summoning multiple instances of the crawler
-// will provide better steam Inventory raw data.
+// Phantasm crawls inventory for item and delivery tracking. Hopefully, by summoning multiple instances of the crawler
+// will provide better steam inventory raw data.
 //
 // crawler.go
 //	- script is intended for serverless functions to work around with ip rate limits during peak usage.
-// 	- publishes raw Inventory data to target webhook url.
+// 	- publishes raw inventory data to target webhook url.
 
 package phantasm
 
@@ -126,12 +126,12 @@ func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
 	return compat.ToAssets(), nil
 }
 
-func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, error) {
-	inventory, err := s.rawInventory(ctx, steamID)
+func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, error) {
+	invent, err := s.rawInventory(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileNotFound) {
 		return nil, err
 	}
-	if inventory != nil {
+	if invent != nil {
 		// re-fetch day old file
 		t, err := times.Stat(s.filePath(steamID))
 		if err != nil {
@@ -139,7 +139,7 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, er
 		}
 		age := time.Since(t.ModTime())
 		if age < s.maxAge {
-			return inventory, nil
+			return invent, nil
 		}
 		s.logger.Info("max age reached, recrawl", "steamid", steamID, "age", age, "max-age", s.maxAge)
 	}
@@ -155,14 +155,14 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, er
 			wait := time.Duration(i+1) * time.Second
 			time.Sleep(wait)
 			s.logger.Info("retrying steam", "attempt", i+1, "steamid", steamID, "waiting", wait)
-			inventory, err = s.rawInventory(ctx, steamID)
+			invent, err = s.rawInventory(ctx, steamID)
 			if err != nil && !errors.Is(err, errFileNotFound) {
 				return nil, err
 			}
 		}
 	}
 	// check raw inventory again but what error you have you need to go.
-	inventory, err = s.rawInventory(ctx, steamID)
+	invent, err = s.rawInventory(ctx, steamID)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +172,7 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*Inventory, er
 	crawlerID := crawlerName(crawlerURL)
 	retryID := crawlerID + "-" + steamID
 	delete(s.retryAfter, retryID)
-	return inventory, nil
+	return invent, nil
 }
 
 func (s *Service) electNewCrawler() {
@@ -267,7 +267,7 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	return nil
 }
 
-func (s *Service) rawInventory(ctx context.Context, steamID string) (*Inventory, error) {
+func (s *Service) rawInventory(ctx context.Context, steamID string) (*inventory, error) {
 	file, err := os.ReadFile(s.filePath(steamID))
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -276,7 +276,7 @@ func (s *Service) rawInventory(ctx context.Context, steamID string) (*Inventory,
 		return nil, fmt.Errorf("open file: %s", err)
 	}
 
-	var inventory Inventory
+	var inventory inventory
 	if err = fastjson.Unmarshal(file, &inventory); err != nil {
 		return nil, fmt.Errorf("unmarshal: %s", err)
 	}
@@ -287,7 +287,7 @@ func (s *Service) filePath(steamID string) string {
 	return filepath.Join(s.config.Path, fmt.Sprintf("%s.json", steamID))
 }
 
-func (i *Inventory) compat() steam.AllInventory {
+func (i *inventory) compat() steam.AllInventory {
 	assets := make([]steam.RawInventoryAsset, len(i.Assets))
 	for k, v := range i.Assets {
 		assets[k] = v.compat()
@@ -301,7 +301,7 @@ func (i *Inventory) compat() steam.AllInventory {
 	return steam.AllInventory{AllInvs: assets, AllDescs: descs}
 }
 
-func (a *Asset) compat() steam.RawInventoryAsset {
+func (a *asset) compat() steam.RawInventoryAsset {
 	return steam.RawInventoryAsset{
 		ID:         a.AssetID,
 		AssetID:    a.AssetID,
@@ -310,7 +310,7 @@ func (a *Asset) compat() steam.RawInventoryAsset {
 	}
 }
 
-func (d *Description) compat() steam.RawInventoryDesc {
+func (d *description) compat() steam.RawInventoryDesc {
 	attrs := make(steam.RawInventoryItemDetails, len(d.Descriptions))
 	for i, v := range d.Descriptions {
 		attrs[i].Value = strings.TrimPrefix(v.Value, "\n")
