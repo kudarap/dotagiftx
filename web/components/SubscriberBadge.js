@@ -12,6 +12,10 @@ export const badgeSettings = {
     label: 'Middleman',
     color: '#15803D',
   },
+  moderator: {
+    label: 'Moderator',
+    color: '#9b59b6',
+  },
   supporter: {
     label: 'Supporter',
     color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_SUPPORTER],
