@@ -23,6 +23,7 @@ import ItemImage, { retinaSrcSet } from '@/components/ItemImage'
 import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
+import ActivitySearchInput from '@/components/ActivitySearchInput'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -72,7 +73,7 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-export default function MarketActivity({ datatable, loading, error, disablePrice }) {
+export default function MarketActivity({ datatable, loading, error, disablePrice, onSearchInput }) {
   const { classes } = useStyles()
 
   const { isMobile } = React.useContext(AppContext)
@@ -95,20 +96,26 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined
 
-  if (error) {
-    return (
-      <Typography className={classes.text} color="error">
-        Error {error}
-      </Typography>
-    )
-  }
-
-  if (!loading && datatable.data.length === 0) {
-    return <Typography className={classes.text}>No Activity</Typography>
-  }
-
   return (
     <>
+      <ActivitySearchInput
+        fullWidth
+        loading={loading}
+        onInput={onSearchInput}
+        color="secondary"
+        placeholder="Filter items"
+      />
+
+      {error && (
+        <Typography className={classes.text} color="error">
+          Error {error}
+        </Typography>
+      )}
+
+      {!loading && datatable.data.length === 0 && (
+        <Typography className={classes.text}>No Activity</Typography>
+      )}
+
       <ul className={classes.list}>
         {datatable.data.map((market, idx) => (
           <li className={classes.activity} key={market.id}>
@@ -218,9 +225,11 @@ MarketActivity.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.string,
   disablePrice: PropTypes.bool,
+  onSearchInput: PropTypes.func,
 }
 MarketActivity.defaultProps = {
   loading: false,
   error: null,
   disablePrice: false,
+  onSearchInput: () => {},
 }

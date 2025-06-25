@@ -135,4 +135,7 @@ const DeliveredTable = withDatatableFetch(MyMarketActivity, {
   status: MARKET_STATUS_SOLD,
 })
 
-const HistoryTable = withDatatableFetch(MyMarketActivity, { ...datatableBaseFilter, limit: 20 })
+const HistoryTable = withDatatableFetch(MyMarketActivity, {
+  ...datatableBaseFilter,
+  limit: 20,
+})

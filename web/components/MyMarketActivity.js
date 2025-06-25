@@ -89,7 +89,7 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
         loading={loading}
         onInput={onSearchInput}
         color="secondary"
-        placeholder="Filter history"
+        placeholder="Filter items"
       />
 
       {error && (
@@ -102,77 +102,75 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
         <Typography className={classes.text}>No Activity</Typography>
       )}
 
-      {!loading && datatable.data.length !== 0 && (
-        <ul className={classes.list}>
-          {datatable.data.map((market, idx) => (
-            <li className={classes.activity} key={market.id}>
-              <Link href={`/${market.item.slug}`}>
-                <ItemImage
-                  className={classes.itemImage}
-                  image={market.item.image}
-                  width={60}
-                  height={40}
-                  title={market.item.name}
-                  rarity={market.item.rarity}
-                />
+      <ul className={classes.list}>
+        {datatable.data.map((market, idx) => (
+          <li className={classes.activity} key={market.id}>
+            <Link href={`/${market.item.slug}`}>
+              <ItemImage
+                className={classes.itemImage}
+                image={market.item.image}
+                width={60}
+                height={40}
+                title={market.item.name}
+                rarity={market.item.rarity}
+              />
+            </Link>
+            <Typography variant="body2" color="textSecondary">
+              <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
+                {market.type === MARKET_TYPE_BID
+                  ? MARKET_BID_STATUS_MAP_TEXT[market.status]
+                  : MARKET_STATUS_MAP_TEXT[market.status]}
+              </span>
+              <span
+                aria-owns={popoverElementID}
+                aria-haspopup="true"
+                data-index={idx}
+                onMouseLeave={debouncePopoverClose}
+                onMouseEnter={handlePopoverOpen}>
+                {(market.status === MARKET_STATUS_LIVE ||
+                  market.status === MARKET_STATUS_RESERVED) &&
+                  VERIFIED_INVENTORY_MAP_ICON[market.inventory_status + Number(market.resell)]}
+
+                {market.status === MARKET_STATUS_SOLD &&
+                  VERIFIED_DELIVERY_MAP_ICON[market.delivery_status]}
+              </span>
+              &nbsp;
+              <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">
+                {`${market.item.hero}'s`}
               </Link>
-              <Typography variant="body2" color="textSecondary">
-                <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
-                  {market.type === MARKET_TYPE_BID
-                    ? MARKET_BID_STATUS_MAP_TEXT[market.status]
-                    : MARKET_STATUS_MAP_TEXT[market.status]}
-                </span>
-                <span
-                  aria-owns={popoverElementID}
-                  aria-haspopup="true"
-                  data-index={idx}
-                  onMouseLeave={debouncePopoverClose}
-                  onMouseEnter={handlePopoverOpen}>
-                  {(market.status === MARKET_STATUS_LIVE ||
-                    market.status === MARKET_STATUS_RESERVED) &&
-                    VERIFIED_INVENTORY_MAP_ICON[market.inventory_status + Number(market.resell)]}
+              &nbsp;
+              <Link href={`/${market.item.slug}`} color="textPrimary">
+                {`${market.item.name}`}
+              </Link>
+              &nbsp;
+              {daysFromNow(market.updated_at)}
+              &nbsp;for&nbsp;
+              <span
+                className={
+                  market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
+                }>
+                {amount(market.price, market.currency)}
+              </span>
+            </Typography>
 
-                  {market.status === MARKET_STATUS_SOLD &&
-                    VERIFIED_DELIVERY_MAP_ICON[market.delivery_status]}
-                </span>
-                &nbsp;
-                <Link href={`/search?hero=${market.item.hero}`} color="textPrimary">
-                  {`${market.item.hero}'s`}
+            <Typography
+              component="pre"
+              color="textSecondary"
+              variant="caption"
+              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
+              {market.partner_steam_id && (
+                <Link
+                  color="textSecondary"
+                  href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
+                  {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+                  {market.notes && '\n'}
                 </Link>
-                &nbsp;
-                <Link href={`/${market.item.slug}`} color="textPrimary">
-                  {`${market.item.name}`}
-                </Link>
-                &nbsp;
-                {daysFromNow(market.updated_at)}
-                &nbsp;for&nbsp;
-                <span
-                  className={
-                    market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
-                  }>
-                  {amount(market.price, market.currency)}
-                </span>
-              </Typography>
-
-              <Typography
-                component="pre"
-                color="textSecondary"
-                variant="caption"
-                style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
-                {market.partner_steam_id && (
-                  <Link
-                    color="textSecondary"
-                    href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
-                    {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
-                    {market.notes && '\n'}
-                  </Link>
-                )}
-                {market.notes}
-              </Typography>
-            </li>
-          ))}
-        </ul>
-      )}
+              )}
+              {market.notes}
+            </Typography>
+          </li>
+        ))}
+      </ul>
 
       {(loading || !datatable.data) && (
         <Typography className={classes.text} color="textSecondary">
