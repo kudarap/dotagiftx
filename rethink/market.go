@@ -226,6 +226,7 @@ func (s *marketStorage) Index(id string) (*dotagiftx.Market, error) {
 			mkt.Item.Hero,
 			mkt.Item.Origin,
 			mkt.Item.Rarity,
+			mkt.PartnerSteamID,
 		}, " ")
 	}
 
