@@ -289,16 +289,16 @@ function baseTable(Component) {
                   clickable
                 />
                 <Chip
-                  onClick={() => onSort('best')}
-                  className={sort === 'best' ? classes.activeSortButtons : null}
-                  label={bidMode ? 'Top buyers' : 'Top sellers'}
+                  onClick={() => onSort('recent')}
+                  className={sort === 'recent' ? classes.activeSortButtons : null}
+                  label="Recent"
                   variant="outlined"
                   clickable
                 />
                 <Chip
-                  onClick={() => onSort('recent')}
-                  className={sort === 'recent' ? classes.activeSortButtons : null}
-                  label="Recent"
+                  onClick={() => onSort('best')}
+                  className={sort === 'best' ? classes.activeSortButtons : null}
+                  label={bidMode ? 'Top buyers' : 'Top sellers'}
                   variant="outlined"
                   clickable
                 />

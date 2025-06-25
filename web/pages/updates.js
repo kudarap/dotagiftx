@@ -33,6 +33,26 @@ export default function Updates() {
 
       <main className={classes.main}>
         <Container>
+          <Typography variant="h5" component="h1" gutterBottom style={{ marginBottom: 26 }}>
+            Updates
+          </Typography>
+
+          <Typography variant="h5" gutterBottom>
+            June 25, 2025
+          </Typography>
+          <Link
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.22.0">
+            {' '}
+            v0.22.0: 5th year anniversarry - Spring forward and Phantasm Crawl{' '}
+            <LaunchIcon fontSize="relative" />
+          </Link>
+          <br />
+          <br />
+          <Divider />
+          <br />
+
           <Typography variant="h5" gutterBottom>
             Jul 21, 2024
           </Typography>

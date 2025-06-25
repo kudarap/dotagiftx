@@ -118,6 +118,11 @@ export default function Footer() {
             </Link>
           </li>
           <li>
+            <Link href="/moderators" color="textSecondary">
+              Moderators
+            </Link>
+          </li>
+          <li>
             <Link href="/privacy" color="textSecondary">
               Privacy
             </Link>

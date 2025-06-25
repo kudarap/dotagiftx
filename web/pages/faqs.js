@@ -34,7 +34,7 @@ function slugify(s) {
     .replace(/\s+/g, '-')
 }
 
-function Question({ children, ...other }) {
+export function Question({ children, ...other }) {
   const { classes } = useStyles()
   const id = slugify(children)
   return (
@@ -51,7 +51,8 @@ function Question({ children, ...other }) {
     </Typography>
   )
 }
-function Answer({ children }) {
+
+export function Answer({ children }) {
   return (
     <Typography color="textSecondary" gutterBottom>
       {children}
@@ -126,7 +127,7 @@ export default function Faqs() {
           <Answer>
             If you asked, you probably do, specially on high-value items where scammers fuck around.
             DotagiftX ONLY suggest that you get the{' '}
-            <Link href="/middlemen" color="secondary">
+            <Link href="/middleman" color="secondary">
               Middleman here
             </Link>
             &nbsp; and read around.

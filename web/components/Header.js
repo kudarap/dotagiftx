@@ -320,8 +320,9 @@ AvatarMenu.propTypes = {
 const moreMenuLinks = [
   ['Guides', '/guides'],
   ['FAQs', '/faqs'],
-  ['Updates', '/updates'],
   ['Middleman', '/middleman'],
+  ['Moderators', '/moderators'],
+  ['Updates', '/updates'],
 ].map(n => ({ label: n[0], path: n[1] }))
 
 function MoreMenu() {
