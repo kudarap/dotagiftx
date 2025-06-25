@@ -102,7 +102,6 @@ export default function MyListings() {
 
 function Tabs(props) {
   const { stats, ...other } = props
-
   return (
     <DashTabs {...other}>
       <DashTab value="" label="Active Listings" badgeContent={stats.live} />
@@ -125,12 +124,15 @@ const LiveTable = withDatatableFetch(MyMarketList, {
   ...datatableBaseFilter,
   status: MARKET_STATUS_LIVE,
 })
+
 const ReservedTable = withDatatableFetch(ReservationList, {
   ...datatableBaseFilter,
   status: MARKET_STATUS_RESERVED,
 })
+
 const DeliveredTable = withDatatableFetch(MyMarketActivity, {
   ...datatableBaseFilter,
   status: MARKET_STATUS_SOLD,
 })
+
 const HistoryTable = withDatatableFetch(MyMarketActivity, { ...datatableBaseFilter, limit: 20 })
