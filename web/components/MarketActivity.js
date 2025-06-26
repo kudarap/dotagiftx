@@ -106,7 +106,7 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
           loading={loading}
           onInput={onSearchInput}
           color="secondary"
-          placeholder="Filter items"
+          placeholder="Filter heroes, items, notes, and steam ids"
         />
       )}
 
@@ -188,19 +188,6 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
               </span>
             </Typography>
 
-            {market.delivery && (
-              <Typography component="pre" color="textSecondary" variant="caption">
-                {`Delivered ${new Date(market.delivery.created_at).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  timeZoneName: 'short',
-                })}`}
-              </Typography>
-            )}
-
             <Typography
               component="pre"
               color="textSecondary"
@@ -214,6 +201,18 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                   {market.notes && '\n'}
                 </Link>
               )}
+
+              {market.delivery && (
+                <span>{`Delivered ${new Date(market.delivery.created_at).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  timeZoneName: 'short',
+                })} \n`}</span>
+              )}
+
               {market.notes}
             </Typography>
           </li>
