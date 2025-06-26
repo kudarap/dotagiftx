@@ -153,6 +153,19 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
               </span>
             </Typography>
 
+            {market.delivery && (
+              <Typography component="pre" color="textSecondary" variant="caption">
+                {`Delivered ${new Date(market.delivery.created_at).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  timeZoneName: 'short',
+                })}`}
+              </Typography>
+            )}
+
             <Typography
               component="pre"
               color="textSecondary"

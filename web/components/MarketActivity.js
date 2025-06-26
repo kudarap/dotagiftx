@@ -73,6 +73,8 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
+const noop = () => {}
+
 export default function MarketActivity({ datatable, loading, error, disablePrice, onSearchInput }) {
   const { classes } = useStyles()
 
@@ -98,13 +100,15 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
 
   return (
     <>
-      <ActivitySearchInput
-        fullWidth
-        loading={loading}
-        onInput={onSearchInput}
-        color="secondary"
-        placeholder="Filter items"
-      />
+      {onSearchInput !== noop && (
+        <ActivitySearchInput
+          fullWidth
+          loading={loading}
+          onInput={onSearchInput}
+          color="secondary"
+          placeholder="Filter items"
+        />
+      )}
 
       {error && (
         <Typography className={classes.text} color="error">
@@ -184,6 +188,19 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
               </span>
             </Typography>
 
+            {market.delivery && (
+              <Typography component="pre" color="textSecondary" variant="caption">
+                {`Delivered ${new Date(market.delivery.created_at).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  timeZoneName: 'short',
+                })}`}
+              </Typography>
+            )}
+
             <Typography
               component="pre"
               color="textSecondary"
@@ -231,5 +248,5 @@ MarketActivity.defaultProps = {
   loading: false,
   error: null,
   disablePrice: false,
-  onSearchInput: () => {},
+  onSearchInput: noop,
 }
