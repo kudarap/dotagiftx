@@ -39,3 +39,5 @@ export const USER_SUBSCRIPTION_MAP_LABEL = {
   [USER_SUBSCRIPTION_TRADER]: 'Trader',
   [USER_SUBSCRIPTION_PARTNER]: 'Partner',
 }
+
+export const USER_AGE_CAUTION = 7

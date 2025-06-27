@@ -2,8 +2,14 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import Avatar from '@/components/Avatar'
-import { USER_STATUS_BANNED, USER_STATUS_MAP_TEXT, USER_STATUS_SUSPENDED } from '@/constants/user'
+import {
+  USER_AGE_CAUTION,
+  USER_STATUS_BANNED,
+  USER_STATUS_MAP_TEXT,
+  USER_STATUS_SUSPENDED,
+} from '@/constants/user'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 import ChipLink from '@/components/ChipLink'
@@ -14,7 +20,7 @@ import {
 } from '@/constants/strings'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
-import SubscriberBadge from './SubscriberBadge'
+import SubscriberBadge from '@/components/SubscriberBadge'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
 import ExclusiveChip from '@/components/ExclusiveChip'
 import moment from 'moment'
@@ -103,7 +109,10 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
         )}
 
         <Typography variant="body2" component="p">
-          Joined {moment(user.created_at).fromNow()}
+          Joined {moment(user.created_at).fromNow()}{' '}
+          {moment().diff(moment(user.created_at), 'days') <= USER_AGE_CAUTION && (
+            <WarningAmberIcon color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
+          )}
         </Typography>
         <Typography variant="body2" component="p">
           <Link href={`/profiles/${user.steam_id}`}>

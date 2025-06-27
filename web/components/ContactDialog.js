@@ -12,6 +12,9 @@ import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
 import MarketNotes from '@/components/MarketNotes'
 import ProfileCard from '@/components/ProfileCard'
+import { Alert } from '@mui/material'
+import moment from 'moment'
+import { USER_AGE_CAUTION } from '@/constants/user'
 
 export default function ContactDialog(props) {
   const { isMobile } = useContext(AppContext)
@@ -39,6 +42,15 @@ export default function ContactDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
+          {moment().diff(moment(market.user.created_at), 'days') <= USER_AGE_CAUTION && (
+            <>
+              <Alert severity="warning">
+                {`This profile just created ${moment(market.user.created_at).fromNow()}. Please transact with caution.`}
+              </Alert>
+              <br />
+            </>
+          )}
+
           <ProfileCard user={market.user} hideSteamProfile>
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>

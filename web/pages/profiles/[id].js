@@ -13,7 +13,7 @@ import {
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
-import { USER_STATUS_MAP_TEXT } from '@/constants/user'
+import { USER_AGE_CAUTION, USER_STATUS_MAP_TEXT } from '@/constants/user'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
@@ -39,6 +39,7 @@ import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
 import moment from 'moment'
+import { WarningAmber } from '@mui/icons-material'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -229,7 +230,10 @@ export default function UserDetails({
                 </Typography>
               )}
               <Typography variant="body2" component="p">
-                Joined {moment(profile.created_at).fromNow()}
+                Joined {moment(profile.created_at).fromNow()}{' '}
+                {moment().diff(moment(user.created_at), 'days') <= USER_AGE_CAUTION && (
+                  <WarningAmber color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
+                )}
               </Typography>
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
