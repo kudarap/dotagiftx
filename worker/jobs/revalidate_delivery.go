@@ -27,7 +27,7 @@ func NewRevalidateDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStor
 	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &RevalidateDelivery{
 		ds, ms, ps, lg,
-		"revalidate_delivery", time.Hour * 24, f}
+		"revalidate_delivery", time.Hour * 12, f}
 }
 
 func (rd *RevalidateDelivery) String() string { return rd.name }

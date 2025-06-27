@@ -106,7 +106,7 @@ func (app *application) setup() error {
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	slogger := slog.Default()
-	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 
 	// Setup application worker
 	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, phantasmSvc)

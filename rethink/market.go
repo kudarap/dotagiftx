@@ -97,9 +97,8 @@ func (s *marketStorage) PendingDeliveryStatus(o dotagiftx.FindOpts) ([]dotagiftx
 	q := newFindOptsQuery(r.Table(tableMarket), o)
 	q = q.Filter(func(t r.Term) r.Term {
 		return t.HasFields(marketFieldDeliveryStatus).Not().
-			Or(t.Field(marketFieldDeliveryStatus).Eq(dotagiftx.DeliveryStatusError))
-		//Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusError).
-		//	Or(t.Field(marketFieldDeliveryStatus).Eq(core.DeliveryStatusNoHit)))
+			Or(t.Field(marketFieldDeliveryStatus).Eq(dotagiftx.DeliveryStatusError)).
+			Or(t.Field(marketFieldDeliveryStatus).Eq(dotagiftx.DeliveryStatusNoHit))
 	})
 
 	var res []dotagiftx.Market

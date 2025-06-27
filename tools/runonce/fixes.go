@@ -16,7 +16,6 @@ func ReIndexAll(
 		if _, err := catalogStg.Index(item.ID); err != nil {
 			log.Println("err", err)
 		}
-
 	}
 }
 
