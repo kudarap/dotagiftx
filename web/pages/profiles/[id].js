@@ -38,6 +38,7 @@ import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
+import moment from 'moment'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -206,7 +207,7 @@ export default function UserDetails({
             <Typography component="h1">
               <Typography
                 className={classes.profileName}
-                component="p"
+                component="h2"
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
@@ -227,6 +228,9 @@ export default function UserDetails({
                   {profile.notes || USER_STATUS_MAP_TEXT[profile.status]}
                 </Typography>
               )}
+              <Typography variant="body2" component="p">
+                Joined {moment(profile.created_at).fromNow()}
+              </Typography>
               <Typography gutterBottom>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}

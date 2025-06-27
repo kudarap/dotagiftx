@@ -17,6 +17,7 @@ import AppContext from '@/components/AppContext'
 import SubscriberBadge from './SubscriberBadge'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
 import ExclusiveChip from '@/components/ExclusiveChip'
+import moment from 'moment'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -74,7 +75,7 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
       <Typography component="h1">
         <Typography
           className={classes.profileName}
-          component="p"
+          component="h3"
           variant="h4"
           color={isProfileReported ? 'error' : ''}>
           {user.name}
@@ -101,7 +102,10 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           <Typography color="error">{USER_STATUS_MAP_TEXT[user.status]}</Typography>
         )}
 
-        <Typography variant="body2" component="span">
+        <Typography variant="body2" component="p">
+          Joined {moment(user.created_at).fromNow()}
+        </Typography>
+        <Typography variant="body2" component="p">
           <Link href={`/profiles/${user.steam_id}`}>
             {marketSummary ? marketSummary.live : '--'} Items
           </Link>{' '}
@@ -116,10 +120,9 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           &middot;{' '}
           <Link href={`/profiles/${user.steam_id}/bought`}>
             {marketSummary ? marketSummary.bid_completed : '--'} Bought
-          </Link>{' '}
+          </Link>
         </Typography>
 
-        <br />
         <Typography gutterBottom>
           {userTag && (
             <>

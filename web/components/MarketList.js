@@ -35,6 +35,7 @@ import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
 import { getUserBadgeFromBoons } from '@/lib/badge'
 import SubscriberBadge from './SubscriberBadge'
+import moment from 'moment'
 
 const useStyles = makeStyles()(theme => ({
   seller: {
@@ -365,11 +366,15 @@ function baseTable(Component) {
                       {market.user.id ? <strong>{market.user.name}</strong> : <em>████████████</em>}
                       {Boolean(getUserBadgeFromBoons(market.user.boons)) && (
                         <SubscriberBadge
-                          style={{ marginLeft: 4 }}
+                          sx={{ ml: 0.5 }}
                           type={getUserBadgeFromBoons(market.user.boons)}
                         />
                       )}
+                      <Typography variant="caption" sx={{ ml: 0.5 }}>
+                        joined {moment(market.user.created_at).fromNow()}
+                      </Typography>
                       <br />
+
                       <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
                       </Typography>
