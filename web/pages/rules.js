@@ -89,7 +89,7 @@ export default function Version() {
 
           <Typography color="textSecondary">
             Since we don&apos;t have profile feedback system yet. You can report them to{' '}
-            <Link href="/feedback" color="secondary">
+            <Link href="/submit-feedback" color="secondary">
               Feedback
             </Link>{' '}
             page along with details. Please don&apos;t forget to include their dotagiftx profile and

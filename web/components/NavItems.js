@@ -34,7 +34,12 @@ export default function NavItems({ profile, onClose, onLogout }) {
     <MenuItem key={key++} onClick={handleClose} component={Link} href="/my-orders" disableUnderline>
       Orders
     </MenuItem>,
-    <MenuItem key={key++} onClick={handleClose} component={Link} href="/feedback" disableUnderline>
+    <MenuItem
+      key={key++}
+      onClick={handleClose}
+      component={Link}
+      href="/submit-feedback"
+      disableUnderline>
       Feedback
     </MenuItem>,
     // <MenuItem key={key++} onClick={handleClose} component={Link} href="/updates" disableUnderline>
