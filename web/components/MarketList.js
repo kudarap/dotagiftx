@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
-import { debounce, NoSsr } from '@mui/material'
+import { debounce, NoSsr, Tooltip } from '@mui/material'
 import { teal as bidColor } from '@mui/material/colors'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -33,9 +33,12 @@ import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import Avatar from '@/components/Avatar'
 import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
+import SubscriberBadge from '@/components/SubscriberBadge'
 import { getUserBadgeFromBoons } from '@/lib/badge'
-import SubscriberBadge from './SubscriberBadge'
 import moment from 'moment'
+
+const displayProfileJoinedDate = false
+const displayPostId = false
 
 const useStyles = makeStyles()(theme => ({
   seller: {
@@ -115,7 +118,6 @@ export default function MarketList({
       }
     })()
   }
-
   const handleSortClick = v => {
     onSortChange(v)
   }
@@ -370,10 +372,26 @@ function baseTable(Component) {
                           type={getUserBadgeFromBoons(market.user.boons)}
                         />
                       )}
-                      <Typography variant="caption" sx={{ ml: 0.5 }}>
-                        joined {moment(market.user.created_at).fromNow()}
-                      </Typography>
+                      {displayProfileJoinedDate && (
+                        <Typography variant="caption" sx={{ ml: 0.5 }}>
+                          joined {moment(market.user.created_at).fromNow()}
+                        </Typography>
+                      )}
                       <br />
+
+                      {displayPostId && (
+                        <>
+                          <Tooltip placement="bottom" title="Copy id to clipboard" arrow>
+                            <Typography
+                              variant="caption"
+                              color="textSecondary"
+                              style={{ zIndex: 100 }}>
+                              {market.id.split('-')[0]}
+                            </Typography>
+                          </Tooltip>
+                          &nbsp;&middot;&nbsp;
+                        </>
+                      )}
 
                       <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}

@@ -19,8 +19,8 @@ export default function MarketNotes({ text }) {
     <div className={classes.root}>
       <Typography color="textSecondary" component="span" variant="body2">
         {`Notes: `}
+        <span className={classes.text}>{text}</span>
       </Typography>
-      <span className={classes.text}>{text}</span>
     </div>
   )
 }

@@ -13,7 +13,11 @@ import {
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
-import { USER_AGE_CAUTION, USER_STATUS_MAP_TEXT } from '@/constants/user'
+import {
+  USER_AGE_CAUTION,
+  USER_STATUS_MAP_TEXT,
+  USER_SUBSCRIPTION_BADGE_MODE,
+} from '@/constants/user'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
@@ -40,6 +44,7 @@ import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
 import moment from 'moment'
 import { WarningAmber } from '@mui/icons-material'
+import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -64,8 +69,8 @@ const useStyles = makeStyles()(theme => ({
     [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(0.5),
   },
@@ -212,7 +217,7 @@ export default function UserDetails({
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
-                {Boolean(userBadge) && (
+                {!USER_SUBSCRIPTION_BADGE_MODE && Boolean(userBadge) && (
                   <SubscriberBadge
                     style={
                       isMobile
@@ -229,9 +234,9 @@ export default function UserDetails({
                   {profile.notes || USER_STATUS_MAP_TEXT[profile.status]}
                 </Typography>
               )}
-              <Typography variant="body2" component="p">
+              <Typography variant="body2" component="p" color="textSecondary">
                 Joined {moment(profile.created_at).fromNow()}{' '}
-                {moment().diff(moment(user.created_at), 'days') <= USER_AGE_CAUTION && (
+                {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (
                   <WarningAmber color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
                 )}
               </Typography>
@@ -246,18 +251,25 @@ export default function UserDetails({
                     {profile.stats.bid_completed} Bought
                   </Link>
                 </Typography>
-                <br />
-                {userTag && (
-                  <>
-                    <ExclusiveChip tag={userTag} />
-                    &nbsp;
-                  </>
-                )}
-                <ChipLink label="Steam Profile" href={profileURL} />
-                &nbsp;
-                <ChipLink label="SteamRep" href={steamRepURL} />
-                &nbsp;
-                <ChipLink label="Dotabuff" href={dotabuffURL} />
+                <Box sx={{ '& > *': { mt: 0.5 } }}>
+                  {USER_SUBSCRIPTION_BADGE_MODE && userBadge && (
+                    <>
+                      <ExclusiveChip tag={userBadge} />
+                      &nbsp;
+                    </>
+                  )}
+                  {userTag && (
+                    <>
+                      <ExclusiveChip tag={userTag} />
+                      &nbsp;
+                    </>
+                  )}
+                  <ChipLink label="Steam Profile" href={profileURL} />
+                  &nbsp;
+                  <ChipLink label="SteamRep" href={steamRepURL} />
+                  &nbsp;
+                  <ChipLink label="Dotabuff" href={dotabuffURL} />
+                </Box>
               </Typography>
             </Typography>
           </div>

@@ -1,8 +1,31 @@
 import React from 'react'
 import Link from '@mui/material/Link'
 import Chip from '@mui/material/Chip'
+import {
+  USER_SUBSCRIPTION_MAP_COLOR,
+  USER_SUBSCRIPTION_PARTNER,
+  USER_SUBSCRIPTION_SUPPORTER,
+  USER_SUBSCRIPTION_TRADER,
+} from '@/constants/user'
 
 export const tagSettings = {
+  // subscribers
+  supporter: {
+    label: 'Supporter',
+    color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_SUPPORTER],
+    link: '/plus',
+  },
+  trader: {
+    label: 'Trader',
+    color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_TRADER],
+    link: '/plus',
+  },
+  partner: {
+    label: 'Partner',
+    color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_PARTNER],
+    link: '/plus',
+  },
+  // internals
   middleman: {
     label: 'Middleman',
     color: '#15803D',

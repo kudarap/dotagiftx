@@ -9,6 +9,7 @@ import {
   USER_STATUS_BANNED,
   USER_STATUS_MAP_TEXT,
   USER_STATUS_SUSPENDED,
+  USER_SUBSCRIPTION_BADGE_MODE,
 } from '@/constants/user'
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
@@ -85,7 +86,7 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           variant="h4"
           color={isProfileReported ? 'error' : ''}>
           {user.name}
-          {userBadge && !isMobile && (
+          {!USER_SUBSCRIPTION_BADGE_MODE && !isMobile && (
             <SubscriberBadge
               type={userBadge}
               style={{ marginLeft: '0.375rem', marginTop: '0.375rem', position: 'absolute' }}
@@ -94,7 +95,7 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           )}
         </Typography>
 
-        {Boolean(userBadge) && isMobile && (
+        {!USER_SUBSCRIPTION_BADGE_MODE && Boolean(userBadge) && isMobile && (
           <div>
             <SubscriberBadge
               type={userBadge}
@@ -108,7 +109,7 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           <Typography color="error">{USER_STATUS_MAP_TEXT[user.status]}</Typography>
         )}
 
-        <Typography variant="body2" component="p">
+        <Typography variant="body2" component="p" color="textSecondary">
           Joined {moment(user.created_at).fromNow()}{' '}
           {moment().diff(moment(user.created_at), 'days') <= USER_AGE_CAUTION && (
             <WarningAmberIcon color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
@@ -132,7 +133,13 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           </Link>
         </Typography>
 
-        <Typography gutterBottom>
+        <Typography gutterBottom sx={{ '& > *': { mt: 0.5 } }}>
+          {USER_SUBSCRIPTION_BADGE_MODE && userBadge && (
+            <>
+              <ExclusiveChip tag={userBadge} />
+              &nbsp;
+            </>
+          )}
           {userTag && (
             <>
               <ExclusiveChip tag={userTag} />

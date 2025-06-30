@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
-import { debounce } from '@mui/material'
+import { debounce, Tooltip } from '@mui/material'
 import Typography from '@mui/material/Typography'
+import Label from '@mui/icons-material/Label'
 import { lightGreen } from '@mui/material/colors'
 import { teal } from '@mui/material/colors'
 import Avatar from '@/components/Avatar'
@@ -24,6 +25,9 @@ import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import ActivitySearchInput from '@/components/ActivitySearchInput'
+import Button from '@/components/Button'
+
+const displayPostId = false
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -145,6 +149,7 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                 rarity={market.item.rarity}
               />
             </Link>
+
             <Typography variant="body2" color="textSecondary">
               <Link href={`/profiles/${market.user.steam_id}`} color="textPrimary">
                 {market.user.name}
@@ -177,6 +182,16 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                 {`${market.item.name}`}
               </Link>
               &nbsp;
+              {displayPostId && (
+                <>
+                  <Tooltip placement="top" title="Copy id to clipboard" arrow>
+                    <Button size="small" startIcon={<Label />} sx={{ mt: -0.4 }}>
+                      {market.id.split('-')[0]}
+                    </Button>
+                  </Tooltip>
+                  &nbsp;
+                </>
+              )}
               {daysFromNow(market.updated_at)}
               &nbsp;
               <span
@@ -189,9 +204,10 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
             </Typography>
 
             <Typography
-              component="pre"
+              component="div"
               color="textSecondary"
               variant="caption"
+              sx={{ mt: -0.5 }}
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
               {market.partner_steam_id && (
                 <Link
@@ -201,7 +217,6 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                   {market.notes && '\n'}
                 </Link>
               )}
-
               {market.delivery && (
                 <span>{`Delivered ${new Date(market.delivery.created_at).toLocaleString('en-US', {
                   year: 'numeric',
@@ -212,7 +227,6 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                   timeZoneName: 'short',
                 })} \n`}</span>
               )}
-
               {market.notes}
             </Typography>
           </li>

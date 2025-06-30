@@ -48,7 +48,7 @@ export default function ContactBuyerDialog(props) {
 
           <Typography variant="body2" color="textSecondary">
             <br />
-            Guides for selling Giftables
+            <strong>Guides for selling Giftables</strong>
             <ul style={{ lineHeight: 1.7 }}>
               <li>Please be respectful on the price stated by the buyer.</li>
               <li>Make sure your item exist in your inventory.</li>
@@ -74,7 +74,7 @@ export default function ContactBuyerDialog(props) {
             rel="noreferrer noopener"
             disableUnderline
             href={steamProfileURL}>
-            Check Steam Profile
+            Steam Profile
           </BidButton>
         </DialogActions>
       </Dialog>

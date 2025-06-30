@@ -57,7 +57,7 @@ export default function ContactDialog(props) {
 
           <Typography variant="body2" color="textSecondary">
             <br />
-            Guides for buying Giftables
+            <strong>Guides for buying Giftables</strong>
             <ul style={{ lineHeight: 1.7 }}>
               <li>
                 Always check the item or set availability on seller&apos;s Dota 2 {` `}
@@ -124,7 +124,7 @@ export default function ContactDialog(props) {
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>
-            View Seller Items
+            Seller Profile
           </Button>
           <Button
             color="secondary"
@@ -134,7 +134,7 @@ export default function ContactDialog(props) {
             target="_blank"
             rel="noreferrer noopener"
             href={steamProfileURL}>
-            Check Steam Profile
+            Steam Profile
           </Button>
         </DialogActions>
       </Dialog>

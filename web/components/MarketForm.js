@@ -410,7 +410,7 @@ export default function MarketForm() {
         <br />
 
         <Typography variant="body2" color="textSecondary" component="div">
-          Guides for selling Giftables
+          <strong>Guides for selling Giftables</strong>
           <ul>
             <li>Please make sure your item exist in your inventory.</li>
             <li>

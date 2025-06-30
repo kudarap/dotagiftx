@@ -85,7 +85,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 			}
 
 			//rest(5)
-			time.Sleep(time.Second / 4)
+			//time.Sleep(time.Second / 4)
 		}
 
 		// Is there more?

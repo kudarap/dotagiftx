@@ -2,12 +2,16 @@
 
 DotagiftX web user interface
 
-### Stack
+### API reference
 
-- NodeJS 20
-- React 17
-- Next 12
-- Material UI 5
+- [Postman Collection](/postman.json)
+
+### Requiremnets
+
+- go 1.24
+- docker 29.2
+- nodejs 20.16
+- yarn 1.22
 
 ### Features
 

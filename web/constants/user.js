@@ -41,3 +41,5 @@ export const USER_SUBSCRIPTION_MAP_LABEL = {
 }
 
 export const USER_AGE_CAUTION = 7
+
+export const USER_SUBSCRIPTION_BADGE_MODE = true
