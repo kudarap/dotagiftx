@@ -241,7 +241,7 @@ export default function UserDetails({
                 )}
               </Typography>
 
-              <Box>
+              <Box sx={{ mb: 1 }}>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
                   <Link href={`${linkProps.href}/reserved`}>{profile.stats.reserved} Reserved</Link>{' '}
