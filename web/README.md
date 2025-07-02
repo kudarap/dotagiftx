@@ -2,25 +2,12 @@
 
 DotagiftX web user interface
 
-### API reference
+### Requirements
 
-- [Postman Collection](/postman.json)
+- NodeJS `22`
+- Yarn `1.22`
 
-### Requiremnets
+### Local Setup
 
-- go 1.24
-- docker 29.2
-- nodejs 20.16
-- yarn 1.22
-
-### Features
-
-- [x] market search
-- [x] item market listing
-- [x] popular items
-- [x] newly listed items
-- [x] user market listing
-- [x] login with steam
-- [x] user post item
-- [x] user remove listing
-- [x] user post set status and notes
+- `yarn`
+- `yarn dev`
