@@ -140,7 +140,6 @@ export default function Header() {
   return (
     <>
       <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
-        {/*<NoticeMe />*/}
         <Container disableMinHeight maxWidth="xl">
           <Toolbar variant="dense" disableGutters>
             {/* Desktop nav branding */}
@@ -277,6 +276,8 @@ export default function Header() {
         <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
       </AppBar>
+
+      <StopKillingGames />
     </>
   )
 }
@@ -386,5 +387,28 @@ function NoticeMe() {
       </Link>
       <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
     </div>
+  )
+}
+
+function StopKillingGames() {
+  return (
+    <Box sx={{ p: 1, textAlign: 'center', backgroundColor: '#15355f' }}>
+      <Link
+        disableUnderline
+        href="https://www.stopkillinggames.com"
+        target="_blank"
+        rel="noreferrer noopener">
+        <img
+          src="https://www.stopkillinggames.com/images/skglogo.svg"
+          height={16}
+          style={{ paddingRight: 8, marginBottom: -2 }}
+        />
+        <u>
+          Take a look at the <strong>Stop Killing Games</strong> initiative if you are an EU
+          citizen.
+        </u>
+      </Link>
+      {/* <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>x</span> */}
+    </Box>
   )
 }
