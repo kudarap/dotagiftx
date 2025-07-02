@@ -10,7 +10,7 @@ import (
 
 /*
 
-objective: verify buyer received reserved item from seller
+objective: verify a buyer received reserved item from seller
 
 params:
 	- seller persona name: check for sender value

@@ -2,7 +2,7 @@ package verifying
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"strings"
 
 	"github.com/kudarap/dotagiftx/steam"
@@ -11,23 +11,50 @@ import (
 // AssetSource represents inventory asset source provider.
 type AssetSource func(steamID string) ([]steam.Asset, error)
 
-type assetProvider interface {
-	Assets(steamID string) ([]steam.Asset, error)
+type AssetSourceProvider func(steamID string) (provider string, sa []steam.Asset, err error)
+
+type Source struct {
 }
 
-func MultiAssetSource(steamID string, providers []AssetSource) ([]steam.Asset, error) {
-	for i, provider := range providers {
-		assets, err := provider(steamID)
-		if err != nil {
-			if i == len(providers)-1 {
-				return nil, fmt.Errorf("all providered used: %w", err)
+func MultiAssetSource(providers map[string]AssetSource) AssetSource {
+	logger := slog.Default()
+	return func(steamID string) ([]steam.Asset, error) {
+		for name, source := range providers {
+			logger.Info("attempting to fetch asset",
+				"provider", name,
+				"steam_id", steamID,
+			)
+			assets, err := source(steamID)
+			if err != nil {
+				logger.Error("failed to fetch assets",
+					"provider", name, "steam_id", steamID,
+					"err", err,
+				)
+				continue
 			}
-			log.Printf("fetching assets for %s: %v", steamID, err)
-			continue
+			return assets, nil
 		}
-		return assets, nil
+		return nil, fmt.Errorf("all asset providers attempted: %s", steamID)
 	}
-	return nil, fmt.Errorf("no assets found for %s", steamID)
+}
+
+func MultiAssetSourceProvider(providers map[string]AssetSource) AssetSourceProvider {
+	logger := slog.Default()
+	return func(steamID string) (string, []steam.Asset, error) {
+		for name, source := range providers {
+			assets, err := source(steamID)
+			if err != nil {
+				logger.Error("failed to fetch assets",
+					"provider", name, "steam_id", steamID,
+					"err", err,
+				)
+				continue
+			}
+			return name, assets, nil
+		}
+
+		return "", nil, fmt.Errorf("all asset providers attempted: %s", steamID)
+	}
 }
 
 // filterByName filters item that matches the name or in the description

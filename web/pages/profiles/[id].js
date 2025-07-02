@@ -210,10 +210,10 @@ export default function UserDetails({
               src={`${CDN_URL}/${profile.avatar}`}
               glow={isDonationGlowExpired(profile.donated_at)}
             />
-            <Typography component="h1">
+            <Box>
               <Typography
                 className={classes.profileName}
-                component="h2"
+                component="h1"
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
@@ -240,7 +240,8 @@ export default function UserDetails({
                   <WarningAmber color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
                 )}
               </Typography>
-              <Typography gutterBottom>
+
+              <Box>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
                   <Link href={`${linkProps.href}/reserved`}>{profile.stats.reserved} Reserved</Link>{' '}
@@ -270,8 +271,8 @@ export default function UserDetails({
                   &nbsp;
                   <ChipLink label="Dotabuff" href={dotabuffURL} />
                 </Box>
-              </Typography>
-            </Typography>
+              </Box>
+            </Box>
           </div>
 
           {isProfileReported ? (

@@ -24,8 +24,10 @@ func main() {
 	conf.WebhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
 	phantasmSvc := phantasm.NewService(conf, slog.Default())
 
-	assetSrc := steaminvorg.InventoryAssetWithCache
-	assetSrc = phantasmSvc.InventoryAsset
+	assetSrc := verifying.MultiAssetSource(map[string]verifying.AssetSource{
+		"phantasm":           phantasmSvc.InventoryAsset,
+		"steaminventory.org": steaminvorg.InventoryAssetWithCache,
+	})
 
 	params := []struct {
 		steamID, item string
