@@ -1,22 +1,97 @@
-package verifying
+package verify
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
 
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 )
+
+type Service struct {
+	assetSources []AssetSourceContext
+	inventorySvc dotagiftx.InventoryService
+	deliverySvc  dotagiftx.DeliveryService
+}
+
+func NewService(
+	as []AssetSourceContext,
+	is dotagiftx.InventoryService,
+	ds dotagiftx.DeliveryService,
+) *Service {
+	return &Service{as, is, ds}
+}
+
+// Inventory checks item existence on inventory and returns an error when request has status error or response
+// body malformed.
+func (s *Service) Inventory(ctx context.Context, marketID, steamID, itemName string) error {
+	if steamID == "" || itemName == "" {
+		return fmt.Errorf("all params are required")
+	}
+
+	var status dotagiftx.InventoryStatus
+	source := s.assetProvider()
+	provider, assets, err := source(ctx, steamID)
+	if err != nil {
+		status = dotagiftx.InventoryStatusError
+		if errors.Is(err, steam.ErrInventoryPrivate) {
+			status = dotagiftx.InventoryStatusPrivate
+		}
+	}
+	if status != 0 {
+		assets = filterByName(assets, itemName)
+		assets = filterByGiftable(assets)
+		status = dotagiftx.InventoryStatusNoHit
+		if len(assets) != 0 {
+			status = dotagiftx.InventoryStatusVerified
+		}
+	}
+
+	err = s.inventorySvc.Set(ctx, &dotagiftx.Inventory{
+		MarketID:   marketID,
+		Status:     status,
+		Assets:     assets,
+		VerifiedBy: provider,
+	})
+	if err != nil {
+		return fmt.Errorf("failed saving inventory: %w", err)
+	}
+	return nil
+}
+
+func (s *Service) Delivery(ctx context.Context, steamID, itemName string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *Service) assetProvider() AssetSourceContext {
+	logger := slog.Default()
+	return func(ctx context.Context, steamID string) (string, []steam.Asset, error) {
+		for _, source := range s.assetSources {
+			name, assets, err := source(ctx, steamID)
+			if err != nil {
+				logger.Error("failed to fetch assets",
+					"provider", name, "steam_id", steamID,
+					"err", err,
+				)
+				continue
+			}
+			return name, assets, nil
+		}
+
+		return "", nil, fmt.Errorf("all asset providers attempted: %s", steamID)
+	}
+}
 
 // AssetSource represents inventory asset source provider.
 type AssetSource func(steamID string) ([]steam.Asset, error)
 
-type AssetSourceProvider func(steamID string) (provider string, sa []steam.Asset, err error)
+type AssetSourceContext func(ctx context.Context, steamID string) (string, []steam.Asset, error)
 
-type Source struct {
-}
-
-func MultiAssetSource(providers map[string]AssetSource) AssetSource {
+func MultiAssetSource(providers ...AssetSource) AssetSource {
 	logger := slog.Default()
 	return func(steamID string) ([]steam.Asset, error) {
 		for name, source := range providers {
@@ -38,27 +113,7 @@ func MultiAssetSource(providers map[string]AssetSource) AssetSource {
 	}
 }
 
-func MultiAssetSourceProvider(providers map[string]AssetSource) AssetSourceProvider {
-	logger := slog.Default()
-	return func(steamID string) (string, []steam.Asset, error) {
-		for name, source := range providers {
-			assets, err := source(steamID)
-			if err != nil {
-				logger.Error("failed to fetch assets",
-					"provider", name, "steam_id", steamID,
-					"err", err,
-				)
-				continue
-			}
-			return name, assets, nil
-		}
-
-		return "", nil, fmt.Errorf("all asset providers attempted: %s", steamID)
-	}
-}
-
-// filterByName filters item that matches the name or in the description
-// that supports unbundled items.
+// filterByName filters item that matches the name or in the description that supports unbundled items.
 func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 	var matches []steam.Asset
 	for _, asset := range a {

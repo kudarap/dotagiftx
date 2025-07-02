@@ -1,6 +1,7 @@
-package verifying
+package verify
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -12,6 +13,16 @@ import (
 //
 // Returns an error when request has status error or response body malformed.
 func Inventory(source AssetSource, steamID, itemName string) (dotagiftx.InventoryStatus, []steam.Asset, error) {
+	ctx := context.Background()
+	return inventoryContext(ctx, source, steamID, itemName)
+}
+
+func inventoryContext(
+	ctx context.Context,
+	source AssetSource,
+	steamID string,
+	itemName string,
+) (dotagiftx.InventoryStatus, []steam.Asset, error) {
 	if steamID == "" || itemName == "" {
 		return dotagiftx.InventoryStatusError, nil, fmt.Errorf("all params are required")
 	}

@@ -14,7 +14,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 	conf.WebhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
 	phantasmSvc := phantasm.NewService(conf, slog.Default())
 
-	assetSrc := verifying.MultiAssetSource(map[string]verifying.AssetSource{
+	assetSrc := verify.MultiAssetSource(map[string]verify.AssetSource{
 		"phantasm":           phantasmSvc.InventoryAsset,
 		"steaminventory.org": steaminvorg.InventoryAssetWithCache,
 	})
@@ -45,7 +45,7 @@ func main() {
 	items, _ := getDelivered(1)
 
 	for _, item := range items {
-		status, snaps, err := verifying.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
+		status, snaps, err := verify.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))

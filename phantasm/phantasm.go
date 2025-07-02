@@ -31,7 +31,6 @@ import (
 	"github.com/djherbis/times"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx/steam"
-	"github.com/kudarap/dotagiftx/steaminvorg"
 )
 
 const (
@@ -47,13 +46,6 @@ var (
 	fastjson = jsoniter.ConfigFastest
 )
 
-type Config struct {
-	Addrs      []string
-	WebhookURL string `envconfig:"WEBHOOK_URL"`
-	Secret     string
-	Path       string
-}
-
 type Service struct {
 	config        Config
 	cachePrefix   string
@@ -68,6 +60,7 @@ type Service struct {
 }
 
 func NewService(config Config, logger *slog.Logger) *Service {
+	config = config.setDefault()
 	if err := os.MkdirAll(config.Path, 0777); err != nil {
 		panic(err)
 	}
@@ -113,13 +106,12 @@ func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, bod
 }
 
 func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
-	s.logger.Info("status", "retryAfter", s.retryAfter, "crawlerCoolAfter", s.crawlerCoolAfter)
+	fmt.Println(s.config.Addrs)
 
 	ctx := context.Background()
 	raw, err := s.autoRetry(ctx, steamID)
 	if err != nil {
-		s.logger.InfoContext(ctx, "falling back to steaminvorg", "steamid", steamID, "err", err)
-		return steaminvorg.InventoryAssetWithCache(steamID)
+		return nil, err
 	}
 
 	compat := raw.compat()
@@ -210,7 +202,7 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	}
 	s.retryAfter[retryID] = timeNow.Add(s.retryCooldown)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, crawlerURL+"?steam_id="+steamID, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, crawlerURL+"?steam_id="+steamID, nil)
 	if err != nil {
 		return err
 	}

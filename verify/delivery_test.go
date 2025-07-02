@@ -1,4 +1,4 @@
-package verifying
+package verify
 
 import (
 	"reflect"

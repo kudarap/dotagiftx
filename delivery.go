@@ -97,13 +97,14 @@ type (
 		Status           DeliveryStatus `json:"status"             db:"status,omitempty,indexed"    valid:"required"`
 		Assets           []SteamAsset   `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries          int            `json:"retries"            db:"retries,omitempty"`
+		VerifiedBy       string         `json:"verified_by"        db:"verified_by,omitempty,indexed"`
 		CreatedAt        *time.Time     `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
 		UpdatedAt        *time.Time     `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
 	// DeliveryService provides access to Delivery service.
 	DeliveryService interface {
-		// Deliveries returns a list of deliveries.
+		// Deliveries return a list of deliveries.
 		Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, error)
 
 		// Delivery returns Delivery details by id.
@@ -142,14 +143,15 @@ type (
 
 	// Inventory represents steam inventory.
 	Inventory struct {
-		ID          string          `json:"id"                 db:"id,omitempty,omitempty"`
-		MarketID    string          `json:"market_id"          db:"market_id,omitempty,indexed" valid:"required"`
-		Status      InventoryStatus `json:"status"             db:"status,omitempty,indexed"    valid:"required"`
-		Assets      []SteamAsset    `json:"steam_assets"       db:"steam_assets,omitempty"`
-		Retries     int             `json:"retries"            db:"retries,omitempty"`
-		BundleCount int             `json:"bundle_count"       db:"bundle_count,omitempty"`
-		CreatedAt   *time.Time      `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
-		UpdatedAt   *time.Time      `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
+		ID          string          `json:"id"           db:"id,omitempty,omitempty"`
+		MarketID    string          `json:"market_id"    db:"market_id,omitempty,indexed" valid:"required"`
+		Status      InventoryStatus `json:"status"       db:"status,omitempty,indexed"    valid:"required"`
+		Assets      []SteamAsset    `json:"steam_assets" db:"steam_assets,omitempty"`
+		Retries     int             `json:"retries"      db:"retries,omitempty"`
+		BundleCount int             `json:"bundle_count" db:"bundle_count,omitempty"`
+		VerifiedBy  string          `json:"verified_by"  db:"verified_by,omitempty,indexed"`
+		CreatedAt   *time.Time      `json:"created_at"   db:"created_at,omitempty,indexed,omitempty"`
+		UpdatedAt   *time.Time      `json:"updated_at"   db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
 	// InventoryService provides access to Inventory service.

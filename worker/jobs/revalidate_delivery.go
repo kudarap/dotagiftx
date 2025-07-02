@@ -8,7 +8,7 @@ import (
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 // RevalidateDelivery represents a delivery verification job.
@@ -69,7 +69,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verifying.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+			status, assets, err := verify.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}

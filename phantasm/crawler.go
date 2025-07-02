@@ -75,16 +75,38 @@ func Main(args map[string]interface{}) map[string]interface{} {
 		return resp(http.StatusInternalServerError, err)
 	}
 
+	var summary CrawlSummary
+	summary.SteamID = steamID
+	summary.QueryLimit = queryLimit
+	summary.RequestDelayMs = int(requestDelay.Milliseconds())
+	summary.Parts = parts
+	summary.InventoryCount = inventoryCount
+	summary.ElapsedSec = time.Since(now).Seconds()
+	summary.WebhookURL = webhookURL
 	log.Println("done!")
-	return resp(http.StatusOK, map[string]interface{}{
-		"steam_id":         steamID,
-		"query_limit":      queryLimit,
-		"request_delay_ms": requestDelay.Milliseconds(),
-		"parts":            parts,
-		"inventory_count":  inventoryCount,
-		"elapsed_sec":      time.Since(now).Seconds(),
-		"webhook_url":      webhookURL,
-	})
+	return resp(http.StatusOK, summary.data())
+}
+
+type CrawlSummary struct {
+	ElapsedSec     float64 `json:"elapsed_sec"`
+	InventoryCount int     `json:"inventory_count"`
+	Parts          int     `json:"parts"`
+	QueryLimit     int     `json:"query_limit"`
+	RequestDelayMs int     `json:"request_delay_ms"`
+	SteamID        string  `json:"steam_id"`
+	WebhookURL     string  `json:"webhook_url"`
+}
+
+func (s CrawlSummary) data() map[string]interface{} {
+	return map[string]interface{}{
+		"elapsed_sec":      s.ElapsedSec,
+		"inventory_count":  s.InventoryCount,
+		"parts":            s.Parts,
+		"query_limit":      s.QueryLimit,
+		"request_delay_ms": s.RequestDelayMs,
+		"steam_id":         s.SteamID,
+		"webhook_url":      s.WebhookURL,
+	}
 }
 
 type inventory struct {
@@ -113,7 +135,7 @@ type description struct {
 	ClassID                     string             `json:"classid"`
 	Commodity                   int                `json:"commodity"`
 	Currency                    int                `json:"currency"`
-	Descriptions                []DescriptionAttrs `json:"descriptions"`
+	Descriptions                []descriptionAttrs `json:"descriptions"`
 	IconURL                     string             `json:"icon_url"`
 	IconURLLarge                string             `json:"icon_url_large"`
 	InstanceID                  string             `json:"instanceid"`
@@ -135,7 +157,7 @@ type description struct {
 	Type     string `json:"type"`
 }
 
-type DescriptionAttrs struct {
+type descriptionAttrs struct {
 	Name  string `json:"name"`
 	Type  string `json:"type"`
 	Value string `json:"value"`

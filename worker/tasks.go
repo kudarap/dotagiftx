@@ -10,7 +10,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 type TaskProcessor struct {
@@ -20,6 +20,11 @@ type TaskProcessor struct {
 	inventorySvc dotagiftx.InventoryService
 	deliverySvc  dotagiftx.DeliveryService
 	phantasmSvc  *phantasm.Service
+}
+
+type verifier interface {
+	Inventory(ctx context.Context, steamID, itemName string) error
+	Delivery(ctx context.Context, steamID, itemName string) error
 }
 
 func NewTaskProcessor(
@@ -105,20 +110,22 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 	if market.User == nil || market.Item == nil {
 		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
 	}
+	// Skips resell items.
 	if market.IsResell() {
 		return nil
 	}
 
 	src := p.phantasmSvc.InventoryAsset
-	status, assets, err := verifying.Inventory(src, market.User.SteamID, market.Item.Name)
+	status, assets, err := verify.Inventory(src, market.User.SteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}
 
 	err = p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
-		MarketID: market.ID,
-		Status:   status,
-		Assets:   assets,
+		MarketID:   market.ID,
+		Status:     status,
+		Assets:     assets,
+		VerifiedBy: "hee",
 	})
 	return nil
 }
@@ -134,7 +141,7 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 	}
 
 	src := p.phantasmSvc.InventoryAsset
-	status, assets, err := verifying.Delivery(src, market.User.Name, market.PartnerSteamID, market.Item.Name)
+	status, assets, err := verify.Delivery(src, market.User.Name, market.PartnerSteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}
