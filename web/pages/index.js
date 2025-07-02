@@ -129,6 +129,7 @@ export default function Index({ marketSummary, trendingItems }) {
         <meta name="twitter:image" content={`${APP_URL}/icon.png`} />
         <meta name="twitter:site" content={`@${APP_NAME}`} />
         {/* OpenGraph */}
+        <meta property="og:site_name" content={APP_NAME} />
         <meta property="og:url" content={APP_URL} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />

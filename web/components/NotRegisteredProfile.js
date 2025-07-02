@@ -72,6 +72,7 @@ export default function NotRegisteredProfile({ profile, canonicalURL }) {
         <meta name="twitter:image" content={profile.steam_avatar} />
         <meta name="twitter:site" content={`@${APP_NAME}`} />
         {/* OpenGraph */}
+        <meta property="og:site_name" content={APP_NAME} />
         <meta property="og:url" content={canonicalURL} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
