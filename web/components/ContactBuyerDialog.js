@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
@@ -46,10 +47,13 @@ export default function ContactBuyerDialog(props) {
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>
 
-          <Typography variant="body2" color="textSecondary">
-            <br />
+          <Box sx={{ mt: 2 }}>
             <strong>Guides for selling Giftables</strong>
-            <ul style={{ lineHeight: 1.7 }}>
+            <Typography
+              component="ul"
+              variant="body2"
+              color="textSecondary"
+              style={{ lineHeight: 1.7 }}>
               <li>Please be respectful on the price stated by the buyer.</li>
               <li>Make sure your item exist in your inventory.</li>
               <li>
@@ -60,8 +64,8 @@ export default function ContactBuyerDialog(props) {
                 Payment agreements will be done between you and the buyer. This website does not
                 accept or integrate any payment service.
               </li>
-            </ul>
-          </Typography>
+            </Typography>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>

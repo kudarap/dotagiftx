@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
@@ -55,10 +56,13 @@ export default function ContactDialog(props) {
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>
 
-          <Typography variant="body2" color="textSecondary">
-            <br />
+          <Box sx={{ mt: 2 }}>
             <strong>Guides for buying Giftables</strong>
-            <ul style={{ lineHeight: 1.7 }}>
+            <Typography
+              component="ul"
+              variant="body2"
+              color="textSecondary"
+              style={{ lineHeight: 1.7 }}>
               <li>
                 Always check the item or set availability on seller&apos;s Dota 2 {` `}
                 <Link
@@ -119,8 +123,8 @@ export default function ContactDialog(props) {
                 </Link>
                 .
               </li>
-            </ul>
-          </Typography>
+            </Typography>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>

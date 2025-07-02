@@ -25,6 +25,7 @@ import SubscriberBadge from '@/components/SubscriberBadge'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
 import ExclusiveChip from '@/components/ExclusiveChip'
 import moment from 'moment'
+import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -79,7 +80,7 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           {...retinaSrcSet(user.avatar, 100, 100)}
         />
       </a>
-      <Typography component="h1">
+      <Box>
         <Typography
           className={classes.profileName}
           component="h3"
@@ -133,7 +134,7 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           </Link>
         </Typography>
 
-        <Typography gutterBottom sx={{ '& > *': { mt: 0.5 } }}>
+        <Box sx={{ '& > *': { mt: 0.5 } }}>
           {USER_SUBSCRIPTION_BADGE_MODE && userBadge && (
             <>
               <ExclusiveChip tag={userBadge} />
@@ -162,8 +163,8 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           &nbsp;
           <ChipLink label="Dotabuff" href={`${DOTABUFF_PROFILE_BASE_URL}/${user.steam_id}`} />
           {other.children}
-        </Typography>
-      </Typography>
+        </Box>
+      </Box>
     </div>
   )
 }
