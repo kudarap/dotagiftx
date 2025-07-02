@@ -1,6 +1,6 @@
 package dotagiftx
 
-//go:generate stringer -type=Errors -output=errors_string.go
+//go:generate go tool stringer -type=Errors -output=errors_string.go
 
 var appErrorText = map[Errors]string{}
 
