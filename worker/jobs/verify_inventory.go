@@ -78,9 +78,10 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 
 			vi.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, result.Status)
 			err = vi.inventorySvc.Set(ctx, &dotagiftx.Inventory{
-				MarketID: mkt.ID,
-				Status:   result.Status,
-				Assets:   result.Assets,
+				MarketID:   mkt.ID,
+				Status:     result.Status,
+				Assets:     result.Assets,
+				VerifiedBy: result.VerifiedBy,
 			})
 			if err != nil {
 				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)

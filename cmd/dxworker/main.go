@@ -115,7 +115,7 @@ func (app *application) setup() error {
 	)
 
 	// Setup application worker
-	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, phantasmSvc)
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
@@ -133,20 +133,20 @@ func (app *application) setup() error {
 	app.worker.AddJob(jobs.NewVerifyDelivery(
 		deliverySvc,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_verify_delivery"),
 	))
 	app.worker.AddJob(jobs.NewGiftWrappedUpdate(
 		deliverySvc,
 		deliveryStg,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_giftwrapped_update"),
 	))
 	app.worker.AddJob(jobs.NewRevalidateDelivery(
 		deliverySvc,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_revalidate_delivery"),
 	))
 	app.worker.AddJob(jobs.NewExpiringSubscription(

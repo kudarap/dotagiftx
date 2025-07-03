@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -19,12 +18,7 @@ type TaskProcessor struct {
 
 	inventorySvc dotagiftx.InventoryService
 	deliverySvc  dotagiftx.DeliveryService
-	phantasmSvc  *phantasm.Service
-}
-
-type verifier interface {
-	Inventory(ctx context.Context, steamID, itemName string) error
-	Delivery(ctx context.Context, steamID, itemName string) error
+	verify       *verify.Source
 }
 
 func NewTaskProcessor(
@@ -32,14 +26,14 @@ func NewTaskProcessor(
 	queue taskQueue,
 	inventorySvc dotagiftx.InventoryService,
 	deliverySvc dotagiftx.DeliveryService,
-	phantasmSvc *phantasm.Service,
+	source *verify.Source,
 ) *TaskProcessor {
 	return &TaskProcessor{
 		queue:        queue,
 		rate:         rate,
 		inventorySvc: inventorySvc,
 		deliverySvc:  deliverySvc,
-		phantasmSvc:  phantasmSvc,
+		verify:       source,
 	}
 }
 
@@ -115,17 +109,15 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 		return nil
 	}
 
-	src := p.phantasmSvc.InventoryAsset
-	status, assets, err := verify.Inventory(src, market.User.SteamID, market.Item.Name)
+	result, err := p.verify.Inventory(ctx, market.User.SteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}
-
 	err = p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 		MarketID:   market.ID,
-		Status:     status,
-		Assets:     assets,
-		VerifiedBy: "hee",
+		Status:     result.Status,
+		Assets:     result.Assets,
+		VerifiedBy: result.VerifiedBy,
 	})
 	return nil
 }
@@ -140,16 +132,15 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
 	}
 
-	src := p.phantasmSvc.InventoryAsset
-	status, assets, err := verify.Delivery(src, market.User.Name, market.PartnerSteamID, market.Item.Name)
+	result, err := p.verify.Delivery(ctx, market.User.Name, market.PartnerSteamID, market.Item.Name)
 	if err != nil {
 		return err
 	}
-
 	err = p.deliverySvc.Set(ctx, &dotagiftx.Delivery{
-		MarketID: market.ID,
-		Status:   status,
-		Assets:   assets,
+		MarketID:   market.ID,
+		Status:     result.Status,
+		Assets:     result.Assets,
+		VerifiedBy: result.VerifiedBy,
 	})
 	return err
 }
