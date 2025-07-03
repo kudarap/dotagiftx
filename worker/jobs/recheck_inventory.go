@@ -14,7 +14,7 @@ import (
 type RecheckInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
-	source       verify.AssetSourceContext
+	source       verify.AssetSource
 	logger       logging.Logger
 	// job settings
 	name     string
@@ -25,7 +25,7 @@ type RecheckInventory struct {
 func NewRecheckInventory(
 	is dotagiftx.InventoryService,
 	ms dotagiftx.MarketStorage,
-	as verify.AssetSourceContext,
+	as verify.AssetSource,
 	lg logging.Logger,
 ) *RecheckInventory {
 	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}

@@ -109,9 +109,9 @@ func (app *application) setup() error {
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
-	multiAssetSource := verify.MultiAssetSourceContext(
-		phantasmSvc.InventoryAssetContext,
-		steaminvorg.InventoryAssetContext,
+	multiAssetSource := verify.MergeAssetSource(
+		phantasmSvc.InventoryAsset,
+		steaminvorg.InventoryAsset,
 	)
 
 	// Setup application worker

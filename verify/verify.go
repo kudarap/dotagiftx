@@ -12,7 +12,7 @@ import (
 // AssetSource represents inventory asset source provider.
 type AssetSource func(ctx context.Context, steamID string) ([]steam.Asset, error)
 
-func MultiAssetSource(providers ...AssetSource) AssetSource {
+func MergeAssetSource(providers ...AssetSource) AssetSource {
 	logger := slog.Default()
 	return func(ctx context.Context, steamID string) ([]steam.Asset, error) {
 		for name, source := range providers {
@@ -23,7 +23,8 @@ func MultiAssetSource(providers ...AssetSource) AssetSource {
 			assets, err := source(ctx, steamID)
 			if err != nil {
 				logger.Error("failed to fetch assets",
-					"provider", name, "steam_id", steamID,
+					"provider", name,
+					"steam_id", steamID,
 					"err", err,
 				)
 

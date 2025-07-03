@@ -25,7 +25,7 @@ func main() {
 	var c phantasm.Config
 	phantasmSvc := phantasm.NewService(c, slog.Default())
 
-	assetSrc := verify.MultiAssetSource(
+	assetSrc := verify.MergeAssetSource(
 		phantasmSvc.InventoryAsset,
 		steaminvorg.InventoryAsset,
 	)
