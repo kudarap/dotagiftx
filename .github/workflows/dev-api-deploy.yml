@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [dev]
 
+permissions:
+  contents: read
+
 env:
   HOST: root@chiligarlic.com
   IMAGE_NAME: dotagiftx/api:dev
