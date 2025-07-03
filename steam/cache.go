@@ -1,6 +1,7 @@
 package steam
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -14,7 +15,7 @@ const (
 
 // InventoryAssetWithCache returns a compact format from all
 // inventory data with cache.
-func InventoryAssetWithCache(steamID string) ([]Asset, error) {
+func InventoryAssetWithCache(ctx context.Context, steamID string) ([]Asset, error) {
 	hit, err := filecache.Get(getCacheKey(steamID))
 	if err != nil {
 		return nil, err
@@ -26,7 +27,7 @@ func InventoryAssetWithCache(steamID string) ([]Asset, error) {
 		return asset, nil
 	}
 
-	asset, err := InventoryAsset(steamID)
+	asset, err := InventoryAsset(ctx, steamID)
 	if err != nil {
 		return nil, err
 	}

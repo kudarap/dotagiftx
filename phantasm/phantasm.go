@@ -17,7 +17,6 @@ package phantasm
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -31,7 +30,6 @@ import (
 	"github.com/djherbis/times"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx/steam"
-	"github.com/kudarap/dotagiftx/steaminvorg"
 )
 
 const (
@@ -47,14 +45,8 @@ var (
 	fastjson = jsoniter.ConfigFastest
 )
 
-type Config struct {
-	Addrs      []string
-	WebhookURL string `envconfig:"WEBHOOK_URL"`
-	Secret     string
-	Path       string
-}
-
 type Service struct {
+	id            string
 	config        Config
 	cachePrefix   string
 	retryCooldown time.Duration
@@ -68,15 +60,17 @@ type Service struct {
 }
 
 func NewService(config Config, logger *slog.Logger) *Service {
+	config = config.setDefault()
 	if err := os.MkdirAll(config.Path, 0777); err != nil {
 		panic(err)
 	}
 
 	return &Service{
+		id:               "phantasm",
 		config:           config,
 		cachePrefix:      "phantasm",
 		maxAge:           defaultMaxAge,
-		logger:           logger,
+		logger:           logger.With("module", "phantasm"),
 		retryAfter:       map[string]time.Time{},
 		retryCooldown:    defaultRetryCooldown,
 		crawlerCoolAfter: map[string]time.Time{},
@@ -86,7 +80,8 @@ func NewService(config Config, logger *slog.Logger) *Service {
 
 func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, body io.ReadCloser) error {
 	// ensure that the filename has no path separators or parent directory references
-	if steamID == "" || strings.Contains(steamID, "/") || strings.Contains(steamID, "\\") || strings.Contains(steamID, "..") {
+	if steamID == "" || strings.Contains(steamID, "/") || strings.Contains(steamID, "\\") ||
+		strings.Contains(steamID, "..") {
 		return errors.New("invalid steam id")
 	}
 	if secret != s.config.Secret {
@@ -112,18 +107,19 @@ func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, bod
 	return nil
 }
 
-func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
-	s.logger.Info("status", "retryAfter", s.retryAfter, "crawlerCoolAfter", s.crawlerCoolAfter)
-
-	ctx := context.Background()
+func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
 	raw, err := s.autoRetry(ctx, steamID)
 	if err != nil {
-		s.logger.InfoContext(ctx, "falling back to steaminvorg", "steamid", steamID, "err", err)
-		return steaminvorg.InventoryAssetWithCache(steamID)
+		return nil, err
 	}
 
 	compat := raw.compat()
 	return compat.ToAssets(), nil
+}
+
+func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []steam.Asset, error) {
+	res, err := s.InventoryAsset(ctx, steamID)
+	return s.id, res, err
 }
 
 func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, error) {
@@ -175,18 +171,6 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, er
 	return invent, nil
 }
 
-func (s *Service) electNewCrawler() {
-	current := s.config.Addrs[s.electedCrawlerID]
-	id := crawlerName(current)
-	if _, ok := s.crawlerCoolAfter[id]; !ok {
-		s.crawlerCoolAfter[id] = time.Now().Add(s.crawlerCooldown)
-		s.electedCrawlerID++
-		if s.electedCrawlerID >= len(s.config.Addrs) {
-			s.electedCrawlerID = 0
-		}
-	}
-}
-
 func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	timeNow := time.Now()
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
@@ -210,59 +194,31 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	}
 	s.retryAfter[retryID] = timeNow.Add(s.retryCooldown)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, crawlerURL+"?steam_id="+steamID, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, crawlerURL+"?steam_id="+steamID, nil)
 	if err != nil {
 		return err
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-Require-Whisk-Auth", s.config.Secret)
-
-	res, err := http.DefaultClient.Do(req)
+	var summary CrawlSummary
+	statusCode, err := sendRequest(req, &summary)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "fetch raw inventory", "steam_id", steamID, "error", err)
-		return err
-	}
-	defer func() {
-		if err = res.Body.Close(); err != nil {
-			s.logger.ErrorContext(ctx, "close body", "error", err.Error())
-		}
-	}()
-	if res.StatusCode > 299 {
 		// only elect new crawler when not found and too much request
-		if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusTooManyRequests {
+		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
 			s.electNewCrawler()
 		}
-
-		body, _ := io.ReadAll(res.Body)
-		return fmt.Errorf("%d - %s", res.StatusCode, body)
-	}
-
-	data := struct {
-		ElapsedSec     float64 `json:"elapsed_sec"`
-		InventoryCount int     `json:"inventory_count"`
-		Parts          int     `json:"parts"`
-		QueryLimit     int     `json:"query_limit"`
-		RequestDelayMs int     `json:"request_delay_ms"`
-		SteamID        string  `json:"steam_id"`
-		WebhookURL     string  `json:"webhook_url"`
-	}{}
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
+		if statusCode == http.StatusForbidden {
+			return steam.ErrInventoryPrivate
+		}
 		return err
 	}
-	if err = json.Unmarshal(body, &data); err != nil {
-		return err
-	}
-
-	//delete(s.retryAfter, retryID)
 	s.logger.Info("fetch raw inventory",
-		"steam_id", steamID,
-		"count", data.InventoryCount,
-		"parts", data.Parts,
-		"query_limit", data.QueryLimit,
-		"request_delay_ms", data.RequestDelayMs,
-		"steam_id", steamID,
-		"webhook_url", data.WebhookURL,
+		"steam_id", summary.SteamID,
+		"count", summary.InventoryCount,
+		"parts", summary.Parts,
+		"query_limit", summary.QueryLimit,
+		"request_delay_ms", summary.RequestDelayMs,
+		"webhook_url", summary.WebhookURL,
 	)
 	return nil
 }
@@ -281,6 +237,18 @@ func (s *Service) rawInventory(ctx context.Context, steamID string) (*inventory,
 		return nil, fmt.Errorf("unmarshal: %s", err)
 	}
 	return &inventory, nil
+}
+
+func (s *Service) electNewCrawler() {
+	current := s.config.Addrs[s.electedCrawlerID]
+	id := crawlerName(current)
+	if _, ok := s.crawlerCoolAfter[id]; !ok {
+		s.crawlerCoolAfter[id] = time.Now().Add(s.crawlerCooldown)
+		s.electedCrawlerID++
+		if s.electedCrawlerID >= len(s.config.Addrs) {
+			s.electedCrawlerID = 0
+		}
+	}
 }
 
 func (s *Service) filePath(steamID string) string {

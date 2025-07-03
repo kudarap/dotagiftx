@@ -6,9 +6,7 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
-	"github.com/kudarap/dotagiftx/phantasm"
-	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 // RecheckInventory represents a job that rechecks no-hit items.
@@ -16,7 +14,7 @@ import (
 type RecheckInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
-	phantasmSvc  *phantasm.Service
+	source       *verify.Source
 	logger       logging.Logger
 	// job settings
 	name     string
@@ -24,10 +22,15 @@ type RecheckInventory struct {
 	filter   dotagiftx.Inventory
 }
 
-func NewRecheckInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *RecheckInventory {
+func NewRecheckInventory(
+	is dotagiftx.InventoryService,
+	ms dotagiftx.MarketStorage,
+	as *verify.Source,
+	lg logging.Logger,
+) *RecheckInventory {
 	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}
 	return &RecheckInventory{
-		is, ms, ps, lg,
+		is, ms, as, lg,
 		"recheck_inventory", time.Hour, f}
 }
 
@@ -47,8 +50,6 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	src := steaminvorg.InventoryAssetWithCache
-	src = ri.phantasmSvc.InventoryAsset
 	invs, _, err := ri.inventorySvc.Inventories(opts)
 	if err != nil {
 		return err
@@ -69,19 +70,20 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 			continue
 		}
 
-		status, assets, err := verifying.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
+		result, err := ri.source.Inventory(ctx, mkt.User.SteamID, mkt.Item.Name)
 		if err != nil {
+			ri.logger.Errorf("skipped process! source error user:%#v item:%#v err:%#v", mkt.User, mkt.Item, err)
 			continue
 		}
-		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
+		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, result.Status)
 		err = ri.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 			MarketID: mkt.ID,
-			Status:   status,
-			Assets:   assets,
+			Status:   result.Status,
+			Assets:   result.Assets,
 		})
 		if err != nil {
-			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 		}
 
 		//rest(5)

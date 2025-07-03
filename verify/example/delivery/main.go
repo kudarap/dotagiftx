@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -14,7 +14,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 func main() {
@@ -22,17 +22,13 @@ func main() {
 		panic("could not load config: " + err.Error())
 	}
 
-	var conf phantasm.Config
-	conf.Path = os.Getenv("DG_PHANTASM_PATH")
-	conf.Addrs = strings.Split(os.Getenv("DG_PHANTASM_ADDRS"), ",")
-	conf.Secret = os.Getenv("DG_PHANTASM_SECRET")
-	conf.WebhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
-	phantasmSvc := phantasm.NewService(conf, slog.Default())
+	var c phantasm.Config
+	phantasmSvc := phantasm.NewService(c, slog.Default())
 
-	assetSrc := verifying.MultiAssetSource(map[string]verifying.AssetSource{
-		"phantasm":           phantasmSvc.InventoryAsset,
-		"steaminventory.org": steaminvorg.InventoryAssetWithCache,
-	})
+	assetSrc := verify.JoinAssetSource(
+		phantasmSvc.InventoryAssetWithProvider,
+		steaminvorg.InventoryAssetWithProvider,
+	)
 
 	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
 
@@ -44,21 +40,22 @@ func main() {
 
 	items, _ := getDelivered(1)
 
+	ctx := context.Background()
 	for _, item := range items {
-		status, snaps, err := verifying.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
-
+		result, err := verify.Delivery(ctx, assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))
 		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println("Status:", status)
 		if err != nil {
 			errorCtr++
 			fmt.Printf("Errored: %s \n\n", err)
 			continue
 		}
+		fmt.Println("Status:", result.Status)
 
 		okCtr++
 
+		snaps := result.Assets
 		fmt.Println("Items:", len(snaps))
 		if len(snaps) != 0 {
 			r := snaps[0]
@@ -69,7 +66,7 @@ func main() {
 			fmt.Println("Dedication:", r.Dedication)
 		}
 
-		switch status {
+		switch result.Status {
 		case dotagiftx.DeliveryStatusPrivate:
 			privateCtr++
 		case dotagiftx.DeliveryStatusNoHit:

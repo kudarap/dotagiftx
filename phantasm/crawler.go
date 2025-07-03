@@ -5,6 +5,7 @@ package phantasm
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -37,6 +38,7 @@ func Main(args map[string]interface{}) map[string]interface{} {
 		return resp(http.StatusInternalServerError, err)
 	}
 
+	ctx := context.Background()
 	now := time.Now()
 	id, ok := args["steam_id"]
 	if !ok {
@@ -55,7 +57,7 @@ func Main(args map[string]interface{}) map[string]interface{} {
 	for {
 		parts++
 		log.Println("requesting part...", parts)
-		next, status, err := get(steamID, queryLimit, startAssetID)
+		next, status, err := get(ctx, steamID, queryLimit, startAssetID)
 		if err != nil {
 			return resp(status, err)
 		}
@@ -71,20 +73,42 @@ func Main(args map[string]interface{}) map[string]interface{} {
 		time.Sleep(requestDelay)
 	}
 
-	if err := post(steamID, invent); err != nil {
+	if err := post(ctx, steamID, invent); err != nil {
 		return resp(http.StatusInternalServerError, err)
 	}
 
+	var summary CrawlSummary
+	summary.SteamID = steamID
+	summary.QueryLimit = queryLimit
+	summary.RequestDelayMs = int(requestDelay.Milliseconds())
+	summary.Parts = parts
+	summary.InventoryCount = inventoryCount
+	summary.ElapsedSec = time.Since(now).Seconds()
+	summary.WebhookURL = webhookURL
 	log.Println("done!")
-	return resp(http.StatusOK, map[string]interface{}{
-		"steam_id":         steamID,
-		"query_limit":      queryLimit,
-		"request_delay_ms": requestDelay.Milliseconds(),
-		"parts":            parts,
-		"inventory_count":  inventoryCount,
-		"elapsed_sec":      time.Since(now).Seconds(),
-		"webhook_url":      webhookURL,
-	})
+	return resp(http.StatusOK, summary.data())
+}
+
+type CrawlSummary struct {
+	ElapsedSec     float64 `json:"elapsed_sec"`
+	InventoryCount int     `json:"inventory_count"`
+	Parts          int     `json:"parts"`
+	QueryLimit     int     `json:"query_limit"`
+	RequestDelayMs int     `json:"request_delay_ms"`
+	SteamID        string  `json:"steam_id"`
+	WebhookURL     string  `json:"webhook_url"`
+}
+
+func (s CrawlSummary) data() map[string]interface{} {
+	return map[string]interface{}{
+		"elapsed_sec":      s.ElapsedSec,
+		"inventory_count":  s.InventoryCount,
+		"parts":            s.Parts,
+		"query_limit":      s.QueryLimit,
+		"request_delay_ms": s.RequestDelayMs,
+		"steam_id":         s.SteamID,
+		"webhook_url":      s.WebhookURL,
+	}
 }
 
 type inventory struct {
@@ -113,7 +137,7 @@ type description struct {
 	ClassID                     string             `json:"classid"`
 	Commodity                   int                `json:"commodity"`
 	Currency                    int                `json:"currency"`
-	Descriptions                []DescriptionAttrs `json:"descriptions"`
+	Descriptions                []descriptionAttrs `json:"descriptions"`
 	IconURL                     string             `json:"icon_url"`
 	IconURLLarge                string             `json:"icon_url_large"`
 	InstanceID                  string             `json:"instanceid"`
@@ -135,7 +159,7 @@ type description struct {
 	Type     string `json:"type"`
 }
 
-type DescriptionAttrs struct {
+type descriptionAttrs struct {
 	Name  string `json:"name"`
 	Type  string `json:"type"`
 	Value string `json:"value"`
@@ -166,55 +190,60 @@ func merge(res ...*inventory) *inventory {
 	return &inventory
 }
 
-func get(steamID string, count int, lastAssetID string) (*inventory, int, error) {
-	res, err := http.Get(fmt.Sprintf(steamURL, steamID, count, lastAssetID))
+func get(ctx context.Context, steamID string, count int, lastAssetID string) (i *inventory, statusCode int, err error) {
+	url := fmt.Sprintf(steamURL, steamID, count, lastAssetID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
-	}
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, http.StatusInternalServerError, err
-	}
-	res.Body.Close()
-
-	if res.StatusCode > 299 {
-		return nil, res.StatusCode, fmt.Errorf("%d - %s", res.StatusCode, body)
 	}
 
 	var inv inventory
-	if err = json.Unmarshal(body, &inv); err != nil {
+	statusCode, err = sendRequest(req, &inv)
+	if err != nil {
 		return nil, http.StatusInternalServerError, err
 	}
 	return &inv, http.StatusOK, nil
 }
 
-func post(steamID string, inv *inventory) error {
-	b, err := json.Marshal(inv)
+func post(ctx context.Context, steamID string, inv *inventory) error {
+	body, err := json.Marshal(inv)
 	if err != nil {
 		return err
 	}
 
 	url := strings.TrimRight(webhookURL, "/") + "/" + steamID
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(b))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set(WebhookAuthHeader, secret)
 
-	res, err := http.DefaultClient.Do(req)
+	_, err = sendRequest(req, inv)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func sendRequest(req *http.Request, out any) (statusCode int, err error) {
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return 0, err
 	}
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	res.Body.Close()
 	if res.StatusCode > 299 {
-		return fmt.Errorf("%d - %s", res.StatusCode, body)
+		return res.StatusCode, errors.New(http.StatusText(res.StatusCode))
 	}
-	return nil
+
+	if err = json.Unmarshal(body, &out); err != nil {
+		return 0, err
+	}
+	return res.StatusCode, nil
 }
 
 func resp(status int, body interface{}) map[string]interface{} {

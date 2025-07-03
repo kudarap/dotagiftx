@@ -1,15 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
-	"os"
 	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 func main() {
@@ -17,41 +17,35 @@ func main() {
 		panic("could not load config: " + err.Error())
 	}
 
-	var conf phantasm.Config
-	conf.Path = os.Getenv("DG_PHANTASM_PATH")
-	conf.Addrs = strings.Split(os.Getenv("DG_PHANTASM_ADDRS"), ",")
-	conf.Secret = os.Getenv("DG_PHANTASM_SECRET")
-	conf.WebhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
-	phantasmSvc := phantasm.NewService(conf, slog.Default())
+	var c phantasm.Config
+	phantasmSvc := phantasm.NewService(c, slog.Default())
 
-	assetSrc := verifying.MultiAssetSource(map[string]verifying.AssetSource{
-		"phantasm":           phantasmSvc.InventoryAsset,
-		"steaminventory.org": steaminvorg.InventoryAssetWithCache,
-	})
+	assetSrc := verify.JoinAssetSource(
+		phantasmSvc.InventoryAssetWithProvider,
+		steaminvorg.InventoryAssetWithProvider,
+	)
 
 	params := []struct {
 		steamID, item string
 	}{
-		{"76561198088587178", "Tribal Pathways"},
-		{"76561198088587178", "Cannonroar Confessor"},
 		{"76561198088587178", "Dirge Amplifier"},
-		{"76561198088587178", "Chines of the Inquisitor"},
-		{"76561198086152168", "Tribal Pathways"},
-		{"76561198086152168", "Cannonroar Confessor"},
+		{"76561198088587178", "Fluttering Breeze"},
 	}
 
+	ctx := context.Background()
 	for _, param := range params {
-		status, snaps, err := verifying.Inventory(assetSrc, param.steamID, param.item)
-
+		result, err := verify.Inventory(ctx, assetSrc, param.steamID, param.item)
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s", param.steamID, param.item))
 		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println("Status:", status)
 		if err != nil {
 			fmt.Printf("Errored: %s \n\n", err)
 			continue
 		}
 
+		snaps := result.Assets
+		fmt.Println("Verified by:", result.VerifiedBy)
+		fmt.Println("Status:", result.Status)
 		fmt.Println("Items:", len(snaps))
 		if len(snaps) == 0 {
 			fmt.Println("")

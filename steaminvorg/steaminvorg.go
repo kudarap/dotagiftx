@@ -1,6 +1,7 @@
 package steaminvorg
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +14,8 @@ import (
 )
 
 const (
+	providerID = "steaminvorg"
+
 	maxGetRetries = 10
 	retrySleepDur = time.Second * 5
 	// freshCacheDur = time.Hour
@@ -20,13 +23,18 @@ const (
 )
 
 // InventoryAsset returns a compact format from all inventory data.
-func InventoryAsset(steamID string) ([]steam.Asset, error) {
+func InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
 	inv, err := SWR(steamID, false)
 	if err != nil {
 		return nil, err
 	}
 
 	return inv.ToAssets(), nil
+}
+
+func InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []steam.Asset, error) {
+	res, err := InventoryAsset(ctx, steamID)
+	return providerID, res, err
 }
 
 // SWR stale-while-re-invalidating crawled data.

@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [dev]
 
+permissions:
+  contents: read
+
 env:
   HOST: root@chiligarlic.com
   IMAGE_NAME: dotagiftx/api:dev
@@ -34,7 +37,7 @@ jobs:
           go test -v ./http/...
           go test -v ./steam/...
           go test -v ./phantasm/...
-      #   go test -v ./verified/...
+          go test -v ./verify/...
 
   deploy:
     # Ensure compile build passes before deploy

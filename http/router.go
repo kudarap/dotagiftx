@@ -41,6 +41,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/blacklists", handleBlacklisted(s.userSvc, s.cache))
 		r.Post("/webhook/paypal", handleUserSubscriptionWebhook(s.userSvc))
 		r.Post("/webhook/phantasm/{steam_id}", handlePhantasmWebhook(s.phantasmSvc))
+		r.Post("/crawler/phantasm", handlePhantasmCrawl())
 	})
 }
 

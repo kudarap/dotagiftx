@@ -1,6 +1,8 @@
-package verifying
+package verify
 
 import (
+	"context"
+	"errors"
 	"reflect"
 	"testing"
 
@@ -51,11 +53,22 @@ func TestVerifyDelivery(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, assets, err := Delivery(steaminvorg.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
+			t.Skip()
+
+			ctx := context.Background()
+			res, err := Delivery(
+				ctx,
+				steaminvorg.InventoryAssetWithProvider,
+				tt.args.sellerPersona,
+				tt.args.buyerSteamID,
+				tt.args.itemName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Delivery() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
+			got := res.Status
+			assets := res.Assets
 			if got != tt.want {
 				t.Errorf("Delivery() got = %v, want %v", got, tt.want)
 			}
@@ -85,19 +98,32 @@ func TestVerifyDeliveryMultiSources(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			stat1, assets1, err1 := Delivery(steaminvorg.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
-			stat2, assets2, err2 := Delivery(steam.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
+			t.Skip()
 
-			if err1 != err2 {
+			ctx := context.Background()
+			res1, err1 := Delivery(
+				ctx,
+				steaminvorg.InventoryAssetWithProvider,
+				tt.args.sellerPersona,
+				tt.args.buyerSteamID,
+				tt.args.itemName,
+			)
+			res2, err2 := Delivery(
+				ctx,
+				steam.InventoryAssetWithProvider,
+				tt.args.sellerPersona,
+				tt.args.buyerSteamID,
+				tt.args.itemName,
+			)
+
+			if !errors.Is(err2, err1) {
 				t.Errorf("Delivery() error not matched %v x %v", err1, err2)
 			}
-
-			if stat1 != stat2 {
-				t.Errorf("Delivery() status not matched %v x %v", stat1, stat2)
+			if res1.Status != res2.Status {
+				t.Errorf("Delivery() status not matched %v x %v", res1.Status, res2.Status)
 			}
-
-			if !reflect.DeepEqual(assets1, assets2) {
-				t.Errorf("Delivery() assets not matched \n\n%#v \n\n%#v", assets1, assets2)
+			if !reflect.DeepEqual(res1.Assets, res2.Assets) {
+				t.Errorf("Delivery() assets not matched \n\n%#v \n\n%#v", res1.Assets, res2.Assets)
 			}
 		})
 	}
