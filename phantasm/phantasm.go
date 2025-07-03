@@ -124,36 +124,42 @@ func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string
 }
 
 func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, error) {
-	invent, err := s.rawInventory(ctx, steamID)
+	logger := s.logger.With("steam_id", steamID)
+	logger.DebugContext(ctx, "fetch with auto retry")
+
+	localFile, err := s.localInventoryFile(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileNotFound) {
 		return nil, err
 	}
-	if invent != nil {
-		// re-fetch day old file
+	if localFile != nil {
+		logger.DebugContext(ctx, "local file ready")
+
+		// attempt to fetch on aged local data
 		t, err := times.Stat(s.filePath(steamID))
 		if err != nil {
 			return nil, err
 		}
 		age := time.Since(t.ModTime())
 		if age < s.maxAge {
-			return invent, nil
+			return localFile, nil
 		}
 
 		// pre-check before fetching
-		s.logger.Info("checking inventory changed base on hash", "steamid", steamID)
+		logger.DebugContext(ctx, "checking inventory changed base on hash")
 		changed, err := s.hasInventoryChanged(ctx, steamID)
 		if err != nil {
 			return nil, err
 		}
 		if !changed {
-			return invent, nil
+			return localFile, nil
 		}
 
-		s.logger.Info("max age reached, recrawl", "steamid", steamID, "age", age, "max-age", s.maxAge)
+		logger.DebugContext(ctx, "max age reached, recrawl", "age", age, "max-age", s.maxAge)
 	}
 
-	err = s.crawlInventory(ctx, steamID)
 	// don't retry if it's not on waiting state.
+	logger.DebugContext(ctx, "local file not found, crawling...")
+	err = s.crawlInventory(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileWaiting) {
 		return nil, err
 	}
@@ -162,15 +168,15 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, er
 		for i := range 5 {
 			wait := time.Duration(i+1) * time.Second
 			time.Sleep(wait)
-			s.logger.Info("reading local data", "attempt", i+1, "steamid", steamID, "waiting", wait)
-			invent, err = s.rawInventory(ctx, steamID)
+			logger.DebugContext(ctx, "reading local data", "attempt", i+1, "waiting", wait)
+			localFile, err = s.localInventoryFile(ctx, steamID)
 			if err != nil && !errors.Is(err, errFileNotFound) {
 				return nil, err
 			}
 		}
 	}
 	// check raw inventory again but what error you have you need to go.
-	invent, err = s.rawInventory(ctx, steamID)
+	localFile, err = s.localInventoryFile(ctx, steamID)
 	if err != nil {
 		return nil, err
 	}
@@ -182,13 +188,13 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, er
 		return nil, err
 	}
 
-	return invent, nil
+	return localFile, nil
 }
 
 func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
 	crawlerID := crawlerName(crawlerURL)
-	s.logger.InfoContext(ctx, "elected crawler", "crawler", crawlerID, "steamID", steamID)
+	s.logger.DebugContext(ctx, "elected crawler", "crawler", crawlerID)
 
 	// check if crawler is ready
 	cd, err := s.cooldown.CrawlerCooldown(ctx, crawlerID)
@@ -205,7 +211,7 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 		return err
 	}
 	if cd {
-		s.logger.InfoContext(ctx, "skipping crawling, please wait after", "ttl", s.retryCooldown)
+		s.logger.DebugContext(ctx, "skipping crawling, please wait after", "ttl", s.retryCooldown)
 		return errFileWaiting
 	}
 	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, s.retryCooldown); err != nil {
@@ -230,8 +236,8 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 		}
 		return err
 	}
-	s.logger.Info("fetch raw inventory",
-		"steam_id", summary.SteamID,
+	s.logger.DebugContext(ctx,
+		"fetch raw inventory",
 		"count", summary.InventoryCount,
 		"parts", summary.Parts,
 		"query_limit", summary.QueryLimit,
@@ -245,7 +251,7 @@ func (s *Service) hasInventoryChanged(ctx context.Context, steamID string) (bool
 	return false, nil
 }
 
-func (s *Service) rawInventory(ctx context.Context, steamID string) (*inventory, error) {
+func (s *Service) localInventoryFile(ctx context.Context, steamID string) (*inventory, error) {
 	file, err := os.ReadFile(s.filePath(steamID))
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -254,11 +260,11 @@ func (s *Service) rawInventory(ctx context.Context, steamID string) (*inventory,
 		return nil, fmt.Errorf("open file: %s", err)
 	}
 
-	var inventory inventory
-	if err = fastjson.Unmarshal(file, &inventory); err != nil {
+	var inv inventory
+	if err = fastjson.Unmarshal(file, &inv); err != nil {
 		return nil, fmt.Errorf("unmarshal: %s", err)
 	}
-	return &inventory, nil
+	return &inv, nil
 }
 
 func (s *Service) electNewCrawler(ctx context.Context) {

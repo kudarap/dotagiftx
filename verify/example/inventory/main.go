@@ -26,7 +26,10 @@ func main() {
 		panic(err)
 	}
 
-	phantasmSvc := phantasm.NewService(conf.Phantasm, redisClient, slog.Default())
+	logger := slog.Default()
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+
+	phantasmSvc := phantasm.NewService(conf.Phantasm, redisClient, logger)
 	assetSrc := verify.JoinAssetSource(
 		phantasmSvc.InventoryAssetWithProvider,
 		steaminvorg.InventoryAssetWithProvider,
@@ -37,7 +40,7 @@ func main() {
 	}{
 		{"76561198088587178", "Dirge Amplifier"},
 		{"76561198088587178", "Fluttering Breeze"},
-		{"76561198078663607", "Loaded Prospects"},
+		//{"76561198078663607", "Loaded Prospects"},
 	}
 
 	ctx := context.Background()
