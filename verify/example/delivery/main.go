@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	phantasmSvc := phantasm.NewService(conf.Phantasm, redisClient, slog.Default())
 	assetSrc := verify.JoinAssetSource(
 		phantasmSvc.InventoryAssetWithProvider,

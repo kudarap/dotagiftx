@@ -22,6 +22,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	if err = redisClient.Flush(context.Background()); err != nil {
+		panic(err)
+	}
+
 	phantasmSvc := phantasm.NewService(conf.Phantasm, redisClient, slog.Default())
 	assetSrc := verify.JoinAssetSource(
 		phantasmSvc.InventoryAssetWithProvider,
