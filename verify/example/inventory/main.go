@@ -7,6 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kudarap/dotagiftx/phantasm"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -15,19 +16,18 @@ func main() {
 		panic("could not load config: " + err.Error())
 	}
 
-	var conf phantasm.Config
-	phantasmSvc := phantasm.NewService(conf, slog.Default())
+	var c phantasm.Config
+	phantasmSvc := phantasm.NewService(c, slog.Default())
 
 	assetSrc := verify.MultiAssetSource(
 		phantasmSvc.InventoryAsset,
-		//steaminvorg.InventoryAssetWithCache,
+		steaminvorg.InventoryAssetWithCache,
 	)
 
 	params := []struct {
 		steamID, item string
 	}{
 		{"76561198088587178", "Dirge Amplifier"},
-		{"76561198088587178", "Cannonroar Confessor"},
 		{"76561198130214012", "Draca Mane"},
 	}
 

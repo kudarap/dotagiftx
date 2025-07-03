@@ -105,6 +105,12 @@ func MultiAssetSource(providers ...AssetSource) AssetSource {
 					"provider", name, "steam_id", steamID,
 					"err", err,
 				)
+
+				// stop the retrying when error is private.
+				if errors.Is(err, steam.ErrInventoryPrivate) {
+					return nil, err
+				}
+
 				continue
 			}
 			return assets, nil

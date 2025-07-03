@@ -165,18 +165,6 @@ func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, er
 	return invent, nil
 }
 
-func (s *Service) electNewCrawler() {
-	current := s.config.Addrs[s.electedCrawlerID]
-	id := crawlerName(current)
-	if _, ok := s.crawlerCoolAfter[id]; !ok {
-		s.crawlerCoolAfter[id] = time.Now().Add(s.crawlerCooldown)
-		s.electedCrawlerID++
-		if s.electedCrawlerID >= len(s.config.Addrs) {
-			s.electedCrawlerID = 0
-		}
-	}
-}
-
 func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	timeNow := time.Now()
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
@@ -206,13 +194,15 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-Require-Whisk-Auth", s.config.Secret)
-
 	var summary CrawlSummary
 	statusCode, err := sendRequest(req, &summary)
 	if err != nil {
 		// only elect new crawler when not found and too much request
 		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
 			s.electNewCrawler()
+		}
+		if statusCode == http.StatusForbidden {
+			return steam.ErrInventoryPrivate
 		}
 		return err
 	}
@@ -241,6 +231,18 @@ func (s *Service) rawInventory(ctx context.Context, steamID string) (*inventory,
 		return nil, fmt.Errorf("unmarshal: %s", err)
 	}
 	return &inventory, nil
+}
+
+func (s *Service) electNewCrawler() {
+	current := s.config.Addrs[s.electedCrawlerID]
+	id := crawlerName(current)
+	if _, ok := s.crawlerCoolAfter[id]; !ok {
+		s.crawlerCoolAfter[id] = time.Now().Add(s.crawlerCooldown)
+		s.electedCrawlerID++
+		if s.electedCrawlerID >= len(s.config.Addrs) {
+			s.electedCrawlerID = 0
+		}
+	}
 }
 
 func (s *Service) filePath(steamID string) string {

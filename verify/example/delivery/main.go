@@ -6,7 +6,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -22,17 +21,13 @@ func main() {
 		panic("could not load config: " + err.Error())
 	}
 
-	var conf phantasm.Config
-	conf.Path = os.Getenv("DG_PHANTASM_PATH")
-	conf.Addrs = strings.Split(os.Getenv("DG_PHANTASM_ADDRS"), ",")
-	conf.Secret = os.Getenv("DG_PHANTASM_SECRET")
-	conf.WebhookURL = os.Getenv("DG_PHANTASM_WEBHOOK_URL")
-	phantasmSvc := phantasm.NewService(conf, slog.Default())
+	var c phantasm.Config
+	phantasmSvc := phantasm.NewService(c, slog.Default())
 
-	assetSrc := verify.MultiAssetSource(map[string]verify.AssetSource{
-		"phantasm":           phantasmSvc.InventoryAsset,
-		"steaminventory.org": steaminvorg.InventoryAssetWithCache,
-	})
+	assetSrc := verify.MultiAssetSource(
+		phantasmSvc.InventoryAsset,
+		steaminvorg.InventoryAssetWithCache,
+	)
 
 	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
 
