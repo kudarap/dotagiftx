@@ -30,7 +30,7 @@ func NewVerifyDelivery(
 	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &VerifyDelivery{
 		ds, ms, vs, lg,
-		"verify_delivery", time.Hour * 24, f}
+		"verify_delivery", time.Hour * 12, f}
 }
 
 func (vd *VerifyDelivery) String() string { return vd.name }

@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -61,7 +62,7 @@ func (c *Client) Set(key string, val interface{}, expr time.Duration) error {
 
 func (c *Client) Get(key string) (val string, err error) {
 	res, err := c.db.Get(ctx, key).Result()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		err = nil
 		return
 	} else if err != nil {

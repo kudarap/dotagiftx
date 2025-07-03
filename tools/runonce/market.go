@@ -29,7 +29,9 @@ func MarketSetRankingScores(userSvc dotagiftx.UserService, marketSvc dotagiftx.M
 }
 
 func MarketIndexRebuild(marketStg dotagiftx.MarketStorage) {
-	res, _ := marketStg.Find(dotagiftx.FindOpts{})
+	res, _ := marketStg.Find(dotagiftx.FindOpts{
+		Filter: dotagiftx.Market{Status: dotagiftx.MarketStatusSold, Type: dotagiftx.MarketTypeAsk},
+	})
 
 	for _, rr := range res {
 		if _, err := marketStg.Index(rr.ID); err != nil {
