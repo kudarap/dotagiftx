@@ -26,6 +26,9 @@ func handlePhantasmCrawl() http.HandlerFunc {
 		args := map[string]interface{}{
 			"steam_id": r.URL.Query().Get("steam_id"),
 		}
+		if r.URL.Query().Has("precheck") {
+			args["precheck"] = true
+		}
 		resp := phantasm.Main(args)
 
 		code, ok := resp["statusCode"].(int)

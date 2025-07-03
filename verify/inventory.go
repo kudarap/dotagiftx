@@ -22,6 +22,7 @@ func Inventory(ctx context.Context, source AssetSource, steamID, itemName string
 	}
 
 	verifier, assets, err := source(ctx, steamID)
+	result.VerifiedBy = verifier
 	if err != nil {
 		if errors.Is(err, steam.ErrInventoryPrivate) {
 			result.Status = dotagiftx.InventoryStatusPrivate
@@ -30,7 +31,6 @@ func Inventory(ctx context.Context, source AssetSource, steamID, itemName string
 		return nil, err
 	}
 
-	result.VerifiedBy = verifier
 	assets = filterByName(assets, itemName)
 	assets = filterByGiftable(assets)
 	if len(assets) == 0 {

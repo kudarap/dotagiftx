@@ -51,6 +51,7 @@ func main() {
 			fmt.Printf("Errored: %s \n\n", err)
 			continue
 		}
+		fmt.Println("Verified by:", result.VerifiedBy)
 		fmt.Println("Status:", result.Status)
 
 		okCtr++

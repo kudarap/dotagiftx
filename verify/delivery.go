@@ -50,14 +50,14 @@ func Delivery(
 	}
 
 	// Pull inventory data using buyerSteamID.
-	_, assets, err := source(ctx, buyerSteamID)
+	verifier, assets, err := source(ctx, buyerSteamID)
+	result.VerifiedBy = verifier
 	if err != nil {
 		if errors.Is(err, steam.ErrInventoryPrivate) {
 			result.Status = dotagiftx.DeliveryStatusPrivate
 			return &result, nil
 		}
 		return nil, err
-
 	}
 
 	assets = filterByName(assets, itemName)
