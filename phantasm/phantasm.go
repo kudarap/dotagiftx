@@ -78,7 +78,8 @@ func NewService(config Config, logger *slog.Logger) *Service {
 
 func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, body io.ReadCloser) error {
 	// ensure that the filename has no path separators or parent directory references
-	if steamID == "" || strings.Contains(steamID, "/") || strings.Contains(steamID, "\\") || strings.Contains(steamID, "..") {
+	if steamID == "" || strings.Contains(steamID, "/") || strings.Contains(steamID, "\\") ||
+		strings.Contains(steamID, "..") {
 		return errors.New("invalid steam id")
 	}
 	if secret != s.config.Secret {

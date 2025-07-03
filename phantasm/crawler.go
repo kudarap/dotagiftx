@@ -237,7 +237,7 @@ func sendRequest(req *http.Request, out any) (statusCode int, err error) {
 	}
 	res.Body.Close()
 	if res.StatusCode > 299 {
-		return res.StatusCode, fmt.Errorf("%d - %s", res.StatusCode, body)
+		return res.StatusCode, errors.New(http.StatusText(res.StatusCode))
 	}
 
 	if err = json.Unmarshal(body, &out); err != nil {
