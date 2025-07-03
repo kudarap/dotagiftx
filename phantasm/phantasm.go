@@ -105,8 +105,7 @@ func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, bod
 	return nil
 }
 
-func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
-	ctx := context.Background()
+func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
 	raw, err := s.autoRetry(ctx, steamID)
 	if err != nil {
 		return nil, err

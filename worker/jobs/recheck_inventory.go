@@ -6,8 +6,6 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
-	"github.com/kudarap/dotagiftx/phantasm"
-	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -16,7 +14,7 @@ import (
 type RecheckInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
-	phantasmSvc  *phantasm.Service
+	source       verify.AssetSourceContext
 	logger       logging.Logger
 	// job settings
 	name     string
@@ -24,10 +22,15 @@ type RecheckInventory struct {
 	filter   dotagiftx.Inventory
 }
 
-func NewRecheckInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *RecheckInventory {
+func NewRecheckInventory(
+	is dotagiftx.InventoryService,
+	ms dotagiftx.MarketStorage,
+	as verify.AssetSourceContext,
+	lg logging.Logger,
+) *RecheckInventory {
 	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}
 	return &RecheckInventory{
-		is, ms, ps, lg,
+		is, ms, as, lg,
 		"recheck_inventory", time.Hour, f}
 }
 
@@ -47,8 +50,6 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	src := steaminvorg.InventoryAssetWithCache
-	src = ri.phantasmSvc.InventoryAsset
 	invs, _, err := ri.inventorySvc.Inventories(opts)
 	if err != nil {
 		return err
@@ -69,7 +70,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 			continue
 		}
 
-		status, assets, err := verify.Inventory(src, mkt.User.SteamID, mkt.Item.Name)
+		status, assets, err := verify.Inventory(ctx, ri.source, mkt.User.SteamID, mkt.Item.Name)
 		if err != nil {
 			continue
 		}

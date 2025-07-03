@@ -1,6 +1,7 @@
 package verify
 
 import (
+	"context"
 	"testing"
 
 	"github.com/kudarap/dotagiftx"
@@ -38,8 +39,9 @@ func TestVerifyInventory(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
 			src := MultiAssetSource()
-			got, assets, err := Inventory(src, tt.args.steamID, tt.args.itemName)
+			got, assets, err := Inventory(ctx, src, tt.args.steamID, tt.args.itemName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Inventory() error = %v, wantErr %v", err, tt.wantErr)
 				return

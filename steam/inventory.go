@@ -1,6 +1,7 @@
 package steam
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -19,7 +20,7 @@ var ErrInventoryPrivate = errors.New("profile inventory is private")
 type Asset = dotagiftx.SteamAsset
 
 // InventoryAsset returns a compact format from raw inventory data.
-func InventoryAsset(steamID string) ([]Asset, error) {
+func InventoryAsset(ctx context.Context, steamID string) ([]Asset, error) {
 	r, err := reqDota2Inventory(steamID)
 	if err != nil {
 		return nil, fmt.Errorf("could send request: %s", err)

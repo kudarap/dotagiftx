@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -31,8 +32,9 @@ func main() {
 		{"76561198130214012", "Draca Mane"},
 	}
 
+	ctx := context.Background()
 	for _, param := range params {
-		status, snaps, err := verify.Inventory(assetSrc, param.steamID, param.item)
+		status, snaps, err := verify.Inventory(ctx, assetSrc, param.steamID, param.item)
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s", param.steamID, param.item))
 		fmt.Println(strings.Repeat("-", 70))

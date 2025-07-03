@@ -1,6 +1,7 @@
 package steaminvorg
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,7 +21,7 @@ const (
 )
 
 // InventoryAsset returns a compact format from all inventory data.
-func InventoryAsset(steamID string) ([]steam.Asset, error) {
+func InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
 	inv, err := SWR(steamID, false)
 	if err != nil {
 		return nil, err

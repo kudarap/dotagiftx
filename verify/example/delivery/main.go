@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,7 +27,7 @@ func main() {
 
 	assetSrc := verify.MultiAssetSource(
 		phantasmSvc.InventoryAsset,
-		steaminvorg.InventoryAssetWithCache,
+		steaminvorg.InventoryAsset,
 	)
 
 	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
@@ -39,8 +40,9 @@ func main() {
 
 	items, _ := getDelivered(1)
 
+	ctx := context.Background()
 	for _, item := range items {
-		status, snaps, err := verify.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
+		status, snaps, err := verify.Delivery(ctx, assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))

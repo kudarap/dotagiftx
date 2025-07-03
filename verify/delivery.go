@@ -1,6 +1,7 @@
 package verify
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -35,6 +36,7 @@ process:
 //
 // Returns an error when request has status error or body malformed.
 func Delivery(
+	ctx context.Context,
 	source AssetSource,
 	sellerPersona,
 	buyerSteamID,
@@ -45,7 +47,7 @@ func Delivery(
 	}
 
 	// Pull inventory data using buyerSteamID.
-	assets, err := source(buyerSteamID)
+	assets, err := source(ctx, buyerSteamID)
 	if err != nil {
 		if errors.Is(err, steam.ErrInventoryPrivate) {
 			return dotagiftx.DeliveryStatusPrivate, nil, nil

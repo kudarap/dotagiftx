@@ -1,6 +1,8 @@
 package verify
 
 import (
+	"context"
+	"errors"
 	"reflect"
 	"testing"
 
@@ -51,7 +53,13 @@ func TestVerifyDelivery(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, assets, err := Delivery(steaminvorg.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
+			ctx := context.Background()
+			got, assets, err := Delivery(
+				ctx,
+				steaminvorg.InventoryAsset,
+				tt.args.sellerPersona,
+				tt.args.buyerSteamID,
+				tt.args.itemName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Delivery() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -85,10 +93,23 @@ func TestVerifyDeliveryMultiSources(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			stat1, assets1, err1 := Delivery(steaminvorg.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
-			stat2, assets2, err2 := Delivery(steam.InventoryAsset, tt.args.sellerPersona, tt.args.buyerSteamID, tt.args.itemName)
+			ctx := context.Background()
+			stat1, assets1, err1 := Delivery(
+				ctx,
+				steaminvorg.InventoryAsset,
+				tt.args.sellerPersona,
+				tt.args.buyerSteamID,
+				tt.args.itemName,
+			)
+			stat2, assets2, err2 := Delivery(
+				ctx,
+				steam.InventoryAsset,
+				tt.args.sellerPersona,
+				tt.args.buyerSteamID,
+				tt.args.itemName,
+			)
 
-			if err1 != err2 {
+			if !errors.Is(err2, err1) {
 				t.Errorf("Delivery() error not matched %v x %v", err1, err2)
 			}
 
