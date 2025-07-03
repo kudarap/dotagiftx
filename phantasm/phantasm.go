@@ -17,7 +17,6 @@ package phantasm
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -106,8 +105,6 @@ func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, bod
 }
 
 func (s *Service) InventoryAsset(steamID string) ([]steam.Asset, error) {
-	fmt.Println(s.config.Addrs)
-
 	ctx := context.Background()
 	raw, err := s.autoRetry(ctx, steamID)
 	if err != nil {
@@ -209,52 +206,22 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-Require-Whisk-Auth", s.config.Secret)
 
-	res, err := http.DefaultClient.Do(req)
+	var summary CrawlSummary
+	statusCode, err := sendRequest(req, &summary)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "fetch raw inventory", "steam_id", steamID, "error", err)
-		return err
-	}
-	defer func() {
-		if err = res.Body.Close(); err != nil {
-			s.logger.ErrorContext(ctx, "close body", "error", err.Error())
-		}
-	}()
-	if res.StatusCode > 299 {
 		// only elect new crawler when not found and too much request
-		if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusTooManyRequests {
+		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
 			s.electNewCrawler()
 		}
-
-		body, _ := io.ReadAll(res.Body)
-		return fmt.Errorf("%d - %s", res.StatusCode, body)
-	}
-
-	data := struct {
-		ElapsedSec     float64 `json:"elapsed_sec"`
-		InventoryCount int     `json:"inventory_count"`
-		Parts          int     `json:"parts"`
-		QueryLimit     int     `json:"query_limit"`
-		RequestDelayMs int     `json:"request_delay_ms"`
-		SteamID        string  `json:"steam_id"`
-		WebhookURL     string  `json:"webhook_url"`
-	}{}
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
 		return err
 	}
-	if err = json.Unmarshal(body, &data); err != nil {
-		return err
-	}
-
-	//delete(s.retryAfter, retryID)
 	s.logger.Info("fetch raw inventory",
-		"steam_id", steamID,
-		"count", data.InventoryCount,
-		"parts", data.Parts,
-		"query_limit", data.QueryLimit,
-		"request_delay_ms", data.RequestDelayMs,
-		"steam_id", steamID,
-		"webhook_url", data.WebhookURL,
+		"steam_id", summary.SteamID,
+		"count", summary.InventoryCount,
+		"parts", summary.Parts,
+		"query_limit", summary.QueryLimit,
+		"request_delay_ms", summary.RequestDelayMs,
+		"webhook_url", summary.WebhookURL,
 	)
 	return nil
 }
