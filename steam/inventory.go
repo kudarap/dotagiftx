@@ -12,9 +12,13 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-var fastjson = jsoniter.ConfigFastest
+const providerID = "steam"
 
-var ErrInventoryPrivate = errors.New("profile inventory is private")
+var (
+	ErrInventoryPrivate = errors.New("profile inventory is private")
+
+	fastjson = jsoniter.ConfigFastest
+)
 
 // Asset represents a compact inventory base of RawInventory model.
 type Asset = dotagiftx.SteamAsset
@@ -27,6 +31,11 @@ func InventoryAsset(ctx context.Context, steamID string) ([]Asset, error) {
 	}
 	defer r.Body.Close()
 	return assetParser(r.Body)
+}
+
+func InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []Asset, error) {
+	res, err := InventoryAsset(ctx, steamID)
+	return providerID, res, err
 }
 
 func assetParser(r io.Reader) ([]Asset, error) {

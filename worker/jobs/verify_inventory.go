@@ -6,8 +6,6 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
-	"github.com/kudarap/dotagiftx/phantasm"
-	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -15,7 +13,7 @@ import (
 type VerifyInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
-	phantasmSvc  *phantasm.Service
+	source       *verify.Source
 	logger       logging.Logger
 	// job settings
 	name     string
@@ -23,10 +21,15 @@ type VerifyInventory struct {
 	filter   dotagiftx.Market
 }
 
-func NewVerifyInventory(is dotagiftx.InventoryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *VerifyInventory {
+func NewVerifyInventory(
+	is dotagiftx.InventoryService,
+	ms dotagiftx.MarketStorage,
+	vs *verify.Source,
+	lg logging.Logger,
+) *VerifyInventory {
 	f := dotagiftx.Market{}
 	return &VerifyInventory{
-		is, ms, ps, lg,
+		is, ms, vs, lg,
 		"verify_inventory", time.Hour * 24, f}
 }
 
@@ -47,8 +50,6 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 	opts.Limit = 10
 	opts.Page = 0
 
-	source := steaminvorg.InventoryAssetWithCache
-	source = vi.phantasmSvc.InventoryAsset
 	for {
 		res, err := vi.marketStg.PendingInventoryStatus(opts)
 		if err != nil {
@@ -70,19 +71,19 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verify.Inventory(source, mkt.User.SteamID, mkt.Item.Name)
+			result, err := vi.source.Inventory(ctx, mkt.User.SteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}
-			vi.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
+			vi.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, result.Status)
 			err = vi.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 				MarketID: mkt.ID,
-				Status:   status,
-				Assets:   assets,
+				Status:   result.Status,
+				Assets:   result.Assets,
 			})
 			if err != nil {
-				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
 			//rest(5)

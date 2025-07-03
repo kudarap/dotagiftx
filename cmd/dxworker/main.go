@@ -109,9 +109,9 @@ func (app *application) setup() error {
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
-	multiAssetSource := verify.MergeAssetSource(
-		phantasmSvc.InventoryAsset,
-		steaminvorg.InventoryAsset,
+	assetSource := verify.NewSource(
+		phantasmSvc.InventoryAssetWithProvider,
+		steaminvorg.InventoryAssetWithProvider,
 	)
 
 	// Setup application worker
@@ -121,13 +121,13 @@ func (app *application) setup() error {
 	app.worker.AddJob(jobs.NewRecheckInventory(
 		inventorySvc,
 		marketStg,
-		multiAssetSource,
+		assetSource,
 		logging.WithPrefix(logger, "job_recheck_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyInventory(
 		inventorySvc,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_verify_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyDelivery(

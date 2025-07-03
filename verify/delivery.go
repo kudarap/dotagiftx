@@ -41,26 +41,33 @@ func Delivery(
 	sellerPersona,
 	buyerSteamID,
 	itemName string,
-) (dotagiftx.DeliveryStatus, []dotagiftx.SteamAsset, error) {
+) (*DeliveryResult, error) {
+	result := DeliveryResult{
+		Status: dotagiftx.DeliveryStatusError,
+	}
 	if sellerPersona == "" || buyerSteamID == "" || itemName == "" {
-		return dotagiftx.DeliveryStatusError, nil, fmt.Errorf("all params are required")
+		return &result, fmt.Errorf("all params are required")
 	}
 
 	// Pull inventory data using buyerSteamID.
-	assets, err := source(ctx, buyerSteamID)
+	_, assets, err := source(ctx, buyerSteamID)
 	if err != nil {
 		if errors.Is(err, steam.ErrInventoryPrivate) {
-			return dotagiftx.DeliveryStatusPrivate, nil, nil
+			result.Status = dotagiftx.DeliveryStatusPrivate
+			return &result, nil
 		}
-		return dotagiftx.DeliveryStatusError, nil, err
+		return nil, err
+
 	}
 
 	assets = filterByName(assets, itemName)
 	if len(assets) == 0 {
-		return dotagiftx.DeliveryStatusNoHit, assets, nil
+		result.Status = dotagiftx.DeliveryStatusNoHit
+		return &result, nil
 	}
 
-	status := dotagiftx.DeliveryStatusNameVerified
+	result.Assets = assets
+	result.Status = dotagiftx.DeliveryStatusNameVerified
 	// Check asset sender matches the seller persona name.
 	//
 	// NOTE! checking against seller persona name might not be accurate since
@@ -70,8 +77,8 @@ func Delivery(
 		if ss.GiftFrom != sellerPersona {
 			continue
 		}
-		status = dotagiftx.DeliveryStatusSenderVerified
+		result.Status = dotagiftx.DeliveryStatusSenderVerified
 	}
 
-	return status, assets, nil
+	return &result, nil
 }

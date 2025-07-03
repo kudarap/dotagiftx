@@ -14,6 +14,8 @@ import (
 )
 
 const (
+	providerID = "steaminvorg"
+
 	maxGetRetries = 10
 	retrySleepDur = time.Second * 5
 	// freshCacheDur = time.Hour
@@ -28,6 +30,11 @@ func InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) 
 	}
 
 	return inv.ToAssets(), nil
+}
+
+func InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []steam.Asset, error) {
+	res, err := InventoryAsset(ctx, steamID)
+	return providerID, res, err
 }
 
 // SWR stale-while-re-invalidating crawled data.

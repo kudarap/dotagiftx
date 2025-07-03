@@ -4,40 +4,66 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
 // AssetSource represents inventory asset source provider.
-type AssetSource func(ctx context.Context, steamID string) ([]steam.Asset, error)
+type AssetSource func(ctx context.Context, steamID string) (providerID string, sa []steam.Asset, err error)
 
-func MergeAssetSource(providers ...AssetSource) AssetSource {
-	logger := slog.Default()
-	return func(ctx context.Context, steamID string) ([]steam.Asset, error) {
-		for name, source := range providers {
-			logger.Info("attempting to fetch asset",
-				"provider", name,
-				"steam_id", steamID,
-			)
-			assets, err := source(ctx, steamID)
+type Source struct {
+	providers []AssetSource
+}
+
+func NewSource(as ...AssetSource) *Source {
+	return &Source{as}
+}
+
+type InventorResult struct {
+	Status     dotagiftx.InventoryStatus
+	Assets     []steam.Asset
+	VerifiedBy string
+}
+
+func (s *Source) Inventory(ctx context.Context, steamID, itemName string) (*InventorResult, error) {
+	src := JoinAssetSource(s.providers...)
+	res, err := Inventory(ctx, src, steamID, itemName)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+type DeliveryResult struct {
+	Status     dotagiftx.DeliveryStatus
+	Assets     []steam.Asset
+	VerifiedBy string
+}
+
+func (s *Source) Delivery(ctx context.Context, sellerPersona, steamID, itemName string) (*DeliveryResult, error) {
+	src := JoinAssetSource(s.providers...)
+	res, err := Delivery(ctx, src, sellerPersona, steamID, itemName)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func JoinAssetSource(providers ...AssetSource) AssetSource {
+	return func(ctx context.Context, steamID string) (string, []steam.Asset, error) {
+		for _, source := range providers {
+			name, assets, err := source(ctx, steamID)
 			if err != nil {
-				logger.Error("failed to fetch assets",
-					"provider", name,
-					"steam_id", steamID,
-					"err", err,
-				)
-
-				// stop the retrying when error is private.
 				if errors.Is(err, steam.ErrInventoryPrivate) {
-					logger.Info("stopping due to private inventory")
-					return nil, err
+					return name, nil, err
 				}
-
 				continue
 			}
-			return assets, nil
+			return name, assets, nil
 		}
-		return nil, fmt.Errorf("all asset providers attempted: %s", steamID)
+		return "", nil, fmt.Errorf("all source exhausted: %s", steamID)
 	}
 }

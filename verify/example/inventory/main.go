@@ -20,30 +20,32 @@ func main() {
 	var c phantasm.Config
 	phantasmSvc := phantasm.NewService(c, slog.Default())
 
-	assetSrc := verify.MergeAssetSource(
-		phantasmSvc.InventoryAsset,
-		steaminvorg.InventoryAssetWithCache,
+	assetSrc := verify.JoinAssetSource(
+		phantasmSvc.InventoryAssetWithProvider,
+		steaminvorg.InventoryAssetWithProvider,
 	)
 
 	params := []struct {
 		steamID, item string
 	}{
 		{"76561198088587178", "Dirge Amplifier"},
-		{"76561198130214012", "Draca Mane"},
+		{"76561198088587178", "Fluttering Breeze"},
 	}
 
 	ctx := context.Background()
 	for _, param := range params {
-		status, snaps, err := verify.Inventory(ctx, assetSrc, param.steamID, param.item)
+		result, err := verify.Inventory(ctx, assetSrc, param.steamID, param.item)
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s", param.steamID, param.item))
 		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println("Status:", status)
 		if err != nil {
 			fmt.Printf("Errored: %s \n\n", err)
 			continue
 		}
 
+		snaps := result.Assets
+		fmt.Println("Verified by:", result.VerifiedBy)
+		fmt.Println("Status:", result.Status)
 		fmt.Println("Items:", len(snaps))
 		if len(snaps) == 0 {
 			fmt.Println("")

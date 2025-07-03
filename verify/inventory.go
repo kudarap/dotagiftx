@@ -13,32 +13,34 @@ import (
 // Inventory checks item existence on inventory.
 //
 // Returns an error when request has status error or response body malformed.
-func Inventory(
-	ctx context.Context,
-	source AssetSource,
-	steamID string,
-	itemName string,
-) (dotagiftx.InventoryStatus, []steam.Asset, error) {
+func Inventory(ctx context.Context, source AssetSource, steamID, itemName string) (*InventorResult, error) {
+	result := InventorResult{
+		Status: dotagiftx.InventoryStatusError,
+	}
 	if steamID == "" || itemName == "" {
-		return dotagiftx.InventoryStatusError, nil, fmt.Errorf("all params are required")
+		return &result, fmt.Errorf("all params are required")
 	}
 
-	assets, err := source(ctx, steamID)
+	verifier, assets, err := source(ctx, steamID)
 	if err != nil {
 		if errors.Is(err, steam.ErrInventoryPrivate) {
-			return dotagiftx.InventoryStatusPrivate, nil, nil
+			result.Status = dotagiftx.InventoryStatusPrivate
+			return &result, nil
 		}
-
-		return dotagiftx.InventoryStatusError, nil, err
+		return nil, err
 	}
 
+	result.VerifiedBy = verifier
 	assets = filterByName(assets, itemName)
 	assets = filterByGiftable(assets)
 	if len(assets) == 0 {
-		return dotagiftx.InventoryStatusNoHit, assets, nil
+		result.Status = dotagiftx.InventoryStatusNoHit
+		return &result, nil
 	}
 
-	return dotagiftx.InventoryStatusVerified, assets, nil
+	result.Assets = assets
+	result.Status = dotagiftx.InventoryStatusVerified
+	return &result, nil
 }
 
 // filterByName filters item that matches the name or in the description that supports unbundled items.

@@ -46,6 +46,7 @@ var (
 )
 
 type Service struct {
+	id            string
 	config        Config
 	cachePrefix   string
 	retryCooldown time.Duration
@@ -65,10 +66,11 @@ func NewService(config Config, logger *slog.Logger) *Service {
 	}
 
 	return &Service{
+		id:               "phantasm",
 		config:           config,
 		cachePrefix:      "phantasm",
 		maxAge:           defaultMaxAge,
-		logger:           logger,
+		logger:           logger.With("module", "phantasm"),
 		retryAfter:       map[string]time.Time{},
 		retryCooldown:    defaultRetryCooldown,
 		crawlerCoolAfter: map[string]time.Time{},
@@ -113,6 +115,11 @@ func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.A
 
 	compat := raw.compat()
 	return compat.ToAssets(), nil
+}
+
+func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []steam.Asset, error) {
+	res, err := s.InventoryAsset(ctx, steamID)
+	return s.id, res, err
 }
 
 func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, error) {

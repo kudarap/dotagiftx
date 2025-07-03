@@ -25,9 +25,9 @@ func main() {
 	var c phantasm.Config
 	phantasmSvc := phantasm.NewService(c, slog.Default())
 
-	assetSrc := verify.MergeAssetSource(
-		phantasmSvc.InventoryAsset,
-		steaminvorg.InventoryAsset,
+	assetSrc := verify.JoinAssetSource(
+		phantasmSvc.InventoryAssetWithProvider,
+		steaminvorg.InventoryAssetWithProvider,
 	)
 
 	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
@@ -42,20 +42,20 @@ func main() {
 
 	ctx := context.Background()
 	for _, item := range items {
-		status, snaps, err := verify.Delivery(ctx, assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
-
+		result, err := verify.Delivery(ctx, assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))
 		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println("Status:", status)
 		if err != nil {
 			errorCtr++
 			fmt.Printf("Errored: %s \n\n", err)
 			continue
 		}
+		fmt.Println("Status:", result.Status)
 
 		okCtr++
 
+		snaps := result.Assets
 		fmt.Println("Items:", len(snaps))
 		if len(snaps) != 0 {
 			r := snaps[0]
@@ -66,7 +66,7 @@ func main() {
 			fmt.Println("Dedication:", r.Dedication)
 		}
 
-		switch status {
+		switch result.Status {
 		case dotagiftx.DeliveryStatusPrivate:
 			privateCtr++
 		case dotagiftx.DeliveryStatusNoHit:

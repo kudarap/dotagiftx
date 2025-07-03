@@ -14,7 +14,7 @@ import (
 type RecheckInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
-	source       verify.AssetSource
+	source       *verify.Source
 	logger       logging.Logger
 	// job settings
 	name     string
@@ -25,7 +25,7 @@ type RecheckInventory struct {
 func NewRecheckInventory(
 	is dotagiftx.InventoryService,
 	ms dotagiftx.MarketStorage,
-	as verify.AssetSource,
+	as *verify.Source,
 	lg logging.Logger,
 ) *RecheckInventory {
 	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}
@@ -70,19 +70,20 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 			continue
 		}
 
-		status, assets, err := verify.Inventory(ctx, ri.source, mkt.User.SteamID, mkt.Item.Name)
+		result, err := ri.source.Inventory(ctx, mkt.User.SteamID, mkt.Item.Name)
 		if err != nil {
+			ri.logger.Errorf("skipped process! source error user:%#v item:%#v err:%#v", mkt.User, mkt.Item, err)
 			continue
 		}
-		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, status)
 
+		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, result.Status)
 		err = ri.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 			MarketID: mkt.ID,
-			Status:   status,
-			Assets:   assets,
+			Status:   result.Status,
+			Assets:   result.Assets,
 		})
 		if err != nil {
-			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 		}
 
 		//rest(5)
