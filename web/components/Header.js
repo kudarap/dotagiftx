@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Image from 'next/image'
@@ -391,6 +391,20 @@ function NoticeMe() {
 }
 
 function StopKillingGames() {
+  const [progress, setProgress] = useState(0.0)
+
+  const url = 'https://eci.ec.europa.eu/045/public/api/report/progression'
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(url)
+      const d = await res.json()
+      const p = Number((d.signatureCount / d.goal) * 100).toFixed(2)
+      setProgress(p)
+      console.log(p)
+    }
+    fetchData()
+  }, [])
+
   return (
     <Box sx={{ p: 1, textAlign: 'center', backgroundColor: '#15355f' }}>
       <Link
@@ -404,6 +418,7 @@ function StopKillingGames() {
           style={{ paddingRight: 8, marginBottom: -2 }}
         />
         <u>
+          {progress != 0 && `${progress}% `}
           Take a look at the <strong>Stop Killing Games</strong> initiative if you are an EU
           citizen.
         </u>
