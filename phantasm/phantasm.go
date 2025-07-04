@@ -27,15 +27,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/djherbis/times"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
 const (
-	defaultLocalMaxAge        = time.Minute
-	defaultInventoryHashTTL   = time.Hour
-	defaultRecrawlTTL         = time.Minute * 5
+	defaultInventoryHashTTL   = time.Hour * 2
+	defaultRecrawlTTL         = time.Minute * 10
 	defaultCrawlerCooldownTTL = time.Minute
 
 	maxWaitRetry = 5
@@ -73,7 +71,6 @@ func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
 		id:                "phantasm",
 		config:            config,
 		cooldown:          cd,
-		localMaxAge:       defaultLocalMaxAge,
 		recrawlCooldown:   defaultRecrawlTTL,
 		crawlerCooldown:   defaultCrawlerCooldownTTL,
 		inventoryHashExpr: defaultInventoryHashTTL,
@@ -137,22 +134,21 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	if localFile != nil {
 		logger.DebugContext(ctx, "local inventory ready")
 
-		// attempt to fetch on aged local data
-		t, err := times.Stat(s.filePath(steamID))
+		// when the hash still exists, the validity file age is still valid by inventoryHashExpr.
+		hash, err := s.cooldown.InventoryHash(ctx, steamID)
 		if err != nil {
 			return nil, err
 		}
-		age := time.Since(t.ModTime())
-		if age < s.localMaxAge {
-			logger.DebugContext(ctx, "local inventory still fresh",
-				"age", age.Round(time.Second),
-				"max-age", s.localMaxAge,
+		if hash != "" {
+			logger.DebugContext(ctx, "local inventory still fresh by hash signature",
+				"hash", hash,
+				"max_age", s.inventoryHashExpr,
 			)
 			return localFile, nil
 		}
 
 		// pre-check before fetching
-		logger.DebugContext(ctx, "check remote inventory changes", "is_old", age > s.localMaxAge)
+		logger.DebugContext(ctx, "check remote inventory changes", "hash", hash)
 		changed, err := s.remoteInventoryChanged(ctx, steamID)
 		if err != nil {
 			logger.Error("precheck remote inventory", "err", err)
@@ -168,10 +164,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			return localFile, nil
 		}
 
-		logger.DebugContext(ctx, "local inventory requires re-fetch",
-			"age", age,
-			"max-age", s.localMaxAge,
-		)
+		logger.DebugContext(ctx, "local inventory requires re-fetch", "max_age", s.inventoryHashExpr)
 	}
 
 	// don't retry if it's not on waiting state.
@@ -240,7 +233,7 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 		return err
 	}
 	logger.DebugContext(ctx,
-		"fetch raw inventory",
+		"fetch remote inventory",
 		"count", summary.InventoryCount,
 		"parts", summary.Parts,
 		"query_limit", summary.QueryLimit,
@@ -266,6 +259,7 @@ func (s *Service) remoteInventoryChanged(ctx context.Context, steamID string) (b
 		return false, err
 	}
 
+	logger.DebugContext(ctx, "comparing hashes", "current", currentHash, "new", result.PrecheckHash)
 	if err = s.cooldown.SetInventoryHash(ctx, steamID, result.PrecheckHash, s.inventoryHashExpr); err != nil {
 		return true, err
 	}

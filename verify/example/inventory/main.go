@@ -22,9 +22,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err = redisClient.Flush(context.Background()); err != nil {
-		panic(err)
-	}
 
 	logger := slog.Default()
 	slog.SetLogLoggerLevel(slog.LevelDebug)
