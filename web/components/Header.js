@@ -400,7 +400,6 @@ function StopKillingGames() {
       const d = await res.json()
       const p = Number((d.signatureCount / d.goal) * 100).toFixed(2)
       setProgress(p)
-      console.log(p)
     }
     fetchData()
   }, [])

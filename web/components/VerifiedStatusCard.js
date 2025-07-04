@@ -54,6 +54,19 @@ const assetModifier = asset => {
 
 const getInventoryURL = steamID => `https://steamcommunity.com/profiles/${steamID}/inventory/#570_2`
 
+const formatDuration = ms => {
+  if (ms < 0) ms = -ms
+  const time = {
+    minute: Math.floor(ms / 60000) % 60,
+    second: Math.floor(ms / 1000) % 60,
+    millisecond: Math.floor(ms) % 1000,
+  }
+  return Object.entries(time)
+    .filter(val => val[1] !== 0)
+    .map(([key, val]) => `${val} ${key}${val !== 1 ? 's' : ''}`)
+    .join(', ')
+}
+
 export default function VerifiedStatusCard({ market, ...other }) {
   const { classes } = useStyles()
 
@@ -96,20 +109,22 @@ export default function VerifiedStatusCard({ market, ...other }) {
         <Typography variant="h5" component="h2">
           {mapLabel[source.status]}
         </Typography>
-        <Typography color="textSecondary" variant="body2" component="p">
-          Last updated {dateFromNow(source.updated_at)}
+        <Typography color="textSecondary" variant="caption" component="p" sx={{ mb: 1 }}>
+          Processed {dateFromNow(source.updated_at)}{' '}
+          {source?.elapsed_ms ? <span>in {formatDuration(source.elapsed_ms)}</span> : null}
         </Typography>
-        <Typography component="p">{mapText[source.status]}</Typography>
+
+        <Typography v component="p">
+          {mapText[source.status]}
+        </Typography>
 
         {source.steam_assets && (
           <>
             {!isDelivery && (
               <Typography variant="body2">
-                <br />
                 Found <strong>{source.bundle_count}</strong> bundle{source.bundle_count > 1 && 's'}
               </Typography>
             )}
-
             <Table className={classes.table} size="small">
               <TableHead>
                 <TableRow>
@@ -153,15 +168,21 @@ export default function VerifiedStatusCard({ market, ...other }) {
         )}
       </CardContent>
       <CardActions style={{ float: 'right' }}>
-        <Link
-          className={classes.poweredBy}
-          variant="caption"
-          target="_blank"
-          rel="noreferrer noopener"
-          underline="none"
-          href={`https://steaminventory.org/?profile=${steamInvProfile}`}>
-          Powered by <strong>SteamInventory.org</strong>
-        </Link>
+        {source?.verified_by ? (
+          <Typography sx={{ color: '#a9071d' }} variant="caption">
+            Powered by <strong style={{ textTransform: 'capitalize' }}>{source.verified_by}</strong>
+          </Typography>
+        ) : (
+          <Link
+            className={classes.poweredBy}
+            variant="caption"
+            target="_blank"
+            rel="noreferrer noopener"
+            underline="none"
+            href={`https://steaminventory.org/?profile=${steamInvProfile}`}>
+            Powered by <strong>SteamInventory.org</strong>
+          </Link>
+        )}
       </CardActions>
     </CardX>
   )
@@ -234,8 +255,8 @@ function ResellCard({ data }) {
         <Typography variant="h5" component="h2">
           Item Resell
         </Typography>
-        <Typography color="textSecondary" variant="body2" component="p">
-          Verified by {data.user.name} {dateFromNow(data.created_at)}
+        <Typography color="textSecondary" variant="caption" component="p" sx={{ mb: 1 }}>
+          Verified by <strong>{data.user.name}</strong> on {dateFromNow(data.created_at)}
         </Typography>
         <Typography component="p">
           Item manually verified by seller from partner&apos;s inventory
@@ -252,7 +273,7 @@ function PendingCard({ data }) {
         <Typography variant="h5" component="h2">
           Pending
         </Typography>
-        <Typography color="textSecondary" variant="body2" component="p">
+        <Typography color="textSecondary" variant="caption" component="p" sx={{ mb: 1 }}>
           Posted {dateFromNow(data.created_at)} and processing for verification
         </Typography>
       </CardContent>
