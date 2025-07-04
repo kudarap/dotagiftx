@@ -21,7 +21,7 @@ func (c *Client) Flush(ctx context.Context) error {
 }
 
 func (c *Client) RetryCooldown(ctx context.Context, crawlID, steamID string) (bool, error) {
-	key := fmt.Sprintf("%s:%s:%s:%sphantasmKey,", crawlID, phantasmRetryAfterKey, steamID)
+	key := fmt.Sprintf("%s:%s:%s:%s", phantasmKey, crawlID, phantasmRetryAfterKey, steamID)
 	v, err := c.db.Get(ctx, key).Bool()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return v, err
@@ -30,7 +30,7 @@ func (c *Client) RetryCooldown(ctx context.Context, crawlID, steamID string) (bo
 }
 
 func (c *Client) SetRetryCooldown(ctx context.Context, crawlID, steamID string, ttl time.Duration) error {
-	key := fmt.Sprintf("%s:%s:%s:%sphantasmKey,", crawlID, phantasmRetryAfterKey, steamID)
+	key := fmt.Sprintf("%s:%s:%s:%s", phantasmKey, crawlID, phantasmRetryAfterKey, steamID)
 	return c.db.Set(ctx, key, true, ttl).Err()
 }
 
