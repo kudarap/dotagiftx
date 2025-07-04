@@ -37,7 +37,7 @@ func main() {
 	}{
 		{"76561198088587178", "Dirge Amplifier"},
 		{"76561198088587178", "Fluttering Breeze"},
-		//{"76561198078663607", "Loaded Prospects"},
+		{"76561198078663607", "Loaded Prospects"},
 	}
 
 	ctx := context.Background()

@@ -32,9 +32,9 @@ import (
 )
 
 const (
-	defaultInventoryHashTTL   = time.Hour * 2
-	defaultRecrawlTTL         = time.Minute * 10
-	defaultCrawlerCooldownTTL = time.Minute
+	defaultInventoryHashTTL = time.Hour * 2
+	defaultRecrawlCD        = time.Minute * 10
+	defaultCrawlerCD        = time.Minute
 
 	maxWaitRetry = 5
 )
@@ -53,10 +53,9 @@ type Service struct {
 	cooldown cooldown
 	logger   *slog.Logger
 
-	recrawlCooldown   time.Duration
-	localMaxAge       time.Duration
-	crawlerCooldown   time.Duration
-	inventoryHashExpr time.Duration
+	recrawlCooldown  time.Duration
+	crawlerCooldown  time.Duration
+	inventoryHashTTL time.Duration
 
 	electedCrawlerID int
 }
@@ -68,13 +67,13 @@ func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
 	}
 
 	return &Service{
-		id:                "phantasm",
-		config:            config,
-		cooldown:          cd,
-		recrawlCooldown:   defaultRecrawlTTL,
-		crawlerCooldown:   defaultCrawlerCooldownTTL,
-		inventoryHashExpr: defaultInventoryHashTTL,
-		logger:            logger.With("module", "phantasm"),
+		id:               "phantasm",
+		config:           config,
+		cooldown:         cd,
+		recrawlCooldown:  defaultRecrawlCD,
+		crawlerCooldown:  defaultCrawlerCD,
+		inventoryHashTTL: defaultInventoryHashTTL,
+		logger:           logger.With("module", "phantasm"),
 	}
 }
 
@@ -140,10 +139,15 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			return nil, err
 		}
 		if hash != "" {
+			// local file still good by hash and need to extend its validity.
 			logger.DebugContext(ctx, "local inventory still fresh by hash signature",
 				"hash", hash,
-				"max_age", s.inventoryHashExpr,
+				"max_age", s.inventoryHashTTL,
+				"extended_bt", s.inventoryHashTTL,
 			)
+			if err = s.cooldown.SetInventoryHash(ctx, steamID, hash, s.inventoryHashTTL); err != nil {
+				return nil, err
+			}
 			return localFile, nil
 		}
 
@@ -164,7 +168,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			return localFile, nil
 		}
 
-		logger.DebugContext(ctx, "local inventory requires re-fetch", "max_age", s.inventoryHashExpr)
+		logger.DebugContext(ctx, "local inventory requires re-fetch", "max_age", s.inventoryHashTTL)
 	}
 
 	// don't retry if it's not on waiting state.
@@ -260,7 +264,7 @@ func (s *Service) remoteInventoryChanged(ctx context.Context, steamID string) (b
 	}
 
 	logger.DebugContext(ctx, "comparing hashes", "current", currentHash, "new", result.PrecheckHash)
-	if err = s.cooldown.SetInventoryHash(ctx, steamID, result.PrecheckHash, s.inventoryHashExpr); err != nil {
+	if err = s.cooldown.SetInventoryHash(ctx, steamID, result.PrecheckHash, s.inventoryHashTTL); err != nil {
 		return true, err
 	}
 	return result.PrecheckHash != currentHash, nil

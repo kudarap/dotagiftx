@@ -11,9 +11,9 @@ import (
 
 const (
 	phantasmKey           = "phantasm"
-	phantasmRetryAfterKey = phantasmKey + "/retryafter"
-	phantasmCooldownKey   = phantasmKey + "/cooldown"
-	phantasmInvHashKey    = phantasmKey + "/invhash"
+	phantasmRetryAfterKey = "retryafter"
+	phantasmCooldownKey   = "cooldown"
+	phantasmInvHashKey    = "inventoryhash"
 )
 
 func (c *Client) Flush(ctx context.Context) error {
@@ -21,7 +21,7 @@ func (c *Client) Flush(ctx context.Context) error {
 }
 
 func (c *Client) RetryCooldown(ctx context.Context, crawlID, steamID string) (bool, error) {
-	key := fmt.Sprintf("%s/%s/%s", phantasmRetryAfterKey, crawlID, steamID)
+	key := fmt.Sprintf("%s:%s:%s:%sphantasmKey,", crawlID, phantasmRetryAfterKey, steamID)
 	v, err := c.db.Get(ctx, key).Bool()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return v, err
@@ -30,12 +30,12 @@ func (c *Client) RetryCooldown(ctx context.Context, crawlID, steamID string) (bo
 }
 
 func (c *Client) SetRetryCooldown(ctx context.Context, crawlID, steamID string, ttl time.Duration) error {
-	key := fmt.Sprintf("%s/%s/%s", phantasmRetryAfterKey, crawlID, steamID)
+	key := fmt.Sprintf("%s:%s:%s:%sphantasmKey,", crawlID, phantasmRetryAfterKey, steamID)
 	return c.db.Set(ctx, key, true, ttl).Err()
 }
 
 func (c *Client) CrawlerCooldown(ctx context.Context, crawlID string) (bool, error) {
-	key := fmt.Sprintf("%s/%s", phantasmCooldownKey, crawlID)
+	key := fmt.Sprintf("%s:%s:%s", phantasmKey, phantasmCooldownKey, crawlID)
 	v, err := c.db.Get(ctx, key).Bool()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return v, err
@@ -44,12 +44,12 @@ func (c *Client) CrawlerCooldown(ctx context.Context, crawlID string) (bool, err
 }
 
 func (c *Client) SetCrawlerCooldown(ctx context.Context, crawlID string, ttl time.Duration) error {
-	key := fmt.Sprintf("%s/%s", phantasmCooldownKey, crawlID)
+	key := fmt.Sprintf("%s:%s:%s", phantasmKey, phantasmCooldownKey, crawlID)
 	return c.db.Set(ctx, key, true, ttl).Err()
 }
 
 func (c *Client) InventoryHash(ctx context.Context, steamID string) (hash string, error error) {
-	key := fmt.Sprintf("%s/%s", phantasmInvHashKey, steamID)
+	key := fmt.Sprintf("%s:%s:%s", phantasmKey, phantasmInvHashKey, steamID)
 	v, err := c.db.Get(ctx, key).Result()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return v, err
@@ -58,6 +58,6 @@ func (c *Client) InventoryHash(ctx context.Context, steamID string) (hash string
 }
 
 func (c *Client) SetInventoryHash(ctx context.Context, steamID, hash string, ttl time.Duration) error {
-	key := fmt.Sprintf("%s/%s", phantasmInvHashKey, steamID)
+	key := fmt.Sprintf("%s:%s:%s", phantasmKey, phantasmInvHashKey, steamID)
 	return c.db.Set(ctx, key, hash, ttl).Err()
 }
