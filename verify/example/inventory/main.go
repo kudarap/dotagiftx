@@ -6,20 +6,27 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/joho/godotenv"
+	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/phantasm"
+	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
+	var conf config.Config
+	if err := config.Load(&conf); err != nil {
 		panic("could not load config: " + err.Error())
 	}
+	redisClient, err := redis.New(conf.Redis)
+	if err != nil {
+		panic(err)
+	}
 
-	var c phantasm.Config
-	phantasmSvc := phantasm.NewService(c, slog.Default())
+	logger := slog.Default()
+	slog.SetLogLoggerLevel(slog.LevelDebug)
 
+	phantasmSvc := phantasm.NewService(conf.Phantasm, redisClient, logger)
 	assetSrc := verify.JoinAssetSource(
 		phantasmSvc.InventoryAssetWithProvider,
 		steaminvorg.InventoryAssetWithProvider,
@@ -30,6 +37,7 @@ func main() {
 	}{
 		{"76561198088587178", "Dirge Amplifier"},
 		{"76561198088587178", "Fluttering Breeze"},
+		{"76561198078663607", "Loaded Prospects"},
 	}
 
 	ctx := context.Background()

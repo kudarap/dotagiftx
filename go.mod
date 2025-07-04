@@ -4,7 +4,6 @@ go 1.24
 
 require (
 	dario.cat/mergo v1.0.2
-	github.com/djherbis/times v1.6.0
 	github.com/fatih/structs v1.1.0
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-playground/validator/v10 v10.27.0

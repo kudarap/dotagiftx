@@ -108,7 +108,7 @@ func (app *application) setup() error {
 	logSvc.Println("setting up services...")
 	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 	assetSource := verify.NewSource(
 		phantasmSvc.InventoryAssetWithProvider,
 		steaminvorg.InventoryAssetWithProvider,

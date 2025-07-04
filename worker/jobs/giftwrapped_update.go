@@ -62,6 +62,8 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 		}
 
 		for _, dd := range deliveries {
+			start := time.Now()
+
 			gw.logger.Infoln("processing gift wrapped update", dd.ID, *dd.GiftOpened, dd.Retries)
 			if dd.RetriesExceeded() {
 				continue
@@ -90,6 +92,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 				Status:     result.Status,
 				Assets:     result.Assets,
 				VerifiedBy: result.VerifiedBy,
+				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
 				gw.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)

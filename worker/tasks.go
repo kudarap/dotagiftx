@@ -109,6 +109,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 		return nil
 	}
 
+	start := time.Now()
 	result, err := p.verify.Inventory(ctx, market.User.SteamID, market.Item.Name)
 	if err != nil {
 		return err
@@ -118,6 +119,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 		Status:     result.Status,
 		Assets:     result.Assets,
 		VerifiedBy: result.VerifiedBy,
+		ElapsedMs:  time.Since(start).Milliseconds(),
 	})
 	return nil
 }
@@ -132,6 +134,7 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
 	}
 
+	start := time.Now()
 	result, err := p.verify.Delivery(ctx, market.User.Name, market.PartnerSteamID, market.Item.Name)
 	if err != nil {
 		return err
@@ -141,6 +144,7 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 		Status:     result.Status,
 		Assets:     result.Assets,
 		VerifiedBy: result.VerifiedBy,
+		ElapsedMs:  time.Since(start).Milliseconds(),
 	})
 	return err
 }

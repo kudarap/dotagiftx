@@ -212,7 +212,7 @@ func (s *itemService) getItemByName(name string) (*dotagiftx.Item, error) {
 	return &itm[0], nil
 }
 
-// downloadItemImage saves image file from a url.
+// downloadItemImage saves an image file from a url.
 func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
