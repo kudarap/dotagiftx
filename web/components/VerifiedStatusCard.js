@@ -29,6 +29,7 @@ const useStyles = makeStyles()({
   root: {
     minWidth: 300,
     zIndex: 1,
+    marginTop: 18,
   },
   poweredBy: {
     color: indigo[400],
@@ -111,11 +112,11 @@ export default function VerifiedStatusCard({ market, ...other }) {
         </Typography>
         <Typography color="textSecondary" variant="caption" component="p" sx={{ mb: 1 }}>
           Processed {dateFromNow(source.updated_at)}{' '}
-          {source?.elapsed_ms ? <span>in {formatDuration(source.elapsed_ms)}</span> : null}
+          {source?.elapsed_ms ? <span>in {formatDuration(source.elapsed_ms)}</span> : null}.
         </Typography>
 
         <Typography v component="p">
-          {mapText[source.status]}
+          {mapText[source.status]}.
         </Typography>
 
         {source.steam_assets && (
@@ -198,7 +199,7 @@ VerifiedStatusCard.defaultProps = {
 function CardX(props) {
   return (
     <ThemeProvider theme={muiLightTheme}>
-      <Card {...props} />
+      <Card style={{ marginTop: 18 }} {...props} />
     </ThemeProvider>
   )
 }
@@ -256,7 +257,7 @@ function ResellCard({ data }) {
           Item Resell
         </Typography>
         <Typography color="textSecondary" variant="caption" component="p" sx={{ mb: 1 }}>
-          Verified by <strong>{data.user.name}</strong> on {dateFromNow(data.created_at)}
+          Verified by <strong>{data.user.name}</strong> on {dateFromNow(data.created_at)}.
         </Typography>
         <Typography component="p">
           Item manually verified by seller from partner&apos;s inventory
@@ -274,7 +275,7 @@ function PendingCard({ data }) {
           Pending
         </Typography>
         <Typography color="textSecondary" variant="caption" component="p" sx={{ mb: 1 }}>
-          Posted {dateFromNow(data.created_at)} and processing for verification
+          Posted {dateFromNow(data.created_at)} and processing for verification.
         </Typography>
       </CardContent>
     </CardX>

@@ -30,7 +30,7 @@ import Button from '@/components/Button'
 const displayPostId = false
 
 const priceTagStyle = {
-  padding: '2px 6px',
+  padding: '2px 4px',
   color: 'white',
 }
 
@@ -194,20 +194,21 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
               )}
               {daysFromNow(market.updated_at)}
               &nbsp;
-              <span
+              <Typography
+                variant="caption"
+                component="span"
                 hidden={disablePrice}
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
                 }>
                 {amount(market.price, market.currency)}
-              </span>
+              </Typography>
             </Typography>
 
             <Typography
               component="div"
               color="textSecondary"
               variant="caption"
-              sx={{ mt: -0.5 }}
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
               {market.partner_steam_id && (
                 <Link

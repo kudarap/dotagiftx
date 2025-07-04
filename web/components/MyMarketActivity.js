@@ -24,7 +24,7 @@ import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import ActivitySearchInput from '@/components/ActivitySearchInput'
 
 const priceTagStyle = {
-  padding: '2px 6px',
+  padding: '2px 4px',
   color: 'white',
 }
 
@@ -145,12 +145,14 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
               &nbsp;
               {daysFromNow(market.updated_at)}
               &nbsp;for&nbsp;
-              <span
+              <Typography
+                variant="caption"
+                component="span"
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
                 }>
                 {amount(market.price, market.currency)}
-              </span>
+              </Typography>
             </Typography>
 
             <Typography
