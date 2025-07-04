@@ -33,10 +33,12 @@ import (
 )
 
 const (
-	defaultMaxAge           = time.Hour * 12
-	defaultRetryCooldown    = time.Minute * 5
-	defaultCrawlCooldown    = time.Minute
-	defaultInventoryHashTTL = time.Hour * 24 * 30
+	defaultLocalMaxAge        = time.Hour
+	defaultRecrawlTTL         = time.Minute * 5
+	defaultCrawlerCooldownTTL = time.Minute
+	defaultInventoryHashTTL   = time.Hour
+
+	maxWaitRetry = 5
 )
 
 var (
@@ -53,10 +55,10 @@ type Service struct {
 	cooldown cooldown
 	logger   *slog.Logger
 
-	retryCooldown   time.Duration
-	maxAge          time.Duration
-	crawlerCooldown time.Duration
-	hashTTL         time.Duration
+	recrawlCooldown   time.Duration
+	localMaxAge       time.Duration
+	crawlerCooldown   time.Duration
+	inventoryHashExpr time.Duration
 
 	electedCrawlerID int
 }
@@ -68,14 +70,14 @@ func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
 	}
 
 	return &Service{
-		id:              "phantasm",
-		config:          config,
-		cooldown:        cd,
-		maxAge:          defaultMaxAge,
-		retryCooldown:   defaultRetryCooldown,
-		crawlerCooldown: defaultCrawlCooldown,
-		hashTTL:         defaultInventoryHashTTL,
-		logger:          logger.With("module", "phantasm"),
+		id:                "phantasm",
+		config:            config,
+		cooldown:          cd,
+		localMaxAge:       defaultLocalMaxAge,
+		recrawlCooldown:   defaultRecrawlTTL,
+		crawlerCooldown:   defaultCrawlerCooldownTTL,
+		inventoryHashExpr: defaultInventoryHashTTL,
+		logger:            logger.With("module", "phantasm"),
 	}
 }
 
@@ -125,14 +127,14 @@ func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string
 
 func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, error) {
 	logger := s.logger.With("steam_id", steamID)
-	logger.DebugContext(ctx, "fetch with auto retry")
+	logger.DebugContext(ctx, "fetch inventory and wait")
 
 	localFile, err := s.localInventoryFile(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileNotFound) {
 		return nil, err
 	}
 	if localFile != nil {
-		logger.DebugContext(ctx, "local file ready")
+		logger.DebugContext(ctx, "local inventory ready")
 
 		// attempt to fetch on aged local data
 		t, err := times.Stat(s.filePath(steamID))
@@ -140,33 +142,39 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			return nil, err
 		}
 		age := time.Since(t.ModTime())
-		if age < s.maxAge {
+		if age < s.localMaxAge {
+			logger.DebugContext(ctx, "local inventory still fresh",
+				"age", age.Round(time.Second),
+				"max-age", s.localMaxAge,
+			)
 			return localFile, nil
 		}
 
 		// pre-check before fetching
-		logger.DebugContext(ctx, "checking inventory changed base on hash")
+		logger.DebugContext(ctx, "checking remote inventory", "is_old", age > s.localMaxAge)
 		changed, err := s.hasInventoryChanged(ctx, steamID)
 		if err != nil {
+			logger.Error("checking remote inventory", "err", err)
 			return nil, err
 		}
 		if !changed {
+			logger.DebugContext(ctx, "remote inventory has not changed, falling back to local")
 			return localFile, nil
 		}
 
-		logger.DebugContext(ctx, "max age reached, recrawl", "age", age, "max-age", s.maxAge)
+		logger.DebugContext(ctx, "max age reached, recrawl", "age", age, "max-age", s.localMaxAge)
 	}
 
 	// don't retry if it's not on waiting state.
 	logger.DebugContext(ctx, "local file not found, crawling...")
-	err = s.crawlInventory(ctx, steamID)
+	err = s.crawlRemoteInventory(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileWaiting) {
 		return nil, err
 	}
 	// retry if its on waiting state.
 	if errors.Is(err, errFileWaiting) {
-		for i := range 5 {
-			wait := time.Duration(i+1) * time.Second
+		for i := range maxWaitRetry {
+			wait := time.Duration(i*i) * time.Second
 			time.Sleep(wait)
 			logger.DebugContext(ctx, "reading local data", "attempt", i+1, "waiting", wait)
 			localFile, err = s.localInventoryFile(ctx, steamID)
@@ -183,7 +191,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 
 	// clear retry
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
-	crawlerID := crawlerName(crawlerURL)
+	crawlerID := extractCrawlerID(crawlerURL)
 	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, 0); err != nil {
 		return nil, err
 	}
@@ -191,10 +199,10 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	return localFile, nil
 }
 
-func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
+func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) error {
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
-	crawlerID := crawlerName(crawlerURL)
-	s.logger.DebugContext(ctx, "elected crawler", "crawler", crawlerID)
+	crawlerID := extractCrawlerID(crawlerURL)
+	logger := s.logger.With("steam_id", steamID, "crawler_id", crawlerID)
 
 	// check if crawler is ready
 	cd, err := s.cooldown.CrawlerCooldown(ctx, crawlerID)
@@ -202,7 +210,7 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 		return err
 	}
 	if cd {
-		return fmt.Errorf("crawler %s is on all cooldown", crawlerID)
+		return fmt.Errorf("crawler %s is on cooldown", crawlerID)
 	}
 
 	// check if there's existing requests
@@ -211,32 +219,18 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 		return err
 	}
 	if cd {
-		s.logger.DebugContext(ctx, "skipping crawling, please wait after", "ttl", s.retryCooldown)
+		logger.DebugContext(ctx, "skipping crawling, please wait after", "recrawl_cd", s.recrawlCooldown)
 		return errFileWaiting
 	}
-	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, s.retryCooldown); err != nil {
+	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, s.recrawlCooldown); err != nil {
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, crawlerURL+"?steam_id="+steamID, nil)
+	summary, err := s.sendCrawlRequest(ctx, crawlerURL, steamID, false)
 	if err != nil {
 		return err
 	}
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-Require-Whisk-Auth", s.config.Secret)
-	var summary CrawlSummary
-	statusCode, err := sendRequest(req, &summary)
-	if err != nil {
-		// only elect new crawler when not found and too much request
-		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
-			s.electNewCrawler(ctx)
-		}
-		if statusCode == http.StatusForbidden {
-			return steam.ErrInventoryPrivate
-		}
-		return err
-	}
-	s.logger.DebugContext(ctx,
+	logger.DebugContext(ctx,
 		"fetch raw inventory",
 		"count", summary.InventoryCount,
 		"parts", summary.Parts,
@@ -248,7 +242,27 @@ func (s *Service) crawlInventory(ctx context.Context, steamID string) error {
 }
 
 func (s *Service) hasInventoryChanged(ctx context.Context, steamID string) (bool, error) {
-	return false, nil
+	crawlerURL := s.config.Addrs[s.electedCrawlerID]
+	crawlerID := extractCrawlerID(crawlerURL)
+	logger := s.logger.With("steam_id", steamID, "crawler_id", crawlerID)
+
+	summary, err := s.sendCrawlRequest(ctx, crawlerURL, steamID, true)
+	if err != nil {
+		return false, err
+	}
+
+	logger.DebugContext(ctx, "precheck remote inventory", "hash", summary.PrecheckHash)
+	h, err := s.cooldown.InventoryHash(ctx, steamID)
+	if err != nil {
+		return false, err
+	}
+	if summary.PrecheckHash == h {
+		return false, nil
+	}
+	if err = s.cooldown.SetInventoryHash(ctx, steamID, summary.PrecheckHash, s.inventoryHashExpr); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (s *Service) localInventoryFile(ctx context.Context, steamID string) (*inventory, error) {
@@ -267,8 +281,8 @@ func (s *Service) localInventoryFile(ctx context.Context, steamID string) (*inve
 	return &inv, nil
 }
 
-func (s *Service) electNewCrawler(ctx context.Context) {
-	crawler := crawlerName(s.config.Addrs[s.electedCrawlerID])
+func (s *Service) electNewCrawler(ctx context.Context) string {
+	crawler := extractCrawlerID(s.config.Addrs[s.electedCrawlerID])
 	cd, err := s.cooldown.CrawlerCooldown(ctx, crawler)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "crawler cooldown", "crawler", crawler, "err", err)
@@ -283,6 +297,42 @@ func (s *Service) electNewCrawler(ctx context.Context) {
 	if s.electedCrawlerID >= len(s.config.Addrs) {
 		s.electedCrawlerID = 0
 	}
+	return extractCrawlerID(s.config.Addrs[s.electedCrawlerID])
+}
+
+func (s *Service) sendCrawlRequest(ctx context.Context, crawlerURL, steamID string, precheck bool) (*CrawlSummary, error) {
+	url := fmt.Sprintf("%s?steam_id=%s", crawlerURL, steamID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = s.setRequestHeaders()
+
+	var summary CrawlSummary
+	statusCode, err := sendRequest(req, &summary)
+	if err != nil {
+		if statusCode == http.StatusForbidden {
+			return nil, steam.ErrInventoryPrivate
+		}
+
+		// only elect new crawler when not found and too much request
+		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
+			elected := s.electNewCrawler(ctx)
+			s.logger.InfoContext(ctx, "current crawler unavailable, new crawler elected",
+				"old", extractCrawlerID(crawlerURL),
+				"new", elected,
+			)
+		}
+		return nil, err
+	}
+	return &summary, nil
+}
+
+func (s *Service) setRequestHeaders() http.Header {
+	h := http.Header{}
+	h.Add("Content-Type", "application/json")
+	h.Add("X-Require-Whisk-Auth", s.config.Secret)
+	return h
 }
 
 func (s *Service) filePath(steamID string) string {
@@ -339,7 +389,7 @@ type cooldown interface {
 	SetInventoryHash(ctx context.Context, steamID, hash string, ttl time.Duration) error
 }
 
-func crawlerName(addr string) string {
+func extractCrawlerID(addr string) string {
 	ss := strings.Split(addr, "/")
 	return ss[len(ss)-1]
 }
