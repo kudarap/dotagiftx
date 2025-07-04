@@ -98,6 +98,7 @@ type (
 		Assets           []SteamAsset   `json:"steam_assets"       db:"steam_assets,omitempty"`
 		Retries          int            `json:"retries"            db:"retries,omitempty"`
 		VerifiedBy       string         `json:"verified_by"        db:"verified_by,omitempty,indexed"`
+		ElapsedMs        int64          `json:"elapsed_ms"         db:"elapsed_ms,omitempty,indexed"`
 		CreatedAt        *time.Time     `json:"created_at"         db:"created_at,omitempty,indexed,omitempty"`
 		UpdatedAt        *time.Time     `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
 	}
@@ -150,6 +151,7 @@ type (
 		Retries     int             `json:"retries"      db:"retries,omitempty"`
 		BundleCount int             `json:"bundle_count" db:"bundle_count,omitempty"`
 		VerifiedBy  string          `json:"verified_by"  db:"verified_by,omitempty,indexed"`
+		ElapsedMs   int64           `json:"elapsed_ms"   db:"elapsed_ms,omitempty,indexed"`
 		CreatedAt   *time.Time      `json:"created_at"   db:"created_at,omitempty,indexed,omitempty"`
 		UpdatedAt   *time.Time      `json:"updated_at"   db:"updated_at,omitempty,indexed,omitempty"`
 	}

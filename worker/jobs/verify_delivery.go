@@ -57,6 +57,8 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
+			start := time.Now()
+
 			// Skip verified statuses.
 			if mkt.DeliveryStatus == dotagiftx.DeliveryStatusNameVerified ||
 				mkt.DeliveryStatus == dotagiftx.DeliveryStatusSenderVerified {
@@ -79,6 +81,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 				Status:     result.Status,
 				Assets:     result.Assets,
 				VerifiedBy: result.VerifiedBy,
+				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
 				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)

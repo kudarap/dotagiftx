@@ -57,6 +57,8 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
+			start := time.Now()
+
 			// Skip verified statuses.
 			if mkt.InventoryStatus == dotagiftx.InventoryStatusVerified ||
 				mkt.InventoryStatus == dotagiftx.InventoryStatusNoHit {
@@ -82,6 +84,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				Status:     result.Status,
 				Assets:     result.Assets,
 				VerifiedBy: result.VerifiedBy,
+				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
 				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)

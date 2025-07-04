@@ -56,6 +56,8 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	}
 
 	for _, ii := range invs {
+		start := time.Now()
+
 		if ii.RetriesExceeded() {
 			continue
 		}
@@ -78,9 +80,11 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 
 		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, result.Status)
 		err = ri.inventorySvc.Set(ctx, &dotagiftx.Inventory{
-			MarketID: mkt.ID,
-			Status:   result.Status,
-			Assets:   result.Assets,
+			MarketID:   mkt.ID,
+			Status:     result.Status,
+			Assets:     result.Assets,
+			VerifiedBy: result.VerifiedBy,
+			ElapsedMs:  time.Since(start).Milliseconds(),
 		})
 		if err != nil {
 			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)

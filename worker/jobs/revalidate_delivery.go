@@ -56,6 +56,8 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
+			start := time.Now()
+
 			if mkt.User == nil || mkt.Item == nil {
 				rd.logger.Debug("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
@@ -81,6 +83,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 				Status:     result.Status,
 				Assets:     result.Assets,
 				VerifiedBy: result.VerifiedBy,
+				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
 				rd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
