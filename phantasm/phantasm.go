@@ -123,9 +123,11 @@ func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string
 
 // crawlWait retrieves the inventory local file when available and fetch it when missing.
 func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, error) {
-	logger := s.logger.With("steam_id", steamID)
-	logger.DebugContext(ctx, "fetch inventory and wait")
+	crawlerURL := s.config.Addrs[s.electedCrawlerID]
+	crawlerID := extractCrawlerID(crawlerURL)
+	logger := s.logger.With("steam_id", steamID, "crawler_id", crawlerID)
 
+	logger.DebugContext(ctx, "fetch inventory and wait")
 	localFile, err := s.localInventoryFile(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileNotFound) {
 		return nil, err
@@ -142,8 +144,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			// local file still good by hash and need to extend its validity.
 			logger.DebugContext(ctx, "local inventory still fresh by hash signature",
 				"hash", hash,
-				"max_age", s.inventoryHashTTL,
-				"extended_bt", s.inventoryHashTTL,
+				"extended_by", s.inventoryHashTTL,
 			)
 			if err = s.cooldown.SetInventoryHash(ctx, steamID, hash, s.inventoryHashTTL); err != nil {
 				return nil, err
@@ -171,6 +172,11 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 		logger.DebugContext(ctx, "local inventory requires re-fetch", "max_age", s.inventoryHashTTL)
 	}
 
+	// precheck to filter out private or failing remote inventory.
+	if _, err = s.sendCrawlRequest(ctx, crawlerURL, steamID, true); err != nil {
+		return nil, err
+	}
+
 	// don't retry if it's not on waiting state.
 	logger.DebugContext(ctx, "local file not found, crawling...")
 	err = s.crawlRemoteInventory(ctx, steamID)
@@ -196,8 +202,6 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	}
 
 	// clear retry
-	crawlerURL := s.config.Addrs[s.electedCrawlerID]
-	crawlerID := extractCrawlerID(crawlerURL)
 	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, 0); err != nil {
 		return nil, err
 	}
