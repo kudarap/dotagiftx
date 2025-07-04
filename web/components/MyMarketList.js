@@ -154,7 +154,6 @@ export default function MyMarketList({ datatable, loading, error, onSearchInput,
                           ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                           : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
                       </span>
-
                       <br />
                       <Typography variant="caption" color="textSecondary">
                         {market.item.hero}

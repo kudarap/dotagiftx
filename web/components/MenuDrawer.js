@@ -21,8 +21,9 @@ const secondaryLinks = [
   ['Bans', '/bans'],
   ['Guides', '/guides'],
   ['FAQs', '/faqs'],
+  ['Middleman', '/middleman'],
+  ['Moderators', '/moderators'],
   ['Updates', '/updates'],
-  ['Middleman', '/middlemen'],
 ].map(convertToNav)
 
 function MenuDrawer({ profile, open, onClose }) {

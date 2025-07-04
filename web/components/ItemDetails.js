@@ -243,6 +243,7 @@ export default function ItemDetails({
         <meta name="twitter:image" content={`${CDN_URL}/${item.image}`} />
         <meta name="twitter:site" content={`${APP_NAME}`} />
         {/* OpenGraph */}
+        <meta property="og:site_name" content={APP_NAME} />
         <meta property="og:url" content={canonicalURL} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />

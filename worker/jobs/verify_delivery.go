@@ -6,16 +6,14 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
-	"github.com/kudarap/dotagiftx/phantasm"
-	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 // VerifyDelivery represents a delivery verification job.
 type VerifyDelivery struct {
 	deliverySvc dotagiftx.DeliveryService
 	marketStg   dotagiftx.MarketStorage
-	phantasmSvc *phantasm.Service
+	source      *verify.Source
 	logger      logging.Logger
 	// job settings
 	name     string
@@ -23,11 +21,16 @@ type VerifyDelivery struct {
 	filter   dotagiftx.Market
 }
 
-func NewVerifyDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *VerifyDelivery {
+func NewVerifyDelivery(
+	ds dotagiftx.DeliveryService,
+	ms dotagiftx.MarketStorage,
+	vs *verify.Source,
+	lg logging.Logger,
+) *VerifyDelivery {
 	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &VerifyDelivery{
-		ds, ms, ps, lg,
-		"verify_delivery", time.Hour * 24, f}
+		ds, ms, vs, lg,
+		"verify_delivery", time.Hour * 12, f}
 }
 
 func (vd *VerifyDelivery) String() string { return vd.name }
@@ -47,8 +50,6 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts.Limit = 10
 	opts.Page = 0
 
-	src := steaminvorg.InventoryAsset
-	src = vd.phantasmSvc.InventoryAsset
 	for {
 		res, err := vd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {
@@ -56,6 +57,8 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
+			start := time.Now()
+
 			// Skip verified statuses.
 			if mkt.DeliveryStatus == dotagiftx.DeliveryStatusNameVerified ||
 				mkt.DeliveryStatus == dotagiftx.DeliveryStatusSenderVerified {
@@ -67,19 +70,21 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verifying.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+			result, err := vd.source.Delivery(ctx, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}
-			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
 
+			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, result.Status)
 			err = vd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
-				MarketID: mkt.ID,
-				Status:   status,
-				Assets:   assets,
+				MarketID:   mkt.ID,
+				Status:     result.Status,
+				Assets:     result.Assets,
+				VerifiedBy: result.VerifiedBy,
+				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
-				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
 			//rest(5)

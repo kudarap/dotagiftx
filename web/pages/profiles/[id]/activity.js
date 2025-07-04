@@ -32,6 +32,7 @@ const defaultFilter = {
   sort: 'updated_at:desc',
   page: 1,
   limit: 15,
+  index: 'user_id',
 }
 
 const defaultData = {
@@ -88,6 +89,11 @@ export default function UserActivity({ profile, canonicalURL }) {
     }
   })
 
+  const handleSearchInput = q => {
+    setDatatable(defaultData)
+    setFilter({ ...filter, page: 1, q })
+  }
+
   const profileURL = `/profiles/${profile.steam_id}`
 
   return (
@@ -121,7 +127,11 @@ export default function UserActivity({ profile, canonicalURL }) {
           <br />
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={datatable || {}} loading={loading} />
+          <MarketActivity
+            datatable={datatable || {}}
+            loading={loading}
+            onSearchInput={handleSearchInput}
+          />
         </Container>
       </main>
 

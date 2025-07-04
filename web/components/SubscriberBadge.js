@@ -8,10 +8,6 @@ import {
 } from '@/constants/user'
 
 export const badgeSettings = {
-  middleman: {
-    label: 'Middleman',
-    color: '#15803D',
-  },
   supporter: {
     label: 'Supporter',
     color: USER_SUBSCRIPTION_MAP_COLOR[USER_SUBSCRIPTION_SUPPORTER],

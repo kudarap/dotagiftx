@@ -21,6 +21,7 @@ import { amount, daysFromNow } from '@/lib/format'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
+import ActivitySearchInput from '@/components/ActivitySearchInput'
 
 const priceTagStyle = {
   padding: '2px 6px',
@@ -60,7 +61,7 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-export default function MyMarketActivity({ datatable, loading, error }) {
+export default function MyMarketActivity({ datatable, loading, error, onSearchInput }) {
   const { classes } = useStyles()
 
   const [currentIndex, setIndex] = React.useState(null)
@@ -81,20 +82,26 @@ export default function MyMarketActivity({ datatable, loading, error }) {
   const open = Boolean(anchorEl)
   const popoverElementID = open ? 'verified-status-popover' : undefined
 
-  if (error) {
-    return (
-      <Typography className={classes.text} color="error">
-        Error {error}
-      </Typography>
-    )
-  }
-
-  if (!loading && datatable.data.length === 0) {
-    return <Typography className={classes.text}>No Activity</Typography>
-  }
-
   return (
     <>
+      <ActivitySearchInput
+        fullWidth
+        loading={loading}
+        onInput={onSearchInput}
+        color="secondary"
+        placeholder="Filter heroes, items, notes, and steam ids"
+      />
+
+      {error && (
+        <Typography className={classes.text} color="error">
+          Error {error}
+        </Typography>
+      )}
+
+      {!loading && datatable.data.length === 0 && (
+        <Typography className={classes.text}>No Activity</Typography>
+      )}
+
       <ul className={classes.list}>
         {datatable.data.map((market, idx) => (
           <li className={classes.activity} key={market.id}>
@@ -159,6 +166,18 @@ export default function MyMarketActivity({ datatable, loading, error }) {
                   {market.notes && '\n'}
                 </Link>
               )}
+
+              {market.delivery && (
+                <span>{`Delivered ${new Date(market.delivery.created_at).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  timeZoneName: 'short',
+                })} \n`}</span>
+              )}
+
               {market.notes}
             </Typography>
           </li>
@@ -186,8 +205,10 @@ MyMarketActivity.propTypes = {
   datatable: PropTypes.object.isRequired,
   loading: PropTypes.bool,
   error: PropTypes.string,
+  onSearchInput: PropTypes.func,
 }
 MyMarketActivity.defaultProps = {
   loading: false,
   error: null,
+  onSearchInput: () => {},
 }

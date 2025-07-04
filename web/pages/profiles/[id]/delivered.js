@@ -33,6 +33,7 @@ const defaultFilter = {
   status: MARKET_STATUS_SOLD,
   sort: 'updated_at:desc',
   page: 1,
+  index: 'user_id',
 }
 
 const defaultData = {
@@ -89,6 +90,11 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
     }
   })
 
+  const handleSearchInput = q => {
+    setDatatable(defaultData)
+    setFilter({ ...filter, page: 1, q })
+  }
+
   const profileURL = `/profiles/${profile.steam_id}`
 
   return (
@@ -139,7 +145,11 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
           <br />
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={datatable || {}} loading={loading} />
+          <MarketActivity
+            datatable={datatable || {}}
+            loading={loading}
+            onSearchInput={handleSearchInput}
+          />
         </Container>
       </main>
 

@@ -1,37 +1,49 @@
-package verifying
+package verify
 
 import (
+	"context"
+	"errors"
 	"fmt"
-	"log"
 	"strings"
 
+	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
-// AssetSource represents inventory asset source provider.
-type AssetSource func(steamID string) ([]steam.Asset, error)
-
-type assetProvider interface {
-	Assets(steamID string) ([]steam.Asset, error)
-}
-
-func MultiAssetSource(steamID string, providers []AssetSource) ([]steam.Asset, error) {
-	for i, provider := range providers {
-		assets, err := provider(steamID)
-		if err != nil {
-			if i == len(providers)-1 {
-				return nil, fmt.Errorf("all providered used: %w", err)
-			}
-			log.Printf("fetching assets for %s: %v", steamID, err)
-			continue
-		}
-		return assets, nil
+// Inventory checks item existence on inventory.
+//
+// Returns an error when request has status error or response body malformed.
+func Inventory(ctx context.Context, source AssetSource, steamID, itemName string) (*InventorResult, error) {
+	result := InventorResult{
+		Status: dotagiftx.InventoryStatusError,
 	}
-	return nil, fmt.Errorf("no assets found for %s", steamID)
+	if steamID == "" || itemName == "" {
+		return &result, fmt.Errorf("all params are required")
+	}
+
+	verifier, assets, err := source(ctx, steamID)
+	result.VerifiedBy = verifier
+	if err != nil {
+		if errors.Is(err, steam.ErrInventoryPrivate) {
+			result.Status = dotagiftx.InventoryStatusPrivate
+			return &result, nil
+		}
+		return nil, err
+	}
+
+	assets = filterByName(assets, itemName)
+	assets = filterByGiftable(assets)
+	if len(assets) == 0 {
+		result.Status = dotagiftx.InventoryStatusNoHit
+		return &result, nil
+	}
+
+	result.Assets = assets
+	result.Status = dotagiftx.InventoryStatusVerified
+	return &result, nil
 }
 
-// filterByName filters item that matches the name or in the description
-// that supports unbundled items.
+// filterByName filters item that matches the name or in the description that supports unbundled items.
 func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 	var matches []steam.Asset
 	for _, asset := range a {

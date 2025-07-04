@@ -14,7 +14,9 @@ import (
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/service"
+	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/tracing"
+	"github.com/kudarap/dotagiftx/verify"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/kudarap/dotagiftx/worker/jobs"
 	"github.com/sirupsen/logrus"
@@ -102,42 +104,49 @@ func (app *application) setup() error {
 	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
-	logSvc.Println("setting up services...")
-	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
 	slogger := slog.Default()
-	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
+	logSvc.Println("setting up services...")
+	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
+	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
+	assetSource := verify.NewSource(
+		phantasmSvc.InventoryAssetWithProvider,
+		steaminvorg.InventoryAssetWithProvider,
+	)
 
 	// Setup application worker
-	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, phantasmSvc)
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
-		inventorySvc, marketStg, phantasmSvc, logging.WithPrefix(logger, "job_recheck_inventory"),
+		inventorySvc,
+		marketStg,
+		assetSource,
+		logging.WithPrefix(logger, "job_recheck_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyInventory(
 		inventorySvc,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_verify_inventory"),
 	))
 	app.worker.AddJob(jobs.NewVerifyDelivery(
 		deliverySvc,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_verify_delivery"),
 	))
 	app.worker.AddJob(jobs.NewGiftWrappedUpdate(
 		deliverySvc,
 		deliveryStg,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_giftwrapped_update"),
 	))
 	app.worker.AddJob(jobs.NewRevalidateDelivery(
 		deliverySvc,
 		marketStg,
-		phantasmSvc,
+		assetSource,
 		logging.WithPrefix(logger, "job_revalidate_delivery"),
 	))
 	app.worker.AddJob(jobs.NewExpiringSubscription(

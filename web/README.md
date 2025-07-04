@@ -2,21 +2,12 @@
 
 DotagiftX web user interface
 
-### Tech Stack
+### Requirements
 
-- NodeJS 14
-- React 17
-- Next 10
-- Material UI 4
+- NodeJS `22`
+- Yarn `1.22`
 
-### Features
+### Local Setup
 
-- [x] market search
-- [x] item market listing
-- [x] popular items
-- [x] newly listed items
-- [x] user market listing
-- [x] login with steam
-- [x] user post item
-- [x] user remove listing
-- [x] user post set status and notes
+- `yarn`
+- `yarn dev`

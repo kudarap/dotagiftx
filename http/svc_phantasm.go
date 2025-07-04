@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -17,5 +18,24 @@ func handlePhantasmWebhook(svc *phantasm.Service) http.HandlerFunc {
 		}
 
 		respondOK(w, "ok")
+	}
+}
+
+func handlePhantasmCrawl() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		args := map[string]interface{}{
+			"steam_id": r.URL.Query().Get("steam_id"),
+		}
+		if r.URL.Query().Has("precheck") {
+			args["precheck"] = true
+		}
+		resp := phantasm.Main(args)
+
+		code, ok := resp["statusCode"].(int)
+		if !ok {
+			respondError(w, errors.New("invalid status code"))
+			return
+		}
+		respond(w, code, resp["body"])
 	}
 }

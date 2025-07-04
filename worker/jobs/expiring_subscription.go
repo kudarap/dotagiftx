@@ -41,7 +41,7 @@ func (s *ExpiringSubscription) Run(ctx context.Context) error {
 
 	// get all users that has subscription
 	// add leeway of 2 days to process recurring payment.
-	// check outstanding days if it's still validate from last payment and skip.
+	// check outstanding days if still valid from last payment and skip.
 	withLeeway := time.Now().AddDate(0, 0, -2)
 	users, err := s.userStg.ExpiringSubscribers(ctx, withLeeway)
 	if err != nil {

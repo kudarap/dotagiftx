@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"flag"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -13,14 +14,17 @@ func main() {
 		panic("could not load config: " + err.Error())
 	}
 
-	steamID := "76561198088587178"
-	if len(os.Args) == 2 {
-		steamID = os.Args[1]
-	}
+	var steamID string
+	var precheck bool
+	flag.StringVar(&steamID, "steam_id", "76561198088587178", "")
+	flag.BoolVar(&precheck, "precheck", false, "")
+	flag.Parse()
 
-	args := map[string]interface{}{
-		"steam_id": steamID,
+	args := map[string]interface{}{"steam_id": steamID}
+	if precheck {
+		args["precheck"] = true
 	}
 	v := phantasm.Main(args)
-	fmt.Println(v)
+	b, _ := json.MarshalIndent(v, "", "\t")
+	os.Stdout.Write(b)
 }

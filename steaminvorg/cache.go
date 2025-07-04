@@ -1,6 +1,7 @@
 package steaminvorg
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
@@ -19,7 +20,7 @@ const (
 )
 
 // InventoryAssetWithCache returns a compact format from all inventory data with cache.
-func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
+func InventoryAssetWithCache(ctx context.Context, steamID string) ([]steam.Asset, error) {
 	log.Println("STEAMINVORG CHECK LOCAL CACHE")
 	hit, _ := filecache.Get(getCacheKey(steamID))
 	if hit != nil {
@@ -32,7 +33,7 @@ func InventoryAssetWithCache(steamID string) ([]steam.Asset, error) {
 	}
 
 	log.Println("STEAMINVORG NO LOCAL CACHE HIT", steamID)
-	asset, err := InventoryAsset(steamID)
+	asset, err := InventoryAsset(ctx, steamID)
 	if err != nil {
 		log.Println("STEAMINVORG ASSET ERROR", steamID, err)
 		return nil, err

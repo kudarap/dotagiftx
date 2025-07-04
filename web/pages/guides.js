@@ -131,7 +131,7 @@ export default function Blacklist() {
 
               <li>
                 If you need a middleman, I only suggest you get{' '}
-                <Link href="/middlemen" color="secondary">
+                <Link href="/middleman" color="secondary">
                   Middleman here
                 </Link>
                 .

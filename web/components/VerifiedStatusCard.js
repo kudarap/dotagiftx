@@ -132,7 +132,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
                         rel="noreferrer noopener"
                         underline="none"
                         href={`${inventoryURL}_${asset.asset_id}`}>
-                        <strong>{asset.displayName}</strong>
+                        <strong>{asset.displayName || asset.name}</strong>
                       </Link>
                     </TableCell>
                     {isDelivery ? (

@@ -33,6 +33,7 @@ const defaultFilter = {
   status: MARKET_STATUS_BID_COMPLETED,
   sort: 'updated_at:desc',
   page: 1,
+  index: 'user_id',
 }
 
 const defaultData = {
@@ -42,6 +43,11 @@ const defaultData = {
 }
 
 const scrollBias = 300
+
+const handleSearchInput = q => {
+  setDatatable(defaultData)
+  setFilter({ ...filter, page: 1, q })
+}
 
 export default function UserReserved({ profile, stats, canonicalURL }) {
   const { classes } = useStyles()
@@ -88,6 +94,11 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
       window.removeEventListener('scroll', listener)
     }
   })
+
+  const handleSearchInput = q => {
+    setDatatable(defaultData)
+    setFilter({ ...filter, page: 1, q })
+  }
 
   const profileURL = `/profiles/${profile.steam_id}`
 
@@ -139,7 +150,12 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
           <br />
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
-          <MarketActivity datatable={datatable || {}} loading={loading} disablePrice />
+          <MarketActivity
+            datatable={datatable || {}}
+            loading={loading}
+            onSearchInput={handleSearchInput}
+            disablePrice
+          />
         </Container>
       </main>
 

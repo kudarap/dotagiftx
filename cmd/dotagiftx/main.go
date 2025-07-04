@@ -144,7 +144,7 @@ func (app *application) setup() error {
 	reportSvc := service.NewReport(reportStg, discordClient)
 	statsSvc := service.NewStats(statsStg, trackStg)
 	hammerSvc := service.NewHammerService(userStg, marketStg)
-	phantasmSvc := phantasm.NewService(app.config.Phantasm, slogger)
+	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 
 	// NOTE! this is for run-once scripts
 	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)

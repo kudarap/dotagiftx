@@ -1,20 +1,38 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/config"
+	"github.com/kudarap/dotagiftx/phantasm"
+	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 func main() {
-	assetSrc := steaminvorg.InventoryAsset
+	var conf config.Config
+	if err := config.Load(&conf); err != nil {
+		panic("could not load config: " + err.Error())
+	}
+	redisClient, err := redis.New(conf.Redis)
+	if err != nil {
+		panic(err)
+	}
+
+	phantasmSvc := phantasm.NewService(conf.Phantasm, redisClient, slog.Default())
+	assetSrc := verify.JoinAssetSource(
+		phantasmSvc.InventoryAssetWithProvider,
+		steaminvorg.InventoryAssetWithProvider,
+	)
 
 	var errorCtr, okCtr, privateCtr, noHitCtr, itemCtr, sellerCtr int
 
@@ -26,30 +44,34 @@ func main() {
 
 	items, _ := getDelivered(1)
 
+	ctx := context.Background()
 	for _, item := range items {
-		status, snaps, err := verifying.Delivery(assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
-
+		result, err := verify.Delivery(ctx, assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 		fmt.Println(strings.Repeat("-", 70))
 		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))
 		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println("Status:", status)
 		if err != nil {
 			errorCtr++
 			fmt.Printf("Errored: %s \n\n", err)
 			continue
 		}
+		fmt.Println("Verified by:", result.VerifiedBy)
+		fmt.Println("Status:", result.Status)
 
 		okCtr++
 
+		snaps := result.Assets
 		fmt.Println("Items:", len(snaps))
 		if len(snaps) != 0 {
 			r := snaps[0]
+			fmt.Println("Name:", r.Name)
+			fmt.Println("Contains:", r.Contains)
 			fmt.Println("GiftFrom:", r.GiftFrom)
 			fmt.Println("DateReceived:", r.DateReceived)
 			fmt.Println("Dedication:", r.Dedication)
 		}
 
-		switch status {
+		switch result.Status {
 		case dotagiftx.DeliveryStatusPrivate:
 			privateCtr++
 		case dotagiftx.DeliveryStatusNoHit:
@@ -70,7 +92,11 @@ func main() {
 }
 
 func getDelivered(limit int) ([]dotagiftx.Market, error) {
-	resp, err := http.Get(fmt.Sprintf("https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400", limit))
+	resp, err := http.Get(fmt.Sprintf(
+		"https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400&user_id=%s",
+		limit,
+		"ddabf335-7286-430a-8403-00e9cda45cfb",
+	))
 	if err != nil {
 		return nil, err
 	}

@@ -6,18 +6,15 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
-	"github.com/kudarap/dotagiftx/phantasm"
-	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
-// GiftWrappedUpdate represents a job that will update delivered
-// items that still un-opened
+// GiftWrappedUpdate represents a job that will update delivered items that still unopened.
 type GiftWrappedUpdate struct {
 	deliverySvc dotagiftx.DeliveryService
 	deliveryStg dotagiftx.DeliveryStorage
 	marketStg   dotagiftx.MarketStorage
-	phantasmSvc *phantasm.Service
+	source      *verify.Source
 	logger      logging.Logger
 	// job settings
 	name     string
@@ -25,14 +22,20 @@ type GiftWrappedUpdate struct {
 	filter   dotagiftx.Delivery
 }
 
-func NewGiftWrappedUpdate(ds dotagiftx.DeliveryService, dstg dotagiftx.DeliveryStorage, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *GiftWrappedUpdate {
+func NewGiftWrappedUpdate(
+	ds dotagiftx.DeliveryService,
+	dg dotagiftx.DeliveryStorage,
+	ms dotagiftx.MarketStorage,
+	vs *verify.Source,
+	lg logging.Logger,
+) *GiftWrappedUpdate {
 	falsePtr := false
 	f := dotagiftx.Delivery{
 		GiftOpened: &falsePtr,
 		Status:     dotagiftx.DeliveryStatusSenderVerified,
 	}
 	return &GiftWrappedUpdate{
-		ds, dstg, ms, ps, lg,
+		ds, dg, ms, vs, lg,
 		"giftwrapped_update", time.Hour / 2, f}
 }
 
@@ -52,8 +55,6 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	src := steaminvorg.InventoryAsset
-	src = gw.phantasmSvc.InventoryAsset
 	for {
 		deliveries, err := gw.deliveryStg.ToVerify(opts)
 		if err != nil {
@@ -61,6 +62,8 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 		}
 
 		for _, dd := range deliveries {
+			start := time.Now()
+
 			gw.logger.Infoln("processing gift wrapped update", dd.ID, *dd.GiftOpened, dd.Retries)
 			if dd.RetriesExceeded() {
 				continue
@@ -77,20 +80,22 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verifying.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+			result, err := gw.source.Delivery(ctx, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				gw.logger.Errorf("delivery verification error: %s", err)
 				continue
 			}
-			gw.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
+			gw.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, result.Status)
 
 			err = gw.deliverySvc.Set(ctx, &dotagiftx.Delivery{
-				MarketID: mkt.ID,
-				Status:   status,
-				Assets:   assets,
+				MarketID:   mkt.ID,
+				Status:     result.Status,
+				Assets:     result.Assets,
+				VerifiedBy: result.VerifiedBy,
+				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
-				gw.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				gw.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
 			//rest(5)

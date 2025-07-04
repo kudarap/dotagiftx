@@ -67,7 +67,7 @@ export default function ThanksSubscriber() {
               Discord
             </Link>{' '}
             or send us a{' '}
-            <Link underline="always" href="/feedback">
+            <Link underline="always" href="/submit-feedback">
               Feedback
             </Link>
             .

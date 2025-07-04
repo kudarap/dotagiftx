@@ -6,16 +6,14 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
-	"github.com/kudarap/dotagiftx/phantasm"
-	"github.com/kudarap/dotagiftx/steaminvorg"
-	"github.com/kudarap/dotagiftx/verifying"
+	"github.com/kudarap/dotagiftx/verify"
 )
 
 // RevalidateDelivery represents a delivery verification job.
 type RevalidateDelivery struct {
 	deliverySvc dotagiftx.DeliveryService
 	marketStg   dotagiftx.MarketStorage
-	phantasmSvc *phantasm.Service
+	source      *verify.Source
 	logger      logging.Logger
 	// job settings
 	name     string
@@ -23,11 +21,16 @@ type RevalidateDelivery struct {
 	filter   dotagiftx.Market
 }
 
-func NewRevalidateDelivery(ds dotagiftx.DeliveryService, ms dotagiftx.MarketStorage, ps *phantasm.Service, lg logging.Logger) *RevalidateDelivery {
+func NewRevalidateDelivery(
+	ds dotagiftx.DeliveryService,
+	ms dotagiftx.MarketStorage,
+	vs *verify.Source,
+	lg logging.Logger,
+) *RevalidateDelivery {
 	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &RevalidateDelivery{
-		ds, ms, ps, lg,
-		"revalidate_delivery", time.Hour * 24, f}
+		ds, ms, vs, lg,
+		"revalidate_delivery", time.Hour * 12, f}
 }
 
 func (rd *RevalidateDelivery) String() string { return rd.name }
@@ -46,8 +49,6 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	src := steaminvorg.InventoryAsset
-	src = rd.phantasmSvc.InventoryAsset
 	for {
 		res, err := rd.marketStg.PendingDeliveryStatus(opts)
 		if err != nil {
@@ -55,6 +56,8 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 		}
 
 		for _, mkt := range res {
+			start := time.Now()
+
 			if mkt.User == nil || mkt.Item == nil {
 				rd.logger.Debug("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
 				continue
@@ -69,23 +72,25 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 				continue
 			}
 
-			status, assets, err := verifying.Delivery(src, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
+			result, err := rd.source.Delivery(ctx, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
 				continue
 			}
-			rd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, status)
+			rd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, result.Status)
 
 			err = rd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
-				MarketID: mkt.ID,
-				Status:   status,
-				Assets:   assets,
+				MarketID:   mkt.ID,
+				Status:     result.Status,
+				Assets:     result.Assets,
+				VerifiedBy: result.VerifiedBy,
+				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
-				rd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, status, err)
+				rd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
 			//rest(5)
-			time.Sleep(time.Second / 4)
+			//time.Sleep(time.Second / 4)
 		}
 
 		// Is there more?

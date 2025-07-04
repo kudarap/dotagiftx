@@ -25,9 +25,13 @@ func buildSitemap(items []dotagiftx.Item, users []dotagiftx.User, vanities []str
 	sitemap.Add(stm.URL{{"loc", "/privacy"}})
 	sitemap.Add(stm.URL{{"loc", "/login"}})
 	sitemap.Add(stm.URL{{"loc", "/donate"}})
-	sitemap.Add(stm.URL{{"loc", "/middlemen"}})
 	sitemap.Add(stm.URL{{"loc", "/guides"}})
 	sitemap.Add(stm.URL{{"loc", "/rules"}})
+	sitemap.Add(stm.URL{{"loc", "/plus"}})
+	sitemap.Add(stm.URL{{"loc", "/updates"}})
+	sitemap.Add(stm.URL{{"loc", "/treasures"}})
+	sitemap.Add(stm.URL{{"loc", "/moderators"}})
+	sitemap.Add(stm.URL{{"loc", "/middleman"}})
 
 	// Add item slug locations.
 	origins := map[string]struct{}{}

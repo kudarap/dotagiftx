@@ -4,8 +4,8 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
-import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import {
   APP_NAME,
   APP_URL,
@@ -13,7 +13,11 @@ import {
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
-import { USER_STATUS_MAP_TEXT } from '@/constants/user'
+import {
+  USER_AGE_CAUTION,
+  USER_STATUS_MAP_TEXT,
+  USER_SUBSCRIPTION_BADGE_MODE,
+} from '@/constants/user'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_ASK } from '@/constants/market'
 import {
   CDN_URL,
@@ -23,7 +27,9 @@ import {
   user,
   vanity,
 } from '@/service/api'
-import { getUserBadgeFromBoons } from '@/lib/badge'
+import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
+import Avatar from '@/components/Avatar'
+import ExclusiveChip from '@/components/ExclusiveChip'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -36,7 +42,9 @@ import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
-import { Alert } from '@mui/material'
+import moment from 'moment'
+import { WarningAmber } from '@mui/icons-material'
+import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -61,8 +69,8 @@ const useStyles = makeStyles()(theme => ({
     [theme.breakpoints.down('sm')]: {
       margin: '0 auto',
     },
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
     marginRight: theme.spacing(1.5),
     marginBottom: theme.spacing(0.5),
   },
@@ -143,6 +151,7 @@ export default function UserDetails({
   const isProfileReported = Boolean(profile.status)
 
   const userBadge = getUserBadgeFromBoons(profile.boons)
+  const userTag = getUserTagFromBoons(profile.boons)
 
   return (
     <>
@@ -159,6 +168,7 @@ export default function UserDetails({
         <meta name="twitter:image" content={`${CDN_URL}/${profile.avatar}`} />
         <meta name="twitter:site" content={`@${APP_NAME}`} />
         {/* OpenGraph */}
+        <meta property="og:site_name" content={APP_NAME} />
         <meta property="og:url" content={canonicalURL} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={metaTitle} />
@@ -201,14 +211,14 @@ export default function UserDetails({
               src={`${CDN_URL}/${profile.avatar}`}
               glow={isDonationGlowExpired(profile.donated_at)}
             />
-            <Typography component="h1">
+            <Box>
               <Typography
                 className={classes.profileName}
-                component="p"
+                component="h1"
                 variant="h4"
                 color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
-                {Boolean(userBadge) && (
+                {!USER_SUBSCRIPTION_BADGE_MODE && Boolean(userBadge) && (
                   <SubscriberBadge
                     style={
                       isMobile
@@ -225,7 +235,14 @@ export default function UserDetails({
                   {profile.notes || USER_STATUS_MAP_TEXT[profile.status]}
                 </Typography>
               )}
-              <Typography gutterBottom>
+              <Typography variant="body2" component="p" color="textSecondary">
+                Joined {moment(profile.created_at).fromNow()}{' '}
+                {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (
+                  <WarningAmber color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
+                )}
+              </Typography>
+
+              <Box sx={{ mb: 1 }}>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{profile.stats.live} Items</Link> &middot;{' '}
                   <Link href={`${linkProps.href}/reserved`}>{profile.stats.reserved} Reserved</Link>{' '}
@@ -236,16 +253,27 @@ export default function UserDetails({
                     {profile.stats.bid_completed} Bought
                   </Link>
                 </Typography>
-                <br />
-                <ChipLink label="Steam Profile" href={profileURL} />
-                &nbsp;
-                {/* <ChipLink label="Steam Inventory" href={`${profileURL}/inventory`} /> */}
-                {/* &nbsp; */}
-                <ChipLink label="SteamRep" href={steamRepURL} />
-                &nbsp;
-                <ChipLink label="Dotabuff" href={dotabuffURL} />
-              </Typography>
-            </Typography>
+                <Box sx={{ '& > *': { mt: 0.5 } }}>
+                  {USER_SUBSCRIPTION_BADGE_MODE && userBadge && (
+                    <>
+                      <ExclusiveChip tag={userBadge} />
+                      &nbsp;
+                    </>
+                  )}
+                  {userTag && (
+                    <>
+                      <ExclusiveChip tag={userTag} />
+                      &nbsp;
+                    </>
+                  )}
+                  <ChipLink label="Steam Profile" href={profileURL} />
+                  &nbsp;
+                  <ChipLink label="SteamRep" href={steamRepURL} />
+                  &nbsp;
+                  <ChipLink label="Dotabuff" href={dotabuffURL} />
+                </Box>
+              </Box>
+            </Box>
           </div>
 
           {isProfileReported ? (

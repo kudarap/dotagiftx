@@ -95,10 +95,6 @@ type (
 		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`
 
-		// Will be use for full-text searching.
-		SearchText    string `json:"-"               db:"search_text,omitempty,indexed"`
-		UserRankScore int    `json:"user_rank_score" db:"user_rank_score,omitempty,indexed"`
-
 		InventoryStatus InventoryStatus `json:"inventory_status" db:"inventory_status,omitempty,indexed"`
 		DeliveryStatus  DeliveryStatus  `json:"delivery_status"  db:"delivery_status,omitempty,indexed"`
 
@@ -108,9 +104,13 @@ type (
 		Delivery  *Delivery  `json:"delivery,omitempty"  db:"delivery,omitempty"`
 		Inventory *Inventory `json:"inventory,omitempty" db:"inventory,omitempty"`
 
-		// NOTE! Experimental for reselling feature.
+		// reselling details.
 		Resell        *bool  `json:"resell"          db:"resell,omitempty"`
 		SellerSteamID string `json:"seller_steam_id" db:"seller_steam_id,omitempty"`
+
+		// Search Indexing.
+		SearchText    string `json:"-"               db:"search_text,omitempty,indexed"`
+		UserRankScore int    `json:"user_rank_score" db:"user_rank_score,omitempty,indexed"`
 	}
 
 	// MarketService provides access to market service.

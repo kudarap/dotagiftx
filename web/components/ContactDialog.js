@@ -5,18 +5,17 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import ChipLink from '@/components/ChipLink'
-import {
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import Box from '@mui/material/Box'
+import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
 import MarketNotes from '@/components/MarketNotes'
 import ProfileCard from '@/components/ProfileCard'
+import { Alert } from '@mui/material'
+import moment from 'moment'
+import { USER_AGE_CAUTION } from '@/constants/user'
 
 export default function ContactDialog(props) {
   const { isMobile } = useContext(AppContext)
@@ -44,30 +43,26 @@ export default function ContactDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          <ProfileCard user={market.user}>
-            {/* <Typography color="textSecondary" component="span"> */}
-            {/*  {`Links: `} */}
-            {/* </Typography> */}
-            {/* <ChipLink label="Steam Profile" href={steamProfileURL} /> */}
-            {/* &nbsp; */}
-            <ChipLink
-              label="SteamRep"
-              href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
-            />
-            &nbsp;
-            <ChipLink
-              label="Dotabuff"
-              href={`${DOTABUFF_PROFILE_BASE_URL}/${market.user.steam_id}`}
-            />
-            &nbsp;
-            <ChipLink label="Steam Inventory" href={dota2Inventory} />
+          {moment().diff(moment(market.user.created_at), 'days') <= USER_AGE_CAUTION && (
+            <>
+              <Alert severity="warning">
+                {`This profile just created ${moment(market.user.created_at).fromNow()}. Please transact with caution.`}
+              </Alert>
+              <br />
+            </>
+          )}
+
+          <ProfileCard user={market.user} hideSteamProfile>
             {market.notes && <MarketNotes text={market.notes} />}
           </ProfileCard>
 
-          <Typography variant="body2" color="textSecondary">
-            <br />
-            Guides for buying Giftables
-            <ul style={{ lineHeight: 1.7 }}>
+          <Box sx={{ mt: 2 }}>
+            <strong>Guides for buying Giftables</strong>
+            <Typography
+              component="ul"
+              variant="body2"
+              color="textSecondary"
+              style={{ lineHeight: 1.7 }}>
               <li>
                 Always check the item or set availability on seller&apos;s Dota 2 {` `}
                 <Link
@@ -96,7 +91,7 @@ export default function ContactDialog(props) {
                 <Typography variant="inherit" component="span" color="white">
                   impersonation
                 </Typography>
-                .<sup style={{ color: 'yellowgreen' }}>NEW</sup>
+                .
               </li>
               <li>
                 Dota 2 Giftables transaction only viable if the two steam user parties have been
@@ -123,29 +118,17 @@ export default function ContactDialog(props) {
 
               <li>
                 If you need a middleman, I only suggest you get{' '}
-                <Link href="/middlemen" target="_blank" color="secondary">
+                <Link href="/middleman" target="_blank" color="secondary">
                   Middleman here
                 </Link>
                 .
               </li>
-
-              {/* <li> */}
-              {/*  Official SteamRep middleman may assist in middle manning for the trade, or{' '} */}
-              {/*  <Link */}
-              {/*    style={{ textDecoration: 'underline' }} */}
-              {/*    href="https://www.reddit.com/r/dota2trade/" */}
-              {/*    target="_blank" */}
-              {/*    rel="noreferrer noopener"> */}
-              {/*    r/Dota2Trade */}
-              {/*  </Link>{' '} */}
-              {/*  mod may assist as well in this. */}
-              {/* </li> */}
-            </ul>
-          </Typography>
+            </Typography>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button component="a" href={storeProfile}>
-            View Seller Items
+            Seller Profile
           </Button>
           <Button
             color="secondary"
@@ -155,7 +138,7 @@ export default function ContactDialog(props) {
             target="_blank"
             rel="noreferrer noopener"
             href={steamProfileURL}>
-            Check Steam Profile
+            Steam Profile
           </Button>
         </DialogActions>
       </Dialog>
