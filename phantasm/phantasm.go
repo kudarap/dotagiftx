@@ -33,10 +33,10 @@ import (
 )
 
 const (
-	defaultLocalMaxAge        = time.Hour
+	defaultLocalMaxAge        = time.Minute
+	defaultInventoryHashTTL   = time.Hour
 	defaultRecrawlTTL         = time.Minute * 5
 	defaultCrawlerCooldownTTL = time.Minute
-	defaultInventoryHashTTL   = time.Hour
 
 	maxWaitRetry = 5
 )
@@ -125,6 +125,7 @@ func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string
 	return s.id, res, err
 }
 
+// crawlWait retrieves the inventory local file when available and fetch it when missing.
 func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, error) {
 	logger := s.logger.With("steam_id", steamID)
 	logger.DebugContext(ctx, "fetch inventory and wait")
@@ -151,18 +152,26 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 		}
 
 		// pre-check before fetching
-		logger.DebugContext(ctx, "checking remote inventory", "is_old", age > s.localMaxAge)
-		changed, err := s.hasInventoryChanged(ctx, steamID)
+		logger.DebugContext(ctx, "check remote inventory changes", "is_old", age > s.localMaxAge)
+		changed, err := s.remoteInventoryChanged(ctx, steamID)
 		if err != nil {
-			logger.Error("checking remote inventory", "err", err)
+			logger.Error("precheck remote inventory", "err", err)
 			return nil, err
 		}
 		if !changed {
-			logger.DebugContext(ctx, "remote inventory has not changed, falling back to local")
+			logger.DebugContext(ctx, "remote inventory did not changed, falling back to local")
+			// refresh inventory file age
+			n := time.Now()
+			if err = os.Chtimes(s.filePath(steamID), n, n); err != nil {
+				return nil, err
+			}
 			return localFile, nil
 		}
 
-		logger.DebugContext(ctx, "max age reached, recrawl", "age", age, "max-age", s.localMaxAge)
+		logger.DebugContext(ctx, "local inventory requires re-fetch",
+			"age", age,
+			"max-age", s.localMaxAge,
+		)
 	}
 
 	// don't retry if it's not on waiting state.
@@ -241,28 +250,26 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 	return nil
 }
 
-func (s *Service) hasInventoryChanged(ctx context.Context, steamID string) (bool, error) {
+func (s *Service) remoteInventoryChanged(ctx context.Context, steamID string) (bool, error) {
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
 	crawlerID := extractCrawlerID(crawlerURL)
 	logger := s.logger.With("steam_id", steamID, "crawler_id", crawlerID)
 
-	summary, err := s.sendCrawlRequest(ctx, crawlerURL, steamID, true)
+	result, err := s.sendCrawlRequest(ctx, crawlerURL, steamID, true)
 	if err != nil {
 		return false, err
 	}
 
-	logger.DebugContext(ctx, "precheck remote inventory", "hash", summary.PrecheckHash)
-	h, err := s.cooldown.InventoryHash(ctx, steamID)
+	logger.DebugContext(ctx, "precheck remote inventory", "hash", result.PrecheckHash)
+	currentHash, err := s.cooldown.InventoryHash(ctx, steamID)
 	if err != nil {
 		return false, err
 	}
-	if summary.PrecheckHash == h {
-		return false, nil
+
+	if err = s.cooldown.SetInventoryHash(ctx, steamID, result.PrecheckHash, s.inventoryHashExpr); err != nil {
+		return true, err
 	}
-	if err = s.cooldown.SetInventoryHash(ctx, steamID, summary.PrecheckHash, s.inventoryHashExpr); err != nil {
-		return false, err
-	}
-	return true, nil
+	return result.PrecheckHash != currentHash, nil
 }
 
 func (s *Service) localInventoryFile(ctx context.Context, steamID string) (*inventory, error) {
@@ -302,6 +309,10 @@ func (s *Service) electNewCrawler(ctx context.Context) string {
 
 func (s *Service) sendCrawlRequest(ctx context.Context, crawlerURL, steamID string, precheck bool) (*CrawlSummary, error) {
 	url := fmt.Sprintf("%s?steam_id=%s", crawlerURL, steamID)
+	if precheck {
+		url = fmt.Sprintf("%s&precheck", url)
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, nil)
 	if err != nil {
 		return nil, err
