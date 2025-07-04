@@ -109,7 +109,7 @@ func (s *Service) SaveInventory(ctx context.Context, steamID, secret string, bod
 }
 
 func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
-	raw, err := s.autoRetry(ctx, steamID)
+	raw, err := s.crawlWait(ctx, steamID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string
 	return s.id, res, err
 }
 
-func (s *Service) autoRetry(ctx context.Context, steamID string) (*inventory, error) {
+func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, error) {
 	logger := s.logger.With("steam_id", steamID)
 	logger.DebugContext(ctx, "fetch with auto retry")
 
