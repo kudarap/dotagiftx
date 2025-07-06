@@ -202,7 +202,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	}
 
 	// clear retry
-	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, 0); err != nil {
+	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, 1); err != nil {
 		return nil, err
 	}
 
