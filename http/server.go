@@ -99,6 +99,7 @@ func (s *Server) setup() {
 	// A good base middleware stack
 	r.Use(s.tracing.Middleware)
 	r.Use(middleware.RequestID)
+	r.Use(vercelRequestID)
 	r.Use(middleware.RealIP)
 	r.Use(NewStructuredLogger(s.logger))
 	r.Use(CORS)
