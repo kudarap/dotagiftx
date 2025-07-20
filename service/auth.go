@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -40,11 +41,11 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 
 	// Check account existence.
 	au, err := s.authStg.GetByUsername(steamPlayer.ID)
-	if err != nil && err != dotagiftx.AuthErrNotFound {
+	if err != nil && !errors.Is(err, dotagiftx.AuthErrNotFound) {
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
 
-	// Account existed and checks login credentials.
+	// Account existed and checked login credentials.
 	if au != nil {
 		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {
 			return nil, dotagiftx.AuthErrLogin
