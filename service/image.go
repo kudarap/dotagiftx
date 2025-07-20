@@ -5,8 +5,8 @@ import (
 	"io"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
 	"github.com/kudarap/dotagiftx/file"
+	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewImage returns a new Image service.
@@ -26,7 +26,7 @@ func (s *imageService) Upload(ctx context.Context, r io.Reader) (fileID string, 
 
 	fileID, err = s.fileMgr.Save(r)
 	if err != nil {
-		err = errors.New(dotagiftx.ImageErrUpload, err)
+		err = xerrors.New(dotagiftx.ImageErrUpload, err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (s *imageService) Thumbnail(fileID string, width, height uint) (path string
 
 	t, err := file.Thumbnail(f, width, height)
 	if err != nil {
-		err = errors.New(dotagiftx.ImageErrThumbnail, err)
+		err = xerrors.New(dotagiftx.ImageErrThumbnail, err)
 		return
 	}
 
@@ -51,7 +51,7 @@ func (s *imageService) Thumbnail(fileID string, width, height uint) (path string
 func (s *imageService) Image(fileID string) (path string, err error) {
 	path, err = s.fileMgr.Get(fileID)
 	if err != nil {
-		err = errors.New(dotagiftx.ImageErrNotFound, err)
+		err = xerrors.New(dotagiftx.ImageErrNotFound, err)
 		return
 	}
 

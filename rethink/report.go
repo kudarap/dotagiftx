@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/xerrors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -38,7 +38,7 @@ func (s *reportStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Report, error) {
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
@@ -74,7 +74,7 @@ func (s *reportStorage) Get(id string) (*dotagiftx.Report, error) {
 			return nil, dotagiftx.ReportErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -87,7 +87,7 @@ func (s *reportStorage) Create(in *dotagiftx.Report) error {
 	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 

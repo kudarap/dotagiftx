@@ -60,8 +60,9 @@ const formatDuration = ms => {
   const time = {
     minute: Math.floor(ms / 60000) % 60,
     second: Math.floor(ms / 1000) % 60,
-    millisecond: Math.floor(ms) % 1000,
+    m: Math.floor(ms) % 1000,
   }
+
   return Object.entries(time)
     .filter(val => val[1] !== 0)
     .map(([key, val]) => `${val} ${key}${val !== 1 ? 's' : ''}`)
@@ -111,8 +112,8 @@ export default function VerifiedStatusCard({ market, ...other }) {
           {mapLabel[source.status]}
         </Typography>
         <Typography color="textSecondary" variant="caption" component="p" sx={{ mb: 1 }}>
-          Processed {dateFromNow(source.updated_at)}{' '}
-          {source?.elapsed_ms ? <span>in {formatDuration(source.elapsed_ms)}</span> : null}.
+          Processed {dateFromNow(source.updated_at)}
+          {source?.elapsed_ms ? <span>&nbsp;in {formatDuration(source.elapsed_ms)}</span> : null}
         </Typography>
 
         <Typography v component="p">

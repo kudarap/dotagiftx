@@ -7,7 +7,7 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 var json = jsoniter.ConfigFastest
@@ -73,7 +73,7 @@ func respondError(w http.ResponseWriter, err error) {
 	status := http.StatusBadRequest
 
 	// Try to parse handled errors.
-	cErr, ok := errors.Parse(err)
+	cErr, ok := xerrors.Parse(err)
 	if ok {
 		if cErr.Fatal {
 			status = http.StatusInternalServerError

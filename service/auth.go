@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewAuth returns a new Auth service.
@@ -56,7 +56,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 		}
 
 		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
-			return nil, errors.New(dotagiftx.UserErrSteamSync, err)
+			return nil, xerrors.New(dotagiftx.UserErrSteamSync, err)
 		}
 
 		return au, nil
@@ -78,7 +78,7 @@ func (s *authService) RenewToken(refreshToken string) (*dotagiftx.Auth, error) {
 
 	au, err := s.authStg.GetByRefreshToken(refreshToken)
 	if err != nil {
-		return nil, errors.New(dotagiftx.AuthErrRefreshToken, err)
+		return nil, xerrors.New(dotagiftx.AuthErrRefreshToken, err)
 	}
 
 	return au, nil
@@ -101,7 +101,7 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 func (s *authService) Auth(id string) (*dotagiftx.Auth, error) {
 	u, err := s.authStg.Get(id)
 	if err != nil {
-		return nil, errors.New(dotagiftx.AuthErrNotFound, err)
+		return nil, xerrors.New(dotagiftx.AuthErrNotFound, err)
 	}
 
 	return u, nil
