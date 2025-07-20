@@ -2,10 +2,11 @@ package dotagiftx
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/hex"
+	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/kudarap/dotagiftx/hash"
 )
 
 // Auth error types.
@@ -87,12 +88,17 @@ func (a Auth) SetDefaults() *Auth {
 }
 
 func (a Auth) GenerateRefreshToken() string {
-	return hash.GenerateSha1()
+	t := fmt.Sprintf("%d%s", time.Now().UnixNano(), AuthSalt)
+	h := sha1.New()
+	h.Write([]byte(t))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 // ComposePassword returns composed password.
 func (Auth) ComposePassword(steamID, userID string) string {
-	return hash.Sha1(steamID + userID)
+	h := sha1.New()
+	h.Write([]byte(steamID + userID + AuthSalt))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 type ctxKey int
@@ -115,3 +121,6 @@ func AuthFromContext(ctx context.Context) *Auth {
 	}
 	return nil
 }
+
+// AuthSalt salt string for hashing.
+var AuthSalt = "and-pepper"

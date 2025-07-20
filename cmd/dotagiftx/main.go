@@ -9,7 +9,6 @@ import (
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/file"
-	"github.com/kudarap/dotagiftx/hash"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
@@ -65,7 +64,7 @@ func (app *application) loadConfig() error {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 
-	hash.Salt = app.config.SigKey
+	dotagiftx.AuthSalt = app.config.SigKey
 	return nil
 }
 
