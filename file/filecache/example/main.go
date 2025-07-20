@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/filecache"
+	"github.com/kudarap/dotagiftx/file/filecache"
 )
 
 func main() {

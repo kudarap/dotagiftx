@@ -8,7 +8,7 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/kudarap/dotagiftx/filecache"
+	"github.com/kudarap/dotagiftx/file/filecache"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
