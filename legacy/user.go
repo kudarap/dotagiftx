@@ -195,7 +195,7 @@ func (s *userService) ProcessManualSubscription(
 	return user, nil
 }
 
-// downloadProfileImage saves image file from url.
+// downloadProfileImage saves an image file from url.
 func (s *userService) downloadProfileImage(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {

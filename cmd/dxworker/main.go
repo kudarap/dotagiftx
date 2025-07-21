@@ -9,7 +9,6 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
-	"github.com/kudarap/dotagiftx/legacy"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
@@ -106,8 +105,8 @@ func (app *application) setup() error {
 	// Service inits.
 	slogger := slog.Default()
 	logSvc.Println("setting up services...")
-	inventorySvc := legacy.NewInventory(inventoryStg, marketStg, catalogStg)
-	deliverySvc := legacy.NewDelivery(deliveryStg, marketStg)
+	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
+	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 	assetSource := verify.NewSource(
 		phantasmSvc.InventoryAssetWithProvider,

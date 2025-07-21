@@ -7,7 +7,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-var ErrHammerNotWeilded = errors.New("user is not weilding a hmmer")
+var ErrHammerNotWielded = errors.New("user is not wielding a hammer")
 
 // markedOfBaal special number to detect eternal mark of doom.
 const markedOfBaal = 10000
@@ -35,7 +35,7 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 	if au == nil {
 		return dotagiftx.AuthErrNoAccess
 	}
-	if err := s.weildingHammer(au.UserID); err != nil {
+	if err := s.wieldingHammer(au.UserID); err != nil {
 		return err
 	}
 
@@ -61,7 +61,7 @@ func (s *BanService) hilt(ctx context.Context, p dotagiftx.HammerParams, us dota
 	if au == nil {
 		return nil, dotagiftx.AuthErrNoAccess
 	}
-	if err := s.weildingHammer(au.UserID); err != nil {
+	if err := s.wieldingHammer(au.UserID); err != nil {
 		return nil, err
 	}
 
@@ -114,14 +114,14 @@ func (s *BanService) sunderListings(userID string, from, to dotagiftx.MarketStat
 	return nil
 }
 
-func (s *BanService) weildingHammer(userID string) error {
+func (s *BanService) wieldingHammer(userID string) error {
 	u, err := s.userStg.Get(userID)
 	if err != nil {
 		return err
 	}
 
 	if u == nil || !u.Hammer {
-		return ErrHammerNotWeilded
+		return ErrHammerNotWielded
 	}
 	return nil
 }

@@ -103,8 +103,8 @@ func AuthFromContext(ctx context.Context) *Auth {
 	return nil
 }
 
-// NewAuth returns a new Auth service.
-func NewAuth(
+// NewAuthService returns a new Auth service.
+func NewAuthService(
 	salt string,
 	sc SteamClient,
 	as AuthStorage,
