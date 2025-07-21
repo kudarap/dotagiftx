@@ -118,10 +118,10 @@ func (app *application) setup() error {
 	// Service inits.
 	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(app.config)
-	userSvc := legacy.NewUser(userStg, fileMgr, paypalClient)
+	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient)
 	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc)
-	imageSvc := legacy.NewImage(fileMgr)
-	itemSvc := legacy.NewItem(itemStg, fileMgr)
+	imageSvc := dotagiftx.NewImageService(fileMgr)
+	itemSvc := dotagiftx.NewItemService(itemStg, fileMgr)
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	marketSvc := legacy.NewMarket(

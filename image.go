@@ -3,6 +3,8 @@ package dotagiftx
 import (
 	"context"
 	"io"
+
+	"github.com/kudarap/dotagiftx/file"
 )
 
 // Image error types.
@@ -60,3 +62,60 @@ type (
 		Dir() string
 	}
 )
+
+// NewImageService returns a new Image service.
+func NewImageService(fm FileManager) ImageService {
+	return &imageService{fm}
+}
+
+type imageService struct {
+	fileMgr FileManager
+}
+
+func (s *imageService) Upload(ctx context.Context, r io.Reader) (fileID string, err error) {
+	if au := AuthFromContext(ctx); au == nil {
+		err = AuthErrNoAccess
+		return
+	}
+
+	fileID, err = s.fileMgr.Save(r)
+	if err != nil {
+		err = NewXError(ImageErrUpload, err)
+		return
+	}
+
+	return fileID, nil
+}
+
+func (s *imageService) Thumbnail(fileID string, width, height uint) (path string, err error) {
+	f, err := s.Image(fileID)
+	if err != nil {
+		return
+	}
+
+	t, err := file.Thumbnail(f, width, height)
+	if err != nil {
+		err = NewXError(ImageErrThumbnail, err)
+		return
+	}
+
+	return t, nil
+}
+
+func (s *imageService) Image(fileID string) (path string, err error) {
+	path, err = s.fileMgr.Get(fileID)
+	if err != nil {
+		err = NewXError(ImageErrNotFound, err)
+		return
+	}
+
+	return path, nil
+}
+
+func (s *imageService) Delete(ctx context.Context, fileID string) error {
+	if au := AuthFromContext(ctx); au == nil {
+		return AuthErrNoAccess
+	}
+
+	return s.fileMgr.Delete(fileID)
+}
