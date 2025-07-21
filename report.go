@@ -2,7 +2,10 @@ package dotagiftx
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -29,7 +32,7 @@ const (
 	ReportTypeScamIncident ReportType = 50
 )
 
-// Report pre-defined labels.
+// Report available labels.
 const (
 	ReportLabelSurveyNext = "community-whats-next"
 )
@@ -65,7 +68,7 @@ type (
 
 	// ReportStorage defines operation for report records.
 	ReportStorage interface {
-		// Find returns a list of reports from data store.
+		// Find returns a list of reports from the data store.
 		Find(opts FindOpts) ([]Report, error)
 
 		// Count returns number of reports from data store.
@@ -79,9 +82,9 @@ type (
 	}
 )
 
-// CheckCreate validates field on creating new report.
+// CheckCreate validates field on creating a new report.
 func (r Report) CheckCreate() error {
-	// Check required fields.
+	// Check the required fields.
 	if err := validator.Struct(r); err != nil {
 		return err
 	}
@@ -104,4 +107,94 @@ func (t ReportType) String() string {
 	}
 
 	return s
+}
+
+// NewReportService returns new report service.
+func NewReportService(rs ReportStorage, wp webhookPoster) ReportService {
+	return &reportService{rs, wp}
+}
+
+type reportService struct {
+	reportStg     ReportStorage
+	webhookPoster webhookPoster
+}
+
+func (s *reportService) Reports(opts FindOpts) ([]Report, *FindMetadata, error) {
+	res, err := s.reportStg.Find(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !opts.WithMeta {
+		return res, nil, err
+	}
+
+	// Get a result and total count for metadata.
+	tc, err := s.reportStg.Count(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return res, &FindMetadata{
+		ResultCount: len(res),
+		TotalCount:  tc,
+	}, nil
+}
+
+func (s *reportService) Report(id string) (*Report, error) {
+	return s.reportStg.Get(id)
+}
+
+func (s *reportService) CreateSurvey(ctx context.Context, rep *Report) error {
+	rep.Type = ReportTypeSurvey
+	return s.Create(ctx, rep)
+}
+
+func (s *reportService) Create(ctx context.Context, rep *Report) error {
+	au := AuthFromContext(ctx)
+	if au == nil {
+		return AuthErrNoAccess
+	}
+	rep.UserID = au.UserID
+
+	rep.Label = strings.TrimSpace(rep.Label)
+	rep.Text = strings.TrimSpace(rep.Text)
+	if err := rep.CheckCreate(); err != nil {
+		return NewXError(ReportErrRequiredFields, err)
+	}
+
+	if err := s.reportStg.Create(rep); err != nil {
+		return err
+	}
+
+	go func() {
+		if err := s.shootToDiscord(rep.ID); err != nil {
+			log.Println("could not shoot to discord:", err)
+		}
+	}()
+
+	return nil
+}
+
+func (s *reportService) shootToDiscord(reportID string) error {
+	reps, _, err := s.Reports(FindOpts{Filter: Report{ID: reportID}})
+	if err != nil {
+		return err
+	}
+	if len(reps) == 0 {
+		return nil
+	}
+
+	rep := reps[0]
+	username := fmt.Sprintf("%s (%s)", rep.User.Name, rep.User.SteamID)
+	content := fmt.Sprintf("[%s] %s", rep.Type, rep.Text)
+	if err = s.webhookPoster.PostWebhook(username, content); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type webhookPoster interface {
+	PostWebhook(username, content string) error
 }

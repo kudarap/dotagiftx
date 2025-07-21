@@ -138,7 +138,7 @@ func (app *application) setup() error {
 		app.contextLog("service_market"),
 	)
 	trackSvc := legacy.NewTrack(trackStg, itemStg)
-	reportSvc := legacy.NewReport(reportStg, discordClient)
+	reportSvc := dotagiftx.NewReportService(reportStg, discordClient)
 	statsSvc := dotagiftx.NewStatsService(statsStg, trackStg)
 	hammerSvc := dotagiftx.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
