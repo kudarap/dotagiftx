@@ -87,3 +87,33 @@ type (
 		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
 	}
 )
+
+// NewStatsService returns new Stats service.
+func NewStatsService(ss StatsStorage, ts TrackStorage) StatsService {
+	return &statsService{ss, ts}
+}
+
+type statsService struct {
+	statsStg StatsStorage
+	trackStg TrackStorage
+}
+
+func (s *statsService) CountMarketStatus(opts FindOpts) (*MarketStatusCount, error) {
+	return s.statsStg.CountMarketStatus(opts)
+}
+
+func (s *statsService) CountTotalMarketStatus() (*MarketStatusCount, error) {
+	return s.statsStg.CountMarketStatus(FindOpts{})
+}
+
+func (s *statsService) CountUserMarketStatus(userID string) (*MarketStatusCount, error) {
+	return s.statsStg.CountUserMarketStatus(userID)
+}
+
+func (s *statsService) GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error) {
+	return s.statsStg.GraphMarketSales(opts)
+}
+
+func (s *statsService) TopKeywords() ([]SearchKeywordScore, error) {
+	return s.trackStg.TopKeywords()
+}

@@ -139,7 +139,7 @@ func (app *application) setup() error {
 	)
 	trackSvc := legacy.NewTrack(trackStg, itemStg)
 	reportSvc := legacy.NewReport(reportStg, discordClient)
-	statsSvc := legacy.NewStats(statsStg, trackStg)
+	statsSvc := dotagiftx.NewStatsService(statsStg, trackStg)
 	hammerSvc := legacy.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 
