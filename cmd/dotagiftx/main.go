@@ -137,7 +137,7 @@ func (app *application) setup() error {
 		rethink.NewQueue(rethinkClient),
 		app.contextLog("service_market"),
 	)
-	trackSvc := legacy.NewTrack(trackStg, itemStg)
+	trackSvc := dotagiftx.NewTrackService(trackStg, itemStg)
 	reportSvc := dotagiftx.NewReportService(reportStg, discordClient)
 	statsSvc := dotagiftx.NewStatsService(statsStg, trackStg)
 	hammerSvc := dotagiftx.NewHammerService(userStg, marketStg)
