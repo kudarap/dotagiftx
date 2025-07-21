@@ -10,7 +10,6 @@ import (
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/http"
-	"github.com/kudarap/dotagiftx/legacy"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/phantasm"
@@ -124,7 +123,7 @@ func (app *application) setup() error {
 	itemSvc := dotagiftx.NewItemService(itemStg, fileMgr)
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
-	marketSvc := legacy.NewMarket(
+	marketSvc := dotagiftx.NewMarketService(
 		marketStg,
 		userStg,
 		itemStg,
