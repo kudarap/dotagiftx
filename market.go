@@ -12,6 +12,8 @@ import (
 	"github.com/kudarap/dotagiftx/logging"
 )
 
+const defaultCurrency = "USD"
+
 // Market error types.
 const (
 	MarketErrNotFound Errors = iota + 2100
@@ -160,7 +162,7 @@ type (
 		// Count returns number of market from data store.
 		Count(FindOpts) (int, error)
 
-		// Get returns market details by id from data store.
+		// Get returns a market details by id from data store.
 		Get(id string) (*Market, error)
 
 		// Create persists a new market to data store.
@@ -186,7 +188,7 @@ type (
 		// Index composes market data for faster search and retrieval.
 		Index(id string) (*Market, error)
 
-		// UpdateUserScore sets new rank score value of all live market by user ID.
+		// UpdateUserScore sets new rank score value of all live markets by user ID.
 		UpdateUserScore(userID string, rankScore int) error
 
 		// UpdateExpiring sets live items to expired status by expiration time.
@@ -246,8 +248,6 @@ func (m Market) CheckUpdate() error {
 
 	return nil
 }
-
-const defaultCurrency = "USD"
 
 // SetDefaults sets default values for a new market.
 func (m Market) SetDefaults() *Market {
