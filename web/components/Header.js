@@ -190,23 +190,18 @@ export default function Header() {
                 </span>
               )}
             </Link>
+            <Link className={classes.nav} href="/hearoes" underline="none">
+              Heroes
+            </Link>
+            <Link className={classes.nav} href="/bans" underline="none">
+              Overwatch
+              <LatestBan />
+            </Link>
             <Link className={classes.nav} href="/plus" underline="none">
               Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>
             </Link>
             <Link className={classes.nav} href="/rules" underline="none">
               Rules
-            </Link>
-            <Link className={classes.nav} href="/bans" underline="none">
-              Bans
-              <LatestBan />
-            </Link>
-            <Link
-              className={classes.nav}
-              href="https://discord.gg/UFt9Ny42kM"
-              target="_blank"
-              rel="noreferrer noopener"
-              underline="none">
-              Discord
             </Link>
             <MoreMenu />
 

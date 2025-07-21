@@ -8,8 +8,8 @@ import (
 	"dario.cat/mergo"
 	"github.com/fatih/structs"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
 	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/xerrors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -134,7 +134,7 @@ func (s *catalogStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error)
 	q := newFindOptsQuery(s.table(), o)
 	//q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 	return res, nil
 }
@@ -169,7 +169,7 @@ func (s *catalogStorage) Get(id string) (*dotagiftx.Catalog, error) {
 			return nil, dotagiftx.CatalogErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -183,7 +183,7 @@ func (s *catalogStorage) getBySlug(slug string) (*dotagiftx.Catalog, error) {
 			return nil, dotagiftx.CatalogErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -205,14 +205,14 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 	// Get item details by item ID.
 	q = r.Table(tableItem).Get(itemID)
 	if err = s.db.one(q, cat); err != nil {
-		return nil, errors.New(dotagiftx.CatalogErrIndexing, err)
+		return nil, xerrors.New(dotagiftx.CatalogErrIndexing, err)
 	}
 
 	benchStart = time.Now()
 	// Get market offers summary from LIVE status.
 	cat.Quantity, cat.LowestAsk, cat.MedianAsk, cat.RecentAsk, err = s.getOffersSummary(itemID)
 	if err != nil {
-		return nil, errors.New(dotagiftx.CatalogErrIndexing, err)
+		return nil, xerrors.New(dotagiftx.CatalogErrIndexing, err)
 	}
 	s.logger.Println("rethink/catalog getOffersSummary", time.Now().Sub(benchStart))
 
@@ -220,7 +220,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 	// Get market buy orders summary.
 	cat.BidCount, cat.HighestBid, cat.RecentBid, err = s.getBuyOrdersSummary(itemID)
 	if err != nil {
-		return nil, errors.New(dotagiftx.CatalogErrIndexing, err)
+		return nil, xerrors.New(dotagiftx.CatalogErrIndexing, err)
 	}
 	s.logger.Println("rethink/catalog getBuyOrdersSummary", time.Now().Sub(benchStart))
 
@@ -228,7 +228,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 	// Get market sales stats which calculated from RESERVED and SOLD statuses.
 	cat.SaleCount, cat.AvgSale, cat.RecentSale, err = s.getSaleSummary(itemID)
 	if err != nil {
-		return nil, errors.New(dotagiftx.CatalogErrIndexing, err)
+		return nil, xerrors.New(dotagiftx.CatalogErrIndexing, err)
 	}
 	s.logger.Println("rethink/catalog getSaleSummary", time.Now().Sub(benchStart))
 
@@ -236,7 +236,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 	// Get reserved and sold count on the market by item ID.
 	cat.ReservedCount, err = s.getReservedCounts(itemID)
 	if err != nil {
-		return nil, errors.New(dotagiftx.CatalogErrIndexing, err)
+		return nil, xerrors.New(dotagiftx.CatalogErrIndexing, err)
 	}
 	cat.SoldCount = cat.SaleCount - cat.ReservedCount
 	s.logger.Println("rethink/catalog getReservedCounts", time.Now().Sub(benchStart))
@@ -249,7 +249,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 	}
 
 	if err != nil {
-		return nil, errors.New(dotagiftx.CatalogErrIndexing, err)
+		return nil, xerrors.New(dotagiftx.CatalogErrIndexing, err)
 	}
 
 	return cat, nil
@@ -415,7 +415,7 @@ func (s *catalogStorage) create(in *dotagiftx.Catalog) error {
 	m := catalogToMap(in)
 
 	if _, err := s.db.insert(s.table().Insert(m)); err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return nil
@@ -433,11 +433,11 @@ func (s *catalogStorage) update(in *dotagiftx.Catalog) error {
 
 	err = s.db.update(s.table().Get(in.ID).Update(m))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return errors.New(dotagiftx.StorageMergeErr, err)
+		return xerrors.New(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -481,7 +481,7 @@ func (s *catalogStorage) findIndexLegacy(o dotagiftx.FindOpts) ([]dotagiftx.Cata
 	o.KeywordFields = s.keywordFields
 	q = newFindOptsQuery(q, o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil

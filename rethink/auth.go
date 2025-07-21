@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/xerrors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 
 	"dario.cat/mergo"
@@ -40,7 +40,7 @@ func (s *authStorage) Get(id string) (*dotagiftx.Auth, error) {
 			return nil, dotagiftx.AuthErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -80,7 +80,7 @@ func (s *authStorage) Create(in *dotagiftx.Auth) error {
 	in.UpdatedAt = t
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -96,11 +96,11 @@ func (s *authStorage) Update(in *dotagiftx.Auth) error {
 	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err := mergo.Merge(in, cur); err != nil {
-		return errors.New(dotagiftx.StorageMergeErr, err)
+		return xerrors.New(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -110,7 +110,7 @@ func (s *authStorage) find(o dotagiftx.FindOpts) ([]dotagiftx.Auth, error) {
 	var res []dotagiftx.Auth
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil

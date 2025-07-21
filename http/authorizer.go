@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 func (s *Server) authorizer(next http.Handler) http.Handler {
@@ -12,7 +12,7 @@ func (s *Server) authorizer(next http.Handler) http.Handler {
 		// Validate token from header.
 		c, err := ParseFromHeader(r.Header)
 		if err != nil {
-			respondError(w, errors.New(dotagiftx.AuthErrNoAccess, err))
+			respondError(w, xerrors.New(dotagiftx.AuthErrNoAccess, err))
 			return
 		}
 

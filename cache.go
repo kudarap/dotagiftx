@@ -1,11 +1,11 @@
 package dotagiftx
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/kudarap/dotagiftx/hash"
 )
 
 // Cache provides access to cache database.
@@ -33,7 +33,7 @@ func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Compose cache key and omit nocache param, this will enable force reloads.
 	q := r.URL.Query()
 	q.Del(cacheSkipKey)
-	key = fmt.Sprintf("%s%s:%s", userID, r.URL.Path, hash.MD5(q.Encode()))
+	key = fmt.Sprintf("%s%s:%s", userID, r.URL.Path, hash(q.Encode()))
 	return
 }
 
@@ -41,4 +41,10 @@ func CacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, 
 	key, noCache = CacheKeyFromRequest(r)
 	key = prefix + ":" + key
 	return
+}
+
+func hash(s string) string {
+	h := md5.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
 }

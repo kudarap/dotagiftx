@@ -1,12 +1,13 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewAuth returns a new Auth service.
@@ -40,11 +41,11 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 
 	// Check account existence.
 	au, err := s.authStg.GetByUsername(steamPlayer.ID)
-	if err != nil && err != dotagiftx.AuthErrNotFound {
+	if err != nil && !errors.Is(err, dotagiftx.AuthErrNotFound) {
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
 
-	// Account existed and checks login credentials.
+	// Account existed and checked login credentials.
 	if au != nil {
 		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {
 			return nil, dotagiftx.AuthErrLogin
@@ -56,7 +57,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 		}
 
 		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
-			return nil, errors.New(dotagiftx.UserErrSteamSync, err)
+			return nil, xerrors.New(dotagiftx.UserErrSteamSync, err)
 		}
 
 		return au, nil
@@ -78,7 +79,7 @@ func (s *authService) RenewToken(refreshToken string) (*dotagiftx.Auth, error) {
 
 	au, err := s.authStg.GetByRefreshToken(refreshToken)
 	if err != nil {
-		return nil, errors.New(dotagiftx.AuthErrRefreshToken, err)
+		return nil, xerrors.New(dotagiftx.AuthErrRefreshToken, err)
 	}
 
 	return au, nil
@@ -101,7 +102,7 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 func (s *authService) Auth(id string) (*dotagiftx.Auth, error) {
 	u, err := s.authStg.Get(id)
 	if err != nil {
-		return nil, errors.New(dotagiftx.AuthErrNotFound, err)
+		return nil, xerrors.New(dotagiftx.AuthErrNotFound, err)
 	}
 
 	return u, nil

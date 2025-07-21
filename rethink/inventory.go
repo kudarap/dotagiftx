@@ -5,7 +5,7 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
+	"github.com/kudarap/dotagiftx/xerrors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -39,7 +39,7 @@ func (s *inventoryStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Inventory, er
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
@@ -76,7 +76,7 @@ func (s *inventoryStorage) Get(id string) (*dotagiftx.Inventory, error) {
 			return nil, dotagiftx.InventoryErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -105,7 +105,7 @@ func (s *inventoryStorage) Create(in *dotagiftx.Inventory) error {
 	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -121,11 +121,11 @@ func (s *inventoryStorage) Update(in *dotagiftx.Inventory) error {
 	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return errors.New(dotagiftx.StorageMergeErr, err)
+		return xerrors.New(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
