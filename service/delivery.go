@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewDelivery returns new Delivery service.
@@ -59,7 +58,7 @@ func (s *deliveryService) DeliveryByMarketID(marketID string) (*dotagiftx.Delive
 
 func (s *deliveryService) Set(_ context.Context, del *dotagiftx.Delivery) error {
 	if err := del.CheckCreate(); err != nil {
-		return xerrors.New(dotagiftx.DeliveryErrRequiredFields, err)
+		return dotagiftx.NewXError(dotagiftx.DeliveryErrRequiredFields, err)
 	}
 
 	defer func() {

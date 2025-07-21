@@ -3,11 +3,9 @@ package rethink
 import (
 	"log"
 
-	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
-	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
-
 	"dario.cat/mergo"
+	"github.com/kudarap/dotagiftx"
+	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 const (
@@ -16,7 +14,7 @@ const (
 	authFieldRefreshToken = "refresh_token"
 )
 
-// NewAuth creates new instance of auth data store.
+// NewAuth creates a new instance of auth data store.
 func NewAuth(c *Client) *authStorage {
 	if err := c.autoMigrate(tableAuth); err != nil {
 		log.Fatalf("could not create %s table: %s", tableAuth, err)
@@ -40,7 +38,7 @@ func (s *authStorage) Get(id string) (*dotagiftx.Auth, error) {
 			return nil, dotagiftx.AuthErrNotFound
 		}
 
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -80,7 +78,7 @@ func (s *authStorage) Create(in *dotagiftx.Auth) error {
 	in.UpdatedAt = t
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -96,11 +94,11 @@ func (s *authStorage) Update(in *dotagiftx.Auth) error {
 	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err := mergo.Merge(in, cur); err != nil {
-		return xerrors.New(dotagiftx.StorageMergeErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -110,7 +108,7 @@ func (s *authStorage) find(o dotagiftx.FindOpts) ([]dotagiftx.Auth, error) {
 	var res []dotagiftx.Auth
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil

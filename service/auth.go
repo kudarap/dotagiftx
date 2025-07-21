@@ -10,19 +10,24 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewAuth returns a new Auth service.
-func NewAuth(salt string, sc dotagiftx.SteamClient, as dotagiftx.AuthStorage, us dotagiftx.UserService) dotagiftx.AuthService {
-	return &authService{salt, sc, as, us}
+func NewAuth(
+	salt string,
+	sc dotagiftx.SteamClient,
+	as dotagiftx.AuthStorage,
+	us dotagiftx.UserService,
+) dotagiftx.AuthService {
+	return &authService{sc, as, us, salt}
 }
 
 type authService struct {
-	salt        string
 	steamClient dotagiftx.SteamClient
 	authStg     dotagiftx.AuthStorage
 	userSvc     dotagiftx.UserService
+
+	salt string
 }
 
 func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotagiftx.Auth, error) {
@@ -61,7 +66,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 		}
 
 		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
-			return nil, xerrors.New(dotagiftx.UserErrSteamSync, err)
+			return nil, dotagiftx.NewXError(dotagiftx.UserErrSteamSync, err)
 		}
 
 		return au, nil
@@ -83,7 +88,7 @@ func (s *authService) RenewToken(refreshToken string) (*dotagiftx.Auth, error) {
 
 	au, err := s.authStg.GetByRefreshToken(refreshToken)
 	if err != nil {
-		return nil, xerrors.New(dotagiftx.AuthErrRefreshToken, err)
+		return nil, dotagiftx.NewXError(dotagiftx.AuthErrRefreshToken, err)
 	}
 
 	return au, nil
@@ -106,7 +111,7 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 func (s *authService) Auth(id string) (*dotagiftx.Auth, error) {
 	u, err := s.authStg.Get(id)
 	if err != nil {
-		return nil, xerrors.New(dotagiftx.AuthErrNotFound, err)
+		return nil, dotagiftx.NewXError(dotagiftx.AuthErrNotFound, err)
 	}
 
 	return u, nil

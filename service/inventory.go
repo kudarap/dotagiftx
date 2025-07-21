@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewInventory returns new Inventory service.
@@ -60,7 +59,7 @@ func (s *InventoryService) InventoryByMarketID(marketID string) (*dotagiftx.Inve
 
 func (s *InventoryService) Set(_ context.Context, inv *dotagiftx.Inventory) error {
 	if err := inv.CheckCreate(); err != nil {
-		return xerrors.New(dotagiftx.InventoryErrRequiredFields, err)
+		return dotagiftx.NewXError(dotagiftx.InventoryErrRequiredFields, err)
 	}
 
 	defer func() {

@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewReport returns new Report service.
@@ -61,7 +60,7 @@ func (s *reportService) Create(ctx context.Context, rep *dotagiftx.Report) error
 	rep.Label = strings.TrimSpace(rep.Label)
 	rep.Text = strings.TrimSpace(rep.Text)
 	if err := rep.CheckCreate(); err != nil {
-		return xerrors.New(dotagiftx.ReportErrRequiredFields, err)
+		return dotagiftx.NewXError(dotagiftx.ReportErrRequiredFields, err)
 	}
 
 	if err := s.reportStg.Create(rep); err != nil {

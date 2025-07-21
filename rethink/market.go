@@ -8,7 +8,7 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
+
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -53,7 +53,7 @@ func (s *marketStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 
 	q := findOpts(o).parseOpts(s.table(), nil)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	for i, rr := range res {
@@ -82,7 +82,7 @@ func (s *marketStorage) PendingInventoryStatus(o dotagiftx.FindOpts) ([]dotagift
 
 	var res []dotagiftx.Market
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	for i, rr := range res {
@@ -103,7 +103,7 @@ func (s *marketStorage) PendingDeliveryStatus(o dotagiftx.FindOpts) ([]dotagiftx
 
 	var res []dotagiftx.Market
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	for i, rr := range res {
@@ -126,7 +126,7 @@ func (s *marketStorage) RevalidateDeliveryStatus(o dotagiftx.FindOpts) ([]dotagi
 
 	var res []dotagiftx.Market
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	for i, rr := range res {
@@ -182,7 +182,7 @@ func (s *marketStorage) Get(id string) (*dotagiftx.Market, error) {
 			return nil, dotagiftx.MarketErrNotFound
 		}
 
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	row.User = s.includeUser(row.UserID)
@@ -245,7 +245,7 @@ func (s *marketStorage) Create(in *dotagiftx.Market) error {
 	in.Item = nil
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -290,11 +290,11 @@ func (s *marketStorage) BaseUpdate(in *dotagiftx.Market) error {
 	//in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return xerrors.New(dotagiftx.StorageMergeErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -397,7 +397,7 @@ func (s *marketStorage) findIndexLegacy(o dotagiftx.FindOpts) ([]dotagiftx.Catal
 	o.KeywordFields = s.keywordFields
 	q = newFindOptsQuery(q, o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -97,7 +97,7 @@ func (s *itemService) Create(ctx context.Context, itm *dotagiftx.Item) error {
 	itm.Rarity = strings.ToLower(itm.Rarity)
 	itm = itm.SetDefaults()
 	if err := itm.CheckCreate(); err != nil {
-		return xerrors.New(dotagiftx.ItemErrRequiredFields, err)
+		return dotagiftx.NewXError(dotagiftx.ItemErrRequiredFields, err)
 	}
 
 	if err := s.itemStg.IsItemExist(itm.Name); err != nil {
@@ -160,12 +160,12 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (dotagiftx.ItemIm
 
 	b, err := io.ReadAll(f)
 	if err != nil {
-		return res, xerrors.New(dotagiftx.ItemErrImport, err)
+		return res, dotagiftx.NewXError(dotagiftx.ItemErrImport, err)
 	}
 
 	yf := &yamlFile{}
 	if err := yaml.Unmarshal(b, yf); err != nil {
-		return res, xerrors.New(dotagiftx.ItemErrImport, err)
+		return res, dotagiftx.NewXError(dotagiftx.ItemErrImport, err)
 	}
 
 	res.Total = len(yf.Items)

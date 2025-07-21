@@ -8,7 +8,6 @@ import (
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
-	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 type TaskProcessor interface {
@@ -477,11 +476,11 @@ func (s *marketService) checkOwnership(ctx context.Context, id string) (*dotagif
 
 	mkt, err := s.userMarket(au.UserID, id)
 	if err != nil {
-		return nil, xerrors.New(dotagiftx.AuthErrForbidden, err)
+		return nil, dotagiftx.NewXError(dotagiftx.AuthErrForbidden, err)
 	}
 
 	if mkt == nil {
-		return nil, xerrors.New(dotagiftx.AuthErrForbidden, dotagiftx.MarketErrNotFound)
+		return nil, dotagiftx.NewXError(dotagiftx.AuthErrForbidden, dotagiftx.MarketErrNotFound)
 	}
 
 	return mkt, nil

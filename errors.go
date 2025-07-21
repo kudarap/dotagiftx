@@ -1,5 +1,9 @@
 package dotagiftx
 
+import (
+	"fmt"
+)
+
 //go:generate go tool stringer -type=Errors -output=errors_string.go
 
 var appErrorText = map[Errors]string{}
@@ -15,4 +19,24 @@ func (i Errors) Error() string {
 // Code returns error code.
 func (i Errors) Code() string {
 	return i.String()
+}
+
+func (i Errors) X(err error) XErrors {
+	return XErrors{Type: i, Err: err}
+}
+
+// XErrors represents application's errors.
+type XErrors struct {
+	Type  Errors
+	Err   error
+	Fatal bool
+}
+
+// Implements error interface.
+func (x XErrors) Error() string {
+	return fmt.Sprintf("%s: %s", x.Type, x.Err)
+}
+
+func NewXError(t Errors, err error) XErrors {
+	return XErrors{Type: t, Err: err}
 }

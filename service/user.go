@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewUser returns a new User service.
@@ -46,7 +45,7 @@ func (s *userService) UserFromContext(ctx context.Context) (*dotagiftx.User, err
 func (s *userService) Create(u *dotagiftx.User) error {
 	url, err := s.downloadProfileImage(u.Avatar)
 	if err != nil {
-		return xerrors.New(dotagiftx.UserErrProfileImageDL, err)
+		return dotagiftx.NewXError(dotagiftx.UserErrProfileImageDL, err)
 	}
 	u.Avatar = url
 
