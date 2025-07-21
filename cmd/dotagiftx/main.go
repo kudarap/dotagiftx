@@ -10,12 +10,12 @@ import (
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/http"
+	"github.com/kudarap/dotagiftx/legacy"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
-	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
@@ -118,13 +118,13 @@ func (app *application) setup() error {
 	// Service inits.
 	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(app.config)
-	userSvc := service.NewUser(userStg, fileMgr, paypalClient)
-	authSvc := service.NewAuth(app.config.SigKey, steamClient, authStg, userSvc)
-	imageSvc := service.NewImage(fileMgr)
-	itemSvc := service.NewItem(itemStg, fileMgr)
-	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
-	marketSvc := service.NewMarket(
+	userSvc := legacy.NewUser(userStg, fileMgr, paypalClient)
+	authSvc := dotagiftx.NewAuth(app.config.SigKey, steamClient, authStg, userSvc)
+	imageSvc := legacy.NewImage(fileMgr)
+	itemSvc := legacy.NewItem(itemStg, fileMgr)
+	deliverySvc := legacy.NewDelivery(deliveryStg, marketStg)
+	inventorySvc := legacy.NewInventory(inventoryStg, marketStg, catalogStg)
+	marketSvc := legacy.NewMarket(
 		marketStg,
 		userStg,
 		itemStg,
@@ -137,10 +137,10 @@ func (app *application) setup() error {
 		rethink.NewQueue(rethinkClient),
 		app.contextLog("service_market"),
 	)
-	trackSvc := service.NewTrack(trackStg, itemStg)
-	reportSvc := service.NewReport(reportStg, discordClient)
-	statsSvc := service.NewStats(statsStg, trackStg)
-	hammerSvc := service.NewHammerService(userStg, marketStg)
+	trackSvc := legacy.NewTrack(trackStg, itemStg)
+	reportSvc := legacy.NewReport(reportStg, discordClient)
+	statsSvc := legacy.NewStats(statsStg, trackStg)
+	hammerSvc := legacy.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 
 	// NOTE! this is for run-once scripts

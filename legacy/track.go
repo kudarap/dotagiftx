@@ -1,4 +1,4 @@
-package service
+package legacy
 
 import (
 	"net/http"

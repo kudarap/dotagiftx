@@ -1,4 +1,4 @@
-package service
+package legacy
 
 import (
 	"github.com/kudarap/dotagiftx"
