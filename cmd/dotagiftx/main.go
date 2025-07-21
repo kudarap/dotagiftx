@@ -61,10 +61,8 @@ type application struct {
 func (app *application) loadConfig() error {
 	config.EnvPrefix = configPrefix
 	if err := config.Load(&app.config); err != nil {
-		return fmt.Errorf("could not load config: %s", err)
+		return fmt.Errorf("load config: %s", err)
 	}
-
-	dotagiftx.AuthSalt = app.config.SigKey
 	return nil
 }
 
@@ -121,7 +119,7 @@ func (app *application) setup() error {
 	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(app.config)
 	userSvc := service.NewUser(userStg, fileMgr, paypalClient)
-	authSvc := service.NewAuth(steamClient, authStg, userSvc)
+	authSvc := service.NewAuth(app.config.SigKey, steamClient, authStg, userSvc)
 	imageSvc := service.NewImage(fileMgr)
 	itemSvc := service.NewItem(itemStg, fileMgr)
 	deliverySvc := service.NewDelivery(deliveryStg, marketStg)

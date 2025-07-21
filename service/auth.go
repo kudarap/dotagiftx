@@ -1,21 +1,25 @@
 package service
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 // NewAuth returns a new Auth service.
-func NewAuth(sc dotagiftx.SteamClient, as dotagiftx.AuthStorage, us dotagiftx.UserService) dotagiftx.AuthService {
-	return &authService{sc, as, us}
+func NewAuth(salt string, sc dotagiftx.SteamClient, as dotagiftx.AuthStorage, us dotagiftx.UserService) dotagiftx.AuthService {
+	return &authService{salt, sc, as, us}
 }
 
 type authService struct {
+	salt        string
 	steamClient dotagiftx.SteamClient
 	authStg     dotagiftx.AuthStorage
 	userSvc     dotagiftx.UserService
@@ -47,7 +51,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*dotag
 
 	// Account existed and checked login credentials.
 	if au != nil {
-		if au.Password != au.ComposePassword(steamPlayer.ID, au.UserID) {
+		if au.Password != s.composePassword(steamPlayer.ID, au.UserID) {
 			return nil, dotagiftx.AuthErrLogin
 		}
 
@@ -95,7 +99,7 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 		return err
 	}
 
-	au.RefreshToken = au.GenerateRefreshToken()
+	au.RefreshToken = s.generateRefreshToken()
 	return s.authStg.Update(au)
 }
 
@@ -120,11 +124,24 @@ func (s *authService) createAccountFromSteam(sp *dotagiftx.SteamPlayer) (*dotagi
 	}
 
 	au := &dotagiftx.Auth{UserID: u.ID, Username: sp.ID}
-	au = au.SetDefaults()
-	au.Password = au.ComposePassword(sp.ID, u.ID)
+	au.RefreshToken = s.generateRefreshToken()
+	au.Password = s.composePassword(sp.ID, u.ID)
 	if err := s.authStg.Create(au); err != nil {
 		return nil, err
 	}
 
 	return au, nil
+}
+
+func (s *authService) generateRefreshToken() string {
+	t := fmt.Sprintf("%d%s", time.Now().UnixNano(), s.salt)
+	h := sha1.New()
+	h.Write([]byte(t))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func (s *authService) composePassword(steamID, userID string) string {
+	h := sha1.New()
+	h.Write([]byte(steamID + userID + s.salt))
+	return hex.EncodeToString(h.Sum(nil))
 }

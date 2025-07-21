@@ -2,9 +2,6 @@ package dotagiftx
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -81,26 +78,6 @@ type (
 	}
 )
 
-// SetDefaults sets auth default values.
-func (a Auth) SetDefaults() *Auth {
-	a.RefreshToken = a.GenerateRefreshToken()
-	return &a
-}
-
-func (a Auth) GenerateRefreshToken() string {
-	t := fmt.Sprintf("%d%s", time.Now().UnixNano(), AuthSalt)
-	h := sha1.New()
-	h.Write([]byte(t))
-	return hex.EncodeToString(h.Sum(nil))
-}
-
-// ComposePassword returns composed password.
-func (Auth) ComposePassword(steamID, userID string) string {
-	h := sha1.New()
-	h.Write([]byte(steamID + userID + AuthSalt))
-	return hex.EncodeToString(h.Sum(nil))
-}
-
 type ctxKey int
 
 const authKey ctxKey = iota
@@ -121,6 +98,3 @@ func AuthFromContext(ctx context.Context) *Auth {
 	}
 	return nil
 }
-
-// AuthSalt salt string for hashing.
-var AuthSalt = "and-pepper"
