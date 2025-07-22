@@ -2,10 +2,13 @@ package dotagiftx
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	neturl "net/url"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -160,13 +163,15 @@ func (i Item) ToCatalog() Catalog {
 }
 
 // NewItemService returns new Item service.
-func NewItemService(is ItemStorage, fm FileManager) ItemService {
-	return &itemService{is, fm}
+func NewItemService(allowedDomains []string, is ItemStorage, fm FileManager) ItemService {
+	return &itemService{is, fm, allowedDomains}
 }
 
 type itemService struct {
 	itemStg ItemStorage
 	fileMgr FileManager
+
+	allowedDomains []string
 }
 
 func (s *itemService) Items(opts FindOpts) ([]Item, *FindMetadata, error) {
@@ -365,6 +370,14 @@ func (s *itemService) getItemByName(name string) (*Item, error) {
 
 // downloadItemImage saves an image file from a url.
 func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
+	u, err := neturl.Parse(url)
+	if err != nil {
+		return "", err
+	}
+	if !slices.Contains(s.allowedDomains, u.Hostname()) {
+		return url, fmt.Errorf("item image downlaod for %s is not allowed", url)
+	}
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

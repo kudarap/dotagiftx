@@ -18,21 +18,22 @@ import (
 var EnvPrefix = "APP"
 
 type Config struct {
-	SigKey            string
-	DivineKey         string
-	Prod              bool
-	Addr              string
-	AppHost           string
-	ApiHost           string
-	SpanEnabled       bool `envconfig:"SPAN_ENABLED"`
-	Upload            file.Config
-	Rethink           rethink.Config
-	Redis             redis.Config
-	Steam             steam.Config
-	Paypal            paypal.Config
-	Log               logging.Config
-	Phantasm          phantasm.Config
-	DiscordWebhookURL string `envconfig:"DISCORD_WEBHOOK_URL"`
+	SigKey              string
+	DivineKey           string
+	Prod                bool
+	Addr                string
+	AppHost             string
+	ApiHost             string
+	SpanEnabled         bool `envconfig:"SPAN_ENABLED"`
+	Upload              file.Config
+	AllowedImageDomains []string `envconfig:"ALLOWED_IMAGE_DOMAINS"`
+	Rethink             rethink.Config
+	Redis               redis.Config
+	Steam               steam.Config
+	Paypal              paypal.Config
+	Log                 logging.Config
+	Phantasm            phantasm.Config
+	DiscordWebhookURL   string `envconfig:"DISCORD_WEBHOOK_URL"`
 }
 
 // Load parses .env values into a struct.
