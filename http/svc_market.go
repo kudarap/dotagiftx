@@ -147,7 +147,7 @@ func handleMarketCreate(svc dotagiftx.MarketService, cache cache) http.HandlerFu
 		}
 
 		go cache.BulkDel(marketCacheKeyPrefix)
-	
+
 		respondOK(w, m)
 	}
 }

@@ -16,7 +16,7 @@ run: test build
 run-worker: test build-worker
 	./$(worker_bin)
 
-test: generate fmt
+test: lint generate fmt
 	go test -v ./
 	go test -v ./http/...
 	go test -v ./steam/...
@@ -37,6 +37,9 @@ generate:
 
 fmt:
 	gofmt -s -l -e -w .
+
+lint:
+	golangci-lint run -v
 
 docker-build:
 	docker build -t $(server_bin) .
