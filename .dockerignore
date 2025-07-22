@@ -15,8 +15,10 @@ README.md
 .vscode
 
 # executables
-/dotagiftx
-/dotagiftx_amd64
+/dxserver
+/dxserver_amd64
+/dxworker
+/dxworker_amd64
 
 # local data
 .localdata
