@@ -14,14 +14,14 @@ const dayHours = time.Hour * 24
 type ExpiringMarket struct {
 	marketStg  dotagiftx.MarketStorage
 	catalogStg dotagiftx.CatalogStorage
-	cache      dotagiftx.Cache
+	cache      cache
 	logger     logging.Logger
 	// job settings
 	name     string
 	interval time.Duration
 }
 
-func NewExpiringMarket(ms dotagiftx.MarketStorage, cs dotagiftx.CatalogStorage, cc dotagiftx.Cache, lg logging.Logger) *ExpiringMarket {
+func NewExpiringMarket(ms dotagiftx.MarketStorage, cs dotagiftx.CatalogStorage, cc cache, lg logging.Logger) *ExpiringMarket {
 	return &ExpiringMarket{
 		marketStg:  ms,
 		catalogStg: cs,

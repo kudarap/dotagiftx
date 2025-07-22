@@ -1,4 +1,4 @@
-package dotagiftx
+package http
 
 import (
 	"crypto/md5"
@@ -6,26 +6,27 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/kudarap/dotagiftx"
 )
 
 // Cache provides access to cache database.
 type Cache interface {
 	Set(key string, val interface{}, expr time.Duration) error
 	Get(key string) (val string, err error)
-	Del(key string) error
 	BulkDel(keyPrefix string) error
 }
 
 const cacheSkipKey = "nocache"
 
 // CacheKeyFromRequest returns cache key from http request.
-// nocache from a request query will return empty string and can be use to skipping cache.
+// nocache from a request query will return empty string and can be used to skipping cache.
 func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Skip caching when a nocache flag exists.
 	_, noCache = r.URL.Query()[cacheSkipKey]
 	// Set owner user id for scoped requests.
 	var userID string
-	au := AuthFromContext(r.Context())
+	au := dotagiftx.AuthFromContext(r.Context())
 	if au != nil {
 		userID = au.UserID
 	}
@@ -33,7 +34,10 @@ func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Compose cache key and omit nocache param, this will enable force reloads.
 	q := r.URL.Query()
 	q.Del(cacheSkipKey)
-	key = fmt.Sprintf("%s%s:%s", userID, r.URL.Path, hash(q.Encode()))
+	h := md5.New()
+	h.Write([]byte(q.Encode()))
+	hash := hex.EncodeToString(h.Sum(nil))
+	key = fmt.Sprintf("%s%s:%s", userID, r.URL.Path, hash)
 	return
 }
 
@@ -41,10 +45,4 @@ func CacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, 
 	key, noCache = CacheKeyFromRequest(r)
 	key = prefix + ":" + key
 	return
-}
-
-func hash(s string) string {
-	h := md5.New()
-	h.Write([]byte(s))
-	return hex.EncodeToString(h.Sum(nil))
 }

@@ -9,6 +9,13 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
+// Vanity URL prefixes.
+const (
+	VanityPrefixID      = "https://steamcommunity.com/id/"
+	VanityPrefixProfile = "https://steamcommunity.com/profiles/"
+	vanityCacheExpr     = time.Hour * 24
+)
+
 // Config represents steam config.
 type Config struct {
 	Key    string
@@ -16,14 +23,14 @@ type Config struct {
 	Return string
 }
 
-// Client represents steam client.
+// Client represents a steam client.
 type Client struct {
 	config Config
-	cache  dotagiftx.Cache
+	cache  cache
 }
 
 // New create new steam client instance.
-func New(c Config, ca dotagiftx.Cache) (*Client, error) {
+func New(c Config, ca cache) (*Client, error) {
 	return &Client{c, ca}, nil
 }
 
@@ -70,13 +77,6 @@ func (c *Client) Player(steamID string) (*dotagiftx.SteamPlayer, error) {
 	}, nil
 }
 
-// Vanity URL prefixes.
-const (
-	VanityPrefixID      = "https://steamcommunity.com/id/"
-	VanityPrefixProfile = "https://steamcommunity.com/profiles/"
-	vanityCacheExpr     = time.Hour * 24
-)
-
 func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 	rawURL = strings.TrimRight(rawURL, "/")
 
@@ -102,6 +102,11 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 		return
 	}
 
-	c.cache.Set(cacheKey, steamID, vanityCacheExpr)
+	err = c.cache.Set(cacheKey, steamID, vanityCacheExpr)
 	return
+}
+
+type cache interface {
+	Set(key string, val interface{}, expr time.Duration) error
+	Get(key string) (val string, err error)
 }

@@ -18,7 +18,7 @@ const (
 func handleMarketCatalogList(
 	svc dotagiftx.MarketService,
 	trackSvc dotagiftx.TrackService,
-	cache dotagiftx.Cache,
+	cache Cache,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +59,7 @@ func handleMarketCatalogList(
 		}()
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -88,10 +88,10 @@ func handleMarketCatalogList(
 	}
 }
 
-func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -133,7 +133,7 @@ const catalogTrendRehydrationDur = catalogTrendCacheExpr / 2
 
 var catalogTrendLastUpdated = time.Now().Add(catalogTrendRehydrationDur)
 
-func rehydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) {
+func rehydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache Cache, logger *logrus.Logger) {
 	if time.Now().Before(catalogTrendLastUpdated) {
 		return
 	}
@@ -148,7 +148,7 @@ func rehydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache d
 	logger.Infoln("REHYDRATED", d.ResultCount)
 }
 
-func hydrateCatalogTrendX(cacheKey string, svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) {
+func hydrateCatalogTrendX(cacheKey string, svc dotagiftx.MarketService, cache Cache, logger *logrus.Logger) {
 	logger.Infoln("REHYDRATING EXP...")
 	list, _, err := svc.TrendingCatalog(dotagiftx.FindOpts{})
 	if err != nil {
@@ -164,7 +164,7 @@ func hydrateCatalogTrendX(cacheKey string, svc dotagiftx.MarketService, cache do
 	logger.Infoln("REHYDRATED EXP", trend.ResultCount)
 }
 
-func handleMarketCatalogTrendListX(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogTrendListX(svc dotagiftx.MarketService, cache Cache, logger *logrus.Logger) http.HandlerFunc {
 	const cacheKeyX = "catalog_trend_exp"
 
 	go func() {
@@ -193,7 +193,7 @@ func handleMarketCatalogTrendListX(svc dotagiftx.MarketService, cache dotagiftx.
 	}
 }
 
-func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache Cache, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var noCache bool
 		opts, err := findOptsFromURL(r.URL, &dotagiftx.Catalog{})
@@ -203,7 +203,7 @@ func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache dotagiftx.C
 		}
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := CacheKeyFromRequest(r)
 		if !noCache {
 			// HOTFIXED! rehydrate before cache expiration.
 			go rehydrateCatalogTrend(cacheKey, svc, cache, logger)
