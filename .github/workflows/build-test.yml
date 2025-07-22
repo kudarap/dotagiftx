@@ -19,11 +19,9 @@ jobs:
         with:
           go-version: 1.24
 
-      #      - name: Install build dependencies
-      #        run: go get golang.org/x/tools/cmd/stringer
-
       - name: Compile
         run: make build
 
+      - uses: golangci/golangci-lint-action@v8
       - name: Test
         run: make test

@@ -29,6 +29,7 @@ jobs:
       - name: Compile
         run: make build
 
+      - uses: golangci/golangci-lint-action@v8
       - name: Test
         run: make test
 
