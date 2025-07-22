@@ -26,7 +26,7 @@ type Config struct {
 	ApiHost             string
 	SpanEnabled         bool `envconfig:"SPAN_ENABLED"`
 	Upload              file.Config
-	AllowedImageDomains []string `envconfig:"ALLOWED_IMAGE_DOMAINS"`
+	AllowedImageSources []string `envconfig:"ALLOWED_IMAGE_SOURCES"`
 	Rethink             rethink.Config
 	Redis               redis.Config
 	Steam               steam.Config

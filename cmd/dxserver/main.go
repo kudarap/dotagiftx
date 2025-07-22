@@ -120,7 +120,7 @@ func (app *application) setup() error {
 	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient)
 	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc)
 	imageSvc := dotagiftx.NewImageService(fileMgr)
-	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageDomains, itemStg, fileMgr)
+	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr)
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	marketSvc := dotagiftx.NewMarketService(
