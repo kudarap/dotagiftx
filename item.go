@@ -375,7 +375,7 @@ func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
 		return "", err
 	}
 	if !slices.Contains(s.allowedDomains, u.Hostname()) {
-		return url, fmt.Errorf("item image downlaod for %s is not allowed", url)
+		return url, fmt.Errorf("item image download for %s is not allowed", url)
 	}
 
 	resp, err := http.Get(url)
