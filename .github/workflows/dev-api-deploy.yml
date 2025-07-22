@@ -1,13 +1,18 @@
-name: API development CD
+name: Deploy Development API
+
+permissions:
+  contents: read
 
 on:
   push:
     branches: [dev]
   pull_request:
     branches: [dev]
-
-permissions:
-  contents: read
+  workflow_run:
+    workflows: ["Run Tests"]
+    branches: [dev]
+    types:
+      - completed
 
 env:
   HOST: root@chiligarlic.com
@@ -16,39 +21,18 @@ env:
   WORKDIR: ~/dotagiftx/dev
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.24
-
-      - name: Compile
-        run: make build
-
-      - uses: golangci/golangci-lint-action@v8
-      - name: Test
-        run: make test
-
   deploy:
-    # Ensure compile build passes before deploy
-    needs: test
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Build Image
         run: docker build -t $IMAGE_NAME .
-
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
-
       - name: SSH Image Deploy
         run: |
           docker save -o $IMAGE_FILE $IMAGE_NAME
