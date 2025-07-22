@@ -262,7 +262,6 @@ func (s *marketStorage) BaseUpdate(in *dotagiftx.Market) error {
 	}
 
 	in.User = nil
-	//in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)

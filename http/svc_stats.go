@@ -49,7 +49,6 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cache) http.Hand
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		//cacheKey, noCache := core.cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		cacheKey, noCache := cacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
@@ -121,7 +120,6 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cache) http.Hand
 func handleGraphMarketSales(svc dotagiftx.StatsService, cache cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		//cacheKey, noCache := core.cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		cacheKey, noCache := cacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {

@@ -14,9 +14,9 @@ linters:
     - ineffassign
     - staticcheck
     - unused
+    - gocritic
   #    - errcheck
   #    - gosec
-  #    - gocritic
   exclusions:
     rules:
       - linters:

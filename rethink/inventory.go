@@ -60,7 +60,7 @@ func (s *inventoryStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 // includeRelatedFields injects user details base on market foreign keys.
 func (s *inventoryStorage) includeRelatedFields(q r.Term) r.Term {
 	return q
-	//return q.
+	// return q.
 	//	EqJoin(inventoryFieldMarketID, r.Table(tableMarket)).
 	//	Map(func(t r.Term) r.Term {
 	//		return t.Field("left").Merge(map[string]interface{}{

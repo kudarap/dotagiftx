@@ -628,10 +628,6 @@ func (s *marketService) processShopkeepersContract(m *Market) (*Market, error) {
 }
 
 func (s *marketService) checkAskType(ask *Market) error {
-	//if err := s.restrictMatchingPriceValue(ask); err != nil {
-	//	return err
-	//}
-
 	user, err := s.userStg.Get(ask.UserID)
 	if err != nil {
 		return err
@@ -665,10 +661,6 @@ func (s *marketService) checkAskType(ask *Market) error {
 }
 
 func (s *marketService) checkBidType(bid *Market) error {
-	//if err := s.restrictMatchingPriceValue(bid); err != nil {
-	//	return err
-	//}
-
 	// Remove existing buy order if exists.
 	res, err := s.marketStg.Find(FindOpts{
 		Filter: Market{

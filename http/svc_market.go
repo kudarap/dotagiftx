@@ -167,11 +167,6 @@ func handleMarketUpdate(svc dotagiftx.MarketService, cache cache) http.HandlerFu
 		}
 
 		go cache.BulkDel(marketCacheKeyPrefix)
-		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
-		//	respondError(w, err)
-		//	return
-		//}
-
 		respondOK(w, m)
 	}
 }

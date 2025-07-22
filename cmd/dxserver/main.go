@@ -142,14 +142,6 @@ func (app *application) setup() error {
 	hammerSvc := dotagiftx.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 
-	// NOTE! this is for run-once scripts
-	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
-	//fixes.ReIndexAll(itemStg, catalogStg)
-	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	//fixes.MarketIndexRebuild(marketStg)
-	//fixes.MarketSetRankingScores(userSvc, marketSvc)
-	//redisClient.BulkDel("")
-
 	// Server setup.
 	logSvc.Println("setting up http server...")
 	srv := http.NewServer(

@@ -24,20 +24,19 @@ func init() {
 
 // Track types.
 const (
-	TrackTypeView        = "v"
-	TrackTypeSearch      = "s"
-	TrackTypeProfileView = "p"
-	//TrackTypeItemView           = 300
-	//TrackTypeCatalogSearch      = 310
-	//TrackTypeProfileClick       = 110
-	//TrackTypeProfileView        = 100
-	//TrackTypeMarketListed       = 220
-	//TrackTypeMarketReserved     = 230
-	//TrackTypeMarketSold         = 240
-	//TrackTypeMarketBidCompleted = 241
-	//TrackTypeMarketRemoved      = 250
-	//TrackTypeMarketCancelled    = 260
-	//TrackTypeMarketExpired      = 270
+	TrackTypeView               = "v"
+	TrackTypeSearch             = "s"
+	TrackTypeProfileView        = "p"
+	TrackTypeItemView           = 300
+	TrackTypeCatalogSearch      = 310
+	TrackTypeProfileClick       = 110
+	TrackTypeMarketListed       = 220
+	TrackTypeMarketReserved     = 230
+	TrackTypeMarketSold         = 240
+	TrackTypeMarketBidCompleted = 241
+	TrackTypeMarketRemoved      = 250
+	TrackTypeMarketCancelled    = 260
+	TrackTypeMarketExpired      = 270
 )
 
 type (

@@ -85,12 +85,6 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 		return strings.TrimPrefix(rawURL, VanityPrefixProfile), nil
 	}
 
-	// Its probably steam ID.
-	//if !strings.HasPrefix(rawURL, VanityPrefixID) {
-	//	err = fmt.Errorf("could not parse URL (%s)", rawURL)
-	//	return
-	//}
-
 	vanity := strings.TrimPrefix(rawURL, VanityPrefixID)
 	cacheKey := fmt.Sprintf("steam/resolvedvanity:%s", vanity)
 	if hit, _ := c.cache.Get(cacheKey); hit != "" {
