@@ -12,9 +12,10 @@ const (
 	storageErrorIndex   = 100
 	authErrorIndex      = 1000
 	userErrorIndex      = 1100
+	itemErrorIndex      = 2000
 	marketErrorIndex    = 2100
 	catalogErrorIndex   = 2200
-	itemErrorIndex      = 3000
+	imageErrorIndex     = 3000
 	trackErrorIndex     = 4000
 	reportErrorIndex    = 5000
 	deliveryErrorIndex  = 6000

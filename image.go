@@ -9,7 +9,7 @@ import (
 
 // Image error types.
 const (
-	ImageErrNotFound Errors = iota + itemErrorIndex
+	ImageErrNotFound Errors = iota + imageErrorIndex
 	ImageErrUpload
 	ImageErrThumbnail
 )
