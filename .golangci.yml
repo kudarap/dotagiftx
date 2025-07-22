@@ -15,8 +15,8 @@ linters:
     - staticcheck
     - unused
     - gocritic
-  #    - errcheck
   #    - gosec
+  #    - errcheck # to be added later
   exclusions:
     rules:
       - linters:
