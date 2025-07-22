@@ -11,8 +11,6 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-var logger = log.Default()
-
 const tagName = "db"
 
 // Config represents rethink database config.

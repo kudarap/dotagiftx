@@ -229,10 +229,7 @@ func (s *itemService) TopHeroes() ([]string, error) {
 	}
 
 	var ph []string
-	for _, s := range sortedKeys(col) {
-		ph = append(ph, s)
-	}
-
+	ph = append(ph, sortedKeys(col)...)
 	return ph, nil
 }
 

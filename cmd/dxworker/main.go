@@ -51,10 +51,9 @@ func main() {
 }
 
 type application struct {
-	config  config.Config
-	worker  *worker.Worker
-	logger  *logrus.Logger
-	version *dotagiftx.Version
+	config config.Config
+	worker *worker.Worker
+	logger *logrus.Logger
 
 	closerFn func()
 }

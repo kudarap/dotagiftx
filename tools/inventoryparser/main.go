@@ -87,7 +87,6 @@ func main() {
 	}
 	fmt.Println("parsed", len(inv.Items))
 
-	const filter = "International 2019"
 	items := map[string]Item{}
 	for _, ii := range inv.Items {
 		if !strings.Contains(strings.ToLower(ii.Name), strings.ToLower(*filterNamePtr)) {

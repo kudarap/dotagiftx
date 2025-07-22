@@ -172,30 +172,3 @@ func parseLog(raw string) []ApiLog {
 
 	return logs
 }
-
-func parseLog0(raw string) []ApiLog {
-	var logs []ApiLog
-	for _, i := range strings.Split(raw, "\n") {
-		parts := strings.Split(i, " ")
-		if len(parts) < 14 {
-			continue
-		}
-
-		ts := parts[0]
-		ts = strings.TrimLeft(ts, "[")
-		ts = strings.TrimRight(ts, "]")
-		tt, _ := time.Parse(time.RFC3339, ts)
-		url := strings.TrimPrefix(parts[5], "http://api.dotagiftx.com")
-		stat, _ := strconv.Atoi(parts[10])
-		elap, _ := time.ParseDuration(parts[13])
-
-		logs = append(logs, ApiLog{
-			Endpoint: url,
-			Status:   stat,
-			Elapse:   elap,
-			Stamp:    tt,
-		})
-	}
-
-	return logs
-}

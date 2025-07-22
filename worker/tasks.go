@@ -114,14 +114,13 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 	if err != nil {
 		return err
 	}
-	err = p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
+	return p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 		MarketID:   market.ID,
 		Status:     result.Status,
 		Assets:     result.Assets,
 		VerifiedBy: result.VerifiedBy,
 		ElapsedMs:  time.Since(start).Milliseconds(),
 	})
-	return nil
 }
 
 func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}) error {

@@ -2,14 +2,12 @@ package http
 
 import (
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
 	"github.com/kudarap/dotagiftx"
 )
 
-func buildSitemap(items []dotagiftx.Item, users []dotagiftx.User, vanities []string) *stm.Sitemap {
+func buildSitemap(items []dotagiftx.Item) *stm.Sitemap {
 	sitemap := stm.NewSitemap(1)
 	//sitemap.SetVerbose(false)
 	sitemap.SetDefaultHost("https://dotagiftx.com")
@@ -49,47 +47,16 @@ func buildSitemap(items []dotagiftx.Item, users []dotagiftx.User, vanities []str
 		sitemap.Add(stm.URL{{"loc", "/search?hero=" + i}})
 	}
 
-	// Add user profile locations.
-	//for _, uu := range users {
-	//	sitemap.Add(stm.URL{{"loc", "/profiles/" + uu.SteamID}, {"changefreq", "monthly"}, {"priority", 0.6}})
-	//}
-	// Add user vanity urls locations.
-	//for _, v := range vanities {
-	//	sitemap.Add(stm.URL{{"loc", "/id/" + v}, {"changefreq", "monthly"}, {"priority", 0.6}})
-	//}
-
 	return sitemap
 }
 
-const (
-	vanityPrefix = "https://steamcommunity.com/id/"
-
-	sitemapCacheKey  = "sitemap"
-	sitemapCacheExpr = time.Hour
-)
-
-func handleSitemap(itemSvc dotagiftx.ItemService, userSvc dotagiftx.UserService, cache cache) http.HandlerFunc {
+func handleSitemap(itemSvc dotagiftx.ItemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(dotagiftx.FindOpts{})
-		users, _ := userSvc.Users(dotagiftx.FindOpts{
-			Limit: 0,
-		})
-
-		var vanities []string
-		for _, u := range users {
-			sp := u
-			if !strings.HasPrefix(sp.URL, vanityPrefix) {
-				continue
-			}
-
-			vanities = append(vanities, strings.TrimPrefix(sp.URL, vanityPrefix))
-		}
-
-		sm := buildSitemap(items, users, vanities).XMLContent()
+		sm := buildSitemap(items).XMLContent()
 		w.Header().Set("content-type", "text/xml")
 		if _, err := w.Write(sm); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-		return
 	}
 }
