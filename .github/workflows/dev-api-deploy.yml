@@ -14,8 +14,6 @@ env:
   IMAGE_NAME: dotagiftx/api:dev
   IMAGE_FILE: api.tar
   WORKDIR: ~/dotagiftx/dev
-#  BIN_FILE: dotagiftx
-#  BIN_NAME: gha_dev
 
 jobs:
   test:
@@ -32,12 +30,7 @@ jobs:
         run: make build
 
       - name: Test
-        run: |
-          go test -v ./
-          go test -v ./http/...
-          go test -v ./steam/...
-          go test -v ./phantasm/...
-          go test -v ./verify/...
+        run: make test
 
   deploy:
     # Ensure compile build passes before deploy

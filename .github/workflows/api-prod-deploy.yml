@@ -30,12 +30,7 @@ jobs:
         run: make build
 
       - name: Test
-        run: |
-          go test -v ./
-          go test -v ./http/...
-          go test -v ./steam/...
-          go test -v ./phantasm/...
-          go test -v ./verify/...
+        run: make test
 
   deploy:
     # Ensure compile build passes before deploy
@@ -53,7 +48,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: SSH Deploy
+      - name: SSH Image Deploy
         run: |
           docker save -o $IMAGE_FILE $IMAGE_NAME
           scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE

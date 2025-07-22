@@ -5,7 +5,7 @@ server_bin=dxserver
 worker_bin=dxworker
 build_flags="-X main.tag=`cat VERSION` -X main.commit=`git rev-parse HEAD` -X main.built=`date -u +%s`"
 
-all: test build build-linux build-worker build-worker-linux
+all: test generate fmt build build-linux build-worker build-worker-linux
 
 install:
 	go get ./...
@@ -16,7 +16,7 @@ run: test build
 run-worker: test build-worker
 	./$(worker_bin)
 
-test: lint generate fmt
+test: lint
 	go test -v ./
 	go test -v ./http/...
 	go test -v ./steam/...
