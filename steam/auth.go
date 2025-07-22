@@ -16,7 +16,7 @@ var (
 	openidNs         = "http://specs.openid.net/auth/2.0"
 	openidIdentifier = "http://specs.openid.net/auth/2.0/identifier_select"
 
-	validationRegexp       = regexp.MustCompile(`^(http|https)://steamcommunity.com/openid/id/[0-9]{15,25}$`)
+	validationRegexp       = regexp.MustCompile(`^(http|https)://steamcommunity\.com/openid/id/[0-9]{15,25}$`)
 	digitsExtractionRegexp = regexp.MustCompile(`\D+`)
 )
 
