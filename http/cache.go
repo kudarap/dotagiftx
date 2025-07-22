@@ -10,8 +10,8 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-// Cache provides access to cache database.
-type Cache interface {
+// cache provides access to cache database.
+type cache interface {
 	Set(key string, val interface{}, expr time.Duration) error
 	Get(key string) (val string, err error)
 	BulkDel(keyPrefix string) error
@@ -19,9 +19,9 @@ type Cache interface {
 
 const cacheSkipKey = "nocache"
 
-// CacheKeyFromRequest returns cache key from http request.
+// cacheKeyFromRequest returns cache key from http request.
 // nocache from a request query will return empty string and can be used to skipping cache.
-func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
+func cacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Skip caching when a nocache flag exists.
 	_, noCache = r.URL.Query()[cacheSkipKey]
 	// Set owner user id for scoped requests.
@@ -41,8 +41,8 @@ func CacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	return
 }
 
-func CacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, noCache bool) {
-	key, noCache = CacheKeyFromRequest(r)
+func cacheKeyFromRequestWithPrefix(r *http.Request, prefix string) (key string, noCache bool) {
+	key, noCache = cacheKeyFromRequest(r)
 	key = prefix + ":" + key
 	return
 }

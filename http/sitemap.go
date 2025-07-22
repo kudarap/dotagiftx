@@ -68,7 +68,7 @@ const (
 	sitemapCacheExpr = time.Hour
 )
 
-func handleSitemap(itemSvc dotagiftx.ItemService, userSvc dotagiftx.UserService, cache Cache) http.HandlerFunc {
+func handleSitemap(itemSvc dotagiftx.ItemService, userSvc dotagiftx.UserService, cache cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(dotagiftx.FindOpts{})
 		users, _ := userSvc.Users(dotagiftx.FindOpts{

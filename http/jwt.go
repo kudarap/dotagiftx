@@ -28,10 +28,10 @@ func New(userID, level string, expiration time.Time) (token string, err error) {
 	return t.SignedString([]byte(SigKey))
 }
 
-// Parse validates and extract claims from token.
+// Parse validates and extracts claims from token.
 func Parse(token string) (*Claims, error) {
 	t, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
+		// Remember to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}

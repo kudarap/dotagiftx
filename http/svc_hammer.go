@@ -7,7 +7,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func handleHammerBan(svc dotagiftx.HammerService, cache Cache) http.HandlerFunc {
+func handleHammerBan(svc dotagiftx.HammerService, cache cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var p dotagiftx.HammerParams
 		if err := parseForm(r, &p); err != nil {
@@ -26,7 +26,7 @@ func handleHammerBan(svc dotagiftx.HammerService, cache Cache) http.HandlerFunc 
 	}
 }
 
-func handleHammerSuspend(svc dotagiftx.HammerService, cache Cache) http.HandlerFunc {
+func handleHammerSuspend(svc dotagiftx.HammerService, cache cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var p dotagiftx.HammerParams
 		if err := parseForm(r, &p); err != nil {
@@ -45,7 +45,7 @@ func handleHammerSuspend(svc dotagiftx.HammerService, cache Cache) http.HandlerF
 	}
 }
 
-func handleHammerLift(svc dotagiftx.HammerService, cache Cache) http.HandlerFunc {
+func handleHammerLift(svc dotagiftx.HammerService, cache cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		p := struct {
 			SteamID         string `json:"steam_id"`
@@ -66,7 +66,7 @@ func handleHammerLift(svc dotagiftx.HammerService, cache Cache) http.HandlerFunc
 	}
 }
 
-func resetProfileListingCache(steamID string, cache Cache) {
+func resetProfileListingCache(steamID string, cache cache) {
 	cache.BulkDel("blacklists")
 	cache.BulkDel(fmt.Sprintf("users/%s*", steamID))
 	cache.BulkDel(marketCacheKeyPrefix)
