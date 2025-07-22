@@ -328,11 +328,6 @@ func (s *marketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 		return nil, nil, err
 	}
 
-	// Assign inventory and delivery status.
-	for i, mkt := range res {
-		res[i] = mkt
-	}
-
 	if !opts.WithMeta {
 		return res, nil, err
 	}
@@ -557,7 +552,7 @@ func (s *marketService) UpdateUserRankScore(userID string) error {
 	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
 		return err
 	}
-	s.logger.Println("service/market UpdateUserScore", time.Now().Sub(benchS))
+	s.logger.Println("service/market UpdateUserScore", time.Since(benchS))
 	return s.userStg.BaseUpdate(u)
 }
 
@@ -584,7 +579,7 @@ func (s *marketService) AutoCompleteBid(_ context.Context, ask Market, partnerSt
 		},
 	}
 	bids, _ := s.marketStg.Find(fo)
-	if bids == nil || len(bids) == 0 {
+	if len(bids) == 0 {
 		return nil
 	}
 
@@ -840,7 +835,7 @@ type taskProcessor interface {
 func bench(l logging.Logger, name string, fn func()) {
 	s := time.Now()
 	fn()
-	l.Println("BENCH service/market", name, time.Now().Sub(s))
+	l.Println("BENCH service/market", name, time.Since(s))
 }
 
 func priceToTenths(n float64) float64 {

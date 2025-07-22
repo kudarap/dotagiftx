@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -384,78 +385,12 @@ func (s *marketStorage) BulkDeleteByStatus(ms dotagiftx.MarketStatus, cutOff tim
 		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).
 		Limit(limit).
 		Delete()
-	if err := s.db.delete(q); err != nil && err != r.ErrEmptyResult {
+	if err := s.db.delete(q); err != nil && !errors.Is(err, r.ErrEmptyResult) {
 		return err
 	}
 	return nil
 }
 
-func (s *marketStorage) findIndexLegacy(o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error) {
-	q := s.indexBaseQuery()
-
-	var res []dotagiftx.Catalog
-	o.KeywordFields = s.keywordFields
-	q = newFindOptsQuery(q, o)
-	if err := s.db.list(q, &res); err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
-	}
-
-	return res, nil
-}
-
-func (s *marketStorage) countIndexLegacy(o dotagiftx.FindOpts) (num int, err error) {
-	q := s.indexBaseQuery()
-	o = dotagiftx.FindOpts{
-		Keyword:       o.Keyword,
-		KeywordFields: s.keywordFields,
-		Filter:        o.Filter,
-	}
-	q = newFindOptsQuery(q, o)
-	err = s.db.one(q.Count(), &num)
-	return
-}
-
-func (s *marketStorage) indexBaseQuery() r.Term {
-	return s.table().GroupByIndex(marketFieldItemID).Ungroup().
-		Map(s.groupIndexMap).
-		EqJoin(marketFieldItemID, r.Table(tableItem)).
-		Zip()
-}
-
 func (s *marketStorage) table() r.Term {
 	return r.Table(tableMarket)
-}
-
-func (s *marketStorage) groupIndexMap(market r.Term) interface{} {
-	//r.db('dotagiftables').table('market').group({index: 'item_id'}).ungroup().map(
-	//    function (doc) {
-	//      let liveMarket = doc('reduction').filter({status: 200});
-	//      return {
-	//        item_id: doc('group'),
-	//        quantity: liveMarket.count(),
-	//        lowest_ask: liveMarket.min('price')('price').default(0),
-	//        highest_bid: liveMarket.max('price')('price').default(0),
-	//        recent_ask: liveMarket.max('created_at')('created_at').default(null),
-	//        item: r.db('dotagiftables').table('item').get(doc('group')),
-	//      };
-	//    }
-	//)
-
-	id := market.Field("group")
-	live := market.Field("reduction").Filter(dotagiftx.Market{Status: dotagiftx.MarketStatusLive})
-	return struct {
-		ItemID     r.Term `db:"item_id"`
-		Quantity   r.Term `db:"quantity"`
-		LowestAsk  r.Term `db:"lowest_ask"`
-		HighestBid r.Term `db:"highest_bid"`
-		RecentAsk  r.Term `db:"recent_ask"`
-		//Item       r.Term `db:"item"`
-	}{
-		id,
-		live.Count().Default(0),
-		live.Min("price").Field("price").Default(0),
-		live.Max("price").Field("price").Default(0),
-		live.Max("created_at").Field("created_at").Default(nil),
-		//r.Table(tableItem).Get(id),
-	}
 }

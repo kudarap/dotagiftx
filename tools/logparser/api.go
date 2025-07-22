@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -54,7 +54,7 @@ func main() {
 	log.Println("reading logs...")
 	fptr := flag.String("file", "testdata", "log file to parse")
 	flag.Parse()
-	data, err := ioutil.ReadFile(*fptr)
+	data, err := os.ReadFile(*fptr)
 	if err != nil {
 		fmt.Println(err)
 		return

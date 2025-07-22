@@ -60,7 +60,7 @@ func respond(w http.ResponseWriter, code int, body interface{}) {
 	enc := json.NewEncoder(w)
 	if err := enc.Encode(body); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(fmt.Sprintf("could not encode body into JSON: %s", err)))
+		_, _ = fmt.Fprintf(w, "could not encode body into JSON: %s", err)
 	}
 }
 

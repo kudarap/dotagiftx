@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -75,7 +74,7 @@ func main() {
 		}
 	}
 
-	data, err := ioutil.ReadFile(cacheSrc)
+	data, err := os.ReadFile(cacheSrc)
 	if err != nil {
 		fmt.Println("could not read file:", err)
 		return

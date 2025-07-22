@@ -263,7 +263,7 @@ func connRetry(name string, fn func() error) error {
 		if err := recover(); err != nil {
 			logger.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
 			time.Sleep(delay)
-			err = connRetry(name, fn)
+			_ = connRetry(name, fn)
 		}
 	}()
 

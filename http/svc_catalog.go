@@ -30,7 +30,6 @@ func handleMarketCatalogList(
 			switch query.Get("sort") {
 			case queryFlagRecentItems:
 				query.Set("sort", "recent_ask:desc")
-				noCache = true
 			case queryFlagPopularItems:
 				query.Set("sort", "view_count:desc")
 			case queryFlagRecentBidItems:
@@ -136,7 +135,7 @@ func hydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache cac
 		return
 	}
 
-	trend := newDataWithMeta(list, &dotagiftx.FindMetadata{len(list), 10})
+	trend := newDataWithMeta(list, &dotagiftx.FindMetadata{ResultCount: len(list), TotalCount: 10})
 	if err = cache.Set(cacheKey, trend, 0); err != nil {
 		logger.Errorf("could not save cache on catalog trend list: %s", err)
 		return
