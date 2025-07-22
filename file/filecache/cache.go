@@ -11,7 +11,7 @@ const dirname = "dgx_filecache"
 
 func init() {
 	// This will create cache dir.
-	_ = os.MkdirAll(filename(""), 0777)
+	_ = os.MkdirAll(filename(""), 0750)
 }
 
 type data struct {
@@ -51,7 +51,7 @@ func Set(key string, val interface{}, expr time.Duration) error {
 	if err != nil {
 		return err
 	}
-	if err = os.WriteFile(path, d, 0666); err != nil {
+	if err = os.WriteFile(path, d, 0600); err != nil {
 		return err
 	}
 	return nil

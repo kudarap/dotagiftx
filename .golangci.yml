@@ -1,0 +1,24 @@
+version: "2"
+
+# Options for analysis running.
+run:
+  # Timeout for total work, e.g. 30s, 5m, 5m30s.
+  # If the value is lower or equal to 0, the timeout is disabled.
+  # Default: 0 (disabled)
+  timeout: 5m
+
+linters:
+  default: none
+  enable:
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+  #    - errcheck
+  #    - gosec
+  #    - gocritic
+  exclusions:
+    rules:
+      - linters:
+          - gosec
+        text: "G115:" # integer overflow conversion uint64 -> int64

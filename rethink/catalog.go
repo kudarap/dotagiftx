@@ -132,7 +132,7 @@ func (s *catalogStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error)
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
-	//q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
+	// q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
@@ -436,26 +436,6 @@ func (s *catalogStorage) update(in *dotagiftx.Catalog) error {
 	}
 
 	return nil
-}
-
-// zeroQtyCatalog reset the catalog entry price when it reaches zero entry/qty.
-func (s *catalogStorage) zeroQtyCatalog(catalogID string) error {
-	cat := map[string]interface{}{
-		"quantity":   0,
-		"lowest_ask": 0,
-		"median_ask": 0,
-		//"highest_bid": 0,
-		"recent_ask": nil,
-	}
-
-	var err error
-	if cur, _ := s.Get(catalogID); cur == nil {
-		_, err = s.db.insert(s.table().Insert(cat))
-	} else {
-		err = s.db.update(s.table().Get(catalogID).Update(cat))
-	}
-
-	return err
 }
 
 func (s *catalogStorage) table() r.Term {

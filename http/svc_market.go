@@ -64,11 +64,9 @@ func handleMarketList(
 		}
 
 		data := newDataWithMeta(list, md)
-		//go func(d dataWithMeta) {
-		if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
+		if err = cache.Set(cacheKey, data, marketCacheExpr); err != nil {
 			logger.Errorf("could not save cache on market list: %s", err)
 		}
-		//}(data)
 
 		if shouldRedactUser {
 			data.Data = redactBuyers(list)
@@ -123,11 +121,9 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cache, logger *logrus
 			return
 		}
 
-		//go func() {
 		if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
 			logger.Errorf("could not save cache on market list: %s", err)
 		}
-		//}()
 
 		if shouldRedactUser {
 			m = redactBuyer(m)
@@ -151,11 +147,7 @@ func handleMarketCreate(svc dotagiftx.MarketService, cache cache) http.HandlerFu
 		}
 
 		go cache.BulkDel(marketCacheKeyPrefix)
-		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
-		//	respondError(w, err)
-		//	return
-		//}
-
+	
 		respondOK(w, m)
 	}
 }

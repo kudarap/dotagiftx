@@ -74,7 +74,7 @@ func (s *deliveryStorage) ToVerify(o dotagiftx.FindOpts) ([]dotagiftx.Delivery, 
 // includeRelatedFields injects user details base on market foreign keys.
 func (s *deliveryStorage) includeRelatedFields(q r.Term) r.Term {
 	return q
-	//return q.
+	// return q.
 	//	EqJoin(deliveryFieldMarketID, r.Table(tableMarket)).
 	//	Map(func(t r.Term) r.Term {
 	//		return t.Field("left").Merge(map[string]interface{}{

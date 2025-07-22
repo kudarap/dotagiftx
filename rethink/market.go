@@ -150,32 +150,6 @@ func (s *marketStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 	return
 }
 
-// includeRelatedFields injects item and user details base on market foreign keys
-// and create a search tag
-func (s *marketStorage) includeRelatedFields(q r.Term) r.Term {
-	return q.
-		//EqJoin(marketFieldItemID, r.Table(tableItem)).
-		//Map(func(t r.Term) r.Term {
-		//	market := t.Field("left")
-		//	item := t.Field("right")
-		//	tags := market.Field(marketFieldNotes).Default("")
-		//	for _, ff := range itemSearchFields {
-		//		tags = tags.Add(" ", item.Field(ff))
-		//	}
-		//
-		//	return market.Merge(map[string]interface{}{
-		//		tableItem:            item,
-		//		marketItemSearchTags: tags,
-		//	})
-		//}).
-		EqJoin(marketFieldUserID, r.Table(tableUser)).
-		Map(func(t r.Term) r.Term {
-			return t.Field("left").Merge(map[string]interface{}{
-				tableUser: t.Field("right"),
-			})
-		})
-}
-
 func (s *marketStorage) Get(id string) (*dotagiftx.Market, error) {
 	row := &dotagiftx.Market{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {

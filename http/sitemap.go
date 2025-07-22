@@ -9,7 +9,7 @@ import (
 
 func buildSitemap(items []dotagiftx.Item) *stm.Sitemap {
 	sitemap := stm.NewSitemap(1)
-	//sitemap.SetVerbose(false)
+	// sitemap.SetVerbose(false)
 	sitemap.SetDefaultHost("https://dotagiftx.com")
 	sitemap.Create()
 

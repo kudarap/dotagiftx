@@ -75,11 +75,12 @@ func respondError(w http.ResponseWriter, err error) {
 	// Try to parse handled errors.
 	xerr, ok := parseXError(err)
 	if ok {
-		if xerr.Fatal {
+		switch {
+		case xerr.Fatal:
 			status = http.StatusInternalServerError
-		} else if errors.Is(xerr.Type, dotagiftx.AuthErrNoAccess) {
+		case errors.Is(xerr.Type, dotagiftx.AuthErrNoAccess):
 			status = http.StatusUnauthorized
-		} else if errors.Is(xerr.Type, dotagiftx.AuthErrForbidden) {
+		case errors.Is(xerr.Type, dotagiftx.AuthErrForbidden):
 			status = http.StatusForbidden
 		}
 

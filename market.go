@@ -134,13 +134,13 @@ type (
 		// Update saves market details changes.
 		Update(context.Context, *Market) error
 
-		// UpdateUserRankScore sets new user ranking score on all live market by user id.
+		// UpdateUserRankScore sets new user ranking score on all live markets by user id.
 		UpdateUserRankScore(userID string) error
 
 		// Index composes market data for faster search and retrieval.
-		//Index(ctx context.Context, id string) (*Market, error)
+		// Index(ctx context.Context, id string) (*Market, error)
 
-		// AutoCompleteBid detects if there's matching reservation on buy order and automatically
+		// AutoCompleteBid detects if there's a matching reservation on buy order and automatically
 		// resolve it by setting complete-bid status.
 		AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error
 
@@ -518,9 +518,6 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 		}
 	}
 
-	//if err = s.UpdateUserRankScore(market.UserID); err != nil {
-	//	return err
-	//}
 	bench(s.logger, "market update :: UpdateUserRankScore", func() {
 		if err = s.UpdateUserRankScore(market.UserID); err != nil {
 			s.logger.Errorf("could not update user rank %s: %s", market.UserID, err)
@@ -688,37 +685,6 @@ func (s *marketService) checkBidType(bid *Market) error {
 		m.Status = MarketStatusRemoved
 		if err = s.marketStg.Update(&m); err != nil {
 			return err
-		}
-	}
-
-	return nil
-}
-
-// restrictMatchingPriceValue restricts market price against its counter-part entry.
-// 1. Market bid price should be lower than the lowest ask price.
-// 2. Market ask price should be higher than the highest bid price.
-//
-// This was designed to enforce the user to check available offers or orders with desired price value.
-//
-// Update 2021/03/08: It turns out some users are picky on which user they want to get the item from, which is very
-// reasonable, and will disable this restriction for now.
-func (s *marketService) restrictMatchingPriceValue(mkt *Market) error {
-	switch mkt.Type {
-	case MarketTypeAsk:
-		bid, err := s.catalogStg.Index(mkt.ItemID)
-		if err != nil {
-			return err
-		}
-		if bid.Quantity != 0 && bid.HighestBid > mkt.Price {
-			return MarketErrInvalidAskPrice
-		}
-	case MarketTypeBid:
-		ask, err := s.catalogStg.Index(mkt.ItemID)
-		if err != nil {
-			return err
-		}
-		if ask.Quantity != 0 && ask.LowestAsk < mkt.Price {
-			return MarketErrInvalidBidPrice
 		}
 	}
 

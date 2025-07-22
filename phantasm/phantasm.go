@@ -62,7 +62,7 @@ type Service struct {
 
 func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
 	config = config.setDefault()
-	if err := os.MkdirAll(config.Path, 0777); err != nil {
+	if err := os.MkdirAll(config.Path, 0750); err != nil {
 		panic(err)
 	}
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
+	"math/rand/v2"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -54,7 +54,7 @@ func getCacheKey(steamID string) string {
 
 func getCacheExpr() time.Duration {
 	n := 10
-	r := rand.Intn(n-(-n)) + (-n)
+	r := rand.IntN(n-(-n)) + (-n)
 	d := time.Minute * time.Duration(r)
 	return localCacheExpr + d
 }

@@ -115,7 +115,7 @@ func main() {
 		fmt.Println(ii.Name)
 		fmt.Println(ii.Hero)
 		fmt.Println(steamCDN + ii.Image)
-		//fmt.Println(ii.Description)
+		// fmt.Println(ii.Description)
 		fmt.Println(strings.Repeat("-", 55))
 	}
 
