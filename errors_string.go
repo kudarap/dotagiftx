@@ -27,11 +27,11 @@ func _() {
 	_ = x[ImageErrNotFound-3000]
 	_ = x[ImageErrUpload-3001]
 	_ = x[ImageErrThumbnail-3002]
-	_ = x[ItemErrNotFound-3000]
-	_ = x[ItemErrRequiredID-3001]
-	_ = x[ItemErrRequiredFields-3002]
-	_ = x[ItemErrCreateItemExists-3003]
-	_ = x[ItemErrImport-3004]
+	_ = x[ItemErrNotFound-2000]
+	_ = x[ItemErrRequiredID-2001]
+	_ = x[ItemErrRequiredFields-2002]
+	_ = x[ItemErrCreateItemExists-2003]
+	_ = x[ItemErrImport-2004]
 	_ = x[MarketErrNotFound-2100]
 	_ = x[MarketErrRequiredID-2101]
 	_ = x[MarketErrRequiredFields-2102]
@@ -57,63 +57,61 @@ func _() {
 	_ = x[UserErrBanned-1106]
 }
 
-const (
-	_Errors_name_0 = "StorageUncaughtErrStorageMergeErr"
-	_Errors_name_1 = "AuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrForbiddenAuthErrLoginAuthErrRefreshToken"
-	_Errors_name_2 = "UserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDLUserErrSteamSyncUserErrSuspendedUserErrBanned"
-	_Errors_name_3 = "MarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimitMarketErrInvalidPriceMarketErrQtyLimitPerUserMarketErrRequiredPartnerURLMarketErrInvalidBidPriceMarketErrInvalidAskPrice"
-	_Errors_name_4 = "CatalogErrNotFoundCatalogErrRequiredIDCatalogErrIndexing"
-	_Errors_name_5 = "ImageErrNotFoundImageErrUploadImageErrThumbnailItemErrCreateItemExistsItemErrImport"
-	_Errors_name_6 = "TrackErrNotFound"
-	_Errors_name_7 = "ReportErrNotFoundReportErrRequiredIDReportErrRequiredFields"
-	_Errors_name_8 = "DeliveryErrNotFoundDeliveryErrRequiredIDDeliveryErrRequiredFields"
-	_Errors_name_9 = "InventoryErrNotFoundInventoryErrRequiredIDInventoryErrRequiredFields"
-)
+const _Errors_name = "StorageUncaughtErrStorageMergeErrAuthErrNotFoundAuthErrRequiredIDAuthErrRequiredFieldsAuthErrNoAccessAuthErrForbiddenAuthErrLoginAuthErrRefreshTokenUserErrNotFoundUserErrRequiredIDUserErrRequiredFieldsUserErrProfileImageDLUserErrSteamSyncUserErrSuspendedUserErrBannedItemErrNotFoundItemErrRequiredIDItemErrRequiredFieldsItemErrCreateItemExistsItemErrImportMarketErrNotFoundMarketErrRequiredIDMarketErrRequiredFieldsMarketErrInvalidStatusMarketErrNotesLimitMarketErrInvalidPriceMarketErrQtyLimitPerUserMarketErrRequiredPartnerURLMarketErrInvalidBidPriceMarketErrInvalidAskPriceCatalogErrNotFoundCatalogErrRequiredIDCatalogErrIndexingImageErrNotFoundImageErrUploadImageErrThumbnailTrackErrNotFoundReportErrNotFoundReportErrRequiredIDReportErrRequiredFieldsDeliveryErrNotFoundDeliveryErrRequiredIDDeliveryErrRequiredFieldsInventoryErrNotFoundInventoryErrRequiredIDInventoryErrRequiredFields"
 
-var (
-	_Errors_index_0 = [...]uint8{0, 18, 33}
-	_Errors_index_1 = [...]uint8{0, 15, 32, 53, 68, 84, 96, 115}
-	_Errors_index_2 = [...]uint8{0, 15, 32, 53, 74, 90, 106, 119}
-	_Errors_index_3 = [...]uint8{0, 17, 36, 59, 81, 100, 121, 145, 172, 196, 220}
-	_Errors_index_4 = [...]uint8{0, 18, 38, 56}
-	_Errors_index_5 = [...]uint8{0, 16, 30, 47, 70, 83}
-	_Errors_index_7 = [...]uint8{0, 17, 36, 59}
-	_Errors_index_8 = [...]uint8{0, 19, 40, 65}
-	_Errors_index_9 = [...]uint8{0, 20, 42, 68}
-)
+var _Errors_map = map[Errors]string{
+	100:  _Errors_name[0:18],
+	101:  _Errors_name[18:33],
+	1000: _Errors_name[33:48],
+	1001: _Errors_name[48:65],
+	1002: _Errors_name[65:86],
+	1003: _Errors_name[86:101],
+	1004: _Errors_name[101:117],
+	1005: _Errors_name[117:129],
+	1006: _Errors_name[129:148],
+	1100: _Errors_name[148:163],
+	1101: _Errors_name[163:180],
+	1102: _Errors_name[180:201],
+	1103: _Errors_name[201:222],
+	1104: _Errors_name[222:238],
+	1105: _Errors_name[238:254],
+	1106: _Errors_name[254:267],
+	2000: _Errors_name[267:282],
+	2001: _Errors_name[282:299],
+	2002: _Errors_name[299:320],
+	2003: _Errors_name[320:343],
+	2004: _Errors_name[343:356],
+	2100: _Errors_name[356:373],
+	2101: _Errors_name[373:392],
+	2102: _Errors_name[392:415],
+	2103: _Errors_name[415:437],
+	2104: _Errors_name[437:456],
+	2105: _Errors_name[456:477],
+	2106: _Errors_name[477:501],
+	2107: _Errors_name[501:528],
+	2108: _Errors_name[528:552],
+	2109: _Errors_name[552:576],
+	2200: _Errors_name[576:594],
+	2201: _Errors_name[594:614],
+	2202: _Errors_name[614:632],
+	3000: _Errors_name[632:648],
+	3001: _Errors_name[648:662],
+	3002: _Errors_name[662:679],
+	4000: _Errors_name[679:695],
+	5000: _Errors_name[695:712],
+	5001: _Errors_name[712:731],
+	5002: _Errors_name[731:754],
+	6000: _Errors_name[754:773],
+	6001: _Errors_name[773:794],
+	6002: _Errors_name[794:819],
+	6100: _Errors_name[819:839],
+	6101: _Errors_name[839:861],
+	6102: _Errors_name[861:887],
+}
 
 func (i Errors) String() string {
-	switch {
-	case 100 <= i && i <= 101:
-		i -= 100
-		return _Errors_name_0[_Errors_index_0[i]:_Errors_index_0[i+1]]
-	case 1000 <= i && i <= 1006:
-		i -= 1000
-		return _Errors_name_1[_Errors_index_1[i]:_Errors_index_1[i+1]]
-	case 1100 <= i && i <= 1106:
-		i -= 1100
-		return _Errors_name_2[_Errors_index_2[i]:_Errors_index_2[i+1]]
-	case 2100 <= i && i <= 2109:
-		i -= 2100
-		return _Errors_name_3[_Errors_index_3[i]:_Errors_index_3[i+1]]
-	case 2200 <= i && i <= 2202:
-		i -= 2200
-		return _Errors_name_4[_Errors_index_4[i]:_Errors_index_4[i+1]]
-	case 3000 <= i && i <= 3004:
-		i -= 3000
-		return _Errors_name_5[_Errors_index_5[i]:_Errors_index_5[i+1]]
-	case i == 4000:
-		return _Errors_name_6
-	case 5000 <= i && i <= 5002:
-		i -= 5000
-		return _Errors_name_7[_Errors_index_7[i]:_Errors_index_7[i+1]]
-	case 6000 <= i && i <= 6002:
-		i -= 6000
-		return _Errors_name_8[_Errors_index_8[i]:_Errors_index_8[i+1]]
-	case 6100 <= i && i <= 6102:
-		i -= 6100
-		return _Errors_name_9[_Errors_index_9[i]:_Errors_index_9[i+1]]
-	default:
-		return "Errors(" + strconv.FormatInt(int64(i), 10) + ")"
+	if str, ok := _Errors_map[i]; ok {
+		return str
 	}
+	return "Errors(" + strconv.FormatInt(int64(i), 10) + ")"
 }
