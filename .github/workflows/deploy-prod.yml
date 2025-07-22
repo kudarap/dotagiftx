@@ -8,6 +8,11 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_run:
+    workflows: ["Testing"]
+    branches: [master]
+    types:
+      - completed
 
 env:
   HOST: root@chiligarlic.com
@@ -16,24 +21,9 @@ env:
   WORKDIR: ~/dotagiftx/prod
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: golangci/golangci-lint-action@v8
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.24
-      - name: Compile
-        run: make build
-      - name: Test
-        run: make test
-
   deploy:
-    # Ensure compile build passes before deploy
-    needs: test
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
       - name: Build Image
