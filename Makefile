@@ -1,11 +1,9 @@
-binary=dxserver
-
-LDFLAGS="-X main.tag=`cat VERSION` \
-		-X main.commit=`git rev-parse HEAD` \
-		-X main.built=`date -u +%s`"
-
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
+
+server_bin=dxserver
+worker_bin=dxworker
+build_flags="-X main.tag=`cat VERSION` -X main.commit=`git rev-parse HEAD` -X main.built=`date -u +%s`"
 
 all: test build build-linux build-worker build-worker-linux
 
@@ -13,10 +11,10 @@ install:
 	go get ./...
 
 run: test build
-	./$(binary)
+	./$(server_bin)
 
 run-worker: test build-worker
-	./dxworker
+	./$(worker_bin)
 
 test: generate fmt
 	go test -v ./
@@ -26,13 +24,13 @@ test: generate fmt
 	go test -v ./verify/...
 
 build:
-	go build -v -ldflags=$(LDFLAGS) -o $(binary) ./cmd/$(binary)
+	go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(LDFLAGS) -o ./$(binary)_amd64 ./cmd/$(binary)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o ./$(server_bin)_amd64 ./cmd/$(server_bin)
 build-worker:
-	go build -v -ldflags=$(LDFLAGS) -o dxworker ./cmd/dxworker
+	go build -v -ldflags=$(build_flags) -o $(worker_bin) ./cmd/$(worker_bin)
 build-worker-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(LDFLAGS) -o dxworker_amd64 ./cmd/dxworker
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
 
 generate:
 	go generate .
@@ -41,9 +39,9 @@ fmt:
 	gofmt -s -l -e -w .
 
 docker-build:
-	docker build -t $(binary) .
+	docker build -t $(server_bin) .
 docker-run:
-	docker run -it --rm -p 8000:8000 $(binary)
+	docker run -it --rm -p 8000:8000 $(server_bin)
 
 web-build:
 	cd ./web && yarn dev && cd ..
