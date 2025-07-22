@@ -16,7 +16,7 @@ const defaultCurrency = "USD"
 
 // Market error types.
 const (
-	MarketErrNotFound Errors = iota + 2100
+	MarketErrNotFound Errors = iota + marketErrorIndex
 	MarketErrRequiredID
 	MarketErrRequiredFields
 	MarketErrInvalidStatus

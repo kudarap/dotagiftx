@@ -11,7 +11,7 @@ import (
 
 // User error types.
 const (
-	UserErrNotFound Errors = iota + 1100
+	UserErrNotFound Errors = iota + userErrorIndex
 	UserErrRequiredID
 	UserErrRequiredFields
 	UserErrProfileImageDL

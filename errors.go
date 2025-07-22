@@ -1,10 +1,25 @@
+//go:generate go tool stringer -type=Errors -output=errors_string.go
+
 package dotagiftx
 
 import (
 	"fmt"
 )
 
-//go:generate go tool stringer -type=Errors -output=errors_string.go
+// Error indexes are used for auto-increment identifier for error code generation.
+// The enumeration below is to avoid conflict.
+const (
+	storageErrorIndex   = 100
+	authErrorIndex      = 1000
+	userErrorIndex      = 1100
+	marketErrorIndex    = 2100
+	catalogErrorIndex   = 2200
+	itemErrorIndex      = 3000
+	trackErrorIndex     = 4000
+	reportErrorIndex    = 5000
+	deliveryErrorIndex  = 6000
+	inventoryErrorIndex = 6100
+)
 
 var appErrorText = map[Errors]string{}
 

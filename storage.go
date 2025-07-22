@@ -2,7 +2,7 @@ package dotagiftx
 
 const (
 	// StorageUncaughtErr storage error type for un-handled errors.
-	StorageUncaughtErr Errors = iota + 100
+	StorageUncaughtErr Errors = iota + storageErrorIndex
 	// StorageMergeErr storage object merge error.
 	StorageMergeErr
 )

@@ -11,7 +11,7 @@ import (
 
 // Report error types.
 const (
-	ReportErrNotFound Errors = iota + 5000
+	ReportErrNotFound Errors = iota + reportErrorIndex
 	ReportErrRequiredID
 	ReportErrRequiredFields
 )

@@ -21,14 +21,14 @@ func init() {
 
 // Delivery error types.
 const (
-	DeliveryErrNotFound Errors = iota + 6000
+	DeliveryErrNotFound Errors = iota + deliveryErrorIndex
 	DeliveryErrRequiredID
 	DeliveryErrRequiredFields
 )
 
 // Inventory error types.
 const (
-	InventoryErrNotFound Errors = iota + 6100
+	InventoryErrNotFound Errors = iota + inventoryErrorIndex
 	InventoryErrRequiredID
 	InventoryErrRequiredFields
 )

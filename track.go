@@ -14,7 +14,7 @@ const authCookieName = "dgAu"
 
 // Available track error types.
 const (
-	TrackErrNotFound Errors = iota + 4000
+	TrackErrNotFound Errors = iota + trackErrorIndex
 )
 
 // sets error text definition.

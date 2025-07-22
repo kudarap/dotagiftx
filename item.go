@@ -20,7 +20,7 @@ const defaultItemRarity = "regular"
 
 // Item error types.
 const (
-	ItemErrNotFound Errors = iota + 2000
+	ItemErrNotFound Errors = iota + itemErrorIndex
 	ItemErrRequiredID
 	ItemErrRequiredFields
 	ItemErrCreateItemExists
@@ -301,16 +301,6 @@ func (s *itemService) Update(ctx context.Context, itm *Item) error {
 	return s.itemStg.Update(itm)
 }
 
-type yamlFile struct {
-	Origin string `yaml:"origin"`
-	Items  []struct {
-		Name   string `yaml:"name"`
-		Hero   string `yaml:"hero"`
-		Image  string `yaml:"image"`
-		Rarity string `yaml:"rarity"`
-	} `yaml:"items"`
-}
-
 func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
 	res := ItemImportResult{}
 
@@ -390,6 +380,16 @@ func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
 	}
 
 	return n, nil
+}
+
+type yamlFile struct {
+	Origin string `yaml:"origin"`
+	Items  []struct {
+		Name   string `yaml:"name"`
+		Hero   string `yaml:"hero"`
+		Image  string `yaml:"image"`
+		Rarity string `yaml:"rarity"`
+	} `yaml:"items"`
 }
 
 type sortedMap struct {

@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	AuthErrNotFound Errors = iota + 1000
+	AuthErrNotFound Errors = iota + authErrorIndex
 	AuthErrRequiredID
 	AuthErrRequiredFields
 	AuthErrNoAccess
