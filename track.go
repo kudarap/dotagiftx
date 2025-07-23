@@ -10,10 +10,9 @@ import (
 	"time"
 )
 
-const authCookieName = "dgAu"
-
-// Available track error types.
 const (
+	authCookieName = "dgAu"
+
 	TrackErrNotFound Errors = iota + trackErrorIndex
 )
 

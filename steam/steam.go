@@ -9,11 +9,11 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-// Vanity URL prefixes.
 const (
 	VanityPrefixID      = "https://steamcommunity.com/id/"
 	VanityPrefixProfile = "https://steamcommunity.com/profiles/"
-	vanityCacheExpr     = time.Hour * 24
+
+	vanityCacheExpr = time.Hour * 24
 )
 
 // Config represents steam config.
