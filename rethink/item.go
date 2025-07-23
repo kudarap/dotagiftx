@@ -6,7 +6,6 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
-
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
