@@ -9,7 +9,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func hydrateStatsMarketSummaryX(cacheKey string, svc dotagiftx.StatsService, cache cacheManager) {
+func hydrateStatsMarketSummaryCache(cacheKey string, svc dotagiftx.StatsService, cache cacheManager) {
 	filter := &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}
 	asks, err := svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter})
 	if err != nil {
@@ -28,7 +28,7 @@ func hydrateStatsMarketSummaryX(cacheKey string, svc dotagiftx.StatsService, cac
 	}{asks, bids}
 
 	if err = cache.Set(cacheKey, res, 0); err != nil {
-		log.Println("Error hydrateStatsMarketSummaryX", err)
+		log.Println("Error hydrateStatsMarketSummaryCache", err)
 	}
 }
 
@@ -39,12 +39,12 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 		t := time.NewTicker(time.Hour / 2)
 		for {
 			<-t.C
-			hydrateStatsMarketSummaryX(cacheKeyX, svc, cache)
+			hydrateStatsMarketSummaryCache(cacheKeyX, svc, cache)
 		}
 	}()
 
 	if hit, _ := cache.Get(cacheKeyX); hit == "" {
-		go hydrateStatsMarketSummaryX(cacheKeyX, svc, cache)
+		go hydrateStatsMarketSummaryCache(cacheKeyX, svc, cache)
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
