@@ -1,6 +1,5 @@
 package jobs
 
-// cache provides access to cache database.
-type cache interface {
+type cacheRemover interface {
 	BulkDel(keyPrefix string) error
 }

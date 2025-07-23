@@ -10,14 +10,13 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-// cache provides access to cache database.
-type cache interface {
+const cacheSkipKey = "nocache"
+
+type cacheManager interface {
 	Set(key string, val interface{}, expr time.Duration) error
 	Get(key string) (val string, err error)
 	BulkDel(keyPrefix string) error
 }
-
-const cacheSkipKey = "nocache"
 
 // cacheKeyFromRequest returns cache key from http request.
 // nocache from a request query will return empty string and can be used to skipping cache.

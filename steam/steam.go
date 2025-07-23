@@ -26,11 +26,11 @@ type Config struct {
 // Client represents a steam client.
 type Client struct {
 	config Config
-	cache  cache
+	cache  cacheReadWriter
 }
 
 // New create new steam client instance.
-func New(c Config, ca cache) (*Client, error) {
+func New(c Config, ca cacheReadWriter) (*Client, error) {
 	return &Client{c, ca}, nil
 }
 
@@ -100,7 +100,7 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 	return
 }
 
-type cache interface {
+type cacheReadWriter interface {
 	Set(key string, val interface{}, expr time.Duration) error
 	Get(key string) (val string, err error)
 }

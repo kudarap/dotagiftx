@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	authCookieName = "dgAu"
-
 	TrackErrNotFound Errors = iota + trackErrorIndex
+
+	authCookieName = "dgAu"
 )
 
 // sets error text definition.

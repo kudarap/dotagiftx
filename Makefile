@@ -5,15 +5,15 @@ server_bin=dxserver
 worker_bin=dxworker
 build_flags="-X main.tag=`cat VERSION` -X main.commit=`git rev-parse HEAD` -X main.built=`date -u +%s`"
 
-all: test generate fmt build build-linux build-worker build-worker-linux
+all: test fmt build build-linux build-worker build-worker-linux
 
 install:
 	go get ./...
 
-run: test build
+run: build
 	./$(server_bin)
 
-run-worker: test build-worker
+run-worker: build-worker
 	./$(worker_bin)
 
 test: lint
@@ -23,23 +23,23 @@ test: lint
 	go test -v ./phantasm/...
 	go test -v ./verify/...
 
-build:
-	go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
-build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o ./$(server_bin)_amd64 ./cmd/$(server_bin)
-build-worker:
-	go build -v -ldflags=$(build_flags) -o $(worker_bin) ./cmd/$(worker_bin)
-build-worker-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
-
-generate:
-	go generate .
-
-fmt:
+fmt: generate
 	gofmt -s -l -e -w .
 
 lint:
 	golangci-lint run -v
+
+generate:
+	go generate .
+
+build: test
+	go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
+build-worker: test
+	go build -v -ldflags=$(build_flags) -o $(worker_bin) ./cmd/$(worker_bin)
+build-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o ./$(server_bin)_amd64 ./cmd/$(server_bin)
+build-worker-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
 
 docker-build:
 	docker build -t $(server_bin) .

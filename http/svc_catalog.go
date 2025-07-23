@@ -18,7 +18,7 @@ const (
 func handleMarketCatalogList(
 	svc dotagiftx.MarketService,
 	trackSvc dotagiftx.TrackService,
-	cache cache,
+	cache cacheManager,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +84,7 @@ func handleMarketCatalogList(
 	}
 }
 
-func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
@@ -127,7 +127,7 @@ const catalogTrendCacheExpr = time.Hour * 2
 // TODO! this is hotfixed for slow query on trending catalog.
 const catalogTrendRehydrationDur = catalogTrendCacheExpr / 2
 
-func hydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache cache, logger *logrus.Logger) {
+func hydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) {
 	logger.Infoln("REHYDRATING EXP...")
 	list, _, err := svc.TrendingCatalog(dotagiftx.FindOpts{})
 	if err != nil {
@@ -143,7 +143,7 @@ func hydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache cac
 	logger.Infoln("REHYDRATED EXP", trend.ResultCount)
 }
 
-func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
 	const cacheKeyX = "catalog_trend_exp"
 
 	go func() {

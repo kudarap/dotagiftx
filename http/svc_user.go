@@ -11,7 +11,7 @@ import (
 
 const userCacheExpr = time.Minute * 5
 
-func handleProfile(svc dotagiftx.UserService, cache cache) http.HandlerFunc {
+func handleProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -34,7 +34,7 @@ func handleProfile(svc dotagiftx.UserService, cache cache) http.HandlerFunc {
 	}
 }
 
-func handlePublicProfile(svc dotagiftx.UserService, cache cache) http.HandlerFunc {
+func handlePublicProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -58,7 +58,7 @@ func handlePublicProfile(svc dotagiftx.UserService, cache cache) http.HandlerFun
 	}
 }
 
-func handleProcSubscription(svc dotagiftx.UserService, cache cache) http.HandlerFunc {
+func handleProcSubscription(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			SubscriptionID string `json:"subscription_id"`
@@ -82,7 +82,7 @@ func handleProcSubscription(svc dotagiftx.UserService, cache cache) http.Handler
 	}
 }
 
-func handleBlacklisted(svc dotagiftx.UserService, cache cache) http.HandlerFunc {
+func handleBlacklisted(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -124,7 +124,7 @@ type vanityUserResp struct {
 }
 
 // TODO this should be place on service
-func handleVanityProfile(svc dotagiftx.UserService, steam dotagiftx.SteamClient, cache cache) http.HandlerFunc {
+func handleVanityProfile(svc dotagiftx.UserService, steam dotagiftx.SteamClient, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -180,7 +180,7 @@ func handleUserSubscriptionWebhook(svc dotagiftx.UserService) http.HandlerFunc {
 	}
 }
 
-func handleUserManualSubscription(svc dotagiftx.UserService, cache cache, divineKey string) http.HandlerFunc {
+func handleUserManualSubscription(svc dotagiftx.UserService, cache cacheManager, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
