@@ -1,13 +1,13 @@
 package http
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 )
 
 var json = jsoniter.ConfigFastest
@@ -60,7 +60,7 @@ func respond(w http.ResponseWriter, code int, body interface{}) {
 	enc := json.NewEncoder(w)
 	if err := enc.Encode(body); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(fmt.Sprintf("could not encode body into JSON: %s", err)))
+		_, _ = fmt.Fprintf(w, "could not encode body into JSON: %s", err)
 	}
 }
 
@@ -73,20 +73,20 @@ func respondError(w http.ResponseWriter, err error) {
 	status := http.StatusBadRequest
 
 	// Try to parse handled errors.
-	cErr, ok := xerrors.Parse(err)
+	xerr, ok := parseXError(err)
 	if ok {
-		if cErr.Fatal {
+		switch {
+		case xerr.Fatal:
 			status = http.StatusInternalServerError
-		} else if cErr.IsEqual(dotagiftx.AuthErrNoAccess) {
+		case errors.Is(xerr.Type, dotagiftx.AuthErrNoAccess):
 			status = http.StatusUnauthorized
-		} else if cErr.IsEqual(dotagiftx.AuthErrForbidden) {
+		case errors.Is(xerr.Type, dotagiftx.AuthErrForbidden):
 			status = http.StatusForbidden
 		}
 
-		body = httpMsg{true, cErr.Type.String(), err.Error()}
-
+		body = httpMsg{true, xerr.Type.String(), err.Error()}
 	} else {
-		// Use generic error message
+		// Use a generic error message
 		body = newError(err)
 	}
 
@@ -111,4 +111,25 @@ func parseForm(r *http.Request, form interface{}) error {
 	}
 
 	return nil
+}
+
+// parseXError returns Errors value if available, else returns nil and ok is false.
+// When error is a core.Error type will create new error with that type to handle them gracefully.
+// Useful when checking errors types on Parse().
+func parseXError(err error) (e *dotagiftx.XErrors, ok bool) {
+	// Try packaged error assertion.
+	if errors.As(err, &e) {
+		return
+	}
+
+	// Try core error assertion as type and handles unpackaged error with valid type that can be used to
+	// check typed errors.
+	var t dotagiftx.Errors
+	if errors.As(err, &t) {
+		// Error with no details.
+		return &dotagiftx.XErrors{Type: t, Err: errors.New("")}, true
+	}
+
+	// Cant parse the error.
+	return nil, false
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func hydrateStatsMarketSummaryX(cacheKey string, svc dotagiftx.StatsService, cache dotagiftx.Cache) {
+func hydrateStatsMarketSummaryCache(cacheKey string, svc dotagiftx.StatsService, cache cacheManager) {
 	filter := &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}
 	asks, err := svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter})
 	if err != nil {
@@ -28,29 +28,28 @@ func hydrateStatsMarketSummaryX(cacheKey string, svc dotagiftx.StatsService, cac
 	}{asks, bids}
 
 	if err = cache.Set(cacheKey, res, 0); err != nil {
-		log.Println("Error hydrateStatsMarketSummaryX", err)
+		log.Println("Error hydrateStatsMarketSummaryCache", err)
 	}
 }
 
-func handleStatsMarketSummary(svc dotagiftx.StatsService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
 	const cacheKeyX = "stats_market_summary_exp"
 
 	go func() {
 		t := time.NewTicker(time.Hour / 2)
 		for {
 			<-t.C
-			hydrateStatsMarketSummaryX(cacheKeyX, svc, cache)
+			hydrateStatsMarketSummaryCache(cacheKeyX, svc, cache)
 		}
 	}()
 
 	if hit, _ := cache.Get(cacheKeyX); hit == "" {
-		go hydrateStatsMarketSummaryX(cacheKeyX, svc, cache)
+		go hydrateStatsMarketSummaryCache(cacheKeyX, svc, cache)
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		//cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := cacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -118,11 +117,10 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache dotagiftx.Cache)
 	}
 }
 
-func handleGraphMarketSales(svc dotagiftx.StatsService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleGraphMarketSales(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		//cacheKey, noCache := core.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := cacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -150,18 +148,18 @@ func handleGraphMarketSales(svc dotagiftx.StatsService, cache dotagiftx.Cache) h
 
 const statsCacheExpr = time.Hour
 
-func handleStatsTopOrigins(itemSvc dotagiftx.ItemService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleStatsTopOrigins(itemSvc dotagiftx.ItemService, cache cacheManager) http.HandlerFunc {
 	return topStatsBaseHandler(itemSvc.TopOrigins, cache)
 }
 
-func handleStatsTopHeroes(itemSvc dotagiftx.ItemService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleStatsTopHeroes(itemSvc dotagiftx.ItemService, cache cacheManager) http.HandlerFunc {
 	return topStatsBaseHandler(itemSvc.TopHeroes, cache)
 }
 
-func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
 	const expiration = time.Hour * 12
 	return func(w http.ResponseWriter, r *http.Request) {
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := cacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)
@@ -180,10 +178,10 @@ func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache dotagiftx.Cac
 	}
 }
 
-func topStatsBaseHandler(fn func() ([]string, error), cache dotagiftx.Cache) http.HandlerFunc {
+func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequest(r)
+		cacheKey, noCache := cacheKeyFromRequest(r)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				respondOK(w, hit)

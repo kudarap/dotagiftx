@@ -15,7 +15,6 @@ import (
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
-	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/sirupsen/logrus"
@@ -118,13 +117,13 @@ func (app *application) setup() error {
 	// Service inits.
 	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(app.config)
-	userSvc := service.NewUser(userStg, fileMgr, paypalClient)
-	authSvc := service.NewAuth(app.config.SigKey, steamClient, authStg, userSvc)
-	imageSvc := service.NewImage(fileMgr)
-	itemSvc := service.NewItem(itemStg, fileMgr)
-	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
-	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
-	marketSvc := service.NewMarket(
+	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient)
+	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc)
+	imageSvc := dotagiftx.NewImageService(fileMgr)
+	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr)
+	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
+	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
+	marketSvc := dotagiftx.NewMarketService(
 		marketStg,
 		userStg,
 		itemStg,
@@ -137,19 +136,11 @@ func (app *application) setup() error {
 		rethink.NewQueue(rethinkClient),
 		app.contextLog("service_market"),
 	)
-	trackSvc := service.NewTrack(trackStg, itemStg)
-	reportSvc := service.NewReport(reportStg, discordClient)
-	statsSvc := service.NewStats(statsStg, trackStg)
-	hammerSvc := service.NewHammerService(userStg, marketStg)
+	trackSvc := dotagiftx.NewTrackService(trackStg, itemStg)
+	reportSvc := dotagiftx.NewReportService(reportStg, discordClient)
+	statsSvc := dotagiftx.NewStatsService(statsStg, trackStg)
+	hammerSvc := dotagiftx.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
-
-	// NOTE! this is for run-once scripts
-	//fixes.GenerateFakeMarket(itemStg, userStg, marketSvc)
-	//fixes.ReIndexAll(itemStg, catalogStg)
-	//fixes.ResolveCompletedBidSteamID(marketStg, steamClient)
-	//fixes.MarketIndexRebuild(marketStg)
-	//fixes.MarketSetRankingScores(userSvc, marketSvc)
-	//redisClient.BulkDel("")
 
 	// Server setup.
 	logSvc.Println("setting up http server...")
@@ -264,7 +255,7 @@ func connRetry(name string, fn func() error) error {
 		if err := recover(); err != nil {
 			logger.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
 			time.Sleep(delay)
-			err = connRetry(name, fn)
+			_ = connRetry(name, fn)
 		}
 	}()
 

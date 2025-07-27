@@ -39,7 +39,7 @@ func NewServer(
 	sc dotagiftx.SteamClient,
 	ps *phantasm.Service,
 	t *tracing.Tracer,
-	c dotagiftx.Cache,
+	c cacheManager,
 	v *dotagiftx.Version,
 	l *logrus.Logger,
 ) *Server {
@@ -84,7 +84,7 @@ type Server struct {
 	phantasmSvc *phantasm.Service
 
 	tracing *tracing.Tracer
-	cache   dotagiftx.Cache
+	cache   cacheManager
 	logger  *logrus.Logger
 	version *dotagiftx.Version
 

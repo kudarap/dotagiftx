@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -36,7 +35,7 @@ func (s *taskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, er
 
 	var res []dotagiftx.Task
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	return res, nil
 }
@@ -45,7 +44,7 @@ func (s *taskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
 	in.Retry++
 	err := s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return nil

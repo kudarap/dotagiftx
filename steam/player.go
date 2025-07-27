@@ -21,17 +21,8 @@ type PlayerSummaries struct {
 	AvatarMedium             string `json:"avatarmedium"`
 	AvatarFull               string `json:"avatarfull"`
 	PersonaState             int    `json:"personastate"`
-
-	CommentPermission int    `json:"commentpermission"`
-	RealName          string `json:"realname"`
-	//PrimaryClanId     string `json:"primaryclanid"`
-	//TimeCreated       int    `json:"timecreated"`
-	//LocCountryCode    string `json:"loccountrycode"`
-	//LocStateCode      string `json:"locstatecode"`
-	//LocCityId         int    `json:"loccityid"`
-	//GameId            string `json:"gameid"`
-	//GameExtraInfo     string `json:"gameextrainfo"`
-	//GameServerIp      string `json:"gameserverip"`
+	CommentPermission        int    `json:"commentpermission"`
+	RealName                 string `json:"realname"`
 }
 
 func GetPlayerSummaries(steamId, apiKey string) (*PlayerSummaries, error) {

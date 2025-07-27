@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -75,7 +74,7 @@ func main() {
 		}
 	}
 
-	data, err := ioutil.ReadFile(cacheSrc)
+	data, err := os.ReadFile(cacheSrc)
 	if err != nil {
 		fmt.Println("could not read file:", err)
 		return
@@ -87,7 +86,6 @@ func main() {
 	}
 	fmt.Println("parsed", len(inv.Items))
 
-	const filter = "International 2019"
 	items := map[string]Item{}
 	for _, ii := range inv.Items {
 		if !strings.Contains(strings.ToLower(ii.Name), strings.ToLower(*filterNamePtr)) {
@@ -117,7 +115,7 @@ func main() {
 		fmt.Println(ii.Name)
 		fmt.Println(ii.Hero)
 		fmt.Println(steamCDN + ii.Image)
-		//fmt.Println(ii.Description)
+		// fmt.Println(ii.Description)
 		fmt.Println(strings.Repeat("-", 55))
 	}
 

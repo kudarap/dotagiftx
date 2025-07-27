@@ -18,7 +18,7 @@ const (
 func handleMarketList(
 	svc dotagiftx.MarketService,
 	trackSvc dotagiftx.TrackService,
-	cache dotagiftx.Cache,
+	cache cacheManager,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +26,7 @@ func handleMarketList(
 		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
@@ -64,11 +64,9 @@ func handleMarketList(
 		}
 
 		data := newDataWithMeta(list, md)
-		//go func(d dataWithMeta) {
-		if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
+		if err = cache.Set(cacheKey, data, marketCacheExpr); err != nil {
 			logger.Errorf("could not save cache on market list: %s", err)
 		}
-		//}(data)
 
 		if shouldRedactUser {
 			data.Data = redactBuyers(list)
@@ -98,13 +96,13 @@ func sortQueryModifier(r *http.Request) {
 	r.URL.RawQuery = query.Encode()
 }
 
-func handleMarketDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
@@ -123,11 +121,9 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logg
 			return
 		}
 
-		//go func() {
 		if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
 			logger.Errorf("could not save cache on market list: %s", err)
 		}
-		//}()
 
 		if shouldRedactUser {
 			m = redactBuyer(m)
@@ -137,7 +133,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logg
 	}
 }
 
-func handleMarketCreate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleMarketCreate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -151,16 +147,12 @@ func handleMarketCreate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http
 		}
 
 		go cache.BulkDel(marketCacheKeyPrefix)
-		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
-		//	respondError(w, err)
-		//	return
-		//}
 
 		respondOK(w, m)
 	}
 }
 
-func handleMarketUpdate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -175,11 +167,6 @@ func handleMarketUpdate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http
 		}
 
 		go cache.BulkDel(marketCacheKeyPrefix)
-		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
-		//	respondError(w, err)
-		//	return
-		//}
-
 		respondOK(w, m)
 	}
 }

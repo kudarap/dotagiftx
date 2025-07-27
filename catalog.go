@@ -6,7 +6,7 @@ import (
 
 // Catalog error types.
 const (
-	CatalogErrNotFound Errors = iota + 2200
+	CatalogErrNotFound Errors = iota + catalogErrorIndex
 	CatalogErrRequiredID
 	CatalogErrIndexing
 )

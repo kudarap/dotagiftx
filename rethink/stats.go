@@ -47,7 +47,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 		Cancelled:    mktMap[dotagiftx.MarketStatusCancelled],
 		BidCompleted: mktMap[dotagiftx.MarketStatusBidCompleted],
 	}
-	s.logger.Println("rethink/stats count ask", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count ask", time.Since(benchStart))
 
 	benchStart = time.Now()
 	if err := s.db.list(baseQuery.
@@ -65,7 +65,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	marketStats.ResellReserved = resellMap[dotagiftx.MarketStatusReserved]
 	marketStats.ResellRemoved = resellMap[dotagiftx.MarketStatusRemoved]
 	marketStats.ResellCancelled = resellMap[dotagiftx.MarketStatusCancelled]
-	s.logger.Println("rethink/stats count resell", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count resell", time.Since(benchStart))
 
 	// Count market bid stats
 	benchStart = time.Now()
@@ -80,7 +80,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	}
 	marketStats.BidLive = mktMap[dotagiftx.MarketStatusLive]
 	marketStats.BidCompleted = mktMap[dotagiftx.MarketStatusBidCompleted]
-	s.logger.Println("rethink/stats count bid", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count bid", time.Since(benchStart))
 
 	// Count delivery stats
 	benchStart = time.Now()
@@ -100,7 +100,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	marketStats.DeliverySenderVerified = dlvMap[dotagiftx.DeliveryStatusSenderVerified]
 	marketStats.DeliveryPrivate = dlvMap[dotagiftx.DeliveryStatusPrivate]
 	marketStats.DeliveryError = dlvMap[dotagiftx.DeliveryStatusError]
-	s.logger.Println("rethink/stats count dlv", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count dlv", time.Since(benchStart))
 
 	// Count inventory stats
 	benchStart = time.Now()
@@ -119,7 +119,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	marketStats.InventoryVerified = invMap[dotagiftx.InventoryStatusVerified]
 	marketStats.InventoryPrivate = invMap[dotagiftx.InventoryStatusPrivate]
 	marketStats.InventoryError = invMap[dotagiftx.InventoryStatusError]
-	s.logger.Println("rethink/stats count inv", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count inv", time.Since(benchStart))
 
 	return marketStats, nil
 }

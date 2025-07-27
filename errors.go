@@ -1,6 +1,26 @@
+//go:generate go tool stringer -type=Errors -output=errors_string.go
+
 package dotagiftx
 
-//go:generate go tool stringer -type=Errors -output=errors_string.go
+import (
+	"fmt"
+)
+
+// Error indexes are used for auto-increment identifier for error code generation.
+// The enumeration below is to avoid conflict.
+const (
+	storageErrorIndex   = 100
+	authErrorIndex      = 1000
+	userErrorIndex      = 1100
+	itemErrorIndex      = 2000
+	marketErrorIndex    = 2100
+	catalogErrorIndex   = 2200
+	imageErrorIndex     = 3000
+	trackErrorIndex     = 4000
+	reportErrorIndex    = 5000
+	deliveryErrorIndex  = 6000
+	inventoryErrorIndex = 6100
+)
 
 var appErrorText = map[Errors]string{}
 
@@ -15,4 +35,24 @@ func (i Errors) Error() string {
 // Code returns error code.
 func (i Errors) Code() string {
 	return i.String()
+}
+
+func (i Errors) X(err error) XErrors {
+	return XErrors{Type: i, Err: err}
+}
+
+// XErrors represents application's errors.
+type XErrors struct {
+	Type  Errors
+	Err   error
+	Fatal bool
+}
+
+// Implements error interface.
+func (x XErrors) Error() string {
+	return fmt.Sprintf("%s: %s", x.Type, x.Err)
+}
+
+func NewXError(t Errors, err error) XErrors {
+	return XErrors{Type: t, Err: err}
 }

@@ -87,7 +87,6 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
-			//rest(5)
 			time.Sleep(time.Second / 4)
 		}
 
@@ -95,6 +94,6 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 		if len(res) < opts.Limit {
 			return nil
 		}
-		//opts.Page++
+		// opts.Page++
 	}
 }

@@ -5,7 +5,6 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -39,7 +38,7 @@ func (s *inventoryStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Inventory, er
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
@@ -60,7 +59,7 @@ func (s *inventoryStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 // includeRelatedFields injects user details base on market foreign keys.
 func (s *inventoryStorage) includeRelatedFields(q r.Term) r.Term {
 	return q
-	//return q.
+	// return q.
 	//	EqJoin(inventoryFieldMarketID, r.Table(tableMarket)).
 	//	Map(func(t r.Term) r.Term {
 	//		return t.Field("left").Merge(map[string]interface{}{
@@ -76,7 +75,7 @@ func (s *inventoryStorage) Get(id string) (*dotagiftx.Inventory, error) {
 			return nil, dotagiftx.InventoryErrNotFound
 		}
 
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -105,7 +104,7 @@ func (s *inventoryStorage) Create(in *dotagiftx.Inventory) error {
 	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -121,11 +120,11 @@ func (s *inventoryStorage) Update(in *dotagiftx.Inventory) error {
 	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return xerrors.New(dotagiftx.StorageMergeErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil

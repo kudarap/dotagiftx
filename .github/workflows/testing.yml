@@ -1,4 +1,5 @@
-name: Building and Testing
+name: Testing
+
 permissions:
   contents: read
 
@@ -13,22 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - uses: golangci/golangci-lint-action@v8
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: 1.24
-
-      #      - name: Install build dependencies
-      #        run: go get golang.org/x/tools/cmd/stringer
-
       - name: Compile
         run: make build
-
       - name: Test
-        run: |
-          go test -v ./
-          go test -v ./http/...
-          go test -v ./steam/...
-          go test -v ./phantasm/...
-          go test -v ./verify/...
+        run: make test

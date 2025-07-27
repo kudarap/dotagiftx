@@ -89,16 +89,12 @@ func (w *Worker) Start() {
 
 			// Runner will block until done making it a single tasking worker.
 			w.runner(ctx, job)
-
-			// Enable this of you want multitasking worker.
-			//go w.runner(ctx, job, false)
 		}
 	}
 }
 
 // AddJob registers a new job while the worker is running.
 func (w *Worker) AddJob(j Job) {
-	//w.jobs = append(w.jobs, j)
 	w.queueJob(j, true)
 }
 

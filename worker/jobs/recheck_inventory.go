@@ -46,7 +46,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 
 	opts := dotagiftx.FindOpts{Filter: ri.filter}
 	opts.Sort = "updated_at:desc"
-	//opts.Limit = 10
+	// opts.Limit = 10
 	opts.Page = 0
 	opts.IndexKey = "status"
 
@@ -90,7 +90,6 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 		}
 
-		//rest(5)
 		time.Sleep(time.Second / 4)
 	}
 

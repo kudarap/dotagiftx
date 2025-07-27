@@ -11,7 +11,7 @@ import (
 
 type ExpiringSubscription struct {
 	userStg dotagiftx.UserStorage
-	cache   dotagiftx.Cache
+	cache   cacheRemover
 	logger  logging.Logger
 	// job settings
 	name     string
@@ -20,7 +20,7 @@ type ExpiringSubscription struct {
 
 func NewExpiringSubscription(
 	us dotagiftx.UserStorage,
-	cache dotagiftx.Cache,
+	cache cacheRemover,
 	lg logging.Logger,
 ) *ExpiringSubscription {
 	return &ExpiringSubscription{

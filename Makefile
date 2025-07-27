@@ -1,51 +1,50 @@
-PROJECTNAME=dotagiftx
-
-LDFLAGS="-X main.tag=`cat VERSION` \
-		-X main.commit=`git rev-parse HEAD` \
-		-X main.built=`date -u +%s`"
-
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
-all: test build build-linux build-worker build-worker-linux
+server_bin=dxserver
+worker_bin=dxworker
+build_flags="-X main.tag=`cat VERSION` -X main.commit=`git rev-parse HEAD` -X main.built=`date -u +%s`"
+
+all: test fmt build build-linux build-worker build-worker-linux
 
 install:
 	go get ./...
 
-run: test build
-	./$(PROJECTNAME)
+run: build
+	./$(server_bin)
 
-run-worker: test build-worker
-	./dxworker
+run-worker: build-worker
+	./$(worker_bin)
 
-test: generate fmt
+test: lint
 	go test -v ./
 	go test -v ./http/...
 	go test -v ./steam/...
 	go test -v ./phantasm/...
 	go test -v ./verify/...
 
-build:
-	go build -v -ldflags=$(LDFLAGS) -o $(PROJECTNAME) ./cmd/$(PROJECTNAME)
-build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(LDFLAGS) \
-		-o ./$(PROJECTNAME)_amd64 ./cmd/$(PROJECTNAME)
-build-worker:
-	go build -v -ldflags=$(LDFLAGS) -o dxworker ./cmd/dxworker
-build-worker-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(LDFLAGS) \
-	    -o dxworker_amd64 ./cmd/dxworker
+fmt: generate
+	gofmt -s -l -e -w .
+
+lint:
+	golangci-lint run -v
 
 generate:
 	go generate .
 
-fmt:
-	gofmt -s -l -e -w .
+build: test
+	go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
+build-worker: test
+	go build -v -ldflags=$(build_flags) -o $(worker_bin) ./cmd/$(worker_bin)
+build-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o ./$(server_bin)_amd64 ./cmd/$(server_bin)
+build-worker-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
 
 docker-build:
-	docker build -t $(PROJECTNAME) .
+	docker build -t $(server_bin) .
 docker-run:
-	docker run -it --rm -p 8000:8000 $(PROJECTNAME)
+	docker run -it --rm -p 8000:8000 $(server_bin)
 
 web-build:
 	cd ./web && yarn dev && cd ..

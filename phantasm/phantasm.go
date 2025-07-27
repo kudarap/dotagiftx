@@ -62,7 +62,7 @@ type Service struct {
 
 func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
 	config = config.setDefault()
-	if err := os.MkdirAll(config.Path, 0777); err != nil {
+	if err := os.MkdirAll(config.Path, 0750); err != nil {
 		panic(err)
 	}
 
@@ -189,8 +189,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			wait := time.Duration(i*i) * time.Second
 			time.Sleep(wait)
 			logger.DebugContext(ctx, "reading local data", "attempt", i+1, "waiting", wait)
-			localFile, err = s.localInventoryFile(ctx, steamID)
-			if err != nil && !errors.Is(err, errFileNotFound) {
+			if _, err = s.localInventoryFile(ctx, steamID); err != nil && !errors.Is(err, errFileNotFound) {
 				return nil, err
 			}
 		}

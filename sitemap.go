@@ -1,4 +1,4 @@
-package service
+package dotagiftx
 
 import "net/http"
 

@@ -10,9 +10,10 @@ import (
 	"time"
 )
 
-// Track error types.
 const (
-	TrackErrNotFound Errors = iota + 4000
+	TrackErrNotFound Errors = iota + trackErrorIndex
+
+	authCookieName = "dgAu"
 )
 
 // sets error text definition.
@@ -22,20 +23,19 @@ func init() {
 
 // Track types.
 const (
-	TrackTypeView        = "v"
-	TrackTypeSearch      = "s"
-	TrackTypeProfileView = "p"
-	//TrackTypeItemView           = 300
-	//TrackTypeCatalogSearch      = 310
-	//TrackTypeProfileClick       = 110
-	//TrackTypeProfileView        = 100
-	//TrackTypeMarketListed       = 220
-	//TrackTypeMarketReserved     = 230
-	//TrackTypeMarketSold         = 240
-	//TrackTypeMarketBidCompleted = 241
-	//TrackTypeMarketRemoved      = 250
-	//TrackTypeMarketCancelled    = 260
-	//TrackTypeMarketExpired      = 270
+	TrackTypeView               = "v"
+	TrackTypeSearch             = "s"
+	TrackTypeProfileView        = "p"
+	TrackTypeItemView           = 300
+	TrackTypeCatalogSearch      = 310
+	TrackTypeProfileClick       = 110
+	TrackTypeMarketListed       = 220
+	TrackTypeMarketReserved     = 230
+	TrackTypeMarketSold         = 240
+	TrackTypeMarketBidCompleted = 241
+	TrackTypeMarketRemoved      = 250
+	TrackTypeMarketCancelled    = 260
+	TrackTypeMarketExpired      = 270
 )
 
 type (
@@ -84,7 +84,7 @@ type (
 		// Create persists a new track to data store.
 		Create(*Track) error
 
-		// ThisWeekKeywords returns top search keywords this week.
+		// TopKeywords returns top search keywords this week.
 		TopKeywords() ([]SearchKeywordScore, error)
 	}
 )
@@ -95,8 +95,6 @@ const (
 	trackUserIDKey  = "u"
 	trackKeywordKey = "k"
 )
-
-const authCookieName = "dgAu"
 
 // SetDefaults sets default values from http.Request.
 func (t *Track) SetDefaults(r *http.Request) {
@@ -130,6 +128,73 @@ func (t *Track) SetDefaults(r *http.Request) {
 	sessCookie = strings.TrimPrefix(sessCookie, authCookieName+"=")
 	_ = json.Unmarshal([]byte(sessCookie), &au)
 	t.SessUserID = au.UserID
+}
+
+// NewTrackService returns new track service.
+func NewTrackService(ts TrackStorage, ps ItemStorage) TrackService {
+	return &trackService{ts, ps}
+}
+
+type trackService struct {
+	trackStg TrackStorage
+	itemStg  ItemStorage
+}
+
+func (s *trackService) Tracks(opts FindOpts) ([]Track, *FindMetadata, error) {
+	res, err := s.trackStg.Find(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !opts.WithMeta {
+		return res, nil, err
+	}
+
+	// Get total count for metadata.
+	total, err := s.trackStg.Count(opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return res, &FindMetadata{
+		ResultCount: len(res),
+		TotalCount:  total,
+	}, nil
+}
+
+func (s *trackService) Track(id string) (*Track, error) {
+	return s.trackStg.Get(id)
+}
+
+func (s *trackService) CreateFromRequest(r *http.Request) error {
+	t := new(Track)
+	t.SetDefaults(r)
+
+	// Track post view.
+	if t.Type == TrackTypeView && t.ItemID != "" {
+		if err := s.itemStg.AddViewCount(t.ItemID); err != nil {
+			return err
+		}
+	}
+
+	return s.trackStg.Create(t)
+}
+
+func (s *trackService) CreateSearchKeyword(r *http.Request, keyword string) error {
+	if r.Method != http.MethodGet {
+		return nil
+	}
+
+	keyword = strings.TrimSpace(keyword)
+	if keyword == "" {
+		return nil
+	}
+
+	t := new(Track)
+	t.SetDefaults(r)
+	t.Type = TrackTypeSearch
+	t.Keyword = keyword
+	return s.trackStg.Create(t)
 }
 
 func userIPFromRequest(req *http.Request) (net.IP, error) {

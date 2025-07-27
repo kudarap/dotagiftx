@@ -6,7 +6,6 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/xerrors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -41,7 +40,7 @@ func (s *itemStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Item, error) {
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
@@ -71,7 +70,7 @@ func (s *itemStorage) Get(id string) (*dotagiftx.Item, error) {
 			return nil, dotagiftx.ItemErrNotFound
 		}
 
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -85,7 +84,7 @@ func (s *itemStorage) GetBySlug(slug string) (*dotagiftx.Item, error) {
 			return nil, dotagiftx.ItemErrNotFound
 		}
 
-		return nil, xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -98,7 +97,7 @@ func (s *itemStorage) Create(in *dotagiftx.Item) error {
 	in.ID = ""
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -114,11 +113,11 @@ func (s *itemStorage) Update(in *dotagiftx.Item) error {
 	in.UpdatedAt = now()
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err := mergo.Merge(in, cur); err != nil {
-		return xerrors.New(dotagiftx.StorageMergeErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -136,7 +135,7 @@ func (s *itemStorage) IsItemExist(name string) error {
 	})
 	var n int
 	if err := s.db.one(q.Count(), &n); err != nil {
-		return xerrors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if n != 0 {
