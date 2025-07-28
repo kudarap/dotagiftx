@@ -271,8 +271,6 @@ export default function Header() {
         <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
       </AppBar>
-
-      <StopKillingGames />
     </>
   )
 }
@@ -382,42 +380,5 @@ function NoticeMe() {
       </Link>
       <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
     </div>
-  )
-}
-
-function StopKillingGames() {
-  const [progress, setProgress] = useState(0.0)
-
-  const url = 'https://eci.ec.europa.eu/045/public/api/report/progression'
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(url)
-      const d = await res.json()
-      const p = Number((d.signatureCount / d.goal) * 100).toFixed(2)
-      setProgress(p)
-    }
-    fetchData()
-  }, [])
-
-  return (
-    <Box sx={{ p: 1, textAlign: 'center', backgroundColor: '#15355f' }}>
-      <Link
-        disableUnderline
-        href="https://www.stopkillinggames.com"
-        target="_blank"
-        rel="noreferrer noopener">
-        <img
-          src="https://www.stopkillinggames.com/images/skglogo.svg"
-          height={16}
-          style={{ paddingRight: 8, marginBottom: -2 }}
-        />
-        <u>
-          {progress != 0 && `${progress}% `}
-          Take a look at the <strong>Stop Killing Games</strong> initiative if you are an EU
-          citizen.
-        </u>
-      </Link>
-      {/* <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>x</span> */}
-    </Box>
   )
 }
