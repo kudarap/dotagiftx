@@ -8,39 +8,37 @@ import (
 	"net/http"
 	"slices"
 	"strings"
-
-	"github.com/plutov/paypal/v4"
 )
+
+const customIDPrefix = "STEAMID-"
 
 // Config represents paypal config.
 type Config struct {
+	Live      bool
 	ClientID  string
 	Secret    string
 	WebhookID string
-	Live      bool
 }
 
 // Client represents paypal client.
 type Client struct {
-	pc *paypal.Client
+	pc *paypalClient
 
 	webhookID string
 }
 
-func New(clientID, secret, webhookID string, live bool) (*Client, error) {
-	base := paypal.APIBaseSandBox
-	if live {
-		base = paypal.APIBaseLive
+func New(conf Config) (*Client, error) {
+	base := apiBaseSandbox
+	if conf.Live {
+		base = apiBaseLive
 	}
-	c, err := paypal.NewClient(clientID, secret, base)
+	c, err := NewClient(conf.ClientID, conf.Secret, base)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{c, webhookID}, nil
+	return &Client{c, conf.WebhookID}, nil
 }
-
-const customIDPrefix = "STEAMID-"
 
 func (c *Client) Subscription(id string) (plan, steamID string, err error) {
 	if c.pc.Token == nil {
