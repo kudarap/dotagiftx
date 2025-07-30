@@ -190,11 +190,8 @@ export default function Header() {
                 </span>
               )}
             </Link>
-            <Link className={classes.nav} href="/hearoes" underline="none">
-              Heroes
-            </Link>
             <Link className={classes.nav} href="/bans" underline="none">
-              Overwatch
+              Bans
               <LatestBan />
             </Link>
             <Link className={classes.nav} href="/plus" underline="none">
