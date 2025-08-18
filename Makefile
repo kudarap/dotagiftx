@@ -33,13 +33,13 @@ generate:
 	go generate .
 
 build: test
-	go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
+	GOEXPERIMENT=greenteagc GOEXPERIMENT=jsonv2 go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
 build-worker: test
-	go build -v -ldflags=$(build_flags) -o $(worker_bin) ./cmd/$(worker_bin)
+	GOEXPERIMENT=greenteagc GOEXPERIMENT=jsonv2 go build -v -ldflags=$(build_flags) -o $(worker_bin) ./cmd/$(worker_bin)
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o ./$(server_bin)_amd64 ./cmd/$(server_bin)
+	GOEXPERIMENT=greenteagc GOEXPERIMENT=jsonv2 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o ./$(server_bin)_amd64 ./cmd/$(server_bin)
 build-worker-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
+	GOEXPERIMENT=greenteagc GOEXPERIMENT=jsonv2 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
 
 docker-build:
 	docker build -t $(server_bin) .
