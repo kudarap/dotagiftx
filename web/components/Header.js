@@ -193,11 +193,11 @@ export default function Header() {
             <Link className={classes.nav} href="/heroes" underline="none">
               Heroes
             </Link>
-            <Link className={classes.nav} href="/download" underline="none">
-              Mobile
-            </Link>
             <Link className={classes.nav} href="/plus" underline="none">
               Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>
+            </Link>
+            <Link className={classes.nav} href="/download" underline="none">
+              Mobile
             </Link>
             <Link className={classes.nav} href="/bans" underline="none">
               Bans
