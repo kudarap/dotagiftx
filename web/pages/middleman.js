@@ -40,12 +40,14 @@ function createRate(payment, serviceFee, minimumFee, pulloutFee, disputeFee) {
   return { payment, serviceFee, minimumFee, pulloutFee, disputeFee }
 }
 
-const middlemanUserIds = ['76561198287849998']
+const middlemanUserIds = [
+  // '76561198287849998',
+]
 
 // paypal fees 4.4% + 0.30
 const tableRates = [
   createRate('PayPal', '+10%', '$1.00', '10% + 4.4% + $0.30', '4.4% + $0.30'),
-  createRate('Mann Co. Supply Crate Key (TF key)', '+25%', '1 Key', '25%', 'None'),
+  createRate('Mann Co. Supply Crate Key (TF key)', '+15%', '1 Key', '15%', 'None'),
   createRate('Crypto', 'TBD', 'TBD', 'TBD', 'TBD'),
 ]
 
@@ -74,7 +76,7 @@ export default function Middleman({ users }) {
           <Typography variant="h5" component="h1" gutterBottom>
             Middleman
             <Typography variant="body2" color="textSecondary">
-              June 25, 2025
+              Updated June 25, 2025
             </Typography>
           </Typography>
           <Typography color="textSecondary">
@@ -86,6 +88,13 @@ export default function Middleman({ users }) {
           {middleman.map(row => (
             <InternalUserCard key={row.id} {...row} />
           ))}
+          <InternalUserCard
+            id="76561198088587178"
+            name="kudarap"
+            img="7055bd1d085fdf1ff9e9928df06ec64c1d04c124.jpg"
+            boons={['MIDDLEMAN_TAG']}
+            discordURL="https://discord.gg/b79zMpjjc5"
+          />
           <br />
 
           {/* <Typography component="h2" variant="h6">
@@ -117,7 +126,7 @@ export default function Middleman({ users }) {
             Service rates
           </Typography>
           <Typography color="textSecondary">
-            Rates updated at June 25, 2025 and subject to change without prior notice, outstanding
+            Rates updated at Sep 17, 2025 and subject to change without prior notice, outstanding
             transaction fees will remain as it is.
           </Typography>
           <TableContainer component={Paper}>

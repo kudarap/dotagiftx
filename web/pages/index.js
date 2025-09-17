@@ -156,7 +156,7 @@ export default function Index({ marketSummary, trendingItems }) {
                 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1758089866935) no-repeat center center',
               backgroundColor: '#292638ff',
               backgroundSize: 'cover',
-              backgroundPositionY: -60,
+              backgroundPositionY: -150,
               width: '100%',
               height: '100%',
             }}></div>
