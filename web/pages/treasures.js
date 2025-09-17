@@ -15,6 +15,13 @@ const stillNewDays = 30
 
 const treasures = [
   {
+    name: "Cosmic 2025 Heroes' Hoard",
+    image: 'cosmic_2025_heroes_hoard.png',
+    rarity: 'mythical',
+    items: 17,
+    release_date: new Date(2025, 9, 17),
+  },
+  {
     name: "Spring 2025 Heroes' Hoard",
     image: 'spring_2024_heroes_hoard.png',
     rarity: 'mythical',
@@ -288,8 +295,8 @@ export default function Treasures() {
               // background:
               // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
-                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/springcleaning2025/treasure/heroes_hoard_spring_2025_backgound.png) repeat-x center top',
-              backgroundColor: '#263238',
+                'url(https://clan.fastly.steamstatic.com/images//3703047/2b1c4ca00864f50bcfab09a102a256edf4f1ddff.png) no-repeat center 0',
+              backgroundColor: '#2a2638ff',
               backgroundSize: 'cover',
               width: '100%',
               height: '100%',

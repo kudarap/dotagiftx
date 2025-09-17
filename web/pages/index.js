@@ -145,32 +145,21 @@ export default function Index({ marketSummary, trendingItems }) {
             width: '100%',
             height: 640,
             marginBottom: 500 - 640,
-            maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
-            WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
+            maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
+            WebkitMaskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
             position: 'relative',
             zIndex: 0,
           }}>
           <div
             style={{
-              // background:
-              // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
-                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/springcleaning2025/header/header_background.jpg) repeat-x center 0',
-              backgroundColor: '#263238',
+                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1758089866935) no-repeat center center',
+              backgroundColor: '#292638ff',
               backgroundSize: 'cover',
-              // backgroundPositionY: -60,
+              backgroundPositionY: -60,
               width: '100%',
               height: '100%',
-            }}>
-            <img
-              src="https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react//springcleaning2025/header/header_hero.png"
-              style={{
-                width: '40%',
-                margin: '-10% 30%',
-                position: 'absolute',
-              }}
-            />
-          </div>
+            }}></div>
         </div>
 
         <Container

@@ -8,8 +8,7 @@ import { APP_NAME } from '@/constants/strings'
 import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
-// const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${1747993535497}`
-const dotaHeroImage = `https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/springcleaning2025/header/header_background.jpg`
+const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${1758089866935}`
 // const heroImage = '/assets/bg_hero.png'
 
 // const mobileHeightCompensator = 31

@@ -184,9 +184,9 @@ export default function Header() {
                     fontSize: '0.6rem',
                     display: 'block',
                     marginTop: '-0.24rem',
-                    marginLeft: 1,
+                    marginLeft: -14,
                   }}>
-                  new release
+                  New cosmic release
                 </span>
               )}
             </Link>
