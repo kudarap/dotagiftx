@@ -190,6 +190,9 @@ export default function Header() {
                 </span>
               )}
             </Link>
+            <Link className={classes.nav} href="/heroes" underline="none">
+              Heroes
+            </Link>
             <Link className={classes.nav} href="/plus" underline="none">
               Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>
             </Link>
@@ -199,14 +202,6 @@ export default function Header() {
             </Link>
             <Link className={classes.nav} href="/rules" underline="none">
               Rules
-            </Link>
-            <Link
-              className={classes.nav}
-              href="https://discord.gg/UFt9Ny42kM"
-              target="_blank"
-              rel="noreferrer noopener"
-              underline="none">
-              Discord
             </Link>
             <MoreMenu />
 
@@ -348,6 +343,16 @@ function MoreMenu() {
         {...bindMenu(popupState)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        <MenuItem
+          onClick={popupState.close}
+          component={Link}
+          href="https://discord.gg/UFt9Ny42kM"
+          target="_blank"
+          rel="noreferrer noopener"
+          disableUnderline>
+          Discord
+        </MenuItem>
+
         {moreMenuLinks.map(menu => (
           <MenuItem
             key={menu.path}
@@ -359,15 +364,6 @@ function MoreMenu() {
           </MenuItem>
         ))}
 
-        {/* <MenuItem
-          onClick={popupState.close}
-          component={Link}
-          href="https://discord.gg/UFt9Ny42kM"
-          target="_blank"
-          rel="noreferrer noopener"
-          disableUnderline>
-          Discord
-        </MenuItem> */}
         {/* <MenuItem onClick={popupState.close} component={Link} href="/plus" disableUnderline>
           Dotagift<span style={{ fontSize: 20 }}>+</span>
         </MenuItem> */}

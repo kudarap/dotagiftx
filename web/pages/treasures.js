@@ -266,7 +266,7 @@ const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
   paddingTop: theme.spacing(2),
   textAlign: 'center',
-  color: theme.palette.text.secondary,
+  color: theme.palette.text.primary,
 }))
 
 export default function Treasures() {
@@ -304,8 +304,13 @@ export default function Treasures() {
         </div>
 
         <Container style={{ position: 'relative' }}>
-          <Typography variant="h4" component="h1" sx={{ mt: -59, mb: 4 }}>
-            All Giftable Treasures
+          <Typography
+            sx={{ mt: -55, mb: 4 }}
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            color="pimary">
+            All Treasures
           </Typography>
 
           <Grid container spacing={1}>
