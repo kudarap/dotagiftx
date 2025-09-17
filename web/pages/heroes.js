@@ -654,7 +654,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.primary,
 }))
 
-export default function Treasures() {
+export default function Heroes() {
   const [heroes, setHeroes] = useState(allHeroes)
   const [searchTerm, setSearchTerm] = useState()
   const handleChange = term => {
@@ -695,12 +695,12 @@ export default function Treasures() {
 
         <Container style={{ position: 'relative' }}>
           <Typography
-            sx={{ mt: -55, mb: 4 }}
+            sx={{ mt: -55, mb: 2 }}
             variant="h3"
             component="h1"
             fontWeight="bold"
             color="pimary">
-            All Heroes
+            {`All Heroes (${allHeroes.length})`}
           </Typography>
 
           <SearchInput
