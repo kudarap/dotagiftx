@@ -114,8 +114,15 @@ export default function Faqs() {
           </Link>
 
           <Typography color="textSecondary" sx={{ mt: 6, mb: 12 }}>
-            DotagiftX mobile is doesn't cover all the websites functionality and it's in active
-            development.
+            DotagiftX mobile has limited functionality compared to website and currently in active
+            development. You can send feedback to{' '}
+            <Link
+              href="https://github.com/tentenponce/dotagiftx-mobile/issues"
+              target="_blank"
+              rel="noreferrer noopener">
+              https://github.com/tentenponce/dotagiftx-mobile/issues
+            </Link>
+            .
           </Typography>
         </Container>
       </main>
