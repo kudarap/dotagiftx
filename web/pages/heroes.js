@@ -6,7 +6,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import { Grid } from '@mui/material'
-import { styled } from '@mui/system'
+import { minHeight, styled } from '@mui/system'
 import Image from 'next/image'
 import Link from '@/components/Link'
 import SearchInput from '@/components/SearchInput'
@@ -654,7 +654,14 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.primary,
 }))
 
+const shuffleList = arr => {
+  arr.sort(function (a, b) {
+    return Math.random() - 0.5
+  })
+}
+
 export default function Heroes() {
+  shuffleList(allHeroes)
   const [heroes, setHeroes] = useState(allHeroes)
   const [searchTerm, setSearchTerm] = useState()
   const handleChange = term => {
@@ -695,7 +702,7 @@ export default function Heroes() {
 
         <Container style={{ position: 'relative' }}>
           <Typography
-            sx={{ mt: -55, mb: 2 }}
+            sx={{ mt: -54.5, mb: 2, letterSpacing: 3, textShadow: '0 0 8px #000000b0' }}
             variant="h3"
             component="h1"
             fontWeight="bold"
@@ -706,7 +713,7 @@ export default function Heroes() {
           <SearchInput
             value={searchTerm}
             onChange={handleChange}
-            placeholder="Search heroes names..."
+            placeholder="Search..."
             label=""
           />
 

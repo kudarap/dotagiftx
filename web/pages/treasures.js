@@ -305,7 +305,7 @@ export default function Treasures() {
 
         <Container style={{ position: 'relative' }}>
           <Typography
-            sx={{ mt: -55, mb: 2 }}
+            sx={{ mt: -54.5, mb: 2, letterSpacing: 3, textShadow: '0 0 8px #000000b0' }}
             variant="h3"
             component="h1"
             fontWeight="bold"

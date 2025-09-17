@@ -68,7 +68,7 @@ export default function Faqs() {
       <main className={classes.main}>
         <Container>
           <Typography
-            sx={{ mt: 8, mb: 1 }}
+            sx={{ mt: 8, mb: 1, letterSpacing: 3 }}
             variant="h3"
             component="h1"
             fontWeight="bold"

@@ -75,12 +75,11 @@ export default function Plus() {
         <Container>
           <Box>
             <Typography
-              sx={{ mt: 8, mb: 1 }}
+              sx={{ mt: 8, mb: 1, letterSpacing: 3 }}
               style={{
                 background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                letterSpacing: 3,
                 // textTransform: 'uppercase',
               }}
               variant="h3"
