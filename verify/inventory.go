@@ -50,6 +50,7 @@ func filterByName(a []steam.Asset, itemName string) []steam.Asset {
 		// Strip "bundle" string to cover items that unbundled:
 		// - Dipper the Destroyer Bundle
 		// - The Abscesserator Bundle
+		asset.Name = fixMisspelledName(asset.Name)
 		itemName = strings.TrimSpace(strings.TrimSuffix(itemName, "Bundle"))
 		if !strings.Contains(strings.Join(asset.Descriptions, "|"), itemName) &&
 			!strings.Contains(asset.Name, itemName) {
@@ -82,4 +83,13 @@ func filterByGiftable(a []steam.Asset) []steam.Asset {
 		matches = append(matches, aa)
 	}
 	return matches
+}
+
+func fixMisspelledName(name string) string {
+	switch name {
+	case "Intergalactic Orbliterator":
+		return "Intergalactic Obliterator"
+	default:
+		return name
+	}
 }
