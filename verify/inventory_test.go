@@ -59,3 +59,37 @@ func TestVerifyInventory(t *testing.T) {
 		})
 	}
 }
+
+func Test_fixMisspelledName(t *testing.T) {
+	tests := []struct {
+		name string
+		a, b string
+		want string
+	}{
+		{
+			"backward compatible",
+			"Intergalactic Orbliterator",
+			"Intergalactic Orbliterator",
+			"Intergalactic Orbliterator",
+		},
+		{
+			"fix",
+			"Intergalactic Orbliterator",
+			"Intergalactic Obliterator",
+			"Intergalactic Obliterator",
+		},
+		{
+			"skip fix",
+			"Chrononaut Continuum",
+			"Intergalactic Obliterator",
+			"Chrononaut Continuum",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := fixMisspelledName(tt.a, tt.b); got != tt.want {
+				t.Errorf("fixMisspelledName() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
