@@ -13,18 +13,6 @@ type Treasure struct {
 	ReleaseDate *time.Time `json:"release_date"`
 }
 
-func releaseDate(v string) *time.Time {
-	if v == "" {
-		return nil
-	}
-
-	t, err := time.Parse("2006-01-02", v)
-	if err != nil {
-		return nil
-	}
-	return &t
-}
-
 var AllTreasures = []Treasure{
 	{
 		"cosmic-2025-heroes-hoard",

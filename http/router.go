@@ -1,6 +1,8 @@
 package http
 
-import "github.com/go-chi/chi/v5"
+import (
+	"github.com/go-chi/chi/v5"
+)
 
 func (s *Server) publicRouter(r chi.Router) {
 	r.Group(func(r chi.Router) {
@@ -42,8 +44,14 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Post("/webhook/paypal", handleUserSubscriptionWebhook(s.userSvc))
 		r.Post("/webhook/phantasm/{steam_id}", handlePhantasmWebhook(s.phantasmSvc))
 		r.Post("/crawler/phantasm", handlePhantasmCrawl())
-		r.Get("/treasures", handleTreasureList())
-		r.Get("/heroes", handleHeroList())
+		r.Route("/treasures", func(r chi.Router) {
+			r.Get("/", handleTreasureList())
+			r.Get("/{slug}", handleTreasureDetail())
+		})
+		r.Route("/heroes", func(r chi.Router) {
+			r.Get("/", handleHeroList())
+			r.Get("/{id}", handleHeroDetail())
+		})
 	})
 }
 
