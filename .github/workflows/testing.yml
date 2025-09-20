@@ -3,11 +3,7 @@ name: Testing
 permissions:
   contents: read
 
-on:
-  push:
-    branches-ignore: [master, dev]
-  pull_request:
-    branches-ignore: [master, dev]
+on: [push, pull_request]
 
 jobs:
   test:
