@@ -1,251 +1,27 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Head from 'next/head'
+import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
+import { Grid } from '@mui/material'
+import { styled } from '@mui/system'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
-import { Grid } from '@mui/material'
-import { styled } from '@mui/system'
-import Image from 'next/image'
 import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
+import { treasureList } from '@/service/api'
 
 const stillNewDays = 30
-
-const treasures = [
-  {
-    name: "Cosmic 2025 Heroes' Hoard",
-    image: 'cosmic_2025_heroes_hoard.png',
-    rarity: 'mythical',
-    items: 17,
-    release_date: new Date(2025, 9, 17),
-  },
-  {
-    name: "Spring 2025 Heroes' Hoard",
-    image: 'spring_2024_heroes_hoard.png',
-    rarity: 'mythical',
-    items: 16,
-    release_date: new Date(2025, 4, 23),
-  },
-  {
-    name: 'The Charms of the Snake',
-    image: 'the_charms_of_the_snake.png',
-    rarity: 'mythical',
-    items: 9,
-  },
-  {
-    name: "Winter 2024 Heroes' Hoard",
-    image: 'winter_2024_heroes_hoard.png',
-    rarity: 'mythical',
-    items: 17,
-  },
-  {
-    name: "Crownfall 2024 Collector's Cache II",
-    image: 'crownfall_2024_collect_s_cache_ii.png',
-    rarity: 'mythical',
-    items: 16,
-  },
-  {
-    name: "Crownfall 2024 Collector's Cache",
-    image: 'crownfall_2024_collect_s_cache.png',
-    rarity: 'mythical',
-    items: 16,
-  },
-  {
-    name: 'Crownfall Treasure I',
-    image: 'crownfall_treasure_i.png',
-    rarity: 'mythical',
-    items: 12,
-  },
-  {
-    name: 'Crownfall Treasure II',
-    image: 'crownfall_treasure_ii.png',
-    rarity: 'mythical',
-    items: 12,
-  },
-  {
-    name: 'Crownfall Treasure III',
-    image: 'crownfall_treasure_iii.png',
-    rarity: 'mythical',
-    items: 11,
-  },
-  {
-    name: 'Dead Reckoning Chest',
-    image: 'dead_reckoning_chest.png',
-    rarity: 'mythical',
-    items: 14,
-  },
-  {
-    name: "August 2023 Collector's Cache",
-    image: 'august_2023_collector_s_cache.png',
-    rarity: 'mythical',
-    items: 16,
-  },
-  {
-    name: "Diretide 2022 Collector's Cache II",
-    image: 'diretide_2022_collector_s_cache_ii.png',
-    rarity: 'immortal',
-    items: 17,
-  },
-  {
-    name: "Diretide 2022 Collector's Cache",
-    image: 'diretide_2022_collector_s_cache.png',
-    rarity: 'immortal',
-    items: 18,
-  },
-  {
-    name: 'Immortal Treasure I 2022',
-    image: 'immortal_treasure_i_2022.png',
-    rarity: 'immortal',
-    items: 9,
-  },
-  {
-    name: 'Immortal Treasure II 2022',
-    image: 'immortal_treasure_ii_2022.png',
-    rarity: 'immortal',
-    items: 9,
-  },
-  {
-    name: 'The Battle Pass Collection 2022',
-    image: 'the_battle_pass_collection_2022.png',
-    rarity: 'immortal',
-    items: 8,
-  },
-  {
-    name: 'Ageless Heirlooms 2022',
-    image: 'ageless_heirlooms_2022.png',
-    rarity: 'immortal',
-    items: 10,
-  },
-  {
-    name: "Aghanim's 2021 Collector's Cache",
-    image: 'aghanim_s_2021_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 17,
-  },
-  {
-    name: "Aghanim's 2021 Ageless Heirlooms",
-    image: 'aghanim_s_2021_ageless_heirlooms.webp',
-    rarity: 'mythical',
-    items: 10,
-  },
-  {
-    name: "Aghanim's 2021 Continuum Collection",
-    image: 'aghanim_s_2021_continuum_collection.webp',
-    rarity: 'mythical',
-    items: 7,
-  },
-  {
-    name: "Aghanim's 2021 Immortal Treasure",
-    image: 'aghanim_s_2021_immortal_treasure.webp',
-    rarity: 'immortal',
-    items: 9,
-  },
-  {
-    name: "Nemestice 2021 Collector's Cache",
-    image: 'nemestice_2021_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 15,
-  },
-  {
-    name: 'Nemestice 2021 Immortal Treasure',
-    image: 'nemestice_2021_immortal_treasure.webp',
-    rarity: 'mythical',
-    items: 9,
-  },
-  {
-    name: 'Nemestice 2021 Themed Treasure',
-    image: 'nemestice_2021_themed_treasure.webp',
-    rarity: 'mythical',
-    items: 11,
-  },
-  {
-    name: 'Immortal Treasure I 2020',
-    image: 'immortal_treasure_i_2020.webp',
-    rarity: 'immortal',
-    items: 10,
-  },
-  {
-    name: 'Immortal Treasure II 2020',
-    image: 'immortal_treasure_ii_2020.webp',
-    rarity: 'immortal',
-    items: 10,
-  },
-  {
-    name: 'Immortal Treasure III 2020',
-    image: 'immortal_treasure_iii_2020.webp',
-    rarity: 'immortal',
-    items: 8,
-  },
-  {
-    name: "The International 2020 Collector's Cache",
-    image: 'the_international_2020_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 18,
-  },
-  {
-    name: "The International 2020 Collector's Cache II",
-    image: 'the_international_2020_collector_s_cache_ii.webp',
-    rarity: 'mythical',
-    items: 17,
-  },
-  {
-    name: "The International 2019 Collector's Cache",
-    image: 'the_international_2019_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 18,
-  },
-  {
-    name: "The International 2019 Collector's Cache II",
-    image: 'the_international_2019_collector_s_cache_ii.webp',
-    rarity: 'mythical',
-    items: 16,
-  },
-  {
-    name: "The International 2018 Collector's Cache",
-    image: 'the_international_2018_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 17,
-  },
-  {
-    name: "The International 2018 Collector's Cache II",
-    image: 'the_international_2018_collector_s_cache_ii.webp',
-    rarity: 'mythical',
-    items: 14,
-  },
-  {
-    name: "The International 2017 Collector's Cache",
-    image: 'the_international_2017_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 22,
-  },
-  {
-    name: "The International 2016 Collector's Cache",
-    image: 'the_international_2016_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 15,
-  },
-  {
-    name: "The International 2015 Collector's Cache",
-    image: 'the_international_2015_collector_s_cache.webp',
-    rarity: 'mythical',
-    items: 11,
-  },
-  {
-    name: 'Treasure of the Cryptic Beacon',
-    image: 'treasure_of_the_cryptic_beacon.webp',
-    rarity: 'mythical',
-    items: 6,
-  },
-]
 
 const rarityColorMap = {
   mythical: '#8847ff',
   immortal: '#b28a33',
 }
 
-const isTreasureNew = releaseDate => {
+const isTreasureNew = v => {
+  let releaseDate = new Date(v)
   if (!releaseDate) {
     return false
   }
@@ -255,10 +31,9 @@ const isTreasureNew = releaseDate => {
   return diff < stillNewDays
 }
 
-export const isRecentTreasureNew = () => {
-  const releaseDate = treasures[0]?.release_date
-  return isTreasureNew(releaseDate)
-}
+const latestTreasureDrop = new Date(2025, 9, 17)
+
+export const isRecentTreasureNew = () => isTreasureNew(latestTreasureDrop)
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#1A20278C',
@@ -269,12 +44,12 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.primary,
 }))
 
-export default function Treasures() {
+export default function Treasures({ treasures }) {
   return (
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: All Giftable Treasures</title>
+        <title>{APP_NAME} :: All Treasures</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -362,4 +137,22 @@ export default function Treasures() {
       <Footer />
     </div>
   )
+}
+Treasures.propTypes = {
+  treasures: PropTypes.arrayOf(PropTypes.object).isRequired,
+  error: PropTypes.string,
+}
+Treasures.defaultProps = {
+  treasures: [],
+  error: null,
+}
+
+export const getStaticProps = async () => {
+  const res = await treasureList()
+  return {
+    props: {
+      treasures: res,
+    },
+    revalidate: 86400, // 1day
+  }
 }
