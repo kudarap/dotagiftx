@@ -42,6 +42,8 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Post("/webhook/paypal", handleUserSubscriptionWebhook(s.userSvc))
 		r.Post("/webhook/phantasm/{steam_id}", handlePhantasmWebhook(s.phantasmSvc))
 		r.Post("/crawler/phantasm", handlePhantasmCrawl())
+		r.Get("/treasures", handleTreasureList())
+		r.Get("/heroes", handleHeroList())
 	})
 }
 
