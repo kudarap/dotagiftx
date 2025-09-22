@@ -37,6 +37,18 @@ r.db('dotagiftx_production')
   .count()
   //.update({ delivery: r.literal(), delivery_status: r.literal() })
 
+
+# request verify delivery
+var db = r.db('dotagiftx_production');
+db.table('task').insert({
+  type: 1,
+  priority: 1,
+  status: 0,
+  payload: db.table('market').get('160447c9-50f8-4bbe-92e7-7bf62844c438').merge(row => {
+    return { user: db.table('user').get(row('user_id')) }
+  })
+})
+
 # top search
 r.db('dotagiftx_production')
   .table('track')
