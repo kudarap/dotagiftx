@@ -210,6 +210,8 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
               color="textSecondary"
               variant="caption"
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
+              ref id: <em>{market.id}</em>
+              <br />
               {market.partner_steam_id && (
                 <Link
                   color="textSecondary"
