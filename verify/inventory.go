@@ -92,5 +92,8 @@ func fixMisspelledName(a, b string) string {
 	if strings.EqualFold(a, "Intergalactic Orbliterator") {
 		return "Intergalactic Obliterator"
 	}
+	if strings.Contains(a, "Orbliterator") && strings.Contains(b, "Obliterator") {
+		return strings.ReplaceAll(a, "Orbliterator", "Obliterator")
+	}
 	return a
 }
