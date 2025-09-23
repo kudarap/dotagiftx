@@ -365,7 +365,7 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 		return AuthErrNoAccess
 	}
 	market.UserID = au.UserID
-	// Prevents access to create new market when account is flagged.
+	// Prevents access to create a new market when an account is flagged.
 	if err := s.checkFlaggedUser(au.UserID); err != nil {
 		return err
 	}

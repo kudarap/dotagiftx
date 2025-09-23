@@ -182,18 +182,16 @@ func (s *marketStorage) Index(id string) (*dotagiftx.Market, error) {
 		mkt.Delivery = &dels[0]
 	}
 
-	mkt.SearchText = mkt.Notes
+	searchText := []string{mkt.ID, mkt.Notes, mkt.PartnerSteamID}
 	if mkt.Item != nil {
-		mkt.SearchText += strings.Join([]string{
-			"",
+		searchText = append(
+			searchText,
 			mkt.Item.Name,
 			mkt.Item.Hero,
 			mkt.Item.Origin,
-			mkt.Item.Rarity,
-			mkt.PartnerSteamID,
-		}, " ")
+			mkt.Item.Rarity)
 	}
-
+	mkt.SearchText = strings.Join(searchText, " ")
 	if err = s.BaseUpdate(mkt); err != nil {
 		return nil, err
 	}
