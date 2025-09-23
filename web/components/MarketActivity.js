@@ -117,7 +117,7 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
           loading={loading}
           onInput={onSearchInput}
           color="secondary"
-          placeholder="Filter heroes, items, notes, and steam ids"
+          placeholder="Filter heroes, items, notes, reference id, and steam id"
         />
       )}
 
