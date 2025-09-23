@@ -1,7 +1,8 @@
 package rethink
 
 import (
-	"fmt"
+	"errors"
+"fmt"
 	"log"
 
 	"dario.cat/mergo"
@@ -66,7 +67,7 @@ func (s *itemStorage) Get(id string) (*dotagiftx.Item, error) {
 
 	row = &dotagiftx.Item{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.ItemErrNotFound
 		}
 
@@ -80,7 +81,7 @@ func (s *itemStorage) GetBySlug(slug string) (*dotagiftx.Item, error) {
 	row := &dotagiftx.Item{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(q, row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.ItemErrNotFound
 		}
 

@@ -1,7 +1,8 @@
 package rethink
 
 import (
-	"log"
+	"errors"
+"log"
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
@@ -71,7 +72,7 @@ func (s *inventoryStorage) includeRelatedFields(q r.Term) r.Term {
 func (s *inventoryStorage) Get(id string) (*dotagiftx.Inventory, error) {
 	row := &dotagiftx.Inventory{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.InventoryErrNotFound
 		}
 

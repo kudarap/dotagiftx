@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"errors"
 	"log"
 
 	"dario.cat/mergo"
@@ -34,7 +35,7 @@ type authStorage struct {
 func (s *authStorage) Get(id string) (*dotagiftx.Auth, error) {
 	row := &dotagiftx.Auth{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.AuthErrNotFound
 		}
 
@@ -48,7 +49,7 @@ func (s *authStorage) GetByUsername(username string) (*dotagiftx.Auth, error) {
 	row := &dotagiftx.Auth{}
 	q := s.table().GetAllByIndex(authFieldUsername, username)
 	if err := s.db.one(q, row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.AuthErrNotFound
 		}
 

@@ -1,7 +1,8 @@
 package rethink
 
 import (
-	"log"
+	"errors"
+"log"
 
 	"github.com/kudarap/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
@@ -57,7 +58,7 @@ func (s *trackStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 func (s *trackStorage) Get(id string) (*dotagiftx.Track, error) {
 	row := &dotagiftx.Track{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.TrackErrNotFound
 		}
 

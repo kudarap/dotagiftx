@@ -1,7 +1,8 @@
 package rethink
 
 import (
-	"log"
+	"errors"
+"log"
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
@@ -86,7 +87,7 @@ func (s *deliveryStorage) includeRelatedFields(q r.Term) r.Term {
 func (s *deliveryStorage) Get(id string) (*dotagiftx.Delivery, error) {
 	row := &dotagiftx.Delivery{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.DeliveryErrNotFound
 		}
 

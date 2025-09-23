@@ -2,6 +2,7 @@ package rethink
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -77,10 +78,10 @@ func (s *userStorage) Get(id string) (*dotagiftx.User, error) {
 		return row, nil
 	}
 
-	// Try find it by user ID.
+	// Try to find it by user ID.
 	row = &dotagiftx.User{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.UserErrNotFound
 		}
 
@@ -94,7 +95,7 @@ func (s *userStorage) getBySteamID(steamID string) (*dotagiftx.User, error) {
 	row := &dotagiftx.User{}
 	q := s.table().GetAllByIndex(userFieldSteamID, steamID)
 	if err := s.db.one(q, row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.UserErrNotFound
 		}
 

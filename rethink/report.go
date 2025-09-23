@@ -1,7 +1,8 @@
 package rethink
 
 import (
-	"log"
+	"errors"
+"log"
 
 	"github.com/kudarap/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
@@ -69,7 +70,7 @@ func (s *reportStorage) includeRelatedFields(q r.Term) r.Term {
 func (s *reportStorage) Get(id string) (*dotagiftx.Report, error) {
 	row := &dotagiftx.Report{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.ReportErrNotFound
 		}
 

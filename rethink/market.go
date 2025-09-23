@@ -176,7 +176,7 @@ func (s *marketStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 func (s *marketStorage) Get(id string) (*dotagiftx.Market, error) {
 	row := &dotagiftx.Market{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.MarketErrNotFound
 		}
 
