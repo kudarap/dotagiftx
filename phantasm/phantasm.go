@@ -121,6 +121,13 @@ func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string
 	return s.id, res, err
 }
 
+func (s *Service) Invalidate(ctx context.Context, steamID string) error {
+	if err := s.cooldown.SetInventoryHash(ctx, steamID, "", s.inventoryHashTTL); err != nil {
+		return fmt.Errorf("invalidate inventory hash: %s", err)
+	}
+	return nil
+}
+
 // crawlWait retrieves the inventory local file when available and fetch it when missing.
 func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, error) {
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
@@ -183,7 +190,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	if err != nil && !errors.Is(err, errFileWaiting) {
 		return nil, err
 	}
-	// retry if its on waiting state.
+	// retry if it's on waiting state.
 	if errors.Is(err, errFileWaiting) {
 		for i := range maxWaitRetry {
 			wait := time.Duration(i*i) * time.Second
@@ -194,7 +201,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			}
 		}
 	}
-	// check raw inventory again but what error you have you need to go.
+	// check raw inventory again, but what error you have you need to go.
 	localFile, err = s.localInventoryFile(ctx, steamID)
 	if err != nil {
 		return nil, err
@@ -222,7 +229,7 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 		return fmt.Errorf("crawler %s is on cooldown", crawlerID)
 	}
 
-	// check if there's existing requests
+	// check if there are existing requests
 	cd, err = s.cooldown.RetryCooldown(ctx, crawlerID, steamID)
 	if err != nil {
 		return err
@@ -308,7 +315,13 @@ func (s *Service) electNewCrawler(ctx context.Context) string {
 	return extractCrawlerID(s.config.Addrs[s.electedCrawlerID])
 }
 
-func (s *Service) sendCrawlRequest(ctx context.Context, crawlerURL, steamID string, precheck bool) (*CrawlSummary, error) {
+func (s *Service) sendCrawlRequest(
+	ctx context.Context,
+	crawlerURL string,
+	steamID string,
+	precheck bool,
+) (*CrawlSummary, error,
+) {
 	url := fmt.Sprintf("%s?steam_id=%s", crawlerURL, steamID)
 	if precheck {
 		url = fmt.Sprintf("%s&precheck", url)

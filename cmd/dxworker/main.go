@@ -113,7 +113,7 @@ func (app *application) setup() error {
 	)
 
 	// Setup application worker
-	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource)
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource, phantasmSvc)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
@@ -158,9 +158,7 @@ func (app *application) setup() error {
 		redisClient,
 		logging.WithPrefix(logger, "job_expiring_market"),
 	))
-	app.worker.AddJob(jobs.NewSweepMarket(
-		marketStg, logging.WithPrefix(logger, "job_sweep_market"),
-	))
+	app.worker.AddJob(jobs.NewSweepMarket(marketStg, logging.WithPrefix(logger, "job_sweep_market")))
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
