@@ -192,8 +192,8 @@ func redactBuyers(list []dotagiftx.Market) []dotagiftx.Market {
 
 		r.User.ID = ""
 		r.User.Name = strings.Repeat(redactChar, len(r.User.Name))
-		r.User.SteamID = strings.Repeat(redactChar, len(r.User.SteamID))
-		r.User.URL = strings.Repeat(redactChar, len(r.User.URL))
+		r.User.SteamID = strings.Repeat(redactChar, 10)
+		r.User.URL = strings.Repeat(redactChar, 10)
 	}
 
 	return rl
