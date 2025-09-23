@@ -56,16 +56,7 @@ func (s *marketStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	userCache := make(map[string]*dotagiftx.User)
-	for i, m := range res {
-		user, hit := userCache[m.UserID]
-		if !hit {
-			user = s.includeUser(m.UserID)
-			userCache[m.UserID] = user
-		}
-		res[i].User = user
-	}
-
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -91,15 +82,7 @@ func (s *marketStorage) PendingInventoryStatus(o dotagiftx.FindOpts) ([]dotagift
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	userCache := make(map[string]*dotagiftx.User)
-	for i, m := range res {
-		user, hit := userCache[m.UserID]
-		if !hit {
-			user = s.includeUser(m.UserID)
-			userCache[m.UserID] = user
-		}
-		res[i].User = user
-	}
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -118,15 +101,7 @@ func (s *marketStorage) PendingDeliveryStatus(o dotagiftx.FindOpts) ([]dotagiftx
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	userCache := make(map[string]*dotagiftx.User)
-	for i, m := range res {
-		user, hit := userCache[m.UserID]
-		if !hit {
-			user = s.includeUser(m.UserID)
-			userCache[m.UserID] = user
-		}
-		res[i].User = user
-	}
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -147,15 +122,7 @@ func (s *marketStorage) RevalidateDeliveryStatus(o dotagiftx.FindOpts) ([]dotagi
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	userCache := make(map[string]*dotagiftx.User)
-	for i, m := range res {
-		user, hit := userCache[m.UserID]
-		if !hit {
-			user = s.includeUser(m.UserID)
-			userCache[m.UserID] = user
-		}
-		res[i].User = user
-	}
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -385,6 +352,18 @@ func (s *marketStorage) BulkDeleteByStatus(ms dotagiftx.MarketStatus, cutOff tim
 		return err
 	}
 	return nil
+}
+
+func (s *marketStorage) fillUsers(markets []dotagiftx.Market) {
+	userCache := make(map[string]*dotagiftx.User)
+	for i, mkt := range markets {
+		user, hit := userCache[mkt.UserID]
+		if !hit {
+			user = s.includeUser(mkt.UserID)
+			userCache[mkt.UserID] = user
+		}
+		markets[i].User = user
+	}
 }
 
 func (s *marketStorage) table() r.Term {
