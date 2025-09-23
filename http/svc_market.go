@@ -18,10 +18,20 @@ const (
 func handleMarketList(
 	svc dotagiftx.MarketService,
 	trackSvc dotagiftx.TrackService,
+	private bool,
 	cache cacheManager,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Modify query params to inject and override private params.
+		auth := dotagiftx.AuthFromContext(r.Context())
+		if private && auth != nil {
+			q := r.URL.Query()
+			q.Set("index", "user_id")
+			q.Set("user_id", auth.UserID)
+			r.URL.RawQuery = q.Encode()
+		}
+
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
 
@@ -172,12 +182,8 @@ func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.Ha
 }
 
 func isReqAuthorized(r *http.Request) bool {
-	c, _ := ParseFromHeader(r.Header)
-	if c == nil {
-		return false
-	}
-
-	return c.UserID != ""
+	v := dotagiftx.AuthFromContext(r.Context())
+	return v == nil
 }
 
 const redactChar = "█"
