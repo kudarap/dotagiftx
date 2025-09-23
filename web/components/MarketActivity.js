@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
-import { debounce, Tooltip } from '@mui/material'
+import { debounce, IconButton, Tooltip } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Label from '@mui/icons-material/Label'
-import { lightGreen } from '@mui/material/colors'
-import { teal } from '@mui/material/colors'
+import { teal, lightGreen } from '@mui/material/colors'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import CheckIcon from '@mui/icons-material/Done'
 import Avatar from '@/components/Avatar'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
@@ -65,6 +66,9 @@ const useStyles = makeStyles()(theme => ({
     borderBottom: `1px ${theme.palette.divider} solid`,
     marginBottom: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    '&:hover': {
+      background: theme.palette.background.paper,
+    },
   },
   list: {
     padding: theme.spacing(1, 0, 0, 0),
@@ -74,6 +78,9 @@ const useStyles = makeStyles()(theme => ({
   },
   text: {
     marginTop: theme.spacing(1),
+  },
+  copyButton: {
+    color: theme.palette.text.secondary,
   },
 }))
 
@@ -203,6 +210,20 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                 }>
                 {amount(market.price, market.currency)}
               </Typography>
+              &nbsp;
+              <Typography
+                sx={{ float: 'right' }}
+                variant="inherit"
+                color="textSecondary"
+                component="pre">
+                {market.id.split('-')[0]}
+                <CopyButton
+                  className={classes.copyButton}
+                  size="small"
+                  sx={{ mt: -0.5 }}
+                  value={market.id}
+                />
+              </Typography>
             </Typography>
 
             <Typography
@@ -210,8 +231,6 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
               color="textSecondary"
               variant="caption"
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
-              ref id: <em>{market.id}</em>
-              <br />
               {market.partner_steam_id && (
                 <Link
                   color="textSecondary"
@@ -265,4 +284,19 @@ MarketActivity.defaultProps = {
   error: null,
   disablePrice: false,
   onSearchInput: noop,
+}
+
+function CopyButton(props) {
+  const [copied, setCopied] = useState(false)
+  const handleClick = () => {
+    navigator.clipboard.writeText(props.value)
+    setCopied(true)
+  }
+  return (
+    <Tooltip title={copied ? 'Copied!' : 'Copy full reference id'}>
+      <IconButton {...props} onClick={handleClick}>
+        {copied ? <CheckIcon fontSize="inherit" /> : <ContentCopyIcon fontSize="inherit" />}
+      </IconButton>
+    </Tooltip>
+  )
 }
