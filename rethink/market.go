@@ -56,8 +56,14 @@ func (s *marketStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
+	userCache := make(map[string]*dotagiftx.User)
+	for i, m := range res {
+		user, hit := userCache[m.UserID]
+		if !hit {
+			user = s.includeUser(m.UserID)
+			userCache[m.UserID] = user
+		}
+		res[i].User = user
 	}
 
 	return res, nil
@@ -85,8 +91,14 @@ func (s *marketStorage) PendingInventoryStatus(o dotagiftx.FindOpts) ([]dotagift
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
+	userCache := make(map[string]*dotagiftx.User)
+	for i, m := range res {
+		user, hit := userCache[m.UserID]
+		if !hit {
+			user = s.includeUser(m.UserID)
+			userCache[m.UserID] = user
+		}
+		res[i].User = user
 	}
 	return res, nil
 }
@@ -106,8 +118,14 @@ func (s *marketStorage) PendingDeliveryStatus(o dotagiftx.FindOpts) ([]dotagiftx
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
+	userCache := make(map[string]*dotagiftx.User)
+	for i, m := range res {
+		user, hit := userCache[m.UserID]
+		if !hit {
+			user = s.includeUser(m.UserID)
+			userCache[m.UserID] = user
+		}
+		res[i].User = user
 	}
 	return res, nil
 }
@@ -129,8 +147,14 @@ func (s *marketStorage) RevalidateDeliveryStatus(o dotagiftx.FindOpts) ([]dotagi
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
+	userCache := make(map[string]*dotagiftx.User)
+	for i, m := range res {
+		user, hit := userCache[m.UserID]
+		if !hit {
+			user = s.includeUser(m.UserID)
+			userCache[m.UserID] = user
+		}
+		res[i].User = user
 	}
 	return res, nil
 }
