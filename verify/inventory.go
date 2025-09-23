@@ -44,21 +44,22 @@ func Inventory(ctx context.Context, source AssetSource, steamID, itemName string
 }
 
 // filterByName filters item that matches the name or in the description that supports unbundled items.
-func filterByName(a []steam.Asset, itemName string) []steam.Asset {
+func filterByName(a []steam.Asset, name string) []steam.Asset {
 	var matches []steam.Asset
 	for _, asset := range a {
-		// Strip "bundle" string to cover items that unbundled:
+		// Strip "bundle" suffix to cover unbundled items:
 		// - Dipper the Destroyer Bundle
 		// - The Abscesserator Bundle
-		asset.Name = fixMisspelledName(asset.Name, itemName)
-		itemName = strings.TrimSpace(strings.TrimSuffix(itemName, "Bundle"))
-		if !strings.Contains(strings.Join(asset.Descriptions, "|"), itemName) &&
-			!strings.Contains(asset.Name, itemName) {
+		name = strings.TrimSpace(strings.TrimSuffix(name, "Bundle"))
+		// Fix misspelled names like earth shakers arcana.
+		asset.Name = fixMisspelledName(asset.Name, name)
+		desc := fixMisspelledName(strings.Join(asset.Descriptions, "|"), name)
+		if !strings.Contains(desc, name) && !strings.Contains(asset.Name, name) {
 			continue
 		}
 
 		// Excluded golden variant of the item.
-		if asset.IsGoldenVariant(itemName) {
+		if asset.IsGoldenVariant(name) {
 			continue
 		}
 

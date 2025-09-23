@@ -91,9 +91,9 @@ func main() {
 
 func getDelivered(limit int) ([]dotagiftx.Market, error) {
 	resp, err := http.Get(fmt.Sprintf(
-		"https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400&user_id=%s",
+		"https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400&id=%s",
 		limit,
-		"4a513712-e93e-48fe-bff0-8c653ba50beb",
+		"53bbe421-a9f3-48ad-8cbd-c16ee1c97ec3",
 	))
 	if err != nil {
 		return nil, err
