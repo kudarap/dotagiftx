@@ -1,12 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
-import { debounce, IconButton, Tooltip } from '@mui/material'
+import { debounce } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import Label from '@mui/icons-material/Label'
 import { teal, lightGreen } from '@mui/material/colors'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import CheckIcon from '@mui/icons-material/Done'
 import Avatar from '@/components/Avatar'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
@@ -26,9 +23,7 @@ import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import ActivitySearchInput from '@/components/ActivitySearchInput'
-import Button from '@/components/Button'
-
-const displayPostId = false
+import CopyButton from '@/components/CopyButton'
 
 const priceTagStyle = {
   padding: '2px 4px',
@@ -189,16 +184,6 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                 {`${market.item.name}`}
               </Link>
               &nbsp;
-              {displayPostId && (
-                <>
-                  <Tooltip placement="top" title="Copy id to clipboard" arrow>
-                    <Button size="small" startIcon={<Label />} sx={{ mt: -0.4 }}>
-                      {market.id.split('-')[0]}
-                    </Button>
-                  </Tooltip>
-                  &nbsp;
-                </>
-              )}
               {daysFromNow(market.updated_at)}
               &nbsp;
               <Typography
@@ -284,19 +269,4 @@ MarketActivity.defaultProps = {
   error: null,
   disablePrice: false,
   onSearchInput: noop,
-}
-
-function CopyButton(props) {
-  const [copied, setCopied] = useState(false)
-  const handleClick = () => {
-    navigator.clipboard.writeText(props.value)
-    setCopied(true)
-  }
-  return (
-    <Tooltip title={copied ? 'Copied!' : 'Copy full reference id'}>
-      <IconButton {...props} onClick={handleClick}>
-        {copied ? <CheckIcon fontSize="inherit" /> : <ContentCopyIcon fontSize="inherit" />}
-      </IconButton>
-    </Tooltip>
-  )
 }

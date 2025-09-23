@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import { debounce } from '@mui/material'
 import Typography from '@mui/material/Typography'
+import CopyButton from '@/components/CopyButton'
 import { lightGreen } from '@mui/material/colors'
 import { teal } from '@mui/material/colors'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
@@ -58,6 +59,9 @@ const useStyles = makeStyles()(theme => ({
   },
   text: {
     marginTop: theme.spacing(1),
+  },
+  copyButton: {
+    color: theme.palette.text.secondary,
   },
 }))
 
@@ -152,6 +156,20 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
                 }>
                 {amount(market.price, market.currency)}
+              </Typography>
+              &nbsp;
+              <Typography
+                sx={{ float: 'right' }}
+                variant="inherit"
+                color="textSecondary"
+                component="pre">
+                {market.id.split('-')[0]}
+                <CopyButton
+                  className={classes.copyButton}
+                  size="small"
+                  sx={{ mt: -0.5 }}
+                  value={market.id}
+                />
               </Typography>
             </Typography>
 
