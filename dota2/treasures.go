@@ -209,7 +209,7 @@ var AllTreasures = []Treasure{
 	{
 		"immortal-treasure-i-2020",
 		"Immortal Treasure I 2020",
-		"immortal_treasure_i_2020.webp",
+		"immortal_treasure_i_2020.png",
 		"immortal",
 		10,
 		nil,
@@ -217,7 +217,7 @@ var AllTreasures = []Treasure{
 	{
 		"immortal-treasure-ii-2020",
 		"Immortal Treasure II 2020",
-		"immortal_treasure_ii_2020.webp",
+		"immortal_treasure_ii_2020.png",
 		"immortal",
 		10,
 		nil,
@@ -225,7 +225,7 @@ var AllTreasures = []Treasure{
 	{
 		"immortal-treasure-iii-2020",
 		"Immortal Treasure III 2020",
-		"immortal_treasure_iii_2020.webp",
+		"immortal_treasure_iii_2020.png",
 		"immortal",
 		8,
 		nil,
