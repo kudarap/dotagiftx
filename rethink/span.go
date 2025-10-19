@@ -35,7 +35,7 @@ func NewSpan(c *Client) *SpanStorage {
 
 func (s *SpanStorage) Add(name string, elapsedMs int64, t time.Time) {
 	name = spanCleanUUIDs(name)
-	name = spanCleanUUIDs(name)
+	name = spanCleanSteamIDs(name)
 	i := span{name, elapsedMs, t}
 	_, err := s.db.insert(r.Table("span").Insert(i))
 	if err != nil {
