@@ -23,6 +23,7 @@ const (
 	marketFieldNotes           = "notes"
 	marketFieldPrice           = "price"
 	marketFieldResell          = "resell"
+	marketFieldRankScore       = "user_rank_score"
 	marketFieldCreatedAt       = "created_at"
 	marketFieldUpdatedAt       = "updated_at"
 	// Hidden field for searching item details.
@@ -225,19 +226,15 @@ func (s *marketStorage) UpdateUserScore(userID string, rankScore int) error {
 		return fmt.Errorf("user id is required to update user score")
 	}
 
-	// get all user live market
-	var markets []dotagiftx.Market
-	q := s.table().GetAllByIndex(marketFieldUserID, userID).Filter(dotagiftx.Market{Status: dotagiftx.MarketStatusLive})
-	if err := s.db.list(q, &markets); err != nil {
-		return err
-	}
-
-	// set new user rank score
-	for _, mm := range markets {
-		mm.UserRankScore = rankScore
-		if err := s.BaseUpdate(&mm); err != nil {
-			return fmt.Errorf("could not update market user rank: %s", err)
-		}
+	// Update user rank score on user's live market listing.
+	qry := s.table().
+		GetAllByIndex(marketFieldUserID, userID).
+		Filter(dotagiftx.Market{Status: dotagiftx.MarketStatusLive}).
+		Update(map[string]any{
+			marketFieldRankScore: rankScore,
+		})
+	if err := s.db.update(qry); err != nil {
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return nil
