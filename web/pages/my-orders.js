@@ -90,7 +90,12 @@ export default function MyOrders() {
             <BuyOrdersTable onReload={handleTableChange} />
           </TabPanel>
           <TabPanel value={tabValue} index="#toreceive">
-            <ToReceiveTable filter={{ partner_steam_id: currentAuth.steam_id }} />
+            <ToReceiveTable
+              filter={{
+                index: 'partner_steam_id',
+                partner_steam_id: currentAuth.steam_id,
+              }}
+            />
           </TabPanel>
           <TabPanel value={tabValue} index="#completed">
             <CompletedTable />
