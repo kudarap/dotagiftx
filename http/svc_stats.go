@@ -57,13 +57,13 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 			}
 		}
 
-		f := &dotagiftx.Market{}
-		if err := findOptsFilter(r.URL, f); err != nil {
+		filter := &dotagiftx.Market{}
+		if err := findOptsFilter(r.URL, filter); err != nil {
 			respondError(w, err)
 			return
 		}
 		// Use hydration when getting all market status
-		if reflect.DeepEqual(f, &dotagiftx.Market{}) {
+		if reflect.DeepEqual(filter, &dotagiftx.Market{}) {
 			hit, _ := cache.Get(cacheKeyX)
 			if hit == "" {
 				respondOK(w, struct {
@@ -81,8 +81,9 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 		var bids *dotagiftx.MarketStatusCount
 
 		// check for user mode
-		if f.UserID != "" {
-			stats, errStat := svc.CountUserMarketStatus(f.UserID)
+		userID, ok := userIDOnFilter(filter)
+		if ok {
+			stats, errStat := svc.CountUserMarketStatus(userID)
 			if errStat != nil {
 				respondError(w, errStat)
 				return
@@ -93,14 +94,16 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 				BidCompleted: stats.BidCompleted,
 			}
 		} else {
-			f.Type = dotagiftx.MarketTypeAsk
-			asks, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: f})
+			index := r.URL.Query().Get("index")
+
+			filter.Type = dotagiftx.MarketTypeAsk
+			asks, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter, IndexKey: index})
 			if err != nil {
 				respondError(w, err)
 				return
 			}
-			f.Type = dotagiftx.MarketTypeBid
-			bids, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: f})
+			filter.Type = dotagiftx.MarketTypeBid
+			bids, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter, IndexKey: index})
 			if err != nil {
 				respondError(w, err)
 				return
@@ -199,4 +202,14 @@ func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.H
 		go cache.Set(cacheKey, top10, statsCacheExpr)
 		respondOK(w, top10)
 	}
+}
+
+func userIDOnFilter(filter *dotagiftx.Market) (id string, ok bool) {
+	if filter.UserID != "" {
+		return filter.UserID, true
+	}
+	if filter.PartnerSteamID != "" {
+		return filter.PartnerSteamID, true
+	}
+	return "", false
 }
