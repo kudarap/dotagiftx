@@ -13,7 +13,9 @@ import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
 import { treasureList } from '@/service/api'
 
-const stillNewDays = 30
+const LATEST_TREASURE_DROP = new Date(2025, 8, 17)
+
+const STILL_NEW_DAYS = 30
 
 const rarityColorMap = {
   mythical: '#8847ff',
@@ -28,12 +30,10 @@ const isTreasureNew = v => {
 
   const now = new Date()
   const diff = (now - releaseDate) / (1000 * 3600 * 24)
-  return diff < stillNewDays
+  return diff < STILL_NEW_DAYS
 }
 
-const latestTreasureDrop = new Date(2025, 9, 17)
-
-export const isRecentTreasureNew = () => isTreasureNew(latestTreasureDrop)
+export const isRecentTreasureNew = () => isTreasureNew(LATEST_TREASURE_DROP)
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#1A20278C',
