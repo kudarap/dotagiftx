@@ -643,12 +643,13 @@ func (s *marketService) checkAskType(ask *Market) error {
 
 	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(FindOpts{
+		UserID:   ask.UserID,
+		IndexKey: "user_id",
 		Filter: Market{
 			ItemID: ask.ItemID,
 			Type:   MarketTypeAsk,
 			Status: MarketStatusLive,
 		},
-		UserID: ask.UserID,
 	})
 	if err != nil {
 		return err
