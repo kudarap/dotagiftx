@@ -54,9 +54,7 @@ export default function MyOrders() {
     ;(async () => {
       const res = await statsMarketSummary({ user_id: currentAuth.user_id })
       // Fetches count of linked markets.
-      const linkedMarket = await statsMarketSummary({
-        partner_steam_id: currentAuth.steam_id,
-      })
+      const linkedMarket = await statsMarketSummary({ partner_steam_id: currentAuth.steam_id })
       res.bids.reserved = linkedMarket.reserved
       setMarketStats(res.bids)
     })()

@@ -131,6 +131,55 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 	}
 }
 
+func handleStatsMarketSummaryV2(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Check for cache hit and render them.
+		cacheKey, noCache := cacheKeyFromRequest(r)
+		if !noCache {
+			if hit, _ := cache.Get(cacheKey); hit != "" {
+				respondOK(w, hit)
+				return
+			}
+		}
+
+		// collect market buy stats
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeBid})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		bids, err := svc.CountMarketStatus(opts)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		// collect market sell stats
+		opts, err = findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk})
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		asks, err := svc.CountMarketStatus(opts)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		// aggregate market sell and buy stats
+		// TODO: this should move to service layer.
+		asks.BidLive = bids.BidLive
+		asks.BidCompleted = bids.BidCompleted
+		res := struct {
+			*dotagiftx.MarketStatusCount
+			Bids *dotagiftx.MarketStatusCount `json:"bids"`
+		}{asks, bids}
+
+		go cache.Set(cacheKey, res, time.Minute*5)
+		respondOK(w, res)
+	}
+}
+
 func handleGraphMarketSales(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.

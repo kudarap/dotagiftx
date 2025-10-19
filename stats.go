@@ -105,10 +105,6 @@ func (s *statsService) CountMarketStatus(opts FindOpts) (*MarketStatusCount, err
 	return s.statsStg.CountMarketStatus(opts)
 }
 
-func (s *statsService) CountTotalMarketStatus() (*MarketStatusCount, error) {
-	return s.statsStg.CountMarketStatus(FindOpts{})
-}
-
 func (s *statsService) CountUserMarketStatus(userID string) (*MarketStatusCount, error) {
 	return s.statsStg.CountUserMarketStatus(userID)
 }
