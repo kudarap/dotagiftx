@@ -81,9 +81,8 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 		var bids *dotagiftx.MarketStatusCount
 
 		// check for user mode
-		userID, ok := userIDOnFilter(filter)
-		if ok {
-			stats, errStat := svc.CountUserMarketStatus(userID)
+		if filter.UserID != "" {
+			stats, errStat := svc.CountUserMarketStatus(filter.UserID)
 			if errStat != nil {
 				respondError(w, errStat)
 				return
@@ -202,14 +201,4 @@ func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.H
 		go cache.Set(cacheKey, top10, statsCacheExpr)
 		respondOK(w, top10)
 	}
-}
-
-func userIDOnFilter(filter *dotagiftx.Market) (id string, ok bool) {
-	if filter.UserID != "" {
-		return filter.UserID, true
-	}
-	if filter.PartnerSteamID != "" {
-		return filter.PartnerSteamID, true
-	}
-	return "", false
 }
