@@ -124,6 +124,16 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	return marketStats, nil
 }
 
+func (s *statsStorage) CountPartnerMarketStatus(partnerSteamID string) (*dotagiftx.MarketStatusCount, error) {
+	var user dotagiftx.User
+	if err := s.db.one(r.Table(tableUser).Get(partnerSteamID), &user); err != nil {
+		return nil, err
+	}
+	return s.CountUserMarketStatus(user.ID)
+}
+
+// CountMarketStatus returns market status counts.
+// TODO: optimize query because it's too slow around ~3000ms'
 func (s *statsStorage) CountMarketStatus(opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	var res []struct {
 		Group     dotagiftx.MarketStatus `db:"group"`

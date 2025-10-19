@@ -81,7 +81,8 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 		var bids *dotagiftx.MarketStatusCount
 
 		// check for user mode
-		if filter.UserID != "" {
+		switch {
+		case filter.UserID != "":
 			stats, errStat := svc.CountUserMarketStatus(filter.UserID)
 			if errStat != nil {
 				respondError(w, errStat)
@@ -92,17 +93,28 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 				BidLive:      stats.BidLive,
 				BidCompleted: stats.BidCompleted,
 			}
-		} else {
-			index := r.URL.Query().Get("index")
 
+		case filter.PartnerSteamID != "":
+			stats, errStat := svc.CountPartnerMarketStatus(filter.PartnerSteamID)
+			if errStat != nil {
+				respondError(w, errStat)
+				return
+			}
+			asks = stats
+			bids = &dotagiftx.MarketStatusCount{
+				BidLive:      stats.BidLive,
+				BidCompleted: stats.BidCompleted,
+			}
+
+		default:
 			filter.Type = dotagiftx.MarketTypeAsk
-			asks, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter, IndexKey: index})
+			asks, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter})
 			if err != nil {
 				respondError(w, err)
 				return
 			}
 			filter.Type = dotagiftx.MarketTypeBid
-			bids, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter, IndexKey: index})
+			bids, err = svc.CountMarketStatus(dotagiftx.FindOpts{Filter: filter})
 			if err != nil {
 				respondError(w, err)
 				return

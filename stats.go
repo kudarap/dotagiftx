@@ -73,6 +73,7 @@ type (
 		TopKeywords() ([]SearchKeywordScore, error)
 
 		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
+		CountPartnerMarketStatus(partnerSteamID string) (*MarketStatusCount, error)
 	}
 
 	StatsStorage interface {
@@ -81,6 +82,8 @@ type (
 		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
 
 		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
+		
+		CountPartnerMarketStatus(partnerSteamID string) (*MarketStatusCount, error)
 	}
 )
 
@@ -92,6 +95,10 @@ func NewStatsService(ss StatsStorage, ts TrackStorage) StatsService {
 type statsService struct {
 	statsStg StatsStorage
 	trackStg TrackStorage
+}
+
+func (s *statsService) CountPartnerMarketStatus(partnerSteamID string) (*MarketStatusCount, error) {
+	return s.statsStg.CountPartnerMarketStatus(partnerSteamID)
 }
 
 func (s *statsService) CountMarketStatus(opts FindOpts) (*MarketStatusCount, error) {
