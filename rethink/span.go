@@ -35,6 +35,7 @@ func NewSpan(c *Client) *SpanStorage {
 
 func (s *SpanStorage) Add(name string, elapsedMs int64, t time.Time) {
 	name = spanCleanUUIDs(name)
+	name = spanCleanUUIDs(name)
 	i := span{name, elapsedMs, t}
 	_, err := s.db.insert(r.Table("span").Insert(i))
 	if err != nil {
@@ -46,4 +47,10 @@ var spanUUID = regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 
 func spanCleanUUIDs(s string) string {
 	return spanUUID.ReplaceAllString(s, "<uuid>")
+}
+
+var steamUUIDFormat = regexp.MustCompile(`[0-9]{17}`)
+
+func spanCleanSteamIDs(s string) string {
+	return steamUUIDFormat.ReplaceAllString(s, "<steamid>")
 }
