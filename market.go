@@ -568,6 +568,7 @@ func (s *marketService) AutoCompleteBid(_ context.Context, ask Market, partnerSt
 
 	// Find matching bid market to update status.
 	fo := FindOpts{
+		IndexKey: "user_id",
 		Filter: Market{
 			Type:   MarketTypeBid,
 			Status: MarketStatusLive,
@@ -643,9 +644,9 @@ func (s *marketService) checkAskType(ask *Market) error {
 
 	// Check Item max offer limit.
 	qty, err := s.marketStg.Count(FindOpts{
-		UserID:   ask.UserID,
 		IndexKey: "user_id",
 		Filter: Market{
+			UserID: ask.UserID,
 			ItemID: ask.ItemID,
 			Type:   MarketTypeAsk,
 			Status: MarketStatusLive,
@@ -664,12 +665,13 @@ func (s *marketService) checkAskType(ask *Market) error {
 func (s *marketService) checkBidType(bid *Market) error {
 	// Remove existing buy order if exists.
 	res, err := s.marketStg.Find(FindOpts{
+		IndexKey: "user_id",
 		Filter: Market{
+			UserID: bid.UserID,
 			ItemID: bid.ItemID,
 			Type:   MarketTypeBid,
 			Status: MarketStatusLive,
 		},
-		UserID: bid.UserID,
 	})
 	if err != nil {
 		return err
