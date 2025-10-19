@@ -124,9 +124,9 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	return marketStats, nil
 }
 
-func (s *statsStorage) CountPartnerMarketStatus(partnerSteamID string) (*dotagiftx.MarketStatusCount, error) {
+func (s *statsStorage) CountUserMarketStatusBySteamID(steamID string) (*dotagiftx.MarketStatusCount, error) {
 	var user dotagiftx.User
-	if err := s.db.one(r.Table(tableUser).Get(partnerSteamID), &user); err != nil {
+	if err := s.db.one(r.Table(tableUser).GetAllByIndex(userFieldSteamID, steamID), &user); err != nil {
 		return nil, err
 	}
 	return s.CountUserMarketStatus(user.ID)

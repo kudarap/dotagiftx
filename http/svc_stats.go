@@ -95,7 +95,7 @@ func handleStatsMarketSummary(svc dotagiftx.StatsService, cache cacheManager) ht
 			}
 
 		case filter.PartnerSteamID != "":
-			stats, errStat := svc.CountPartnerMarketStatus(filter.PartnerSteamID)
+			stats, errStat := svc.CountUserMarketStatusBySteamID(filter.PartnerSteamID)
 			if errStat != nil {
 				respondError(w, errStat)
 				return
