@@ -538,7 +538,11 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 }
 
 func (s *marketService) UpdateUserRankScore(userID string) error {
-	stats, err := s.statsStg.CountUserMarketStatus(userID)
+	opts := FindOpts{
+		IndexKey: "user_id",
+		Filter:   Market{UserID: userID},
+	}
+	stats, err := s.statsStg.CountMarketStatusV2(opts)
 	if err != nil {
 		return fmt.Errorf("error getting user market stats: %s", err)
 	}

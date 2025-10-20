@@ -2,7 +2,7 @@ package rethink
 
 import (
 	"errors"
-"log"
+	"log"
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"

@@ -2,7 +2,7 @@ package rethink
 
 import (
 	"errors"
-"log"
+	"log"
 
 	"github.com/kudarap/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"

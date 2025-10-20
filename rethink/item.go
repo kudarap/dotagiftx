@@ -2,7 +2,7 @@ package rethink
 
 import (
 	"errors"
-"fmt"
+	"fmt"
 	"log"
 
 	"dario.cat/mergo"
