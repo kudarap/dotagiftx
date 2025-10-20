@@ -97,7 +97,7 @@ type (
 		Status         MarketStatus `json:"status"           db:"status,omitempty,indexed"    valid:"required"`
 		Price          float64      `json:"price"            db:"price,omitempty,indexed"     valid:"required"`
 		Currency       string       `json:"currency"         db:"currency,omitempty"`
-		PartnerSteamID string       `json:"partner_steam_id" db:"partner_steam_id,omitempty"`
+		PartnerSteamID string       `json:"partner_steam_id" db:"partner_steam_id,indexed,omitempty"`
 		Notes          string       `json:"notes"            db:"notes,omitempty"`
 		CreatedAt      *time.Time   `json:"created_at"       db:"created_at,omitempty,indexed"`
 		UpdatedAt      *time.Time   `json:"updated_at"       db:"updated_at,omitempty,indexed"`

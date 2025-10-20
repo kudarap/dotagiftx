@@ -32,6 +32,7 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Get("/sitemap.xml", handleSitemap(s.itemSvc))
 		r.Get("/stats/market_summary", handleStatsMarketSummary(s.statsSvc, s.cache))
 		r.Get("/stats/market_summary_v2", handleStatsMarketSummaryV2(s.statsSvc, s.cache))
+		r.Get("/stats/market_summary_overall", handleStatsMarketSummaryOverall(s.statsSvc, s.cache, s.logger))
 		r.Get("/stats/top_origins", handleStatsTopOrigins(s.itemSvc, s.cache))
 		r.Get("/stats/top_heroes", handleStatsTopHeroes(s.itemSvc, s.cache))
 		r.Get("/stats/top_keywords", handleStatsTopKeywords(s.statsSvc, s.cache))
