@@ -67,6 +67,7 @@ type (
 	// StatsService provides access to stats service.
 	StatsService interface {
 		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
+		CountMarketStatusV2(opts FindOpts) (*MarketStatusCount, error)
 
 		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
 
@@ -78,6 +79,7 @@ type (
 
 	StatsStorage interface {
 		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
+		CountMarketStatusV2(opts FindOpts) (*MarketStatusCount, error)
 
 		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
 
@@ -103,6 +105,10 @@ func (s *statsService) CountUserMarketStatusBySteamID(partnerSteamID string) (*M
 
 func (s *statsService) CountMarketStatus(opts FindOpts) (*MarketStatusCount, error) {
 	return s.statsStg.CountMarketStatus(opts)
+}
+
+func (s *statsService) CountMarketStatusV2(opts FindOpts) (*MarketStatusCount, error) {
+	return s.statsStg.CountMarketStatusV2(opts)
 }
 
 func (s *statsService) CountUserMarketStatus(userID string) (*MarketStatusCount, error) {

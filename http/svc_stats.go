@@ -142,25 +142,25 @@ func handleStatsMarketSummaryV2(svc dotagiftx.StatsService, cache cacheManager) 
 			}
 		}
 
-		// collect market buy stats
-		opts, err := findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeBid})
+		// collect market sell stats
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
-		bids, err := svc.CountMarketStatus(opts)
+		asks, err := svc.CountMarketStatusV2(opts)
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		// collect market sell stats
-		opts, err = findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk})
+		// collect market buy stats
+		opts, err = findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeBid})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
-		asks, err := svc.CountMarketStatus(opts)
+		bids, err := svc.CountMarketStatusV2(opts)
 		if err != nil {
 			respondError(w, err)
 			return
