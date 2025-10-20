@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import * as format from '@/lib/format'
-import { marketSearch, statsMarketSummary } from '@/service/api'
+import { marketSearch, statsMarketSummaryOverall } from '@/service/api'
 import { APP_NAME } from '@/constants/strings'
 import {
   MARKET_STATUS_MAP_TEXT,
@@ -184,7 +184,7 @@ export async function getServerSideProps({ query }) {
   let summary = null
   let error = null
   try {
-    summary = await statsMarketSummary()
+    summary = await statsMarketSummaryOverall()
   } catch (e) {
     error = e.message
   }

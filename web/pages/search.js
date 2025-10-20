@@ -8,7 +8,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
-import { catalogSearch, statsMarketSummary } from '@/service/api'
+import { catalogSearch, statsMarketSummaryOverall } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -169,7 +169,7 @@ export async function getServerSideProps({ query }) {
     error = e.message
   }
 
-  const marketSummary = await statsMarketSummary()
+  const marketSummary = await statsMarketSummaryOverall()
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)

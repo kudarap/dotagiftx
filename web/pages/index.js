@@ -16,7 +16,7 @@ import {
   fetcher,
   STATS_TOP_HEROES,
   STATS_TOP_ORIGINS,
-  statsMarketSummary,
+  statsMarketSummaryOverall,
 } from '@/service/api'
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
@@ -360,7 +360,7 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const marketSummary = await statsMarketSummary()
+  const marketSummary = await statsMarketSummaryOverall()
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)
