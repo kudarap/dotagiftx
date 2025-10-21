@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -70,13 +71,15 @@ func (c *Client) autoMigrate(table string) error {
 		}
 	}
 
-	return c.exec(r.TableCreate(table))
+	ctx := context.Background()
+	return c.execContext(ctx, r.TableCreate(table))
 }
 
 // autoIndex creates table index base model that has tag "index".
 func (c *Client) autoIndex(table string, model interface{}) error {
+	ctx := context.Background()
 	for _, ff := range getModelIndexedFields(model) {
-		if err := c.createIndex(table, ff); err != nil {
+		if err := c.createIndex(ctx, table, ff); err != nil {
 			return fmt.Errorf("could not create %s index on %s table: %s", ff, tableCatalog, err)
 		}
 	}
@@ -84,29 +87,29 @@ func (c *Client) autoIndex(table string, model interface{}) error {
 	return nil
 }
 
-// run returns a cursor which can be used to view all rows returned.
-func (c *Client) run(t r.Term) (*r.Cursor, error) {
-	return t.Run(c.db)
+// runContext returns a cursor which can be used to view all rows returned.
+func (c *Client) runContext(ctx context.Context, t r.Term) (*r.Cursor, error) {
+	return t.Run(c.db, r.RunOpts{Context: ctx})
 }
 
-// runWrite returns a WriteResponse and should be used for queries such as Insert, Update, etc...
-func (c *Client) runWrite(t r.Term) (r.WriteResponse, error) {
-	return t.RunWrite(c.db)
+// runWriteContext returns a WriteResponse and should be used for queries such as Insert, Update, etc...
+func (c *Client) runWriteContext(ctx context.Context, t r.Term) (r.WriteResponse, error) {
+	return t.RunWrite(c.db, r.RunOpts{Context: ctx})
 }
 
-// exec sends a query to the server and closes the connection immediately after reading the response from the database.
-// If you do not wish to wait for the response then you can set the NoReply flag.
-func (c *Client) exec(t r.Term) error {
-	return t.Exec(c.db)
+// Sends a query to the server and closes the connection immediately after reading the response from the database.
+// If you do not wish to wait for the response, then you can set the NoReply flag.
+func (c *Client) execContext(ctx context.Context, t r.Term) error {
+	return t.Exec(c.db, r.ExecOpts{Context: ctx})
 }
 
-func (c *Client) list(t r.Term, out interface{}) error {
+func (c *Client) listContext(ctx context.Context, t r.Term, out interface{}) error {
 	if c.tracing != nil {
 		s := c.tracing.StartSpan("rethink list " + t.String())
 		defer s.End()
 	}
 
-	res, err := c.run(t)
+	res, err := c.runContext(ctx, t)
 	if err != nil {
 		return err
 	}
@@ -117,13 +120,13 @@ func (c *Client) list(t r.Term, out interface{}) error {
 	return res.Close()
 }
 
-func (c *Client) one(t r.Term, out interface{}) error {
+func (c *Client) oneContext(ctx context.Context, t r.Term, out interface{}) error {
 	if c.tracing != nil {
 		s := c.tracing.StartSpan("rethink one " + t.String())
 		defer s.End()
 	}
 
-	res, err := c.run(t)
+	res, err := c.runContext(ctx, t)
 	if err != nil {
 		return err
 	}
@@ -134,8 +137,8 @@ func (c *Client) one(t r.Term, out interface{}) error {
 	return res.Close()
 }
 
-func (c *Client) insert(t r.Term) (id string, err error) {
-	res, err := c.runWrite(t)
+func (c *Client) insertContext(ctx context.Context, t r.Term) (id string, err error) {
+	res, err := c.runWriteContext(ctx, t)
 	if err != nil {
 		return
 	}
@@ -147,31 +150,51 @@ func (c *Client) insert(t r.Term) (id string, err error) {
 	return res.GeneratedKeys[0], nil
 }
 
-func (c *Client) update(t r.Term) error {
-	_, err := c.runWrite(t)
+func (c *Client) updateContext(ctx context.Context, t r.Term) error {
+	_, err := c.runWriteContext(ctx, t)
 	return err
 }
 
-func (c *Client) delete(t r.Term) error {
-	return c.update(t)
+func (c *Client) deleteContext(ctx context.Context, t r.Term) error {
+	return c.updateContext(ctx, t)
 }
 
-func (c *Client) createIndex(tableName, index string) error {
-	tbl := r.Table(tableName)
+func (c *Client) list(t r.Term, out interface{}) error {
+	return c.listContext(context.Background(), t, out)
+}
+
+func (c *Client) one(t r.Term, out interface{}) error {
+	return c.oneContext(context.Background(), t, out)
+}
+
+func (c *Client) insert(t r.Term) (id string, err error) {
+	return c.insertContext(context.Background(), t)
+}
+
+func (c *Client) update(t r.Term) error {
+	return c.updateContext(context.Background(), t)
+}
+
+func (c *Client) delete(t r.Term) error {
+	return c.deleteContext(context.Background(), t)
+}
+
+func (c *Client) createIndex(ctx context.Context, tableName, index string) error {
+	table := r.Table(tableName)
 
 	var indexes []string
-	if err := c.list(tbl.IndexList(), &indexes); err != nil {
+	if err := c.listContext(ctx, table.IndexList(), &indexes); err != nil {
 		return err
 	}
 
 	for _, ii := range indexes {
-		// Skip creating index.
+		// Skip creating an index
 		if ii == index {
 			return nil
 		}
 	}
 
-	return c.exec(tbl.IndexCreate(index))
+	return c.execContext(ctx, table.IndexCreate(index))
 }
 
 func getTables(s *r.Session) (table []string, err error) {

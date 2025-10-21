@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -24,7 +25,8 @@ func NewItem(c *Client) dotagiftx.ItemStorage {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
 	}
 
-	if err := c.createIndex(tableItem, itemFieldSlug); err != nil {
+	ctx := context.Background()
+	if err := c.createIndex(ctx, tableItem, itemFieldSlug); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
