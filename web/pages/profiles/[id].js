@@ -320,6 +320,8 @@ UserDetails.defaultProps = {
   filter: {},
   markets: {
     data: [],
+    result_count: 0,
+    total_count: 0,
   },
   error: null,
 }
@@ -387,7 +389,7 @@ export async function getServerSideProps(context) {
   profile.stats = profile.market_stats
 
   // Retrieve initial user market data.
-  let markets = {}
+  let markets = { data: [], result_count: 0, total_count: 0 }
   let error = null
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
@@ -395,11 +397,11 @@ export async function getServerSideProps(context) {
     filter.q = query.filter
   }
 
-  try {
-    markets = await marketSearch(filter)
-  } catch (e) {
-    error = e.message
-  }
+  // try {
+  //   markets = await marketSearch(filter)
+  // } catch (e) {
+  //   error = e.message
+  // }
 
   // Compose profile page canonical URL.
 
