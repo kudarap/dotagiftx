@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"encoding/csv"
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -25,15 +23,16 @@ func init() {
 	flag.Int64Var(&minBatchRows, "minbatchrows", 8, "MinBatchRows")
 	flag.IntVar(&ratePerIteration, "rateperiteration", 1000, "RatePerIteration")
 	flag.Parse()
-
 }
 
 func migrate(db *r.Session) {
 	ctx := context.Background()
 
-	cursor, err := r.Table("track").OrderBy(r.OrderByOpts{Index: "created_at"}).Run(db, r.RunOpts{
-		MinBatchRows: minBatchRows,
-	})
+	cursor, err := r.Table("market_production").
+		OrderBy(r.OrderByOpts{Index: "created_at"}).
+		Run(db, r.RunOpts{
+			MinBatchRows: minBatchRows,
+		})
 	if err != nil {
 		panic(err)
 	}
@@ -41,35 +40,14 @@ func migrate(db *r.Session) {
 
 	chdb := clickhouseInit()
 
-	csvFile, err := os.Create("output.csv")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer csvFile.Close()
-	writer := csv.NewWriter(csvFile)
-	defer writer.Flush()
-	writer.Write([]string{
-		"id",
-		"type",
-		"item_id",
-		"user_id",
-		"keyword",
-		"client_ip",
-		"user_agent",
-		"referer",
-		"cookies",
-		"sess_user_id",
-		"created_at",
-	})
-
 	var total int
 	bench := time.Now()
-	progressBar := progressbar.Default(12000000)
+	progressBar := progressbar.Default(120000)
 
 	var batchInsertCtr = 0
 	for {
-		var track dotagiftx.Track
-		if cursor.Next(&track) {
+		var market dotagiftx.Market
+		if cursor.Next(&market) {
 			total++
 
 			// Clickhouse writes
@@ -83,31 +61,37 @@ func migrate(db *r.Session) {
 
 			err = chdb.AsyncInsert(
 				ctx,
-				`INSERT INTO track_production (
+				`INSERT INTO market (
 					id,
-					type,
-					item_id,
 					user_id,
-					keyword,
-					client_ip,
-					user_agent,
-					referer,
-					cookies,
-					sess_user_id,
-					created_at
-				) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+					item_id,
+					type,
+					status,
+					price,
+					currency,
+					partner_steam_id,
+					inventory_status,
+					delivery_status,
+					resell,
+					seller_steam_id,
+                    created_at,
+					updated_at,
+				) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
 				false,
-				track.ID,
-				track.Type,
-				track.ItemID,
-				track.UserID,
-				track.Keyword,
-				track.ClientIP,
-				track.UserAgent,
-				track.Referer,
-				track.Cookies,
-				track.SessUserID,
-				track.CreatedAt.Unix(),
+				market.ID,
+				market.UserID,
+				market.ItemID,
+				uint(market.Type),
+				uint(market.Status),
+				market.Price,
+				market.Currency,
+				market.PartnerSteamID,
+				uint(market.InventoryStatus),
+				uint(market.DeliveryStatus),
+				market.Resell,
+				market.SellerSteamID,
+				market.CreatedAt.Unix(),
+				market.UpdatedAt.Unix(),
 			)
 			if err != nil {
 				log.Println("error append clickhouse:", total, err)
@@ -148,9 +132,7 @@ func connect() (driver.Conn, error) {
 	ctx := context.Background()
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{"localhost:9000"},
-		Auth: clickhouse.Auth{
-			Password: "root",
-		},
+		Auth: clickhouse.Auth{},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to clickhouse: %s", err)
