@@ -29,10 +29,6 @@ type Client struct {
 	tracing *tracing.Tracer
 }
 
-func (c *Client) Session() *r.Session {
-	return c.db
-}
-
 // New create new rethink database instance.
 func New(c Config) (*Client, error) {
 	sess, err := r.Connect(r.ConnectOpts{
