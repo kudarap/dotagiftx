@@ -28,7 +28,7 @@ func init() {
 func migrate(db *r.Session) {
 	ctx := context.Background()
 
-	cursor, err := r.Table("market_production").
+	cursor, err := r.Table("market").
 		OrderBy(r.OrderByOpts{Index: "created_at"}).
 		Run(db, r.RunOpts{
 			MinBatchRows: minBatchRows,
@@ -132,7 +132,11 @@ func connect() (driver.Conn, error) {
 	ctx := context.Background()
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{"localhost:9000"},
-		Auth: clickhouse.Auth{},
+		Auth: clickhouse.Auth{
+			Database: "dotagiftx_production",
+			Username: "default",
+			Password: "",
+		},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to clickhouse: %s", err)
