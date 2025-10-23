@@ -7,12 +7,46 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func (c *Client) CaptureTrack(ctx context.Context, track dotagiftx.Track) error {
-	panic("implement me")
+func (c *Client) CaptureTrackStats(ctx context.Context, track dotagiftx.Track) error {
+	const query = `INSERT INTO track (
+		id,
+		type,
+		item_id,
+		user_id,
+		keyword,
+		client_ip,
+		user_agent,
+		referer,
+		cookies,
+		sess_user_id,
+		created_at
+	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
+
+	err := c.conn.AsyncInsert(
+		ctx,
+		query,
+		false,
+		track.ID,
+		track.Type,
+		track.ItemID,
+		track.UserID,
+		track.Keyword,
+		track.ClientIP,
+		track.UserAgent,
+		track.Referer,
+		track.Cookies,
+		track.SessUserID,
+		track.CreatedAt.Unix(),
+	)
+	if err != nil {
+		return fmt.Errorf("async insert track: %w", err)
+	}
+
+	return nil
 }
 
-func (c *Client) CaptureMarket(ctx context.Context, market dotagiftx.Market) error {
-	const qry = `INSERT INTO market (
+func (c *Client) CaptureMarketStats(ctx context.Context, market dotagiftx.Market) error {
+	const query = `INSERT INTO market (
 		id,
 		user_id,
 		item_id,
@@ -31,7 +65,7 @@ func (c *Client) CaptureMarket(ctx context.Context, market dotagiftx.Market) err
 
 	err := c.conn.AsyncInsert(
 		ctx,
-		qry,
+		query,
 		false,
 		market.ID,
 		market.UserID,
