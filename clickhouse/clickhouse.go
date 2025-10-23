@@ -19,7 +19,7 @@ func New(conf Config) (*Client, error) {
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{conf.Addr},
 		Auth: clickhouse.Auth{
-			Database: conf.Database,
+			Database: conf.Db,
 			Username: conf.User,
 			Password: conf.Pass,
 		},
@@ -48,8 +48,8 @@ func (c *Client) Close() error {
 }
 
 type Config struct {
-	Addr     string
-	Database string
-	User     string
-	Pass     string
+	Addr string
+	Db   string
+	User string
+	Pass string
 }
