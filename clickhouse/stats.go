@@ -22,7 +22,7 @@ func (c *Client) CaptureTrackStats(ctx context.Context, track dotagiftx.Track) e
 		created_at
 	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
 
-	err := c.conn.AsyncInsert(
+	err := c.db.AsyncInsert(
 		ctx,
 		query,
 		false,
@@ -63,7 +63,7 @@ func (c *Client) CaptureMarketStats(ctx context.Context, market dotagiftx.Market
 		updated_at,
 	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 
-	err := c.conn.AsyncInsert(
+	err := c.db.AsyncInsert(
 		ctx,
 		query,
 		false,
