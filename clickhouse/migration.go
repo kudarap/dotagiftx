@@ -6,8 +6,7 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-const initDatabase = `
-	CREATE TABLE IF NOT EXISTS track
+const trackTable = `CREATE TABLE IF NOT EXISTS track
 	(
 		id UUID,
 		type Enum8('' = 0, 'v' = 1, 's' = 2, 'p' = 3),
@@ -23,9 +22,9 @@ const initDatabase = `
 	)
 	ENGINE = MergeTree
 	PARTITION BY toYYYYMM(created_at)
-	ORDER BY created_at;
+	ORDER BY created_at`
 
-	CREATE TABLE IF NOT EXISTS market
+const marketTable = `CREATE TABLE IF NOT EXISTS market
 	(
 		id UUID,
 		user_id String,
@@ -44,9 +43,13 @@ const initDatabase = `
 	)
 	ENGINE = ReplacingMergeTree
 	PARTITION BY toYYYYMM(updated_at)
-	ORDER BY id;`
+	ORDER BY id`
 
 func autoMigration(ctx context.Context, db driver.Conn) error {
-	_, err := db.Query(ctx, initDatabase)
-	return err
+	for _, query := range []string{trackTable, marketTable} {
+		if err := db.Exec(ctx, query); err != nil {
+			return err
+		}
+	}
+	return nil
 }

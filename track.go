@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -41,18 +43,17 @@ const (
 type (
 	// Track represents tracking data.
 	Track struct {
-		ID         string     `json:"id"           db:"id,omitempty"`
-		Type       string     `json:"type"         db:"type,omitempty,indexed"`
-		ItemID     string     `json:"item_id"      db:"item_id,omitempty,indexed"`
-		UserID     string     `json:"user_id"      db:"user_id,omitempty,indexed"`
-		Keyword    string     `json:"keyword"      db:"keyword,omitempty"`
-		ClientIP   string     `json:"client_ip"    db:"client_ip,omitempty"`
-		UserAgent  string     `json:"user_agent"   db:"user_agent,omitempty"`
-		Referer    string     `json:"referer"      db:"referer,omitempty"`
-		Cookies    []string   `json:"cookies"      db:"cookies,omitempty"`
-		SessUserID string     `json:"sess_user_id" db:"sess_user_id,omitempty"`
-		CreatedAt  *time.Time `json:"created_at"   db:"created_at,omitempty,indexed"`
-		UpdatedAt  *time.Time `json:"updated_at"   db:"updated_at,omitempty"`
+		ID         string    `json:"id"           db:"id,omitempty"`
+		Type       string    `json:"type"         db:"type,omitempty,indexed"`
+		ItemID     string    `json:"item_id"      db:"item_id,omitempty,indexed"`
+		UserID     string    `json:"user_id"      db:"user_id,omitempty,indexed"`
+		Keyword    string    `json:"keyword"      db:"keyword,omitempty"`
+		ClientIP   string    `json:"client_ip"    db:"client_ip,omitempty"`
+		UserAgent  string    `json:"user_agent"   db:"user_agent,omitempty"`
+		Referer    string    `json:"referer"      db:"referer,omitempty"`
+		Cookies    []string  `json:"cookies"      db:"cookies,omitempty"`
+		SessUserID string    `json:"sess_user_id" db:"sess_user_id,omitempty"`
+		CreatedAt  time.Time `json:"created_at"   db:"created_at,omitempty,indexed"`
 	}
 
 	// TrackService provides access to track service.
@@ -99,6 +100,7 @@ const (
 // SetDefaults sets default values from http.Request.
 func (t *Track) SetDefaults(r *http.Request) {
 	q := r.URL.Query()
+	t.ID = uuid.New().String()
 	t.Type = q.Get(trackTypeKey)
 	t.ItemID = q.Get(trackItemIDKey)
 	t.UserID = q.Get(trackUserIDKey)
@@ -128,6 +130,7 @@ func (t *Track) SetDefaults(r *http.Request) {
 	sessCookie = strings.TrimPrefix(sessCookie, authCookieName+"=")
 	_ = json.Unmarshal([]byte(sessCookie), &au)
 	t.SessUserID = au.UserID
+	t.CreatedAt = time.Now()
 }
 
 // NewTrackService returns new track service.

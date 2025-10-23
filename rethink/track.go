@@ -69,15 +69,10 @@ func (s *trackStorage) Get(id string) (*dotagiftx.Track, error) {
 }
 
 func (s *trackStorage) Create(in *dotagiftx.Track) error {
-	t := now()
-	in.CreatedAt = t
-	in.UpdatedAt = t
-	id, err := s.db.insert(s.table().Insert(in))
+	_, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
-	in.ID = id
-
 	return nil
 }
 
