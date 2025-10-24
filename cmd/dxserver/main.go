@@ -291,6 +291,8 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 	}
 
 	err = rethinkClient.ListenChangeFeed("market", func(prev, next []byte) error {
+		fmt.Println("market change feed", prev, next)
+
 		deleted := prev != nil && next == nil
 		if deleted {
 			var v dotagiftx.Market
@@ -300,6 +302,9 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 			return clickhouseClient.DeleteMarketStats(ctx, v.ID)
 		}
 
+		if next == nil {
+			return nil
+		}
 		var v dotagiftx.Market
 		if err := json.Unmarshal(next, &v); err != nil {
 			return err
