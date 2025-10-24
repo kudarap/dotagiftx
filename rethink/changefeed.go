@@ -19,12 +19,12 @@ func (c *Client) ListenChangeFeed(table string, exec func([]byte) error) error {
 
 type changeFeed struct {
 	ch     chan map[string]any
-	closed chan bool
+	closer chan bool
 	cursor *r.Cursor
 }
 
 func (f *changeFeed) close() error {
-	f.closed <- true
+	f.closer <- true
 	return f.cursor.Close()
 }
 
@@ -36,8 +36,8 @@ func newChangeFeed(db *r.Session, table string, fn func([]byte) error) (*changeF
 	}
 
 	var feed changeFeed
-	feed.ch = make(chan map[string]any, 1000)
-	feed.closed = make(chan bool, 1)
+	feed.ch = make(chan map[string]any, 10000)
+	feed.closer = make(chan bool)
 	feed.cursor = cursor
 
 	logrus.Info(table, "change feed started")
@@ -45,7 +45,7 @@ func newChangeFeed(db *r.Session, table string, fn func([]byte) error) (*changeF
 		feed.cursor.Listen(feed.ch)
 		for {
 			select {
-			case <-feed.closed:
+			case <-feed.closer:
 				logrus.Info(table, "change feed closed")
 				return
 
