@@ -279,7 +279,7 @@ func setupClickHouse(cfg clickhouse.Config) (c *clickhouse.Client, err error) {
 
 func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhouse.Client) error {
 	ctx := context.Background()
-	err := rethinkClient.ListenChangeFeed("track", func(next, prev []byte) error {
+	err := rethinkClient.ListenChangeFeed("track", func(prev, next []byte) error {
 		var v dotagiftx.Track
 		if err := json.Unmarshal(next, &v); err != nil {
 			return err
@@ -290,8 +290,8 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 		return err
 	}
 
-	err = rethinkClient.ListenChangeFeed("market", func(next, prev []byte) error {
-		deleted := next == nil && prev != nil
+	err = rethinkClient.ListenChangeFeed("market", func(prev, next []byte) error {
+		deleted := prev != nil && next == nil
 		if deleted {
 			var v dotagiftx.Market
 			if err := json.Unmarshal(prev, &v); err != nil {

@@ -7,7 +7,7 @@ import (
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-func (c *Client) ListenChangeFeed(table string, exec func(next, prev []byte) error) error {
+func (c *Client) ListenChangeFeed(table string, exec func(prev, next []byte) error) error {
 	feed, err := newChangeFeed(c.db, table, exec)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (f *changeFeed) close() error {
 	return f.cursor.Close()
 }
 
-func newChangeFeed(db *r.Session, table string, exec func(next, prev []byte) error) (*changeFeed, error) {
+func newChangeFeed(db *r.Session, table string, exec func(prev, next []byte) error) (*changeFeed, error) {
 	t := r.Table(table).Changes()
 	cursor, err := t.Run(db)
 	if err != nil {
@@ -50,17 +50,17 @@ func newChangeFeed(db *r.Session, table string, exec func(next, prev []byte) err
 				return
 
 			case event := <-feed.ch:
-				next, err := json.Marshal(event["new_val"])
-				if err != nil {
-					logrus.Errorf("could not marshal new_val: %s", err)
-					continue
-				}
 				prev, err := json.Marshal(event["old_val"])
 				if err != nil {
 					logrus.Errorf("could not marshal new_val: %s", err)
 					continue
 				}
-				if err = exec(next, prev); err != nil {
+				next, err := json.Marshal(event["new_val"])
+				if err != nil {
+					logrus.Errorf("could not marshal new_val: %s", err)
+					continue
+				}
+				if err = exec(prev, next); err != nil {
 					logrus.Errorf("could not process change: %s", err)
 				}
 			}
