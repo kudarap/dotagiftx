@@ -300,9 +300,6 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 			return clickhouseClient.DeleteMarketStats(ctx, v.ID)
 		}
 
-		if next == nil {
-			return nil
-		}
 		var v dotagiftx.Market
 		if err := json.Unmarshal(next, &v); err != nil {
 			return err

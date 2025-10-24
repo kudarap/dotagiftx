@@ -59,7 +59,7 @@ func newChangeFeed(db *r.Session, table string, exec func(prev, next []byte) err
 					}
 				}
 				if raw := event["new_val"]; raw != nil {
-					oldVal, err = json.Marshal(raw)
+					newVal, err = json.Marshal(raw)
 					if err != nil {
 						logrus.Errorf("could not marshal new_val: %s", err)
 						continue
