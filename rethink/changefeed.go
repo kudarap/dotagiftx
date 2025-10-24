@@ -50,17 +50,22 @@ func newChangeFeed(db *r.Session, table string, exec func(prev, next []byte) err
 				return
 
 			case event := <-feed.ch:
-				prev, err := json.Marshal(event["old_val"])
-				if err != nil {
-					logrus.Errorf("could not marshal new_val: %s", err)
-					continue
+				var oldVal, newVal []byte
+				if raw := event["old_val"]; raw != nil {
+					oldVal, err = json.Marshal(raw)
+					if err != nil {
+						logrus.Errorf("could not marshal old_val: %s", err)
+						continue
+					}
 				}
-				next, err := json.Marshal(event["new_val"])
-				if err != nil {
-					logrus.Errorf("could not marshal new_val: %s", err)
-					continue
+				if raw := event["new_val"]; raw != nil {
+					oldVal, err = json.Marshal(raw)
+					if err != nil {
+						logrus.Errorf("could not marshal new_val: %s", err)
+						continue
+					}
 				}
-				if err = exec(prev, next); err != nil {
+				if err = exec(oldVal, newVal); err != nil {
 					logrus.Errorf("could not process change: %s", err)
 				}
 			}
