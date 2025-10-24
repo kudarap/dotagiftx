@@ -18,8 +18,9 @@ func (c *Client) ListenChangeFeed(table string, exec func([]byte) error) error {
 }
 
 type changeFeed struct {
-	cursor *r.Cursor
+	ch     chan map[string]any
 	closed chan bool
+	cursor *r.Cursor
 }
 
 func (f *changeFeed) close() error {
@@ -34,18 +35,21 @@ func newChangeFeed(db *r.Session, table string, fn func([]byte) error) (*changeF
 		return nil, err
 	}
 
-	closed := make(chan bool, 1)
-	feed := make(chan map[string]any)
-	cursor.Listen(feed)
+	var feed changeFeed
+	feed.ch = make(chan map[string]any, 1000)
+	feed.closed = make(chan bool, 1)
+	feed.cursor = cursor
+
 	logrus.Info(table, "change feed started")
 	go func() {
+		feed.cursor.Listen(feed.ch)
 		for {
 			select {
-			case <-closed:
+			case <-feed.closed:
 				logrus.Info(table, "change feed closed")
 				return
 
-			case event := <-feed:
+			case event := <-feed.ch:
 				b, err := json.Marshal(event["new_val"])
 				if err != nil {
 					logrus.Errorf("could not marshal new_val: %s", err)
@@ -57,5 +61,5 @@ func newChangeFeed(db *r.Session, table string, fn func([]byte) error) (*changeF
 		}
 	}()
 
-	return &changeFeed{cursor, closed}, nil
+	return &feed, nil
 }
