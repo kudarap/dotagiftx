@@ -145,6 +145,9 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
 
+	// HOTFIX for missing user data
+	existingUser, _ := s.userSvc.User(steamPlayer.ID)
+
 	// Account existed and checked login credentials.
 	if au != nil {
 		if au.Password != s.composePassword(steamPlayer.ID, au.UserID) {
@@ -169,6 +172,11 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 		return nil, err
 	}
 
+	// HOTFIX for missing user data
+	au.UserID = existingUser.ID
+	if err = s.authStg.Update(au); err != nil {
+		return nil, err
+	}
 	return au, nil
 }
 
