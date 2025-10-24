@@ -274,6 +274,8 @@ export default function Header() {
         <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
       </AppBar>
+
+      <Incident />
     </>
   )
 }
@@ -383,6 +385,44 @@ function NoticeMe() {
         <strong>Take me to live site</strong>
       </Link>
       <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
+    </div>
+  )
+}
+
+function Incident() {
+  const storageKye = 'major-incident-data-loss-2025-10-25'
+
+  const [closed, setClosed] = React.useState(false)
+  React.useEffect(() => {
+    setClosed(!!Storage.get(storageKye))
+  }, [])
+
+  const onClose = () => {
+    if (confirm('Confirm close announcement') == true) {
+      Storage.save(storageKye, true)
+      setClosed(true)
+    }
+  }
+
+  if (closed) {
+    return null
+  }
+
+  return (
+    <div
+      style={{
+        textAlign: 'center',
+        backgroundColor: '#aa2e25',
+        paddingTop: 8,
+        paddingBottom: 8,
+      }}>
+      {`Announcement: `}
+      <u>
+        <Link href="/post/major-incident-data-loss">Major Data Loss Incident</Link>
+      </u>
+      <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }} onClick={onClose}>
+        close
+      </span>
     </div>
   )
 }
