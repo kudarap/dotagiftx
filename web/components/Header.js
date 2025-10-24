@@ -413,8 +413,9 @@ function Incident() {
       style={{
         textAlign: 'center',
         backgroundColor: '#aa2e25',
-        paddingTop: 8,
-        paddingBottom: 8,
+        paddingTop: 6,
+        paddingBottom: 6,
+        boxShadow: '0 0 6px #aa2e25',
       }}>
       {`Announcement: `}
       <u>
