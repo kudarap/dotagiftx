@@ -89,6 +89,14 @@ func (c *Client) CaptureMarketStats(ctx context.Context, market dotagiftx.Market
 	return nil
 }
 
+func (c *Client) DeleteMarketStats(ctx context.Context, id string) error {
+	err := c.db.Exec(ctx, `DELETE FROM market WHERE id = $1`, id)
+	if err != nil {
+		return fmt.Errorf("delete market: %w", err)
+	}
+	return nil
+}
+
 func (c *Client) CountMarketStatus(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	panic("implement me")
 }

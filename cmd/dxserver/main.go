@@ -279,9 +279,9 @@ func setupClickHouse(cfg clickhouse.Config) (c *clickhouse.Client, err error) {
 
 func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhouse.Client) error {
 	ctx := context.Background()
-	err := rethinkClient.ListenChangeFeed("track", func(b []byte) error {
+	err := rethinkClient.ListenChangeFeed("track", func(next, prev []byte) error {
 		var v dotagiftx.Track
-		if err := json.Unmarshal(b, &v); err != nil {
+		if err := json.Unmarshal(next, &v); err != nil {
 			return err
 		}
 		return clickhouseClient.CaptureTrackStats(ctx, v)
@@ -290,9 +290,18 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 		return err
 	}
 
-	err = rethinkClient.ListenChangeFeed("market", func(b []byte) error {
+	err = rethinkClient.ListenChangeFeed("market", func(next, prev []byte) error {
+		deleted := next == nil && prev != nil
+		if deleted {
+			var v dotagiftx.Market
+			if err := json.Unmarshal(prev, &v); err != nil {
+				return err
+			}
+			return clickhouseClient.DeleteMarketStats(ctx, v.ID)
+		}
+
 		var v dotagiftx.Market
-		if err := json.Unmarshal(b, &v); err != nil {
+		if err := json.Unmarshal(next, &v); err != nil {
 			return err
 		}
 		return clickhouseClient.CaptureMarketStats(ctx, v)
