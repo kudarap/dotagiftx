@@ -90,9 +90,6 @@ func (c *Client) CaptureMarketStats(ctx context.Context, market dotagiftx.Market
 }
 
 func (c *Client) DeleteMarketStats(ctx context.Context, id string) error {
-	// delete is too slow
-	return nil
-
 	err := c.db.Exec(ctx, `DELETE FROM market WHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("delete market: %w", err)

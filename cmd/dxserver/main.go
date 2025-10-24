@@ -291,14 +291,14 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 	}
 
 	err = rethinkClient.ListenChangeFeed("market", func(prev, next []byte) error {
-		deleted := prev != nil && next == nil
-		if deleted {
-			var v dotagiftx.Market
-			if err := json.Unmarshal(prev, &v); err != nil {
-				return err
-			}
-			return clickhouseClient.DeleteMarketStats(ctx, v.ID)
-		}
+		//deleted := prev != nil && next == nil
+		//if deleted {
+		//	var v dotagiftx.Market
+		//	if err := json.Unmarshal(prev, &v); err != nil {
+		//		return err
+		//	}
+		//	return clickhouseClient.DeleteMarketStats(ctx, v.ID)
+		//}
 
 		var v dotagiftx.Market
 		if err := json.Unmarshal(next, &v); err != nil {
