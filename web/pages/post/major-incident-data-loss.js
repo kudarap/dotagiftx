@@ -55,7 +55,7 @@ export default function ThanksSubscriber() {
 
             <Typography>
               User authentication was also affected, but already deployed a hotfix to enabled login.
-              In anycase you still have issue please reach out to{' '}
+              In any case you still have issue please reach out to{' '}
               <u>
                 <Link
                   href="https://discord.gg/JbAm39ubSr"
@@ -69,7 +69,7 @@ export default function ThanksSubscriber() {
             <br />
 
             <Typography>
-              I apoligize for this grave error and will be more careful next time and make sure
+              I apologize for this grave error and will be more careful next time and make sure
               contingency plan are in place to prevent this major incident from happening. Thank you
               for understanding, if you have more concern you can join on{' '}
               <u>
