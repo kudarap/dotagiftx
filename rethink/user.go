@@ -93,7 +93,7 @@ func (s *userStorage) Get(id string) (*dotagiftx.User, error) {
 
 func (s *userStorage) getBySteamID(steamID string) (*dotagiftx.User, error) {
 	row := &dotagiftx.User{}
-	q := s.table().GetAllByIndex(userFieldSteamID, steamID).OrderBy(r.Desc("created_at"))
+	q := s.table().GetAllByIndex(userFieldSteamID, steamID).OrderBy("created_at").Limit(1)
 	if err := s.db.one(q, row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.UserErrNotFound

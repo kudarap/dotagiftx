@@ -145,9 +145,6 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
 
-	// HOTFIX for missing user data
-	existingUser, _ := s.userSvc.User(steamPlayer.ID)
-
 	// Account existed and checked login credentials.
 	if au != nil {
 		if au.Password != s.composePassword(steamPlayer.ID, au.UserID) {
@@ -166,17 +163,15 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 		return au, nil
 	}
 
+	// HOTFIX for missing user data
+	existingUser, _ := s.userSvc.User(steamPlayer.ID)
+
 	// Process account registration and save details.
-	au, err = s.createAccountFromSteam(steamPlayer)
+	au, err = s.createAccountFromSteam(steamPlayer, existingUser)
 	if err != nil {
 		return nil, err
 	}
 
-	// HOTFIX for missing user data
-	au.UserID = existingUser.ID
-	if err = s.authStg.Update(au); err != nil {
-		return nil, err
-	}
 	return au, nil
 }
 
@@ -216,20 +211,22 @@ func (s *authService) Auth(id string) (*Auth, error) {
 	return u, nil
 }
 
-func (s *authService) createAccountFromSteam(sp *SteamPlayer) (*Auth, error) {
-	u := &User{
-		SteamID: sp.ID,
-		Name:    sp.Name,
-		URL:     sp.URL,
-		Avatar:  sp.Avatar,
-	}
-	if err := s.userSvc.Create(u); err != nil {
-		return nil, err
+func (s *authService) createAccountFromSteam(sp *SteamPlayer, user *User) (*Auth, error) {
+	if user == nil {
+		user = &User{
+			SteamID: sp.ID,
+			Name:    sp.Name,
+			URL:     sp.URL,
+			Avatar:  sp.Avatar,
+		}
+		if err := s.userSvc.Create(user); err != nil {
+			return nil, err
+		}
 	}
 
-	au := &Auth{UserID: u.ID, Username: sp.ID}
+	au := &Auth{UserID: user.ID, Username: sp.ID}
 	au.RefreshToken = s.generateRefreshToken()
-	au.Password = s.composePassword(sp.ID, u.ID)
+	au.Password = s.composePassword(sp.ID, user.ID)
 	if err := s.authStg.Create(au); err != nil {
 		return nil, err
 	}
