@@ -17,8 +17,8 @@ RUN make build
 # final stage
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
-COPY --from=builder /code/dxserver /api
+COPY --from=builder /code/dxserver .
 
 LABEL Name=dotagiftx Version=0.22.1
-ENTRYPOINT exec ./api
+ENTRYPOINT exec ./dxserver
 EXPOSE 80
