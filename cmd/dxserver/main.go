@@ -84,10 +84,6 @@ func (app *application) setup() error {
 	if err != nil {
 		return err
 	}
-	clickHouseClient, err := setupClickHouse(app.config.ClickHouse)
-	if err != nil {
-		return err
-	}
 	rethinkClient, err := setupRethink(app.config.Rethink)
 	if err != nil {
 		return err
@@ -96,8 +92,15 @@ func (app *application) setup() error {
 	rethinkClient.SetTracer(traceSpan)
 
 	// Analytics stats capture.
-	if err = setupChangeFeeds(rethinkClient, clickHouseClient); err != nil {
-		return err
+	var clickHouseClient *clickhouse.Client
+	if app.config.StatsCaptureEnabled {
+		clickHouseClient, err = setupClickHouse(app.config.ClickHouse)
+		if err != nil {
+			return err
+		}
+		if err = setupChangeFeeds(rethinkClient, clickHouseClient); err != nil {
+			return err
+		}
 	}
 
 	// External services setup.
@@ -186,8 +189,10 @@ func (app *application) setup() error {
 		if err = rethinkClient.Close(); err != nil {
 			logSvc.Fatal("could not close rethink client", err)
 		}
-		if err = clickHouseClient.Close(); err != nil {
-			logSvc.Fatal("could not close clickhouse client", err)
+		if app.config.StatsCaptureEnabled {
+			if err = clickHouseClient.Close(); err != nil {
+				logSvc.Fatal("could not close clickhouse client", err)
+			}
 		}
 	}
 

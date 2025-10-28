@@ -26,6 +26,7 @@ type Config struct {
 	AppHost             string
 	ApiHost             string
 	SpanEnabled         bool `envconfig:"SPAN_ENABLED"`
+	StatsCaptureEnabled bool `envconfig:"STATS_CAPTURE_ENABLED"`
 	Upload              file.Config
 	AllowedImageSources []string `envconfig:"ALLOWED_IMAGE_SOURCES"`
 	Rethink             rethink.Config
