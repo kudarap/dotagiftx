@@ -178,7 +178,7 @@ export default function Header() {
               {isRecentTreasureNew() && (
                 <span
                   style={{
-                    color: 'yellowgreen',
+                    color: '#bcecff',
                     padding: '0 8px',
                     position: 'absolute',
                     fontSize: '0.6rem',
@@ -186,7 +186,7 @@ export default function Header() {
                     marginTop: '-0.24rem',
                     marginLeft: -14,
                   }}>
-                  New cosmic release
+                  New Winter Treasure
                 </span>
               )}
             </Link>

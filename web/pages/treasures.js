@@ -13,7 +13,7 @@ import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
 import { treasureList } from '@/service/api'
 
-const LATEST_TREASURE_DROP = new Date(2025, 8, 17)
+const LATEST_TREASURE_DROP = new Date(2025, 12, 15)
 
 const STILL_NEW_DAYS = 30
 

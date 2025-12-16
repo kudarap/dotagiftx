@@ -15,6 +15,14 @@ type Treasure struct {
 
 var AllTreasures = []Treasure{
 	{
+		"winter-2025-collectors-cache",
+		"Winter 2025 Collector's Cache",
+		"winter_2025_collectors_cache.png",
+		"mythical",
+		16,
+		releaseDate("2025-12-15"),
+	},
+	{
 		"cosmic-2025-heroes-hoard",
 		"Cosmic 2025 Heroes' Hoard",
 		"cosmic_2025_heroes_hoard.png",
@@ -47,7 +55,7 @@ var AllTreasures = []Treasure{
 		nil,
 	},
 	{
-		"crownfall-2024-collects-cache-ii",
+		"crownfall-2024-collectors-cache-ii",
 		"Crownfall 2024 Collector's Cache II",
 		"crownfall_2024_collect_s_cache_ii.png",
 		"mythical",
@@ -55,7 +63,7 @@ var AllTreasures = []Treasure{
 		nil,
 	},
 	{
-		"crownfall-2024-collects-cache",
+		"crownfall-2024-collectors-cache",
 		"Crownfall 2024 Collector's Cache",
 		"crownfall_2024_collect_s_cache.png",
 		"mythical",
