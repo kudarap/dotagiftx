@@ -2,6 +2,7 @@ package dotagiftx
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -60,7 +61,6 @@ type (
 	ItemImportResult struct {
 		Created int `json:"created"`
 		Updated int `json:"updated"`
-		Error   int `json:"error"`
 		Total   int `json:"total"`
 	}
 
@@ -299,19 +299,20 @@ func (s *itemService) Update(ctx context.Context, itm *Item) error {
 }
 
 func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
-	res := ItemImportResult{}
+	var result ItemImportResult
 
 	b, err := io.ReadAll(f)
 	if err != nil {
-		return res, NewXError(ItemErrImport, err)
+		return result, NewXError(ItemErrImport, err)
 	}
 
 	yf := &yamlFile{}
 	if err := yaml.Unmarshal(b, yf); err != nil {
-		return res, NewXError(ItemErrImport, err)
+		return result, NewXError(ItemErrImport, err)
 	}
 
-	res.Total = len(yf.Items)
+	var errs []error
+	result.Total = len(yf.Items)
 	for _, ii := range yf.Items {
 		itm := &Item{
 			Origin: yf.Origin,
@@ -325,21 +326,24 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 		if cur, _ := s.getItemByName(ii.Name); cur != nil {
 			itm.ID = cur.ID
 			if err := s.Update(ctx, itm); err != nil {
-				res.Error++
+				errs = append(errs, err)
 				continue
 			}
-			res.Updated++
+			result.Updated++
 			continue
 		}
 
 		if err := s.Create(ctx, itm); err != nil {
-			res.Error++
+			errs = append(errs, err)
 			continue
 		}
-		res.Created++
+		result.Created++
+	}
+	if len(errs) > 0 {
+		return result, errors.Join(errs...)
 	}
 
-	return res, nil
+	return result, nil
 }
 
 func (s *itemService) getItemByName(name string) (*Item, error) {
