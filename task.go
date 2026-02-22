@@ -39,7 +39,7 @@ type (
 		Status    TaskStatus   `json:"status"       db:"status,index"`
 		Priority  TaskPriority `json:"priority"     db:"priority,omitempty,index"`
 		Type      TaskType     `json:"type"         db:"type,omitempty,index"`
-		Payload   interface{}  `json:"payload"      db:"payload,omitempty"`
+		Payload   any          `json:"payload"      db:"payload,omitempty"`
 		Retry     int          `json:"retry"        db:"retry,omitempty"`
 		Note      string       `json:"note"         db:"note,omitempty"`
 		ElapsedMs int64        `json:"elapsed_ms"   db:"elapsed_ms,omitempty"`

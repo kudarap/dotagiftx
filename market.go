@@ -794,7 +794,7 @@ func (s *marketService) CatalogDetails(slug string, opts FindOpts) (*Catalog, er
 }
 
 type taskProcessor interface {
-	Queue(ctx context.Context, p TaskPriority, t TaskType, payload interface{}) (id string, err error)
+	Queue(ctx context.Context, p TaskPriority, t TaskType, payload any) (id string, err error)
 }
 
 func bench(l logging.Logger, name string, fn func()) {
