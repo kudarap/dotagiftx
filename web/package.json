@@ -1,6 +1,6 @@
 {
   "name": "dotagiftx",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "engines": {
-    "node": "22.x",
-    "npm": "10.x"
+    "node": "24.x",
+    "npm": "11.x"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
