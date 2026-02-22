@@ -44,9 +44,9 @@ build-worker-linux:
 		-ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
 
 docker-build:
-	docker build -t $(server_bin) .
+	docker build -t dotagiftx/$(server_bin) .
 docker-run:
-	docker run -it --rm -p 8000:8000 $(server_bin)
+	docker run -it --rm -p 8000:8000 dotagiftx/$(server_bin)
 
 web-build:
 	cd ./web && yarn dev && cd ..
