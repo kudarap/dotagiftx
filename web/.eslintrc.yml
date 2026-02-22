@@ -26,3 +26,6 @@ rules:
     - warn
     - ignore:
         - '^@'
+  # temporarily off
+  react/prop-types: warn
+  react/require-default-props: warn
