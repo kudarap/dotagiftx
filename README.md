@@ -10,6 +10,7 @@ Marketplace for giftable Dota 2 items
 
 - Go 1.26
 - Node 24.x
+- Yarn 1.22
 - Docker 29.x
 
 ### Local Setup
