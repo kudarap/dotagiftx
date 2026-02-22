@@ -390,16 +390,16 @@ function NoticeMe() {
 }
 
 function Incident() {
-  const storageKye = 'major-incident-data-loss-2025-10-25'
+  const storageKey = 'major-incident-data-loss-2025-10-25'
 
-  const [closed, setClosed] = React.useState(false)
+  const [closed, setClosed] = React.useState(true)
   React.useEffect(() => {
-    setClosed(!!Storage.get(storageKye))
+    setClosed(!!Storage.get(storageKey))
   }, [])
 
   const onClose = () => {
     if (confirm('Confirm close announcement') == true) {
-      Storage.save(storageKye, true)
+      Storage.save(storageKey, true)
       setClosed(true)
     }
   }

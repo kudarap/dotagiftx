@@ -5,7 +5,7 @@ type (
 	FindOpts struct {
 		Keyword       string
 		KeywordFields []string
-		Filter        interface{}
+		Filter        any
 		UserID        string
 		Sort          string
 		Desc          bool

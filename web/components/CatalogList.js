@@ -118,8 +118,8 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                       {isRecentMode
                         ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
                         : bidType
-                        ? item.bid_count
-                        : item.quantity}
+                          ? item.bid_count
+                          : item.quantity}
                     </Typography>
                   </TableCell>
                 )}
@@ -137,13 +137,14 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
   )
 }
 CatalogList.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  items: PropTypes.arrayOf(PropTypes.object),
   variant: PropTypes.string,
   loading: PropTypes.bool,
   error: PropTypes.string,
   bidType: PropTypes.bool,
 }
 CatalogList.defaultProps = {
+  items: [],
   variant: '',
   loading: false,
   error: null,

@@ -4,10 +4,16 @@ DotagiftX web user interface
 
 ### Requirements
 
-- NodeJS `22`
-- Yarn `1.22`
+- Node 24.x https://nodejs.org/en/download
+- Yarn 4.x https://yarnpkg.com/getting-started/install
 
 ### Local Setup
 
-- `yarn`
-- `yarn dev`
+- Open a new terminal to setup and run web client.
+
+```shell
+cd web
+cp .env.sample .env
+yarn
+yarn dev
+```

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/kudarap/dotagiftx"
 )
 
@@ -22,8 +23,8 @@ func (c *Client) CaptureTrackStats(ctx context.Context, track dotagiftx.Track) e
 		created_at
 	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
 
-	err := c.db.AsyncInsert(
-		ctx,
+	err := c.db.Exec(
+		clickhouse.Context(ctx, clickhouse.WithAsync(false)),
 		query,
 		false,
 		track.ID,
@@ -63,8 +64,8 @@ func (c *Client) CaptureMarketStats(ctx context.Context, market dotagiftx.Market
 		updated_at,
 	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 
-	err := c.db.AsyncInsert(
-		ctx,
+	err := c.db.Exec(
+		clickhouse.Context(ctx, clickhouse.WithAsync(false)),
 		query,
 		false,
 		market.ID,
