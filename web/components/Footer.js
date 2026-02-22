@@ -27,7 +27,7 @@ const useStyles = makeStyles()(theme => ({
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
     // background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) center -800px`,
-    background: `linear-gradient(0deg, rgba(49, 38, 56, 0.36) 0%, rgba(83, 32, 85, 0.85) 100%),url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1758089866935) center -800px`,
+    background: `linear-gradient(0deg, rgba(49, 38, 56, 0.36) 0%, rgba(83, 32, 85, 0.85) 100%),url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1765871187994) center top`,
   },
   list: {
     [theme.breakpoints.down('sm')]: {

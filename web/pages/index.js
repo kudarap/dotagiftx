@@ -21,6 +21,7 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import { right } from '@popperjs/core'
 // import SearchInput from '@/components/SearchInput'
 // import CatalogList from '@/components/CatalogList'
 // import Link from '@/components/Link'
@@ -152,11 +153,33 @@ export default function Index({ marketSummary, trendingItems }) {
           }}>
           <div
             style={{
+              position: 'absolute',
+              width: '100%',
+            }}>
+            <div style={{ marginTop: -170, textAlign: 'center' }}>
+              <video
+                width={700}
+                preload="auto"
+                poster="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.png"
+                autoPlay
+                muted
+                loop
+                playsInline>
+                <source
+                  type="video/webm"
+                  src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.webm"
+                />
+              </video>
+            </div>
+          </div>
+
+          <div
+            style={{
               background:
-                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1758089866935) no-repeat center center',
+                'url(https://cdn.steamstatic.com/apps/dota2/images/dota_react/largo/treasure_background.png) no-repeat center center',
               backgroundColor: '#292638ff',
               backgroundSize: 'cover',
-              backgroundPositionY: -150,
+              backgroundPositionY: -135,
               width: '100%',
               height: '100%',
             }}></div>

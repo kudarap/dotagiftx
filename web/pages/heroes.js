@@ -58,15 +58,15 @@ export default function Heroes({ heroes: allHeroes }) {
             position: 'relative',
             zIndex: 0,
           }}>
-          <div
+          {/* <div
             style={{
               background:
-                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
+                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center top',
               backgroundColor: '#2a2638ff',
               backgroundSize: 'cover',
               width: '100%',
               height: '100%',
-            }}></div>
+            }}></div> */}
         </div>
 
         <Container style={{ position: 'relative' }}>

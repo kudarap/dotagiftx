@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/clickhouse"
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/file"
@@ -87,6 +90,18 @@ func (app *application) setup() error {
 	}
 	traceSpan := tracing.NewTracer(app.config.SpanEnabled, rethink.NewSpan(rethinkClient))
 	rethinkClient.SetTracer(traceSpan)
+
+	// Analytics stats capture.
+	var clickHouseClient *clickhouse.Client
+	if app.config.StatsCaptureEnabled {
+		clickHouseClient, err = setupClickHouse(app.config.ClickHouse)
+		if err != nil {
+			return err
+		}
+		if err = setupChangeFeeds(rethinkClient, clickHouseClient); err != nil {
+			return err
+		}
+	}
 
 	// External services setup.
 	logSvc.Println("setting up external services...")
@@ -174,6 +189,11 @@ func (app *application) setup() error {
 		if err = rethinkClient.Close(); err != nil {
 			logSvc.Fatal("could not close rethink client", err)
 		}
+		if app.config.StatsCaptureEnabled {
+			if err = clickHouseClient.Close(); err != nil {
+				logSvc.Fatal("could not close clickhouse client", err)
+			}
+		}
 	}
 
 	return nil
@@ -245,6 +265,44 @@ func setupRedis(cfg redis.Config) (c *redis.Client, err error) {
 
 	err = connRetry("redis", fn)
 	return
+}
+
+func setupClickHouse(cfg clickhouse.Config) (c *clickhouse.Client, err error) {
+	c = &clickhouse.Client{}
+	fn := func() error {
+		c, err = clickhouse.New(cfg)
+		if err != nil {
+			return fmt.Errorf("could not setup clickhouse client: %s", err)
+		}
+
+		return nil
+	}
+
+	err = connRetry("clickhouse", fn)
+	return
+}
+
+func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhouse.Client) error {
+	ctx := context.Background()
+	err := rethinkClient.ListenChangeFeed("track", func(prev, next []byte) error {
+		var v dotagiftx.Track
+		if err := json.Unmarshal(next, &v); err != nil {
+			return err
+		}
+		return clickhouseClient.CaptureTrackStats(ctx, v)
+	})
+	if err != nil {
+		return err
+	}
+
+	err = rethinkClient.ListenChangeFeed("market", func(prev, next []byte) error {
+		var v dotagiftx.Market
+		if err := json.Unmarshal(next, &v); err != nil {
+			return err
+		}
+		return clickhouseClient.CaptureMarketStats(ctx, v)
+	})
+	return err
 }
 
 func connRetry(name string, fn func() error) error {

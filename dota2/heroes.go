@@ -764,4 +764,10 @@ var AllHeroes = []Hero{
 		"zuus.png",
 		"intelligence",
 	},
+	{
+		"largo",
+		"Largo",
+		"largo.png",
+		"strength",
+	},
 }

@@ -26,6 +26,8 @@ type Client struct {
 	db     *r.Session
 	tables []string
 
+	changeFeeds []*changeFeed
+
 	tracing *tracing.Tracer
 }
 
@@ -49,7 +51,8 @@ func New(c Config) (*Client, error) {
 		log.Fatal("could not get table:", err)
 	}
 
-	return &Client{sess, ts, nil}, nil
+	var feed []*changeFeed
+	return &Client{sess, ts, feed, nil}, nil
 }
 
 func (c *Client) SetTracer(t *tracing.Tracer) {
@@ -58,6 +61,11 @@ func (c *Client) SetTracer(t *tracing.Tracer) {
 
 // Close ends rethink database session.
 func (c *Client) Close() error {
+	for _, feed := range c.changeFeeds {
+		if err := feed.close(); err != nil {
+			return err
+		}
+	}
 	return c.db.Close()
 }
 

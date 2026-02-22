@@ -47,7 +47,7 @@ func (s *authStorage) Get(id string) (*dotagiftx.Auth, error) {
 
 func (s *authStorage) GetByUsername(username string) (*dotagiftx.Auth, error) {
 	row := &dotagiftx.Auth{}
-	q := s.table().GetAllByIndex(authFieldUsername, username)
+	q := s.table().GetAllByIndex(authFieldUsername, username).OrderBy("created_at").Limit(1)
 	if err := s.db.one(q, row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.AuthErrNotFound
