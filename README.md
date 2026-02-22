@@ -9,8 +9,6 @@ Marketplace for giftable Dota 2 items
 ### Requirements
 
 - Go 1.26 https://go.dev/dl/
-- Node 24.x https://nodejs.org/en/download
-- Yarn 1.22 https://classic.yarnpkg.com/en/docs/install
 - Docker 29.x https://docs.docker.com/get-docker/
 
 ### Local Setup
@@ -33,11 +31,4 @@ make local
 make run
 ```
 
-- Open a new terminal to setup and run web client.
-
-```shell
-cd web
-cp .env.sample .env
-yarn
-yarn dev
-```
+- Run web client locally [web](web/README.md)
