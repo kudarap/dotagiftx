@@ -1,12 +1,15 @@
----
+root: true
 extends:
+  - eslint:recommended
   - airbnb
+  - plugin:react/recommended
   - prettier
-  - prettier/react
 plugins:
+  - react
   - prettier
+env:
+  browser: true
 rules:
-  prettier/prettier: error
   no-plusplus: off
   no-continue: off
   react/jsx-props-no-spreading: off
@@ -19,5 +22,6 @@ rules:
     - ignore:
         - '^@'
   import/extensions:
+    - warn
     - ignore:
         - '^@'
