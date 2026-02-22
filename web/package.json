@@ -29,7 +29,7 @@
     "lodash": "^4.17.23",
     "material-ui-popup-state": "^2.0.1",
     "moment": "^2.30.1",
-    "next": "^12.3.7",
+    "next": "^15.5.10",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-cool-inview": "^2.0.9",
