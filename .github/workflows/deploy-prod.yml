@@ -6,8 +6,6 @@ permissions:
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
 
 env:
   HOST: root@chiligarlic.com
@@ -19,14 +17,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: golangci/golangci-lint-action@v9
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: 1.26
+          go-version-file: "go.mod"
+
+      - uses: golangci/golangci-lint-action@v9
 
       - name: Compile
         run: make build
@@ -55,5 +54,3 @@ jobs:
           docker save -o $IMAGE_FILE $IMAGE_NAME
           scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
           ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE"
-
-#          ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE && ./restart.sh"
