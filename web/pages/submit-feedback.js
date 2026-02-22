@@ -5,9 +5,6 @@ import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import { FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material'
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -59,8 +56,8 @@ export default function About() {
   useEffect(() => {
     if (!isLoggedIn) {
       router.push('/')
-      return null
     }
+    return null
   }, [])
 
   const handleSubmit = () => {
@@ -98,10 +95,6 @@ export default function About() {
 
   const handleProfileChange = e => {
     setPayload({ ...payload, profile: e.target.value })
-  }
-
-  const handleReservedChange = e => {
-    setPayload({ ...payload, profile: e.target.checked })
   }
 
   return (

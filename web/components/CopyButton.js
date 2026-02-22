@@ -6,8 +6,9 @@ import CheckIcon from '@mui/icons-material/Done'
 
 export default function CopyButton(props) {
   const [copied, setCopied] = useState(false)
+  const { value } = props
   const handleClick = () => {
-    navigator.clipboard.writeText(props.value)
+    navigator.clipboard.writeText(value)
     setCopied(true)
   }
   return (

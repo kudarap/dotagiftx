@@ -56,11 +56,14 @@ const assetModifier = asset => {
 const getInventoryURL = steamID => `https://steamcommunity.com/profiles/${steamID}/inventory/#570_2`
 
 const formatDuration = ms => {
-  if (ms < 0) ms = -ms
+  let millis = ms
+  if (millis < 0) {
+    millis = -millis
+  }
   const time = {
-    minute: Math.floor(ms / 60000) % 60,
-    second: Math.floor(ms / 1000) % 60,
-    m: Math.floor(ms) % 1000,
+    minute: Math.floor(millis / 60000) % 60,
+    second: Math.floor(millis / 1000) % 60,
+    m: Math.floor(millis) % 1000,
   }
 
   return Object.entries(time)

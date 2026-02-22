@@ -67,6 +67,7 @@ export default function History({ status, summary, error }) {
   const [datatable, setDatatable] = React.useState(defaultData)
   const [filter, setFilter] = React.useState({ ...defaultFilter, status })
   const [loading, setLoading] = React.useState(false)
+  const [filterError, setFilterError] = React.useState('')
 
   React.useEffect(() => {
     setDatatable(defaultData)
@@ -89,7 +90,7 @@ export default function History({ status, summary, error }) {
           setDatatable({ ...datatable, data })
         }
       } catch (e) {
-        console.log('error getting history', e.message)
+        setFilterError('error getting history', e.message)
       }
       setLoading(false)
     })()
@@ -111,8 +112,8 @@ export default function History({ status, summary, error }) {
     }
   })
 
-  summary.sold = format.numberWithCommas(summary.sold)
-  summary.reserved = format.numberWithCommas(summary.reserved)
+  const summarySold = format.numberWithCommas(summary.sold)
+  const summaryReserved = format.numberWithCommas(summary.reserved)
   return (
     <>
       <Header />
@@ -136,16 +137,22 @@ export default function History({ status, summary, error }) {
               component={Link}
               href="/history/reserved"
               style={status === MARKET_STATUS_RESERVED ? { textDecoration: 'underline' } : null}>
-              {summary.reserved} Reserved
+              {summaryReserved} Reserved
             </Typography>
             &nbsp;&middot;&nbsp;
             <Typography
               component={Link}
               href="/history/delivered"
               style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : null}>
-              {summary.sold} Delivered
+              {summarySold} Delivered
             </Typography>
           </Typography>
+
+          {filterError && (
+            <Typography align="center" variant="body2" color="error">
+              {filterError}
+            </Typography>
+          )}
 
           {error && <Typography color="error">{error.message.split(':')[0]}</Typography>}
           <MarketActivity

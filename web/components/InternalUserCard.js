@@ -12,7 +12,7 @@ import { getUserTagFromBoons } from '@/lib/badge'
 
 export default function InternalUserCard({ name, id, img, boons, discordURL }) {
   const userTag = getUserTagFromBoons(boons)
-  const color = tagSettings[userTag].color
+  const { color } = tagSettings[userTag]
 
   return (
     <Box sx={{ display: 'inline-flex' }}>

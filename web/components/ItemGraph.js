@@ -32,7 +32,7 @@ const marketDeliveredFilter = {
   index: 'item_id',
 }
 
-const ItemGraph = ({ itemId = '', itemName = '' }) => {
+function ItemGraph({ itemId = '', itemName = '' }) {
   // Retrieve market sales graph.
   const shouldLoadGraph = true
   marketSalesGraphFilter.item_id = itemId

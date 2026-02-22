@@ -1,6 +1,6 @@
 import { API_URL } from '@/service/api'
 
-const SITEMAP_URL = API_URL + '/sitemap.xml'
+const SITEMAP_URL = `${API_URL}/sitemap.xml`
 
 function SiteMap() {
   // getServerSideProps will do the heavy lifting

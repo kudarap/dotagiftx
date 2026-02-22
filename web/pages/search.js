@@ -43,14 +43,16 @@ function SelectSort({ className, style, ...other }) {
     <FormControl size="small" {...{ className, style }}>
       <Select id="select-sort" {...other}>
         {sortOpts.map(opt => (
-          <MenuItem value={opt.value}>{opt.label}</MenuItem>
+          <MenuItem key={opt.value} value={opt.value}>
+            {opt.label}
+          </MenuItem>
         ))}
       </Select>
     </FormControl>
   )
 }
 
-export default function Search({ catalogs: initialCatalogs, marketSummary, filter, canonicalURL }) {
+export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
   const { classes } = useStyles()
 
   const [catalogs, setCatalogs] = React.useState(initialCatalogs)

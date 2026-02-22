@@ -11,10 +11,6 @@ import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
-import ProfileCard from '@/components/ProfileCard'
-import Table from '@mui/material/Table'
-import { Paper } from '@mui/material'
-import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -140,30 +136,30 @@ export default function Faq() {
             Donator badge will be on your profile forever and make your avatar glow for 30 days.
           </Typography>
 
-          {/*<br />*/}
+          {/* <br /> */}
 
-          {/*<Typography variant="h5">What the badge looks like?</Typography>*/}
-          {/*<Paper style={{ padding: 24, margin: '10px auto', width: 600 }}>*/}
-          {/*  <ProfileCard*/}
-          {/*    user={{*/}
-          {/*      id: 'f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17',*/}
-          {/*      steam_id: '76561198088587178',*/}
-          {/*      name: 'kudarap',*/}
-          {/*      url: 'https://steamcommunity.com/id/kudarap/',*/}
-          {/*      avatar: '6401d0c455e255525e605d328b66375099e46bb2.jpg',*/}
-          {/*      status: 0,*/}
-          {/*      donation: 1,*/}
-          {/*      donated_at: '2021-04-22T04:22:16.613Z',*/}
-          {/*      created_at: '2020-06-18T13:13:43.926+08:00',*/}
-          {/*      updated_at: '2021-03-16T14:23:59.871+08:00',*/}
-          {/*    }}*/}
-          {/*    marketSummary={{*/}
-          {/*      live: 92,*/}
-          {/*      reserved: 2,*/}
-          {/*      sold: 26,*/}
-          {/*    }}*/}
-          {/*  />*/}
-          {/*</Paper>*/}
+          {/* <Typography variant="h5">What the badge looks like?</Typography> */}
+          {/* <Paper style={{ padding: 24, margin: '10px auto', width: 600 }}> */}
+          {/*  <ProfileCard */}
+          {/*    user={{ */}
+          {/*      id: 'f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17', */}
+          {/*      steam_id: '76561198088587178', */}
+          {/*      name: 'kudarap', */}
+          {/*      url: 'https://steamcommunity.com/id/kudarap/', */}
+          {/*      avatar: '6401d0c455e255525e605d328b66375099e46bb2.jpg', */}
+          {/*      status: 0, */}
+          {/*      donation: 1, */}
+          {/*      donated_at: '2021-04-22T04:22:16.613Z', */}
+          {/*      created_at: '2020-06-18T13:13:43.926+08:00', */}
+          {/*      updated_at: '2021-03-16T14:23:59.871+08:00', */}
+          {/*    }} */}
+          {/*    marketSummary={{ */}
+          {/*      live: 92, */}
+          {/*      reserved: 2, */}
+          {/*      sold: 26, */}
+          {/*    }} */}
+          {/*  /> */}
+          {/* </Paper> */}
         </Container>
       </main>
 

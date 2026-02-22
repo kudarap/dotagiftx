@@ -24,12 +24,10 @@ const Item = styled(Paper)(({ theme }) => ({
 }))
 
 const shuffleList = arr => {
-  arr.sort(function (a, b) {
-    return Math.random() - 0.5
-  })
+  arr.sort(() => Math.random() - 0.5)
 }
 
-export default function Heroes({ heroes: allHeroes }) {
+export default function Heroes({ heroes: allHeroes, error }) {
   shuffleList(allHeroes)
   const [heroes, setHeroes] = useState(allHeroes)
   const [searchTerm, setSearchTerm] = useState()
@@ -70,6 +68,12 @@ export default function Heroes({ heroes: allHeroes }) {
         </div>
 
         <Container style={{ position: 'relative' }}>
+          {error && (
+            <Typography align="center" variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
+
           <Typography
             sx={{ mt: -54.5, mb: 2, letterSpacing: 3, textShadow: '0 0 8px #000000b0' }}
             variant="h3"
@@ -87,25 +91,23 @@ export default function Heroes({ heroes: allHeroes }) {
           />
 
           <Grid container spacing={1} sx={{ mt: 2 }}>
-            {heroes.map(hero => {
-              return (
-                <Grid item xs={4} md={2} key={hero.name}>
-                  <Link href={`/search?hero=${hero.name}`} underline="none">
-                    <Item>
-                      <div>
-                        <Image
-                          src={'/assets/heroes/' + hero.image}
-                          alt={hero.name}
-                          width={256 * 0.7}
-                          height={144 * 0.7}
-                        />
-                      </div>
-                      <Typography noWrap>{hero.name}</Typography>
-                    </Item>
-                  </Link>
-                </Grid>
-              )
-            })}
+            {heroes.map(hero => (
+              <Grid item xs={4} md={2} key={hero.name}>
+                <Link href={`/search?hero=${hero.name}`} underline="none">
+                  <Item>
+                    <div>
+                      <Image
+                        src={`/assets/heroes/${hero.image}`}
+                        alt={hero.name}
+                        width={256 * 0.7}
+                        height={144 * 0.7}
+                      />
+                    </div>
+                    <Typography noWrap>{hero.name}</Typography>
+                  </Item>
+                </Link>
+              </Grid>
+            ))}
           </Grid>
         </Container>
       </main>
@@ -116,7 +118,7 @@ export default function Heroes({ heroes: allHeroes }) {
 }
 
 Heroes.propTypes = {
-  heroes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  heroes: PropTypes.arrayOf(PropTypes.object),
   error: PropTypes.string,
 }
 Heroes.defaultProps = {

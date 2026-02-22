@@ -9,7 +9,11 @@ plugins:
   - prettier
 env:
   browser: true
+  es2020: true
+parserOptions:
+  ecmaVersion: 2020
 rules:
+  eqeqeq: off
   no-plusplus: off
   no-continue: off
   react/jsx-props-no-spreading: off
@@ -25,3 +29,6 @@ rules:
     - warn
     - ignore:
         - '^@'
+  # temporarily off
+  react/prop-types: warn
+  react/require-default-props: warn

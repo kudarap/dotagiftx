@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Fab from '@mui/material/Fab'
 import VoteIcon from '@mui/icons-material/HowToVote'
+import { teal } from '@mui/material/colors'
+import { Slide } from '@mui/material'
 import VoteDialog from '@/components/VoteDialog'
 import { reportSearch } from '@/service/api'
 import { REPORT_TYPE_SURVEY } from '@/constants/report'
-import { teal } from '@mui/material/colors'
-import { Slide } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
