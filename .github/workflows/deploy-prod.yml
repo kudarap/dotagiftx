@@ -19,12 +19,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v8
       - uses: golangci/golangci-lint-action@v8
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.25
+          go-version: 1.26
       - name: Compile
         run: make build
       - name: Test

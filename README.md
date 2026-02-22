@@ -8,7 +8,7 @@ Marketplace for giftable Dota 2 items
 
 ### Requirements
 
-- Go `1.25`
+- Go `1.26`
 - Docker `29`
 
 ### Local Setup
