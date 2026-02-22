@@ -8,36 +8,27 @@ Marketplace for giftable Dota 2 items
 
 ### Requirements
 
-- Go 1.26
-- Node 24.x
-- Yarn 1.22
-- Docker 29.x
+- Go 1.26 https://go.dev/dl/
+- Docker 29.x https://docs.docker.com/get-docker/
 
 ### Local Setup
 
 - Create a new env config and change accordingly. Change `DG_PAYPAL_*` values with your own sandbox account credentials.
 
 ```shell
-$ cp .env.sample .env
+cp .env.sample .env
 ```
 
 - Open a new terminal to setup databases.
 
 ```shell
-$ make local
+make local
 ```
 
 - Open a new terminal to run backend server.
 
 ```shell
-$ make run
+make run
 ```
 
-- Open a new terminal to setup and run web client.
-
-```shell
-$ cd web
-$ cp .env.sample .env
-$ yarn
-$ yarn dev
-```
+- Run web client locally [web](web/README.md)
