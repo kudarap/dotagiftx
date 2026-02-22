@@ -12,6 +12,7 @@ env:
 rules:
   no-plusplus: off
   no-continue: off
+  eqeqeq: off
   react/jsx-props-no-spreading: off
   react/jsx-closing-bracket-location: off
   react/forbid-prop-types: off

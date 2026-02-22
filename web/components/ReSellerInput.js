@@ -18,11 +18,7 @@ export default function ReSellInput(props) {
           </Typography>
         }
       />
-      {checked && (
-        <>
-          <TextField {...props} disabled={!checked} required={checked} autoFocus />
-        </>
-      )}
+      {checked && <TextField {...props} disabled={!checked} required={checked} autoFocus />}
       <br />
       <br />
     </div>

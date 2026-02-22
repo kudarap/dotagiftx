@@ -2,8 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
-import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
+import { Alert } from '@mui/material'
+import Avatar from '@/components/Avatar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
@@ -14,7 +15,6 @@ import {
   STEAM_PROFILE_BASE_URL,
   STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
-import { Alert } from '@mui/material'
 import Link from '@/components/Link'
 import { dateFromNow } from '@/lib/format'
 

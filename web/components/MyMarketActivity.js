@@ -3,9 +3,8 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import { debounce } from '@mui/material'
 import Typography from '@mui/material/Typography'
+import { lightGreen, teal } from '@mui/material/colors'
 import CopyButton from '@/components/CopyButton'
-import { lightGreen } from '@mui/material/colors'
-import { teal } from '@mui/material/colors'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
   MARKET_TYPE_ASK,

@@ -6,6 +6,9 @@ import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
+import moment from 'moment'
+import { WarningAmber } from '@mui/icons-material'
+import { Box } from '@mui/material'
 import {
   APP_NAME,
   APP_URL,
@@ -42,9 +45,6 @@ import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
-import moment from 'moment'
-import { WarningAmber } from '@mui/icons-material'
-import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   main: {

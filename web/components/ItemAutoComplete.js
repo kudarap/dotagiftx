@@ -134,6 +134,4 @@ ItemAutoComplete.defaultProps = {
   forwardedRef: null,
 }
 
-export default React.forwardRef((props, ref) => {
-  return <ItemAutoComplete forwardedRef={ref} {...props} />
-})
+export default React.forwardRef((props, ref) => <ItemAutoComplete forwardedRef={ref} {...props} />)

@@ -2,13 +2,13 @@ import React from 'react'
 import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import LaunchIcon from '@mui/icons-material/Launch'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import Divider from '@mui/material/Divider'
 import Link from '@/components/Link'
-import LaunchIcon from '@mui/icons-material/Launch'
 
 const useStyles = makeStyles()(theme => ({
   main: {

@@ -204,7 +204,7 @@ Middleman.defaultProps = {
 
 // This gets called on every request
 export async function getServerSideProps(context) {
-  let users = []
+  const users = []
   for (const id of middlemanUserIds) {
     try {
       users.push(await user(id))

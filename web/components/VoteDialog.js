@@ -14,13 +14,12 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import VoteIcon from '@mui/icons-material/HowToVote'
 import RemoveIcon from '@mui/icons-material/Close'
+import { TextField, Alert } from '@mui/material'
 import { reportCreate } from '@/service/api'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
 import { REPORT_LABEL_SURVEY_NEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
-import { TextField } from '@mui/material'
-import { Alert } from '@mui/material'
 
 const voteOptions = shuffle([
   'Inventory import from Steam',

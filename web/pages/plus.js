@@ -1,8 +1,5 @@
 import React, { useContext } from 'react'
 import Head from 'next/head'
-import { USER_SUBSCRIPTION_MAP_COLOR, USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
-import AppContext from '@/components/AppContext'
-import { myProfile } from '@/service/api'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -15,12 +12,15 @@ import TimelineConnector from '@mui/lab/TimelineConnector'
 import TimelineContent from '@mui/lab/TimelineContent'
 import TimelineDot from '@mui/lab/TimelineDot'
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
+import { Alert } from '@mui/material'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import { APP_NAME } from '@/constants/strings'
 import Link from '@/components/Link'
-import { Alert } from '@mui/material'
+import { myProfile } from '@/service/api'
+import AppContext from '@/components/AppContext'
+import { USER_SUBSCRIPTION_MAP_COLOR, USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
 import { dateCalendar } from '@/lib/format'
 
 const FeatureList = styled('ul')(({ theme }) => ({
@@ -300,55 +300,53 @@ export default function Plus() {
 
 function FeatureUnlockables() {
   return (
-    <React.Fragment>
-      <Timeline>
-        <TimelineItem>
-          <TimelineOppositeContent color="text.secondary">5 subscribers</TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent>
-            <Typography>Gem of Truesight</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Grants vision to all buy orders
-            </Typography>
-          </TimelineContent>
-        </TimelineItem>
-        <TimelineItem>
-          <TimelineOppositeContent color="text.secondary">10 subscribers</TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent>
-            <Typography>Seer Stone</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Provides an analytics and monitoring dashboard
-            </Typography>
-          </TimelineContent>
-        </TimelineItem>
-        <TimelineItem>
-          <TimelineOppositeContent color="text.secondary">??</TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent>
-            <Typography>Fusion Rune</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Ability to create your own cache
-            </Typography>
-          </TimelineContent>
-        </TimelineItem>
-        <TimelineItem>
-          <TimelineOppositeContent color="text.secondary">???</TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-          </TimelineSeparator>
-          <TimelineContent>???</TimelineContent>
-        </TimelineItem>
-      </Timeline>
-    </React.Fragment>
+    <Timeline>
+      <TimelineItem>
+        <TimelineOppositeContent color="text.secondary">5 subscribers</TimelineOppositeContent>
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector />
+        </TimelineSeparator>
+        <TimelineContent>
+          <Typography>Gem of Truesight</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Grants vision to all buy orders
+          </Typography>
+        </TimelineContent>
+      </TimelineItem>
+      <TimelineItem>
+        <TimelineOppositeContent color="text.secondary">10 subscribers</TimelineOppositeContent>
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector />
+        </TimelineSeparator>
+        <TimelineContent>
+          <Typography>Seer Stone</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Provides an analytics and monitoring dashboard
+          </Typography>
+        </TimelineContent>
+      </TimelineItem>
+      <TimelineItem>
+        <TimelineOppositeContent color="text.secondary">??</TimelineOppositeContent>
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector />
+        </TimelineSeparator>
+        <TimelineContent>
+          <Typography>Fusion Rune</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Ability to create your own cache
+          </Typography>
+        </TimelineContent>
+      </TimelineItem>
+      <TimelineItem>
+        <TimelineOppositeContent color="text.secondary">???</TimelineOppositeContent>
+        <TimelineSeparator>
+          <TimelineDot />
+        </TimelineSeparator>
+        <TimelineContent>???</TimelineContent>
+      </TimelineItem>
+    </Timeline>
   )
 }

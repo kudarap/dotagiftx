@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Image from 'next/image'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
-import Image from 'next/image'
 
 const baseSizeQuality = 20
 export function retinaSrcSet(filename, width, height) {

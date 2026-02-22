@@ -2,11 +2,11 @@ import React from 'react'
 import Head from 'next/head'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { Divider } from '@mui/material'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import { APP_NAME } from '@/constants/strings'
-import { Divider } from '@mui/material'
 import Link from '@/components/Link'
 
 export default function ThanksSubscriber() {

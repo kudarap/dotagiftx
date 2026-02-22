@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
+import PropTypes from 'prop-types'
 import Avatar from '@/components/Avatar'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
@@ -12,7 +13,6 @@ import Button from '@/components/Button'
 import SteamIcon from '@/components/SteamIcon'
 import DiscordIcon from '@/components/DiscordIcon'
 import { version } from '@/service/api'
-import PropTypes from 'prop-types'
 
 const useStyles = makeStyles()(theme => ({
   main: {
