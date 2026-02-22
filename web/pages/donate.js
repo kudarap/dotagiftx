@@ -5,16 +5,12 @@ import Typography from '@mui/material/Typography'
 import AwardIcon from '@mui/icons-material/Flare'
 import KeyIcon from '@mui/icons-material/VpnKey'
 import MoneyIcon from '@mui/icons-material/LocalAtm'
-import Table from '@mui/material/Table'
-import { Paper } from '@mui/material'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
-import ProfileCard from '@/components/ProfileCard'
-import DonatorBadge from '@/components/DonatorBadge'
 
 const useStyles = makeStyles()(theme => ({
   main: {

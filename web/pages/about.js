@@ -63,7 +63,7 @@ export default function About({ build }) {
           <br />
 
           <Typography variant="h5" component="h2" gutterBottom>
-            Who's behind it?
+            Who&apos;s behind it?
           </Typography>
           <Avatar src="/kudarap.jpg" style={{ width: 100, height: 100 }} />
           <Typography color="textSecondary">

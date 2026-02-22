@@ -24,10 +24,10 @@ const Item = styled(Paper)(({ theme }) => ({
 }))
 
 const shuffleList = arr => {
-  arr.sort((a, b) => Math.random() - 0.5)
+  arr.sort(() => Math.random() - 0.5)
 }
 
-export default function Heroes({ heroes: allHeroes }) {
+export default function Heroes({ heroes: allHeroes, error }) {
   shuffleList(allHeroes)
   const [heroes, setHeroes] = useState(allHeroes)
   const [searchTerm, setSearchTerm] = useState()
@@ -68,6 +68,12 @@ export default function Heroes({ heroes: allHeroes }) {
         </div>
 
         <Container style={{ position: 'relative' }}>
+          {error && (
+            <Typography align="center" variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
+
           <Typography
             sx={{ mt: -54.5, mb: 2, letterSpacing: 3, textShadow: '0 0 8px #000000b0' }}
             variant="h3"
@@ -112,7 +118,7 @@ export default function Heroes({ heroes: allHeroes }) {
 }
 
 Heroes.propTypes = {
-  heroes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  heroes: PropTypes.arrayOf(PropTypes.object),
   error: PropTypes.string,
 }
 Heroes.defaultProps = {
