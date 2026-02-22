@@ -39,7 +39,7 @@ func main() {
 	// Benchmark things up.
 	ts := time.Now()
 	defer func() {
-		fmt.Println(time.Now().Sub(ts))
+		fmt.Println(time.Since(ts))
 	}()
 
 	items, _ := getDelivered(1)
@@ -48,7 +48,7 @@ func main() {
 	for _, item := range items {
 		result, err := verify.Delivery(ctx, assetSrc, item.User.Name, item.PartnerSteamID, item.Item.Name)
 		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println(fmt.Sprintf("%s -> %s (%s)", item.User.Name, item.PartnerSteamID, item.Item.Name))
+		fmt.Printf("%s -> %s (%s)\n", item.User.Name, item.PartnerSteamID, item.Item.Name)
 		fmt.Println(strings.Repeat("-", 70))
 		if err != nil {
 			errorCtr++
@@ -85,17 +85,15 @@ func main() {
 		fmt.Println("")
 	}
 
-	fmt.Println(fmt.Sprintf("%d/%d total | %d error", okCtr, len(items), errorCtr))
-	fmt.Println(fmt.Sprintf("%d private | %d nohit | %d item | %d seller",
-		privateCtr, noHitCtr, itemCtr, sellerCtr))
-
+	fmt.Printf("%d/%d total | %d error\n", okCtr, len(items), errorCtr)
+	fmt.Printf("%d private | %d nohit | %d item | %d seller\n", privateCtr, noHitCtr, itemCtr, sellerCtr)
 }
 
 func getDelivered(limit int) ([]dotagiftx.Market, error) {
 	resp, err := http.Get(fmt.Sprintf(
-		"https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400&user_id=%s",
+		"https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400&id=%s",
 		limit,
-		"ddabf335-7286-430a-8403-00e9cda45cfb",
+		"53bbe421-a9f3-48ad-8cbd-c16ee1c97ec3",
 	))
 	if err != nil {
 		return nil, err

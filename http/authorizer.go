@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
 )
 
 func (s *Server) authorizer(next http.Handler) http.Handler {
@@ -12,13 +11,12 @@ func (s *Server) authorizer(next http.Handler) http.Handler {
 		// Validate token from header.
 		c, err := ParseFromHeader(r.Header)
 		if err != nil {
-			respondError(w, errors.New(dotagiftx.AuthErrNoAccess, err))
+			respondError(w, dotagiftx.AuthErrNoAccess.X(err))
 			return
 		}
 
 		// Checks auth level required.
-
-		// Inject auth details to context that will later be use as
+		// Inject auth details to context that will later be used as
 		// context user and authorizer level.
 		ctx := dotagiftx.AuthToContext(r.Context(), &dotagiftx.Auth{
 			UserID: c.UserID,

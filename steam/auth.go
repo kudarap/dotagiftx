@@ -16,8 +16,8 @@ var (
 	openidNs         = "http://specs.openid.net/auth/2.0"
 	openidIdentifier = "http://specs.openid.net/auth/2.0/identifier_select"
 
-	validationRegexp       = regexp.MustCompile("^(http|https)://steamcommunity.com/openid/id/[0-9]{15,25}$")
-	digitsExtractionRegexp = regexp.MustCompile("\\D+")
+	validationRegexp       = regexp.MustCompile(`^(http|https)://steamcommunity\.com/openid/id/[0-9]{15,25}$`)
+	digitsExtractionRegexp = regexp.MustCompile(`\D+`)
 )
 
 type OpenId struct {
@@ -81,11 +81,11 @@ func (id OpenId) AuthUrl() string {
 
 func (id *OpenId) ValidateAndGetId() (string, error) {
 	if id.Mode() != "id_res" {
-		return "", errors.New("Mode must equal to \"id_res\".")
+		return "", errors.New("mode must equal to id_res")
 	}
 
 	if id.data.Get("openid.return_to") != id.returnUrl {
-		return "", errors.New("The \"return_to url\" must match the url of current request.")
+		return "", errors.New("the return_to url must match the url of current request")
 	}
 
 	params := make(url.Values)
@@ -112,15 +112,15 @@ func (id *OpenId) ValidateAndGetId() (string, error) {
 
 	response := strings.Split(string(content), "\n")
 	if response[0] != "ns:"+openidNs {
-		return "", errors.New("Wrong ns in the response.")
+		return "", errors.New("wrong ns in the response")
 	}
 	if strings.HasSuffix(response[1], "false") {
-		return "", errors.New("Unable validate openId.")
+		return "", errors.New("unable validate openId")
 	}
 
 	openIdUrl := id.data.Get("openid.claimed_id")
 	if !validationRegexp.MatchString(openIdUrl) {
-		return "", errors.New("Invalid steam id pattern.")
+		return "", errors.New("invalid steam id patterns")
 	}
 
 	return digitsExtractionRegexp.ReplaceAllString(openIdUrl, ""), nil

@@ -1,11 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
-import { debounce, Tooltip } from '@mui/material'
+import { debounce } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import Label from '@mui/icons-material/Label'
-import { lightGreen } from '@mui/material/colors'
-import { teal } from '@mui/material/colors'
+import { teal, lightGreen } from '@mui/material/colors'
 import Avatar from '@/components/Avatar'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
@@ -25,12 +23,10 @@ import Link from '@/components/Link'
 import AppContext from '@/components/AppContext'
 import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import ActivitySearchInput from '@/components/ActivitySearchInput'
-import Button from '@/components/Button'
-
-const displayPostId = false
+import CopyButton from '@/components/CopyButton'
 
 const priceTagStyle = {
-  padding: '2px 6px',
+  padding: '2px 4px',
   color: 'white',
 }
 
@@ -65,6 +61,9 @@ const useStyles = makeStyles()(theme => ({
     borderBottom: `1px ${theme.palette.divider} solid`,
     marginBottom: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    '&:hover': {
+      background: theme.palette.background.paper,
+    },
   },
   list: {
     padding: theme.spacing(1, 0, 0, 0),
@@ -74,6 +73,9 @@ const useStyles = makeStyles()(theme => ({
   },
   text: {
     marginTop: theme.spacing(1),
+  },
+  copyButton: {
+    color: theme.palette.text.secondary,
   },
 }))
 
@@ -110,7 +112,7 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
           loading={loading}
           onInput={onSearchInput}
           color="secondary"
-          placeholder="Filter heroes, items, notes, and steam ids"
+          placeholder="Filter heroes, items, notes, reference id, and steam id"
         />
       )}
 
@@ -182,32 +184,37 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                 {`${market.item.name}`}
               </Link>
               &nbsp;
-              {displayPostId && (
-                <>
-                  <Tooltip placement="top" title="Copy id to clipboard" arrow>
-                    <Button size="small" startIcon={<Label />} sx={{ mt: -0.4 }}>
-                      {market.id.split('-')[0]}
-                    </Button>
-                  </Tooltip>
-                  &nbsp;
-                </>
-              )}
               {daysFromNow(market.updated_at)}
               &nbsp;
-              <span
+              <Typography
+                variant="caption"
+                component="span"
                 hidden={disablePrice}
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
                 }>
                 {amount(market.price, market.currency)}
-              </span>
+              </Typography>
+              &nbsp;
+              <Typography
+                sx={{ float: 'right' }}
+                variant="inherit"
+                color="textSecondary"
+                component="pre">
+                {market.id.split('-')[0]}
+                <CopyButton
+                  className={classes.copyButton}
+                  size="small"
+                  sx={{ mt: -0.5 }}
+                  value={market.id}
+                />
+              </Typography>
             </Typography>
 
             <Typography
               component="div"
               color="textSecondary"
               variant="caption"
-              sx={{ mt: -0.5 }}
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
               {market.partner_steam_id && (
                 <Link

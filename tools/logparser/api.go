@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -54,7 +54,7 @@ func main() {
 	log.Println("reading logs...")
 	fptr := flag.String("file", "testdata", "log file to parse")
 	flag.Parse()
-	data, err := ioutil.ReadFile(*fptr)
+	data, err := os.ReadFile(*fptr)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -168,33 +168,6 @@ func parseLog(raw string) []ApiLog {
 		entry.Elapse, _ = time.ParseDuration(parts[9])
 
 		logs = append(logs, entry)
-	}
-
-	return logs
-}
-
-func parseLog0(raw string) []ApiLog {
-	var logs []ApiLog
-	for _, i := range strings.Split(raw, "\n") {
-		parts := strings.Split(i, " ")
-		if len(parts) < 14 {
-			continue
-		}
-
-		ts := parts[0]
-		ts = strings.TrimLeft(ts, "[")
-		ts = strings.TrimRight(ts, "]")
-		tt, _ := time.Parse(time.RFC3339, ts)
-		url := strings.TrimPrefix(parts[5], "http://api.dotagiftx.com")
-		stat, _ := strconv.Atoi(parts[10])
-		elap, _ := time.ParseDuration(parts[13])
-
-		logs = append(logs, ApiLog{
-			Endpoint: url,
-			Status:   stat,
-			Elapse:   elap,
-			Stamp:    tt,
-		})
 	}
 
 	return logs

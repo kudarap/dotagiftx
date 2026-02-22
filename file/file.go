@@ -150,17 +150,3 @@ func normalizeExt(ext string) string {
 
 	return ext
 }
-
-func checksum(r io.Reader) (io.Reader, string, error) {
-	var b bytes.Buffer
-
-	h := sha1.New()
-	if _, err := io.Copy(&b, io.TeeReader(r, h)); err != nil {
-		return &b, "", err
-	}
-
-	s := fmt.Sprintf("%d", time.Now().Nanosecond())
-	h.Write([]byte(s))
-	sum := h.Sum(nil)
-	return &b, hex.EncodeToString(sum), nil
-}

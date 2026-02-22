@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -77,7 +78,6 @@ func Main(args map[string]interface{}) map[string]interface{} {
 		lastAssetID = next.LastAssetID
 		inventoryCount = next.TotalInventoryCount
 		if next.MoreItems == 0 || precheck {
-			inventoryCount = next.TotalInventoryCount
 			break
 		}
 		time.Sleep(requestDelay)
@@ -144,13 +144,8 @@ func (i *inventory) hash(steamID string) (string, error) {
 	}
 
 	h := sha1.New()
-	if _, err := io.WriteString(h, steamID); err != nil {
-		return "", err
-	}
-	if _, err := io.WriteString(h, string(b.Bytes())); err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%x", h.Sum(nil)), nil
+	h.Write([]byte(steamID + b.String()))
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 type asset struct {

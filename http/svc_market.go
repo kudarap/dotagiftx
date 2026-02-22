@@ -18,15 +18,25 @@ const (
 func handleMarketList(
 	svc dotagiftx.MarketService,
 	trackSvc dotagiftx.TrackService,
-	cache dotagiftx.Cache,
+	private bool,
+	cache cacheManager,
 	logger *logrus.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Modify query params to inject and override private params.
+		auth := dotagiftx.AuthFromContext(r.Context())
+		if private && auth != nil {
+			q := r.URL.Query()
+			q.Set("index", "user_id")
+			q.Set("user_id", auth.UserID)
+			r.URL.RawQuery = q.Encode()
+		}
+
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
@@ -64,11 +74,9 @@ func handleMarketList(
 		}
 
 		data := newDataWithMeta(list, md)
-		//go func(d dataWithMeta) {
-		if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
+		if err = cache.Set(cacheKey, data, marketCacheExpr); err != nil {
 			logger.Errorf("could not save cache on market list: %s", err)
 		}
-		//}(data)
 
 		if shouldRedactUser {
 			data.Data = redactBuyers(list)
@@ -98,13 +106,13 @@ func sortQueryModifier(r *http.Request) {
 	r.URL.RawQuery = query.Encode()
 }
 
-func handleMarketDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
 
 		// Check for cache hit and render them.
-		cacheKey, noCache := dotagiftx.CacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
+		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
@@ -123,11 +131,9 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logg
 			return
 		}
 
-		//go func() {
 		if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
 			logger.Errorf("could not save cache on market list: %s", err)
 		}
-		//}()
 
 		if shouldRedactUser {
 			m = redactBuyer(m)
@@ -137,7 +143,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache dotagiftx.Cache, logg
 	}
 }
 
-func handleMarketCreate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleMarketCreate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -151,16 +157,12 @@ func handleMarketCreate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http
 		}
 
 		go cache.BulkDel(marketCacheKeyPrefix)
-		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
-		//	respondError(w, err)
-		//	return
-		//}
 
 		respondOK(w, m)
 	}
 }
 
-func handleMarketUpdate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http.HandlerFunc {
+func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -175,22 +177,13 @@ func handleMarketUpdate(svc dotagiftx.MarketService, cache dotagiftx.Cache) http
 		}
 
 		go cache.BulkDel(marketCacheKeyPrefix)
-		//if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
-		//	respondError(w, err)
-		//	return
-		//}
-
 		respondOK(w, m)
 	}
 }
 
 func isReqAuthorized(r *http.Request) bool {
-	c, _ := ParseFromHeader(r.Header)
-	if c == nil {
-		return false
-	}
-
-	return c.UserID != ""
+	v := dotagiftx.AuthFromContext(r.Context())
+	return v == nil
 }
 
 const redactChar = "█"
@@ -205,8 +198,8 @@ func redactBuyers(list []dotagiftx.Market) []dotagiftx.Market {
 
 		r.User.ID = ""
 		r.User.Name = strings.Repeat(redactChar, len(r.User.Name))
-		r.User.SteamID = strings.Repeat(redactChar, len(r.User.SteamID))
-		r.User.URL = strings.Repeat(redactChar, len(r.User.URL))
+		r.User.SteamID = strings.Repeat(redactChar, 10)
+		r.User.URL = strings.Repeat(redactChar, 10)
 	}
 
 	return rl

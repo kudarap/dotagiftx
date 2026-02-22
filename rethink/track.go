@@ -1,10 +1,10 @@
 package rethink
 
 import (
+	"errors"
 	"log"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -38,7 +38,7 @@ func (s *trackStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Track, error) {
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
@@ -58,26 +58,21 @@ func (s *trackStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 func (s *trackStorage) Get(id string) (*dotagiftx.Track, error) {
 	row := &dotagiftx.Track{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.TrackErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
 func (s *trackStorage) Create(in *dotagiftx.Track) error {
-	t := now()
-	in.CreatedAt = t
-	in.UpdatedAt = t
-	id, err := s.db.insert(s.table().Insert(in))
+	_, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
-	in.ID = id
-
 	return nil
 }
 

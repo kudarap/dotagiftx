@@ -1,6 +1,8 @@
 package http
 
-import "github.com/go-chi/chi/v5"
+import (
+	"github.com/go-chi/chi/v5"
+)
 
 func (s *Server) publicRouter(r chi.Router) {
 	r.Group(func(r chi.Router) {
@@ -19,16 +21,17 @@ func (s *Server) publicRouter(r chi.Router) {
 			r.Get("/{id}", handleItemDetail(s.itemSvc, s.cache, s.logger))
 		})
 		r.Route("/markets", func(r chi.Router) {
-			r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.cache, s.logger))
+			r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, false, s.cache, s.logger))
 			r.Get("/{id}", handleMarketDetail(s.marketSvc, s.cache, s.logger))
 		})
-		r.Get("/catalogs_trend", handleMarketCatalogTrendListX(s.marketSvc, s.cache, s.logger))
+		r.Get("/catalogs_trend", handleMarketCatalogTrendList(s.marketSvc, s.cache, s.logger))
 		r.Get("/catalogs", handleMarketCatalogList(s.marketSvc, s.trackSvc, s.cache, s.logger))
 		r.Get("/catalogs/{slug}", handleMarketCatalogDetail(s.marketSvc, s.cache, s.logger))
 		r.Get("/users/{id}", handlePublicProfile(s.userSvc, s.cache))
 		r.Get("/t", handleTracker(s.trackSvc, s.logger))
-		r.Get("/sitemap.xml", handleSitemap(s.itemSvc, s.userSvc, s.cache))
-		r.Get("/stats/market_summary", handleStatsMarketSummary(s.statsSvc, s.cache))
+		r.Get("/sitemap.xml", handleSitemap(s.itemSvc))
+		r.Get("/stats/market_summary_v2", handleStatsMarketSummaryV2(s.statsSvc, s.cache))
+		r.Get("/stats/market_summary_overall", handleStatsMarketSummaryOverall(s.statsSvc, s.cache, s.logger))
 		r.Get("/stats/top_origins", handleStatsTopOrigins(s.itemSvc, s.cache))
 		r.Get("/stats/top_heroes", handleStatsTopHeroes(s.itemSvc, s.cache))
 		r.Get("/stats/top_keywords", handleStatsTopKeywords(s.statsSvc, s.cache))
@@ -42,6 +45,14 @@ func (s *Server) publicRouter(r chi.Router) {
 		r.Post("/webhook/paypal", handleUserSubscriptionWebhook(s.userSvc))
 		r.Post("/webhook/phantasm/{steam_id}", handlePhantasmWebhook(s.phantasmSvc))
 		r.Post("/crawler/phantasm", handlePhantasmCrawl())
+		r.Route("/treasures", func(r chi.Router) {
+			r.Get("/", handleTreasureList())
+			r.Get("/{slug}", handleTreasureDetail())
+		})
+		r.Route("/heroes", func(r chi.Router) {
+			r.Get("/", handleHeroList())
+			r.Get("/{id}", handleHeroDetail())
+		})
 	})
 }
 
@@ -52,7 +63,7 @@ func (s *Server) privateRouter(r chi.Router) {
 			r.Get("/profile", handleProfile(s.userSvc, s.cache))
 			r.Post("/process_subscription", handleProcSubscription(s.userSvc, s.cache))
 			r.Route("/markets", func(r chi.Router) {
-				r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, s.cache, s.logger))
+				r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, true, s.cache, s.logger))
 				r.Post("/", handleMarketCreate(s.marketSvc, s.cache))
 				r.Get("/{id}", handleMarketDetail(s.marketSvc, s.cache, s.logger))
 				r.Patch("/{id}", handleMarketUpdate(s.marketSvc, s.cache))

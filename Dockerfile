@@ -1,8 +1,8 @@
 # build stage
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25-alpine AS builder
 WORKDIR /code
 
-RUN apk add --no-cache git make
+RUN apk add --no-cache git make curl
 
 # download and cache go dependencies
 COPY go.mod .
@@ -17,7 +17,8 @@ RUN make build
 # final stage
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
-COPY --from=builder /code/dotagiftx /api
-ENTRYPOINT ./api
-LABEL Name=dotagiftx Version=0.22.0
+COPY --from=builder /code/dxserver .
+
+LABEL Name=dotagiftx Version=0.22.1
+ENTRYPOINT exec ./dxserver
 EXPOSE 80

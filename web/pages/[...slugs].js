@@ -51,6 +51,16 @@ export async function getServerSideProps(props) {
 
   const [itemSlug, marketTypeParam, sortParam] = slugs
 
+  // Hotfix backward compatible spelling support of ES arcana
+  if (itemSlug === 'intergalactic-orbliterator-earthshaker') {
+    return {
+      redirect: {
+        destination: 'intergalactic-obliterator-earthshaker',
+        permanent: false,
+      },
+    }
+  }
+
   let catalog = {}
   let error = null
 

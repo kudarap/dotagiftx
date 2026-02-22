@@ -12,7 +12,6 @@ import (
 type findOpts dotagiftx.FindOpts
 
 func newFindOptsQuery(q r.Term, o dotagiftx.FindOpts) r.Term {
-	//return findOpts(o).parseOpts(q, nil)
 	return baseFindOptsQuery(q, o, nil)
 }
 

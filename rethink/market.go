@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -8,7 +9,6 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -23,6 +23,7 @@ const (
 	marketFieldNotes           = "notes"
 	marketFieldPrice           = "price"
 	marketFieldResell          = "resell"
+	marketFieldRankScore       = "user_rank_score"
 	marketFieldCreatedAt       = "created_at"
 	marketFieldUpdatedAt       = "updated_at"
 	// Hidden field for searching item details.
@@ -53,13 +54,10 @@ func (s *marketStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 
 	q := findOpts(o).parseOpts(s.table(), nil)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
-	}
-
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -82,12 +80,10 @@ func (s *marketStorage) PendingInventoryStatus(o dotagiftx.FindOpts) ([]dotagift
 
 	var res []dotagiftx.Market
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
-	}
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -103,12 +99,10 @@ func (s *marketStorage) PendingDeliveryStatus(o dotagiftx.FindOpts) ([]dotagiftx
 
 	var res []dotagiftx.Market
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
-	}
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -126,12 +120,10 @@ func (s *marketStorage) RevalidateDeliveryStatus(o dotagiftx.FindOpts) ([]dotagi
 
 	var res []dotagiftx.Market
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
-	for i, rr := range res {
-		res[i].User = s.includeUser(rr.UserID)
-	}
+	s.fillUsers(res)
 	return res, nil
 }
 
@@ -149,40 +141,14 @@ func (s *marketStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 	return
 }
 
-// includeRelatedFields injects item and user details base on market foreign keys
-// and create a search tag
-func (s *marketStorage) includeRelatedFields(q r.Term) r.Term {
-	return q.
-		//EqJoin(marketFieldItemID, r.Table(tableItem)).
-		//Map(func(t r.Term) r.Term {
-		//	market := t.Field("left")
-		//	item := t.Field("right")
-		//	tags := market.Field(marketFieldNotes).Default("")
-		//	for _, ff := range itemSearchFields {
-		//		tags = tags.Add(" ", item.Field(ff))
-		//	}
-		//
-		//	return market.Merge(map[string]interface{}{
-		//		tableItem:            item,
-		//		marketItemSearchTags: tags,
-		//	})
-		//}).
-		EqJoin(marketFieldUserID, r.Table(tableUser)).
-		Map(func(t r.Term) r.Term {
-			return t.Field("left").Merge(map[string]interface{}{
-				tableUser: t.Field("right"),
-			})
-		})
-}
-
 func (s *marketStorage) Get(id string) (*dotagiftx.Market, error) {
 	row := &dotagiftx.Market{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.MarketErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	row.User = s.includeUser(row.UserID)
@@ -217,18 +183,16 @@ func (s *marketStorage) Index(id string) (*dotagiftx.Market, error) {
 		mkt.Delivery = &dels[0]
 	}
 
-	mkt.SearchText = mkt.Notes
+	searchText := []string{mkt.ID, mkt.Notes, mkt.PartnerSteamID}
 	if mkt.Item != nil {
-		mkt.SearchText += strings.Join([]string{
-			"",
+		searchText = append(
+			searchText,
 			mkt.Item.Name,
 			mkt.Item.Hero,
 			mkt.Item.Origin,
-			mkt.Item.Rarity,
-			mkt.PartnerSteamID,
-		}, " ")
+			mkt.Item.Rarity)
 	}
-
+	mkt.SearchText = strings.Join(searchText, " ")
 	if err = s.BaseUpdate(mkt); err != nil {
 		return nil, err
 	}
@@ -245,7 +209,7 @@ func (s *marketStorage) Create(in *dotagiftx.Market) error {
 	in.Item = nil
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -262,19 +226,15 @@ func (s *marketStorage) UpdateUserScore(userID string, rankScore int) error {
 		return fmt.Errorf("user id is required to update user score")
 	}
 
-	// get all user live market
-	var markets []dotagiftx.Market
-	q := s.table().GetAllByIndex(marketFieldUserID, userID).Filter(dotagiftx.Market{Status: dotagiftx.MarketStatusLive})
-	if err := s.db.list(q, &markets); err != nil {
-		return err
-	}
-
-	// set new user rank score
-	for _, mm := range markets {
-		mm.UserRankScore = rankScore
-		if err := s.BaseUpdate(&mm); err != nil {
-			return fmt.Errorf("could not update market user rank: %s", err)
-		}
+	// Update user rank score on user's live market listing.
+	qry := s.table().
+		GetAllByIndex(marketFieldUserID, userID).
+		Filter(dotagiftx.Market{Status: dotagiftx.MarketStatusLive}).
+		Update(map[string]any{
+			marketFieldRankScore: rankScore,
+		})
+	if err := s.db.update(qry); err != nil {
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return nil
@@ -287,14 +247,13 @@ func (s *marketStorage) BaseUpdate(in *dotagiftx.Market) error {
 	}
 
 	in.User = nil
-	//in.Item = nil
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return errors.New(dotagiftx.StorageMergeErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -384,78 +343,24 @@ func (s *marketStorage) BulkDeleteByStatus(ms dotagiftx.MarketStatus, cutOff tim
 		Filter(r.Row.Field(marketFieldCreatedAt).Lt(cutOff)).
 		Limit(limit).
 		Delete()
-	if err := s.db.delete(q); err != nil && err != r.ErrEmptyResult {
+	if err := s.db.delete(q); err != nil && !errors.Is(err, r.ErrEmptyResult) {
 		return err
 	}
 	return nil
 }
 
-func (s *marketStorage) findIndexLegacy(o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error) {
-	q := s.indexBaseQuery()
-
-	var res []dotagiftx.Catalog
-	o.KeywordFields = s.keywordFields
-	q = newFindOptsQuery(q, o)
-	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+func (s *marketStorage) fillUsers(markets []dotagiftx.Market) {
+	userCache := make(map[string]*dotagiftx.User)
+	for i, mkt := range markets {
+		user, hit := userCache[mkt.UserID]
+		if !hit {
+			user = s.includeUser(mkt.UserID)
+			userCache[mkt.UserID] = user
+		}
+		markets[i].User = user
 	}
-
-	return res, nil
-}
-
-func (s *marketStorage) countIndexLegacy(o dotagiftx.FindOpts) (num int, err error) {
-	q := s.indexBaseQuery()
-	o = dotagiftx.FindOpts{
-		Keyword:       o.Keyword,
-		KeywordFields: s.keywordFields,
-		Filter:        o.Filter,
-	}
-	q = newFindOptsQuery(q, o)
-	err = s.db.one(q.Count(), &num)
-	return
-}
-
-func (s *marketStorage) indexBaseQuery() r.Term {
-	return s.table().GroupByIndex(marketFieldItemID).Ungroup().
-		Map(s.groupIndexMap).
-		EqJoin(marketFieldItemID, r.Table(tableItem)).
-		Zip()
 }
 
 func (s *marketStorage) table() r.Term {
 	return r.Table(tableMarket)
-}
-
-func (s *marketStorage) groupIndexMap(market r.Term) interface{} {
-	//r.db('dotagiftables').table('market').group({index: 'item_id'}).ungroup().map(
-	//    function (doc) {
-	//      let liveMarket = doc('reduction').filter({status: 200});
-	//      return {
-	//        item_id: doc('group'),
-	//        quantity: liveMarket.count(),
-	//        lowest_ask: liveMarket.min('price')('price').default(0),
-	//        highest_bid: liveMarket.max('price')('price').default(0),
-	//        recent_ask: liveMarket.max('created_at')('created_at').default(null),
-	//        item: r.db('dotagiftables').table('item').get(doc('group')),
-	//      };
-	//    }
-	//)
-
-	id := market.Field("group")
-	live := market.Field("reduction").Filter(dotagiftx.Market{Status: dotagiftx.MarketStatusLive})
-	return struct {
-		ItemID     r.Term `db:"item_id"`
-		Quantity   r.Term `db:"quantity"`
-		LowestAsk  r.Term `db:"lowest_ask"`
-		HighestBid r.Term `db:"highest_bid"`
-		RecentAsk  r.Term `db:"recent_ask"`
-		//Item       r.Term `db:"item"`
-	}{
-		id,
-		live.Count().Default(0),
-		live.Min("price").Field("price").Default(0),
-		live.Max("price").Field("price").Default(0),
-		live.Max("created_at").Field("created_at").Default(nil),
-		//r.Table(tableItem).Get(id),
-	}
 }

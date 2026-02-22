@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kudarap/dotagiftx/filecache"
+	"github.com/kudarap/dotagiftx/file/filecache"
 )
 
 const (

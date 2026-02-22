@@ -98,14 +98,14 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 				gw.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
-			//rest(5)
+			// rest(5)
 		}
 
 		// Is there more?
 		if len(deliveries) < opts.Limit {
 			return nil
 		}
-		//opts.Page++
+		// opts.Page++
 	}
 }
 

@@ -178,35 +178,33 @@ export default function Header() {
               {isRecentTreasureNew() && (
                 <span
                   style={{
-                    color: 'yellowgreen',
+                    color: '#bcecff',
                     padding: '0 8px',
                     position: 'absolute',
                     fontSize: '0.6rem',
                     display: 'block',
                     marginTop: '-0.24rem',
-                    marginLeft: 1,
+                    marginLeft: -14,
                   }}>
-                  new release
+                  New Winter Treasure
                 </span>
               )}
+            </Link>
+            <Link className={classes.nav} href="/heroes" underline="none">
+              Heroes
             </Link>
             <Link className={classes.nav} href="/plus" underline="none">
               Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>
             </Link>
-            <Link className={classes.nav} href="/rules" underline="none">
-              Rules
+            <Link className={classes.nav} href="/download" underline="none">
+              Mobile
             </Link>
             <Link className={classes.nav} href="/bans" underline="none">
               Bans
               <LatestBan />
             </Link>
-            <Link
-              className={classes.nav}
-              href="https://discord.gg/UFt9Ny42kM"
-              target="_blank"
-              rel="noreferrer noopener"
-              underline="none">
-              Discord
+            <Link className={classes.nav} href="/rules" underline="none">
+              Rules
             </Link>
             <MoreMenu />
 
@@ -277,7 +275,7 @@ export default function Header() {
         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
       </AppBar>
 
-      <StopKillingGames />
+      <Incident />
     </>
   )
 }
@@ -350,6 +348,16 @@ function MoreMenu() {
         {...bindMenu(popupState)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        <MenuItem
+          onClick={popupState.close}
+          component={Link}
+          href="https://discord.gg/UFt9Ny42kM"
+          target="_blank"
+          rel="noreferrer noopener"
+          disableUnderline>
+          Discord
+        </MenuItem>
+
         {moreMenuLinks.map(menu => (
           <MenuItem
             key={menu.path}
@@ -361,15 +369,6 @@ function MoreMenu() {
           </MenuItem>
         ))}
 
-        {/* <MenuItem
-          onClick={popupState.close}
-          component={Link}
-          href="https://discord.gg/UFt9Ny42kM"
-          target="_blank"
-          rel="noreferrer noopener"
-          disableUnderline>
-          Discord
-        </MenuItem> */}
         {/* <MenuItem onClick={popupState.close} component={Link} href="/plus" disableUnderline>
           Dotagift<span style={{ fontSize: 20 }}>+</span>
         </MenuItem> */}
@@ -390,40 +389,41 @@ function NoticeMe() {
   )
 }
 
-function StopKillingGames() {
-  const [progress, setProgress] = useState(0.0)
+function Incident() {
+  const storageKye = 'major-incident-data-loss-2025-10-25'
 
-  const url = 'https://eci.ec.europa.eu/045/public/api/report/progression'
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(url)
-      const d = await res.json()
-      const p = Number((d.signatureCount / d.goal) * 100).toFixed(2)
-      setProgress(p)
-      console.log(p)
-    }
-    fetchData()
+  const [closed, setClosed] = React.useState(false)
+  React.useEffect(() => {
+    setClosed(!!Storage.get(storageKye))
   }, [])
 
+  const onClose = () => {
+    if (confirm('Confirm close announcement') == true) {
+      Storage.save(storageKye, true)
+      setClosed(true)
+    }
+  }
+
+  if (closed) {
+    return null
+  }
+
   return (
-    <Box sx={{ p: 1, textAlign: 'center', backgroundColor: '#15355f' }}>
-      <Link
-        disableUnderline
-        href="https://www.stopkillinggames.com"
-        target="_blank"
-        rel="noreferrer noopener">
-        <img
-          src="https://www.stopkillinggames.com/images/skglogo.svg"
-          height={16}
-          style={{ paddingRight: 8, marginBottom: -2 }}
-        />
-        <u>
-          {progress != 0 && `${progress}% `}
-          Take a look at the <strong>Stop Killing Games</strong> initiative if you are an EU
-          citizen.
-        </u>
-      </Link>
-      {/* <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>x</span> */}
-    </Box>
+    <div
+      style={{
+        textAlign: 'center',
+        backgroundColor: '#aa2e25',
+        paddingTop: 6,
+        paddingBottom: 6,
+        boxShadow: '0 0 6px #aa2e25',
+      }}>
+      {`Announcement: `}
+      <u>
+        <Link href="/post/major-incident-data-loss">Major Data Loss Incident</Link>
+      </u>
+      <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }} onClick={onClose}>
+        close
+      </span>
+    </div>
   )
 }

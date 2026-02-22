@@ -16,11 +16,12 @@ import {
   fetcher,
   STATS_TOP_HEROES,
   STATS_TOP_ORIGINS,
-  statsMarketSummary,
+  statsMarketSummaryOverall,
 } from '@/service/api'
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import { right } from '@popperjs/core'
 // import SearchInput from '@/components/SearchInput'
 // import CatalogList from '@/components/CatalogList'
 // import Link from '@/components/Link'
@@ -145,32 +146,43 @@ export default function Index({ marketSummary, trendingItems }) {
             width: '100%',
             height: 640,
             marginBottom: 500 - 640,
-            maskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
-            WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
+            maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
+            WebkitMaskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
             position: 'relative',
             zIndex: 0,
           }}>
           <div
             style={{
-              // background:
-              // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
+              position: 'absolute',
+              width: '100%',
+            }}>
+            <div style={{ marginTop: -170, textAlign: 'center' }}>
+              <video
+                width={700}
+                preload="auto"
+                poster="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.png"
+                autoPlay
+                muted
+                loop
+                playsInline>
+                <source
+                  type="video/webm"
+                  src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.webm"
+                />
+              </video>
+            </div>
+          </div>
+
+          <div
+            style={{
               background:
-                'url(https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/springcleaning2025/header/header_background.jpg) repeat-x center 0',
-              backgroundColor: '#263238',
+                'url(https://cdn.steamstatic.com/apps/dota2/images/dota_react/largo/treasure_background.png) no-repeat center center',
+              backgroundColor: '#292638ff',
               backgroundSize: 'cover',
-              // backgroundPositionY: -60,
+              backgroundPositionY: -135,
               width: '100%',
               height: '100%',
-            }}>
-            <img
-              src="https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react//springcleaning2025/header/header_hero.png"
-              style={{
-                width: '40%',
-                margin: '-10% 30%',
-                position: 'absolute',
-              }}
-            />
-          </div>
+            }}></div>
         </div>
 
         <Container
@@ -371,7 +383,7 @@ Index.propTypes = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  const marketSummary = await statsMarketSummary()
+  const marketSummary = await statsMarketSummaryOverall()
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
   marketSummary.sold = format.numberWithCommas(marketSummary.sold)

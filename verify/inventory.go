@@ -44,20 +44,22 @@ func Inventory(ctx context.Context, source AssetSource, steamID, itemName string
 }
 
 // filterByName filters item that matches the name or in the description that supports unbundled items.
-func filterByName(a []steam.Asset, itemName string) []steam.Asset {
+func filterByName(a []steam.Asset, name string) []steam.Asset {
 	var matches []steam.Asset
 	for _, asset := range a {
-		// Strip "bundle" string to cover items that unbundled:
+		// Strip "bundle" suffix to cover unbundled items:
 		// - Dipper the Destroyer Bundle
 		// - The Abscesserator Bundle
-		itemName = strings.TrimSpace(strings.TrimSuffix(itemName, "Bundle"))
-		if !strings.Contains(strings.Join(asset.Descriptions, "|"), itemName) &&
-			!strings.Contains(asset.Name, itemName) {
+		name = strings.TrimSpace(strings.TrimSuffix(name, "Bundle"))
+		// Fix misspelled names like earth shakers arcana.
+		asset.Name = fixMisspelledName(asset.Name, name)
+		desc := fixMisspelledName(strings.Join(asset.Descriptions, "|"), name)
+		if !strings.Contains(desc, name) && !strings.Contains(asset.Name, name) {
 			continue
 		}
 
 		// Excluded golden variant of the item.
-		if asset.IsGoldenVariant(itemName) {
+		if asset.IsGoldenVariant(name) {
 			continue
 		}
 
@@ -82,4 +84,17 @@ func filterByGiftable(a []steam.Asset) []steam.Asset {
 		matches = append(matches, aa)
 	}
 	return matches
+}
+
+func fixMisspelledName(a, b string) string {
+	if strings.EqualFold(a, b) {
+		return a
+	}
+	if strings.EqualFold(a, "Intergalactic Orbliterator") {
+		return "Intergalactic Obliterator"
+	}
+	if strings.Contains(a, "Orbliterator") && strings.Contains(b, "Obliterator") {
+		return strings.ReplaceAll(a, "Orbliterator", "Obliterator")
+	}
+	return a
 }

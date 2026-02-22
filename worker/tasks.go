@@ -16,9 +16,10 @@ type TaskProcessor struct {
 	queue taskQueue
 	rate  time.Duration
 
-	inventorySvc dotagiftx.InventoryService
-	deliverySvc  dotagiftx.DeliveryService
-	verify       *verify.Source
+	inventorySvc         dotagiftx.InventoryService
+	deliverySvc          dotagiftx.DeliveryService
+	verify               *verify.Source
+	inventoryInvalidator inventoryInvalidator
 }
 
 func NewTaskProcessor(
@@ -27,13 +28,15 @@ func NewTaskProcessor(
 	inventorySvc dotagiftx.InventoryService,
 	deliverySvc dotagiftx.DeliveryService,
 	source *verify.Source,
+	invInvalidator inventoryInvalidator,
 ) *TaskProcessor {
 	return &TaskProcessor{
-		queue:        queue,
-		rate:         rate,
-		inventorySvc: inventorySvc,
-		deliverySvc:  deliverySvc,
-		verify:       source,
+		queue:                queue,
+		rate:                 rate,
+		inventorySvc:         inventorySvc,
+		deliverySvc:          deliverySvc,
+		verify:               source,
+		inventoryInvalidator: invInvalidator,
 	}
 }
 
@@ -100,11 +103,10 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
 	}
-
 	if market.User == nil || market.Item == nil {
 		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
 	}
-	// Skips resell items.
+	// Skips resold items.
 	if market.IsResell() {
 		return nil
 	}
@@ -114,14 +116,13 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 	if err != nil {
 		return err
 	}
-	err = p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
+	return p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 		MarketID:   market.ID,
 		Status:     result.Status,
 		Assets:     result.Assets,
 		VerifiedBy: result.VerifiedBy,
 		ElapsedMs:  time.Since(start).Milliseconds(),
 	})
-	return nil
 }
 
 func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}) error {
@@ -129,9 +130,11 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
 	}
-
 	if market.User == nil || market.Item == nil {
 		return fmt.Errorf("skipped process! missing data user:%#v item:%#v", market.User, market.Item)
+	}
+	if err := p.inventoryInvalidator.Invalidate(ctx, market.PartnerSteamID); err != nil {
+		return fmt.Errorf("invalidate inventory: %s", err)
 	}
 
 	start := time.Now()
@@ -152,6 +155,10 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}
 type taskQueue interface {
 	Get(ctx context.Context) (*dotagiftx.Task, error)
 	Update(ctx context.Context, t dotagiftx.Task) error
+}
+
+type inventoryInvalidator interface {
+	Invalidate(ctx context.Context, steamID string) error
 }
 
 func marshallTaskPayload(in, out interface{}) error {

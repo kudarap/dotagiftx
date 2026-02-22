@@ -47,7 +47,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 		Cancelled:    mktMap[dotagiftx.MarketStatusCancelled],
 		BidCompleted: mktMap[dotagiftx.MarketStatusBidCompleted],
 	}
-	s.logger.Println("rethink/stats count ask", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count ask", time.Since(benchStart))
 
 	benchStart = time.Now()
 	if err := s.db.list(baseQuery.
@@ -65,7 +65,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	marketStats.ResellReserved = resellMap[dotagiftx.MarketStatusReserved]
 	marketStats.ResellRemoved = resellMap[dotagiftx.MarketStatusRemoved]
 	marketStats.ResellCancelled = resellMap[dotagiftx.MarketStatusCancelled]
-	s.logger.Println("rethink/stats count resell", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count resell", time.Since(benchStart))
 
 	// Count market bid stats
 	benchStart = time.Now()
@@ -80,7 +80,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	}
 	marketStats.BidLive = mktMap[dotagiftx.MarketStatusLive]
 	marketStats.BidCompleted = mktMap[dotagiftx.MarketStatusBidCompleted]
-	s.logger.Println("rethink/stats count bid", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count bid", time.Since(benchStart))
 
 	// Count delivery stats
 	benchStart = time.Now()
@@ -100,7 +100,7 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	marketStats.DeliverySenderVerified = dlvMap[dotagiftx.DeliveryStatusSenderVerified]
 	marketStats.DeliveryPrivate = dlvMap[dotagiftx.DeliveryStatusPrivate]
 	marketStats.DeliveryError = dlvMap[dotagiftx.DeliveryStatusError]
-	s.logger.Println("rethink/stats count dlv", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count dlv", time.Since(benchStart))
 
 	// Count inventory stats
 	benchStart = time.Now()
@@ -119,81 +119,91 @@ func (s *statsStorage) CountUserMarketStatus(userID string) (*dotagiftx.MarketSt
 	marketStats.InventoryVerified = invMap[dotagiftx.InventoryStatusVerified]
 	marketStats.InventoryPrivate = invMap[dotagiftx.InventoryStatusPrivate]
 	marketStats.InventoryError = invMap[dotagiftx.InventoryStatusError]
-	s.logger.Println("rethink/stats count inv", time.Now().Sub(benchStart))
+	s.logger.Println("rethink/stats count inv", time.Since(benchStart))
 
 	return marketStats, nil
 }
 
-func (s *statsStorage) CountMarketStatus(opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
-	var res []struct {
-		Group     dotagiftx.MarketStatus `db:"group"`
-		Reduction int                    `db:"reduction"`
-	}
-	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), opts)
-	if err := s.db.list(q.Filter(dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}).Count(), &res); err != nil {
+func (s *statsStorage) CountUserMarketStatusBySteamID(steamID string) (*dotagiftx.MarketStatusCount, error) {
+	var user dotagiftx.User
+	if err := s.db.one(r.Table(tableUser).GetAllByIndex(userFieldSteamID, steamID), &user); err != nil {
 		return nil, err
 	}
-	mapRes := map[dotagiftx.MarketStatus]int{}
-	for _, rr := range res {
-		mapRes[rr.Group] = rr.Reduction
+	return s.CountUserMarketStatus(user.ID)
+}
+
+// CountMarketStatus returns market status counts.
+// TODO: optimize query because it's too slow around ~3000ms
+func (s *statsStorage) CountMarketStatus(opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+	var result []struct {
+		Status dotagiftx.MarketStatus `db:"group"`
+		Count  int                    `db:"count"`
+	}
+	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), opts)
+	if err := s.db.list(q.Filter(dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}).Count(), &result); err != nil {
+		return nil, err
+	}
+	mapResult := map[dotagiftx.MarketStatus]int{}
+	for _, v := range result {
+		mapResult[v.Status] = v.Count
 	}
 
-	msc := &dotagiftx.MarketStatusCount{
-		Pending:      mapRes[dotagiftx.MarketStatusPending],
-		Live:         mapRes[dotagiftx.MarketStatusLive],
-		Sold:         mapRes[dotagiftx.MarketStatusSold],
-		Reserved:     mapRes[dotagiftx.MarketStatusReserved],
-		Removed:      mapRes[dotagiftx.MarketStatusRemoved],
-		Cancelled:    mapRes[dotagiftx.MarketStatusCancelled],
-		BidCompleted: mapRes[dotagiftx.MarketStatusBidCompleted],
+	marketStats := &dotagiftx.MarketStatusCount{
+		Pending:      mapResult[dotagiftx.MarketStatusPending],
+		Live:         mapResult[dotagiftx.MarketStatusLive],
+		Sold:         mapResult[dotagiftx.MarketStatusSold],
+		Reserved:     mapResult[dotagiftx.MarketStatusReserved],
+		Removed:      mapResult[dotagiftx.MarketStatusRemoved],
+		Cancelled:    mapResult[dotagiftx.MarketStatusCancelled],
+		BidCompleted: mapResult[dotagiftx.MarketStatusBidCompleted],
 	}
 
 	// Count bid stats
 	q = newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldStatus), opts)
-	if err := s.db.list(q.Filter(dotagiftx.Market{Type: dotagiftx.MarketTypeBid}).Count(), &res); err != nil {
+	if err := s.db.list(q.Filter(dotagiftx.Market{Type: dotagiftx.MarketTypeBid}).Count(), &result); err != nil {
 		return nil, err
 	}
-	mapRes = map[dotagiftx.MarketStatus]int{}
-	for _, rr := range res {
-		mapRes[rr.Group] = rr.Reduction
+	mapResult = map[dotagiftx.MarketStatus]int{}
+	for _, v := range result {
+		mapResult[v.Status] = v.Count
 	}
-	msc.BidLive = mapRes[dotagiftx.MarketStatusLive]
-	msc.BidCompleted = mapRes[dotagiftx.MarketStatusBidCompleted]
+	marketStats.BidLive = mapResult[dotagiftx.MarketStatusLive]
+	marketStats.BidCompleted = mapResult[dotagiftx.MarketStatusBidCompleted]
 
-	cds, err := s.CountDeliveryStatus(opts)
+	deliveryStats, err := s.countDeliveryStatus(opts)
 	if err != nil {
 		return nil, err
 	}
-	msc.DeliveryNoHit = cds.DeliveryNoHit
-	msc.DeliveryNameVerified = cds.DeliveryNameVerified
-	msc.DeliverySenderVerified = cds.DeliverySenderVerified
-	msc.DeliveryPrivate = cds.DeliveryPrivate
-	msc.DeliveryError = cds.DeliveryError
+	marketStats.DeliveryNoHit = deliveryStats.DeliveryNoHit
+	marketStats.DeliveryNameVerified = deliveryStats.DeliveryNameVerified
+	marketStats.DeliverySenderVerified = deliveryStats.DeliverySenderVerified
+	marketStats.DeliveryPrivate = deliveryStats.DeliveryPrivate
+	marketStats.DeliveryError = deliveryStats.DeliveryError
 
-	cis, err := s.CountInventoryStatus(opts)
+	inventoryStats, err := s.countInventoryStatus(opts)
 	if err != nil {
 		return nil, err
 	}
-	msc.InventoryNoHit = cis.InventoryNoHit
-	msc.InventoryVerified = cis.InventoryVerified
-	msc.InventoryPrivate = cis.InventoryPrivate
-	msc.InventoryError = cis.InventoryError
+	marketStats.InventoryNoHit = inventoryStats.InventoryNoHit
+	marketStats.InventoryVerified = inventoryStats.InventoryVerified
+	marketStats.InventoryPrivate = inventoryStats.InventoryPrivate
+	marketStats.InventoryError = inventoryStats.InventoryError
 
-	return msc, nil
+	return marketStats, nil
 }
 
-func (s *statsStorage) CountDeliveryStatus(o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+func (s *statsStorage) countDeliveryStatus(o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	var res []struct {
-		Group     dotagiftx.DeliveryStatus `db:"group"`
-		Reduction int                      `db:"reduction"`
+		Status dotagiftx.DeliveryStatus `db:"group"`
+		Count  int                      `db:"reduction"`
 	}
 	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldDeliveryStatus), o)
 	if err := s.db.list(q.Count(), &res); err != nil {
 		return nil, err
 	}
 	dlvMap := map[dotagiftx.DeliveryStatus]int{}
-	for _, rr := range res {
-		dlvMap[rr.Group] = rr.Reduction
+	for _, v := range res {
+		dlvMap[v.Status] = v.Count
 	}
 	msc := &dotagiftx.MarketStatusCount{
 		DeliveryNoHit:          dlvMap[dotagiftx.DeliveryStatusNoHit],
@@ -206,10 +216,10 @@ func (s *statsStorage) CountDeliveryStatus(o dotagiftx.FindOpts) (*dotagiftx.Mar
 	return msc, nil
 }
 
-func (s *statsStorage) CountInventoryStatus(o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+func (s *statsStorage) countInventoryStatus(o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	var res []struct {
-		Group     dotagiftx.InventoryStatus `db:"group"`
-		Reduction int                       `db:"reduction"`
+		Status dotagiftx.InventoryStatus `db:"group"`
+		Count  int                       `db:"reduction"`
 	}
 	q := newFindOptsQuery(r.Table(tableMarket).GroupByIndex(marketFieldInventoryStatus), o)
 	if err := s.db.list(q.Count(), &res); err != nil {
@@ -217,7 +227,7 @@ func (s *statsStorage) CountInventoryStatus(o dotagiftx.FindOpts) (*dotagiftx.Ma
 	}
 	mapRes := map[dotagiftx.InventoryStatus]int{}
 	for _, rr := range res {
-		mapRes[rr.Group] = rr.Reduction
+		mapRes[rr.Status] = rr.Count
 	}
 
 	msc := &dotagiftx.MarketStatusCount{

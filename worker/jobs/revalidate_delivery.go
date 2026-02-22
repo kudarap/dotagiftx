@@ -89,14 +89,13 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 				rd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
-			//rest(5)
-			//time.Sleep(time.Second / 4)
+			// time.Sleep(time.Second / 4)
 		}
 
 		// Is there more?
 		if len(res) < opts.Limit {
 			return nil
 		}
-		//opts.Page++
+		// opts.Page++
 	}
 }

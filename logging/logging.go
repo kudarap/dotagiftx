@@ -1,8 +1,6 @@
 package logging
 
 import (
-	"os"
-
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -56,9 +54,9 @@ type Config struct {
 // Default returns pre-configured logger.
 func Default() *logrus.Logger {
 	l := logrus.New()
-	//l.SetFormatter(&logrus.TextFormatter{
+	// l.SetFormatter(&logrus.TextFormatter{
 	//	FullTimestamp: true,
-	//})
+	// })
 	formatter := new(prefixed.TextFormatter)
 	formatter.FullTimestamp = true
 	l.Formatter = formatter
@@ -119,8 +117,4 @@ func openLogfileWithRotator(path string) (*lumberjack.Logger, error) {
 		MaxAge:     fileMaxAge, // days
 		Compress:   true,       // disabled by default
 	}, nil
-}
-
-func openLogfile(path string) (*os.File, error) {
-	return os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 }

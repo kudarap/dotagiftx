@@ -62,7 +62,7 @@ type Service struct {
 
 func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
 	config = config.setDefault()
-	if err := os.MkdirAll(config.Path, 0777); err != nil {
+	if err := os.MkdirAll(config.Path, 0750); err != nil {
 		panic(err)
 	}
 
@@ -119,6 +119,13 @@ func (s *Service) InventoryAsset(ctx context.Context, steamID string) ([]steam.A
 func (s *Service) InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []steam.Asset, error) {
 	res, err := s.InventoryAsset(ctx, steamID)
 	return s.id, res, err
+}
+
+func (s *Service) Invalidate(ctx context.Context, steamID string) error {
+	if err := s.cooldown.SetInventoryHash(ctx, steamID, "", s.inventoryHashTTL); err != nil {
+		return fmt.Errorf("invalidate inventory hash: %s", err)
+	}
+	return nil
 }
 
 // crawlWait retrieves the inventory local file when available and fetch it when missing.
@@ -183,26 +190,25 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	if err != nil && !errors.Is(err, errFileWaiting) {
 		return nil, err
 	}
-	// retry if its on waiting state.
+	// retry if it's on waiting state.
 	if errors.Is(err, errFileWaiting) {
 		for i := range maxWaitRetry {
 			wait := time.Duration(i*i) * time.Second
 			time.Sleep(wait)
 			logger.DebugContext(ctx, "reading local data", "attempt", i+1, "waiting", wait)
-			localFile, err = s.localInventoryFile(ctx, steamID)
-			if err != nil && !errors.Is(err, errFileNotFound) {
+			if _, err = s.localInventoryFile(ctx, steamID); err != nil && !errors.Is(err, errFileNotFound) {
 				return nil, err
 			}
 		}
 	}
-	// check raw inventory again but what error you have you need to go.
+	// check raw inventory again, but what error you have you need to go.
 	localFile, err = s.localInventoryFile(ctx, steamID)
 	if err != nil {
 		return nil, err
 	}
 
 	// clear retry
-	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, 0); err != nil {
+	if err = s.cooldown.SetRetryCooldown(ctx, crawlerID, steamID, 1); err != nil {
 		return nil, err
 	}
 
@@ -223,7 +229,7 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 		return fmt.Errorf("crawler %s is on cooldown", crawlerID)
 	}
 
-	// check if there's existing requests
+	// check if there are existing requests
 	cd, err = s.cooldown.RetryCooldown(ctx, crawlerID, steamID)
 	if err != nil {
 		return err
@@ -309,7 +315,13 @@ func (s *Service) electNewCrawler(ctx context.Context) string {
 	return extractCrawlerID(s.config.Addrs[s.electedCrawlerID])
 }
 
-func (s *Service) sendCrawlRequest(ctx context.Context, crawlerURL, steamID string, precheck bool) (*CrawlSummary, error) {
+func (s *Service) sendCrawlRequest(
+	ctx context.Context,
+	crawlerURL string,
+	steamID string,
+	precheck bool,
+) (*CrawlSummary, error,
+) {
 	url := fmt.Sprintf("%s?steam_id=%s", crawlerURL, steamID)
 	if precheck {
 		url = fmt.Sprintf("%s&precheck", url)

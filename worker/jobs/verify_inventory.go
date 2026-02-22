@@ -64,7 +64,6 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				mkt.InventoryStatus == dotagiftx.InventoryStatusNoHit {
 
 				// TODO! might remove items
-				//vi.logger.Warnln("batch no need check", opts.Page, mkt.User.SteamID, mkt.Item.Name)
 				continue
 			}
 
@@ -90,7 +89,6 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
 			}
 
-			//rest(5)
 			time.Sleep(time.Second / 4)
 		}
 
@@ -98,7 +96,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 		if len(res) < opts.Limit {
 			return nil
 		}
-		//opts.Page++
-		//time.Sleep(time.Second * 2)
+		// opts.Page++
+		// time.Sleep(time.Second * 2)
 	}
 }

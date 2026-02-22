@@ -75,12 +75,11 @@ export default function Plus() {
         <Container>
           <Box>
             <Typography
-              sx={{ mt: 8 }}
+              sx={{ mt: 8, mb: 1, letterSpacing: 3 }}
               style={{
                 background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                letterSpacing: 3,
                 // textTransform: 'uppercase',
               }}
               variant="h3"
@@ -89,7 +88,7 @@ export default function Plus() {
               color="secondary">
               Dotagift Plus
             </Typography>
-            <Typography variant="h6" sx={{ mb: 2 }}>
+            <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
               Help support DotagiftX and get exclusive feature access, dedicated support, and
               profile badge.
             </Typography>
@@ -123,6 +122,7 @@ export default function Plus() {
                   px: 3,
                   borderTop: '2px solid #596b95',
                   backgroundImage: 'linear-gradient(#4654755c, #465475)',
+                  borderRadius: 2,
                 }}>
                 <Typography variant="h6">Supporter</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
@@ -134,7 +134,7 @@ export default function Plus() {
                 <Button
                   variant="outlined"
                   fullWidth
-                  sx={{ bgcolor: 'rgb(78, 93, 128)' }}
+                  sx={{ mt: 10, bgcolor: 'rgb(78, 93, 128)' }}
                   component={Link}
                   href="/transmute/subscription?id=supporter">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
@@ -152,6 +152,7 @@ export default function Plus() {
                   px: 3,
                   borderTop: '2px solid #629cbd',
                   backgroundImage: 'linear-gradient(#578ba863, #578ba8)',
+                  borderRadius: 2,
                 }}>
                 <Typography variant="h6">Trader</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
@@ -163,7 +164,7 @@ export default function Plus() {
                 <Button
                   variant="outlined"
                   fullWidth
-                  sx={{ bgcolor: 'rgb(100, 159, 192)' }}
+                  sx={{ mt: 10, bgcolor: 'rgb(100, 159, 192)' }}
                   component={Link}
                   href="/transmute/subscription?id=trader">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
@@ -181,6 +182,7 @@ export default function Plus() {
                   px: 3,
                   borderTop: '2px solid #ae7f1e',
                   backgroundImage: 'linear-gradient(#a6791d63, #a6791d)',
+                  borderRadius: 2,
                   maxWidth: 500,
                   margin: 'auto',
                 }}>
@@ -200,7 +202,7 @@ export default function Plus() {
                 <Button
                   variant="outlined"
                   fullWidth
-                  sx={{ bgcolor: 'rgb(197, 144, 35)' }}
+                  sx={{ mt: 10, bgcolor: 'rgb(197, 144, 35)' }}
                   component={Link}
                   href="/transmute/subscription?id=partner">
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
@@ -223,7 +225,7 @@ export default function Plus() {
             </Typography>
             <Grid container spacing={1.5}>
               {/* <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
                   <img src="/assets/badge-bp.png" height={48} />
                   <Typography>Partner Badge</Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -233,7 +235,7 @@ export default function Plus() {
               </Grid> */}
 
               <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
                   <img src="/assets/refresher-shard.png" height={48} />
                   <Typography>Refresher Shard</Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -243,7 +245,7 @@ export default function Plus() {
               </Grid>
 
               <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
                   <img src="/assets/refresher-orb.png" height={48} />
                   <Typography>Refresher Orb</Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -253,7 +255,7 @@ export default function Plus() {
               </Grid>
 
               <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
                   <img src="/assets/recipe.png" height={48} />
                   <Typography>Shopkeeper's Contract</Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -263,7 +265,7 @@ export default function Plus() {
               </Grid>
 
               <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 4 }}>
+                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
                   <img src="/assets/courier.png" height={48} />
                   <Typography>Dedicated Pos-5</Typography>
                   <Typography variant="caption" color="text.secondary">

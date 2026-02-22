@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import { debounce } from '@mui/material'
 import Typography from '@mui/material/Typography'
+import CopyButton from '@/components/CopyButton'
 import { lightGreen } from '@mui/material/colors'
 import { teal } from '@mui/material/colors'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
@@ -24,7 +25,7 @@ import { VerifiedStatusPopover } from '@/components/VerifiedStatusCard'
 import ActivitySearchInput from '@/components/ActivitySearchInput'
 
 const priceTagStyle = {
-  padding: '2px 6px',
+  padding: '2px 4px',
   color: 'white',
 }
 
@@ -59,6 +60,9 @@ const useStyles = makeStyles()(theme => ({
   text: {
     marginTop: theme.spacing(1),
   },
+  copyButton: {
+    color: theme.palette.text.secondary,
+  },
 }))
 
 export default function MyMarketActivity({ datatable, loading, error, onSearchInput }) {
@@ -89,7 +93,7 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
         loading={loading}
         onInput={onSearchInput}
         color="secondary"
-        placeholder="Filter heroes, items, notes, and steam ids"
+        placeholder="Filter heroes, items, notes, reference id, and steam id"
       />
 
       {error && (
@@ -145,12 +149,28 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
               &nbsp;
               {daysFromNow(market.updated_at)}
               &nbsp;for&nbsp;
-              <span
+              <Typography
+                variant="caption"
+                component="span"
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
                 }>
                 {amount(market.price, market.currency)}
-              </span>
+              </Typography>
+              &nbsp;
+              <Typography
+                sx={{ float: 'right' }}
+                variant="inherit"
+                color="textSecondary"
+                component="pre">
+                {market.id.split('-')[0]}
+                <CopyButton
+                  className={classes.copyButton}
+                  size="small"
+                  sx={{ mt: -0.5 }}
+                  value={market.id}
+                />
+              </Typography>
             </Typography>
 
             <Typography

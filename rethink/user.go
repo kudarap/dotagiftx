@@ -2,13 +2,13 @@ package rethink
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/errors"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -41,7 +41,7 @@ func (s *userStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.User, error) {
 	var res []dotagiftx.User
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
@@ -52,7 +52,7 @@ func (s *userStorage) FindFlagged(o dotagiftx.FindOpts) ([]dotagiftx.User, error
 	o.KeywordFields = s.keywordFields
 	q := baseFindOptsQuery(s.table(), o, s.flaggedFilter)
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
@@ -78,14 +78,14 @@ func (s *userStorage) Get(id string) (*dotagiftx.User, error) {
 		return row, nil
 	}
 
-	// Try find it by user ID.
+	// Try to find it by user ID.
 	row = &dotagiftx.User{}
 	if err := s.db.one(s.table().Get(id), row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.UserErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -93,13 +93,13 @@ func (s *userStorage) Get(id string) (*dotagiftx.User, error) {
 
 func (s *userStorage) getBySteamID(steamID string) (*dotagiftx.User, error) {
 	row := &dotagiftx.User{}
-	q := s.table().GetAllByIndex(userFieldSteamID, steamID)
+	q := s.table().GetAllByIndex(userFieldSteamID, steamID).OrderBy("created_at").Limit(1)
 	if err := s.db.one(q, row); err != nil {
-		if err == r.ErrEmptyResult {
+		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.UserErrNotFound
 		}
 
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
@@ -111,7 +111,7 @@ func (s *userStorage) Create(in *dotagiftx.User) error {
 	in.UpdatedAt = t
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
@@ -131,11 +131,11 @@ func (s *userStorage) BaseUpdate(in *dotagiftx.User) error {
 
 	err = s.db.update(s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return errors.New(dotagiftx.StorageMergeErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -146,7 +146,7 @@ func (s *userStorage) ExpiringSubscribers(ctx context.Context, t time.Time) ([]d
 	var res []dotagiftx.User
 	q := s.table().HasFields("subscription_ends_at")
 	if err := s.db.list(q, &res); err != nil {
-		return nil, errors.New(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	var expiring []dotagiftx.User
@@ -171,7 +171,7 @@ func (s *userStorage) PurgeSubscription(ctx context.Context, userID string) erro
 		"updated_at":           t,
 	}))
 	if err != nil {
-		return errors.New(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/kudarap/dotagiftx/clickhouse"
 	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
@@ -18,21 +19,24 @@ import (
 var EnvPrefix = "APP"
 
 type Config struct {
-	SigKey            string
-	DivineKey         string
-	Prod              bool
-	Addr              string
-	AppHost           string
-	ApiHost           string
-	SpanEnabled       bool `envconfig:"SPAN_ENABLED"`
-	Upload            file.Config
-	Rethink           rethink.Config
-	Redis             redis.Config
-	Steam             steam.Config
-	Paypal            paypal.Config
-	Log               logging.Config
-	Phantasm          phantasm.Config
-	DiscordWebhookURL string `envconfig:"DISCORD_WEBHOOK_URL"`
+	SigKey              string
+	DivineKey           string
+	Prod                bool
+	Addr                string
+	AppHost             string
+	ApiHost             string
+	SpanEnabled         bool `envconfig:"SPAN_ENABLED"`
+	StatsCaptureEnabled bool `envconfig:"STATS_CAPTURE_ENABLED"`
+	Upload              file.Config
+	AllowedImageSources []string `envconfig:"ALLOWED_IMAGE_SOURCES"`
+	Rethink             rethink.Config
+	Redis               redis.Config
+	ClickHouse          clickhouse.Config
+	Steam               steam.Config
+	Paypal              paypal.Config
+	Log                 logging.Config
+	Phantasm            phantasm.Config
+	DiscordWebhookURL   string `envconfig:"DISCORD_WEBHOOK_URL"`
 }
 
 // Load parses .env values into a struct.

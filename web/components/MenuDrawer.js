@@ -17,6 +17,7 @@ const primaryLinks = [
 
 const secondaryLinks = [
   ['Treasures', '/treasures'],
+  ['Heroes', '/heroes'],
   ['Rules', '/rules'],
   ['Bans', '/bans'],
   ['Guides', '/guides'],
@@ -24,6 +25,7 @@ const secondaryLinks = [
   ['Middleman', '/middleman'],
   ['Moderators', '/moderators'],
   ['Updates', '/updates'],
+  ['Mobile', '/download'],
 ].map(convertToNav)
 
 function MenuDrawer({ profile, open, onClose }) {

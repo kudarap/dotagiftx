@@ -44,7 +44,7 @@ func main() {
 	for _, param := range params {
 		result, err := verify.Inventory(ctx, assetSrc, param.steamID, param.item)
 		fmt.Println(strings.Repeat("-", 70))
-		fmt.Println(fmt.Sprintf("%s -> %s", param.steamID, param.item))
+		fmt.Printf("%s -> %s\n", param.steamID, param.item)
 		fmt.Println(strings.Repeat("-", 70))
 		if err != nil {
 			fmt.Printf("Errored: %s \n\n", err)

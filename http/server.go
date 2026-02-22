@@ -39,7 +39,7 @@ func NewServer(
 	sc dotagiftx.SteamClient,
 	ps *phantasm.Service,
 	t *tracing.Tracer,
-	c dotagiftx.Cache,
+	c cacheManager,
 	v *dotagiftx.Version,
 	l *logrus.Logger,
 ) *Server {
@@ -84,7 +84,7 @@ type Server struct {
 	phantasmSvc *phantasm.Service
 
 	tracing *tracing.Tracer
-	cache   dotagiftx.Cache
+	cache   cacheManager
 	logger  *logrus.Logger
 	version *dotagiftx.Version
 
@@ -99,9 +99,11 @@ func (s *Server) setup() {
 	// A good base middleware stack
 	r.Use(s.tracing.Middleware)
 	r.Use(middleware.RequestID)
+	r.Use(vercelRequestID)
 	r.Use(middleware.RealIP)
 	r.Use(NewStructuredLogger(s.logger))
-	r.Use(CORS)
+	r.Use(cors)
+	r.Use(requestIDWriter)
 	r.Use(middleware.Recoverer)
 
 	// Set routes handler.
@@ -111,7 +113,6 @@ func (s *Server) setup() {
 	r.NotFound(handle404())
 	r.MethodNotAllowed(handle405())
 
-	// Set default address.
 	if s.Addr == "" {
 		s.Addr = defaultAddr
 	}

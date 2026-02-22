@@ -13,6 +13,7 @@ const useStyles = makeStyles()(theme => ({
     [theme.breakpoints.down('md')]: {
       padding: theme.spacing(1),
     },
+    minHeight: 500,
   },
 }))
 

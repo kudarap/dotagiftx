@@ -1,0 +1,52 @@
+name: Deploy Development API
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+env:
+  HOST: root@chiligarlic.com
+  IMAGE_NAME: dotagiftx/api:dev
+  IMAGE_FILE: api.tar
+  WORKDIR: ~/dotagiftx/dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: golangci/golangci-lint-action@v8
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.25
+      - name: Compile
+        run: make build
+      - name: Test
+        run: make test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Image
+        run: docker build -t $IMAGE_NAME .
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: SSH Image Deploy
+        run: |
+          docker save -o $IMAGE_FILE $IMAGE_NAME
+          scp $IMAGE_FILE $HOST:$WORKDIR/$IMAGE_FILE
+          ssh $HOST "cd $WORKDIR && docker load -i $IMAGE_FILE && ./restart.sh"
+
+#      - name: SSH Binary Upload
+#        run: scp $BIN_FILE $HOST:$WORKDIR/$BIN_NAME

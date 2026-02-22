@@ -13,7 +13,6 @@ import (
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/rethink"
-	"github.com/kudarap/dotagiftx/service"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 	"github.com/kudarap/dotagiftx/tracing"
 	"github.com/kudarap/dotagiftx/verify"
@@ -52,10 +51,9 @@ func main() {
 }
 
 type application struct {
-	config  config.Config
-	worker  *worker.Worker
-	logger  *logrus.Logger
-	version *dotagiftx.Version
+	config config.Config
+	worker *worker.Worker
+	logger *logrus.Logger
 
 	closerFn func()
 }
@@ -106,8 +104,8 @@ func (app *application) setup() error {
 	// Service inits.
 	slogger := slog.Default()
 	logSvc.Println("setting up services...")
-	inventorySvc := service.NewInventory(inventoryStg, marketStg, catalogStg)
-	deliverySvc := service.NewDelivery(deliveryStg, marketStg)
+	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
+	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 	assetSource := verify.NewSource(
 		phantasmSvc.InventoryAssetWithProvider,
@@ -115,7 +113,7 @@ func (app *application) setup() error {
 	)
 
 	// Setup application worker
-	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource)
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource, phantasmSvc)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
@@ -160,9 +158,7 @@ func (app *application) setup() error {
 		redisClient,
 		logging.WithPrefix(logger, "job_expiring_market"),
 	))
-	app.worker.AddJob(jobs.NewSweepMarket(
-		marketStg, logging.WithPrefix(logger, "job_sweep_market"),
-	))
+	app.worker.AddJob(jobs.NewSweepMarket(marketStg, logging.WithPrefix(logger, "job_sweep_market")))
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
@@ -241,7 +237,7 @@ func connRetry(name string, fn func() error) error {
 		if err := recover(); err != nil {
 			logger.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
 			time.Sleep(delay)
-			err = connRetry(name, fn)
+			_ = connRetry(name, fn)
 		}
 	}()
 

@@ -28,10 +28,13 @@ export const STATS = '/stats'
 export const STATS_TOP_ORIGINS = `${STATS}/top_origins`
 export const STATS_TOP_HEROES = `${STATS}/top_heroes`
 export const STATS_TOP_KEYWORDS = `${STATS}/top_keywords`
-export const STATS_MARKET_SUMMARY = `${STATS}/market_summary`
+export const STATS_MARKET_SUMMARY = `${STATS}/market_summary_v2`
+export const STATS_MARKET_SUMMARY_OVERALL = `${STATS}/market_summary_overall`
 export const GRAPH_MARKET_SALES = `/graph/market_sales`
 export const REPORTS = '/reports'
 export const BLACKLIST = '/blacklists'
+export const TREASURES = '/treasures'
+export const HEROES = '/heroes'
 const VERSION = '/'
 const TRACK = '/t'
 
@@ -49,6 +52,8 @@ export const user = steamID => http.request(http.GET, `${USERS}/${steamID}`)
 export const vanity = vid => http.request(http.GET, `${VANITY}/${vid}`)
 export const statsMarketSummary = (filter = {}) =>
   http.request(http.GET, parseParams(STATS_MARKET_SUMMARY, filter))
+
+export const statsMarketSummaryOverall = () => http.request(http.GET, STATS_MARKET_SUMMARY_OVERALL)
 
 export const myMarketSearch = http.baseSearchRequest(MY_MARKETS)
 export const myMarket = {
@@ -70,6 +75,11 @@ export const catalogSearch = http.baseSearchRequest(CATALOGS)
 export const catalogTrendSearch = http.baseSearchRequest(CATALOGS_TREND)
 export const reportSearch = http.baseSearchRequest(REPORTS)
 export const blacklistSearch = http.baseSearchRequest(BLACKLIST)
+
+export const treasureList = () => http.request(http.GET, TREASURES)
+export const getTreasure = slug => http.request(http.GET, `${TREASURES}/${slug}`)
+export const heroList = () => http.request(http.GET, HEROES)
+export const getHero = id => http.request(http.GET, `${HEROES}/${id}`)
 
 export const trackItemViewURL = itemID => `${API_URL}${TRACK}?t=v&i=${itemID}`
 export const trackProfileViewURL = userID => `${API_URL}${TRACK}?t=p&u=${userID}`

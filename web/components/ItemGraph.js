@@ -91,7 +91,7 @@ const ItemGraph = ({ itemId = '', itemName = '' }) => {
           </div>
           <div id="delivered">
             {marketDelivered && marketDelivered.result_count !== 0 && (
-              <MarketActivity datatable={marketDelivered} disablePrice />
+              <MarketActivity datatable={marketDelivered} />
             )}
           </div>
         </div>
