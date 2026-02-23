@@ -41,6 +41,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
+    "@types/react": "^17.0.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^10.1.8",

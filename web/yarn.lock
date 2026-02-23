@@ -1254,10 +1254,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react@npm:^17.0.0":
+  version: 17.0.91
+  resolution: "@types/react@npm:17.0.91"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    "@types/scheduler": "npm:^0.16"
+    csstype: "npm:^3.2.2"
+  checksum: 10c0/f1a5f77dbe6d62c04bfa2692d1204fd537e5fb15461a10673fa116a4b211f8ebaf426a4b1b95da04d38cea47dfc77c4d403f0850db7d9853298248a54478cc60
+  languageName: node
+  linkType: hard
+
 "@types/scheduler@npm:*":
   version: 0.26.0
   resolution: "@types/scheduler@npm:0.26.0"
   checksum: 10c0/84626b06551ab7e1247412a2588430da5cd75263a353f1fd70593ca7331d43797937b89fe587089c6b3613d0658986087c5f0b2debef5bae831cdc1104a432ef
+  languageName: node
+  linkType: hard
+
+"@types/scheduler@npm:^0.16":
+  version: 0.16.8
+  resolution: "@types/scheduler@npm:0.16.8"
+  checksum: 10c0/f86de504945b8fc41b1f391f847444d542e2e4067cf7e5d9bfeb5d2d2393d3203b1161bc0ef3b1e104d828dabfb60baf06e8d2c27e27ff7e8258e6e618d8c4ec
   languageName: node
   linkType: hard
 
@@ -1852,6 +1870,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csstype@npm:^3.2.2":
+  version: 3.2.3
+  resolution: "csstype@npm:3.2.3"
+  checksum: 10c0/cd29c51e70fa822f1cecd8641a1445bed7063697469d35633b516e60fe8c1bde04b08f6c5b6022136bb669b64c63d4173af54864510fbb4ee23281801841a3ce
+  languageName: node
+  linkType: hard
+
 "d3-array@npm:2 - 3, d3-array@npm:2.10.0 - 3, d3-array@npm:^3.1.6":
   version: 3.2.4
   resolution: "d3-array@npm:3.2.4"
@@ -2124,6 +2149,7 @@ __metadata:
     "@mui/system": "npm:^5.18.0"
     "@paypal/react-paypal-js": "npm:^8.9.2"
     "@popperjs/core": "npm:^2.11.8"
+    "@types/react": "npm:^17.0.0"
     clsx: "npm:^1.2.1"
     eslint: "npm:^8.57.1"
     eslint-config-airbnb: "npm:^19.0.4"
