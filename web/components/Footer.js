@@ -8,7 +8,7 @@ import { APP_NAME } from '@/constants/strings'
 import { APP_FOOTER_HEIGHT } from '@/constants/app'
 
 // Stole from SteamDB dota 2 page footer.
-const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${1758089866935}`
+// const dotaHeroImage = `https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=${1758089866935}`
 // const heroImage = '/assets/bg_hero.png'
 
 // const mobileHeightCompensator = 31
@@ -63,7 +63,7 @@ const useStyles = makeStyles()(theme => ({
   highlight: {
     background: '-webkit-linear-gradient(#EBCF87 10%, #C79123 90%)',
     // background: '-webkit-linear-gradient(#EBCF87 10%, #A9EFAA, #7FBC8B)',
-    backgroundClip: 'border-box',
+    // backgroundClip: 'border-box',
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',

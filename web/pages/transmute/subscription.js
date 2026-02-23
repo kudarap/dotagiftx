@@ -69,7 +69,7 @@ function ButtonWrapper({ type, planId, customId, onSuccess }) {
   )
 }
 
-const FeatureList = styled('ul')(({ theme }) => ({
+const FeatureList = styled('ul')(() => ({
   listStyle: 'none',
   '& li:before': {
     content: `'✔'`,
@@ -92,7 +92,7 @@ const minimumCycle = {
 
 const manualPriceOverhead = 0.6
 
-export default function Subscription({ data }) {
+export default function Subscription() {
   const { currentAuth } = useContext(AppContext)
 
   const router = useRouter()
@@ -114,10 +114,9 @@ export default function Subscription({ data }) {
     setSubscriptionPrice(priceTable[query.id])
   }, [query.id, currentAuth.user_id])
 
-  const handleSuccess = data => {
-    console.log(data)
+  const handleSuccess = res => {
     // send orderId to subscription verifier to ack the process
-    router.push(`/thanks-subscriber?sub=${subscription.id}&subid=${data.subscriptionID}`)
+    router.push(`/thanks-subscriber?sub=${subscription.id}&subid=${res.subscriptionID}`)
   }
 
   const isReady = currentAuth.steam_id && subscription

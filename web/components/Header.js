@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Image from 'next/image'
@@ -107,15 +107,15 @@ export default function Header() {
         return
       }
 
-      let profile = Storage.get(APP_CACHE_PROFILE)
-      if (profile) {
-        setProfile(profile)
+      const hit = Storage.get(APP_CACHE_PROFILE)
+      if (hit) {
+        setProfile(hit)
         return
       }
 
-      profile = await myProfile.GET()
-      Storage.save(APP_CACHE_PROFILE, profile)
-      setProfile(profile)
+      const res = await myProfile.GET()
+      Storage.save(APP_CACHE_PROFILE, res)
+      setProfile(res)
     })()
   }, [])
 
@@ -377,17 +377,17 @@ function MoreMenu() {
   )
 }
 
-function NoticeMe() {
-  return (
-    <div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>
-      You are viewing a development version of this site.&nbsp;
-      <Link href="https://dotagiftx.com">
-        <strong>Take me to live site</strong>
-      </Link>
-      <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
-    </div>
-  )
-}
+// function NoticeMe() {
+//   return (
+//     <div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>
+//       You are viewing a development version of this site.&nbsp;
+//       <Link href="https://dotagiftx.com">
+//         <strong>Take me to live site</strong>
+//       </Link>
+//       <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
+//     </div>
+//   )
+// }
 
 function Incident() {
   const storageKey = 'major-incident-data-loss-2025-10-25'

@@ -15,7 +15,6 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import InternalUserCard from '@/components/InternalUserCard'
-import { user } from '@/service/api'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -37,10 +36,6 @@ const useStyles = makeStyles()(theme => ({
 function createRate(payment, serviceFee, minimumFee, pulloutFee, disputeFee) {
   return { payment, serviceFee, minimumFee, pulloutFee, disputeFee }
 }
-
-const middlemanUserIds = [
-  // '76561198287849998',
-]
 
 // paypal fees 4.4% + 0.30
 const tableRates = [
@@ -194,31 +189,10 @@ export default function Middleman({ users }) {
 }
 
 Middleman.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.object).isRequired,
+  users: PropTypes.arrayOf(PropTypes.object),
   error: PropTypes.string,
 }
 Middleman.defaultProps = {
   users: [],
   error: null,
-}
-
-// This gets called on every request
-export async function getServerSideProps(context) {
-  const users = []
-  for (const id of middlemanUserIds) {
-    try {
-      users.push(await user(id))
-    } catch (e) {
-      return {
-        props: {
-          error: e.message,
-        },
-      }
-    }
-  }
-  return {
-    props: {
-      users,
-    },
-  }
 }

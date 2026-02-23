@@ -21,14 +21,6 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { right } from '@popperjs/core'
-// import SearchInput from '@/components/SearchInput'
-// import CatalogList from '@/components/CatalogList'
-// import Link from '@/components/Link'
-// import Footer from '@/components/Footer'
-
-// const Header = dynamic(() => import('@/components/Header'))
-// const Container = dynamic(() => import('@/components/Container'))
 const SearchInput = dynamic(() => import('@/components/SearchInput'))
 const CatalogList = dynamic(() => import('@/components/CatalogList'))
 const Link = dynamic(() => import('@/components/Link'))

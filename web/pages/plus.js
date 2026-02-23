@@ -23,7 +23,7 @@ import AppContext from '@/components/AppContext'
 import { USER_SUBSCRIPTION_MAP_COLOR, USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
 import { dateCalendar } from '@/lib/format'
 
-const FeatureList = styled('ul')(({ theme }) => ({
+const FeatureList = styled('ul')(() => ({
   listStyle: 'none',
   '& li:before': {
     content: `'✔'`,
@@ -193,7 +193,7 @@ export default function Plus() {
                     <Link href="#exclusive-features">Refresher Orb</Link>
                   </li>
                   <li>
-                    <Link href="#exclusive-features">Shopkeeper's Contract</Link>
+                    <Link href="#exclusive-features">Shopkeeper&apos;s Contract</Link>
                   </li>
                   <li>
                     <Link href="#exclusive-features">Dedicated Pos-5</Link>
@@ -236,7 +236,11 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img src="/assets/refresher-shard.png" height={48} />
+                  <img
+                    src="/assets/refresher-shard.png"
+                    alt="assets/refresher-shard.png"
+                    height={48}
+                  />
                   <Typography>Refresher Shard</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Automatically refreshes expiring buy orders
@@ -246,7 +250,7 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img src="/assets/refresher-orb.png" height={48} />
+                  <img src="/assets/refresher-orb.png" alt="assets/refresher-orb.png" height={48} />
                   <Typography>Refresher Orb</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Automatically refreshes expiring buy orders and listings
@@ -256,8 +260,8 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img src="/assets/recipe.png" height={48} />
-                  <Typography>Shopkeeper's Contract</Typography>
+                  <img src="/assets/recipe.png" alt="assets/recipe.png" height={48} />
+                  <Typography>Shopkeeper&apos;s Contract</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Grants the ability to resell items outside your inventory
                   </Typography>
@@ -266,7 +270,7 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img src="/assets/courier.png" height={48} />
+                  <img src="/assets/courier.png" alt="assets/courier.png" height={48} />
                   <Typography>Dedicated Pos-5</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Exclusive support channel on Discord and Steam

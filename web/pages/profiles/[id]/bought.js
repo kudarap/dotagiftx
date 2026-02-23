@@ -44,11 +44,6 @@ const defaultData = {
 
 const scrollBias = 300
 
-const handleSearchInput = q => {
-  setDatatable(defaultData)
-  setFilter({ ...filter, page: 1, q })
-}
-
 export default function UserReserved({ profile, stats, canonicalURL }) {
   const { classes } = useStyles()
 

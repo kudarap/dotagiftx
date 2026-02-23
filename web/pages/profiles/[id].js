@@ -277,11 +277,12 @@ export default function UserDetails({
           </div>
 
           {isProfileReported ? (
-            <p align="center">
+            <Typography align="center">
+              <br />
               <Button component={Link} href={`${linkProps.href}/activity`}>
                 Show All Activity
               </Button>
-            </p>
+            </Typography>
           ) : (
             <>
               <UserMarketList
@@ -355,16 +356,6 @@ export async function getServerSideProps(context) {
       return {
         props: {
           error: e.message,
-        },
-      }
-    }
-
-    // Since not registered user will render differently, should return now.
-    if (!profile.is_registered) {
-      return {
-        props: {
-          profile,
-          canonicalURL,
         },
       }
     }
