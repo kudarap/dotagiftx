@@ -59,6 +59,7 @@ export default function ItemImage({
         <img
           loading="lazy"
           src={baseSrc}
+          srcSet={srcSet}
           alt={title || image}
           style={imgStyle}
           height={height}

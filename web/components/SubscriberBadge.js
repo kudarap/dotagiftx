@@ -22,13 +22,11 @@ export const badgeSettings = {
   },
 }
 
-const useStyles = makeStyles()(theme => ({
+const useStyles = makeStyles()(() => ({
   root: {
     color: 'white',
-    padding: '0 4px',
     padding: '0 0.675rem',
     fontSize: 10,
-    fontWeight: 500,
     fontWeight: '0.875rem',
     borderRadius: '2px',
     display: 'inline-block',
