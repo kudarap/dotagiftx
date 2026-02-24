@@ -9,10 +9,13 @@ plugins:
   - prettier
 env:
   browser: true
+  es2020: true
+parserOptions:
+  ecmaVersion: 2020
 rules:
+  eqeqeq: off
   no-plusplus: off
   no-continue: off
-  eqeqeq: off
   react/jsx-props-no-spreading: off
   react/jsx-closing-bracket-location: off
   react/forbid-prop-types: off
