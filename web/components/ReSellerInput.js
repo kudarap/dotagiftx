@@ -14,15 +14,12 @@ export default function ReSellInput(props) {
         control={<Checkbox checked={checked} onChange={() => setChecked(!checked)} />}
         label={
           <Typography>
-            <strong>Shopkeeper's Contract</strong>: I confirm this item exist on seller's inventory.
+            <strong>Shopkeeper&apos;s Contract</strong>: I confirm this item exist on seller&apos;s
+            inventory.
           </Typography>
         }
       />
-      {checked && (
-        <>
-          <TextField {...props} disabled={!checked} required={checked} autoFocus />
-        </>
-      )}
+      {checked && <TextField {...props} disabled={!checked} required={checked} autoFocus />}
       <br />
       <br />
     </div>

@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Image from 'next/image'
 import AppBar from '@mui/material/AppBar'
-import Avatar from '@/components/Avatar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
@@ -13,6 +12,8 @@ import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
 import MenuIcon from '@mui/icons-material/Menu'
 import HoverMenu from 'material-ui-popup-state/HoverMenu'
 import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
+import { isRecentTreasureNew } from 'pages/treasures'
+import Avatar from '@/components/Avatar'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
@@ -29,7 +30,6 @@ import brandImage from '../public/brand_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
-import { isRecentTreasureNew } from 'pages/treasures'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -107,15 +107,15 @@ export default function Header() {
         return
       }
 
-      let profile = Storage.get(APP_CACHE_PROFILE)
-      if (profile) {
-        setProfile(profile)
+      const hit = Storage.get(APP_CACHE_PROFILE)
+      if (hit) {
+        setProfile(hit)
         return
       }
 
-      profile = await myProfile.GET()
-      Storage.save(APP_CACHE_PROFILE, profile)
-      setProfile(profile)
+      const res = await myProfile.GET()
+      Storage.save(APP_CACHE_PROFILE, res)
+      setProfile(res)
     })()
   }, [])
 
@@ -377,17 +377,17 @@ function MoreMenu() {
   )
 }
 
-function NoticeMe() {
-  return (
-    <div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>
-      You are viewing a development version of this site.&nbsp;
-      <Link href="https://dotagiftx.com">
-        <strong>Take me to live site</strong>
-      </Link>
-      <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
-    </div>
-  )
-}
+// function NoticeMe() {
+//   return (
+//     <div style={{ textAlign: 'center', backgroundColor: 'crimson' }}>
+//       You are viewing a development version of this site.&nbsp;
+//       <Link href="https://dotagiftx.com">
+//         <strong>Take me to live site</strong>
+//       </Link>
+//       <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }}>close</span>
+//     </div>
+//   )
+// }
 
 function Incident() {
   const storageKey = 'major-incident-data-loss-2025-10-25'

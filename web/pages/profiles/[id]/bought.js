@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
-import Avatar from '@/components/Avatar'
 import Typography from '@mui/material/Typography'
+import Avatar from '@/components/Avatar'
 import { APP_NAME, APP_URL } from '@/constants/strings'
 import { MARKET_STATUS_BID_COMPLETED } from '@/constants/market'
 import { CDN_URL, marketSearch, user } from '@/service/api'
@@ -43,11 +43,6 @@ const defaultData = {
 }
 
 const scrollBias = 300
-
-const handleSearchInput = q => {
-  setDatatable(defaultData)
-  setFilter({ ...filter, page: 1, q })
-}
 
 export default function UserReserved({ profile, stats, canonicalURL }) {
   const { classes } = useStyles()

@@ -114,7 +114,7 @@ export default function Blacklist() {
           <br />
           {error && <Typography color="error">Could not load blacklisted users</Typography>}
           {!data && !error && <Typography>Loading...</Typography>}
-          {!error && data && data.map(user => <UserCard data={user} />)}
+          {!error && data && data.map(user => <UserCard key={user.id} data={user} />)}
           {!error && data && data.length === 0 && resolvedQuery && (
             <Typography>Please wait. Redirecting to profile...</Typography>
           )}

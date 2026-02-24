@@ -21,14 +21,6 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
-import { right } from '@popperjs/core'
-// import SearchInput from '@/components/SearchInput'
-// import CatalogList from '@/components/CatalogList'
-// import Link from '@/components/Link'
-// import Footer from '@/components/Footer'
-
-// const Header = dynamic(() => import('@/components/Header'))
-// const Container = dynamic(() => import('@/components/Container'))
 const SearchInput = dynamic(() => import('@/components/SearchInput'))
 const CatalogList = dynamic(() => import('@/components/CatalogList'))
 const Link = dynamic(() => import('@/components/Link'))
@@ -52,7 +44,6 @@ const useStyles = makeStyles()(theme => ({
   },
   bannerHighlight: {
     background: '-webkit-linear-gradient(#EBCF87 10%, #EA6953 90%)',
-    backgroundClip: 'border-box',
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
@@ -182,7 +173,8 @@ export default function Index({ marketSummary, trendingItems }) {
               backgroundPositionY: -135,
               width: '100%',
               height: '100%',
-            }}></div>
+            }}
+          />
         </div>
 
         <Container
@@ -320,7 +312,7 @@ export default function Index({ marketSummary, trendingItems }) {
 
           {/* Top 10 foot links */}
           <Grid container spacing={2}>
-            {/* Top 10 Heroes*/}
+            {/* Top 10 Heroes */}
             <Grid item sm={4} xs={12}>
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&

@@ -22,7 +22,7 @@ export default function Avatar(props) {
   if (glow) {
     style = {
       ...style,
-      border: '1px solid ' + glowFrame.border,
+      border: `1px solid ${glowFrame.border}`,
       // animation: 'donatorglow4 12s infinite',
       // animationFillMode: 'forwards',
       // animationDelay: '3s',
@@ -33,10 +33,10 @@ export default function Avatar(props) {
     const borderWidth = large ? 2 : 1
     style = {
       ...style,
-      borderTop: borderWidth * 1 + 'px solid ' + badgeSettings[badge].color,
-      borderLeft: borderWidth * 1 + 'px solid ' + badgeSettings[badge].color,
-      borderRight: borderWidth * 1 + 'px solid ' + badgeSettings[badge].color,
-      borderBottom: borderWidth * 2 + 'px solid ' + badgeSettings[badge].color,
+      borderTop: `${borderWidth * 1}px solid ${badgeSettings[badge].color}`,
+      borderLeft: `${borderWidth * 1}px solid ${badgeSettings[badge].color}`,
+      borderRight: `${borderWidth * 1}px solid ${badgeSettings[badge].color}`,
+      borderBottom: `${borderWidth * 2}px solid ${badgeSettings[badge].color}`,
     }
   }
 

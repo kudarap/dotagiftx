@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import MuiLink from '@mui/material/Link'
 
-const NextComposed = React.forwardRef(function NextComposed(props, ref) {
+const NextComposed = React.forwardRef((props, ref) => {
   const { as, href, ...other } = props
 
   return (

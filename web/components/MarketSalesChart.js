@@ -45,13 +45,11 @@ export default function MarketSalesChart({ data }) {
     return null
   }
 
-  const format = data.map(v => {
-    return {
-      unix: moment(v.date).unix() * 1000,
-      avg: Number(v.avg.toFixed(2)),
-      count: v.count,
-    }
-  })
+  const format = data.map(v => ({
+    unix: moment(v.date).unix() * 1000,
+    avg: Number(v.avg.toFixed(2)),
+    count: v.count,
+  }))
 
   return (
     <div style={{ width: '100%', height: 200, marginLeft: -20 }}>
