@@ -5,7 +5,8 @@ import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
-import { styled } from '@mui/system'
+// import { styled } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
@@ -35,14 +36,23 @@ const isTreasureNew = v => {
 
 export const isRecentTreasureNew = () => isTreasureNew(LATEST_TREASURE_DROP)
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#1A20278C',
-  ...theme.typography?.body,
-  padding: theme.spacing(1),
-  paddingTop: theme.spacing(2),
-  textAlign: 'center',
-  color: theme.palette.text?.primary,
-}))
+export function Item({ children, ...other }) {
+  const theme = useTheme()
+  return (
+    <Paper
+      sx={{
+        backgroundColor: '#1A20278C',
+        ...theme.typography.body,
+        padding: theme.spacing(1),
+        paddingTop: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.primary,
+      }}
+      {...other}>
+      {children}
+    </Paper>
+  )
+}
 
 export default function Treasures({ treasures, error }) {
   return (

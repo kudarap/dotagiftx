@@ -1,14 +1,38 @@
 import React from 'react'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
+import { DocumentHeadTags, documentGetInitialProps } from '@mui/material-nextjs/v15-pagesRouter'
 import { withEmotionCache } from 'tss-react/nextJs'
 import muiTheme from '@/lib/theme'
 import createEmotionCache from '@/lib/createEmotionCache'
+
+const MyDocument2 = function (props) {
+  return (
+    <Html lang="en">
+      <Head>
+        <DocumentHeadTags {...props} />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  )
+}
+
+MyDocument2.getInitialProps = async ctx => {
+  const finalProps = await documentGetInitialProps(ctx)
+  return finalProps
+}
+
+export default MyDocument2
 
 class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
         <Head>
+          <DocumentHeadTags {...props} />
+
           {/* resolves dns for fast load time from other resources */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://www.googleanalytics.com" />
@@ -53,9 +77,14 @@ class MyDocument extends Document {
   }
 }
 
-export default withEmotionCache({
-  Document: MyDocument,
-  // Every emotion cache used in the app should be provided.
-  // Caches for MUI should use "prepend": true.
-  getCaches: () => [createEmotionCache()],
-})
+MyDocument.getInitialProps = async ctx => {
+  const finalProps = await documentGetInitialProps(ctx)
+  return finalProps
+}
+
+// export default withEmotionCache({
+//   Document: MyDocument,
+//   // Every emotion cache used in the app should be provided.
+//   // Caches for MUI should use "prepend": true.
+//   getCaches: () => [createEmotionCache()],
+// })
