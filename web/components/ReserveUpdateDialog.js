@@ -166,8 +166,8 @@ export default function ReserveUpdateDialog(props) {
                       {`Notes: `}
                     </Typography>
                     <Typography component="ul" variant="body2" style={{ marginTop: 0 }}>
-                      {market.notes.split('\n').map((s, i) => (
-                        <li key={i}>{s}</li>
+                      {market.notes.split('\n').map(s => (
+                        <li key={s}>{s}</li>
                       ))}
                     </Typography>
                   </>

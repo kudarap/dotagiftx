@@ -63,13 +63,11 @@ export default function Feedback() {
 
           {reports &&
             reports.data &&
-            map(tallyVotes, (text, score) => {
-              return (
-                <Typography color="secondary">
-                  {text}x {score}
-                </Typography>
-              )
-            })}
+            map(tallyVotes, (text, score) => (
+              <Typography color="secondary">
+                {text}x {score}
+              </Typography>
+            ))}
 
           <Box>
             {reports &&

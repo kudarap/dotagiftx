@@ -117,7 +117,12 @@ export default function VoteDialog(props) {
           <FormLabel component="legend">Here are some suggestions:</FormLabel>
           <RadioGroup aria-label="options" value={value} onChange={handleChange}>
             {voteOptions.map(opts => (
-              <FormControlLabel {...opts} control={<Radio />} disabled={Boolean(message)} />
+              <FormControlLabel
+                key={opts.value}
+                {...opts}
+                control={<Radio />}
+                disabled={Boolean(message)}
+              />
             ))}
             <FormControlLabel
               label="Not listed"

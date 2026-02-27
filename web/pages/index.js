@@ -21,6 +21,7 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+
 const SearchInput = dynamic(() => import('@/components/SearchInput'))
 const CatalogList = dynamic(() => import('@/components/CatalogList'))
 const Link = dynamic(() => import('@/components/Link'))

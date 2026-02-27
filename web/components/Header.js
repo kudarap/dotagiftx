@@ -12,7 +12,7 @@ import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
 import MenuIcon from '@mui/icons-material/Menu'
 import HoverMenu from 'material-ui-popup-state/HoverMenu'
 import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
-import { isRecentTreasureNew } from 'pages/treasures'
+import { isRecentTreasureNew } from '@/pages/treasures'
 import Avatar from '@/components/Avatar'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
@@ -279,12 +279,8 @@ export default function Header() {
     </>
   )
 }
-Header.propTypes = {
-  disableSearch: PropTypes.bool,
-}
-Header.defaultProps = {
-  disableSearch: false,
-}
+Header.propTypes = {}
+Header.defaultProps = {}
 
 function AvatarMenu({ profile, onLogout }) {
   const popupState = usePopupState({
