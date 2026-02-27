@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
+import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { CacheProvider } from '@emotion/react'
 import { APP_NAME } from '@/constants/strings'
 import theme from '@/lib/theme'
@@ -17,25 +18,27 @@ export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache(), pageProps } = props
 
   return (
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Dota 2 Giftables Community Market</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
-        {/* <meta */}
-        {/*  name="viewport" */}
-        {/*  content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" */}
-        {/* /> */}
-      </Head>
+    <AppCacheProvider>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta charSet="UTF-8" />
+          <title>{APP_NAME} :: Dota 2 Giftables Community Market</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
+          {/* <meta */}
+          {/*  name="viewport" */}
+          {/*  content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" */}
+          {/* /> */}
+        </Head>
 
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
 
-        <Root>
-          <Component {...pageProps} />
-        </Root>
-      </ThemeProvider>
-    </CacheProvider>
+          <Root>
+            <Component {...pageProps} />
+          </Root>
+        </ThemeProvider>
+      </CacheProvider>
+    </AppCacheProvider>
   )
 }
 

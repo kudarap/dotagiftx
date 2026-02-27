@@ -35,14 +35,17 @@ const isTreasureNew = v => {
 
 export const isRecentTreasureNew = () => isTreasureNew(LATEST_TREASURE_DROP)
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#1A20278C',
-  ...theme.typography.body,
-  padding: theme.spacing(1),
-  paddingTop: theme.spacing(2),
-  textAlign: 'center',
-  color: theme.palette.text.primary,
-}))
+const Item = styled(Paper)(({ theme }) => {
+  console.log('typography', theme.typography.body1)
+  return {
+    backgroundColor: '#1A20278C',
+    ...theme.typography.body1,
+    padding: theme.spacing(1),
+    paddingTop: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.primary,
+  }
+})
 
 export default function Treasures({ treasures, error }) {
   return (

@@ -28,7 +28,6 @@ const shuffleList = arr => {
 }
 
 export default function Heroes({ heroes: allHeroes, error }) {
-  shuffleList(allHeroes)
   const [heroes, setHeroes] = useState(allHeroes)
   const [searchTerm, setSearchTerm] = useState()
   const handleChange = term => {
@@ -128,6 +127,7 @@ Heroes.defaultProps = {
 
 export const getStaticProps = async () => {
   const res = await heroList()
+  shuffleList(res)
   return {
     props: {
       heroes: res,
