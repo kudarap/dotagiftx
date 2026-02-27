@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from 'react'
-import moment from 'moment'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
@@ -8,6 +7,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
+import Paper from '@mui/material/Paper'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import SubmitIcon from '@mui/icons-material/Check'
@@ -16,17 +16,11 @@ import { myMarket, myProfile } from '@/service/api'
 import Link from '@/components/Link'
 import ItemImage from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
-import { MARKET_NOTES_MAX_LEN, MARKET_TYPE_BID, MARKET_BID_EXPR_DAYS } from '@/constants/market'
+import { MARKET_NOTES_MAX_LEN, MARKET_TYPE_BID } from '@/constants/market'
 import { itemRarityColorMap } from '@/constants/palette'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import Button from '@/components/Button'
-import { Paper } from '@mui/material'
-import {
-  USER_SUBSCRIPTION_MAP_COLOR,
-  USER_SUBSCRIPTION_PARTNER,
-  USER_SUBSCRIPTION_SUPPORTER,
-  USER_SUBSCRIPTION_TRADER,
-} from '@/constants/user'
+import { USER_SUBSCRIPTION_MAP_COLOR } from '@/constants/user'
 import RefresherOrbBoon from './RefresherOrbBoon'
 import RefresherShardBoon from './RefresherShardBoon'
 
@@ -96,9 +90,8 @@ export default function BuyOrderDialog(props) {
 
     ;(async () => {
       const user = await myProfile.GET(true)
-      const boons = [...(user?.boons || [])]
       setSubscription(user?.subscription || null)
-      setBoons(boons)
+      setBoons([...(user?.boons || [])])
     })()
   }, [isLoggedIn])
 

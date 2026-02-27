@@ -1,6 +1,6 @@
 import { CDN_URL } from '@/service/api'
 
-export function schemaOrgProduct(canonicalURL, item = {}, other) {
+function schemaOrgProduct(canonicalURL, item = {}, other) {
   const data = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -25,3 +25,5 @@ export function schemaOrgProduct(canonicalURL, item = {}, other) {
 
   return data
 }
+
+export default schemaOrgProduct

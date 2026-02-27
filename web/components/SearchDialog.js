@@ -9,10 +9,10 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
 import SearchIcon from '@mui/icons-material/Search'
+import useSWR from 'swr'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
 import Link from './Link'
-import useSWR from 'swr'
 import { fetcherBase, STATS_TOP_KEYWORDS } from '@/service/api'
 
 function SearchDialog({ open, onClose }) {
@@ -29,46 +29,44 @@ function SearchDialog({ open, onClose }) {
   }
 
   return (
-    <>
-      <Dialog
-        fullWidth
-        fullScreen={isMobile}
-        open={open}
-        onClose={onClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title" component="form" onSubmit={handleSubmit}>
-          <InputBase
-            autoFocus
-            fullWidth
-            sx={{ fontSize: '1.1em' }}
-            startAdornment={<SearchIcon sx={{ mr: 2, fontSize: '1.1em' }} />}
-            endAdornment={<DialogCloseButton sx={{ fontSize: '1.1em' }} onClick={onClose} />}
-            placeholder="Search for item, hero, or treasure"
-            onChange={e => setKeyword(e.target.value)}
-          />
-        </DialogTitle>
-        <Divider />
-        <DialogContent sx={{ pb: 6 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Top keywords
-          </Typography>
-          <Grid container spacing={{ xs: 2, sm: 1 }}>
-            {topKeywords &&
-              topKeywords.map(item => (
-                <Grid key={item.keyword} item sm={6} xs={12}>
-                  <Link
-                    href={`/search?q=${item.keyword}`}
-                    style={{ textTransform: 'capitalize' }}
-                    onClick={onClose}>
-                    {item.keyword}
-                  </Link>
-                </Grid>
-              ))}
-          </Grid>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Dialog
+      fullWidth
+      fullScreen={isMobile}
+      open={open}
+      onClose={onClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
+      <DialogTitle id="alert-dialog-title" component="form" onSubmit={handleSubmit}>
+        <InputBase
+          autoFocus
+          fullWidth
+          sx={{ fontSize: '1.1em' }}
+          startAdornment={<SearchIcon sx={{ mr: 2, fontSize: '1.1em' }} />}
+          endAdornment={<DialogCloseButton sx={{ fontSize: '1.1em' }} onClick={onClose} />}
+          placeholder="Search for item, hero, or treasure"
+          onChange={e => setKeyword(e.target.value)}
+        />
+      </DialogTitle>
+      <Divider />
+      <DialogContent sx={{ pb: 6 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Top keywords
+        </Typography>
+        <Grid container spacing={{ xs: 2, sm: 1 }}>
+          {topKeywords &&
+            topKeywords.map(item => (
+              <Grid key={item.keyword} item sm={6} xs={12}>
+                <Link
+                  href={`/search?q=${item.keyword}`}
+                  style={{ textTransform: 'capitalize' }}
+                  onClick={onClose}>
+                  {item.keyword}
+                </Link>
+              </Grid>
+            ))}
+        </Grid>
+      </DialogContent>
+    </Dialog>
   )
 }
 SearchDialog.propTypes = {

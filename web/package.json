@@ -20,9 +20,9 @@
     "@mui/icons-material": "^5.18.0",
     "@mui/lab": "^5.0.0-alpha.177",
     "@mui/material": "^5.18.0",
+    "@mui/system": "^5.18.0",
     "@paypal/react-paypal-js": "^8.9.2",
     "@popperjs/core": "^2.11.8",
-    "@vercel/analytics": "^1.6.1",
     "clsx": "^1.2.1",
     "form-data": "^3.0.4",
     "js-cookie": "^3.0.5",
@@ -41,14 +41,15 @@
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "@types/react": "^17.0.0",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^4.3.8",
     "prettier": "3.8.1",
     "pretty-quick": "^4.2.2"

@@ -3,15 +3,14 @@ import useSWR from 'swr'
 import map from 'lodash/map'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
+import { Box, Card, CardContent } from '@mui/material'
+import moment from 'moment'
 import { fetcher, REPORTS } from '@/service/api'
-import { dateFromNow } from '@/lib/format'
 import { REPORT_TYPE_MAP_TEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import Link from '@/components/Link'
-import { Box, Card, CardContent } from '@mui/material'
-import moment from 'moment'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -64,13 +63,11 @@ export default function Feedback() {
 
           {reports &&
             reports.data &&
-            map(tallyVotes, (text, score) => {
-              return (
-                <Typography color="secondary">
-                  {text}x {score}
-                </Typography>
-              )
-            })}
+            map(tallyVotes, (text, score) => (
+              <Typography color="secondary">
+                {text}x {score}
+              </Typography>
+            ))}
 
           <Box>
             {reports &&

@@ -1,13 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
 import useInView from 'react-cool-inview'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
-import { schemaOrgProduct } from '@/lib/richdata'
+import schemaOrgProduct from '@/lib/richdata'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
 import { APP_NAME } from '@/constants/strings'
 import { CDN_URL, marketSearch, trackItemViewURL } from '@/service/api'
@@ -19,7 +20,6 @@ import Link from '@/components/Link'
 import TablePagination from '@/components/TablePagination'
 import BuyOrderDialog from '@/components/BuyOrderDialog'
 import ItemViewCard from '@/components/ItemViewCard'
-import dynamic from 'next/dynamic'
 
 const ItemGraph = dynamic(() => import('@/components/ItemGraph'))
 
@@ -258,7 +258,7 @@ export default function ItemDetails({
         {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
         <link
           rel="preload"
-          fetchpriority="high"
+          fetchPriority="high"
           as="image"
           href={`${CDN_URL}/${item.image}`}
           type="image/png"

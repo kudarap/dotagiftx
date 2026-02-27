@@ -2,11 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import * as Auth from '@/service/auth'
 import { blacklistSearch } from '@/service/api'
 import AppContext from '@/components/AppContext'
-import WhatsNewDialog from '@/components/WhatsNewDialog'
-import { PayPalScriptProvider } from '@paypal/react-paypal-js'
+// import WhatsNewDialog from '@/components/WhatsNewDialog'
 // import SurveyFab from '@/components/SurveyFab'
 // import { REPORT_LABEL_SURVEY_NEXT } from '@/constants/report'
 
@@ -44,15 +44,15 @@ function Root({ children }) {
         }}>
         {children}
       </PayPalScriptProvider>
-
       {/* {currentAuth.user_id && (
         <Theme>
           <SurveyFab userID={currentAuth.user_id} label={REPORT_LABEL_SURVEY_NEXT} />
         </Theme>
       )} */}
 
+      {/* HOTFIX! google not indexing */}
       {/* {currentAuth.user_id && ( */}
-      <WhatsNewDialog userID={currentAuth.user_id} />
+      {/* <WhatsNewDialog userID={currentAuth.user_id} /> */}
       {/* )} */}
     </AppContext.Provider>
   )

@@ -4,11 +4,11 @@ import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import { Divider } from '@mui/material'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
 import AppContext from '@/components/AppContext'
-import { Divider } from '@mui/material'
 import Link from '@/components/Link'
 
 const isPaypalLive = process.env.NEXT_PUBLIC_API_URL.startsWith('https://api.dotagiftx.com')
@@ -37,7 +37,7 @@ const subscriptions = {
   },
 }
 
-const ButtonWrapper = ({ type, planId, customId, onSuccess }) => {
+function ButtonWrapper({ type, planId, customId, onSuccess }) {
   const [{ options }, dispatch] = usePayPalScriptReducer()
 
   useEffect(() => {
@@ -52,16 +52,14 @@ const ButtonWrapper = ({ type, planId, customId, onSuccess }) => {
 
   return (
     <PayPalButtons
-      createSubscription={(data, actions) => {
-        return actions.subscription
+      createSubscription={(data, actions) =>
+        actions.subscription
           .create({
             plan_id: planId,
             custom_id: customId,
           })
-          .then(orderId => {
-            return orderId
-          })
-      }}
+          .then(orderId => orderId)
+      }
       onApprove={onSuccess}
       style={{
         label: 'subscribe',
@@ -71,7 +69,7 @@ const ButtonWrapper = ({ type, planId, customId, onSuccess }) => {
   )
 }
 
-const FeatureList = styled('ul')(({ theme }) => ({
+const FeatureList = styled('ul')(() => ({
   listStyle: 'none',
   '& li:before': {
     content: `'✔'`,
@@ -94,7 +92,7 @@ const minimumCycle = {
 
 const manualPriceOverhead = 0.6
 
-export default function Subscription({ data }) {
+export default function Subscription() {
   const { currentAuth } = useContext(AppContext)
 
   const router = useRouter()
@@ -116,10 +114,9 @@ export default function Subscription({ data }) {
     setSubscriptionPrice(priceTable[query.id])
   }, [query.id, currentAuth.user_id])
 
-  const handleSuccess = data => {
-    console.log(data)
+  const handleSuccess = res => {
     // send orderId to subscription verifier to ack the process
-    router.push(`/thanks-subscriber?sub=${subscription.id}&subid=${data.subscriptionID}`)
+    router.push(`/thanks-subscriber?sub=${subscription.id}&subid=${res.subscriptionID}`)
   }
 
   const isReady = currentAuth.steam_id && subscription
@@ -185,30 +182,31 @@ export default function Subscription({ data }) {
                   rel="noreferrer noopener"
                   href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key">
                   TF2 Keys
-                </Link>
-                {' '}or{' '}
+                </Link>{' '}
+                or{' '}
                 <Link
                   color="secondary"
                   target="_blank"
                   rel="noreferrer noopener"
                   href="https://steamcommunity.com/market/listings/570/Fractal%20Horns%20of%20Inner%20Abysm">
                   TB Arcanas
-                </Link>
-                {' '}
-                with minimum of {minimumSubscriptionCycle} months and +{manualPriceOverhead * 100}% overhead for steam
-                community market conversion and manual processing fees.
+                </Link>{' '}
+                with minimum of {minimumSubscriptionCycle} months and +{manualPriceOverhead * 100}%
+                overhead for steam community market conversion and manual processing fees.
               </Typography>
 
               <Box>
                 <Typography>
                   <br />${subscriptionPrice} x {minimumSubscriptionCycle} months = $
                   {subscriptionPrice * minimumSubscriptionCycle}
-                  <br />
-                  +{manualPriceOverhead * 100}% SCM overhead fee = $
-                  {Math.round((subscriptionPrice * minimumSubscriptionCycle) * manualPriceOverhead)}
+                  <br />+{manualPriceOverhead * 100}% SCM overhead fee = $
+                  {Math.round(subscriptionPrice * minimumSubscriptionCycle * manualPriceOverhead)}
                   <br />
                   <strong>
-                    Total = ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
+                    Total = $
+                    {Math.round(
+                      subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead)
+                    )}
                   </strong>
                 </Typography>
               </Box>
@@ -218,7 +216,10 @@ export default function Subscription({ data }) {
                   <li>
                     Acquire your TF2 keys and/or TB Arcanas and total should equal to{' '}
                     <strong>
-                      ${Math.round(subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead))}
+                      $
+                      {Math.round(
+                        subscriptionPrice * minimumSubscriptionCycle * (1 + manualPriceOverhead)
+                      )}
                     </strong>
                     .
                   </li>

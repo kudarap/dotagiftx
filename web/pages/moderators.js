@@ -68,8 +68,8 @@ export default function Moderators({ users }) {
           </Typography>
           <br />
 
-          {moderators.map(row => (
-            <InternalUserCard {...row} />
+          {moderators.map(mod => (
+            <InternalUserCard key={mod.id} {...mod} />
           ))}
           <br />
         </Container>
@@ -81,7 +81,7 @@ export default function Moderators({ users }) {
 }
 
 Moderators.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.object).isRequired,
+  users: PropTypes.arrayOf(PropTypes.object),
   error: PropTypes.string,
 }
 Moderators.defaultProps = {
@@ -90,8 +90,8 @@ Moderators.defaultProps = {
 }
 
 // This gets called on every request
-export async function getServerSideProps(context) {
-  let users = []
+export async function getServerSideProps() {
+  const users = []
   for (const id of moderatorsUserIds) {
     try {
       users.push(await user(id))

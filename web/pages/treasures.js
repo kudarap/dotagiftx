@@ -23,7 +23,7 @@ const rarityColorMap = {
 }
 
 const isTreasureNew = v => {
-  let releaseDate = new Date(v)
+  const releaseDate = new Date(v)
   if (!releaseDate) {
     return false
   }
@@ -44,7 +44,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.primary,
 }))
 
-export default function Treasures({ treasures }) {
+export default function Treasures({ treasures, error }) {
   return (
     <div className="container">
       <Head>
@@ -75,7 +75,8 @@ export default function Treasures({ treasures }) {
               backgroundSize: 'cover',
               width: '100%',
               height: '100%',
-            }}></div>
+            }}
+          />
         </div>
 
         <Container style={{ position: 'relative' }}>
@@ -88,48 +89,52 @@ export default function Treasures({ treasures }) {
             {`All Treasures (${treasures.length})`}
           </Typography>
 
+          {error && (
+            <Typography align="center" variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
+
           <Grid container spacing={1}>
-            {treasures.map(treasure => {
-              return (
-                <Grid item xs={6} md={3} key={treasure.name}>
-                  <Link href={`/search?origin=${treasure.name}`} underline="none">
-                    <Item
-                      style={{
-                        borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}`,
-                        borderTop: isTreasureNew(treasure?.release_date) ? '2px solid green' : null,
-                        marginTop: isTreasureNew(treasure?.release_date) ? -2 : null,
-                      }}>
-                      {isTreasureNew(treasure?.release_date) && (
-                        <span
-                          style={{
-                            position: 'absolute',
-                            zIndex: 10,
-                            background: 'green',
-                            fontWeight: 'bolder',
-                            color: 'white',
-                            padding: '0 8px',
-                            marginTop: -16,
-                            marginLeft: -18,
-                            borderBottomLeftRadius: 4,
-                            borderBottomRightRadius: 4,
-                          }}>
-                          new
-                        </span>
-                      )}
-                      <div>
-                        <Image
-                          src={'/assets/treasures/' + treasure.image}
-                          alt={treasure.name}
-                          width={256}
-                          height={171}
-                        />
-                      </div>
-                      <Typography noWrap>{treasure.name}</Typography>
-                    </Item>
-                  </Link>
-                </Grid>
-              )
-            })}
+            {treasures.map(treasure => (
+              <Grid item xs={6} md={3} key={treasure.name}>
+                <Link href={`/search?origin=${treasure.name}`} underline="none">
+                  <Item
+                    style={{
+                      borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}`,
+                      borderTop: isTreasureNew(treasure?.release_date) ? '2px solid green' : null,
+                      marginTop: isTreasureNew(treasure?.release_date) ? -2 : null,
+                    }}>
+                    {isTreasureNew(treasure?.release_date) && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          zIndex: 10,
+                          background: 'green',
+                          fontWeight: 'bolder',
+                          color: 'white',
+                          padding: '0 8px',
+                          marginTop: -16,
+                          marginLeft: -18,
+                          borderBottomLeftRadius: 4,
+                          borderBottomRightRadius: 4,
+                        }}>
+                        new
+                      </span>
+                    )}
+                    <div>
+                      <Image
+                        src={`/assets/treasures/${treasure.image}`}
+                        alt={treasure.name}
+                        width={256}
+                        height={171}
+                      />
+                    </div>
+                    <Typography noWrap>{treasure.name}</Typography>
+                  </Item>
+                </Link>
+              </Grid>
+            ))}
           </Grid>
         </Container>
       </main>
@@ -139,7 +144,7 @@ export default function Treasures({ treasures }) {
   )
 }
 Treasures.propTypes = {
-  treasures: PropTypes.arrayOf(PropTypes.object).isRequired,
+  treasures: PropTypes.arrayOf(PropTypes.object),
   error: PropTypes.string,
 }
 Treasures.defaultProps = {
