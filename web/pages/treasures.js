@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import Image from 'next/image'
+import Image from 'next/legacy/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
@@ -36,14 +36,13 @@ const isTreasureNew = v => {
 export const isRecentTreasureNew = () => isTreasureNew(LATEST_TREASURE_DROP)
 
 const Item = styled(Paper)(({ theme }) => {
-  console.log('typography', theme.typography.body1)
   return {
     backgroundColor: '#1A20278C',
-    ...theme.typography.body1,
+    // ...theme.typography.body,
     padding: theme.spacing(1),
     paddingTop: theme.spacing(2),
     textAlign: 'center',
-    color: theme.palette.text.primary,
+    // color: theme.palette.text.primary,
   }
 })
 
@@ -52,7 +51,7 @@ export default function Treasures({ treasures, error }) {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: All Treasures</title>
+        <title>{`${APP_NAME} :: All Treasures`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

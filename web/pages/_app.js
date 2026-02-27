@@ -18,11 +18,11 @@ export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache(), pageProps } = props
 
   return (
-    <AppCacheProvider>
+    <AppCacheProvider {...props}>
       <CacheProvider value={emotionCache}>
         <Head>
           <meta charSet="UTF-8" />
-          <title>{APP_NAME} :: Dota 2 Giftables Community Market</title>
+          <title>{`${APP_NAME} :: Dota 2 Giftables Community Market`}</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6.0" />
           {/* <meta */}
           {/*  name="viewport" */}
