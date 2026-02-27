@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
@@ -74,13 +74,17 @@ export default function ItemImage({
       <Image
         src={baseSrc}
         alt={title || image}
-        style={imgStyle}
         width={width}
         height={height}
         quality={100}
         responsive="true"
         priority
         {...other}
+        style={{
+          ...imgStyle,
+          maxWidth: '100%',
+          height: 'auto',
+        }}
       />
     </div>
   )

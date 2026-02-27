@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
@@ -42,9 +42,7 @@ export default function Heroes({ heroes: allHeroes, error }) {
         <title>{APP_NAME} :: Heroes</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Header />
-
       <main>
         <div
           style={{
@@ -100,6 +98,10 @@ export default function Heroes({ heroes: allHeroes, error }) {
                         alt={hero.name}
                         width={256 * 0.7}
                         height={144 * 0.7}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                     <Typography noWrap>{hero.name}</Typography>
@@ -110,7 +112,6 @@ export default function Heroes({ heroes: allHeroes, error }) {
           </Grid>
         </Container>
       </main>
-
       <Footer />
     </div>
   )

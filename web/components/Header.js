@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
@@ -147,7 +147,6 @@ export default function Header() {
               <Image
                 width={134}
                 height={30}
-                layout="fixed"
                 className={classes.brand}
                 src={brandImage}
                 alt={APP_NAME}
@@ -274,7 +273,6 @@ export default function Header() {
         <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
       </AppBar>
-
       <Incident />
     </>
   )

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
@@ -35,16 +35,14 @@ const isTreasureNew = v => {
 
 export const isRecentTreasureNew = () => isTreasureNew(LATEST_TREASURE_DROP)
 
-const Item = styled(Paper)(({ theme }) => {
-  return {
-    backgroundColor: '#1A20278C',
-    // ...theme.typography.body,
-    padding: theme.spacing(1),
-    paddingTop: theme.spacing(2),
-    textAlign: 'center',
-    // color: theme.palette.text.primary,
-  }
-})
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#1A20278C',
+  ...theme.typography?.body,
+  padding: theme.spacing(1),
+  paddingTop: theme.spacing(2),
+  textAlign: 'center',
+  color: theme.palette.text?.primary,
+}))
 
 export default function Treasures({ treasures, error }) {
   return (
@@ -54,9 +52,7 @@ export default function Treasures({ treasures, error }) {
         <title>{`${APP_NAME} :: All Treasures`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Header />
-
       <main>
         <div
           style={{
@@ -130,6 +126,10 @@ export default function Treasures({ treasures, error }) {
                         alt={treasure.name}
                         width={256}
                         height={171}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                     <Typography noWrap>{treasure.name}</Typography>
@@ -140,7 +140,6 @@ export default function Treasures({ treasures, error }) {
           </Grid>
         </Container>
       </main>
-
       <Footer />
     </div>
   )
