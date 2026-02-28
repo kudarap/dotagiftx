@@ -38,7 +38,7 @@
   "devDependencies": {
     "eslint": "^9.39.3",
     "eslint-config-next": "16.1.6",
-    "husky": "^4.3.8",
+    "husky": "^9.1.7",
     "prettier": "3.8.1",
     "pretty-quick": "^4.2.2"
   },
