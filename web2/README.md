@@ -14,6 +14,6 @@ DotagiftX web user interface
 ```shell
 cd web
 cp .env.sample .env
-yarn
-yarn dev
+bun install
+bun dev
 ```
