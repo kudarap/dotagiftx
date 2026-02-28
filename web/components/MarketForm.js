@@ -157,7 +157,6 @@ export default function MarketForm() {
       try {
         let res
         for (let i = 0; i < quantity; i++) {
-          // eslint-disable-next-line no-await-in-loop
           res = await myMarket.POST(newMarket)
         }
 

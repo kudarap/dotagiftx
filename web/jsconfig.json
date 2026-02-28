@@ -6,7 +6,7 @@
       "@/service/*": ["service/*"],
       "@/constants/*": ["constants/*"],
       "@/lib/*": ["lib/*"],
-      "@/pages/*": ["pages/*"]
+      "@/pages/*": ["/pages/*"]
     }
   }
 }
