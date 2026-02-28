@@ -1,6 +1,6 @@
 {
-  "name": "web2",
-  "version": "0.1.0",
+  "name": "dotagiftx",
+  "version": "0.23.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -50,6 +50,18 @@
     "husky": "^4.3.8",
     "prettier": "3.8.1",
     "pretty-quick": "^4.2.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "ignoreScripts": [
     "sharp",
