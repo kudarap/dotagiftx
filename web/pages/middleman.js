@@ -44,16 +44,10 @@ const tableRates = [
   createRate('Crypto', 'TBD', 'TBD', 'TBD', 'TBD'),
 ]
 
-export default function Middleman({ users }) {
+export default function Middleman() {
   const { classes } = useStyles()
 
-  const middleman = users.map(row => ({
-    id: row.steam_id,
-    name: row.name,
-    img: row.avatar,
-    boons: row.boons,
-    discordURL: 'https://discord.gg/b79zMpjjc5',
-  }))
+
 
   return (
     <>
@@ -78,9 +72,6 @@ export default function Middleman({ users }) {
           </Typography>
           <br />
 
-          {middleman.map(row => (
-            <InternalUserCard key={row.id} {...row} />
-          ))}
           <InternalUserCard
             id="76561198088587178"
             name="kudarap"
@@ -186,13 +177,4 @@ export default function Middleman({ users }) {
       <Footer />
     </>
   )
-}
-
-Middleman.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.object),
-  error: PropTypes.string,
-}
-Middleman.defaultProps = {
-  users: [],
-  error: null,
 }
