@@ -1,0 +1,96 @@
+import React, { useContext } from 'react'
+import PropTypes from 'prop-types'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
+import Link from '@/components/Link'
+import Button from '@/components/Button'
+import DialogCloseButton from '@/components/DialogCloseButton'
+import AppContext from '@/components/AppContext'
+import BidButton from '@/components/BidButton'
+import MarketNotes from '@/components/MarketNotes'
+import ProfileCard from '@/components/ProfileCard'
+
+export default function ContactBuyerDialog(props) {
+  const { isMobile } = useContext(AppContext)
+
+  const { market, open, onClose } = props
+
+  // Check for redacted user and disabled them for opening the dialog.
+  if (!market || (market && !market.user.id)) {
+    return null
+  }
+
+  const storeProfile = `/profiles/${market.user.steam_id}`
+  const steamProfileURL = `${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`
+
+  return (
+    <div>
+      <Dialog
+        fullWidth
+        fullScreen={isMobile}
+        open={open}
+        onClose={onClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">
+          Contact Buyer
+          <DialogCloseButton onClick={onClose} />
+        </DialogTitle>
+        <DialogContent>
+          <ProfileCard user={market.user} hideSteamProfile>
+            {market.notes && <MarketNotes text={market.notes} />}
+          </ProfileCard>
+
+          <Box sx={{ mt: 2 }}>
+            <strong>Guides for selling Giftables</strong>
+            <Typography
+              component="ul"
+              variant="body2"
+              color="textSecondary"
+              style={{ lineHeight: 1.7 }}>
+              <li>Please be respectful on the price stated by the buyer.</li>
+              <li>Make sure your item exist in your inventory.</li>
+              <li>
+                Dota 2 Giftables transaction only viable if the two steam user parties have been
+                friends for 30 days.
+              </li>
+              <li>
+                Payment agreements will be done between you and the buyer. This website does not
+                accept or integrate any payment service.
+              </li>
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button component="a" href={storeProfile}>
+            Buyer Profile
+          </Button>
+          <BidButton
+            variant="outlined"
+            component={Link}
+            target="_blank"
+            rel="noreferrer noopener"
+            disableUnderline
+            href={steamProfileURL}>
+            Steam Profile
+          </BidButton>
+        </DialogActions>
+      </Dialog>
+    </div>
+  )
+}
+ContactBuyerDialog.propTypes = {
+  market: PropTypes.object,
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+}
+ContactBuyerDialog.defaultProps = {
+  market: null,
+  open: false,
+  onClose: () => {},
+}
