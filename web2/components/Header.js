@@ -130,7 +130,7 @@ export default function Header() {
         console.warn(e.message)
       }
       destroyLoginSess()
-      // eslint-disable-next-line no-undef
+
       window.location = '/'
     })()
   }

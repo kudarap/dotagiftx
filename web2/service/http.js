@@ -57,7 +57,7 @@ const baseRequest = (method, endpoint, body, token = null) => {
       // Catch auth error to force logout.
       if (response.status === 401) {
         Auth.clear()
-        // eslint-disable-next-line no-undef
+
         window.location = '/login'
         throw Error('Authentication error')
       }
