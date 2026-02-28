@@ -115,7 +115,8 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
             {searchTerm && (
               <div>
                 <Typography component="h1" variant="h6">
-                  {catalogs && catalogs.total_count} results for &quot;{searchTerm}&quot;
+                  {catalogs && catalogs.total_count} results for &quot;
+                  {searchTerm}&quot;
                 </Typography>
               </div>
             )}

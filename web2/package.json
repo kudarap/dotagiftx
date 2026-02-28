@@ -37,7 +37,8 @@
   },
   "devDependencies": {
     "eslint": "^9.39.3",
-    "eslint-config-next": "16.1.6"
+    "eslint-config-next": "16.1.6",
+    "prettier": "3.8.1"
   },
   "browserslist": {
     "production": [
