@@ -5,8 +5,6 @@ import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
-// import { styled } from '@mui/material/styles'
-import { useTheme } from '@mui/material/styles'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
@@ -35,24 +33,6 @@ const isTreasureNew = v => {
 }
 
 export const isRecentTreasureNew = () => isTreasureNew(LATEST_TREASURE_DROP)
-
-export function Item({ children, ...other }) {
-  const theme = useTheme()
-  return (
-    <Paper
-      sx={{
-        backgroundColor: '#1A20278C',
-        ...theme.typography.body,
-        padding: theme.spacing(1),
-        paddingTop: theme.spacing(2),
-        textAlign: 'center',
-        color: theme.palette.text.primary,
-      }}
-      {...other}>
-      {children}
-    </Paper>
-  )
-}
 
 export default function Treasures({ treasures, error }) {
   return (
@@ -107,8 +87,13 @@ export default function Treasures({ treasures, error }) {
             {treasures.map(treasure => (
               <Grid item xs={6} md={3} key={treasure.name}>
                 <Link href={`/search?origin=${treasure.name}`} underline="none">
-                  <Item
-                    style={{
+                  <Paper
+                    sx={{
+                      backgroundColor: '#1A20278C',
+                      padding: 1,
+                      paddingTop: 2,
+                      textAlign: 'center',
+                      color: 'text.primary',
                       borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}`,
                       borderTop: isTreasureNew(treasure?.release_date) ? '2px solid green' : null,
                       marginTop: isTreasureNew(treasure?.release_date) ? -2 : null,
@@ -143,7 +128,7 @@ export default function Treasures({ treasures, error }) {
                       />
                     </div>
                     <Typography noWrap>{treasure.name}</Typography>
-                  </Item>
+                  </Paper>
                 </Link>
               </Grid>
             ))}
