@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import Box from '@mui/material/Box'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -16,18 +17,16 @@ export default function About() {
 
       <Header />
 
-      <main sx={() =>(
-        {
+      <Box component="main" sx={theme => ({
           [theme.breakpoints.down('md')]: {
             marginTop: theme.spacing(2),
           },
-          marginTop: theme.spacing(4),
-        }
-      )}>
+          marginTop: 4,
+        })}>
         <Container maxWidth="sm">
-          <MarketForm />
+          <MarketForm /> 
         </Container>
-      </main>
+      </Box>
 
       <Footer />
     </>
