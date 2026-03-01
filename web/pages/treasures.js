@@ -5,7 +5,6 @@ import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
-import { styled } from '@mui/system'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
@@ -35,26 +34,15 @@ const isTreasureNew = v => {
 
 export const isRecentTreasureNew = () => isTreasureNew(LATEST_TREASURE_DROP)
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#1A20278C',
-  ...theme.typography.body,
-  padding: theme.spacing(1),
-  paddingTop: theme.spacing(2),
-  textAlign: 'center',
-  color: theme.palette.text.primary,
-}))
-
 export default function Treasures({ treasures, error }) {
   return (
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: All Treasures</title>
+        <title>{`${APP_NAME} :: All Treasures`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Header />
-
       <main>
         <div
           style={{
@@ -99,8 +87,13 @@ export default function Treasures({ treasures, error }) {
             {treasures.map(treasure => (
               <Grid item xs={6} md={3} key={treasure.name}>
                 <Link href={`/search?origin=${treasure.name}`} underline="none">
-                  <Item
-                    style={{
+                  <Paper
+                    sx={{
+                      backgroundColor: '#1A20278C',
+                      padding: 1,
+                      paddingTop: 2,
+                      textAlign: 'center',
+                      color: 'text.primary',
                       borderBottom: `2px solid ${rarityColorMap[treasure.rarity]}`,
                       borderTop: isTreasureNew(treasure?.release_date) ? '2px solid green' : null,
                       marginTop: isTreasureNew(treasure?.release_date) ? -2 : null,
@@ -128,17 +121,20 @@ export default function Treasures({ treasures, error }) {
                         alt={treasure.name}
                         width={256}
                         height={171}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                     <Typography noWrap>{treasure.name}</Typography>
-                  </Item>
+                  </Paper>
                 </Link>
               </Grid>
             ))}
           </Grid>
         </Container>
       </main>
-
       <Footer />
     </div>
   )

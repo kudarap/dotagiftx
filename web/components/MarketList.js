@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
-import { debounce, NoSsr, Tooltip } from '@mui/material'
+import { Box, debounce, NoSsr, Tooltip } from '@mui/material'
 import { teal as bidColor } from '@mui/material/colors'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -354,18 +354,21 @@ function baseTable(Component) {
           {datatable.data.map((market, idx) => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
-                <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
                   <div className={classes.seller}>
-                    <Avatar
-                      badge={getUserBadgeFromBoons(market.user.boons)}
-                      className={classes.avatar}
-                      alt={market.user.name}
-                      glow={isDonationGlowExpired(market.user.donated_at)}
-                      {...retinaSrcSet(market.user.avatar, 40, 40)}
-                    />
+                    <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
+                      <Avatar
+                        badge={getUserBadgeFromBoons(market.user.boons)}
+                        className={classes.avatar}
+                        alt={market.user.name}
+                        glow={isDonationGlowExpired(market.user.donated_at)}
+                        {...retinaSrcSet(market.user.avatar, 40, 40)}
+                      />
+                    </Link>
                     <div>
                       {/* check for redacted data */}
-                      {market.user.id ? <strong>{market.user.name}</strong> : <em>████████████</em>}
+                      <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
+                        {market.user.id ? <strong>{market.user.name}</strong> : <em>████████████</em>}
+                      </Link>
                       {Boolean(getUserBadgeFromBoons(market.user.boons)) && (
                         <SubscriberBadge
                           sx={{ ml: 0.5 }}
@@ -393,11 +396,17 @@ function baseTable(Component) {
                         </>
                       )}
 
-                      <Typography variant="caption" color="textSecondary">
+                      <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
+                        <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
                       </Typography>
+                      </Link>
                       {!bidMode && (
-                        <span
+                        <Box
+                          component="span"
+                          sx={{
+                            cursor: 'pointer'
+                           }}
                           aria-owns={popoverElementID}
                           aria-haspopup="true"
                           data-index={idx}
@@ -406,11 +415,10 @@ function baseTable(Component) {
                           {market.resell
                             ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                             : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
-                        </span>
+                        </Box>
                       )}
                     </div>
                   </div>
-                </Link>
               </TableCell>
               <Component
                 currentUserID={currentUserID}

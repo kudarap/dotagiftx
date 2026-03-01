@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
+import { useTheme } from '@mui/material/styles'
 import { APP_NAME } from '@/constants/strings'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -36,6 +37,7 @@ function slugify(s) {
 
 export function Question({ children, ...other }) {
   const { classes } = useStyles()
+  const theme = useTheme()
   const id = slugify(children)
   return (
     <Typography

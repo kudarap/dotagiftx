@@ -130,7 +130,7 @@ export default function Header() {
         console.warn(e.message)
       }
       destroyLoginSess()
-      // eslint-disable-next-line no-undef
+
       window.location = '/'
     })()
   }
@@ -147,7 +147,6 @@ export default function Header() {
               <Image
                 width={134}
                 height={30}
-                layout="fixed"
                 className={classes.brand}
                 src={brandImage}
                 alt={APP_NAME}
@@ -274,7 +273,6 @@ export default function Header() {
         <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
       </AppBar>
-
       <Incident />
     </>
   )

@@ -5,7 +5,6 @@ import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
-import { styled } from '@mui/system'
 import Link from '@/components/Link'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -14,23 +13,10 @@ import SearchInput from '@/components/SearchInput'
 import { APP_NAME } from '@/constants/strings'
 import { heroList } from '@/service/api'
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#1A20278C',
-  ...theme.typography.body,
-  padding: theme.spacing(1),
-  paddingTop: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.primary,
-}))
-
-const shuffleList = arr => {
-  arr.sort(() => Math.random() - 0.5)
-}
-
 export default function Heroes({ heroes: allHeroes, error }) {
-  shuffleList(allHeroes)
   const [heroes, setHeroes] = useState(allHeroes)
   const [searchTerm, setSearchTerm] = useState()
+
   const handleChange = term => {
     setSearchTerm(term)
     setHeroes(allHeroes.filter(v => !!v.name.match(new RegExp(term, 'gi'))))
@@ -40,12 +26,10 @@ export default function Heroes({ heroes: allHeroes, error }) {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Heroes</title>
+        <title>{`${APP_NAME} :: Heroes`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Header />
-
       <main>
         <div
           style={{
@@ -55,17 +39,7 @@ export default function Heroes({ heroes: allHeroes, error }) {
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
-          }}>
-          {/* <div
-            style={{
-              background:
-                'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center top',
-              backgroundColor: '#2a2638ff',
-              backgroundSize: 'cover',
-              width: '100%',
-              height: '100%',
-            }}></div> */}
-        </div>
+          }}/>
 
         <Container style={{ position: 'relative' }}>
           {error && (
@@ -94,24 +68,33 @@ export default function Heroes({ heroes: allHeroes, error }) {
             {heroes.map(hero => (
               <Grid item xs={4} md={2} key={hero.name}>
                 <Link href={`/search?hero=${hero.name}`} underline="none">
-                  <Item>
+                  <Paper sx={theme => ({
+                    backgroundColor: '#1A20278C',
+                    padding: theme.spacing(1),
+                    paddingTop: theme.spacing(1),
+                    textAlign: 'center',
+                    color: theme.palette.text.primary,
+                  })}>
                     <div>
                       <Image
                         src={`/assets/heroes/${hero.image}`}
                         alt={hero.name}
                         width={256 * 0.7}
                         height={144 * 0.7}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                     <Typography noWrap>{hero.name}</Typography>
-                  </Item>
+                  </Paper>
                 </Link>
               </Grid>
             ))}
           </Grid>
         </Container>
       </main>
-
       <Footer />
     </div>
   )
@@ -126,8 +109,14 @@ Heroes.defaultProps = {
   error: null,
 }
 
+const shuffleList = arr => {
+  arr.sort(() => Math.random() - 0.5)
+}
+
 export const getStaticProps = async () => {
-  const res = await heroList()
+  let res = await heroList()
+  shuffleList(res)
+  
   return {
     props: {
       heroes: res,

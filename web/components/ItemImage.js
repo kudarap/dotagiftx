@@ -74,13 +74,17 @@ export default function ItemImage({
       <Image
         src={baseSrc}
         alt={title || image}
-        style={imgStyle}
         width={width}
         height={height}
         quality={100}
         responsive="true"
         priority
         {...other}
+        style={{
+          ...imgStyle,
+          maxWidth: '100%',
+          height: 'auto',
+        }}
       />
     </div>
   )

@@ -23,23 +23,6 @@ import AppContext from '@/components/AppContext'
 import ReSellInput from './ReSellerInput'
 import RefresherOrbBoon from './RefresherOrbBoon'
 
-const useStyles = makeStyles()(theme => ({
-  root: {
-    maxWidth: theme.breakpoints.values.sm,
-    margin: '0 auto',
-    padding: theme.spacing(2),
-  },
-  itemImage: {
-    width: 150,
-    height: 100,
-    float: 'left',
-    marginRight: theme.spacing(1),
-  },
-  bidText: {
-    color: theme.palette.accent.main,
-  },
-}))
-
 const defaultItem = {
   id: '',
 }
@@ -83,7 +66,6 @@ const checkMarketPayload = payload => {
 }
 
 export default function MarketForm() {
-  const { classes } = useStyles()
   const { isLoggedIn } = useContext(AppContext)
 
   const [item, setItem] = React.useState(defaultItem)
@@ -157,7 +139,6 @@ export default function MarketForm() {
       try {
         let res
         for (let i = 0; i < quantity; i++) {
-          // eslint-disable-next-line no-await-in-loop
           res = await myMarket.POST(newMarket)
         }
 
@@ -225,12 +206,15 @@ export default function MarketForm() {
 
       <Paper
         component="form"
-        className={classes.root}
-        sx={{
+        sx={theme => ({
+          maxWidth: theme.breakpoints.values.sm,
+          margin: '0 auto',
+          padding: theme.spacing(2),
+
           transition: `box-shadow .5s ease-in-out, border .2s`,
           borderTop: subscribersColor ? `5px solid ${subscribersColor}` : null,
           boxShadow: subscribersColor ? `0 0 15px ${subscribersColor}` : null,
-        }}
+        })}
         onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1">
           Post your item on {APP_NAME}
@@ -253,7 +237,12 @@ export default function MarketForm() {
         {item.id && (
           <div>
             <ItemImage
-              className={classes.itemImage}
+              sx={theme => ({
+                width: 150,
+                height: 100,
+                float: 'left',
+                marginRight: theme.spacing(1),
+              })}
               image={item.image}
               width={150}
               height={100}
@@ -293,7 +282,9 @@ export default function MarketForm() {
             </Typography>
             <Typography variant="body2" color="textSecondary">
               Request to buy at:{' '}
-              <Link href={`/${item.slug}/buyorders`} className={classes.bidText}>
+              <Link sx={{
+                color: 'accent.main',
+              }} href={`/${item.slug}/buyorders`} >
                 {item.highest_bid ? format.amount(item.highest_bid, 'USD') : 'no orders yet'}
               </Link>
             </Typography>

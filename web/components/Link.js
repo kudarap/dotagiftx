@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-has-content */
 import React from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
@@ -9,11 +8,7 @@ import MuiLink from '@mui/material/Link'
 const NextComposed = React.forwardRef((props, ref) => {
   const { as, href, ...other } = props
 
-  return (
-    <NextLink href={href} as={as}>
-      <a ref={ref} {...other} />
-    </NextLink>
-  )
+  return <NextLink href={href} as={as} ref={ref} {...other}></NextLink>
 })
 
 NextComposed.propTypes = {

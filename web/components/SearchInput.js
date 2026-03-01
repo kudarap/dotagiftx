@@ -17,7 +17,8 @@ const useStyles = makeStyles()(theme => ({
     // marginBottom: theme.spacing(4),
     '& .MuiInputBase-root': {
       color: theme.palette.grey[800],
-      backgroundColor: theme.palette.app.white,
+      backgroundColor: theme.palette.common.white,
+      // backgroundColor: theme.palette.app.white,
     },
   },
   verticalDivider: {

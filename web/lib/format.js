@@ -3,7 +3,6 @@ import moment from 'moment'
 export function amount(n, currency = '') {
   let sign = ''
   if (currency) {
-    // eslint-disable-next-line default-case
     switch (currency.toLocaleUpperCase()) {
       case 'USD':
         sign = '$'
