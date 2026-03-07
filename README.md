@@ -11,6 +11,14 @@ Marketplace for giftable Dota 2 items
 - Go 1.26 https://go.dev/dl
 - Docker 29.x https://docs.docker.com/get-docker
 
+### Credentials
+
+- [Steam](https://steamcommunity.com/dev)
+  - `DG_STEAM_KEY`
+- [PayPal](https://developer.paypal.com)
+  - `DG_PAYPAL_CLIENTID`
+  - `DG_PAYPAL_SECRET`
+
 ### Local Setup
 
 - Create a new env config and change accordingly. Change `DG_PAYPAL_*` values with your own sandbox account credentials.
