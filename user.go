@@ -462,19 +462,22 @@ func (s *userService) ProcessManualSubscription(ctx context.Context, param Manua
 }
 
 // downloadProfileImage saves an image file from url.
-func (s *userService) downloadProfileImage(url string) (string, error) {
+func (s *userService) downloadProfileImage(url string) (filename string, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 
-	f, err := s.fileMgr.Save(resp.Body)
+	uu := strings.Split(url, "/")
+	name := uu[len(uu)-1]
+	name = strings.TrimSuffix(name, ".jpg")
+	name = strings.TrimSuffix(name, "_full")
+	filename, err = s.fileMgr.SaveWithName(resp.Body, name)
 	if err != nil {
 		return "", err
 	}
-
-	return f, nil
+	return filename, nil
 }
 
 type subscriptionChecker interface {
