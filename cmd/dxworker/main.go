@@ -159,6 +159,7 @@ func (app *application) setup() error {
 		logging.WithPrefix(logger, "job_expiring_market"),
 	))
 	app.worker.AddJob(jobs.NewSweepMarket(marketStg, logging.WithPrefix(logger, "job_sweep_market")))
+	app.worker.AddJob(jobs.NewSweepPhantasmCache(phantasmSvc, logging.WithPrefix(logger, "job_sweep_phantasm")))
 
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
