@@ -297,7 +297,7 @@ export default function ItemDetails({
             offers={offers}
             buyOrders={orders}
             error={error}
-            loading={loading}
+            loadingType={loading}
             onSortChange={handleSortChange}
             tabIndex={tabIndex}
             onTabChange={handleTabChange}

@@ -77,7 +77,7 @@ export default function MarketList({
   offers,
   buyOrders,
   error,
-  loading,
+  loadingType,
   sort,
   pagination,
   tabIndex,
@@ -122,8 +122,8 @@ export default function MarketList({
     onSortChange(v)
   }
 
-  const offerListLoading = loading === 'ask'
-  const buyOrderLoading = !buyOrders.data || loading === 'bid'
+  const offerListLoading = loadingType === 'ask'
+  const buyOrderLoading = !buyOrders.data || loadingType === 'bid'
 
   return (
     <>
@@ -202,7 +202,7 @@ MarketList.propTypes = {
   buyOrders: PropTypes.object.isRequired,
   pagination: PropTypes.element,
   error: PropTypes.string,
-  loading: PropTypes.bool,
+  loadingType: PropTypes.string,
   sort: PropTypes.string,
   tabIndex: PropTypes.number,
   onSortChange: PropTypes.func,
@@ -211,7 +211,7 @@ MarketList.propTypes = {
 MarketList.defaultProps = {
   pagination: null,
   error: null,
-  loading: false,
+  loadingType: null,
   sort: null,
   tabIndex: 1,
   onSortChange: () => {},

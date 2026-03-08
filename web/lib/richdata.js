@@ -1,5 +1,6 @@
 import { CDN_URL } from '@/service/api'
 
+// eslint-disable-next-line default-param-last
 function schemaOrgProduct(canonicalURL, item = {}, other) {
   const data = {
     '@context': 'https://schema.org',

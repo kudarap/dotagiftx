@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -33,8 +33,18 @@ function Root({ children }) {
     })()
   }, [])
 
+  const contextValue = useMemo(
+    () => ({
+      isMobile,
+      isTablet,
+      currentAuth,
+      isLoggedIn,
+      latestBan,
+    }),
+    []
+  )
   return (
-    <AppContext.Provider value={{ isMobile, isTablet, currentAuth, isLoggedIn, latestBan }}>
+    <AppContext.Provider value={contextValue}>
       <PayPalScriptProvider
         options={{
           'client-id': PAYPAL_CLIENT_ID,
