@@ -394,7 +394,7 @@ function Incident() {
   }, [])
 
   const onClose = () => {
-    if (confirm('Confirm close announcement') == true) {
+    if (window.confirm('Confirm close announcement') == true) {
       Storage.save(storageKey, true)
       setClosed(true)
     }
@@ -417,6 +417,7 @@ function Incident() {
       <u>
         <Link href="/post/major-incident-data-loss">Major Data Loss Incident</Link>
       </u>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <span style={{ float: 'right', paddingRight: 16, cursor: 'pointer' }} onClick={onClose}>
         close
       </span>
