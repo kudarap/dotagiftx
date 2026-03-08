@@ -15,6 +15,26 @@ import AppContext from '@/components/AppContext'
 import Link from './Link'
 import { fetcherBase, STATS_TOP_KEYWORDS } from '@/service/api'
 
+const sanitizeInput = unsafe => {
+  if (typeof unsafe !== 'string') return ''
+
+  return unsafe
+    .replace(
+      /[&<>"'/]/g,
+      char =>
+        ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+          '/': '&#x2F;',
+        })[char]
+    )
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '')
+}
+
 function SearchDialog({ open, onClose }) {
   const { isMobile } = useContext(AppContext)
 
@@ -44,7 +64,7 @@ function SearchDialog({ open, onClose }) {
           startAdornment={<SearchIcon sx={{ mr: 2, fontSize: '1.1em' }} />}
           endAdornment={<DialogCloseButton sx={{ fontSize: '1.1em' }} onClick={onClose} />}
           placeholder="Search for item, hero, or treasure"
-          onChange={e => setKeyword(e.target.value)}
+          onChange={e => setKeyword(sanitizeInput(e.target.value))}
         />
       </DialogTitle>
       <Divider />
