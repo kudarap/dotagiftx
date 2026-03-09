@@ -16,6 +16,9 @@ run: build
 run-worker: build-worker
 	./$(worker_bin)
 
+run-web:
+	cd ./web && yarn dev && cd ..
+
 test: lint
 	go test -v ./
 	go test -v ./http/...
