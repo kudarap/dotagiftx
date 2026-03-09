@@ -41,7 +41,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
-    "@types/react": "^17.0.0",
+    "@types/react": "^17.0.91",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^10.1.8",
@@ -49,7 +49,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "husky": "^4.3.8",
     "prettier": "3.8.1",
     "pretty-quick": "^4.2.2"
