@@ -258,7 +258,8 @@ export default function ItemDetails({
         {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
         <link
           rel="preload"
-          fetchPriority="high"
+          // eslint-disable-next-line react/no-unknown-property
+          fetchpriority="high"
           as="image"
           href={`${CDN_URL}/${item.image}`}
           type="image/png"

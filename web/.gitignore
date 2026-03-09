@@ -31,12 +31,3 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-
-# yarn Zero-Installs
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
