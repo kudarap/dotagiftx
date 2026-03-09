@@ -87,7 +87,6 @@ export async function getServerSideProps(props) {
     result_count: askData.length || 0,
     total_count: catalog.quantity,
   }
-
   const initialBids = {
     data: [],
     result_count: 0,
@@ -96,6 +95,17 @@ export async function getServerSideProps(props) {
 
   const canonicalURL = `${APP_URL}/${itemSlug}`
   const marketType = marketTypeParam || 'offers'
+
+  // reduce large page data by nullifying un-needed data
+  // nextjs.org/docs/messages/large-page-data
+  // this can be reduce on API server level
+  delete catalog.asks
+  for (let i = 0; i < initialAsks.data.length; i++) {
+    delete initialAsks.data[i].item
+    if (initialAsks.data[i].inventory) {
+      delete initialAsks.data[i].inventory.steam_assets
+    }
+  }
 
   return {
     props: {

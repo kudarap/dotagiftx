@@ -393,8 +393,17 @@ export async function getServerSideProps(context) {
   }
 
   // Compose profile page canonical URL.
-
   canonicalURL = `${APP_URL}/${vanityMode ? 'id' : 'profiles'}/${params.id}`
+
+  // reduce large page data by nullifying un-needed data
+  // nextjs.org/docs/messages/large-page-data
+  // this can be reduce on API server level
+  for (let i = 0; i < markets.data.length; i++) {
+    delete markets.data[i].user
+    if (markets.data[i].inventory) {
+      delete markets.data[i].inventory.steam_assets
+    }
+  }
 
   return {
     props: {
