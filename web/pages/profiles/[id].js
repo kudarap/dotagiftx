@@ -6,6 +6,9 @@ import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
+import moment from 'moment'
+import { WarningAmber } from '@mui/icons-material'
+import { Box } from '@mui/material'
 import {
   APP_NAME,
   APP_URL,
@@ -42,9 +45,6 @@ import NotRegisteredProfile from '@/components/NotRegisteredProfile'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import ErrorPage from '../404'
-import moment from 'moment'
-import { WarningAmber } from '@mui/icons-material'
-import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -277,11 +277,12 @@ export default function UserDetails({
           </div>
 
           {isProfileReported ? (
-            <p align="center">
+            <Typography align="center">
+              <br />
               <Button component={Link} href={`${linkProps.href}/activity`}>
                 Show All Activity
               </Button>
-            </p>
+            </Typography>
           ) : (
             <>
               <UserMarketList
@@ -355,16 +356,6 @@ export async function getServerSideProps(context) {
       return {
         props: {
           error: e.message,
-        },
-      }
-    }
-
-    // Since not registered user will render differently, should return now.
-    if (!profile.is_registered) {
-      return {
-        props: {
-          profile,
-          canonicalURL,
         },
       }
     }

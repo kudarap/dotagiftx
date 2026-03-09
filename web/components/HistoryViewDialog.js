@@ -5,6 +5,7 @@ import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import { TextField } from '@mui/material'
 import { amount, dateCalendar } from '@/lib/format'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import DialogCloseButton from '@/components/DialogCloseButton'
@@ -14,7 +15,6 @@ import {
   MARKET_TYPE_BID,
 } from '@/constants/market'
 import AppContext from '@/components/AppContext'
-import { TextField } from '@mui/material'
 import ItemImageDialog from '@/components/ItemImageDialog'
 
 const useStyles = makeStyles()(theme => ({
@@ -94,7 +94,7 @@ export default function HistoryViewDialog(props) {
                   </Typography>
                   <Typography component="ul" variant="body2" style={{ marginTop: 0 }}>
                     {market.notes.split('\n').map(s => (
-                      <li>{s}</li>
+                      <li key={s}>{s}</li>
                     ))}
                   </Typography>
                 </>

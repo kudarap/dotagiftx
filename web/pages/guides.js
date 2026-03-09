@@ -109,7 +109,8 @@ export default function Blacklist() {
                 Only a limited number of items can be gifted within a certain time. ( 8 items for
                 every 24 hours )
                 <li>
-                  The number of gifts one can send is determined by the player's Experience Trophy.
+                  The number of gifts one can send is determined by the player&apos;s Experience
+                  Trophy.
                 </li>
               </li>
             </ul>

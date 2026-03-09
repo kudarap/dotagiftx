@@ -1,4 +1,3 @@
-import fetch from 'unfetch'
 import useSWR from 'swr'
 import { API_URL } from '@/service/api'
 

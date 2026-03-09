@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import moment from 'moment'
+import { Box } from '@mui/material'
 import Avatar from '@/components/Avatar'
 import {
   USER_AGE_CAUTION,
@@ -24,8 +26,6 @@ import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
 import ExclusiveChip from '@/components/ExclusiveChip'
-import moment from 'moment'
-import { Box } from '@mui/material'
 
 const useStyles = makeStyles()(theme => ({
   details: {

@@ -16,8 +16,8 @@ const datatableBaseFilter = {
   page: 1,
 }
 
-const withDataFetch = (Component, initFilter, searchFn = myMarketSearch) => {
-  const wrapped = props => {
+function withDataFetch(Component, initFilter, searchFn = myMarketSearch) {
+  function wrapped(props) {
     const { filter: propFilter, onReload } = props
 
     const [data, setData] = React.useState(initialDatatable)

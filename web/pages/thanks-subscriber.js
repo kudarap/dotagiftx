@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
@@ -12,9 +13,8 @@ import AppContext from '@/components/AppContext'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import * as Storage from '@/service/storage'
 import Avatar from '@/components/Avatar'
-import { CDN_URL, processMySubscription } from '@/service/api'
+import { CDN_URL, processMySubscription, myProfile } from '@/service/api'
 import SubscriberBadge from '@/components/SubscriberBadge'
-import { useRouter } from 'next/router'
 
 const avatarSize = 92
 

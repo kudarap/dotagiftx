@@ -183,7 +183,7 @@ export default function MarketUpdateDialog(props) {
                     </Typography>
                     <Typography component="ul" variant="body2" style={{ marginTop: 0 }}>
                       {market.notes.split('\n').map(s => (
-                        <li>{s}</li>
+                        <li key={s}>{s}</li>
                       ))}
                     </Typography>
                   </>

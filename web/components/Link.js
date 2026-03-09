@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import MuiLink from '@mui/material/Link'
 
-const NextComposed = React.forwardRef(function NextComposed(props, ref) {
+const nextLinkRef = (props, ref) => {
   const { as, href, ...other } = props
 
   return (
@@ -14,7 +14,9 @@ const NextComposed = React.forwardRef(function NextComposed(props, ref) {
       <a ref={ref} {...other} />
     </NextLink>
   )
-})
+}
+
+const NextComposed = React.forwardRef(nextLinkRef)
 
 NextComposed.propTypes = {
   as: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
@@ -70,4 +72,6 @@ Link.propTypes = {
   disableUnderline: PropTypes.bool,
 }
 
-export default React.forwardRef((props, ref) => <Link {...props} innerRef={ref} />)
+const linkRef = (props, ref) => <Link {...props} innerRef={ref} />
+
+export default React.forwardRef(linkRef)

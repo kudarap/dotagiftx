@@ -144,6 +144,8 @@ func normalizeExt(ext string) string {
 	switch ext {
 	case ".jpe":
 		fallthrough
+	case ".jfif":
+		fallthrough
 	case ".jpeg":
 		return ".jpg"
 	}

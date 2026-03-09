@@ -13,6 +13,7 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
+import moment from 'moment'
 import {
   VERIFIED_INVENTORY_MAP_ICON,
   VERIFIED_INVENTORY_VERIFIED_RESELL,
@@ -35,7 +36,6 @@ import DashTabs from '@/components/DashTabs'
 import DashTab from '@/components/DashTab'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import { getUserBadgeFromBoons } from '@/lib/badge'
-import moment from 'moment'
 
 const displayProfileJoinedDate = false
 const displayPostId = false
@@ -77,7 +77,7 @@ export default function MarketList({
   offers,
   buyOrders,
   error,
-  loading,
+  loadingType,
   sort,
   pagination,
   tabIndex,
@@ -122,8 +122,8 @@ export default function MarketList({
     onSortChange(v)
   }
 
-  const offerListLoading = loading === 'ask'
-  const buyOrderLoading = !buyOrders.data || loading === 'bid'
+  const offerListLoading = loadingType === 'ask'
+  const buyOrderLoading = !buyOrders.data || loadingType === 'bid'
 
   return (
     <>
@@ -202,7 +202,7 @@ MarketList.propTypes = {
   buyOrders: PropTypes.object.isRequired,
   pagination: PropTypes.element,
   error: PropTypes.string,
-  loading: PropTypes.bool,
+  loadingType: PropTypes.string,
   sort: PropTypes.string,
   tabIndex: PropTypes.number,
   onSortChange: PropTypes.func,
@@ -211,14 +211,14 @@ MarketList.propTypes = {
 MarketList.defaultProps = {
   pagination: null,
   error: null,
-  loading: false,
+  loadingType: null,
   sort: null,
   tabIndex: 1,
   onSortChange: () => {},
   onTabChange: () => {},
 }
 
-const OfferList = props => {
+function OfferList(props) {
   const { isMobile } = props
   if (isMobile) {
     return <OfferListMini {...props} />
@@ -233,7 +233,7 @@ OfferList.defaultProps = {
   isMobile: false,
 }
 
-const OrderList = props => {
+function OrderList(props) {
   const { isMobile } = props
   if (isMobile) {
     return <OrderListMini bidMode {...props} />
@@ -245,7 +245,7 @@ OrderList.propTypes = OfferList.propTypes
 OrderList.defaultProps = OfferList.defaultProps
 
 function baseTable(Component) {
-  const wrapped = props => {
+  function wrapped(props) {
     const { classes } = useStyles()
 
     const { currentUserID } = props

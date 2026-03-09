@@ -128,6 +128,31 @@ func (s *Service) Invalidate(ctx context.Context, steamID string) error {
 	return nil
 }
 
+func (s *Service) CleanLocalCache(ctx context.Context, maxAge time.Duration) error {
+	files, err := os.ReadDir(s.config.Path)
+	if err != nil {
+		return fmt.Errorf("read dir: %s", err)
+	}
+
+	for _, file := range files {
+		info, err := file.Info()
+		if err != nil {
+			return fmt.Errorf("%s file info: %s", file, err)
+		}
+
+		if time.Since(info.ModTime()) < maxAge {
+			continue
+		}
+
+		f := filepath.Join(s.config.Path, file.Name())
+		if err = os.Remove(f); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // crawlWait retrieves the inventory local file when available and fetch it when missing.
 func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, error) {
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]

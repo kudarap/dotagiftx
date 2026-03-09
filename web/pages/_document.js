@@ -55,7 +55,7 @@ class MyDocument extends Document {
 
 export default withEmotionCache({
   Document: MyDocument,
-  //Every emotion cache used in the app should be provided.
-  //Caches for MUI should use "prepend": true.
+  // Every emotion cache used in the app should be provided.
+  // Caches for MUI should use "prepend": true.
   getCaches: () => [createEmotionCache()],
 })
