@@ -25,6 +25,6 @@ RUN apk --no-cache add ca-certificates tzdata
 
 COPY --from=builder /code/dxserver .
 
-LABEL Name=dotagiftx Version=0.23.1
+LABEL Name=dotagiftx Version=0.23.2
 ENTRYPOINT ["./dxserver"]
 EXPOSE 80
