@@ -38,6 +38,7 @@
     "tss-react": "^3.7.1"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^16.1.6",
     "@types/react": "^17.0.91",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
