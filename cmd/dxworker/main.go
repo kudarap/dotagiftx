@@ -1,8 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
+	nethttp "net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"time"
@@ -26,6 +29,17 @@ const configPrefix = "DG"
 var logger = logging.Default()
 
 func main() {
+	var pprofEnabled bool
+	flag.BoolVar(&pprofEnabled, "pprof", false, "enable pprof")
+	flag.Parse()
+	fmt.Println("pprof enabled:", pprofEnabled)
+	if pprofEnabled {
+		go func() {
+			fmt.Println("pprof running on :6666 ...")
+			fmt.Println(nethttp.ListenAndServe(":6666", nil))
+		}()
+	}
+
 	app := newApp()
 
 	v := dotagiftx.NewVersion(false, tag, commit, built)
