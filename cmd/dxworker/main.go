@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"log/slog"
 	nethttp "net/http"
 	_ "net/http/pprof"
@@ -10,6 +11,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/google/gops/agent"
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/logging"
@@ -37,6 +39,12 @@ func main() {
 		go func() {
 			fmt.Println("pprof running on :6666 ...")
 			fmt.Println(nethttp.ListenAndServe(":6666", nil))
+		}()
+
+		go func() {
+			if err := agent.Listen(agent.Options{}); err != nil {
+				log.Fatal(err)
+			}
 		}()
 	}
 
