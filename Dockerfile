@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.26-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS builder
 RUN apk add --no-cache git make curl
 
 WORKDIR /code
@@ -15,7 +15,7 @@ COPY . .
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    go build \
+    GOOS=linux GOARCH=amd64 go build \
     -ldflags="-X main.tag=`cat VERSION` -X main.commit=`git rev-parse HEAD` -X main.built=`date -u +%s`" \
     -v ./cmd/dxserver
 

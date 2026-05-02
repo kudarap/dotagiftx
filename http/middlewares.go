@@ -2,9 +2,11 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/kudarap/dotagiftx"
 )
 
 const (
@@ -48,6 +50,27 @@ func requestIDWriter(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		rid, _ := r.Context().Value(requestIDKey).(string)
 		w.Header().Set(requestIDHeader, rid)
+		next.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func rateLimiter(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		// get user id
+		var userID string
+		auth := dotagiftx.AuthFromContext(ctx)
+		if auth != nil {
+			userID = auth.UserID
+		}
+
+		// get user ip
+		userIP := r.RemoteAddr
+
+		fmt.Println("rateLimiter", userID, userIP)
+
+		// check rate limit
 		next.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(fn)

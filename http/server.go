@@ -104,6 +104,7 @@ func (s *Server) setup() {
 	r.Use(NewStructuredLogger(s.logger))
 	r.Use(cors)
 	r.Use(requestIDWriter)
+	r.Use(rateLimiter)
 	r.Use(middleware.Recoverer)
 
 	// Set routes handler.
