@@ -255,7 +255,7 @@ var AllHeroes = []Hero{
 		"intelligence",
 	},
 	{
-		"wisp",
+		"io",
 		"Io",
 		"wisp.png",
 		"universal",
@@ -447,7 +447,7 @@ var AllHeroes = []Hero{
 		"intelligence",
 	},
 	{
-		"outworldndestroyer",
+		"outworlddestroyer",
 		"Outworld Destroyer",
 		"obsidian_destroyer.png",
 		"intelligence",
@@ -639,7 +639,7 @@ var AllHeroes = []Hero{
 		"strength",
 	},
 	{
-		"shredder",
+		"timbersaw",
 		"Timbersaw",
 		"shredder.png",
 		"strength",
@@ -675,7 +675,7 @@ var AllHeroes = []Hero{
 		"strength",
 	},
 	{
-		"abyssalunderlord",
+		"underlord",
 		"Underlord",
 		"abyssal_underlord.png",
 		"strength",

@@ -36,7 +36,8 @@ const (
 	defaultRecrawlCD        = time.Minute * 10
 	defaultCrawlerCD        = time.Minute
 
-	maxWaitRetry = 5
+	maxWaitRetry         = 5
+	maxFetchRetryAttempt = 10
 )
 
 var (
@@ -394,7 +395,7 @@ func (s *Service) sendCrawlRequest(
 				req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
 				_, err1 := sendRequest(req, &summary)
 				return err1
-			}, 3)
+			}, maxFetchRetryAttempt)
 			// check success
 			if err == nil {
 				return &summary, nil
