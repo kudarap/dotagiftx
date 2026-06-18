@@ -40,8 +40,8 @@ const (
 )
 
 var (
-	errFileNotFound = fmt.Errorf("raw file not found")
-	errFileWaiting  = fmt.Errorf("waiting for file")
+	errFileNotFound = errors.New("raw file not found")
+	errFileWaiting  = errors.New("waiting for file")
 )
 
 type Service struct {
@@ -55,7 +55,8 @@ type Service struct {
 	crawlerCooldown  time.Duration
 	inventoryHashTTL time.Duration
 
-	electedCrawlerID int
+	electedCrawlerID  int
+	autoRotateCrawler bool
 }
 
 func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
@@ -72,6 +73,8 @@ func NewService(config Config, cd cooldown, logger *slog.Logger) *Service {
 		crawlerCooldown:  defaultCrawlerCD,
 		inventoryHashTTL: defaultInventoryHashTTL,
 		logger:           logger.With("module", "phantasm"),
+
+		autoRotateCrawler: true,
 	}
 }
 
@@ -157,7 +160,6 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	crawlerID := extractCrawlerID(crawlerURL)
 	logger := s.logger.With("steam_id", steamID, "crawler_id", crawlerID)
 
-	logger.DebugContext(ctx, "fetch inventory and wait")
 	localFile, err := s.localInventoryFile(ctx, steamID)
 	if err != nil && !errors.Is(err, errFileNotFound) {
 		return nil, err
@@ -242,6 +244,7 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 	crawlerURL := s.config.Addrs[s.electedCrawlerID]
 	crawlerID := extractCrawlerID(crawlerURL)
 	logger := s.logger.With("steam_id", steamID, "crawler_id", crawlerID)
+	logger.InfoContext(ctx, "crawling remote inventory")
 
 	// check if crawler is ready
 	cd, err := s.cooldown.CrawlerCooldown(ctx, crawlerID)
@@ -277,6 +280,12 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 		"request_delay_ms", summary.RequestDelayMs,
 		"webhook_url", summary.WebhookURL,
 	)
+
+	// rotate crawler on success when auto rotate is enabled
+	if s.autoRotateCrawler {
+		cid := s.electNewCrawler(ctx)
+		s.logger.DebugContext(ctx, "rotating crawler", "id", cid)
+	}
 	return nil
 }
 
@@ -319,7 +328,7 @@ func (s *Service) localInventoryFile(ctx context.Context, steamID string) (*inve
 	return &inv, nil
 }
 
-func (s *Service) electNewCrawler(ctx context.Context) string {
+func (s *Service) electNewCrawler(ctx context.Context) (crawlerID string) {
 	crawler := extractCrawlerID(s.config.Addrs[s.electedCrawlerID])
 	cd, err := s.cooldown.CrawlerCooldown(ctx, crawler)
 	if err != nil {
@@ -343,7 +352,9 @@ func (s *Service) sendCrawlRequest(
 	crawlerURL string,
 	steamID string,
 	precheck bool,
-) (*CrawlSummary, error,
+) (
+	*CrawlSummary,
+	error,
 ) {
 	url := fmt.Sprintf("%s?steam_id=%s", crawlerURL, steamID)
 	if precheck {
