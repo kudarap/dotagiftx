@@ -369,6 +369,7 @@ func (s *Service) sendCrawlRequest(
 			s.logger.InfoContext(ctx, "current crawler unavailable, new crawler elected",
 				"old", extractCrawlerID(crawlerURL),
 				"new", elected,
+				"err", err,
 			)
 		}
 		return nil, err

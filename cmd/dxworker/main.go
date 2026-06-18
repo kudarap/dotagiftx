@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -11,6 +13,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/gops/agent"
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
@@ -74,6 +78,7 @@ func main() {
 
 type application struct {
 	config config.Config
+	server *nethttp.Server
 	worker *worker.Worker
 	logger *logrus.Logger
 
@@ -183,8 +188,18 @@ func (app *application) setup() error {
 	app.worker.AddJob(jobs.NewSweepMarket(marketStg, logging.WithPrefix(logger, "job_sweep_market")))
 	app.worker.AddJob(jobs.NewSweepPhantasmCache(phantasmSvc, logging.WithPrefix(logger, "job_sweep_phantasm")))
 
+	// Server setup.
+	logSvc.Println("setting up http server...")
+	app.server = setupServer(app.config.Addr, phantasmSvc)
+
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
+		// Force server shutdown after shutdownTimeout and this was added because of SSE's opened connection.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		defer cancel()
+		if err = app.server.Shutdown(ctx); err != nil {
+			logSvc.Println("could not shutdown http server", err)
+		}
 		if err = app.worker.Stop(); err != nil {
 			logSvc.Fatal("could not stop worker", err)
 		}
@@ -205,6 +220,15 @@ func (app *application) run() error {
 	// Handle quit on SIGINT (CTRL-C).
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
+
+	// Handle error on server start.
+	svlog := app.contextLog("server")
+	go func() {
+		svlog.Infoln("starting server on", app.config.Addr)
+		if err := app.server.ListenAndServe(); err != nil && !errors.Is(err, nethttp.ErrServerClosed) {
+			svlog.Fatalf("could not listen and serve on %s: %v\n", app.config.Addr, err)
+		}
+	}()
 
 	go app.worker.Start()
 
@@ -250,6 +274,31 @@ func setupRedis(cfg redis.Config) (c *redis.Client, err error) {
 
 	err = connRetry("redis", fn)
 	return
+}
+
+func setupServer(addr string, svc *phantasm.Service) *nethttp.Server {
+	r := chi.NewRouter()
+	r.Use(middleware.Recoverer)
+	r.Post("/webhook/phantasm/{steam_id}", func(w nethttp.ResponseWriter, r *nethttp.Request) {
+		id := chi.URLParam(r, "steam_id")
+		secret := r.Header.Get(phantasm.WebhookAuthHeader)
+		if err := svc.SaveInventory(r.Context(), id, secret, r.Body); err != nil {
+			w.WriteHeader(nethttp.StatusOK)
+			_, _ = fmt.Fprintf(w, "error: %s", err)
+			return
+		}
+
+		w.WriteHeader(nethttp.StatusOK)
+		_, _ = fmt.Fprintf(w, "ok")
+	})
+
+	const readWriteTimeout = time.Second * 15
+	return &nethttp.Server{
+		Addr:         addr,
+		Handler:      r,
+		WriteTimeout: readWriteTimeout,
+		ReadTimeout:  readWriteTimeout,
+	}
 }
 
 func connRetry(name string, fn func() error) error {
