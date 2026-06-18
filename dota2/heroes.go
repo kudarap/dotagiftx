@@ -117,7 +117,7 @@ var AllHeroes = []Hero{
 		"agility",
 	},
 	{
-		"rattletrap",
+		"clockwerk",
 		"Clockwerk",
 		"rattletrap.png",
 		"strength",
@@ -345,7 +345,7 @@ var AllHeroes = []Hero{
 		"strength",
 	},
 	{
-		"magnataur",
+		"magnus",
 		"Magnus",
 		"magnataur.png",
 		"universal",
@@ -405,13 +405,13 @@ var AllHeroes = []Hero{
 		"agility",
 	},
 	{
-		"furion",
+		"naturesprophet",
 		"Nature's Prophet",
 		"furion.png",
 		"universal",
 	},
 	{
-		"necrolyte",
+		"necrophos",
 		"Necrophos",
 		"necrolyte.png",
 		"intelligence",
@@ -447,7 +447,7 @@ var AllHeroes = []Hero{
 		"intelligence",
 	},
 	{
-		"obsidiandestroyer",
+		"outworldndestroyer",
 		"Outworld Destroyer",
 		"obsidian_destroyer.png",
 		"intelligence",
@@ -543,7 +543,7 @@ var AllHeroes = []Hero{
 		"intelligence",
 	},
 	{
-		"nevermore",
+		"shadowfiend",
 		"Shadow Fiend",
 		"nevermore.png",
 		"agility",
@@ -753,13 +753,13 @@ var AllHeroes = []Hero{
 		"intelligence",
 	},
 	{
-		"skeletonking",
+		"wraithking",
 		"Wraith King",
 		"skeleton_king.png",
 		"strength",
 	},
 	{
-		"zuus",
+		"zeus",
 		"Zeus",
 		"zuus.png",
 		"intelligence",
