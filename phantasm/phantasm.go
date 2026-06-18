@@ -375,14 +375,32 @@ func (s *Service) sendCrawlRequest(
 		}
 
 		// only elect new crawler when not found and too much request
+		var shouldRetry bool
 		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
-			elected := s.electNewCrawler(ctx)
-			s.logger.InfoContext(ctx, "current crawler unavailable, new crawler elected",
-				"old", extractCrawlerID(crawlerURL),
-				"new", elected,
-				"err", err,
-			)
+			shouldRetry = true
 		}
+
+		if shouldRetry {
+			err = retryRequest(func() error {
+				current := s.currentCrawlerID()
+				next := s.electNewCrawler(ctx)
+				s.logger.InfoContext(ctx,
+					"current crawler unavailable, new crawler elected and retying",
+					"current", current,
+					"next", next,
+					"err", err,
+				)
+
+				req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
+				_, err1 := sendRequest(req, &summary)
+				return err1
+			}, 3)
+			// check success
+			if err == nil {
+				return &summary, nil
+			}
+		}
+
 		return nil, err
 	}
 	return &summary, nil
@@ -397,6 +415,11 @@ func (s *Service) setRequestHeaders() http.Header {
 
 func (s *Service) filePath(steamID string) string {
 	return filepath.Join(s.config.Path, fmt.Sprintf("%s.json", steamID))
+}
+
+func (s *Service) currentCrawlerID() string {
+	v := s.config.Addrs[s.electedCrawlerID]
+	return extractCrawlerID(v)
 }
 
 func (i *inventory) compat() steam.AllInventory {
@@ -452,4 +475,16 @@ type cooldown interface {
 func extractCrawlerID(addr string) string {
 	ss := strings.Split(addr, "/")
 	return ss[len(ss)-1]
+}
+
+func retryRequest(fn func() error, maxAttempt int) error {
+	var err error
+	for i := 0; i < maxAttempt; i++ {
+		// return immediately on success with nil error
+		if err = fn(); err == nil {
+			return nil
+		}
+	}
+
+	return err
 }
