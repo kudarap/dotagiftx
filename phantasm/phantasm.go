@@ -199,9 +199,6 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			if err = os.Chtimes(s.filePath(steamID), n, n); err != nil {
 				return nil, err
 			}
-			if err = s.cooldown.SetInventoryHash(ctx, steamID, hash, s.inventoryHashTTL); err != nil {
-				return nil, err
-			}
 			return localFile, nil
 		}
 
@@ -314,7 +311,7 @@ func (s *Service) remoteInventoryChanged(ctx context.Context, steamID string) (b
 		return false, err
 	}
 	if currentHash == "" {
-		logger.DebugContext(ctx, "no inventory hash found, falling back to local pre-hash")
+		logger.DebugContext(ctx, "no inventory hash found in cache, falling back to local pre-hash")
 		currentHash, err = s.localInventoryPreHash(ctx, steamID)
 		if err != nil {
 			logger.Error("local pre-hash error", "err", err)
