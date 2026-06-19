@@ -168,7 +168,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	if localFile != nil {
 		logger.DebugContext(ctx, "local inventory ready")
 
-		// when the hash still exists, the validity file age is still valid by inventory hash.
+		// use local file when inventory hash still valid and refresh expiration.
 		hash, err := s.cooldown.InventoryHash(ctx, steamID)
 		if err != nil {
 			return nil, err
@@ -185,7 +185,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 			return localFile, nil
 		}
 
-		// pre-check before fetching
+		// pre-check remote inventory for changes before fetching
 		logger.DebugContext(ctx, "check remote inventory changes", "hash", hash)
 		changed, err := s.remoteInventoryChanged(ctx, steamID)
 		if err != nil {
@@ -194,9 +194,12 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 		}
 		if !changed {
 			logger.DebugContext(ctx, "remote inventory did not changed, falling back to local")
-			// refresh inventory file age
+			// refresh inventory file age and hash
 			n := time.Now()
 			if err = os.Chtimes(s.filePath(steamID), n, n); err != nil {
+				return nil, err
+			}
+			if err = s.cooldown.SetInventoryHash(ctx, steamID, hash, s.inventoryHashTTL); err != nil {
 				return nil, err
 			}
 			return localFile, nil
@@ -282,6 +285,10 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 		"webhook_url", summary.WebhookURL,
 	)
 
+	if err = s.setLocalInventoryPreHash(ctx, steamID, summary.PrecheckHash); err != nil {
+		return err
+	}
+
 	// rotate crawler on success when auto rotate is enabled
 	if s.autoRotateCrawler {
 		cid := s.electNewCrawler(ctx)
@@ -305,6 +312,13 @@ func (s *Service) remoteInventoryChanged(ctx context.Context, steamID string) (b
 	if err != nil {
 		return false, err
 	}
+	if currentHash == "" {
+		logger.DebugContext(ctx, "no inventory hash found, falling back to local pre-hash")
+		currentHash, err = s.localInventoryPreHash(ctx, steamID)
+		if err != nil {
+			logger.Error("local pre-hash error", "err", err)
+		}
+	}
 
 	logger.DebugContext(ctx, "comparing hashes", "current", currentHash, "new", result.PrecheckHash)
 	if err = s.cooldown.SetInventoryHash(ctx, steamID, result.PrecheckHash, s.inventoryHashTTL); err != nil {
@@ -327,6 +341,34 @@ func (s *Service) localInventoryFile(ctx context.Context, steamID string) (*inve
 		return nil, fmt.Errorf("unmarshal: %s", err)
 	}
 	return &inv, nil
+}
+
+func (s *Service) localInventoryPreHash(ctx context.Context, steamID string) (string, error) {
+	hash, err := os.ReadFile(s.filePathPreHash(steamID))
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "", nil
+		}
+		return "", fmt.Errorf("open file: %s", err)
+	}
+
+	return string(hash), nil
+}
+
+func (s *Service) setLocalInventoryPreHash(ctx context.Context, steamID, hash string) error {
+	file, err := os.Create(s.filePathPreHash(steamID))
+	if err != nil {
+		return fmt.Errorf("pre-hash open file: %s", err)
+	}
+	defer func() {
+		if err = file.Close(); err != nil {
+			s.logger.Error("pre-hash close file", "error", err.Error())
+		}
+	}()
+	if _, err = file.WriteString(hash); err != nil {
+		return fmt.Errorf("pre-hash copy: %s", err)
+	}
+	return nil
 }
 
 func (s *Service) electNewCrawler(ctx context.Context) (crawlerID string) {
@@ -416,6 +458,10 @@ func (s *Service) setRequestHeaders() http.Header {
 
 func (s *Service) filePath(steamID string) string {
 	return filepath.Join(s.config.Path, fmt.Sprintf("%s.json", steamID))
+}
+
+func (s *Service) filePathPreHash(steamID string) string {
+	return filepath.Join(s.config.Path, fmt.Sprintf("%s.prehash", steamID))
 }
 
 func (s *Service) currentCrawlerID() string {
