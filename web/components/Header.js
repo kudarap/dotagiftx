@@ -138,32 +138,31 @@ export default function Header() {
   const { classes } = useStyles()
 
   return (
-    <>
-      <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
-        <Container disableMinHeight maxWidth="xl">
-          <Toolbar variant="dense" disableGutters>
-            {/* Desktop nav branding */}
-            <Link href="/" disableUnderline className={classes.logo}>
-              <Image
-                width={134}
-                height={30}
-                layout="fixed"
-                className={classes.brand}
-                src={brandImage}
-                alt={APP_NAME}
-              />
-              {/* <img
+    <AppBar position="static" variant="outlined" elevation={0} className={classes.appBar}>
+      <Container disableMinHeight maxWidth="xl">
+        <Toolbar variant="dense" disableGutters>
+          {/* Desktop nav branding */}
+          <Link href="/" disableUnderline className={classes.logo}>
+            <Image
+              width={134}
+              height={30}
+              layout="fixed"
+              className={classes.brand}
+              src={brandImage}
+              alt={APP_NAME}
+            />
+            {/* <img
               width={134}
               className={classes.brand}
               src="/brand_1x.png"
               srcSet="/brand_1x.png 1x, /brand_2x.png 2x"
               alt={APP_NAME}
             /> */}
-            </Link>
+          </Link>
 
-            <span className={classes.spacer} />
+          <span className={classes.spacer} />
 
-            {/* <Link
+          {/* <Link
             className={classes.nav}
             href="/search?q=Aghanim"
             underline="none"
@@ -173,51 +172,84 @@ export default function Header() {
             }}>
             Aghanim's 2021
           </Link> */}
-            <Link className={classes.nav} href="/treasures" underline="none">
-              Treasures
-              {isRecentTreasureNew() && (
-                <span
-                  style={{
-                    color: '#bcecff',
-                    padding: '0 8px',
-                    position: 'absolute',
-                    fontSize: '0.6rem',
-                    display: 'block',
-                    marginTop: '-0.24rem',
-                    marginLeft: -14,
-                  }}>
-                  New Winter Treasure
-                </span>
-              )}
-            </Link>
-            <Link className={classes.nav} href="/heroes" underline="none">
-              Heroes
-            </Link>
-            <Link className={classes.nav} href="/plus" underline="none">
-              Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>
-            </Link>
-            <Link className={classes.nav} href="/download" underline="none">
-              Mobile
-            </Link>
-            <Link className={classes.nav} href="/bans" underline="none">
-              Bans
-              <LatestBan />
-            </Link>
-            <Link className={classes.nav} href="/rules" underline="none">
-              Rules
-            </Link>
-            <MoreMenu />
+          <Link className={classes.nav} href="/treasures" underline="none">
+            Treasures
+            {isRecentTreasureNew() && (
+              <span
+                style={{
+                  color: '#bcecff',
+                  padding: '0 8px',
+                  position: 'absolute',
+                  fontSize: '0.6rem',
+                  display: 'block',
+                  marginTop: '-0.24rem',
+                  marginLeft: -14,
+                }}>
+                New Winter Treasure
+              </span>
+            )}
+          </Link>
+          <Link className={classes.nav} href="/heroes" underline="none">
+            Heroes
+          </Link>
+          <Link className={classes.nav} href="/plus" underline="none">
+            Dotagift<span style={{ fontSize: 18, color: '#CA9039' }}>+</span>
+          </Link>
+          <Link className={classes.nav} href="/download" underline="none">
+            Mobile
+          </Link>
+          <Link className={classes.nav} href="/bans" underline="none">
+            Bans
+            <LatestBan />
+          </Link>
+          <Link className={classes.nav} href="/rules" underline="none">
+            Rules
+          </Link>
+          <MoreMenu />
 
-            <NoSsr>
-              <span style={{ flexGrow: 1 }} />
+          <NoSsr>
+            <span style={{ flexGrow: 1 }} />
 
-              <SearchButton
-                style={{ width: 180, marginTop: 4 }}
-                onClick={() => setOpenSearchDialog(true)}
-              />
-              <span className={classes.spacer} />
+            <SearchButton
+              style={{ width: 180, marginTop: 4 }}
+              onClick={() => setOpenSearchDialog(true)}
+            />
+            <span className={classes.spacer} />
 
-              {/* Post item button */}
+            {/* Post item button */}
+            <Button
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'inherit',
+                },
+              }}
+              variant="outlined"
+              color="secondary"
+              component={Link}
+              href="/post-item"
+              disableUnderline>
+              Post item
+            </Button>
+            <Button
+              onClick={() => setOpenDrawer(true)}
+              variant="outlined"
+              sx={{
+                display: {
+                  width: 36,
+                  height: 36,
+                  xs: 'inherit',
+                  md: 'none',
+                },
+              }}>
+              <MenuIcon fontSize="small" />
+            </Button>
+            <span className={classes.spacer} />
+
+            {/* Avatar menu button */}
+            {isLoggedIn ? (
+              <AvatarMenu profile={profile} onLogout={handleLogout} />
+            ) : (
               <Button
                 sx={{
                   display: {
@@ -225,58 +257,22 @@ export default function Header() {
                     md: 'inherit',
                   },
                 }}
-                variant="outlined"
-                color="secondary"
+                startIcon={<SteamIcon />}
                 component={Link}
-                href="/post-item"
+                href="/login"
                 disableUnderline>
-                Post item
+                Sign in
               </Button>
-              <Button
-                onClick={() => setOpenDrawer(true)}
-                variant="outlined"
-                sx={{
-                  display: {
-                    width: 36,
-                    height: 36,
-                    xs: 'inherit',
-                    md: 'none',
-                  },
-                }}>
-                <MenuIcon fontSize="small" />
-              </Button>
-              <span className={classes.spacer} />
+            )}
+          </NoSsr>
 
-              {/* Avatar menu button */}
-              {isLoggedIn ? (
-                <AvatarMenu profile={profile} onLogout={handleLogout} />
-              ) : (
-                <Button
-                  sx={{
-                    display: {
-                      xs: 'none',
-                      md: 'inherit',
-                    },
-                  }}
-                  startIcon={<SteamIcon />}
-                  component={Link}
-                  href="/login"
-                  disableUnderline>
-                  Sign in
-                </Button>
-              )}
-            </NoSsr>
+          {/* Mobile nav buttons */}
+        </Toolbar>
+      </Container>
 
-            {/* Mobile nav buttons */}
-          </Toolbar>
-        </Container>
-
-        <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
-        <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
-      </AppBar>
-
-      <Incident />
-    </>
+      <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
+      <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
+    </AppBar>
   )
 }
 Header.propTypes = {}
