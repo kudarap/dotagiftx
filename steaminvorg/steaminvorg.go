@@ -66,7 +66,7 @@ func SWR(steamID string, strict bool) (*steam.AllInventory, error) {
 
 	// check for meta until processed with a little bit of back-off
 	for i := 1; i <= maxGetRetries; i++ {
-		sharedLogger.Info("try", steamID, "steam_id", "count", i)
+		sharedLogger.Info("try", "steam_id", steamID, "count", i)
 		m, err = GetMeta(steamID)
 		if err != nil {
 			sharedLogger.Error("try err", "steam_id", steamID, "err", err)
