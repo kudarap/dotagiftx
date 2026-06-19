@@ -209,7 +209,12 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	}
 
 	// precheck to filter out private or failing remote inventory.
-	if _, err = s.sendCrawlRequest(ctx, crawlerURL, steamID, true); err != nil {
+	logger.DebugContext(ctx, "pre-check for private or failing remote inventory")
+	precheckSummary, err := s.sendCrawlRequest(ctx, crawlerURL, steamID, true)
+	if err != nil {
+		return nil, err
+	}
+	if err = s.setLocalInventoryPreHash(ctx, steamID, precheckSummary.PrecheckHash); err != nil {
 		return nil, err
 	}
 
@@ -284,10 +289,6 @@ func (s *Service) crawlRemoteInventory(ctx context.Context, steamID string) erro
 		"request_delay_ms", summary.RequestDelayMs,
 		"webhook_url", summary.WebhookURL,
 	)
-
-	if err = s.setLocalInventoryPreHash(ctx, steamID, summary.PrecheckHash); err != nil {
-		return err
-	}
 
 	// rotate crawler on success when auto rotate is enabled
 	if s.autoRotateCrawler {
