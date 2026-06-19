@@ -78,7 +78,7 @@ func (c *Client) Player(steamID string) (*dotagiftx.SteamPlayer, error) {
 }
 
 func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
-	rawURL = strings.TrimRight(rawURL, "/")
+	rawURL = cleanProfileURL(rawURL)
 
 	// SteamID might be present on the URL provided.
 	if strings.HasPrefix(rawURL, VanityPrefixProfile) {
@@ -103,4 +103,14 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 type cacheReadWriter interface {
 	Set(key string, val interface{}, expr time.Duration) error
 	Get(key string) (val string, err error)
+}
+
+func cleanProfileURL(s string) string {
+	s = strings.TrimRight(s, "/")
+	s = strings.TrimPrefix(s, VanityPrefixProfile)
+	ss := strings.Split(s, "/")
+	if len(ss) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%s%s", VanityPrefixProfile, ss[0])
 }
