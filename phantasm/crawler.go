@@ -298,7 +298,7 @@ func structToMap(data interface{}) map[string]interface{} {
 	reflectValue := reflect.ValueOf(data)
 	reflectValue = reflect.Indirect(reflectValue)
 
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		v = v.Elem()
 	}
 	for i := 0; i < v.NumField(); i++ {

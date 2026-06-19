@@ -168,7 +168,7 @@ func (s *Service) crawlWait(ctx context.Context, steamID string) (*inventory, er
 	if localFile != nil {
 		logger.DebugContext(ctx, "local inventory ready")
 
-		// when the hash still exists, the validity file age is still valid by inventoryHashExpr.
+		// when the hash still exists, the validity file age is still valid by inventory hash.
 		hash, err := s.cooldown.InventoryHash(ctx, steamID)
 		if err != nil {
 			return nil, err
