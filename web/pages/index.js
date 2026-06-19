@@ -103,8 +103,8 @@ export default function Index({ marketSummary, trendingItems }) {
   const description = `Search on ${marketSummary.live} Giftable items`
 
   const metaTitle = `${APP_NAME} :: Dota 2 Giftables Community Market`
-  const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for 
-          Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market. 
+  const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for
+          Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market.
           The project was heavily inspired by Giftable Megathread from r/Dota2Trade.`
 
   return (
@@ -145,30 +145,8 @@ export default function Index({ marketSummary, trendingItems }) {
           }}>
           <div
             style={{
-              position: 'absolute',
-              width: '100%',
-            }}>
-            <div style={{ marginTop: -170, textAlign: 'center' }}>
-              <video
-                width={700}
-                preload="auto"
-                poster="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.png"
-                autoPlay
-                muted
-                loop
-                playsInline>
-                <source
-                  type="video/webm"
-                  src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.webm"
-                />
-              </video>
-            </div>
-          </div>
-
-          <div
-            style={{
               background:
-                'url(https://cdn.steamstatic.com/apps/dota2/images/dota_react/largo/treasure_background.png) no-repeat center center',
+                'url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/570/06918d1009cc79ffdee853f1ef789cddf8014226/library_hero.jpg) repeat-x center center',
               backgroundColor: '#292638ff',
               backgroundSize: 'cover',
               backgroundPositionY: -135,
