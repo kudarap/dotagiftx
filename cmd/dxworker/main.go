@@ -108,7 +108,8 @@ func (app *application) setup() error {
 	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
-	slogger := slog.Default()
+	th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
+	slogger := slog.New(th)
 	logSvc.Println("setting up services...")
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
@@ -209,6 +210,8 @@ func (app *application) run() error {
 		}
 	}()
 
+	// delay worker start to give leeway on phantasm webhook to be online
+	time.Sleep(10 * time.Second)
 	go app.worker.Start()
 
 	<-quit
