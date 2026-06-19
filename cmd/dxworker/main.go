@@ -211,7 +211,7 @@ func (app *application) run() error {
 	}()
 
 	// delay worker start to give leeway on phantasm webhook to be online
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 	go app.worker.Start()
 
 	<-quit
