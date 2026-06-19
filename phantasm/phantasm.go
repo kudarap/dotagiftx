@@ -422,7 +422,7 @@ func (s *Service) sendCrawlRequest(
 		}
 
 		if shouldRetry {
-			err = retryRequest(func() error {
+			err = retryRequest(func(attempt int) error {
 				current := s.currentCrawlerID()
 				next := s.electNewCrawler(ctx)
 				s.logger.InfoContext(ctx,
@@ -430,6 +430,7 @@ func (s *Service) sendCrawlRequest(
 					"current", current,
 					"next", next,
 					"err", err,
+					"attempt", attempt,
 				)
 
 				req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
@@ -522,14 +523,14 @@ func extractCrawlerID(addr string) string {
 	return ss[len(ss)-1]
 }
 
-func retryRequest(fn func() error, maxAttempt int) error {
+func retryRequest(fn func(attempt int) error, maxAttempt int) error {
 	var err error
 	for i := 0; i < maxAttempt; i++ {
+		time.Sleep((time.Second * 2) * time.Duration(i+1))
 		// return immediately on success with nil error
-		if err = fn(); err == nil {
+		if err = fn(i + 1); err == nil {
 			return nil
 		}
 	}
-
 	return err
 }
