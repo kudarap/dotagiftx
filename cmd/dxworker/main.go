@@ -114,8 +114,16 @@ func (app *application) setup() error {
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
+	phantasmSvcExp := phantasm.NewService(phantasm.Config{
+		Addrs:                []string{"https://dotagiftx-phantasm-cloudfunc.vercel.app/api/index"},
+		WebhookURL:           app.config.Phantasm.WebhookURL,
+		Secret:               app.config.Phantasm.Secret,
+		Path:                 app.config.Phantasm.Path,
+		MaxFetchRetryAttempt: 1,
+	}, redisClient, slogger)
 	assetSource := verify.NewSource(
 		phantasmSvc.InventoryAssetWithProvider,
+		phantasmSvcExp.InventoryAssetWithProvider,
 		steaminvorg.InventoryAssetWithProvider,
 	)
 
