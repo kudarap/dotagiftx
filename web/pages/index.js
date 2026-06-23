@@ -136,6 +136,8 @@ export default function Index({ marketSummary, trendingItems }) {
         <div
           style={{
             width: '100%',
+            // height: 1000,
+            // marginBottom: 500 - 1340,
             height: 640,
             marginBottom: 500 - 640,
             maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
@@ -145,11 +147,9 @@ export default function Index({ marketSummary, trendingItems }) {
           }}>
           <div
             style={{
-              background:
-                'url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/570/06918d1009cc79ffdee853f1ef789cddf8014226/library_hero.jpg) repeat-x center center',
-              backgroundColor: '#292638ff',
-              backgroundSize: 'cover',
-              backgroundPositionY: -135,
+              background: 'url(/assets/axe-missing.png) repeat-x center center',
+              backgroundColor: '#263238',
+              backgroundPositionY: 0,
               width: '100%',
               height: '100%',
             }}
