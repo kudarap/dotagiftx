@@ -8,10 +8,10 @@ services:
       - ./.localdata/rethinkdb:/data'
 
   redis:
-    image: redis:8.0
+    image: valkey/valkey:9-1-alpine
     ports:
       - "6379:6379"
     environment:
       REDIS_PASSWORD: root
     volumes:
-      - ./.localdata/redis:/data'
+      - ./.localdata/valkey:/data'
