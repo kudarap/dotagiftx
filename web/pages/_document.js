@@ -43,6 +43,12 @@ class MyDocument extends Document {
               />
             </>
           )}
+
+          <script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id="ec6e2180-8ba0-49cc-beb2-14601404b3d8"
+          />
         </Head>
         <body>
           <Main />
