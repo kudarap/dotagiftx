@@ -136,8 +136,6 @@ export default function Index({ marketSummary, trendingItems }) {
         <div
           style={{
             width: '100%',
-            // height: 1000,
-            // marginBottom: 500 - 1340,
             height: 640,
             marginBottom: 500 - 640,
             maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
@@ -147,13 +145,29 @@ export default function Index({ marketSummary, trendingItems }) {
           }}>
           <div
             style={{
-              background: 'url(/assets/axe-missing.png) repeat-x center center',
-              backgroundColor: '#263238',
-              backgroundPositionY: 0,
+              position: 'absolute',
               width: '100%',
-              height: '100%',
-            }}
-          />
+            }}>
+            <div style={{ marginTop: -170, textAlign: 'center' }}>
+              <video
+                style={{
+                  width: '100%',
+                  marginTop: '0vw',
+                  marginBottom: '-20vw',
+                }}
+                preload="auto"
+                poster="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
+                autoPlay
+                muted
+                loop
+                playsInline>
+                <source
+                  type="video/webm"
+                  src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
+                />
+              </video>
+            </div>
+          </div>
         </div>
 
         <Container
