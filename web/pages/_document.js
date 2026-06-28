@@ -46,8 +46,9 @@ class MyDocument extends Document {
 
           <script
             defer
-            src="https://cloud.umami.is/script.js"
-            data-website-id="ec6e2180-8ba0-49cc-beb2-14601404b3d8"
+            src="https://umami.chiligarlic.com/script.js"
+            data-website-id="19ea236a-d223-4cab-9887-c7a2c3acaf63"
+            data-domains="dotagiftx.com"
           />
         </Head>
         <body>

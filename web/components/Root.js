@@ -22,6 +22,10 @@ function Root({ children }) {
   const [latestBan, setLatestBan] = React.useState(null)
   React.useEffect(() => {
     ;(async () => {
+      if (!!window.umami && isLoggedIn) {
+        window.umami.identify(currentAuth.steam_id)
+      }
+
       try {
         const user = await blacklistSearch({ limit: 1, sort: 'updated_at:desc' })
         if (user) {
