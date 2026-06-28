@@ -6,6 +6,7 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import * as Auth from '@/service/auth'
 import { blacklistSearch } from '@/service/api'
 import AppContext from '@/components/AppContext'
+import { USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
 // import WhatsNewDialog from '@/components/WhatsNewDialog'
 // import SurveyFab from '@/components/SurveyFab'
 // import { REPORT_LABEL_SURVEY_NEXT } from '@/constants/report'
@@ -22,14 +23,13 @@ function Root({ children }) {
   const [latestBan, setLatestBan] = React.useState(null)
   React.useEffect(() => {
     ;(async () => {
-      // analytics identify logged in user
+      // analytics identify user session
       if (!!window.umami && isLoggedIn) {
-        const { id, steam_id, name, subscription } = currentAuth
         window.umami.identify({
-          id,
-          steam_id,
-          name,
-          subscription,
+          id: currentAuth.steam_id,
+          user_id: currentAuth.id,
+          name: currentAuth.name,
+          subscription: USER_SUBSCRIPTION_MAP_LABEL[currentAuth.subscription],
         })
       }
 
