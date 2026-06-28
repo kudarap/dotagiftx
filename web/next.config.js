@@ -7,10 +7,6 @@ module.exports = {
         source: '/id/:slug',
         destination: '/profiles/:slug?vanity=:slug',
       },
-      {
-        source: '/sinigang',
-        destination: 'https://umami.chiligarlic.com/script.js',
-      },
     ]
   },
   async redirects() {

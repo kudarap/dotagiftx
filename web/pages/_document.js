@@ -44,7 +44,11 @@ class MyDocument extends Document {
             </>
           )}
 
-          <script defer src="/sinigang" data-website-id="19ea236a-d223-4cab-9887-c7a2c3acaf63" />
+          <script
+            defer
+            src="https://umami.chiligarlic.com/adobo.js"
+            data-website-id="19ea236a-d223-4cab-9887-c7a2c3acaf63"
+          />
         </Head>
         <body>
           <Main />
