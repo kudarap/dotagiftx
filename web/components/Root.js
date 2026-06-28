@@ -22,8 +22,15 @@ function Root({ children }) {
   const [latestBan, setLatestBan] = React.useState(null)
   React.useEffect(() => {
     ;(async () => {
+      // analytics identify logged in user
       if (!!window.umami && isLoggedIn) {
-        window.umami.identify(currentAuth.steam_id)
+        const { id, steam_id, name, subscription } = currentAuth
+        window.umami.identify({
+          id,
+          steam_id,
+          name,
+          subscription,
+        })
       }
 
       try {
