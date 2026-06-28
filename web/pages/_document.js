@@ -48,6 +48,12 @@ class MyDocument extends Document {
             defer
             src="https://umami.chiligarlic.com/adobo.js"
             data-website-id="19ea236a-d223-4cab-9887-c7a2c3acaf63"
+            data-performance="true"
+          />
+          <script
+            defer
+            src="https://umami.chiligarlic.com/recorder.js"
+            data-website-id="19ea236a-d223-4cab-9887-c7a2c3acaf63"
           />
         </Head>
         <body>
