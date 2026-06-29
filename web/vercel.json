@@ -1,4 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "bunVersion": "1.x"
+  "bunVersion": "1.x",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.dotagiftx.com/:path*"
+    },
+    {
+      "source": "/sinigang",
+      "destination": "https://umami.chiligarlic.com/adobo.js"
+    }
+  ]
 }
