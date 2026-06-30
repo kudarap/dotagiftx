@@ -11,6 +11,14 @@ module.exports = {
         source: '/api/:path*',
         destination: 'https://api.dotagiftx.com/:path*',
       },
+      {
+        source: '/us-api/:path*',
+        destination: 'https://api.dev.dotagiftx.com/:path*',
+      },
+      {
+        source: '/eu-api/:path*',
+        destination: 'https://eu.api.dotagiftx.com/:path*',
+      },
     ]
   },
   async redirects() {
