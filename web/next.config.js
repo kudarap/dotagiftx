@@ -7,6 +7,10 @@ module.exports = {
         source: '/id/:slug',
         destination: '/profiles/:slug?vanity=:slug',
       },
+      {
+        source: '/api/:path*',
+        destination: 'https://api.dotagiftx.com/:path*',
+      },
     ]
   },
   async redirects() {
