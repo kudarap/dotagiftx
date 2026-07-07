@@ -18,6 +18,7 @@ import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
 import { APP_CACHE_PROFILE } from '@/constants/app'
+import { USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
@@ -101,6 +102,20 @@ export default function Header() {
 
   // load profile data if logged in.
   const [profile, setProfile] = React.useState(defaultProfile)
+
+  const setProfileAnalytics = userData => {
+    // analytics identify user session
+    if (!!window.umami && isLoggedIn) {
+      window.umami.identify(userData.steam_id, {
+        id: userData.steam_id,
+        user_id: userData.id,
+        name: userData.name,
+        subscription: USER_SUBSCRIPTION_MAP_LABEL[userData.subscription],
+      })
+    }
+    setProfile(userData)
+  }
+
   React.useEffect(() => {
     ;(async () => {
       if (!isLoggedIn) {
@@ -109,13 +124,13 @@ export default function Header() {
 
       const hit = Storage.get(APP_CACHE_PROFILE)
       if (hit) {
-        setProfile(hit)
+        setProfileAnalytics(hit)
         return
       }
 
       const res = await myProfile.GET()
       Storage.save(APP_CACHE_PROFILE, res)
-      setProfile(res)
+      setProfileAnalytics(res)
     })()
   }, [])
 
