@@ -27,7 +27,7 @@ import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import NavItems from '@/components/NavItems'
 import LatestBan from './LatestBan'
-import brandImage from '../public/brand_2x.png'
+import brandImage from '../public/brand_darkcarnival_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
@@ -49,8 +49,9 @@ const useStyles = makeStyles()(theme => ({
   },
   brand: {
     height: 30,
-    WebkitTransition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-    transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    filter: 'brightness(85%)',
+    WebkitTransition: 'all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    transition: 'all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     '&:hover': {
       filter: 'brightness(115%)',
     },

@@ -2,35 +2,49 @@ import { createTheme } from '@mui/material/styles'
 import { teal, blueGrey, grey } from '@mui/material/colors'
 import { responsiveFontSizes } from '@mui/material'
 
+const defaultPalette = {
+  mode: 'dark',
+  primary: {
+    main: grey[200],
+    light: grey[100],
+    dark: grey[400],
+  },
+  secondary: {
+    main: '#C79123',
+  },
+  bid: {
+    main: teal[300],
+  },
+  accent: {
+    main: teal.A200,
+  },
+  background: {
+    default: '#263238',
+    paper: '#2e3d44',
+  },
+  // App specific colors.
+  app: {
+    white: '#FFFBF1',
+  },
+}
+
+const darkCarnivalPalette = {
+  secondary: {
+    main: '#FFDFB7',
+  },
+  background: {
+    default: '#090a19',
+    paper: '#292e3db0',
+  },
+}
+
 const baseThemeOpts = {
   typography: {
     fontFamily: 'Ubuntu, sans-serif',
   },
   palette: {
-    mode: 'dark',
-    primary: {
-      main: grey[200],
-      light: grey[100],
-      dark: grey[400],
-    },
-    secondary: {
-      main: '#C79123',
-    },
-    bid: {
-      main: teal[300],
-    },
-    accent: {
-      main: teal.A200,
-    },
-    background: {
-      // 1c161a
-      default: '#263238',
-      paper: '#2e3d44',
-    },
-    // App specific colors.
-    app: {
-      white: '#FFFBF1',
-    },
+    ...defaultPalette,
+    ...darkCarnivalPalette,
   },
   components: {
     MuiAppBar: {
@@ -82,7 +96,8 @@ const baseThemeOpts = {
     MuiTableCell: {
       styleOverrides: {
         root: {
-          borderBottomColor: '#263238',
+          // borderBottomColor: '#263238',
+          borderBottomColor: '#2632388a',
         },
       },
     },

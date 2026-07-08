@@ -28,7 +28,7 @@ const useStyles = makeStyles()(theme => ({
     },
     marginTop: theme.spacing(5),
     height: APP_FOOTER_HEIGHT,
-    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, rgb(38, 50, 56) 100%), url(${dotaHeroImage}) repeat-x center center`,
+    background: `linear-gradient(0deg, rgba(38, 50, 56, 0.36) 0%, ${theme.palette.background.default} 100%), url(${dotaHeroImage}) repeat-x center center`,
     backgroundImage: 'cover',
     backgroundSize: '100%',
   },
