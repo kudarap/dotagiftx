@@ -34,7 +34,7 @@ const darkCarnivalPalette = {
   },
   background: {
     default: '#090a19',
-    paper: '#292e3db0',
+    paper: '#1e2331ef',
   },
 }
 
@@ -93,11 +93,18 @@ const baseThemeOpts = {
     MuiPaper: {
       styleOverrides: { root: { backgroundImage: 'unset' } },
     },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          border: '1px solid #515051',
+        },
+      },
+    },
     MuiTableCell: {
       styleOverrides: {
         root: {
           // borderBottomColor: '#263238',
-          borderBottomColor: '#2632388a',
+          borderBottomColor: '#51505161',
         },
       },
     },
