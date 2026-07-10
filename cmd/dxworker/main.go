@@ -114,9 +114,7 @@ func (app *application) setup() error {
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
-	verifySources := []verify.AssetSource{
-		phantasmSvc.InventoryAssetWithProvider,
-	}
+	verifySources := []verify.AssetSource{phantasmSvc.InventoryAssetWithProvider}
 	// TODO: Use proper level of fallbacks. For experimental purposes only.
 	if len(app.config.Phantasm.BackupAddrs) != 0 {
 		phantasmSvcExp := phantasm.NewService(phantasm.Config{
