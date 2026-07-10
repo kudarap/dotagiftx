@@ -117,6 +117,7 @@ func (app *application) setup() error {
 	verifySources := []verify.AssetSource{phantasmSvc.InventoryAssetWithProvider}
 	// TODO: Use proper level of fallbacks. For experimental purposes only.
 	if len(app.config.Phantasm.BackupAddrs) != 0 {
+		logSvc.Println("EXPERIMENTAL: phantasm backup source enabled", app.config.Phantasm.BackupAddrs)
 		phantasmSvcExp := phantasm.NewService(phantasm.Config{
 			Addrs:                app.config.Phantasm.BackupAddrs,
 			WebhookURL:           app.config.Phantasm.WebhookURL,
