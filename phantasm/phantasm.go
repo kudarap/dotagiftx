@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx/steam"
+	"github.com/mailru/easyjson"
 )
 
 const (
@@ -42,8 +42,6 @@ const (
 var (
 	errFileNotFound = fmt.Errorf("raw file not found")
 	errFileWaiting  = fmt.Errorf("waiting for file")
-
-	fastjson = jsoniter.ConfigFastest
 )
 
 type Service struct {
@@ -315,7 +313,7 @@ func (s *Service) localInventoryFile(ctx context.Context, steamID string) (*inve
 	}
 
 	var inv inventory
-	if err = fastjson.Unmarshal(file, &inv); err != nil {
+	if err = easyjson.Unmarshal(file, &inv); err != nil {
 		return nil, fmt.Errorf("unmarshal: %s", err)
 	}
 	return &inv, nil
