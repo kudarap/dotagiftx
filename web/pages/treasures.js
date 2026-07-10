@@ -70,7 +70,7 @@ export default function Treasures({ treasures, error }) {
               // background:
               // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
-                'url(https://cdn.steamstatic.com/apps/dota2/images/dota_react/largo/treasure_background.png) no-repeat center top',
+                'url(https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/backgrounds/sky_backdrop.png) no-repeat center top',
               backgroundColor: '#2a2638ff',
               backgroundSize: 'cover',
               width: '100%',

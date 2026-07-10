@@ -12,8 +12,6 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Popper from '@mui/material/Popper'
 import { indigo } from '@mui/material/colors'
-import { ThemeProvider } from '@mui/material/styles'
-import { muiLightTheme } from '@/lib/theme'
 import {
   VERIFIED_DELIVERY_MAP_LABEL,
   VERIFIED_DELIVERY_MAP_TEXT,
@@ -174,7 +172,7 @@ export default function VerifiedStatusCard({ market, ...other }) {
       </CardContent>
       <CardActions style={{ float: 'right' }}>
         {source?.verified_by ? (
-          <Typography sx={{ color: '#a9071d' }} variant="caption">
+          <Typography variant="caption">
             Powered by <strong style={{ textTransform: 'capitalize' }}>{source.verified_by}</strong>
           </Typography>
         ) : (
@@ -202,9 +200,11 @@ VerifiedStatusCard.defaultProps = {
 
 function CardX(props) {
   return (
-    <ThemeProvider theme={muiLightTheme}>
-      <Card style={{ marginTop: 18 }} {...props} />
-    </ThemeProvider>
+    <Card
+      // dark carnival event theme
+      sx={{ mt: 18, boxShadow: 10, background: '#292e3d', border: '1px solid #515051' }}
+      {...props}
+    />
   )
 }
 
