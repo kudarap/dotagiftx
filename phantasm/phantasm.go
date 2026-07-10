@@ -36,8 +36,8 @@ const (
 	defaultRecrawlCD        = time.Minute * 10
 	defaultCrawlerCD        = time.Minute
 
-	maxWaitRetry         = 5
-	maxFetchRetryAttempt = 10
+	maxWaitRetry                = 5
+	defaultMaxFetchRetryAttempt = 10
 )
 
 var (
@@ -397,7 +397,7 @@ func (s *Service) sendCrawlRequest(
 	*CrawlSummary,
 	error,
 ) {
-	url := fmt.Sprintf("%s?steam_id=%s", crawlerURL, steamID)
+	url := fmt.Sprintf("%s?steam_id=%s&webhook_url=%s", crawlerURL, steamID, s.config.WebhookURL)
 	if precheck {
 		url = fmt.Sprintf("%s&precheck", url)
 	}
@@ -436,7 +436,7 @@ func (s *Service) sendCrawlRequest(
 				req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
 				_, err1 := sendRequest(req, &summary)
 				return err1
-			}, maxFetchRetryAttempt)
+			}, s.config.MaxFetchRetryAttempt)
 			// check success
 			if err == nil {
 				return &summary, nil

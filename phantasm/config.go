@@ -8,10 +8,14 @@ const (
 )
 
 type Config struct {
-	Addrs      []string
-	WebhookURL string `envconfig:"WEBHOOK_URL"`
-	Secret     string
-	Path       string
+	Addrs                []string
+	WebhookURL           string `envconfig:"WEBHOOK_URL"`
+	Secret               string
+	Path                 string
+	MaxFetchRetryAttempt int
+
+	// Experimental backup crawler addresses
+	BackupAddrs []string `envconfig:"BACKUP_ADDRS"`
 }
 
 func (c Config) setDefault() Config {
@@ -26,6 +30,9 @@ func (c Config) setDefault() Config {
 	}
 	if c.Path == "" {
 		c.Path = defaultConfigPath
+	}
+	if c.MaxFetchRetryAttempt == 0 {
+		c.MaxFetchRetryAttempt = defaultMaxFetchRetryAttempt
 	}
 	return c
 }

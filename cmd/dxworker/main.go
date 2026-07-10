@@ -114,10 +114,21 @@ func (app *application) setup() error {
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
-	assetSource := verify.NewSource(
-		phantasmSvc.InventoryAssetWithProvider,
-		steaminvorg.InventoryAssetWithProvider,
-	)
+	verifySources := []verify.AssetSource{phantasmSvc.InventoryAssetWithProvider}
+	// TODO: Use proper level of fallbacks. For experimental purposes only.
+	if len(app.config.Phantasm.BackupAddrs) != 0 {
+		logSvc.Println("EXPERIMENTAL: phantasm backup source enabled", app.config.Phantasm.BackupAddrs)
+		phantasmSvcExp := phantasm.NewService(phantasm.Config{
+			Addrs:                app.config.Phantasm.BackupAddrs,
+			WebhookURL:           app.config.Phantasm.WebhookURL,
+			Secret:               app.config.Phantasm.Secret,
+			Path:                 app.config.Phantasm.Path,
+			MaxFetchRetryAttempt: 1,
+		}, redisClient, slogger)
+		verifySources = append(verifySources, phantasmSvcExp.InventoryAssetWithProvider)
+	}
+	verifySources = append(verifySources, steaminvorg.InventoryAssetWithProvider)
+	assetSource := verify.NewSource(verifySources...)
 
 	// Setup application worker
 	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource, phantasmSvc, slogger)
