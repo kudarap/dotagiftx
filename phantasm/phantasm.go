@@ -397,7 +397,7 @@ func (s *Service) sendCrawlRequest(
 	*CrawlSummary,
 	error,
 ) {
-	url := fmt.Sprintf("%s?steam_id=%s", crawlerURL, steamID)
+	url := fmt.Sprintf("%s?steam_id=%s&webhook_url=%s", crawlerURL, steamID, s.config.WebhookURL)
 	if precheck {
 		url = fmt.Sprintf("%s&precheck", url)
 	}

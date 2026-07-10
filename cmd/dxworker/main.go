@@ -114,18 +114,22 @@ func (app *application) setup() error {
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
-	phantasmSvcExp := phantasm.NewService(phantasm.Config{
-		Addrs:                []string{"https://dotagiftx-phantasm-cloudfunc.vercel.app/api/index"},
-		WebhookURL:           app.config.Phantasm.WebhookURL,
-		Secret:               app.config.Phantasm.Secret,
-		Path:                 app.config.Phantasm.Path,
-		MaxFetchRetryAttempt: 1,
-	}, redisClient, slogger)
-	assetSource := verify.NewSource(
+	verifySources := []verify.AssetSource{
 		phantasmSvc.InventoryAssetWithProvider,
-		phantasmSvcExp.InventoryAssetWithProvider,
-		steaminvorg.InventoryAssetWithProvider,
-	)
+	}
+	// TODO: Use proper level of fallbacks. For experimental purposes only.
+	if len(app.config.Phantasm.BackupAddrs) != 0 {
+		phantasmSvcExp := phantasm.NewService(phantasm.Config{
+			Addrs:                app.config.Phantasm.BackupAddrs,
+			WebhookURL:           app.config.Phantasm.WebhookURL,
+			Secret:               app.config.Phantasm.Secret,
+			Path:                 app.config.Phantasm.Path,
+			MaxFetchRetryAttempt: 1,
+		}, redisClient, slogger)
+		verifySources = append(verifySources, phantasmSvcExp.InventoryAssetWithProvider)
+	}
+	verifySources = append(verifySources, steaminvorg.InventoryAssetWithProvider)
+	assetSource := verify.NewSource(verifySources...)
 
 	// Setup application worker
 	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource, phantasmSvc, slogger)

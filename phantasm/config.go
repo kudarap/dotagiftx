@@ -13,6 +13,9 @@ type Config struct {
 	Secret               string
 	Path                 string
 	MaxFetchRetryAttempt int
+
+	// Experimental backup crawler addresses
+	BackupAddrs []string `envconfig:"BACKUP_ADDRS"`
 }
 
 func (c Config) setDefault() Config {
