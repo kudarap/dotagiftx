@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -21,6 +22,13 @@ const (
 	// freshCacheDur = time.Hour
 	freshCacheDur = time.Minute * 15
 )
+
+var sharedLogger *slog.Logger
+
+func init() {
+	th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
+	sharedLogger = slog.New(th).With("module", "steaminvorg")
+}
 
 // InventoryAsset returns a compact format from all inventory data.
 func InventoryAsset(ctx context.Context, steamID string) ([]steam.Asset, error) {
@@ -42,46 +50,46 @@ func SWR(steamID string, strict bool) (*steam.AllInventory, error) {
 	// check for freshly cached inventory
 	m, err := GetMeta(steamID)
 	if err != nil && strict {
-		log.Println("STEAMINVORG META ERR", steamID, err)
+		sharedLogger.Error("get meta", "steam_id", steamID, "err", err)
 		return nil, err
 	}
 	if m != nil && m.isCacheFresh() {
-		log.Println("STEAMINVORG CACHED", steamID)
+		sharedLogger.Error("cached", "steam_id", steamID)
 		return Get(steamID)
 	}
 
-	log.Println("STEAMINVORG CRAWL REQUEST", steamID)
+	sharedLogger.Info("crawl request", "steam_id", steamID)
 	if _, err = Crawl(steamID); err != nil {
-		log.Println("STEAMINVORG CRAWL REQUEST ERR", steamID, err)
+		sharedLogger.Error("crawl request", "steam_id", steamID, "err", err)
 		return nil, err
 	}
 
 	// check for meta until processed with a little bit of back-off
 	for i := 1; i <= maxGetRetries; i++ {
-		log.Println("STEAMINVORG TRY", steamID, i)
+		sharedLogger.Info("try", "steam_id", steamID, "count", i)
 		m, err = GetMeta(steamID)
 		if err != nil {
-			log.Println("STEAMINVORG TRY ERR", steamID, err)
+			sharedLogger.Error("try err", "steam_id", steamID, "err", err)
 			return nil, err
 		}
 		if m != nil && m.Status == "success" {
-			log.Println("STEAMINVORG TRY SUCCESS", steamID, i)
+			sharedLogger.Info("try ok", "steam_id", steamID, "count", i)
 			break
 		}
 
 		if i == maxGetRetries {
-			log.Println("STEAMINVORG TIMED OUT", steamID)
+			sharedLogger.Info("timed out", "steam_id", steamID)
 		}
 		time.Sleep(retrySleepDur + time.Duration(i)*time.Second)
 	}
 
 	res, err := Get(steamID)
 	if err != nil {
-		log.Println("STEAMINVORG GET ERR", steamID, err)
+		sharedLogger.Error("get err", "steam_id", steamID, "err", err)
 		return nil, err
 	}
 
-	log.Println("STEAMINVORG GET DONE", steamID)
+	sharedLogger.Info("get done", "steam_id", steamID)
 	return res, nil
 }
 

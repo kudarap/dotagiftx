@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand/v2"
 	"net/http"
 	"os"
 	"reflect"
@@ -65,6 +66,7 @@ func Main(args map[string]interface{}) map[string]interface{} {
 	var lastAssetID string
 	var invent *inventory
 	for {
+		time.Sleep(time.Duration(100+rand.IntN(900)) * time.Millisecond)
 		parts++
 		log.Println("requesting part...", parts)
 		next, status, err := get(ctx, steamID, limit, lastAssetID)
@@ -298,7 +300,7 @@ func structToMap(data interface{}) map[string]interface{} {
 	reflectValue := reflect.ValueOf(data)
 	reflectValue = reflect.Indirect(reflectValue)
 
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		v = v.Elem()
 	}
 	for i := 0; i < v.NumField(); i++ {
