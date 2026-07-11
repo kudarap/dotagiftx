@@ -107,7 +107,9 @@ func (s *userStorage) getBySteamID(steamID string) (*dotagiftx.User, error) {
 
 func (s *userStorage) Create(in *dotagiftx.User) error {
 	t := now()
-	in.CreatedAt = t
+	if in.CreatedAt == nil {
+		in.CreatedAt = t
+	}
 	in.UpdatedAt = t
 	id, err := s.db.insert(s.table().Insert(in))
 	if err != nil {
