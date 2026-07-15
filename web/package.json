@@ -9,7 +9,6 @@
     "lint": "bun --bun next lint"
   },
   "engines": {
-    "node": "24.x",
     "npm": "11.x"
   },
   "dependencies": {
