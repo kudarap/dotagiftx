@@ -202,7 +202,7 @@ function CardX(props) {
   return (
     <Card
       // dark carnival event theme
-      sx={{ mt: 18, boxShadow: 10, background: '#292e3d', border: '1px solid #515051' }}
+      sx={{ mt: 2.25, boxShadow: 10, background: '#292e3d', border: '1px solid #515051' }}
       {...props}
     />
   )
