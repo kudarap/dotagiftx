@@ -44,6 +44,9 @@ export default function SearchInput(props) {
   const { classes } = useStyles()
 
   const [keyword, setKeyword] = React.useState(value)
+  React.useEffect(() => {
+    setKeyword(value)
+  }, [value])
 
   const handleChange = ({ target }) => {
     const v = target.value
