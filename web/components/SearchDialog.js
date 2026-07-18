@@ -18,7 +18,7 @@ import { fetcherBase, STATS_TOP_KEYWORDS } from '@/service/api'
 const sanitizeInput = unsafe => {
   if (typeof unsafe !== 'string') return ''
 
-  return unsafe.replace(/[^0-9a-zA-Z-']/g, '')
+  return unsafe.replace(/[^0-9a-zA-Z- ']/g, '')
 }
 
 function SearchDialog({ open, onClose }) {
