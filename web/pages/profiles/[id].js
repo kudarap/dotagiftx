@@ -7,7 +7,7 @@ import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import moment from 'moment'
-import { WarningAmber } from '@mui/icons-material'
+import NewbieIcon from '@mui/icons-material/NewReleases'
 import { Box } from '@mui/material'
 import {
   APP_NAME,
@@ -236,9 +236,12 @@ export default function UserDetails({
                 </Typography>
               )}
               <Typography variant="body2" component="p" color="textSecondary">
-                Joined {moment(profile.created_at).fromNow()}{' '}
+                <Typography component="span" variant="caption">
+                  {profile.steam_id}
+                </Typography>{' '}
+                &middot; Joined {moment(profile.created_at).fromNow()}{' '}
                 {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (
-                  <WarningAmber color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
+                  <NewbieIcon color="info" fontSize="inherit" sx={{ mb: -0.3 }} />
                 )}
               </Typography>
 

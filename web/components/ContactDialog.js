@@ -46,7 +46,7 @@ export default function ContactDialog(props) {
           {moment().diff(moment(market.user.created_at), 'days') <= USER_AGE_CAUTION && (
             <>
               <Alert severity="warning">
-                {`This profile just created ${moment(market.user.created_at).fromNow()}. Please transact with caution.`}
+                {`This user just joined ${moment(market.user.created_at).fromNow()}. Please transact with caution.`}
               </Alert>
               <br />
             </>
