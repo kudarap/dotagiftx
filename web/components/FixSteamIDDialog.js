@@ -37,7 +37,14 @@ const useStyles = makeStyles()(theme => ({
 
 const steamCommunityBaseURL = 'https://steamcommunity.com'
 const steamProfileBaseURL = `${steamCommunityBaseURL}/profiles/`
-
+const validateSteamProfileURL = rawURL => {
+  if (!url.isValid(rawURL)) {
+    throw new Error('Steam Profile is not a valid URL.')
+  }
+  if (!startsWith(rawURL, steamCommunityBaseURL, 0)) {
+    throw new Error(`Steam Profile should start with ${steamCommunityBaseURL}`)
+  }
+}
 export default function FixSteamIDDialog(props) {
   const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
@@ -57,6 +64,21 @@ export default function FixSteamIDDialog(props) {
 
     setSteamProfileURL(steamProfileBaseURL + market.partner_steam_id)
   }, [market])
+
+  // watch steam profile url validity and autofill notes with status and dates.
+  React.useEffect(() => {
+    try {
+      validateSteamProfileURL(steamProfileURL)
+    } catch (e) {
+      return
+    }
+
+    if (!market) {
+      return
+    }
+
+    setNotes(`${MARKET_STATUS_MAP_TEXT[market.status]} at ${dateTime(market.updated_at)}`)
+  })
 
   const { onClose } = props
   const handleClose = () => {
@@ -90,15 +112,6 @@ export default function FixSteamIDDialog(props) {
 
       setLoader(false)
     })()
-  }
-
-  const validateSteamProfileURL = rawURL => {
-    if (!url.isValid(rawURL)) {
-      throw new Error('Steam Profile is not a valid URL.')
-    }
-    if (!startsWith(rawURL, steamCommunityBaseURL, 0)) {
-      throw new Error(`Steam Profile should start with ${steamCommunityBaseURL}`)
-    }
   }
 
   const handleCancelClick = () => {
