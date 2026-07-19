@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
-import { WarningAmber } from '@mui/icons-material'
+import WarningAmber from '@mui/icons-material/WarningAmber'
 import {
   MARKET_STATUS_LIVE,
   MARKET_STATUS_RESERVED,
@@ -39,6 +39,10 @@ const initialMarketStats = {
   sold: 0,
 }
 
+const marketIssueFilter = {
+  partner_steam_id: 'https:',
+}
+
 export default function MyListings() {
   const { classes } = useStyles()
 
@@ -55,7 +59,7 @@ export default function MyListings() {
       const res = await marketSearch({
         user_id: currentAuth.user_id,
         index: 'user_id',
-        partner_steam_id: 'https:',
+        ...marketIssueFilter,
       })
       setMarketFixes(res?.data || [])
     })()
@@ -114,7 +118,7 @@ export default function MyListings() {
 
           {marketIssues.length != 0 && (
             <TabPanel value={tabValue} index="#fix-broken-partner-steam-id">
-              <BrokenPartnerSteamID />
+              <BrokenPartnerSteamID onReload={handleTableChange} />
             </TabPanel>
           )}
         </Container>
@@ -141,7 +145,7 @@ function Tabs(props) {
           label={
             <>
               <WarningAmber color="warning" fontSize="inherit" sx={{ mr: 0.6, mt: 0.25 }} />
-              Fix Data
+              Fix Steam ID
             </>
           }
           badgeContent={issues}
@@ -182,6 +186,6 @@ const HistoryTable = withDatatableFetch(MyMarketActivity, {
 
 const BrokenPartnerSteamID = withDatatableFetch(FixMyMarketActivity, {
   ...datatableBaseFilter,
-  partner_steam_id: 'https:',
+  ...marketIssueFilter,
   limit: 20,
 })
