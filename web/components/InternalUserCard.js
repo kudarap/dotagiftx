@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
@@ -10,7 +11,7 @@ import DiscordIcon from '@/components/DiscordIcon'
 import { CDN_URL } from '@/service/api'
 import { getUserTagFromBoons } from '@/lib/badge'
 
-export default function InternalUserCard({ name, id, img, boons, discordURL }) {
+export default function InternalUserCard({ name, id, img, boons, discordURL, createdAt }) {
   const userTag = getUserTagFromBoons(boons)
   if (!userTag) {
     return null
@@ -27,6 +28,12 @@ export default function InternalUserCard({ name, id, img, boons, discordURL }) {
       <Box sx={{ mr: 6, mb: 4 }}>
         <Typography variant="h5" component="h3">
           {name}
+        </Typography>
+        <Typography variant="body2" component="p" color="textSecondary">
+          <Typography component="span" variant="caption">
+            {id}
+          </Typography>{' '}
+          &middot; Joined {moment(createdAt).fromNow()}{' '}
         </Typography>
         <Box sx={{ mb: 1, mt: 1 }}>
           <ExclusiveChip tag={userTag} />

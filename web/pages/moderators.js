@@ -47,6 +47,7 @@ export default function Moderators() {
             img: u.avatar,
             boons: u.boons,
             discordURL: 'https://discord.gg/UFt9Ny42kM',
+            createdAt: u.created_at,
           })
         })
       })
