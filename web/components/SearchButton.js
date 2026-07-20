@@ -5,6 +5,7 @@ import InputBase from '@mui/material/InputBase'
 import Button from '@mui/material/Button'
 import SearchIcon from '@mui/icons-material/Search'
 import { styled } from '@mui/material/styles'
+import PropTypes from 'prop-types'
 
 const SearchPaper = styled(Paper)(({ theme }) => ({
   padding: '4px 8px 2px',
@@ -72,4 +73,9 @@ export default function SearchButton({ style, onClick, ...other }) {
       </Button>
     </>
   )
+}
+
+SearchButton.propTypes = {
+  style: PropTypes.object.isRequired,
+  onClick: PropTypes.func.isRequired,
 }

@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { Divider } from '@mui/material'
+import PropTypes from 'prop-types'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
@@ -67,6 +68,13 @@ function ButtonWrapper({ type, planId, customId, onSuccess }) {
       }}
     />
   )
+}
+
+ButtonWrapper.propTypes = {
+  type: PropTypes.string.isRequired,
+  planId: PropTypes.string.isRequired,
+  customId: PropTypes.string.isRequired,
+  onSuccess: PropTypes.func.isRequired,
 }
 
 const FeatureList = styled('ul')(() => ({

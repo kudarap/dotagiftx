@@ -56,6 +56,7 @@ function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
         setValue(res.name)
         onSelect(res)
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.log('error getting item details', e.message)
       }
     })()
@@ -67,6 +68,7 @@ function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
         const res = await itemSearch(itemSearchFilter)
         setOptions(res.data.map(i => ({ ...i, text: `${i.hero}${optionTextSeparator}${i.name}` })))
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.log('error getting item list', e.message)
       }
     })()
