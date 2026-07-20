@@ -12,6 +12,10 @@ import { getUserTagFromBoons } from '@/lib/badge'
 
 export default function InternalUserCard({ name, id, img, boons, discordURL }) {
   const userTag = getUserTagFromBoons(boons)
+  if (!userTag) {
+    return null
+  }
+
   const { color } = tagSettings[userTag]
 
   return (
