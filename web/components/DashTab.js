@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Badge from '@mui/material/Badge'
 import { styled } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -40,4 +41,9 @@ export default function DashTab(props) {
       }
     />
   )
+}
+
+DashTab.propTypes = {
+  label: PropTypes.string.isRequired,
+  badgeContent: PropTypes.node.isRequired,
 }

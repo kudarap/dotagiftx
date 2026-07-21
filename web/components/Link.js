@@ -72,6 +72,18 @@ Link.propTypes = {
   disableUnderline: PropTypes.bool,
 }
 
+Link.defaultProps = {
+  activeClassName: '',
+  as: '',
+  className: '',
+  href: '',
+  innerRef: '',
+  naked: false,
+  onClick: () => {},
+  prefetch: false,
+  disableUnderline: false,
+}
+
 const linkRef = (props, ref) => <Link {...props} innerRef={ref} />
 
 export default React.forwardRef(linkRef)

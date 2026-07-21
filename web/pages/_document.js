@@ -1,5 +1,6 @@
 import React from 'react'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 import { withEmotionCache } from 'tss-react/nextJs'
 import muiTheme from '@/lib/theme'
 import createEmotionCache from '@/lib/createEmotionCache'
@@ -28,17 +29,20 @@ class MyDocument extends Document {
 
           {process.env.NEXT_PUBLIC_GA && (
             <>
-              <script
-                async
+              <Script
+                strategy="afterInteractive"
                 src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA}`}
               />
-              <script
+              <Script
+                id="google-analytics"
+                strategy="afterInteractive"
                 dangerouslySetInnerHTML={{
                   __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments)}
-                gtag("js", new Date());
-                gtag("config", "${process.env.NEXT_PUBLIC_GA}");`,
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '${process.env.NEXT_PUBLIC_GA}');
+                  `,
                 }}
               />
             </>

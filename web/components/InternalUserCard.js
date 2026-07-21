@@ -3,6 +3,7 @@ import moment from 'moment'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
+import PropTypes from 'prop-types'
 import ChipLink from '@/components/ChipLink'
 import Avatar from '@/components/Avatar'
 import ExclusiveChip, { tagSettings } from '@/components/ExclusiveChip'
@@ -66,4 +67,16 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
       </Box>
     </Box>
   )
+}
+
+InternalUserCard.propTypes = {
+  boons: PropTypes.array,
+  discordURL: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  img: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+}
+
+InternalUserCard.defaultProps = {
+  boons: []
 }

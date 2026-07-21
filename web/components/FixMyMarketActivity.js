@@ -75,8 +75,6 @@ export default function FixMyMarketActivity({
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleUpdateClick = marketIdx => {
-    console.log(datatable)
-    console.log(marketIdx)
     setCurrentMarket(datatable.data[marketIdx])
   }
   const handleUpdateSuccess = () => {

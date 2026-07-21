@@ -28,6 +28,7 @@ function Root({ children }) {
           setLatestBan(user[0])
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('error getting lastest ban', error)
       }
     })()

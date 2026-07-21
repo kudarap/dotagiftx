@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 import {
   LineChart,
@@ -40,6 +41,15 @@ function CustomToolTip(props) {
   )
 }
 
+CustomToolTip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array.isRequired,
+}
+
+CustomToolTip.defaultProps = {
+  active: false
+}
+
 export default function MarketSalesChart({ data }) {
   if (!data) {
     return null
@@ -77,4 +87,12 @@ export default function MarketSalesChart({ data }) {
       </ResponsiveContainer>
     </div>
   )
+}
+
+MarketSalesChart.propTypes = {
+  data: PropTypes.array
+}
+
+MarketSalesChart.defaultProps = {
+  data: undefined
 }
