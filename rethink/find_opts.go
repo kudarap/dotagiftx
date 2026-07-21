@@ -2,11 +2,13 @@ package rethink
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/kudarap/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
+
+	"github.com/kudarap/dotagiftx"
 )
 
 type findOpts dotagiftx.FindOpts
@@ -81,7 +83,8 @@ func (o findOpts) parseKeyword() interface{} {
 		// Matches that contains the keywords non case sensitive.
 		q := searchText
 		for _, ww := range strings.Split(normalizeKeyword(o.Keyword), " ") {
-			q = q.And(searchText.Match(fmt.Sprintf("(?i)%s", ww)))
+			escaped := regexp.QuoteMeta(ww)
+			q = q.And(searchText.Match(fmt.Sprintf("(?i)%s", escaped)))
 		}
 
 		return q
