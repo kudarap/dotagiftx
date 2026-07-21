@@ -6,9 +6,8 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
-
 	"github.com/kudarap/dotagiftx"
+	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 type findOpts dotagiftx.FindOpts
