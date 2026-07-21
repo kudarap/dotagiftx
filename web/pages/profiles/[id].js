@@ -80,21 +80,22 @@ export default function UserDetails({
   profile,
   filter,
   markets: initialMarkets,
-  error: initialError,
+  profileError,
+  marketError,
   canonicalURL,
 }) {
   const { classes } = useStyles()
 
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [loading, setLoading] = React.useState(false)
-  const [error, setError] = React.useState(initialError)
+  const [error, setError] = React.useState(marketError)
   const { isMobile } = React.useContext(AppContext)
 
-  if (error) {
+  if (profileError) {
     return (
       <ErrorPage>
         <Typography variant="h5" align="center">
-          Profile not found
+          {profileError}
         </Typography>
       </ErrorPage>
     )
@@ -318,14 +319,16 @@ UserDetails.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
   markets: PropTypes.object,
-  error: PropTypes.string,
+  profileError: PropTypes.string,
+  marketError: PropTypes.string,
 }
 UserDetails.defaultProps = {
   filter: {},
   markets: {
     data: [],
   },
-  error: null,
+  profileError: null,
+  marketError: null,
 }
 
 const marketSearchFilter = {
@@ -358,7 +361,7 @@ export async function getServerSideProps(context) {
     } catch (e) {
       return {
         props: {
-          error: e.message,
+          profileError: e.message,
         },
       }
     }
@@ -371,7 +374,7 @@ export async function getServerSideProps(context) {
     } catch (e) {
       return {
         props: {
-          error: e.message,
+          profileError: e.message,
         },
       }
     }
@@ -381,8 +384,10 @@ export async function getServerSideProps(context) {
   profile.stats = profile.market_stats
 
   // Retrieve initial user market data.
-  let markets = {}
-  let error = null
+  let markets = {
+    data: [],
+  }
+  let marketError = null
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
   if (query.filter) {
@@ -390,9 +395,10 @@ export async function getServerSideProps(context) {
   }
 
   try {
-    markets = await marketSearch(filter)
+    const res = await marketSearch(filter)
+    markets = res
   } catch (e) {
-    error = e.message
+    marketError = e.message
   }
 
   // Compose profile page canonical URL.
@@ -414,7 +420,8 @@ export async function getServerSideProps(context) {
       canonicalURL,
       filter,
       markets,
-      error,
+      profileError: null,
+      marketError,
     },
   }
 }

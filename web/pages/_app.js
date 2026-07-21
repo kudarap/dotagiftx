@@ -43,6 +43,5 @@ export default function MyApp(props) {
 
 MyApp.propTypes = {
   Component: PropTypes.elementType.isRequired,
-  emotionCache: PropTypes.object.isRequired,
   pageProps: PropTypes.object.isRequired,
 }
