@@ -114,7 +114,6 @@ export default function MarketList({
         await myMarket.PATCH(mktID, { status: MARKET_STATUS_REMOVED })
         router.reload()
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.error(`Error: ${e.message}`)
       }
     })()

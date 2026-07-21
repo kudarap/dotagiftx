@@ -75,10 +75,6 @@ export default function FixMyMarketActivity({
 
   const [currentMarket, setCurrentMarket] = React.useState(null)
   const handleUpdateClick = marketIdx => {
-    // eslint-disable-next-line no-console
-    console.log(datatable)
-    // eslint-disable-next-line no-console
-    console.log(marketIdx)
     setCurrentMarket(datatable.data[marketIdx])
   }
   const handleUpdateSuccess = () => {

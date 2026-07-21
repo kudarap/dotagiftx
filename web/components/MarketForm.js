@@ -123,7 +123,6 @@ export default function MarketForm() {
           setItem(res)
         })
         .catch(e => {
-          // eslint-disable-next-line no-console
           console.log('error getting catalog info', e.message)
         })
     }
