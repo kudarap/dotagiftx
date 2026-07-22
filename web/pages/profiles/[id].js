@@ -294,6 +294,7 @@ export default function UserDetails({
                 data={markets}
                 loading={loading}
                 error={error}
+                searchValue={qFilter}
               />
               {!error && (
                 <TablePaginationRouter

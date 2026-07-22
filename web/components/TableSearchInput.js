@@ -26,10 +26,10 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-export default function TableSearchInput({ onInput, loading, ...other }) {
+export default function TableSearchInput({ value: externalValue, onInput, loading, ...other }) {
   const { classes } = useStyles()
 
-  const [value, setValue] = React.useState('')
+  const [value, setValue] = React.useState(externalValue || '')
 
   const debounceSearch = React.useCallback(debounce(onInput, 500), [])
 
@@ -58,10 +58,12 @@ export default function TableSearchInput({ onInput, loading, ...other }) {
   )
 }
 TableSearchInput.propTypes = {
-  onInput: PropTypes.func,
   loading: PropTypes.bool,
+  onInput: PropTypes.func,
+  value: PropTypes.string,
 }
 TableSearchInput.defaultProps = {
-  onInput: () => {},
   loading: false,
+  onInput: () => {},
+  value: '',
 }
