@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import Script from 'next/script'
 import { makeStyles } from 'tss-react/mui'
 import useInView from 'react-cool-inview'
 import Typography from '@mui/material/Typography'
@@ -250,7 +249,7 @@ export default function ItemDetails({
         <meta property="og:description" content={metaDesc} />
         <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
         {/* Rich Results */}
-        <Script
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
