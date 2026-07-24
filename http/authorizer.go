@@ -9,7 +9,7 @@ import (
 func (s *Server) authorizer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Validate token from header.
-		c, err := ParseFromHeader(r.Header)
+		c, err := parseAuthFromHeader(r.Header)
 		if err != nil {
 			respondError(w, dotagiftx.AuthErrNoAccess.X(err))
 			return
