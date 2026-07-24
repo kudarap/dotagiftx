@@ -11,7 +11,7 @@ const nextLinkRef = (props, ref) => {
 
   return (
     <NextLink href={disabled ? '#' : href} as={as}>
-      <a ref={ref} {...other} style={{ pointerEvents: disabled ? 'none' : 'auto' }} />
+      <a ref={ref} {...other} />
     </NextLink>
   )
 }
