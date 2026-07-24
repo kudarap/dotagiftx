@@ -57,8 +57,8 @@ jobs:
         with:
           push: true
           tags: kudarap/dotagiftx:dev
-          cache-from: type=registry,ref=kudarap/dotagiftx:dev
-          cache-to: type=inline
+          cache-from: type=registry,ref=kudarap/dotagiftx:buildcache
+          cache-to: type=registry,ref=kudarap/dotagiftx:buildcache,mode=max
 
       - name: SSH Image Deploy
         run: ssh root@chiligarlic.com "cd ~/deployments/dotagiftx/dev && ./restart.sh"
