@@ -100,7 +100,7 @@ func (s *Server) setup() {
 	r.Use(s.tracing.Middleware)
 	r.Use(middleware.RequestID)
 	r.Use(vercelRequestID)
-	r.Use(middleware.RealIP)
+	r.Use(middleware.ClientIPFromHeader("X-Real-IP"))
 	r.Use(NewStructuredLogger(s.logger))
 	r.Use(cors)
 	r.Use(requestIDWriter)
