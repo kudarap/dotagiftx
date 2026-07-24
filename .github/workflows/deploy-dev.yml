@@ -61,4 +61,4 @@ jobs:
           cache-to: type=inline
 
       - name: SSH Image Deploy
-        run: ssh root@chiligarlic.com "cd ~/deployments/dotagiftx/dev && ./crestart.sh"
+        run: ssh root@chiligarlic.com "cd ~/deployments/dotagiftx/dev && ./restart.sh"
