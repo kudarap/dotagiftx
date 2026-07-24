@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     -v ./cmd/dxserver
 
 # final stage
-FROM alpine:3.23
+FROM alpine:3.24
 RUN apk --no-cache add ca-certificates tzdata
 
 COPY --from=builder /code/dxserver .
