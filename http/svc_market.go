@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -182,8 +183,15 @@ func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.Ha
 }
 
 func isReqAuthorized(r *http.Request) bool {
-	v := dotagiftx.AuthFromContext(r.Context())
-	return v == nil
+	auth, err := ParseFromHeader(r.Header)
+	if err != nil {
+		fmt.Println("err:", err)
+		return false
+	}
+	if auth.ExpiresAt.Before(time.Now()) {
+		return false
+	}
+	return auth.UserID != ""
 }
 
 const redactChar = "█"
