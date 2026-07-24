@@ -71,13 +71,18 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
 
 InternalUserCard.propTypes = {
   boons: PropTypes.array,
-  discordURL: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  img: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  createdAt: PropTypes.string.isRequired,
+  discordURL: PropTypes.string,
+  id: PropTypes.string,
+  img: PropTypes.string,
+  name: PropTypes.string,
+  createdAt: PropTypes.string,
 }
 
 InternalUserCard.defaultProps = {
   boons: [],
+  discordURL: '',
+  id: '',
+  img: '',
+  name: '',
+  createdAt: '',
 }

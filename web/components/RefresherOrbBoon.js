@@ -31,9 +31,9 @@ export default function RefresherOrbBoon({ boons }) {
 }
 
 RefresherOrbBoon.propTypes = {
-  boons: PropTypes.string
+  boons: PropTypes.string,
 }
 
 RefresherOrbBoon.defaultProps = {
-  boons: ''
+  boons: '',
 }

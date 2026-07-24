@@ -81,7 +81,7 @@ Link.defaultProps = {
   innerRef: '',
   naked: false,
   onClick: () => {},
-  prefetch: false,
+  prefetch: null,
   disableUnderline: false,
   disabled: false,
 }

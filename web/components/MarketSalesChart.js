@@ -47,7 +47,7 @@ CustomToolTip.propTypes = {
 }
 
 CustomToolTip.defaultProps = {
-  active: false
+  active: false,
 }
 
 export default function MarketSalesChart({ data }) {
@@ -90,9 +90,9 @@ export default function MarketSalesChart({ data }) {
 }
 
 MarketSalesChart.propTypes = {
-  data: PropTypes.array
+  data: PropTypes.array,
 }
 
 MarketSalesChart.defaultProps = {
-  data: undefined
+  data: undefined,
 }

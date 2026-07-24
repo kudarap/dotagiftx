@@ -45,9 +45,9 @@ export default function Custom404({ children }) {
 }
 
 Custom404.propTypes = {
-  children: PropTypes.string
+  children: PropTypes.string,
 }
 
 Custom404.defaultProps = {
-  children: ''
+  children: '',
 }

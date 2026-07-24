@@ -80,7 +80,7 @@ function BasicMenu({ onClose }) {
 }
 
 BasicMenu.propTypes = {
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
 }
 
 export default ExpiringPostsBanner

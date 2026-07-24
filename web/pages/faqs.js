@@ -54,7 +54,7 @@ export function Question({ children, ...other }) {
 }
 
 Question.propTypes = {
-  children: PropTypes.string.isRequired
+  children: PropTypes.string.isRequired,
 }
 
 export function Answer({ children }) {
@@ -66,7 +66,7 @@ export function Answer({ children }) {
 }
 
 Answer.propTypes = {
-  children: PropTypes.string.isRequired
+  children: PropTypes.string.isRequired,
 }
 
 export default function Faqs() {

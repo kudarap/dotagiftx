@@ -64,9 +64,9 @@ export default function ExclusiveChip({ tag, ...props }) {
 }
 
 ExclusiveChip.propTypes = {
-  tag: PropTypes.string
+  tag: PropTypes.string,
 }
 
 ExclusiveChip.defaultProps = {
-  tag: ''
+  tag: '',
 }

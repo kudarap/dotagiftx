@@ -22,5 +22,5 @@ export default function CopyButton(props) {
 }
 
 CopyButton.propTypes = {
-  value: PropTypes.string.isRequired
+  value: PropTypes.string.isRequired,
 }

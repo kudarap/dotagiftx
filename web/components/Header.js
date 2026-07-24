@@ -143,7 +143,7 @@ export default function Header() {
       try {
         await authRevoke(currentAuth.refresh_token)
       } catch (e) {
-      // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-console
         console.warn(e.message)
       }
       destroyLoginSess()

@@ -31,9 +31,9 @@ export default function RefresherShardBoon({ boons }) {
 }
 
 RefresherShardBoon.propTypes = {
-  boons: PropTypes.string
+  boons: PropTypes.string,
 }
 
 RefresherShardBoon.defaultProps = {
-  boons: ''
+  boons: '',
 }

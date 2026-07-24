@@ -95,5 +95,5 @@ export default function ItemViewCard({ item }) {
 }
 
 ItemViewCard.propTypes = {
-  item: PropTypes.object.isRequired
+  item: PropTypes.object.isRequired,
 }
