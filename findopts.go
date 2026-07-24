@@ -1,5 +1,7 @@
 package dotagiftx
 
+import "errors"
+
 type (
 	// FindOpts represents find options.
 	FindOpts struct {
@@ -24,3 +26,10 @@ type (
 		TotalCount  int
 	}
 )
+
+func (o FindOpts) validate() error {
+	if o.Page < 0 || o.Limit < 0 {
+		return errors.New("invalid page or limit")
+	}
+	return nil
+}

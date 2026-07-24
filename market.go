@@ -722,6 +722,9 @@ func (s *marketService) userMarket(userID, id string) (*Market, error) {
 
 func (s *marketService) Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error) {
 	opts.Keyword = strings.ReplaceAll(opts.Keyword, `\`, "")
+	if err := opts.validate(); err != nil {
+		return nil, nil, err
+	}
 
 	res, err := s.catalogStg.Find(opts)
 	if err != nil {
