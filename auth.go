@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -109,16 +110,18 @@ func NewAuthService(
 	sc SteamClient,
 	as AuthStorage,
 	us UserService,
+	logger *slog.Logger,
 ) AuthService {
-	return &authService{sc, as, us, salt}
+	return &authService{salt, sc, as, us, logger}
 }
 
 type authService struct {
+	salt string
+
 	steamClient SteamClient
 	authStg     AuthStorage
 	userSvc     UserService
-
-	salt string
+	logger      *slog.Logger
 }
 
 func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth, error) {
@@ -140,39 +143,64 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 	}
 
 	// Check account existence.
-	au, err := s.authStg.GetByUsername(steamPlayer.ID)
+	authData, err := s.authStg.GetByUsername(steamPlayer.ID)
 	if err != nil && !errors.Is(err, AuthErrNotFound) {
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
 
 	// Account existed and checked login credentials.
-	if au != nil {
-		if au.Password != s.composePassword(steamPlayer.ID, au.UserID) {
+	if authData != nil {
+		if authData.Password != s.composePassword(steamPlayer.ID, authData.UserID) {
 			return nil, AuthErrLogin
 		}
 
-		u, _ := s.userSvc.User(au.UserID)
+		u, err := s.userSvc.User(authData.UserID)
+		if err != nil {
+			if errors.Is(err, UserErrNotFound) {
+				s.logger.Warn("user not found, but auth exists. re-creating user.",
+					"auth_id", authData.ID,
+					"user_id", authData.UserID,
+					"username", authData.Username,
+				)
+				// create user data with auth user id and creation date to preserve previous user data.
+				u = &User{
+					ID:        authData.UserID,
+					CreatedAt: authData.CreatedAt,
+					SteamID:   steamPlayer.ID,
+					Name:      steamPlayer.Name,
+					URL:       steamPlayer.URL,
+					Avatar:    steamPlayer.Avatar,
+				}
+				if err = s.userSvc.Create(u); err != nil {
+					return nil, err
+				}
+
+				s.logger.Debug("user re-created", "user", u)
+				return authData, nil
+			}
+
+			return nil, err
+		}
 		if err = u.CheckStatus(); err != nil {
 			return nil, err
 		}
-
 		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
 			return nil, UserErrSteamSync.X(err)
 		}
 
-		return au, nil
+		return authData, nil
 	}
 
 	// HOTFIX for missing user data
 	existingUser, _ := s.userSvc.User(steamPlayer.ID)
 
 	// Process account registration and save details.
-	au, err = s.createAccountFromSteam(steamPlayer, existingUser)
+	authData, err = s.createAccountFromSteam(steamPlayer, existingUser)
 	if err != nil {
 		return nil, err
 	}
 
-	return au, nil
+	return authData, nil
 }
 
 func (s *authService) RenewToken(refreshToken string) (*Auth, error) {

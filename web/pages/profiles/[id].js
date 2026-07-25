@@ -7,7 +7,7 @@ import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import moment from 'moment'
-import { WarningAmber } from '@mui/icons-material'
+import NewbieIcon from '@mui/icons-material/NewReleases'
 import { Box } from '@mui/material'
 import {
   APP_NAME,
@@ -80,21 +80,22 @@ export default function UserDetails({
   profile,
   filter,
   markets: initialMarkets,
-  error: initialError,
+  profileError,
+  marketError,
   canonicalURL,
 }) {
   const { classes } = useStyles()
 
   const [markets, setMarkets] = React.useState(initialMarkets)
   const [loading, setLoading] = React.useState(false)
-  const [error, setError] = React.useState(initialError)
+  const [error, setError] = React.useState(marketError)
   const { isMobile } = React.useContext(AppContext)
 
-  if (error) {
+  if (profileError) {
     return (
       <ErrorPage>
         <Typography variant="h5" align="center">
-          Profile not found
+          {profileError}
         </Typography>
       </ErrorPage>
     )
@@ -236,9 +237,12 @@ export default function UserDetails({
                 </Typography>
               )}
               <Typography variant="body2" component="p" color="textSecondary">
-                Joined {moment(profile.created_at).fromNow()}{' '}
+                <Typography component="span" variant="caption">
+                  {profile.steam_id}
+                </Typography>{' '}
+                &middot; Joined {moment(profile.created_at).fromNow()}{' '}
                 {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (
-                  <WarningAmber color="warning" fontSize="inherit" sx={{ mb: -0.3 }} />
+                  <NewbieIcon color="info" fontSize="inherit" sx={{ mb: -0.3 }} />
                 )}
               </Typography>
 
@@ -290,6 +294,7 @@ export default function UserDetails({
                 data={markets}
                 loading={loading}
                 error={error}
+                searchValue={qFilter}
               />
               {!error && (
                 <TablePaginationRouter
@@ -315,14 +320,16 @@ UserDetails.propTypes = {
   canonicalURL: PropTypes.string.isRequired,
   filter: PropTypes.object,
   markets: PropTypes.object,
-  error: PropTypes.string,
+  profileError: PropTypes.string,
+  marketError: PropTypes.string,
 }
 UserDetails.defaultProps = {
   filter: {},
   markets: {
     data: [],
   },
-  error: null,
+  profileError: null,
+  marketError: null,
 }
 
 const marketSearchFilter = {
@@ -355,7 +362,7 @@ export async function getServerSideProps(context) {
     } catch (e) {
       return {
         props: {
-          error: e.message,
+          profileError: e.message,
         },
       }
     }
@@ -368,7 +375,7 @@ export async function getServerSideProps(context) {
     } catch (e) {
       return {
         props: {
-          error: e.message,
+          profileError: e.message,
         },
       }
     }
@@ -378,8 +385,10 @@ export async function getServerSideProps(context) {
   profile.stats = profile.market_stats
 
   // Retrieve initial user market data.
-  let markets = {}
-  let error = null
+  let markets = {
+    data: [],
+  }
+  let marketError = null
   const filter = { ...marketSearchFilter, user_id: profile.id }
   filter.page = Number(query.page || 1)
   if (query.filter) {
@@ -387,14 +396,24 @@ export async function getServerSideProps(context) {
   }
 
   try {
-    markets = await marketSearch(filter)
+    const res = await marketSearch(filter)
+    markets = res
   } catch (e) {
-    error = e.message
+    marketError = e.message
   }
 
   // Compose profile page canonical URL.
-
   canonicalURL = `${APP_URL}/${vanityMode ? 'id' : 'profiles'}/${params.id}`
+
+  // reduce large page data by nullifying un-needed data
+  // nextjs.org/docs/messages/large-page-data
+  // this can be reduce on API server level
+  for (let i = 0; i < markets.data.length; i++) {
+    delete markets.data[i].user
+    if (markets.data[i].inventory) {
+      delete markets.data[i].inventory.steam_assets
+    }
+  }
 
   return {
     props: {
@@ -402,7 +421,8 @@ export async function getServerSideProps(context) {
       canonicalURL,
       filter,
       markets,
-      error,
+      profileError: null,
+      marketError,
     },
   }
 }

@@ -7,10 +7,10 @@ import NextLink from 'next/link'
 import MuiLink from '@mui/material/Link'
 
 const nextLinkRef = (props, ref) => {
-  const { as, href, ...other } = props
+  const { as, href, disabled, ...other } = props
 
   return (
-    <NextLink href={href} as={as}>
+    <NextLink href={disabled ? '#' : href} as={as}>
       <a ref={ref} {...other} />
     </NextLink>
   )
@@ -70,6 +70,20 @@ Link.propTypes = {
   onClick: PropTypes.func,
   prefetch: PropTypes.bool,
   disableUnderline: PropTypes.bool,
+  disabled: PropTypes.bool,
+}
+
+Link.defaultProps = {
+  activeClassName: '',
+  as: '',
+  className: '',
+  href: '',
+  innerRef: '',
+  naked: false,
+  onClick: () => {},
+  prefetch: null,
+  disableUnderline: false,
+  disabled: false,
 }
 
 const linkRef = (props, ref) => <Link {...props} innerRef={ref} />

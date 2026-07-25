@@ -43,7 +43,7 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-export default function UserMarketList({ data, loading, error, onSearchInput }) {
+export default function UserMarketList({ data, loading, error, onSearchInput, searchValue }) {
   const { classes } = useStyles()
   const { isMobile } = useContext(AppContext)
 
@@ -81,6 +81,7 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
                   fullWidth
                   loading={loading}
                   onInput={onSearchInput}
+                  value={searchValue}
                   color="secondary"
                   placeholder="Filter user items"
                 />
@@ -196,12 +197,14 @@ export default function UserMarketList({ data, loading, error, onSearchInput }) 
 }
 UserMarketList.propTypes = {
   onSearchInput: PropTypes.func,
+  searchValue: PropTypes.string,
   data: PropTypes.object.isRequired,
   loading: PropTypes.bool,
   error: PropTypes.string,
 }
 UserMarketList.defaultProps = {
   onSearchInput: () => {},
+  searchValue: '',
   loading: false,
   error: null,
 }

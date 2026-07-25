@@ -103,8 +103,8 @@ export default function Index({ marketSummary, trendingItems }) {
   const description = `Search on ${marketSummary.live} Giftable items`
 
   const metaTitle = `${APP_NAME} :: Dota 2 Giftables Community Market`
-  const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for 
-          Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market. 
+  const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for
+          Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market.
           The project was heavily inspired by Giftable Megathread from r/Dota2Trade.`
 
   return (
@@ -150,32 +150,24 @@ export default function Index({ marketSummary, trendingItems }) {
             }}>
             <div style={{ marginTop: -170, textAlign: 'center' }}>
               <video
-                width={700}
+                style={{
+                  width: '100%',
+                  marginTop: '0vw',
+                  marginBottom: '-20vw',
+                }}
                 preload="auto"
-                poster="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.png"
+                poster="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
                 autoPlay
                 muted
                 loop
                 playsInline>
                 <source
                   type="video/webm"
-                  src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/treasures_winter2025/set_tiny.webm"
+                  src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
                 />
               </video>
             </div>
           </div>
-
-          <div
-            style={{
-              background:
-                'url(https://cdn.steamstatic.com/apps/dota2/images/dota_react/largo/treasure_background.png) no-repeat center center',
-              backgroundColor: '#292638ff',
-              backgroundSize: 'cover',
-              backgroundPositionY: -135,
-              width: '100%',
-              height: '100%',
-            }}
-          />
         </div>
 
         <Container

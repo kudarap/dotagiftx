@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -20,6 +20,8 @@ type TaskProcessor struct {
 	deliverySvc          dotagiftx.DeliveryService
 	verify               *verify.Source
 	inventoryInvalidator inventoryInvalidator
+
+	logger *slog.Logger
 }
 
 func NewTaskProcessor(
@@ -29,6 +31,7 @@ func NewTaskProcessor(
 	deliverySvc dotagiftx.DeliveryService,
 	source *verify.Source,
 	invInvalidator inventoryInvalidator,
+	logger *slog.Logger,
 ) *TaskProcessor {
 	return &TaskProcessor{
 		queue:                queue,
@@ -37,6 +40,7 @@ func NewTaskProcessor(
 		deliverySvc:          deliverySvc,
 		verify:               source,
 		inventoryInvalidator: invInvalidator,
+		logger:               logger.With("processor", "task"),
 	}
 }
 
@@ -49,7 +53,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 
 		t, err := p.queue.Get(ctx)
 		if err != nil {
-			log.Printf("ERR! could not get task from queue: %s", err)
+			p.logger.ErrorContext(ctx, "get task from queue", "err", err)
 			continue
 		}
 		if t == nil {
@@ -61,11 +65,15 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 
 		task.Status = dotagiftx.TaskStatusProcessing
 		if err = p.queue.Update(ctx, task); err != nil {
-			log.Printf("ERR! could not process task: %s", err)
+			p.logger.ErrorContext(ctx, "mark task status as processing", "err", err)
 			wg.Done()
 			continue
 		}
-		log.Println("task get", task.ID, task.Type, task.Priority)
+		p.logger.InfoContext(ctx, "processing",
+			"id", task.ID,
+			"type", task.Type,
+			"priority", task.Priority,
+		)
 
 		var run func(context.Context, interface{}) error
 		switch task.Type {
@@ -75,24 +83,36 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 			run = p.taskVerifyDelivery
 		}
 
-		log.Println("task processing...", task.ID, task.Type)
 		err = run(ctx, task.Payload)
 		task.ElapsedMs = time.Since(start).Milliseconds()
 		if err != nil {
-			log.Printf("ERR! running tasks: %s %s", task.Type, err)
+			p.logger.ErrorContext(ctx, "run task",
+				"id", task.ID,
+				"err", err,
+			)
 			task.Status = dotagiftx.TaskStatusError
 			task.Note = fmt.Sprintf("err: %s", err)
 			if err = p.queue.Update(ctx, task); err != nil {
-				log.Printf("ERR! could not run task: %s", err)
+				p.logger.ErrorContext(ctx, "mark task status as error",
+					"id", task.ID,
+					"err", err,
+				)
 			}
 			wg.Done()
 			continue
 		}
 
 		task.Status = dotagiftx.TaskStatusDone
-		log.Println("task done!", task.ID, time.Duration(task.ElapsedMs)*time.Millisecond)
+		p.logger.InfoContext(ctx, "done",
+			"id", task.ID,
+			"type", task.Type,
+			"elapsed_ms", task.ElapsedMs,
+		)
 		if err = p.queue.Update(ctx, task); err != nil {
-			log.Printf("ERR! could not update task: %s", err)
+			p.logger.ErrorContext(ctx, "mark task status as done",
+				"id", task.ID,
+				"err", err,
+			)
 		}
 		wg.Done()
 	}

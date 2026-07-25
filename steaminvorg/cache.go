@@ -3,7 +3,6 @@ package steaminvorg
 import (
 	"context"
 	"fmt"
-	"log"
 	"math/rand/v2"
 	"time"
 
@@ -21,10 +20,10 @@ const (
 
 // InventoryAssetWithCache returns a compact format from all inventory data with cache.
 func InventoryAssetWithCache(ctx context.Context, steamID string) ([]steam.Asset, error) {
-	log.Println("STEAMINVORG CHECK LOCAL CACHE")
+	sharedLogger.Info("check local cache", "steam_id", steamID)
 	hit, _ := filecache.Get(getCacheKey(steamID))
 	if hit != nil {
-		log.Println("STEAMINVORG LOCAL CACHE HIT!")
+		sharedLogger.Info("cache hit", "steam_id", steamID)
 
 		b, _ := fastjson.Marshal(hit)
 		var asset []steam.Asset
@@ -32,19 +31,19 @@ func InventoryAssetWithCache(ctx context.Context, steamID string) ([]steam.Asset
 		return asset, nil
 	}
 
-	log.Println("STEAMINVORG NO LOCAL CACHE HIT", steamID)
+	sharedLogger.Info("no local cache hit", "steam_id", steamID)
 	asset, err := InventoryAsset(ctx, steamID)
 	if err != nil {
-		log.Println("STEAMINVORG ASSET ERROR", steamID, err)
+		sharedLogger.Error("asset error", "steam_id", steamID, "err", err)
 		return nil, err
 	}
 
 	if err = filecache.Set(getCacheKey(steamID), asset, getCacheExpr()); err != nil {
-		log.Println("STEAMINVORG LOCAL CACHE SET ERROR", steamID, err)
+		sharedLogger.Error("local cache set error", "steam_id", steamID, "err", err)
 		return nil, err
 	}
 
-	log.Println("STEAMINVORG ASSET DONE", steamID)
+	sharedLogger.Info("asset done", "steam_id", steamID)
 	return asset, nil
 }
 

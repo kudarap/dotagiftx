@@ -52,6 +52,16 @@ function SelectSort({ className, style, ...other }) {
   )
 }
 
+SelectSort.propTypes = {
+  className: PropTypes.string,
+  style: PropTypes.string,
+}
+
+SelectSort.defaultProps = {
+  className: '',
+  style: '',
+}
+
 export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
   const { classes } = useStyles()
 

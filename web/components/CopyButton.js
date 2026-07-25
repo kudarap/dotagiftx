@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
@@ -18,4 +19,8 @@ export default function CopyButton(props) {
       </IconButton>
     </Tooltip>
   )
+}
+
+CopyButton.propTypes = {
+  value: PropTypes.string.isRequired,
 }

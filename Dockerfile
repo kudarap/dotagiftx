@@ -20,11 +20,11 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     -v ./cmd/dxserver
 
 # final stage
-FROM alpine:3.23
+FROM alpine:3.24
 RUN apk --no-cache add ca-certificates tzdata
 
 COPY --from=builder /code/dxserver .
 
-LABEL Name=dotagiftx Version=0.23.2
+LABEL Name=dotagiftx Version=0.24.0
 ENTRYPOINT ["./dxserver"]
 EXPOSE 80

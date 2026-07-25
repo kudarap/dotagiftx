@@ -1,4 +1,5 @@
 import { makeStyles } from 'tss-react/mui'
+import PropTypes from 'prop-types'
 import Link from '@/components/Link'
 import {
   USER_SUBSCRIPTION_MAP_COLOR,
@@ -53,6 +54,13 @@ export default function SubscriberBadge({ style: initialStyle, size, type, ...ot
     </Link>
   )
 }
+
+SubscriberBadge.propTypes = {
+  style: PropTypes.object,
+  size: PropTypes.bool,
+  type: PropTypes.string,
+}
+
 SubscriberBadge.defaultProps = {
   style: {},
   size: false,

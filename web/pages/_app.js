@@ -8,6 +8,8 @@ import { APP_NAME } from '@/constants/strings'
 import theme from '@/lib/theme'
 import createEmotionCache from '@/lib/createEmotionCache'
 import Root from '@/components/Root'
+
+// eslint-disable-next-line
 import '@/components/Avatar.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -41,6 +43,5 @@ export default function MyApp(props) {
 
 MyApp.propTypes = {
   Component: PropTypes.elementType.isRequired,
-  emotionCache: PropTypes.object,
   pageProps: PropTypes.object.isRequired,
 }

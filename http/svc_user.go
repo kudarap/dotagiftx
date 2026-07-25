@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/steam"
 )
 
 const userCacheExpr = time.Minute * 5
@@ -124,7 +125,7 @@ type vanityUserResp struct {
 }
 
 // TODO this should be place on service
-func handleVanityProfile(svc dotagiftx.UserService, steam dotagiftx.SteamClient, cache cacheManager) http.HandlerFunc {
+func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamClient, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -139,7 +140,7 @@ func handleVanityProfile(svc dotagiftx.UserService, steam dotagiftx.SteamClient,
 
 		// Try to resolve the vanity URL or vanity.
 		id := chi.URLParam(r, "id")
-		steamID, err := steam.ResolveVanityURL(id)
+		steamID, err := steamClient.ResolveVanityURL(fmt.Sprintf(steam.VanityURLPrefix+"%s", id))
 		if err != nil {
 			respondError(w, err)
 			return
@@ -153,7 +154,7 @@ func handleVanityProfile(svc dotagiftx.UserService, steam dotagiftx.SteamClient,
 			vUser.IsRegistered = true
 		} else {
 			// Otherwise, get it from steam API.
-			sp, err := steam.Player(steamID)
+			sp, err := steamClient.Player(steamID)
 			if err != nil {
 				respondError(w, err)
 				return

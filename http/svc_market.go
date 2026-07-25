@@ -2,7 +2,6 @@ package http
 
 import (
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -79,7 +78,7 @@ func handleMarketList(
 		}
 
 		if shouldRedactUser {
-			data.Data = redactBuyers(list)
+			data.Data = dotagiftx.Markets(list).RedactedUsers()
 		}
 
 		respondOK(w, data)
@@ -116,7 +115,12 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger 
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
-					respondOK(w, redactBuyerFromCache(hit))
+					m := dotagiftx.Market{}
+					if err := json.UnmarshalFromString(hit, &m); err != nil {
+						respondError(w, err)
+						return
+					}
+					respondOK(w, m.RedactedUser())
 					return
 				}
 
@@ -136,7 +140,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger 
 		}
 
 		if shouldRedactUser {
-			m = redactBuyer(m)
+			m = new(m.RedactedUser())
 		}
 
 		respondOK(w, m)
@@ -181,31 +185,7 @@ func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.Ha
 	}
 }
 
-func isReqAuthorized(r *http.Request) bool {
-	v := dotagiftx.AuthFromContext(r.Context())
-	return v == nil
-}
-
-const redactChar = "█"
-
-func redactBuyers(list []dotagiftx.Market) []dotagiftx.Market {
-	rl := make([]dotagiftx.Market, len(list))
-	copy(rl, list)
-	for _, r := range rl {
-		if r.Type != dotagiftx.MarketTypeBid {
-			continue
-		}
-
-		r.User.ID = ""
-		r.User.Name = strings.Repeat(redactChar, len(r.User.Name))
-		r.User.SteamID = strings.Repeat(redactChar, 10)
-		r.User.URL = strings.Repeat(redactChar, 10)
-	}
-
-	return rl
-}
-
-func redactBuyersFromCache(hit string) interface{} {
+func redactBuyersFromCache(hit string) any {
 	d := struct {
 		Data        []dotagiftx.Market `json:"data"`
 		ResultCount int                `json:"result_count"`
@@ -215,23 +195,17 @@ func redactBuyersFromCache(hit string) interface{} {
 		return nil
 	}
 
-	d.Data = redactBuyers(d.Data)
+	d.Data = dotagiftx.Markets(d.Data).RedactedUsers()
 	return d
 }
 
-func redactBuyer(m *dotagiftx.Market) *dotagiftx.Market {
-	if m == nil {
-		return nil
+func isReqAuthorized(r *http.Request) bool {
+	auth, err := parseAuthFromHeader(r.Header)
+	if err != nil {
+		return false
 	}
-
-	return &redactBuyers([]dotagiftx.Market{*m})[0]
-}
-
-func redactBuyerFromCache(hit string) *dotagiftx.Market {
-	d := &dotagiftx.Market{}
-	if err := json.UnmarshalFromString(hit, &d); err != nil {
-		return nil
+	if auth.ExpiresAt.Before(time.Now()) {
+		return false
 	}
-
-	return redactBuyer(d)
+	return auth.UserID != ""
 }
