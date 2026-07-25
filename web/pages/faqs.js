@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
@@ -52,12 +53,20 @@ export function Question({ children, ...other }) {
   )
 }
 
+Question.propTypes = {
+  children: PropTypes.string.isRequired,
+}
+
 export function Answer({ children }) {
   return (
     <Typography color="textSecondary" gutterBottom>
       {children}
     </Typography>
   )
+}
+
+Answer.propTypes = {
+  children: PropTypes.string.isRequired,
 }
 
 export default function Faqs() {

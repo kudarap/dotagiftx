@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
@@ -10,11 +9,13 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import Skeleton from '@mui/material/Skeleton'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import InternalUserCard from '@/components/InternalUserCard'
+import { user } from '@/service/api'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -44,16 +45,45 @@ const tableRates = [
   createRate('Crypto', 'TBD', 'TBD', 'TBD', 'TBD'),
 ]
 
-export default function Middleman({ users }) {
+const middlemanUserIds = ['76561198088587178']
+
+export default function Middleman() {
   const { classes } = useStyles()
 
-  const middleman = users.map(row => ({
-    id: row.steam_id,
-    name: row.name,
-    img: row.avatar,
-    boons: row.boons,
-    discordURL: 'https://discord.gg/b79zMpjjc5',
-  }))
+  const [middleman, setMiddleman] = React.useState([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    async function fetchUser(id) {
+      return new Promise(resolve => {
+        user(id).then(u => {
+          resolve({
+            id: u.steam_id,
+            name: u.name,
+            img: u.avatar,
+            boons: ['MIDDLEMAN_TAG'],
+            discordURL: 'https://discord.gg/b79zMpjjc5',
+            createdAt: u.created_at,
+          })
+        })
+      })
+    }
+
+    async function fetchUsers(array) {
+      const res = await Promise.all(
+        array.map(async item => {
+          const v = await fetchUser(item)
+          return v
+        })
+      )
+      return res
+    }
+
+    fetchUsers(middlemanUserIds).then(res => {
+      setMiddleman(res)
+      setLoading(false)
+    })
+  }, [])
 
   return (
     <>
@@ -78,17 +108,16 @@ export default function Middleman({ users }) {
           </Typography>
           <br />
 
+          {loading &&
+            middlemanUserIds.map(id => (
+              <Skeleton key={id}>
+                <InternalUserCard boons={['MIDDLEMAN_TAG']} />
+              </Skeleton>
+            ))}
+
           {middleman.map(row => (
             <InternalUserCard key={row.id} {...row} />
           ))}
-          <InternalUserCard
-            id="76561198088587178"
-            name="kudarap"
-            img="7055bd1d085fdf1ff9e9928df06ec64c1d04c124.jpg"
-            boons={['MIDDLEMAN_TAG']}
-            discordURL="https://discord.gg/b79zMpjjc5"
-          />
-          <br />
 
           {/* <Typography component="h2" variant="h6">
             Calculator
@@ -186,13 +215,4 @@ export default function Middleman({ users }) {
       <Footer />
     </>
   )
-}
-
-Middleman.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.object),
-  error: PropTypes.string,
-}
-Middleman.defaultProps = {
-  users: [],
-  error: null,
 }

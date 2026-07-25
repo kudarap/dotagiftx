@@ -1,4 +1,5 @@
 import moment from 'moment'
+import PropTypes from 'prop-types'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { MARKET_BID_EXPR_DAYS } from '@/constants/market'
@@ -27,4 +28,12 @@ export default function RefresherShardBoon({ boons }) {
       </Typography>
     </Box>
   )
+}
+
+RefresherShardBoon.propTypes = {
+  boons: PropTypes.string,
+}
+
+RefresherShardBoon.defaultProps = {
+  boons: '',
 }

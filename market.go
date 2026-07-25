@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -119,6 +120,9 @@ type (
 		SearchText    string `json:"-"               db:"search_text,omitempty,indexed"`
 		UserRankScore int    `json:"user_rank_score" db:"user_rank_score,omitempty,indexed"`
 	}
+
+	// Markets represents a collection of market.
+	Markets []Market
 
 	// MarketService provides access to market service.
 	MarketService interface {
@@ -263,6 +267,27 @@ func (m Market) SetDefaults() *Market {
 // IsResell check if the market is a re-sell item.
 func (m Market) IsResell() bool {
 	return m.Type == MarketTypeAsk && m.Resell != nil && *m.Resell
+}
+
+func (m Market) RedactedUser() Market {
+	if m.Type != MarketTypeBid {
+		return m
+	}
+
+	s := strings.Repeat("█", 10)
+	m.User.ID = ""
+	m.User.Name = s
+	m.User.SteamID = s
+	m.User.URL = s
+	return m
+}
+
+func (m Markets) RedactedUsers() []Market {
+	mm := slices.Clone(m)
+	for i, v := range mm {
+		mm[i] = v.RedactedUser()
+	}
+	return mm
 }
 
 // String returns text value of a market status.
@@ -722,6 +747,9 @@ func (s *marketService) userMarket(userID, id string) (*Market, error) {
 
 func (s *marketService) Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error) {
 	opts.Keyword = strings.ReplaceAll(opts.Keyword, `\`, "")
+	if err := opts.validate(); err != nil {
+		return nil, nil, err
+	}
 
 	res, err := s.catalogStg.Find(opts)
 	if err != nil {

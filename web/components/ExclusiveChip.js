@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from '@mui/material/Link'
 import Chip from '@mui/material/Chip'
+import PropTypes from 'prop-types'
 import {
   USER_SUBSCRIPTION_MAP_COLOR,
   USER_SUBSCRIPTION_PARTNER,
@@ -60,4 +61,12 @@ export default function ExclusiveChip({ tag, ...props }) {
       {...props}
     />
   )
+}
+
+ExclusiveChip.propTypes = {
+  tag: PropTypes.string,
+}
+
+ExclusiveChip.defaultProps = {
+  tag: '',
 }

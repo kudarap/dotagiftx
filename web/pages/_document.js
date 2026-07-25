@@ -43,6 +43,22 @@ class MyDocument extends Document {
               />
             </>
           )}
+
+          {process.env.NEXT_PUBLIC_UMAMI && (
+            <>
+              <script
+                defer
+                src="https://umami.chiligarlic.com/adobo.js"
+                data-website-id={process.env.NEXT_PUBLIC_UMAMI}
+                data-performance="true"
+              />
+              <script
+                defer
+                src="https://umami.chiligarlic.com/recorder.js"
+                data-website-id={process.env.NEXT_PUBLIC_UMAMI}
+              />
+            </>
+          )}
         </Head>
         <body>
           <Main />

@@ -49,7 +49,6 @@ const marketBuyOrderFilter = {
   type: MARKET_TYPE_BID,
   status: MARKET_STATUS_LIVE,
   sort: 'highest',
-  nocache: true,
 }
 
 const DEFAULT_SORT = 'price'

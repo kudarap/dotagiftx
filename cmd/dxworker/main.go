@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	nethttp "net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/logging"
@@ -52,6 +57,7 @@ func main() {
 
 type application struct {
 	config config.Config
+	server *nethttp.Server
 	worker *worker.Worker
 	logger *logrus.Logger
 
@@ -102,18 +108,30 @@ func (app *application) setup() error {
 	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
-	slogger := slog.Default()
+	th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
+	slogger := slog.New(th)
 	logSvc.Println("setting up services...")
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
-	assetSource := verify.NewSource(
-		phantasmSvc.InventoryAssetWithProvider,
-		steaminvorg.InventoryAssetWithProvider,
-	)
+	verifySources := []verify.AssetSource{phantasmSvc.InventoryAssetWithProvider}
+	// TODO: Use proper level of fallbacks. For experimental purposes only.
+	if len(app.config.Phantasm.BackupAddrs) != 0 {
+		logSvc.Println("EXPERIMENTAL: phantasm backup source enabled", app.config.Phantasm.BackupAddrs)
+		phantasmSvcExp := phantasm.NewService(phantasm.Config{
+			Addrs:                app.config.Phantasm.BackupAddrs,
+			WebhookURL:           app.config.Phantasm.WebhookURL,
+			Secret:               app.config.Phantasm.Secret,
+			Path:                 app.config.Phantasm.Path,
+			MaxFetchRetryAttempt: 1,
+		}, redisClient, slogger)
+		verifySources = append(verifySources, phantasmSvcExp.InventoryAssetWithProvider)
+	}
+	verifySources = append(verifySources, steaminvorg.InventoryAssetWithProvider)
+	assetSource := verify.NewSource(verifySources...)
 
 	// Setup application worker
-	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource, phantasmSvc)
+	tp := worker.NewTaskProcessor(time.Second, queue, inventorySvc, deliverySvc, assetSource, phantasmSvc, slogger)
 	app.worker = worker.New(tp)
 	app.worker.SetLogger(app.contextLog("worker"))
 	app.worker.AddJob(jobs.NewRecheckInventory(
@@ -161,8 +179,18 @@ func (app *application) setup() error {
 	app.worker.AddJob(jobs.NewSweepMarket(marketStg, logging.WithPrefix(logger, "job_sweep_market")))
 	app.worker.AddJob(jobs.NewSweepPhantasmCache(phantasmSvc, logging.WithPrefix(logger, "job_sweep_phantasm")))
 
+	// Server setup.
+	logSvc.Println("setting up http server...")
+	app.server = setupServer(app.config.Addr, phantasmSvc)
+
 	app.closerFn = func() {
 		logSvc.Println("closing and stopping app...")
+		// Force server shutdown after shutdownTimeout and this was added because of SSE's opened connection.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		defer cancel()
+		if err = app.server.Shutdown(ctx); err != nil {
+			logSvc.Println("could not shutdown http server", err)
+		}
 		if err = app.worker.Stop(); err != nil {
 			logSvc.Fatal("could not stop worker", err)
 		}
@@ -184,6 +212,17 @@ func (app *application) run() error {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 
+	// Handle error on server start.
+	svlog := app.contextLog("server")
+	go func() {
+		svlog.Infoln("starting server on", app.config.Addr)
+		if err := app.server.ListenAndServe(); err != nil && !errors.Is(err, nethttp.ErrServerClosed) {
+			svlog.Fatalf("could not listen and serve on %s: %v\n", app.config.Addr, err)
+		}
+	}()
+
+	// delay worker start to give leeway on phantasm webhook to be online
+	time.Sleep(5 * time.Second)
 	go app.worker.Start()
 
 	<-quit
@@ -228,6 +267,31 @@ func setupRedis(cfg redis.Config) (c *redis.Client, err error) {
 
 	err = connRetry("redis", fn)
 	return
+}
+
+func setupServer(addr string, svc *phantasm.Service) *nethttp.Server {
+	r := chi.NewRouter()
+	r.Use(middleware.Recoverer)
+	r.Post("/webhook/phantasm/{steam_id}", func(w nethttp.ResponseWriter, r *nethttp.Request) {
+		id := chi.URLParam(r, "steam_id")
+		secret := r.Header.Get(phantasm.WebhookAuthHeader)
+		if err := svc.SaveInventory(r.Context(), id, secret, r.Body); err != nil {
+			w.WriteHeader(nethttp.StatusOK)
+			_, _ = fmt.Fprintf(w, "error: %s", err)
+			return
+		}
+
+		w.WriteHeader(nethttp.StatusOK)
+		_, _ = fmt.Fprintf(w, "ok")
+	})
+
+	const readWriteTimeout = time.Second * 15
+	return &nethttp.Server{
+		Addr:         addr,
+		Handler:      r,
+		WriteTimeout: readWriteTimeout,
+		ReadTimeout:  readWriteTimeout,
+	}
 }
 
 func connRetry(name string, fn func() error) error {

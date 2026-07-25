@@ -133,7 +133,7 @@ func (i Item) MakeSlug() string {
 
 // IsActive determines item is giftable.
 func (i Item) IsActive() bool {
-	return *i.Active
+	return i.Active != nil && *i.Active
 }
 
 // SetDefaults sets default values for a new item.

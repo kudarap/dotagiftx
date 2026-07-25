@@ -1,6 +1,7 @@
 import React from 'react'
 import useSWR from 'swr'
 import Typography from '@mui/material/Typography'
+import PropTypes from 'prop-types'
 import { MARKET_STATUS_RESERVED, MARKET_STATUS_SOLD, MARKET_TYPE_ASK } from '@/constants/market'
 import { fetcher, GRAPH_MARKET_SALES, MARKETS } from '@/service/api'
 import MarketSalesChart from '@/components/MarketSalesChart'
@@ -98,6 +99,16 @@ function ItemGraph({ itemId = '', itemName = '' }) {
       )}
     </>
   )
+}
+
+ItemGraph.propTypes = {
+  itemId: PropTypes.string,
+  itemName: PropTypes.string,
+}
+
+ItemGraph.defaultProps = {
+  itemId: '',
+  itemName: '',
 }
 
 export default ItemGraph

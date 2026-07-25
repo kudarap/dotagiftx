@@ -53,8 +53,8 @@ func GetPlayerSummaries(steamId, apiKey string) (*PlayerSummaries, error) {
 	return &data.Response.Players[0], err
 }
 
-func ResolveVanityURL(vanityURL, apiKey string) (steamID string, err error) {
-	url := fmt.Sprintf("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=%s&vanityurl=%s", apiKey, vanityURL)
+func ResolveVanityURL(vanityID, apiKey string) (steamID string, err error) {
+	url := fmt.Sprintf("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=%s&vanityurl=%s", apiKey, vanityID)
 	resp, err := http.Get(url)
 	if err != nil {
 		return

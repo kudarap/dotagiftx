@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/kudarap/dotagiftx/steam"
+	"github.com/mailru/easyjson"
 )
 
 func Test_merge_verify(t *testing.T) {
@@ -128,7 +129,7 @@ func parseInventory(r io.Reader) (*inventory, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = fastjson.Unmarshal(b, &raw); err != nil {
+	if err = easyjson.Unmarshal(b, &raw); err != nil {
 		return nil, err
 	}
 	return &raw, nil

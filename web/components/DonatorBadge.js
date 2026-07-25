@@ -1,4 +1,5 @@
 import { makeStyles } from 'tss-react/mui'
+import PropTypes from 'prop-types'
 import Link from '@/components/Link'
 
 const useStyles = makeStyles()(() => ({
@@ -31,6 +32,11 @@ export default function DonatorBadge({ style: initialStyle, size, ...other }) {
       underline="none"
     />
   )
+}
+
+DonatorBadge.propTypes = {
+  style: PropTypes.object,
+  size: PropTypes.bool,
 }
 
 DonatorBadge.defaultProps = {

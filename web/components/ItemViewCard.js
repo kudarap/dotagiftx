@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import { makeStyles } from 'tss-react/mui'
+import PropTypes from 'prop-types'
 import RarityTag from '@/components/RarityTag'
 import ItemImage from '@/components/ItemImage'
 import Link from '@/components/Link'
@@ -91,4 +92,8 @@ export default function ItemViewCard({ item }) {
       </Grid>
     </Grid>
   )
+}
+
+ItemViewCard.propTypes = {
+  item: PropTypes.object.isRequired,
 }

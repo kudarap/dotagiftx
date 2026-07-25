@@ -49,6 +49,26 @@ db.table('task').insert({
   })
 })
 
+db.table('market').getAll(200, {index: 'status'})
+  .filter({ type: 10 })
+  .filter(r.row('created_at').date().gt(r.time(2026, 6, 1, 'Z')))
+  .filter(r.row('inventory_status').default(0).eq(0))
+  .count()
+
+db.table('market').getAll(200, {index: 'status'})
+  .filter({ type: 10 })
+  .filter(r.row('created_at').date().gt(r.time(2026, 6, 1, 'Z')))
+  .filter(r.row('inventory_status').default(0).eq(0))
+  .getField('id')
+  .forEach(v => {
+    return db.table('task').insert({
+      type: 2,
+      priority: 3,
+      status: 0,
+      payload: db.table('market').get(v).merge(row => ({ user: db.table('user').get(row('user_id')) })
+    })
+  })
+
 # top search
 r.db('dotagiftx_production')
   .table('track')

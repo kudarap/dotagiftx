@@ -3,6 +3,7 @@ package steam
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -10,8 +11,8 @@ import (
 )
 
 const (
-	VanityPrefixID      = "https://steamcommunity.com/id/"
-	VanityPrefixProfile = "https://steamcommunity.com/profiles/"
+	VanityURLPrefix  = "https://steamcommunity.com/id/"
+	profileURLPrefix = "https://steamcommunity.com/profiles/"
 
 	vanityCacheExpr = time.Hour * 24
 )
@@ -78,14 +79,19 @@ func (c *Client) Player(steamID string) (*dotagiftx.SteamPlayer, error) {
 }
 
 func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
-	rawURL = strings.TrimRight(rawURL, "/")
-
-	// SteamID might be present on the URL provided.
-	if strings.HasPrefix(rawURL, VanityPrefixProfile) {
-		return strings.TrimPrefix(rawURL, VanityPrefixProfile), nil
+	url, ok := cleanProfileURL(rawURL)
+	if !ok {
+		return "", fmt.Errorf("could not resolve profile URL: %s", rawURL)
 	}
 
-	vanity := strings.TrimPrefix(rawURL, VanityPrefixID)
+	// SteamID might be present on the URL provided.
+	if after, ok := strings.CutPrefix(url, profileURLPrefix); ok {
+		return after, nil
+	}
+
+	// URL provided could be a vanity type and need to be resolved to
+	// get steam id.
+	vanity := strings.TrimPrefix(url, VanityURLPrefix)
 	cacheKey := fmt.Sprintf("steam/resolvedvanity:%s", vanity)
 	if hit, _ := c.cache.Get(cacheKey); hit != "" {
 		return strings.ReplaceAll(hit, `"`, ""), nil
@@ -103,4 +109,23 @@ func (c *Client) ResolveVanityURL(rawURL string) (steamID string, err error) {
 type cacheReadWriter interface {
 	Set(key string, val interface{}, expr time.Duration) error
 	Get(key string) (val string, err error)
+}
+
+var reSteamID = regexp.MustCompile("[0-9]{17}")
+
+func cleanProfileURL(rawURL string) (url string, ok bool) {
+	// vanity url mode
+	if v, ok := strings.CutPrefix(rawURL, VanityURLPrefix); ok {
+		s := strings.Split(v, "/")
+		if len(s) == 0 {
+			return "", false
+		}
+		return fmt.Sprintf("%s%s", VanityURLPrefix, s[0]), true
+	}
+
+	id := reSteamID.FindString(rawURL)
+	if id == "" {
+		return "", false
+	}
+	return fmt.Sprintf("%s%s", profileURLPrefix, id), true
 }

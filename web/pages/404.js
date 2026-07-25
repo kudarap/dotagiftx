@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import { APP_NAME } from '@/constants/strings'
@@ -41,4 +42,12 @@ export default function Custom404({ children }) {
       <Footer />
     </>
   )
+}
+
+Custom404.propTypes = {
+  children: PropTypes.string,
+}
+
+Custom404.defaultProps = {
+  children: '',
 }

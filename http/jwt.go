@@ -51,8 +51,8 @@ func Parse(token string) (*Claims, error) {
 	return tc, nil
 }
 
-// ParseFromHeader parses Authorization bearer token as JWT.
-func ParseFromHeader(h http.Header) (*Claims, error) {
+// parseAuthFromHeader parses Authorization bearer token as JWT.
+func parseAuthFromHeader(h http.Header) (*Claims, error) {
 	// Get access header.
 	header := strings.TrimSpace(h.Get("Authorization"))
 	if header == "" {

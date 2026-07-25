@@ -133,7 +133,7 @@ func (app *application) setup() error {
 	logSvc.Println("setting up services...")
 	fileMgr := setupFileManager(app.config)
 	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient)
-	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc)
+	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc, slogger)
 	imageSvc := dotagiftx.NewImageService(fileMgr)
 	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr)
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
