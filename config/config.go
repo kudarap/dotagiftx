@@ -1,7 +1,9 @@
 package config
 
 import (
+	"errors"
 	"fmt"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -42,7 +44,7 @@ type Config struct {
 // Load parses .env values into a struct.
 func Load(conf *Config) error {
 	// Load env file.
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("could not load config: %s", err)
 	}
 	// Bind env values.
