@@ -5,9 +5,8 @@ permissions:
 
 on:
   push:
-    branches-ignore: [master, dev]
   pull_request:
-    branches-ignore: [master, dev]
+    branches: [feature/*, hotfix/*, release/*]
 
 jobs:
   test:
