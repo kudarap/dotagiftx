@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-has-content */
 import React from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
@@ -9,11 +8,7 @@ import MuiLink from '@mui/material/Link'
 const nextLinkRef = (props, ref) => {
   const { as, href, disabled, ...other } = props
 
-  return (
-    <NextLink href={disabled ? '#' : href} as={as}>
-      <a ref={ref} {...other} />
-    </NextLink>
-  )
+  return <NextLink href={disabled ? '#' : href} as={as} ref={ref} {...other} />
 }
 
 const NextComposed = React.forwardRef(nextLinkRef)
@@ -22,6 +17,7 @@ NextComposed.propTypes = {
   as: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   href: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   prefetch: PropTypes.bool,
+  disabled: PropTypes.bool,
 }
 
 // A styled version of the Next.js Link component:

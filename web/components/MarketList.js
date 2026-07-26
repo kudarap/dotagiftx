@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
-import { debounce, NoSsr, Tooltip } from '@mui/material'
+import { Box, debounce, NoSsr, Tooltip } from '@mui/material'
 import { teal as bidColor } from '@mui/material/colors'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -396,11 +396,17 @@ function baseTable(Component) {
                         </>
                       )}
 
-                      <Typography variant="caption" color="textSecondary">
+                      <Link href={`/profiles/${market.user.steam_id}`} disableUnderline>
+                        <Typography variant="caption" color="textSecondary">
                         {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
                       </Typography>
+                      </Link>
                       {!bidMode && (
-                        <span
+                        <Box
+                          component="span"
+                          sx={{
+                            cursor: 'pointer'
+                           }}
                           aria-owns={popoverElementID}
                           aria-haspopup="true"
                           data-index={idx}
@@ -409,7 +415,7 @@ function baseTable(Component) {
                           {market.resell
                             ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                             : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
-                        </span>
+                        </Box>
                       )}
                     </div>
                   </div>

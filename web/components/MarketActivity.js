@@ -106,7 +106,7 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
 
   return (
     <>
-      {onSearchInput !== noop && (
+      {onSearchInput != undefined && onSearchInput !== noop && (
         <ActivitySearchInput
           fullWidth
           loading={loading}
