@@ -1,6 +1,7 @@
 package dotagiftx
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -12,15 +13,22 @@ type Version struct {
 	Tag        string `json:"version"`
 	Commit     string `json:"hash"`
 	Built      string `json:"built"`
+	Active     string `json:"active"`
+
+	started    time.Time
+	timeFormat string
 }
 
 // NewVersion returns a formatted version details.
 func NewVersion(prod bool, tag, commit, built string) *Version {
 	v := &Version{
-		prod,
-		tag,
-		commit,
-		built,
+		Production: prod,
+		Tag:        tag,
+		Commit:     commit,
+		Built:      built,
+
+		started:    time.Now(),
+		timeFormat: "Mon Jan 2 15:04:05 -0700 MST 2006",
 	}
 	v.formatBuiltDate()
 	v.formatTag()
@@ -34,7 +42,16 @@ func (v *Version) formatBuiltDate() {
 	}
 
 	i, _ := strconv.ParseInt(v.Built, 10, 64)
-	v.Built = time.Unix(i, 0).Format("Mon Jan 2 15:04:05 -0700 MST 2006")
+	v.Built = time.Unix(i, 0).Format(v.timeFormat)
+}
+
+func (v *Version) SetUptime() *Version {
+	v.Active = fmt.Sprintf(
+		"Since %s; %s",
+		v.started.Format(v.timeFormat),
+		time.Since(v.started).Truncate(time.Second).String(),
+	)
+	return v
 }
 
 func (v *Version) formatTag() {

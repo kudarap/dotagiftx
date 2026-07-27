@@ -8,6 +8,7 @@ import (
 
 func handleInfo(v *dotagiftx.Version) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		v = v.SetUptime()
 		respondOK(w, v)
 	}
 }
