@@ -55,7 +55,6 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
             <TableHeadCell>Item</TableHeadCell>
             {!isMobile && (
               <TableHeadCell align="right">
-                {}
                 {isRecentMode ? (bidType ? 'Ordered' : 'Listed') : 'Qty'}
               </TableHeadCell>
             )}
@@ -114,7 +113,6 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                 {!isMobile && (
                   <TableCell align="right">
                     <Typography variant="body2" color="textSecondary">
-                      {}
                       {isRecentMode
                         ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
                         : bidType
