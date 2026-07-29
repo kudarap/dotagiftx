@@ -1,7 +1,5 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import moment from 'moment'
-
-import AppContext from './AppContext'
 
 const sinceDayMin = 1
 const sinceDayMax = 30
@@ -12,24 +10,15 @@ const getDaysFromTs = datetime => {
   return Math.ceil(ts / 86400000)
 }
 
-export default function LatestBan() {
-  const { latestBan } = useContext(AppContext)
+export default function LatestBan({ value }) {
   const [grayscale, setGrayscale] = useState(0)
 
-  const recentBanAt = latestBan?.updated_at || null
-
-  useMemo(() => {
-    if (!recentBanAt) {
-      return
-    }
-
-    const daysDiff = getDaysFromTs(recentBanAt)
-    setGrayscale((daysDiff / sinceRate).toFixed(2) * 100)
-  }, [recentBanAt])
-
-  if (!recentBanAt) {
+  if (!value) {
     return null
   }
+
+  const recentBanAt = getDaysFromTs(value)
+  setGrayscale((recentBanAt / sinceRate).toFixed(2) * 100)
 
   return (
     <span

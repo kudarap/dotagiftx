@@ -12,13 +12,13 @@ import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
 import MenuIcon from '@mui/icons-material/Menu'
 import HoverMenu from 'material-ui-popup-state/HoverMenu'
 import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
-import { isRecentTreasureNew } from '@/pages/treasures'
-import Avatar from '@/components/Avatar'
 import * as Storage from '@/service/storage'
+import { blacklistSearch } from '@/service/api'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import { USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
+import Avatar from '@/components/Avatar'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
@@ -26,6 +26,7 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import NavItems from '@/components/NavItems'
+import { isRecentTreasureNew } from '@/pages/treasures'
 import LatestBan from './LatestBan'
 import brandImage from '../public/brand_darkcarnival_2x.png'
 import SearchDialog from './SearchDialog'
@@ -103,6 +104,7 @@ export default function Header() {
 
   // load profile data if logged in.
   const [profile, setProfile] = React.useState(defaultProfile)
+  const [latestBan, setLatestBan] = React.useState(null)
 
   const setProfileAnalytics = userData => {
     // analytics identify user session
@@ -132,6 +134,21 @@ export default function Header() {
       const res = await myProfile.GET()
       Storage.save(APP_CACHE_PROFILE, res)
       setProfileAnalytics(res)
+    })()
+  }, [])
+
+  React.useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await blacklistSearch({ limit: 1, sort: 'updated_at:desc' })
+        if (res) {
+          console.log('res', res[0].created_at)
+          // setLatestBan(res[0].created_at)
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('failed getting lastest ban', error)
+      }
     })()
   }, [])
 
@@ -216,7 +233,7 @@ export default function Header() {
           </Link>
           <Link className={classes.nav} href="/bans" underline="none">
             Bans
-            <LatestBan />
+            <LatestBan value={latestBan} />
           </Link>
           <Link className={classes.nav} href="/rules" underline="none">
             Rules

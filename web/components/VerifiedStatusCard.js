@@ -271,7 +271,6 @@ function ResellCard({ data }) {
     </CardX>
   )
 }
-
 ResellCard.propTypes = {
   data: PropTypes.object.isRequired,
 }
@@ -290,7 +289,6 @@ function PendingCard({ data }) {
     </CardX>
   )
 }
-
 PendingCard.propTypes = {
   data: PropTypes.object.isRequired,
 }

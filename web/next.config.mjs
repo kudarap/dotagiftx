@@ -43,6 +43,7 @@ const config = (phase, { defaultConfig }) => {
     },
 
     images: {
+      qualities: [100, 75],
       remotePatterns: [
         {
           protocol: 'https',
