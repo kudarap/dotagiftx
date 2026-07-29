@@ -4,7 +4,6 @@ import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import * as Auth from '@/service/auth'
-import { blacklistSearch } from '@/service/api'
 import AppContext from '@/components/AppContext'
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID

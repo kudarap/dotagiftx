@@ -13,7 +13,6 @@ import MenuIcon from '@mui/icons-material/Menu'
 import HoverMenu from 'material-ui-popup-state/HoverMenu'
 import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
 import * as Storage from '@/service/storage'
-import { blacklistSearch } from '@/service/api'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
 import { APP_CACHE_PROFILE } from '@/constants/app'
@@ -104,7 +103,6 @@ export default function Header() {
 
   // load profile data if logged in.
   const [profile, setProfile] = React.useState(defaultProfile)
-  const [latestBan, setLatestBan] = React.useState(null)
 
   const setProfileAnalytics = userData => {
     // analytics identify user session
@@ -134,21 +132,6 @@ export default function Header() {
       const res = await myProfile.GET()
       Storage.save(APP_CACHE_PROFILE, res)
       setProfileAnalytics(res)
-    })()
-  }, [])
-
-  React.useEffect(() => {
-    ;(async () => {
-      try {
-        const res = await blacklistSearch({ limit: 1, sort: 'updated_at:desc' })
-        if (res) {
-          console.log('res', res[0].created_at)
-          // setLatestBan(res[0].created_at)
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('failed getting lastest ban', error)
-      }
     })()
   }, [])
 
@@ -233,7 +216,7 @@ export default function Header() {
           </Link>
           <Link className={classes.nav} href="/bans" underline="none">
             Bans
-            <LatestBan value={latestBan} />
+            <LatestBan />
           </Link>
           <Link className={classes.nav} href="/rules" underline="none">
             Rules
