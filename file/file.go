@@ -96,13 +96,33 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 
 // Get gets file path base on file name and its existence.
 func (l *Local) Get(name string) (path string, err error) {
-	path = filepath.Join(l.Dir(), name)
-	// Check the actual file existence.
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+	if name == "" || strings.Contains(name, "/") || strings.Contains(name, "\\") || strings.Contains(name, "..") {
+		return "", errors.New("invalid file name")
+	}
+
+	baseDir := l.Dir()
+	path = filepath.Join(baseDir, name)
+
+	absBase, err := filepath.Abs(baseDir)
+	if err != nil {
+		return "", err
+	}
+	absPath, err := filepath.Abs(path)
+	if err != nil {
 		return "", err
 	}
 
-	return
+	basePrefix := absBase + string(os.PathSeparator)
+	if absPath != absBase && !strings.HasPrefix(absPath, basePrefix) {
+		return "", errors.New("invalid file path")
+	}
+
+	// Check the actual file existence.
+	if _, err := os.Stat(absPath); os.IsNotExist(err) {
+		return "", err
+	}
+
+	return absPath, nil
 }
 
 // Delete uploaded file base on file name.
