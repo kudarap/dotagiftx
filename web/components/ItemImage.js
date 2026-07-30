@@ -22,18 +22,19 @@ export default function ItemImage({
   className,
   width,
   height,
-  nextOptimized,
+  sx,
   ...other
 }) {
-  const contStyle = {
+  const containerStyle = {
     lineHeight: 1,
     flexShrink: 0,
     overflow: 'hidden',
     userSelect: 'none',
+    width,
+    height,
   }
-
   if (rarity) {
-    contStyle.border = `1px solid ${itemRarityColorMap[rarity]}`
+    containerStyle.border = `1px solid ${itemRarityColorMap[rarity]}`
   }
 
   const imgStyle = {
@@ -46,31 +47,13 @@ export default function ItemImage({
   let baseSrc = CDN_URL + image
   // using srcset to support high dpi or retina displays when
   // dimension were set.
-  let srcSet = null
   if (width && height) {
     const rs = retinaSrcSet(image, width, height)
     baseSrc = rs.src
-    srcSet = rs.srcSet
-  }
-
-  if (!nextOptimized) {
-    return (
-      <div style={contStyle} className={className}>
-        <img
-          loading="lazy"
-          src={baseSrc}
-          srcSet={srcSet}
-          alt={title || image}
-          style={imgStyle}
-          height={height}
-          {...other}
-        />
-      </div>
-    )
   }
 
   return (
-    <div style={contStyle} className={className}>
+    <div style={containerStyle} sx={sx} className={className}>
       <Image
         src={baseSrc}
         alt={title || image}
@@ -96,11 +79,11 @@ ItemImage.propTypes = {
   title: PropTypes.string,
   rarity: PropTypes.string,
   className: PropTypes.string,
-  nextOptimized: PropTypes.bool,
+  sx: PropTypes.object,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
   className: '',
-  nextOptimized: false,
+  sx: null,
 }
