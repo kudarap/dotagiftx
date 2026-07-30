@@ -20,24 +20,6 @@ export default function MyDocument(props) {
         <link rel="icon" href="/favicon.ico" />
         <meta name="emotion-insertion-point" content="" />
 
-        {process.env.NEXT_PUBLIC_GA && (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA}`}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments)}
-                gtag("js", new Date());
-                gtag("config", "${process.env.NEXT_PUBLIC_GA}");`,
-              }}
-            />
-          </>
-        )}
-
         {process.env.NEXT_PUBLIC_UMAMI && (
           <>
             <script
