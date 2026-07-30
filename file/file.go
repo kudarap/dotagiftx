@@ -96,6 +96,10 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 
 // Get gets file path base on file name and its existence.
 func (l *Local) Get(name string) (path string, err error) {
+	if err = l.validateName(name); err != nil {
+		return "", err
+	}
+
 	path = filepath.Join(l.Dir(), name)
 	// Check the actual file existence.
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -107,6 +111,10 @@ func (l *Local) Get(name string) (path string, err error) {
 
 // Delete uploaded file base on file name.
 func (l *Local) Delete(name string) error {
+	if err := l.validateName(name); err != nil {
+		return err
+	}
+
 	p := filepath.Join(l.Dir(), name)
 	if err := os.Remove(p); err != nil {
 		return err
@@ -118,6 +126,21 @@ func (l *Local) Delete(name string) error {
 // Dir returns save path location.
 func (l *Local) Dir() string {
 	return l.saveDir
+}
+
+func (l *Local) validateName(name string) error {
+	n := strings.TrimSpace(name)
+	if n == "" {
+		return errors.New("file name required")
+	}
+	if filepath.IsAbs(n) {
+		return fmt.Errorf("invalid file name: absolute paths are not allowed")
+	}
+	if strings.Contains(n, "/") || strings.Contains(n, "\\") || strings.Contains(n, "..") {
+		return fmt.Errorf("invalid file name")
+	}
+
+	return nil
 }
 
 func (l *Local) getType(data []byte) (string, error) {
