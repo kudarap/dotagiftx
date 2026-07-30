@@ -38,7 +38,7 @@ const sortOpts = [
   ['recent-bid', 'New Buy Orders'],
 ].map(([value, label]) => ({ value, label }))
 
-function SelectSort({ className, style, ...other }) {
+function SelectSort({ className = '', style = '', ...other }) {
   return (
     <FormControl size="small" {...{ className, style }}>
       <Select id="select-sort" {...other}>
@@ -55,11 +55,6 @@ function SelectSort({ className, style, ...other }) {
 SelectSort.propTypes = {
   className: PropTypes.string,
   style: PropTypes.string,
-}
-
-SelectSort.defaultProps = {
-  className: '',
-  style: '',
 }
 
 export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
@@ -125,7 +120,8 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
             {searchTerm && (
               <div>
                 <Typography component="h1" variant="h6">
-                  {catalogs && catalogs.total_count} results for &quot;{searchTerm}&quot;
+                  {catalogs && catalogs.total_count} results for &quot;
+                  {searchTerm}&quot;
                 </Typography>
               </div>
             )}

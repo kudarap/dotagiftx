@@ -12,13 +12,12 @@ import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
 import MenuIcon from '@mui/icons-material/Menu'
 import HoverMenu from 'material-ui-popup-state/HoverMenu'
 import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
-import { isRecentTreasureNew } from '@/pages/treasures'
-import Avatar from '@/components/Avatar'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
 import { APP_CACHE_PROFILE } from '@/constants/app'
 import { USER_SUBSCRIPTION_MAP_LABEL } from '@/constants/user'
+import Avatar from '@/components/Avatar'
 import Container from '@/components/Container'
 import Link from '@/components/Link'
 import SteamIcon from '@/components/SteamIcon'
@@ -26,6 +25,7 @@ import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
 import { APP_NAME } from '@/constants/strings'
 import NavItems from '@/components/NavItems'
+import { isRecentTreasureNew } from '@/pages/treasures'
 import LatestBan from './LatestBan'
 import brandImage from '../public/brand_darkcarnival_2x.png'
 import SearchDialog from './SearchDialog'
@@ -143,11 +143,10 @@ export default function Header() {
       try {
         await authRevoke(currentAuth.refresh_token)
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.warn(e.message)
       }
       destroyLoginSess()
-      // eslint-disable-next-line no-undef
+
       window.location = '/'
     })()
   }
@@ -163,7 +162,6 @@ export default function Header() {
             <Image
               width={134}
               height={30}
-              layout="fixed"
               className={classes.brand}
               src={brandImage}
               alt={APP_NAME}

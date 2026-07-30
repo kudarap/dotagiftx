@@ -15,7 +15,7 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-function TablePagination({ count, page, rowsPerPage, onPageChange, ...other }) {
+function TablePagination({ count, page, rowsPerPage = 10, onPageChange, ...other }) {
   const { classes } = useStyles()
   const theme = useTheme()
 
@@ -88,9 +88,6 @@ TablePagination.propTypes = {
   onPageChange: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number,
-}
-TablePagination.defaultProps = {
-  rowsPerPage: 10,
 }
 
 export default TablePagination

@@ -1,9 +1,6 @@
-/* eslint-disable no-restricted-syntax */
-
 const badgePrefix = '_BADGE'
 
 export const getUserBadgeFromBoons = (boons = []) => {
-  // eslint-disable-next-line guard-for-in
   for (const i in boons) {
     const boon = String(boons[i])
     if (boon.endsWith(badgePrefix)) {
@@ -16,7 +13,6 @@ export const getUserBadgeFromBoons = (boons = []) => {
 const tagPrefix = '_TAG'
 
 export const getUserTagFromBoons = (boons = []) => {
-  // eslint-disable-next-line guard-for-in
   for (const i in boons) {
     const boon = String(boons[i])
     if (boon.endsWith(tagPrefix)) {

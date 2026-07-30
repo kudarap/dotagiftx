@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { makeStyles } from 'tss-react/mui'
-import { debounce, NoSsr, Tooltip } from '@mui/material'
+import { Box, debounce, NoSsr, Tooltip } from '@mui/material'
 import { teal as bidColor } from '@mui/material/colors'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -46,7 +46,7 @@ const useStyles = makeStyles()(theme => ({
     padding: theme.spacing(2),
   },
   avatar: {
-    marginRight: theme.spacing(1.5),
+    marginRight: theme.spacing(1),
   },
   tableHead: {
     // background: '#202a2f',
@@ -354,11 +354,11 @@ function baseTable(Component) {
           {datatable.data.map((market, idx) => (
             <TableRow key={market.id} hover>
               <TableCell component="th" scope="row" padding="none">
-                <Link
-                  href={`/profiles/${market.user.steam_id}`}
-                  disabled={!market.user.id}
-                  disableUnderline>
-                  <div className={classes.seller}>
+                <div className={classes.seller}>
+                  <Link
+                    disableUnderline
+                    disabled={!market.user.id}
+                    href={`/profiles/${market.user.steam_id}`}>
                     <Avatar
                       badge={getUserBadgeFromBoons(market.user.boons)}
                       className={classes.avatar}
@@ -366,54 +366,58 @@ function baseTable(Component) {
                       glow={isDonationGlowExpired(market.user.donated_at)}
                       {...retinaSrcSet(market.user.avatar, 40, 40)}
                     />
-                    <div>
-                      {/* check for redacted data */}
-                      {market.user.id ? <strong>{market.user.name}</strong> : <em>████████████</em>}
-                      {Boolean(getUserBadgeFromBoons(market.user.boons)) && (
-                        <SubscriberBadge
-                          sx={{ ml: 0.5 }}
-                          type={getUserBadgeFromBoons(market.user.boons)}
-                        />
-                      )}
-                      {displayProfileJoinedDate && (
-                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                          joined {moment(market.user.created_at).fromNow()}
-                        </Typography>
-                      )}
-                      <br />
-
-                      {displayPostId && (
-                        <>
-                          <Tooltip placement="bottom" title="Copy id to clipboard" arrow>
-                            <Typography
-                              variant="caption"
-                              color="textSecondary"
-                              style={{ zIndex: 100 }}>
-                              {market.id.split('-')[0]}
-                            </Typography>
-                          </Tooltip>
-                          &nbsp;&middot;&nbsp;
-                        </>
-                      )}
-
-                      <Typography variant="caption" color="textSecondary">
-                        {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
+                  </Link>
+                  <div>
+                    <strong>{market.user.name}</strong>
+                    {market.user.id && Boolean(getUserBadgeFromBoons(market.user.boons)) && (
+                      <SubscriberBadge
+                        sx={{ ml: 0.5 }}
+                        type={getUserBadgeFromBoons(market.user.boons)}
+                      />
+                    )}
+                    {displayProfileJoinedDate && (
+                      <Typography variant="caption" sx={{ ml: 0.5 }}>
+                        joined {moment(market.user.created_at).fromNow()}
                       </Typography>
-                      {!bidMode && (
-                        <span
-                          aria-owns={popoverElementID}
-                          aria-haspopup="true"
-                          data-index={idx}
-                          onMouseLeave={debouncePopoverClose}
-                          onMouseEnter={handlePopoverOpen}>
-                          {market.resell
-                            ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
-                            : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
-                        </span>
-                      )}
-                    </div>
+                    )}
+                    <br />
+
+                    {/* Copy id to clipboard */}
+                    {displayPostId && (
+                      <>
+                        <Tooltip placement="bottom" title="Copy id to clipboard" arrow>
+                          <Typography
+                            variant="caption"
+                            color="textSecondary"
+                            style={{ zIndex: 100 }}>
+                            {market.id.split('-')[0]}
+                          </Typography>
+                        </Tooltip>
+                        &nbsp;&middot;&nbsp;
+                      </>
+                    )}
+
+                    <Typography variant="caption" color="textSecondary">
+                      {bidMode ? 'Ordered' : 'Posted'} {dateFromNow(market.created_at)}
+                    </Typography>
+
+                    {/* Verification status badge with Tooltip */}
+                    {!bidMode && (
+                      <Box
+                        component="span"
+                        sx={{ cursor: 'pointer' }}
+                        data-index={idx}
+                        aria-owns={popoverElementID}
+                        aria-haspopup="true"
+                        onMouseLeave={debouncePopoverClose}
+                        onMouseEnter={handlePopoverOpen}>
+                        {market.resell
+                          ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
+                          : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
+                      </Box>
+                    )}
                   </div>
-                </Link>
+                </div>
               </TableCell>
               <Component
                 currentUserID={currentUserID}
@@ -428,10 +432,10 @@ function baseTable(Component) {
         <VerifiedStatusPopover
           id={popoverElementID}
           open={open}
+          market={datatable.data[currentIndex]}
           anchorEl={anchorEl}
           onClose={handlePopoverClose}
           onMouseEnter={() => debouncePopoverClose.clear()}
-          market={datatable.data[currentIndex]}
         />
       </>
     )

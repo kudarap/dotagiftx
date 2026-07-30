@@ -1,14 +1,10 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import * as Auth from '@/service/auth'
-import { blacklistSearch } from '@/service/api'
 import AppContext from '@/components/AppContext'
-// import WhatsNewDialog from '@/components/WhatsNewDialog'
-// import SurveyFab from '@/components/SurveyFab'
-// import { REPORT_LABEL_SURVEY_NEXT } from '@/constants/report'
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 
@@ -19,19 +15,10 @@ function Root({ children }) {
   const currentAuth = Auth.get()
   const isLoggedIn = Auth.isOk()
 
-  const [latestBan, setLatestBan] = React.useState(null)
+  const [isClient, setIsClient] = useState(false)
+
   React.useEffect(() => {
-    ;(async () => {
-      try {
-        const user = await blacklistSearch({ limit: 1, sort: 'updated_at:desc' })
-        if (user) {
-          setLatestBan(user[0])
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('error getting lastest ban', error)
-      }
-    })()
+    setIsClient(true)
   }, [])
 
   const contextValue = useMemo(
@@ -40,10 +27,15 @@ function Root({ children }) {
       isTablet,
       currentAuth,
       isLoggedIn,
-      latestBan,
     }),
-    []
+    [isMobile, isTablet, currentAuth, isLoggedIn]
   )
+
+  // Don't render anything on the server-side to prevent hydration mismatches
+  if (!isClient) {
+    return null
+  }
+
   return (
     <AppContext.Provider value={contextValue}>
       <PayPalScriptProvider
@@ -55,16 +47,6 @@ function Root({ children }) {
         }}>
         {children}
       </PayPalScriptProvider>
-      {/* {currentAuth.user_id && (
-        <Theme>
-          <SurveyFab userID={currentAuth.user_id} label={REPORT_LABEL_SURVEY_NEXT} />
-        </Theme>
-      )} */}
-
-      {/* HOTFIX! google not indexing */}
-      {/* {currentAuth.user_id && ( */}
-      {/* <WhatsNewDialog userID={currentAuth.user_id} /> */}
-      {/* )} */}
     </AppContext.Provider>
   )
 }

@@ -1,6 +1,13 @@
+import { Ubuntu } from 'next/font/google'
 import { createTheme } from '@mui/material/styles'
 import { teal, blueGrey, grey } from '@mui/material/colors'
 import { responsiveFontSizes } from '@mui/material'
+
+const font = Ubuntu({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 const defaultPalette = {
   mode: 'dark',
@@ -40,7 +47,7 @@ const darkCarnivalPalette = {
 
 const baseThemeOpts = {
   typography: {
-    fontFamily: 'Ubuntu, sans-serif',
+    fontFamily: font.style.fontFamily,
   },
   palette: {
     ...defaultPalette,

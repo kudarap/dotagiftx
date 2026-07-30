@@ -14,7 +14,6 @@ export const get = () => {
 }
 
 export const isOk = () => {
-  // eslint-disable-next-line no-prototype-builtins
   return get().hasOwnProperty(userIDKey)
 }
 
