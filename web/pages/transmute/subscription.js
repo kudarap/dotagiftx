@@ -12,7 +12,14 @@ import Footer from '@/components/Footer'
 import AppContext from '@/components/AppContext'
 import Link from '@/components/Link'
 
-const isPaypalLive = process.env.NEXT_PUBLIC_API_URL.startsWith('https://api.dotagiftx.com')
+const isPaypalLive = (() => {
+  try {
+    const apiUrl = new URL(process.env.NEXT_PUBLIC_API_URL)
+    return apiUrl.protocol === 'https:' && apiUrl.hostname === 'api.dotagiftx.com'
+  } catch {
+    return false
+  }
+})()
 
 const subscriptions = {
   supporter: {
