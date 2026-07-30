@@ -13,7 +13,7 @@ import (
 const cacheSkipKey = "nocache"
 
 type cacheManager interface {
-	Set(key string, val interface{}, expr time.Duration) error
+	Set(key string, val any, expr time.Duration) error
 	Get(key string) (val string, err error)
 	BulkDel(keyPrefix string) error
 }

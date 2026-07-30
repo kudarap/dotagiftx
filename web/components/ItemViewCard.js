@@ -46,7 +46,6 @@ export default function ItemViewCard({ item }) {
                 height={220}
                 title={item.name}
                 rarity={item.rarity}
-                nextOptimized
               />
             </a>
           )}

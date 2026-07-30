@@ -33,9 +33,9 @@ const useStyles = makeStyles()(theme => ({
     display: 'flex',
   },
   image: {
-    margin: theme.spacing(-1, 1, -1, 1),
+    margin: theme.spacing(-0.5, 1, -1, 1.5),
     width: 77,
-    height: 55,
+    height: 51,
   },
 }))
 
@@ -55,7 +55,6 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
             <TableHeadCell>Item</TableHeadCell>
             {!isMobile && (
               <TableHeadCell align="right">
-                {/* eslint-disable-next-line no-nested-ternary */}
                 {isRecentMode ? (bidType ? 'Ordered' : 'Listed') : 'Qty'}
               </TableHeadCell>
             )}
@@ -114,7 +113,6 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                 {!isMobile && (
                   <TableCell align="right">
                     <Typography variant="body2" color="textSecondary">
-                      {/* eslint-disable-next-line no-nested-ternary */}
                       {isRecentMode
                         ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
                         : bidType

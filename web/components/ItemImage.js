@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Image from 'next/image'
+import Box from '@mui/material/Box'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
@@ -15,74 +16,46 @@ export function retinaSrcSet(filename, width, height) {
   return { src, srcSet: `${src} 1x, ${src2x} 2x` }
 }
 
-export default function ItemImage({
-  image,
-  title,
-  rarity,
-  className,
-  width,
-  height,
-  nextOptimized,
-  ...other
-}) {
-  const contStyle = {
+export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
+  const containerStyle = {
     lineHeight: 1,
     flexShrink: 0,
     overflow: 'hidden',
     userSelect: 'none',
+    display: 'flex',
+    flexDirection: 'column',
   }
-
   if (rarity) {
-    contStyle.border = `1px solid ${itemRarityColorMap[rarity]}`
+    containerStyle.border = `1px solid ${itemRarityColorMap[rarity]}`
   }
 
-  const imgStyle = {
+  const imageStyle = {
     color: 'transparent',
-    objectFit: 'cover',
-    textAlign: 'center',
-    textIndent: '10000px',
+    width: '100%',
+    height: 'auto',
   }
 
   let baseSrc = CDN_URL + image
   // using srcset to support high dpi or retina displays when
   // dimension were set.
-  let srcSet = null
   if (width && height) {
     const rs = retinaSrcSet(image, width, height)
     baseSrc = rs.src
-    srcSet = rs.srcSet
-  }
-
-  if (!nextOptimized) {
-    return (
-      <div style={contStyle} className={className}>
-        <img
-          loading="lazy"
-          src={baseSrc}
-          srcSet={srcSet}
-          alt={title || image}
-          style={imgStyle}
-          height={height}
-          {...other}
-        />
-      </div>
-    )
   }
 
   return (
-    <div style={contStyle} className={className}>
+    <Box style={containerStyle} className={className} {...other}>
       <Image
+        style={imageStyle}
         src={baseSrc}
         alt={title || image}
-        style={imgStyle}
         width={width}
         height={height}
         quality={100}
         responsive="true"
         priority
-        {...other}
       />
-    </div>
+    </Box>
   )
 }
 ItemImage.propTypes = {
@@ -92,11 +65,9 @@ ItemImage.propTypes = {
   title: PropTypes.string,
   rarity: PropTypes.string,
   className: PropTypes.string,
-  nextOptimized: PropTypes.bool,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
   className: '',
-  nextOptimized: false,
 }

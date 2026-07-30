@@ -75,7 +75,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 			"priority", task.Priority,
 		)
 
-		var run func(context.Context, interface{}) error
+		var run func(context.Context, any) error
 		switch task.Type {
 		case dotagiftx.TaskTypeVerifyInventory:
 			run = p.taskVerifyInventory
@@ -118,7 +118,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 	}
 }
 
-func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{}) error {
+func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data any) error {
 	var market dotagiftx.Market
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
@@ -145,7 +145,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data interface{
 	})
 }
 
-func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data interface{}) error {
+func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data any) error {
 	var market dotagiftx.Market
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
@@ -181,8 +181,8 @@ type inventoryInvalidator interface {
 	Invalidate(ctx context.Context, steamID string) error
 }
 
-func marshallTaskPayload(in, out interface{}) error {
-	raw, ok := in.(map[string]interface{})
+func marshallTaskPayload(in, out any) error {
+	raw, ok := in.(map[string]any)
 	if !ok {
 		return fmt.Errorf("un-supported payload")
 	}

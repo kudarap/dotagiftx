@@ -68,15 +68,16 @@ func (id OpenId) AuthUrl() string {
 	}
 
 	i := 0
-	u := steamLogin + "?"
+	var u strings.Builder
+	u.WriteString(steamLogin + "?")
 	for key, value := range data {
-		u += key + "=" + value
+		u.WriteString(key + "=" + value)
 		if i != len(data)-1 {
-			u += "&"
+			u.WriteString("&")
 		}
 		i++
 	}
-	return u
+	return u.String()
 }
 
 func (id *OpenId) ValidateAndGetId() (string, error) {
@@ -94,8 +95,8 @@ func (id *OpenId) ValidateAndGetId() (string, error) {
 	params.Set("openid.sig", id.data.Get("openid.sig"))
 	params.Set("openid.ns", id.data.Get("openid.ns"))
 
-	split := strings.Split(id.data.Get("openid.signed"), ",")
-	for _, item := range split {
+	split := strings.SplitSeq(id.data.Get("openid.signed"), ",")
+	for item := range split {
 		params.Set("openid."+item, id.data.Get("openid."+item))
 	}
 	params.Set("openid.mode", "check_authentication")

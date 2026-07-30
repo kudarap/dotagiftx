@@ -24,7 +24,7 @@ func newMsg(msg string) httpMsg {
 	return m
 }
 
-func newError(err error) interface{} {
+func newError(err error) any {
 	m := httpMsg{}
 	m.Error = true
 	m.Msg = err.Error()
@@ -32,12 +32,12 @@ func newError(err error) interface{} {
 }
 
 type dataWithMeta struct {
-	Data        interface{} `json:"data"`
-	ResultCount int         `json:"result_count"`
-	TotalCount  int         `json:"total_count"`
+	Data        any `json:"data"`
+	ResultCount int `json:"result_count"`
+	TotalCount  int `json:"total_count"`
 }
 
-func newDataWithMeta(data interface{}, md *dotagiftx.FindMetadata) dataWithMeta {
+func newDataWithMeta(data any, md *dotagiftx.FindMetadata) dataWithMeta {
 	return dataWithMeta{data, md.ResultCount, md.TotalCount}
 }
 
@@ -46,7 +46,7 @@ func hasQueryField(url *url.URL, key string) bool {
 	return ok
 }
 
-func respond(w http.ResponseWriter, code int, body interface{}) {
+func respond(w http.ResponseWriter, code int, body any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
@@ -64,12 +64,12 @@ func respond(w http.ResponseWriter, code int, body interface{}) {
 	}
 }
 
-func respondOK(w http.ResponseWriter, body interface{}) {
+func respondOK(w http.ResponseWriter, body any) {
 	respond(w, http.StatusOK, body)
 }
 
 func respondError(w http.ResponseWriter, err error) {
-	var body interface{}
+	var body any
 	status := http.StatusBadRequest
 
 	// Try to parse handled errors.
@@ -105,7 +105,7 @@ func handle405() http.HandlerFunc {
 	}
 }
 
-func parseForm(r *http.Request, form interface{}) error {
+func parseForm(r *http.Request, form any) error {
 	if err := json.NewDecoder(r.Body).Decode(form); err != nil {
 		return fmt.Errorf("could not parse json form: %s", err)
 	}

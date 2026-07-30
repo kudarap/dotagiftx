@@ -15,5 +15,5 @@ DotagiftX web user interface
 cd web
 cp .env.sample .env
 bun install
-bun  dev
+bun dev
 ```

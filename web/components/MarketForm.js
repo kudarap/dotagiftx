@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import SubmitIcon from '@mui/icons-material/Check'
 import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import { catalog, myMarket, myProfile } from '@/service/api'
 import { APP_NAME } from '@/constants/strings'
 import { USER_SUBSCRIPTION_MAP_COLOR } from '@/constants/user'
@@ -22,23 +23,6 @@ import { VERIFIED_INVENTORY_VERIFIED, VERIFIED_DELIVERY_MAP_ICON } from '@/const
 import AppContext from '@/components/AppContext'
 import ReSellInput from './ReSellerInput'
 import RefresherOrbBoon from './RefresherOrbBoon'
-
-const useStyles = makeStyles()(theme => ({
-  root: {
-    maxWidth: theme.breakpoints.values.sm,
-    margin: '0 auto',
-    padding: theme.spacing(2),
-  },
-  itemImage: {
-    width: 150,
-    height: 100,
-    float: 'left',
-    marginRight: theme.spacing(1),
-  },
-  bidText: {
-    color: theme.palette.accent.main,
-  },
-}))
 
 const defaultItem = {
   id: '',
@@ -83,7 +67,6 @@ const checkMarketPayload = payload => {
 }
 
 export default function MarketForm() {
-  const { classes } = useStyles()
   const { isLoggedIn } = useContext(AppContext)
 
   const [item, setItem] = React.useState(defaultItem)
@@ -157,7 +140,6 @@ export default function MarketForm() {
       try {
         let res
         for (let i = 0; i < quantity; i++) {
-          // eslint-disable-next-line no-await-in-loop
           res = await myMarket.POST(newMarket)
         }
 
@@ -225,12 +207,15 @@ export default function MarketForm() {
 
       <Paper
         component="form"
-        className={classes.root}
-        sx={{
+        sx={theme => ({
+          maxWidth: theme.breakpoints.values.sm,
+          margin: '0 auto',
+          padding: theme.spacing(2),
+
           transition: `box-shadow .5s ease-in-out, border .2s`,
           borderTop: subscribersColor ? `5px solid ${subscribersColor}` : null,
           boxShadow: subscribersColor ? `0 0 15px ${subscribersColor}` : null,
-        }}
+        })}
         onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1">
           Post your item on {APP_NAME}
@@ -243,6 +228,7 @@ export default function MarketForm() {
         <br />
 
         <ItemAutoComplete
+          required
           ref={itemSelectEl}
           onSelect={handleItemSelect}
           disabled={loading || !isLoggedIn}
@@ -251,55 +237,62 @@ export default function MarketForm() {
 
         {/* Selected item preview */}
         {item.id && (
-          <div>
+          <Box sx={{ display: 'flex', mb: 2 }}>
             <ItemImage
-              className={classes.itemImage}
+              sx={{
+                width: 150,
+                height: 100,
+              }}
               image={item.image}
               width={150}
               height={100}
               rarity={item.rarity}
               title={item.name}
             />
-            <Typography variant="body2" color="textSecondary">
-              Origin:{' '}
-              <Typography variant="body2" color="textPrimary" component="span">
-                {item.origin}
+            <Box sx={{ ml: 1 }}>
+              <Typography variant="body2" color="textSecondary">
+                Origin:{' '}
+                <Typography variant="body2" color="textPrimary" component="span">
+                  {item.origin}
+                </Typography>
               </Typography>
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Rarity:{' '}
-              <Typography
-                variant="body2"
-                color="textPrimary"
-                component="span"
-                style={{
-                  textTransform: 'capitalize',
-                  color: itemRarityColorMap[item.rarity],
-                }}>
-                {item.rarity}
+              <Typography variant="body2" color="textSecondary">
+                Rarity:{' '}
+                <Typography
+                  variant="body2"
+                  color="textPrimary"
+                  component="span"
+                  style={{
+                    textTransform: 'capitalize',
+                    color: itemRarityColorMap[item.rarity],
+                  }}>
+                  {item.rarity}
+                </Typography>
               </Typography>
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Hero:{' '}
-              <Typography variant="body2" color="textPrimary" component="span">
-                {item.hero}
+              <Typography variant="body2" color="textSecondary">
+                Hero:{' '}
+                <Typography variant="body2" color="textPrimary" component="span">
+                  {item.hero}
+                </Typography>
               </Typography>
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Starting at:{' '}
-              <Link href={`/${item.slug}`}>
-                {item.lowest_ask ? format.amount(item.lowest_ask, 'USD') : 'no offers yet'}
-              </Link>
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Request to buy at:{' '}
-              <Link href={`/${item.slug}/buyorders`} className={classes.bidText}>
-                {item.highest_bid ? format.amount(item.highest_bid, 'USD') : 'no orders yet'}
-              </Link>
-            </Typography>
-            <br />
-            {/* <br /> */}
-          </div>
+              <Typography variant="body2" color="textSecondary">
+                Starting at:{' '}
+                <Link href={`/${item.slug}`}>
+                  {item.lowest_ask ? format.amount(item.lowest_ask, 'USD') : 'no offers yet'}
+                </Link>
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Request to buy at:{' '}
+                <Link
+                  sx={{
+                    color: 'accent.main',
+                  }}
+                  href={`/${item.slug}/buyorders`}>
+                  {item.highest_bid ? format.amount(item.highest_bid, 'USD') : 'no orders yet'}
+                </Link>
+              </Typography>
+            </Box>
+          </Box>
         )}
 
         {boons && boons.indexOf('SHOPKEEPERS_CONTRACT') !== -1 && (
@@ -398,14 +391,15 @@ export default function MarketForm() {
               .
             </Alert>
           )}
-          {error && (
-            <Typography align="center" variant="body2" color="error">
-              {error}
-            </Typography>
-          )}
         </div>
 
         <RefresherOrbBoon boons={boons} />
+
+        {error && (
+          <Typography sx={{ mt: 1 }} align="center" variant="body2" color="error">
+            {error}
+          </Typography>
+        )}
 
         <br />
 

@@ -232,7 +232,7 @@ func (d *rawMetadata) format() *Metadata {
 	return m
 }
 
-func getRequest(url string, data interface{}) error {
+func getRequest(url string, data any) error {
 	res, err := http.Get(url)
 	if err != nil {
 		return err

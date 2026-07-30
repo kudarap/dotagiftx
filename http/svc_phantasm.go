@@ -23,7 +23,7 @@ func handlePhantasmWebhook(svc *phantasm.Service) http.HandlerFunc {
 
 func handlePhantasmCrawl() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		args := map[string]interface{}{
+		args := map[string]any{
 			"steam_id": r.URL.Query().Get("steam_id"),
 		}
 		if r.URL.Query().Has("precheck") {

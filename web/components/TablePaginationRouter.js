@@ -20,8 +20,8 @@ const useStyles = makeStyles()(theme => ({
 function TablePaginationRouter({
   count,
   page: initPage,
-  rowsPerPage,
-  onPageChange,
+  rowsPerPage = 10,
+  onPageChange = () => {},
   linkProps,
   ...other
 }) {
@@ -117,10 +117,6 @@ TablePaginationRouter.propTypes = {
   onPageChange: PropTypes.func,
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number,
-}
-TablePaginationRouter.defaultProps = {
-  rowsPerPage: 10,
-  onPageChange: () => {},
 }
 
 export default TablePaginationRouter

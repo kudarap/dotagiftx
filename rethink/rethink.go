@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
@@ -72,17 +73,15 @@ func (c *Client) Close() error {
 // autoMigrate create tables and wait for to finish. Existing table will be ignored.
 func (c *Client) autoMigrate(table string) error {
 	// Checks table existence and skip create.
-	for _, t := range c.tables {
-		if t == table {
-			return nil
-		}
+	if slices.Contains(c.tables, table) {
+		return nil
 	}
 
 	return c.exec(r.TableCreate(table))
 }
 
 // autoIndex creates table index base model that has tag "index".
-func (c *Client) autoIndex(table string, model interface{}) error {
+func (c *Client) autoIndex(table string, model any) error {
 	for _, ff := range getModelIndexedFields(model) {
 		if err := c.createIndex(table, ff); err != nil {
 			return fmt.Errorf("could not create %s index on %s table: %s", ff, tableCatalog, err)
@@ -108,7 +107,7 @@ func (c *Client) exec(t r.Term) error {
 	return t.Exec(c.db)
 }
 
-func (c *Client) list(t r.Term, out interface{}) error {
+func (c *Client) list(t r.Term, out any) error {
 	if c.tracing != nil {
 		s := c.tracing.StartSpan("rethink list " + t.String())
 		defer s.End()
@@ -125,7 +124,7 @@ func (c *Client) list(t r.Term, out interface{}) error {
 	return res.Close()
 }
 
-func (c *Client) one(t r.Term, out interface{}) error {
+func (c *Client) one(t r.Term, out any) error {
 	if c.tracing != nil {
 		s := c.tracing.StartSpan("rethink one " + t.String())
 		defer s.End()
@@ -172,11 +171,8 @@ func (c *Client) createIndex(tableName, index string) error {
 		return err
 	}
 
-	for _, ii := range indexes {
-		// Skip creating index.
-		if ii == index {
-			return nil
-		}
+	if slices.Contains(indexes, index) {
+		return nil
 	}
 
 	return c.exec(tbl.IndexCreate(index))
@@ -195,13 +191,12 @@ func now() *time.Time {
 
 const indexedTagName = "index"
 
-func getModelIndexedFields(model interface{}) (fields []string) {
+func getModelIndexedFields(model any) (fields []string) {
 	// TypeOf returns the reflection Type that represents the dynamic type of variable.
 	// If variable is a nil interface value, TypeOf returns nil.
 	t := reflect.TypeOf(model)
 	// Iterate over all available fields and read the tag value.
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
+	for field := range t.Fields() {
 		tag := field.Tag.Get(tagName)
 		if !strings.Contains(tag, indexedTagName) {
 			continue

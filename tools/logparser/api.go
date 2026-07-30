@@ -141,7 +141,7 @@ func generateReport(logs []ApiLog) []Report {
 
 func parseLog(raw string) []ApiLog {
 	var logs []ApiLog
-	for _, raw := range strings.Split(raw, "\n") {
+	for raw := range strings.SplitSeq(raw, "\n") {
 		var entry ApiLog
 
 		body := strings.Split(raw, `" level=info msg="`)

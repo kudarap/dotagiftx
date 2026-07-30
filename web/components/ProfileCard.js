@@ -90,7 +90,11 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           {!USER_SUBSCRIPTION_BADGE_MODE && !isMobile && (
             <SubscriberBadge
               type={userBadge}
-              style={{ marginLeft: '0.375rem', marginTop: '0.375rem', position: 'absolute' }}
+              style={{
+                marginLeft: '0.375rem',
+                marginTop: '0.375rem',
+                position: 'absolute',
+              }}
               size="medium"
             />
           )}

@@ -14,7 +14,7 @@ type authResp struct {
 	SteamID      string    `json:"steam_id,omitempty"`
 	RefreshToken string    `json:"refresh_token,omitempty"`
 	Token        string    `json:"token,omitempty"`
-	ExpiresAt    time.Time `json:"expires_at,omitempty"`
+	ExpiresAt    time.Time `json:"expires_at"`
 }
 
 func handleAuthSteam(svc dotagiftx.AuthService) http.HandlerFunc {

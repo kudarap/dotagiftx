@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { Grid } from '@mui/material'
-import { styled } from '@mui/system'
+import { styled } from '@mui/material/styles'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import Footer from '@/components/Footer'
@@ -49,12 +49,10 @@ export default function Treasures({ treasures, error }) {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: All Treasures</title>
+        <title>{`${APP_NAME} :: All Treasures`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Header />
-
       <main>
         <div
           style={{
@@ -128,6 +126,10 @@ export default function Treasures({ treasures, error }) {
                         alt={treasure.name}
                         width={256}
                         height={171}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                     <Typography noWrap>{treasure.name}</Typography>
@@ -138,7 +140,6 @@ export default function Treasures({ treasures, error }) {
           </Grid>
         </Container>
       </main>
-
       <Footer />
     </div>
   )

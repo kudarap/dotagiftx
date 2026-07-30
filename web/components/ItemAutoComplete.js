@@ -11,37 +11,11 @@ import { item, itemSearch } from '@/service/api'
 const itemSearchFilter = { limit: 1000, sort: 'created_at:desc', active: true }
 const optionTextSeparator = ' - '
 
-function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
+function ItemAutoComplete({ onSelect, forwardedRef, required, ...other }) {
   const [open, setOpen] = React.useState(false)
   const [options, setOptions] = React.useState([])
   const [value, setValue] = React.useState('')
   const loading = open && options.length === 0
-
-  // React.useEffect(() => {
-  //   let active = true
-  //
-  //   if (!loading) {
-  //     return undefined
-  //   }
-  //
-  //   ;(async () => {
-  //     const catalogs = await itemSearch(itemSearchFilter)
-  //
-  //     if (active) {
-  //       setOptions(catalogs.data)
-  //     }
-  //   })()
-  //
-  //   return () => {
-  //     active = false
-  //   }
-  // }, [loading])
-  //
-  // React.useEffect(() => {
-  //   if (!open) {
-  //     setOptions([])
-  //   }
-  // }, [open])
 
   const router = useRouter()
   const itemSlug = router.query.s
@@ -106,6 +80,7 @@ function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
         <TextField
           {...params}
           ref={forwardedRef}
+          required={required}
           color="secondary"
           label="Item name"
           helperText="Search item you want to post from your inventory."
@@ -128,10 +103,12 @@ function ItemAutoComplete({ onSelect, forwardedRef, ...other }) {
 ItemAutoComplete.propTypes = {
   onSelect: PropTypes.func,
   forwardedRef: PropTypes.object,
+  required: PropTypes.bool,
 }
 ItemAutoComplete.defaultProps = {
   onSelect: () => {},
   forwardedRef: null,
+  required: null,
 }
 
 const itemAutoCompleteRef = (props, ref) => <ItemAutoComplete forwardedRef={ref} {...props} />

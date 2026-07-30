@@ -50,7 +50,7 @@ func (s *taskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
 	return nil
 }
 
-func (s *taskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload interface{}) (id string, err error) {
+func (s *taskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload any) (id string, err error) {
 	n := now()
 	id, err = s.db.insert(s.table().Insert(dotagiftx.Task{
 		Status:    0,

@@ -46,7 +46,7 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
-func (c *Client) Set(key string, val interface{}, expr time.Duration) error {
+func (c *Client) Set(key string, val any, expr time.Duration) error {
 	// Skip caching when key and value is empty.
 	if key == "" || val == nil {
 		return nil

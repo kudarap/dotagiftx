@@ -125,7 +125,8 @@ export default function VerifiedStatusCard({ market, ...other }) {
           <>
             {!isDelivery && (
               <Typography variant="body2">
-                Found <strong>{source.bundle_count}</strong> bundle{source.bundle_count > 1 && 's'}
+                Found <strong>{source.bundle_count}</strong> bundle
+                {source.bundle_count > 1 && 's'}
               </Typography>
             )}
             <Table className={classes.table} size="small">
@@ -270,7 +271,6 @@ function ResellCard({ data }) {
     </CardX>
   )
 }
-
 ResellCard.propTypes = {
   data: PropTypes.object.isRequired,
 }
@@ -289,7 +289,6 @@ function PendingCard({ data }) {
     </CardX>
   )
 }
-
 PendingCard.propTypes = {
   data: PropTypes.object.isRequired,
 }

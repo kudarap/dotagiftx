@@ -150,7 +150,11 @@ export default function ItemDetails({
     setPage(pageValue)
     // scroll to top when page change
     window.scrollTo(0, 0)
-    router.push({ query: { page: pageValue } }, null, { shallow: true })
+    router.push(
+      { pathname: router.pathname, query: { ...router.query, page: pageValue } },
+      undefined,
+      { shallow: true }
+    )
   }
 
   const getOffers = async (sortValue, pageValue) => {
@@ -257,8 +261,7 @@ export default function ItemDetails({
         {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
         <link
           rel="preload"
-          // eslint-disable-next-line react/no-unknown-property
-          fetchpriority="high"
+          fetchPriority="high"
           as="image"
           href={`${CDN_URL}/${item.image}`}
           type="image/png"
