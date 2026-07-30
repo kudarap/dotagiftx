@@ -13,7 +13,7 @@ export default function MyDocument(props) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://www.googleanalytics.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" />
+        <link rel="preconnect" href="https://cdn.steamstatic.com" />
 
         {/* PWA primary color */}
         <meta name="theme-color" content={theme.palette.primary.main} />
