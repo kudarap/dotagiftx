@@ -13,7 +13,6 @@ import {
   APP_NAME,
   DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -192,15 +191,6 @@ function UserCard({ data }) {
             rel="noreferrer noopener"
             href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
             Steam Profile
-          </Link>
-          &nbsp;&middot;&nbsp;
-          <Link
-            variant="body2"
-            gutterBottom
-            target="_blank"
-            rel="noreferrer noopener"
-            href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}>
-            SteamRep
           </Link>
           &nbsp;&middot;&nbsp;
           <Link

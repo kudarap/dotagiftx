@@ -40,8 +40,6 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
           <ExclusiveChip tag={userTag} />
           &nbsp;
           <ChipLink href={`https://steamcommunity.com/profiles/${id}`} label="Steam Profile" />
-          &nbsp;
-          <ChipLink href={`https://steamrep.com/profiles/${id}`} label="SteamRep" />
         </Box>
         <Box>
           <Button

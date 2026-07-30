@@ -13,7 +13,6 @@ import {
   APP_NAME,
   DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
 import Link from '@/components/Link'
 import { dateFromNow } from '@/lib/format'
@@ -51,7 +50,6 @@ export default function NotRegisteredProfile({ profile, canonicalURL }) {
   const { classes } = useStyles()
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
-  const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
   const dotabuffURL = `${DOTABUFF_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `${APP_NAME} :: ${profile.name}`
@@ -99,8 +97,6 @@ export default function NotRegisteredProfile({ profile, canonicalURL }) {
                 &nbsp;
                 {/* <ChipLink label="Steam Inventory" href={`${profileURL}/inventory`} /> */}
                 {/* &nbsp; */}
-                <ChipLink label="SteamRep" href={steamRepURL} />
-                &nbsp;
                 <ChipLink label="Dotabuff" href={dotabuffURL} />
               </Typography>
             </Typography>
