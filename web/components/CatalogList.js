@@ -33,9 +33,9 @@ const useStyles = makeStyles()(theme => ({
     display: 'flex',
   },
   image: {
-    margin: theme.spacing(-1, 1, -1, 1),
+    margin: theme.spacing(-0.5, 1, -1, 1.5),
     width: 77,
-    height: 55,
+    height: 51,
   },
 }))
 

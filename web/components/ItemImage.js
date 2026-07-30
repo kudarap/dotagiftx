@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Image from 'next/image'
+import Box from '@mui/material/Box'
 import { CDN_URL } from '@/service/api'
 import { itemRarityColorMap } from '@/constants/palette'
 
@@ -15,33 +16,23 @@ export function retinaSrcSet(filename, width, height) {
   return { src, srcSet: `${src} 1x, ${src2x} 2x` }
 }
 
-export default function ItemImage({
-  image,
-  title,
-  rarity,
-  className,
-  width,
-  height,
-  sx,
-  ...other
-}) {
+export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
   const containerStyle = {
     lineHeight: 1,
     flexShrink: 0,
     overflow: 'hidden',
     userSelect: 'none',
-    width,
-    height,
+    display: 'flex',
+    flexDirection: 'column',
   }
   if (rarity) {
     containerStyle.border = `1px solid ${itemRarityColorMap[rarity]}`
   }
 
-  const imgStyle = {
+  const imageStyle = {
     color: 'transparent',
-    objectFit: 'cover',
-    textAlign: 'center',
-    textIndent: '10000px',
+    width: '100%',
+    height: 'auto',
   }
 
   let baseSrc = CDN_URL + image
@@ -53,8 +44,9 @@ export default function ItemImage({
   }
 
   return (
-    <div style={containerStyle} sx={sx} className={className}>
+    <Box style={containerStyle} className={className} {...other}>
       <Image
+        style={imageStyle}
         src={baseSrc}
         alt={title || image}
         width={width}
@@ -62,14 +54,8 @@ export default function ItemImage({
         quality={100}
         responsive="true"
         priority
-        {...other}
-        style={{
-          ...imgStyle,
-          maxWidth: '100%',
-          height: 'auto',
-        }}
       />
-    </div>
+    </Box>
   )
 }
 ItemImage.propTypes = {
@@ -79,11 +65,9 @@ ItemImage.propTypes = {
   title: PropTypes.string,
   rarity: PropTypes.string,
   className: PropTypes.string,
-  sx: PropTypes.object,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
   className: '',
-  sx: null,
 }

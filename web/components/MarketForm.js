@@ -239,12 +239,10 @@ export default function MarketForm() {
         {item.id && (
           <Box sx={{ display: 'flex', mb: 2 }}>
             <ItemImage
-              sx={theme => ({
+              sx={{
                 width: 150,
                 height: 100,
-                float: 'left',
-                marginRight: theme.spacing(1),
-              })}
+              }}
               image={item.image}
               width={150}
               height={100}
