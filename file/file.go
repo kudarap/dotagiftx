@@ -96,7 +96,11 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 
 // Get gets file path base on file name and its existence.
 func (l *Local) Get(name string) (path string, err error) {
-	path = filepath.Join(l.Dir(), name)
+	path, err = l.resolveSafePath(name)
+	if err != nil {
+		return "", err
+	}
+
 	// Check the actual file existence.
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return "", err
@@ -107,7 +111,11 @@ func (l *Local) Get(name string) (path string, err error) {
 
 // Delete uploaded file base on file name.
 func (l *Local) Delete(name string) error {
-	p := filepath.Join(l.Dir(), name)
+	p, err := l.resolveSafePath(name)
+	if err != nil {
+		return err
+	}
+
 	if err := os.Remove(p); err != nil {
 		return err
 	}
@@ -118,6 +126,29 @@ func (l *Local) Delete(name string) error {
 // Dir returns save path location.
 func (l *Local) Dir() string {
 	return l.saveDir
+}
+
+func (l *Local) resolveSafePath(name string) (string, error) {
+	baseAbs, err := filepath.Abs(l.Dir())
+	if err != nil {
+		return "", err
+	}
+
+	targetAbs, err := filepath.Abs(filepath.Join(baseAbs, name))
+	if err != nil {
+		return "", err
+	}
+
+	rel, err := filepath.Rel(baseAbs, targetAbs)
+	if err != nil {
+		return "", err
+	}
+
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+		return "", errors.New("invalid file path")
+	}
+
+	return targetAbs, nil
 }
 
 func (l *Local) getType(data []byte) (string, error) {
