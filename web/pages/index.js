@@ -21,6 +21,7 @@ import {
 import * as format from '@/lib/format'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
+import { display } from '@mui/system'
 
 const SearchInput = dynamic(() => import('@/components/SearchInput'))
 const CatalogList = dynamic(() => import('@/components/CatalogList'))
@@ -58,6 +59,11 @@ const useStyles = makeStyles()(theme => ({
   footLinks: {
     [theme.breakpoints.down('sm')]: {
       textAlign: 'center',
+    },
+  },
+  splash: {
+    [theme.breakpoints.down('sm')]: {
+      // display: 'none',
     },
   },
   divider: {
@@ -133,6 +139,7 @@ export default function Index({ marketSummary, trendingItems }) {
       <Header disableSearch />
 
       <main className={classes.main}>
+        {/* Splash banner */}
         <div
           style={{
             width: '100%',
@@ -140,33 +147,32 @@ export default function Index({ marketSummary, trendingItems }) {
             marginBottom: 500 - 640,
             maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
             WebkitMaskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
-            position: 'relative',
-            zIndex: 0,
           }}>
           <div
+            className={classes.splash}
             style={{
               position: 'absolute',
               width: '100%',
+              marginTop: 0,
+              textAlign: 'center',
             }}>
-            <div style={{ marginTop: -170, textAlign: 'center' }}>
-              <video
-                style={{
-                  width: '100%',
-                  marginTop: '0vw',
-                  marginBottom: '-20vw',
-                }}
-                preload="auto"
-                poster="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline>
-                <source
-                  type="video/webm"
-                  src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
-                />
-              </video>
-            </div>
+            <video
+              style={{
+                width: '100%',
+                marginTop: '-10vw',
+                userSelect: 'none',
+              }}
+              preload="auto"
+              poster="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
+              autoPlay
+              muted
+              loop
+              playsInline>
+              <source
+                type="video/webm"
+                src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
+              />
+            </video>
           </div>
         </div>
 
