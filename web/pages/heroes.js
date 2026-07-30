@@ -54,7 +54,8 @@ export default function Heroes({ heroes: allHeroes, error }) {
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
-          }}/>
+          }}
+        />
 
         <Container style={{ position: 'relative' }}>
           {error && (

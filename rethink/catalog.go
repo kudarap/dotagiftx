@@ -90,18 +90,18 @@ func (s *catalogStorage) Trending() ([]dotagiftx.Catalog, error) {
 		Filter(map[string]string{trackFieldType: dotagiftx.TrackTypeView}).
 		Group(trackFieldItemID).Count().
 		Ungroup().OrderBy(r.Desc(reductionField)).
-		Map(func(t r.Term) interface{} {
+		Map(func(t r.Term) any {
 			itemID := t.Field("group")
 			mq := r.Table(tableMarket).
 				Between(startTime, endTime, r.BetweenOpts{Index: marketFieldCreatedAt}).
-				Filter(map[string]interface{}{marketFieldItemID: itemID})
-			askQ := mq.Filter(map[string]interface{}{marketFieldType: dotagiftx.MarketTypeAsk})
+				Filter(map[string]any{marketFieldItemID: itemID})
+			askQ := mq.Filter(map[string]any{marketFieldType: dotagiftx.MarketTypeAsk})
 			// Score rate evaluation.
 			viewScore := t.Field(reductionField)
 			entryScore := askQ.Count()
-			reserveScore := askQ.Filter(map[string]interface{}{marketFieldStatus: dotagiftx.MarketStatusReserved}).Count()
-			soldScore := askQ.Filter(map[string]interface{}{marketFieldStatus: dotagiftx.MarketStatusSold}).Count()
-			bidScore := mq.Filter(map[string]interface{}{marketFieldType: dotagiftx.MarketTypeBid}).Count()
+			reserveScore := askQ.Filter(map[string]any{marketFieldStatus: dotagiftx.MarketStatusReserved}).Count()
+			soldScore := askQ.Filter(map[string]any{marketFieldStatus: dotagiftx.MarketStatusSold}).Count()
+			bidScore := mq.Filter(map[string]any{marketFieldType: dotagiftx.MarketTypeBid}).Count()
 			finalScore := r.Expr([]r.Term{
 				viewScore.Mul(dotagiftx.TrendScoreRateView),
 				entryScore.Mul(dotagiftx.TrendScoreRateMarketEntry),
@@ -110,7 +110,7 @@ func (s *catalogStorage) Trending() ([]dotagiftx.Catalog, error) {
 				bidScore.Mul(dotagiftx.TrendScoreRateBid),
 			}).Sum()
 
-			return map[string]interface{}{
+			return map[string]any{
 				trackFieldItemID: itemID,
 				scoreFieldName:   finalScore,
 				"view_count":     finalScore,
@@ -442,7 +442,7 @@ func (s *catalogStorage) table() r.Term {
 	return r.Table(tableCatalog)
 }
 
-func catalogToMap(cat *dotagiftx.Catalog) map[string]interface{} {
+func catalogToMap(cat *dotagiftx.Catalog) map[string]any {
 	s := structs.New(cat)
 	s.TagName = "json"
 	return s.Map()

@@ -15,7 +15,7 @@ func init() {
 }
 
 type data struct {
-	Payload interface{}
+	Payload any
 	Expr    int64
 }
 
@@ -23,7 +23,7 @@ func (d *data) isExpired() bool {
 	return time.Now().Unix() > d.Expr
 }
 
-func Get(key string) (val interface{}, err error) {
+func Get(key string) (val any, err error) {
 	path := filename(key)
 	b, err := os.ReadFile(path)
 	if err != nil && !os.IsNotExist(err) {
@@ -45,7 +45,7 @@ func Get(key string) (val interface{}, err error) {
 	return d.Payload, nil
 }
 
-func Set(key string, val interface{}, expr time.Duration) error {
+func Set(key string, val any, expr time.Duration) error {
 	path := filename(key)
 	d, err := newData(val, expr)
 	if err != nil {
@@ -62,7 +62,7 @@ func Del(key string) error {
 	return os.Remove(path)
 }
 
-func newData(val interface{}, d time.Duration) ([]byte, error) {
+func newData(val any, d time.Duration) ([]byte, error) {
 	t := time.Now().Add(d).Unix()
 	c := &data{val, t}
 	b, err := json.Marshal(c)

@@ -271,10 +271,10 @@ func (s *statsStorage) GraphMarketSales(o dotagiftx.FindOpts) ([]dotagiftx.Marke
 			f.Day(),
 			f.Timezone(),
 		}
-	}).Field(marketFieldPrice).Ungroup().Map(func(doc r.Term) interface{} {
+	}).Field(marketFieldPrice).Ungroup().Map(func(doc r.Term) any {
 		fg := doc.Field("group")
 		fr := doc.Field("reduction")
-		return map[string]interface{}{
+		return map[string]any{
 			"date":  r.Time(fg.Nth(0), fg.Nth(1), fg.Nth(2), fg.Nth(3)),
 			"count": fr.Count(),
 			"avg":   fr.Avg(),

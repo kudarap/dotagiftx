@@ -61,7 +61,7 @@ func (s *reportStorage) includeRelatedFields(q r.Term) r.Term {
 	return q.
 		EqJoin(reportFieldUserID, r.Table(tableUser)).
 		Map(func(t r.Term) r.Term {
-			return t.Field("left").Merge(map[string]interface{}{
+			return t.Field("left").Merge(map[string]any{
 				tableUser: t.Field("right"),
 			})
 		})

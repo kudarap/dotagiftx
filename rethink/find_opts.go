@@ -67,7 +67,7 @@ func (o findOpts) parseOpts(q r.Term, hookFn func(r.Term) r.Term) r.Term {
 	return q
 }
 
-func (o findOpts) parseKeyword() interface{} {
+func (o findOpts) parseKeyword() any {
 	if len(o.KeywordFields) == 0 {
 		return nil
 	}
@@ -81,7 +81,7 @@ func (o findOpts) parseKeyword() interface{} {
 
 		// Matches that contains the keywords non case sensitive.
 		q := searchText
-		for _, ww := range strings.Split(normalizeKeyword(o.Keyword), " ") {
+		for ww := range strings.SplitSeq(normalizeKeyword(o.Keyword), " ") {
 			escaped := regexp.QuoteMeta(ww)
 			q = q.And(searchText.Match(fmt.Sprintf("(?i)%s", escaped)))
 		}
@@ -102,16 +102,16 @@ func normalizeKeyword(keyword string) string {
 	return s
 }
 
-func (o findOpts) parseFilter() map[string]interface{} {
+func (o findOpts) parseFilter() map[string]any {
 	if o.Filter == nil {
-		return map[string]interface{}{}
+		return map[string]any{}
 	}
 
 	structs.DefaultTagName = tagName
 	return structs.New(o.Filter).Map()
 }
 
-func (o findOpts) parseOrder() interface{} {
+func (o findOpts) parseOrder() any {
 	if o.Desc {
 		return r.Desc(o.Sort)
 	}
@@ -130,8 +130,8 @@ func (o findOpts) parseSlice() (start int, end int) {
 	return
 }
 
-func (o findOpts) setUserScope() map[string]interface{} {
-	return map[string]interface{}{
+func (o findOpts) setUserScope() map[string]any {
+	return map[string]any{
 		"user_id": o.UserID,
 	}
 }

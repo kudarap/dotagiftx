@@ -15,11 +15,11 @@ import (
 var fastjson = jsoniter.ConfigFastest
 
 type Item struct {
-	ClassID     string      `json:"classid"`
-	Name        string      `json:"name"`
-	Image       string      `json:"icon_url_large"`
-	Type        string      `json:"type"`
-	DescRaw     interface{} `json:"descriptions"`
+	ClassID     string `json:"classid"`
+	Name        string `json:"name"`
+	Image       string `json:"icon_url_large"`
+	Type        string `json:"type"`
+	DescRaw     any    `json:"descriptions"`
 	Description string
 	Hero        string
 }
@@ -29,7 +29,7 @@ func (i Item) stringifyDesc() (description, hero string) {
 
 	// Extract hero name
 	const seg1 = "value:Used By: "
-	for _, hh := range strings.Split(s, "] map[") {
+	for hh := range strings.SplitSeq(s, "] map[") {
 		if strings.Contains(hh, seg1) {
 			hs := strings.Split(hh, seg1)
 			hero = hs[len(hs)-1]

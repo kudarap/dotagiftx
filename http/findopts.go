@@ -11,7 +11,7 @@ import (
 
 const defaultPageLimit = 10
 
-func findOptsFromURL(u *url.URL, filter interface{}) (dotagiftx.FindOpts, error) {
+func findOptsFromURL(u *url.URL, filter any) (dotagiftx.FindOpts, error) {
 	opts := dotagiftx.FindOpts{}
 	get := u.Query().Get
 
@@ -60,7 +60,7 @@ func parseSort(sortStr string) (field string, isDesc bool) {
 
 const defaultFilterTag = "json"
 
-func findOptsFilter(u *url.URL, filter interface{}) error {
+func findOptsFilter(u *url.URL, filter any) error {
 	// Sets search filters.
 	d := schema.NewDecoder()
 	d.SetAliasTag(defaultFilterTag)

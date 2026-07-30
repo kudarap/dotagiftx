@@ -178,7 +178,7 @@ History.defaultProps = {
 
 export async function getServerSideProps({ query }) {
   let status = null
-   
+
   switch (query.status) {
     case 'reserved':
       status = MARKET_STATUS_RESERVED

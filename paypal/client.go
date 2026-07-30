@@ -189,7 +189,7 @@ func (c *paypalClient) SetReturnRepresentation() {
 // Send makes a request to the API, the response body will be
 // unmarshalled into v, or if v is an io.Writer, the response will
 // be written to it without decoding
-func (c *paypalClient) Send(req *http.Request, v interface{}) (retErr error) {
+func (c *paypalClient) Send(req *http.Request, v any) (retErr error) {
 	var (
 		err  error
 		resp *http.Response
@@ -270,7 +270,7 @@ func (c *paypalClient) Send(req *http.Request, v interface{}) (retErr error) {
 // If the access token soon to be expired or already expired, it will try to get a new one before
 // making the main request
 // client.Token will be updated when changed
-func (c *paypalClient) SendWithAuth(req *http.Request, v interface{}) error {
+func (c *paypalClient) SendWithAuth(req *http.Request, v any) error {
 	// c.Lock()
 	c.mu.Lock()
 	// Note: Here we do not want to `defer c.Unlock()` because we need `c.Send(...)`
@@ -294,7 +294,7 @@ func (c *paypalClient) SendWithAuth(req *http.Request, v interface{}) error {
 }
 
 // SendWithBasicAuth makes a request to the API using clientID:secret basic auth
-func (c *paypalClient) SendWithBasicAuth(req *http.Request, v interface{}) error {
+func (c *paypalClient) SendWithBasicAuth(req *http.Request, v any) error {
 	req.SetBasicAuth(c.ClientID, c.Secret)
 
 	return c.Send(req, v)
@@ -302,7 +302,7 @@ func (c *paypalClient) SendWithBasicAuth(req *http.Request, v interface{}) error
 
 // NewRequest constructs a request
 // Convert payload to a JSON
-func (c *paypalClient) NewRequest(ctx context.Context, method, url string, payload interface{}) (*http.Request, error) {
+func (c *paypalClient) NewRequest(ctx context.Context, method, url string, payload any) (*http.Request, error) {
 	var buf io.Reader
 	if payload != nil {
 		b, err := json.Marshal(&payload)

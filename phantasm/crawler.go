@@ -37,7 +37,7 @@ var (
 	secret     string
 )
 
-func Main(args map[string]interface{}) map[string]interface{} {
+func Main(args map[string]any) map[string]any {
 	log.Println("starting phantasm...")
 	if err := loadConfig(); err != nil {
 		return resp(http.StatusInternalServerError, err)
@@ -275,8 +275,8 @@ func sendRequest(req *http.Request, out any) (statusCode int, err error) {
 	return res.StatusCode, nil
 }
 
-func resp(status int, body interface{}) map[string]interface{} {
-	return map[string]interface{}{
+func resp(status int, body any) map[string]any {
+	return map[string]any{
 		"statusCode": status,
 		"body":       body,
 	}
@@ -291,8 +291,8 @@ func loadConfig() error {
 	return nil
 }
 
-func structToMap(data interface{}) map[string]interface{} {
-	res := map[string]interface{}{}
+func structToMap(data any) map[string]any {
+	res := map[string]any{}
 	if data == nil {
 		return res
 	}

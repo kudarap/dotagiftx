@@ -59,7 +59,7 @@ func (s *userStorage) FindFlagged(o dotagiftx.FindOpts) ([]dotagiftx.User, error
 }
 
 func (s *userStorage) flaggedFilter(q r.Term) r.Term {
-	return q.Filter(func(t r.Term) interface{} {
+	return q.Filter(func(t r.Term) any {
 		return t.Field("status").Ge(dotagiftx.UserStatusSuspended)
 	})
 }
@@ -164,7 +164,7 @@ func (s *userStorage) ExpiringSubscribers(ctx context.Context, t time.Time) ([]d
 // PurgeSubscription clears subscription data.
 func (s *userStorage) PurgeSubscription(ctx context.Context, userID string) error {
 	t := time.Now()
-	err := s.db.update(s.table().Get(userID).Update(map[string]interface{}{
+	err := s.db.update(s.table().Get(userID).Update(map[string]any{
 		"boons":                r.Literal(),
 		"subscription":         r.Literal(),
 		"subscribed_at":        r.Literal(),

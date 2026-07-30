@@ -20,7 +20,7 @@ func main() {
 	flag.BoolVar(&precheck, "precheck", false, "")
 	flag.Parse()
 
-	args := map[string]interface{}{"steam_id": steamID}
+	args := map[string]any{"steam_id": steamID}
 	if precheck {
 		args["precheck"] = true
 	}

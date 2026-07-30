@@ -17,14 +17,16 @@ export default function About() {
 
       <Header />
 
-      <Box component="main" sx={theme => ({
+      <Box
+        component="main"
+        sx={theme => ({
           [theme.breakpoints.down('md')]: {
             marginTop: theme.spacing(2),
           },
           marginTop: 4,
         })}>
         <Container maxWidth="sm">
-          <MarketForm /> 
+          <MarketForm />
         </Container>
       </Box>
 

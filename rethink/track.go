@@ -100,14 +100,14 @@ const last7days = 604800
 func (s *trackStorage) TopKeywords() ([]dotagiftx.SearchKeywordScore, error) {
 	now := r.Now()
 	q := s.table().Between(now.Sub(last7days), now, r.BetweenOpts{Index: trackFieldCreatedAt}).
-		Filter(map[string]interface{}{"type": "s"}).
+		Filter(map[string]any{"type": "s"}).
 		Group(r.Row.Field("keyword").Downcase()).
 		Count().
 		Ungroup().
 		OrderBy(r.Desc("reduction")).
 		Limit(12).
-		Map(func(doc r.Term) interface{} {
-			return map[string]interface{}{
+		Map(func(doc r.Term) any {
+			return map[string]any{
 				"Keyword": doc.Field("group"),
 				"Score":   doc.Field("reduction"),
 			}

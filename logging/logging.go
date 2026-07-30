@@ -9,34 +9,34 @@ import (
 // Logger provides access to logging service.
 type Logger interface {
 	// Standard Lib logger methods.
-	Print(v ...interface{})
-	Println(v ...interface{})
-	Printf(format string, v ...interface{})
+	Print(v ...any)
+	Println(v ...any)
+	Printf(format string, v ...any)
 
-	Panic(v ...interface{})
-	Panicln(v ...interface{})
-	Panicf(format string, v ...interface{})
+	Panic(v ...any)
+	Panicln(v ...any)
+	Panicf(format string, v ...any)
 
-	Fatal(v ...interface{})
-	Fatalln(v ...interface{})
-	Fatalf(format string, v ...interface{})
+	Fatal(v ...any)
+	Fatalln(v ...any)
+	Fatalf(format string, v ...any)
 
 	// Custom logger methods.
-	Info(v ...interface{})
-	Infoln(v ...interface{})
-	Infof(format string, v ...interface{})
+	Info(v ...any)
+	Infoln(v ...any)
+	Infof(format string, v ...any)
 
-	Error(v ...interface{})
-	Errorln(v ...interface{})
-	Errorf(format string, v ...interface{})
+	Error(v ...any)
+	Errorln(v ...any)
+	Errorf(format string, v ...any)
 
-	Debug(v ...interface{})
-	Debugln(v ...interface{})
-	Debugf(format string, v ...interface{})
+	Debug(v ...any)
+	Debugln(v ...any)
+	Debugf(format string, v ...any)
 
-	Warn(v ...interface{})
-	Warnln(v ...interface{})
-	Warnf(format string, v ...interface{})
+	Warn(v ...any)
+	Warnln(v ...any)
+	Warnf(format string, v ...any)
 }
 
 const (
