@@ -132,6 +132,10 @@ func (l *Local) getType(data []byte) (string, error) {
 	return "", fmt.Errorf("file type '%s' not allowed in %s", t, l.allowedTypes)
 }
 
+func (l *Local) cleanPath(name string) (string, error) {
+	return filepath.Clean(filepath.Join(l.Dir(), name)), nil
+}
+
 func generateSha1Name() string {
 	h := sha1.New()
 	s := fmt.Sprintf("%d", time.Now().Nanosecond())

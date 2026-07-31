@@ -37,6 +37,40 @@ func TestLocal_Save(t *testing.T) {
 	})
 }
 
+func TestLocal_cleanPath(t *testing.T) {
+	local := Local{
+		allowedTypes: []string{"image/jpeg"},
+		sizeLimit:    kbSize * 1000,
+		saveDir:      "/images",
+	}
+
+	tests := []struct {
+		name    string
+		path    string
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			path:    "",
+			want:    "/images",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := local.cleanPath(tt.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("cleanPath() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("cleanPath() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func errCheck(t *testing.T, err error) {
 	if err != nil {
 		t.Fatal(err)
