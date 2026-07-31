@@ -27,10 +27,10 @@ import { APP_NAME } from '@/constants/strings'
 import NavItems from '@/components/NavItems'
 import { isRecentTreasureNew } from '@/pages/treasures'
 import LatestBan from './LatestBan'
-import brandImage from '../public/brand_darkcarnival_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
+import brandImage from '../public/brand_darkcarnival_2x.png'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -39,6 +39,7 @@ const useStyles = makeStyles()(theme => ({
       padding: 0,
     },
     padding: theme.spacing(0, 1.5),
+    background: '#00000057', // dark carnivcal event exclusive
   },
   logo: {
     [theme.breakpoints.down('sm')]: {

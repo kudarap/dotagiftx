@@ -101,7 +101,6 @@ export default function Index({ marketSummary, trendingItems }) {
   }
 
   const description = `Search on ${marketSummary.live} Giftable items`
-
   const metaTitle = `${APP_NAME} :: Dota 2 Giftables Community Market`
   const metaDesc = `${description}. ${APP_NAME} was made to provide better search and pricing for
           Dota 2 Giftable items like Collector's Caches which are not available on Steam Community Market.
@@ -130,44 +129,43 @@ export default function Index({ marketSummary, trendingItems }) {
         <meta property="og:image" content={`${APP_URL}/icon.png`} />
       </Head>
 
-      <Header disableSearch />
+      <Header />
 
-      <main className={classes.main}>
-        {/* Splash banner */}
-        <div
+      {/* Splash banner */}
+      <div
+        style={{
+          width: '100%',
+          // maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
+          // WebkitMaskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
+          // overflow: 'hidden',
+          marginTop: -70,
+          zIndex: -1,
+        }}>
+        <video
           style={{
             width: '100%',
-            height: 640,
-            marginBottom: 500 - 640,
-            maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
-            WebkitMaskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
-            overflow: 'hidden',
-          }}>
-          <video
-            style={{
-              width: '100%',
-              userSelect: 'none',
-              zIndex: -1,
-              marginTop: '-10vw',
-            }}
-            preload="auto"
-            poster="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline>
-            <source
-              type="video/webm"
-              src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
-            />
-          </video>
-        </div>
+            userSelect: 'none',
+          }}
+          preload="auto"
+          poster="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline>
+          <source
+            type="video/webm"
+            src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
+          />
+        </video>
+      </div>
 
+      <main className={classes.main}>
         <Container
           sx={{
             mt: {
-              md: -52,
-              xs: -78,
+              lg: 28 - 85,
+              md: 12 - 45,
+              xs: 4 - 14,
             },
             position: 'relative',
           }}>
