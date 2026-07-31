@@ -109,6 +109,6 @@ func composePath(filename string, width, height uint) string {
 	dir := filepath.Dir(filename)
 	name := filepath.Base(filename)
 	dimension := strconv.Itoa(int(width)) + "x" + strconv.Itoa(int(height))
-	path := filepath.Join(dir, cacheDir, dimension, name)
+	path := filepath.Clean(filepath.Join(dir, cacheDir, dimension, name))
 	return path
 }
