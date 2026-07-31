@@ -62,7 +62,7 @@ jobs:
           tags: kudarap/dotagiftx:${{ env.VERSION }},kudarap/dotagiftx:latest
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           cache-from: type=registry,ref=kudarap/dotagiftx:buildcache
           cache-to: type=registry,ref=kudarap/dotagiftx:buildcache,mode=max
 
