@@ -66,28 +66,6 @@ export default function ItemDetails({
   canonicalURL,
 }) {
   const { classes } = useStyles()
-
-  if (initialError) {
-    return (
-      <>
-        <Header />
-
-        <main className={classes.main}>
-          <Container>
-            <Typography variant="h5" component="h1" gutterBottom align="center">
-              Item Error
-            </Typography>
-            <Typography color="textSecondary" align="center">
-              {initialError}
-            </Typography>
-          </Container>
-        </main>
-
-        <Footer />
-      </>
-    )
-  }
-
   const [offers, setOffers] = React.useState(initialAsks)
   const [orders, setOrders] = React.useState(initialBids)
   const [error, setError] = React.useState(null)
@@ -230,6 +208,27 @@ export default function ItemDetails({
   const { observe, inView } = useInView({
     onEnter: ({ unobserve }) => unobserve(), // only run once
   })
+
+  if (initialError) {
+    return (
+      <>
+        <Header />
+
+        <main className={classes.main}>
+          <Container>
+            <Typography variant="h5" component="h1" gutterBottom align="center">
+              Item Error
+            </Typography>
+            <Typography color="textSecondary" align="center">
+              {initialError}
+            </Typography>
+          </Container>
+        </main>
+
+        <Footer />
+      </>
+    )
+  }
 
   return (
     <>

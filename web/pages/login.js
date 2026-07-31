@@ -66,13 +66,20 @@ export default function Login() {
   const [error, setError] = React.useState(null)
 
   const router = useRouter()
-  if (isLoggedIn) {
-    router.push('/my-listings')
-    return null
-  }
+
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      router.push('/my-listings')
+    }
+  }, [isLoggedIn, router])
 
   React.useEffect(() => {
     const query = window.location.search
+
+    if (isLoggedIn || !query) {
+      return
+    }
+
     const login = async () => {
       setLoading(true)
       try {
@@ -95,7 +102,11 @@ export default function Login() {
     if (query) {
       login()
     }
-  }, [])
+  }, [isLoggedIn])
+
+  if (isLoggedIn) {
+    return null
+  }
 
   return (
     <>
@@ -132,7 +143,8 @@ export default function Login() {
             startIcon={loading ? <CircularProgress color="secondary" size={22} /> : <SteamIcon />}
             variant="outlined"
             size="large"
-            href={getLoginURL}>
+            href={getLoginURL}
+          >
             Sign in through Steam
           </Button>
           {error && <Typography color="error">{error.message}</Typography>}
@@ -145,7 +157,8 @@ export default function Login() {
               target="_blank"
               rel="noreferrer noopener"
               href="https://developer.valvesoftware.com/wiki/Steam_Web_API"
-              color="secondary">
+              color="secondary"
+            >
               Steam Web API
             </Link>{' '}
             this includes (<em>steam id, profile name, and avatar image</em>) and use cookies to

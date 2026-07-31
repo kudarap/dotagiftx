@@ -1,17 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import has from 'lodash/has'
 
-const tabPanelIndex = {}
 export default function TabPanel(props) {
   const { children, value, index, ...other } = props
+  const [visited, setVisited] = React.useState(value === index)
 
-  // Check for indexed component, it will prevent render from
-  // loading everything on mount.
-  if (value !== index && !has(tabPanelIndex, index)) {
+  if (value === index && !visited) {
+    setVisited(true)
+  }
+
+  if (value !== index && !visited) {
     return null
   }
-  tabPanelIndex[index] = true
 
   return (
     <div hidden={value !== index} {...other}>

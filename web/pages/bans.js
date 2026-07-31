@@ -33,11 +33,6 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-const filter = {
-  sort: 'updated_at:desc',
-  limit: 100,
-}
-
 const STEAMURL = 'https://steamcommunity.com'
 
 function cleanURL(url = '') {
@@ -72,8 +67,12 @@ export default function Blacklist() {
   const { classes } = useStyles()
 
   const [query, setQuery] = React.useState('')
-  filter.q = query
-  const url = parseParams(BLACKLIST, filter)
+  const url = parseParams(BLACKLIST, {
+    sort: 'updated_at:desc',
+    limit: 100,
+    q: query,
+  })
+
   const { data, error } = useSWR(url, fetcherBase)
 
   const router = useRouter()
@@ -127,7 +126,7 @@ export default function Blacklist() {
 }
 
 function SearchBar({ onInput, ...other }) {
-  const debounceSearch = React.useCallback(debounce(onInput, 500), [])
+  const debounceSearch = React.useMemo(() => debounce(onInput, 500), [onInput])
 
   const [value, setValue] = React.useState('')
   const handleInput = e => {
@@ -177,7 +176,8 @@ function UserCard({ data }) {
                 marginTop: -2,
                 fontSize: '0.785em',
                 fontWeight: 500,
-              }}>
+              }}
+            >
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
@@ -190,7 +190,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Steam Profile
           </Link>
           &nbsp;&middot;&nbsp;
@@ -199,7 +200,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             SteamRep
           </Link>
           &nbsp;&middot;&nbsp;
@@ -208,7 +210,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Dotabuff
           </Link>
         </Typography>

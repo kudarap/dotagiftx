@@ -17,7 +17,7 @@ const datatableBaseFilter = {
 }
 
 function withDataFetch(Component, initFilter, searchFn = myMarketSearch) {
-  function wrapped(props) {
+  function Wrapped(props) {
     const { filter: propFilter, onReload } = props
 
     const [data, setData] = React.useState(initialDatatable)
@@ -71,16 +71,16 @@ function withDataFetch(Component, initFilter, searchFn = myMarketSearch) {
       </>
     )
   }
-  wrapped.prototype = {
+  Wrapped.prototype = {
     filter: PropTypes.object,
     onReload: PropTypes.func,
   }
-  wrapped.defaultProps = {
+  Wrapped.defaultProps = {
     filter: {},
     onReload: () => {},
   }
 
-  return wrapped
+  return Wrapped
 }
 
 withDataFetch.propTypes = {
