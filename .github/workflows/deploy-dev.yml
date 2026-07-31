@@ -55,8 +55,10 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
-          push: true
           tags: kudarap/dotagiftx:dev
+          context: .
+          push: true
+          platforms: linux/amd64
           cache-from: type=registry,ref=kudarap/dotagiftx:buildcache
           cache-to: type=registry,ref=kudarap/dotagiftx:buildcache,mode=max
 
