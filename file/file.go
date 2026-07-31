@@ -148,13 +148,7 @@ var validNamePattern = regexp.MustCompile(`^[A-Za-z0-9 ._/-]+$`)
 
 func (l *Local) resolvePath(name string) (string, error) {
 	// validate raw file name
-	if filepath.IsAbs(name) {
-		return "", fmt.Errorf("file name '%s' should not be absolute", name)
-	}
-	if strings.HasPrefix(name, "..") {
-		return "", fmt.Errorf("invalid file name '%s'", name)
-	}
-	if !validNamePattern.MatchString(name) {
+	if filepath.IsAbs(name) || strings.HasPrefix(name, "..") || !validNamePattern.MatchString(name) {
 		return "", fmt.Errorf("invalid file name '%s'", name)
 	}
 
