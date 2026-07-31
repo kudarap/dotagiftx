@@ -5,7 +5,7 @@ permissions:
 
 on:
   push:
-    branches: [dev, feature/version-tag-image-release]
+    branches: [dev]
 
 jobs:
   test:
@@ -55,10 +55,10 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
+          tags: kudarap/dotagiftx:dev
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: kudarap/dotagiftx:dev
           cache-from: type=registry,ref=kudarap/dotagiftx:buildcache
           cache-to: type=registry,ref=kudarap/dotagiftx:buildcache,mode=max
 
