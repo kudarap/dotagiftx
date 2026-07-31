@@ -56,6 +56,78 @@ func TestLocal_cleanPath(t *testing.T) {
 			want:    "/images",
 			wantErr: false,
 		},
+		{
+			name:    "simple filename",
+			path:    "test.jpg",
+			want:    "/images/test.jpg",
+			wantErr: false,
+		},
+		{
+			name:    "relative path traversal",
+			path:    "../test.jpg",
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "absolute path",
+			path:    "/tmp/test.jpg",
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "multiple directory traversal",
+			path:    "../../../test.jpg",
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "path with dots",
+			path:    "./test.jpg",
+			want:    "/images/test.jpg",
+			wantErr: false,
+		},
+		{
+			name:    "path with multiple dots",
+			path:    ".../test.jpg",
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "empty path component",
+			path:    "test//file.jpg",
+			want:    "/images/test/file.jpg",
+			wantErr: false,
+		},
+		{
+			name:    "path with spaces",
+			path:    "test file.jpg",
+			want:    "/images/test file.jpg",
+			wantErr: false,
+		},
+		{
+			name:    "path with special characters",
+			path:    "test@#$%^&*().jpg",
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "path with unicode characters",
+			path:    "test_测试.jpg",
+			want:    "/images/test_测试.jpg",
+			wantErr: false,
+		},
+		{
+			name:    "path with encoded characters",
+			path:    "test%20file.jpg",
+			want:    "/images/test%20file.jpg",
+			wantErr: false,
+		},
+		{
+			name:    "path with backslashes",
+			path:    "test\\file.jpg",
+			want:    "",
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
