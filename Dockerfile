@@ -2,20 +2,19 @@
 FROM golang:1.26-alpine AS builder
 RUN apk add --no-cache git make curl
 
-ENV GOCACHE=/gobuildcache
-ENV GOMODCACHE=/gomodcache
-
 WORKDIR /code
 
 # download and cache go dependencies
 COPY go.mod go.sum ./
 
-RUN --mount=type=cache,target=/gomodcache go mod download
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 
 # then copy source code as the last step
 COPY . .
 
-RUN --mount=type=cache,target=/gomodcache --mount=type=cache,target=/gobuildcache \
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
     go build \
     -ldflags="-X main.tag=`cat VERSION` -X main.commit=`git rev-parse HEAD` -X main.built=`date -u +%s`" \
     -v ./cmd/dxserver
