@@ -1,3 +1,4 @@
+
 name: Deploy Production API
 
 permissions:
@@ -6,6 +7,7 @@ permissions:
 on:
   push:
     branches: [master]
+    tags: ["*"]
 
 jobs:
   test:
@@ -34,6 +36,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Get version from tag or VERSION file
+        id: version
+        run: |
+          if [[ ! -z "${{ github.ref }}" && "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            if [ -f VERSION ]; then
+              echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+            else
+              echo "VERSION=latest" >> $GITHUB_ENV
+            fi
+          fi
+
       - name: Login to Docker Hub
         uses: docker/login-action@v4
         with:
@@ -56,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           push: true
-          tags: kudarap/dotagiftx:latest
+          tags: kudarap/dotagiftx:${{ env.VERSION }},kudarap/dotagiftx:latest
           cache-from: type=registry,ref=kudarap/dotagiftx:buildcache
           cache-to: type=registry,ref=kudarap/dotagiftx:buildcache,mode=max
 
