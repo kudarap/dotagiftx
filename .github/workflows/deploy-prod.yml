@@ -7,7 +7,6 @@ permissions:
 on:
   push:
     branches: [master]
-    tags: ["*"]
 
 jobs:
   test:
@@ -42,11 +41,7 @@ jobs:
           if [[ ! -z "${{ github.ref }}" && "${{ github.ref }}" == refs/tags/* ]]; then
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           else
-            if [ -f VERSION ]; then
-              echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
-            else
-              echo "VERSION=latest" >> $GITHUB_ENV
-            fi
+            echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
           fi
 
       - name: Login to Docker Hub
