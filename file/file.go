@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -77,7 +78,10 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 	name = baseName + normalizeExt(ext[0])
 
 	// Create file inside save saveDir.
-	dst := filepath.Join(l.Dir(), name)
+	dst, err := l.resolvePath(name)
+	if err != nil {
+		return
+	}
 	out, err := os.Create(dst)
 	if err != nil {
 		return
@@ -96,9 +100,13 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 
 // Get gets file path base on file name and its existence.
 func (l *Local) Get(name string) (path string, err error) {
-	path = filepath.Join(l.Dir(), name)
+	path, err = l.resolvePath(name)
+	if err != nil {
+		return "", err
+	}
+
 	// Check the actual file existence.
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+	if _, err = os.Stat(path); os.IsNotExist(err) {
 		return "", err
 	}
 
@@ -107,8 +115,12 @@ func (l *Local) Get(name string) (path string, err error) {
 
 // Delete uploaded file base on file name.
 func (l *Local) Delete(name string) error {
-	p := filepath.Join(l.Dir(), name)
-	if err := os.Remove(p); err != nil {
+	p, err := l.resolvePath(name)
+	if err != nil {
+		return err
+	}
+
+	if err = os.Remove(p); err != nil {
 		return err
 	}
 
@@ -117,7 +129,7 @@ func (l *Local) Delete(name string) error {
 
 // Dir returns save path location.
 func (l *Local) Dir() string {
-	return l.saveDir
+	return filepath.Clean(l.saveDir)
 }
 
 func (l *Local) getType(data []byte) (string, error) {
@@ -132,8 +144,31 @@ func (l *Local) getType(data []byte) (string, error) {
 	return "", fmt.Errorf("file type '%s' not allowed in %s", t, l.allowedTypes)
 }
 
-func (l *Local) cleanPath(name string) (string, error) {
-	return filepath.Clean(filepath.Join(l.Dir(), name)), nil
+var validNamePattern = regexp.MustCompile(`^[A-Za-z0-9 ._/-]+$`)
+
+func (l *Local) resolvePath(name string) (string, error) {
+	// validate raw file name
+	if filepath.IsAbs(name) {
+		return "", fmt.Errorf("file name '%s' should not be absolute", name)
+	}
+	if strings.HasPrefix(name, "..") {
+		return "", fmt.Errorf("invalid file name '%s'", name)
+	}
+	if !validNamePattern.MatchString(name) {
+		return "", fmt.Errorf("invalid file name '%s'", name)
+	}
+
+	// clean file name and path
+	dir := l.Dir()
+	path := filepath.Clean(filepath.Join(dir, name))
+
+	// Check if the cleaned path is within the allowed directory
+	// This prevents directory traversal attacks
+	if !strings.HasPrefix(path, dir) {
+		return "", fmt.Errorf("path %s is outside of allowed directory %s", name, l.Dir())
+	}
+
+	return path, nil
 }
 
 func generateSha1Name() string {

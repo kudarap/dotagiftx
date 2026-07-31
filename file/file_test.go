@@ -37,7 +37,7 @@ func TestLocal_Save(t *testing.T) {
 	})
 }
 
-func TestLocal_cleanPath(t *testing.T) {
+func TestLocal_resolvePath(t *testing.T) {
 	local := Local{
 		allowedTypes: []string{"image/jpeg"},
 		sizeLimit:    kbSize * 1000,
@@ -53,8 +53,8 @@ func TestLocal_cleanPath(t *testing.T) {
 		{
 			name:    "empty",
 			path:    "",
-			want:    "/images",
-			wantErr: false,
+			want:    "",
+			wantErr: true,
 		},
 		{
 			name:    "simple filename",
@@ -113,14 +113,14 @@ func TestLocal_cleanPath(t *testing.T) {
 		{
 			name:    "path with unicode characters",
 			path:    "test_测试.jpg",
-			want:    "/images/test_测试.jpg",
-			wantErr: false,
+			want:    "",
+			wantErr: true,
 		},
 		{
 			name:    "path with encoded characters",
 			path:    "test%20file.jpg",
-			want:    "/images/test%20file.jpg",
-			wantErr: false,
+			want:    "",
+			wantErr: true,
 		},
 		{
 			name:    "path with backslashes",
@@ -131,7 +131,7 @@ func TestLocal_cleanPath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := local.cleanPath(tt.path)
+			got, err := local.resolvePath(tt.path)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("cleanPath() error = %v, wantErr %v", err, tt.wantErr)
 				return
