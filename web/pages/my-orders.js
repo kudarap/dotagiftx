@@ -68,7 +68,7 @@ export default function MyOrders() {
   React.useEffect(() => {
     const hash = router.asPath.replace(router.pathname, '')
     setTabValue(hash)
-  }, [router.asPath])
+  }, [router.asPath, router.pathname])
 
   const handleTabChange = (e, v) => {
     setTabValue(v)

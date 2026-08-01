@@ -71,7 +71,7 @@ function withDataFetch(Component, initFilter, searchFn = myMarketSearch) {
       </>
     )
   }
-  Wrapped.prototype = {
+  Wrapped.propTypes = {
     filter: PropTypes.object,
     onReload: PropTypes.func,
   }

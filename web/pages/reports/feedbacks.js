@@ -46,6 +46,8 @@ export default function Feedback() {
 
       counts[report.text] = (counts[report.text] || 0) + 1
     }
+
+    return counts
   }, [reports])
 
   return (

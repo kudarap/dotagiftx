@@ -58,7 +58,7 @@ export default function MyReservations() {
       const res = await myMarketSearch(filter)
       setTotal(res.total_count)
     })()
-  }, [])
+  }, [filter])
 
   const handleSearchInput = value => {
     setFilter({ ...filter, loading: true, page: 1, q: value })
