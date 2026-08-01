@@ -113,7 +113,7 @@ export default function Updates() {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Updates</title>
+        <title>Updates :: {APP_NAME}</title>
       </Head>
 
       <Header />

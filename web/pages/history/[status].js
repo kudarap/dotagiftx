@@ -121,7 +121,7 @@ export default function History({ status, summary, error }) {
       <Head>
         <meta charSet="UTF-8" />
         <title>
-          {APP_NAME} :: Market {MARKET_STATUS_MAP_TEXT[status]} History
+          Market {MARKET_STATUS_MAP_TEXT[status]} History :: {APP_NAME}
         </title>
         <meta name="description" content="Market transaction history" />
       </Head>

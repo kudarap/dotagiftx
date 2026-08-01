@@ -49,7 +49,7 @@ export default function Treasures({ treasures, error }) {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{`${APP_NAME} :: All Treasures`}</title>
+        <title>{`All Treasures :: ${APP_NAME}`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />

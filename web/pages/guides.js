@@ -24,7 +24,7 @@ export default function Blacklist() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Guides</title>
+        <title>Guides :: {APP_NAME}</title>
       </Head>
 
       <Header />

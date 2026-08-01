@@ -101,7 +101,7 @@ export default function Login() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Sign In</title>
+        <title>Sign In :: {APP_NAME}</title>
       </Head>
 
       <Header />

@@ -32,7 +32,7 @@ export default function About({ build }) {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: About</title>
+        <title>About :: {APP_NAME}</title>
       </Head>
 
       <Header />
