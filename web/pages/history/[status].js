@@ -69,29 +69,31 @@ export default function History({ status, summary, error }) {
   const [loading, setLoading] = React.useState(false)
   const [filterError, setFilterError] = React.useState('')
 
+  const busyRef = React.useRef(false)
+
   React.useEffect(() => {
     setDatatable(defaultData)
     setFilter({ ...defaultFilter, status })
   }, [status])
 
   React.useEffect(() => {
-    if (loading) {
+    if (busyRef.current) {
       return
     }
 
+    busyRef.current = true
     setLoading(true)
     ;(async () => {
       try {
         const res = await marketSearch(filter)
-        if (datatable.data.length === 0) {
-          setDatatable(res)
-        } else {
-          const data = [...datatable.data, ...res.data]
-          setDatatable({ ...datatable, data })
-        }
+        setDatatable(current =>
+          current.data.length === 0 ? res : { ...current, data: [...current.data, ...res.data] }
+        )
       } catch (e) {
         setFilterError('error getting history', e.message)
       }
+
+      busyRef.current = false
       setLoading(false)
     })()
   }, [filter])
@@ -136,14 +138,16 @@ export default function History({ status, summary, error }) {
             <Typography
               component={Link}
               href="/history/reserved"
-              style={status === MARKET_STATUS_RESERVED ? { textDecoration: 'underline' } : null}>
+              style={status === MARKET_STATUS_RESERVED ? { textDecoration: 'underline' } : null}
+            >
               {summaryReserved} Reserved
             </Typography>
             &nbsp;&middot;&nbsp;
             <Typography
               component={Link}
               href="/history/delivered"
-              style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : null}>
+              style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : null}
+            >
               {summarySold} Delivered
             </Typography>
           </Typography>

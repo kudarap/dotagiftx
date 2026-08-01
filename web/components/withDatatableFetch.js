@@ -30,12 +30,12 @@ function withDataFetch(Component, initFilter, searchFn = myMarketSearch) {
 
     React.useEffect(() => {
       ;(async () => {
-        setData({ ...data, loading: true, error: null })
+        setData(current => ({ ...current, loading: true, error: null }))
         try {
           const res = await searchFn(filter)
-          setData({ ...data, loading: false, ...res })
+          setData(current => ({ ...current, loading: false, ...res }))
         } catch (e) {
-          setData({ ...data, loading: false, error: e.message })
+          setData(current => ({ ...current, loading: false, error: e.message }))
         }
       })()
     }, [filter, tick])
