@@ -43,12 +43,12 @@ export default function MyReservations() {
 
   React.useEffect(() => {
     ;(async () => {
-      setData({ ...data, loading: true, error: null })
+      setData(current => ({ ...current, loading: true, error: null }))
       try {
         const res = await myMarketSearch(filter)
-        setData({ ...data, loading: false, ...res })
+        setData(current => ({ ...current, loading: false, ...res }))
       } catch (e) {
-        setData({ ...data, loading: false, error: e.message })
+        setData(current => ({ ...current, loading: false, error: e.message }))
       }
     })()
   }, [filter, reloadFlag])
@@ -58,7 +58,7 @@ export default function MyReservations() {
       const res = await myMarketSearch(filter)
       setTotal(res.total_count)
     })()
-  }, [])
+  }, [filter])
 
   const handleSearchInput = value => {
     setFilter({ ...filter, loading: true, page: 1, q: value })

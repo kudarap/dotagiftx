@@ -63,7 +63,7 @@ export default function MyListings() {
       })
       setMarketFixes(res?.data || [])
     })()
-  }, [])
+  }, [currentAuth.user_id])
 
   // tick indicates when to get new stats
   const [tick, setTick] = React.useState(false)
@@ -72,14 +72,14 @@ export default function MyListings() {
       const res = await statsMarketSummary({ user_id: currentAuth.user_id, index: 'user_id' })
       setMarketStats(res)
     })()
-  }, [tick])
+  }, [tick, currentAuth.user_id])
 
   // handling tab changes
   const router = useRouter()
   React.useEffect(() => {
     const hash = router.asPath.replace(router.pathname, '')
     setTabValue(hash)
-  }, [router.asPath])
+  }, [router.asPath, router.pathname])
 
   const handleTabChange = (e, v) => {
     setTabValue(v)

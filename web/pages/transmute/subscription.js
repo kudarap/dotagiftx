@@ -12,7 +12,6 @@ import Footer from '@/components/Footer'
 import AppContext from '@/components/AppContext'
 import Link from '@/components/Link'
 
-
 const isPaypalLive = (() => {
   try {
     const apiUrl = new URL(process.env.NEXT_PUBLIC_API_URL)
@@ -57,6 +56,7 @@ function ButtonWrapper({ type, planId, customId, onSuccess }) {
         intent: 'subscription',
       },
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type])
 
   return (
@@ -113,9 +113,9 @@ export default function Subscription() {
 
   const router = useRouter()
   const { query } = router
-  const [subscription, setSubscription] = useState()
-  const [minimumSubscriptionCycle, setMinimumSubscriptionCycle] = useState()
-  const [subscriptionPrice, setSubscriptionPrice] = useState()
+  const subscription = subscriptions[query.id]
+  const minimumSubscriptionCycle = minimumCycle[query.id]
+  const subscriptionPrice = priceTable[query.id]
   useEffect(() => {
     if (!query.id) {
       return
@@ -124,11 +124,7 @@ export default function Subscription() {
       router.push('/login')
       return
     }
-
-    setSubscription(subscriptions[query.id])
-    setMinimumSubscriptionCycle(minimumCycle[query.id])
-    setSubscriptionPrice(priceTable[query.id])
-  }, [query.id, currentAuth.user_id])
+  }, [query.id, currentAuth.user_id, router])
 
   const handleSuccess = res => {
     // send orderId to subscription verifier to ack the process
@@ -156,7 +152,8 @@ export default function Subscription() {
               variant="h3"
               component="h1"
               fontWeight="bold"
-              color="secondary">
+              color="secondary"
+            >
               Dotagift Plus
             </Typography>
             {isReady && (
@@ -196,7 +193,8 @@ export default function Subscription() {
                   color="secondary"
                   target="_blank"
                   rel="noreferrer noopener"
-                  href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key">
+                  href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key"
+                >
                   TF2 Keys
                 </Link>{' '}
                 or{' '}
@@ -204,7 +202,8 @@ export default function Subscription() {
                   color="secondary"
                   target="_blank"
                   rel="noreferrer noopener"
-                  href="https://steamcommunity.com/market/listings/570/Fractal%20Horns%20of%20Inner%20Abysm">
+                  href="https://steamcommunity.com/market/listings/570/Fractal%20Horns%20of%20Inner%20Abysm"
+                >
                   TB Arcanas
                 </Link>{' '}
                 with minimum of {minimumSubscriptionCycle} months and +{manualPriceOverhead * 100}%
@@ -245,7 +244,8 @@ export default function Subscription() {
                       color="secondary"
                       target="_blank"
                       rel="noreferrer noopener"
-                      href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW">
+                      href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW"
+                    >
                       trade offer
                     </Link>{' '}
                     and indicate your subscription plan.
@@ -256,7 +256,8 @@ export default function Subscription() {
                       color="secondary"
                       target="_blank"
                       rel="noreferrer noopener"
-                      href="https://discord.gg/3JVU2EumRw">
+                      href="https://discord.gg/3JVU2EumRw"
+                    >
                       Discord
                     </Link>{' '}
                     that you made a trade offer and allow us to process in 2-3 days.

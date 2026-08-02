@@ -31,7 +31,7 @@ export default function TableSearchInput({ value: externalValue, onInput, loadin
 
   const [value, setValue] = React.useState(externalValue || '')
 
-  const debounceSearch = React.useCallback(debounce(onInput, 500), [])
+  const debounceSearch = React.useMemo(() => debounce(onInput, 500), [onInput])
 
   const handleSearchInput = e => {
     const v = e.target.value

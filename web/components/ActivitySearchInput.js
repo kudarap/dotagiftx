@@ -29,7 +29,7 @@ export default function ActivitySearchInput({ onInput, loading, ...other }) {
 
   const [value, setValue] = React.useState('')
 
-  const debounceSearch = React.useCallback(debounce(onInput, 500), [])
+  const debounceSearch = React.useMemo(() => debounce(onInput, 500), [onInput])
 
   const handleSearchInput = e => {
     const v = e.target.value

@@ -42,7 +42,7 @@ export default function ThanksSubscriber() {
       Storage.save(APP_CACHE_PROFILE, remote)
       setProfile(remote)
     })()
-  }, [])
+  }, [isLoggedIn])
 
   const [verified, setVerified] = React.useState(null)
   React.useEffect(() => {
@@ -101,7 +101,8 @@ export default function ThanksSubscriber() {
               component={Link}
               target="_blank"
               rel="noreferrer noopener"
-              href="https://discord.gg/UFt9Ny42kM">
+              href="https://discord.gg/UFt9Ny42kM"
+            >
               Join our Discord
             </Button>
           </Box>

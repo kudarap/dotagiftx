@@ -33,6 +33,8 @@ function ItemAutoComplete({ onSelect, forwardedRef, required, ...other }) {
         console.log('error getting item details', e.message)
       }
     })()
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemSlug])
 
   React.useEffect(() => {

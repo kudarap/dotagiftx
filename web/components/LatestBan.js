@@ -26,7 +26,7 @@ export default function LatestBan() {
 
       try {
         const res = await blacklistSearch({ limit: 1, sort: 'updated_at:desc' })
-        if (res) {
+        if (res && res.length > 0) {
           const latest = res[0].updated_at
           setValue(latest)
           save(CACHE_KEY, latest, 3600)
@@ -35,7 +35,7 @@ export default function LatestBan() {
         console.warn('failed getting lastest ban', error)
       }
     })()
-  }, [])
+  }, [value])
 
   if (!value) {
     return null
@@ -51,7 +51,8 @@ export default function LatestBan() {
         marginTop: '-0.16rem',
         color: '#FF6464',
         filter: `grayscale(${grayscale}%)`,
-      }}>
+      }}
+    >
       {moment(value).fromNow()}
     </span>
   )

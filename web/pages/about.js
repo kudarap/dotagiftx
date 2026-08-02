@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import Image from 'next/image'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
@@ -55,7 +56,8 @@ export default function About({ build }) {
             <Link
               href="https://www.reddit.com/r/Dota2Trade"
               rel="noreferrer noopener"
-              target="_blank">
+              target="_blank"
+            >
               r/Dota2Trade
             </Link>
             .
@@ -78,7 +80,8 @@ export default function About({ build }) {
             component={Link}
             target="_blank"
             rel="noreferrer noopener"
-            href="https://discord.gg/UFt9Ny42kM">
+            href="https://discord.gg/UFt9Ny42kM"
+          >
             Discord
           </Button>
           <Button
@@ -88,16 +91,24 @@ export default function About({ build }) {
             component={Link}
             target="_blank"
             rel="noreferrer noopener"
-            href="https://steamcommunity.com/profiles/76561198088587178">
+            href="https://steamcommunity.com/profiles/76561198088587178"
+          >
             Steam
           </Button>
           <Button
             startIcon={
-              <img src="/icon_2x.png" style={{ height: 22, filter: 'brightness(10)' }} alt="dgx" />
+              <Image
+                src="/icon_2x.png"
+                style={{ height: 22, filter: 'brightness(10)' }}
+                width={60}
+                height={60}
+                alt="dgx"
+              />
             }
             size="large"
             component={Link}
-            href="/profiles/76561198088587178">
+            href="/profiles/76561198088587178"
+          >
             DotagiftX
           </Button>
           <br />

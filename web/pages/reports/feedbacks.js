@@ -21,8 +21,6 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-const tallyVotes = {}
-
 const filter = {
   sort: 'created_at:desc',
   limit: 100,
@@ -34,20 +32,23 @@ export default function Feedback() {
   const { data: reports, error } = useSWR([REPORTS, filter], fetcher)
 
   // tally report data base on text
-  if (reports && reports.data) {
-    reports.data.forEach(report => {
+  const tallyVotes = React.useMemo(() => {
+    const counts = {}
+
+    if (!reports?.data) {
+      return counts
+    }
+
+    for (const report of reports.data) {
       if (report.type !== REPORT_TYPE_SURVEY) {
-        return
+        continue
       }
 
-      if (!tallyVotes[report.text]) {
-        tallyVotes[report.text] = 1
-        return
-      }
+      counts[report.text] = (counts[report.text] || 0) + 1
+    }
 
-      tallyVotes[report.text]++
-    })
-  }
+    return counts
+  }, [reports])
 
   return (
     <>

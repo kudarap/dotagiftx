@@ -66,28 +66,6 @@ export default function ItemDetails({
   canonicalURL,
 }) {
   const { classes } = useStyles()
-
-  if (initialError) {
-    return (
-      <>
-        <Header />
-
-        <main className={classes.main}>
-          <Container>
-            <Typography variant="h5" component="h1" gutterBottom align="center">
-              Item Error
-            </Typography>
-            <Typography color="textSecondary" align="center">
-              {initialError}
-            </Typography>
-          </Container>
-        </main>
-
-        <Footer />
-      </>
-    )
-  }
-
   const [offers, setOffers] = React.useState(initialAsks)
   const [orders, setOrders] = React.useState(initialBids)
   const [error, setError] = React.useState(null)
@@ -157,37 +135,43 @@ export default function ItemDetails({
     )
   }
 
-  const getOffers = async (sortValue, pageValue) => {
-    setLoading('ask')
-    try {
-      const res = await marketSearch({
-        ...initialFilter,
-        sort: sortValue === 'price' ? 'lowest' : sortValue,
-        page: pageValue,
-        index: 'item_id',
-      })
-      setOffers(res)
-    } catch (e) {
-      setError(e.message)
-    }
-    setLoading(null)
-  }
-  const getBuyOrders = async sortValue => {
-    setLoading('bid')
-    try {
-      const res = await marketSearch({
-        ...marketBuyOrderFilter,
-        sort: sortValue === 'price' ? 'highest' : sortValue,
-        item_id: item.id,
-        index: 'item_id',
-      })
-      res.loaded = true
-      setOrders(res)
-    } catch (e) {
-      setError(e.message)
-    }
-    setLoading(null)
-  }
+  const getOffers = React.useCallback(
+    async (sortValue, pageValue) => {
+      setLoading('ask')
+      try {
+        const res = await marketSearch({
+          ...initialFilter,
+          sort: sortValue === 'price' ? 'lowest' : sortValue,
+          page: pageValue,
+          index: 'item_id',
+        })
+        setOffers(res)
+      } catch (e) {
+        setError(e.message)
+      }
+      setLoading(null)
+    },
+    [initialFilter]
+  )
+  const getBuyOrders = React.useCallback(
+    async sortValue => {
+      setLoading('bid')
+      try {
+        const res = await marketSearch({
+          ...marketBuyOrderFilter,
+          sort: sortValue === 'price' ? 'highest' : sortValue,
+          item_id: item.id,
+          index: 'item_id',
+        })
+        res.loaded = true
+        setOrders(res)
+      } catch (e) {
+        setError(e.message)
+      }
+      setLoading(null)
+    },
+    [item.id]
+  )
   const handleBuyOrderClick = () => {
     setOpenBuyOrderDialog(true)
   }
@@ -198,7 +182,7 @@ export default function ItemDetails({
   // Handle initial buy orders on page load.
   React.useEffect(() => {
     getBuyOrders(sort)
-  }, [])
+  }, [getBuyOrders, sort])
 
   // Handles update offers and buy orders on filter change
   React.useEffect(() => {
@@ -216,7 +200,7 @@ export default function ItemDetails({
 
     // process buy orders
     getBuyOrders(sort)
-  }, [tabIndex, sort, page])
+  }, [tabIndex, sort, page, getBuyOrders, getOffers, initialAsks, initialFilter.page, sortParam])
 
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
@@ -230,6 +214,27 @@ export default function ItemDetails({
   const { observe, inView } = useInView({
     onEnter: ({ unobserve }) => unobserve(), // only run once
   })
+
+  if (initialError) {
+    return (
+      <>
+        <Header />
+
+        <main className={classes.main}>
+          <Container>
+            <Typography variant="h5" component="h1" gutterBottom align="center">
+              Item Error
+            </Typography>
+            <Typography color="textSecondary" align="center">
+              {initialError}
+            </Typography>
+          </Container>
+        </main>
+
+        <Footer />
+      </>
+    )
+  }
 
   return (
     <>
@@ -284,7 +289,8 @@ export default function ItemDetails({
                 color="secondary"
                 component={Link}
                 href={`/post-item?s=${item.slug}`}
-                disableUnderline>
+                disableUnderline
+              >
                 Post this item
               </Button>
             </Grid>
@@ -330,6 +336,7 @@ export default function ItemDetails({
         }}
         onChange={handleBuyerChange}
       />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={trackItemViewURL(item.id)} height={1} width={1} alt="" />
 
       <Footer />

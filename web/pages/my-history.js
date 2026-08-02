@@ -60,29 +60,64 @@ export default function MyHistory() {
   const [cancelledFilter, setCancelledFilter] = React.useState(cancelledMarketFilter)
 
   React.useEffect(() => {
+    let active = true
     ;(async () => {
       try {
         const res = await myMarketSearch(soldFilter)
-        setSoldItems({ ...soldItems, loading: false, ...res })
+        if (active) {
+          setSoldItems(current => ({ ...current, loading: false, ...res }))
+        }
       } catch (e) {
-        setSoldItems({ ...soldItems, loading: false, error: e.message })
-      }
-
-      try {
-        const res = await myMarketSearch(completedFilter)
-        setCompletedItems({ ...completedItems, loading: false, ...res })
-      } catch (e) {
-        setCompletedItems({ ...completedItems, loading: false, error: e.message })
-      }
-
-      try {
-        const res = await myMarketSearch(cancelledFilter)
-        setCancelledItems({ ...cancelledItems, loading: false, ...res })
-      } catch (e) {
-        setCancelledItems({ ...cancelledItems, loading: false, error: e.message })
+        if (active) {
+          setSoldItems(current => ({ ...current, loading: false, error: e.message }))
+        }
       }
     })()
+
+    return () => {
+      active = false
+    }
   }, [soldFilter])
+
+  React.useEffect(() => {
+    let active = true
+    ;(async () => {
+      try {
+        const res = await myMarketSearch(completedFilter)
+        if (active) {
+          setCompletedItems(current => ({ ...current, loading: false, ...res }))
+        }
+      } catch (e) {
+        if (active) {
+          setCompletedItems(current => ({ ...current, loading: false, error: e.message }))
+        }
+      }
+    })()
+
+    return () => {
+      active = false
+    }
+  }, [completedFilter])
+
+  React.useEffect(() => {
+    let active = true
+    ;(async () => {
+      try {
+        const res = await myMarketSearch(cancelledFilter)
+        if (active) {
+          setCancelledItems(current => ({ ...current, loading: false, ...res }))
+        }
+      } catch (e) {
+        if (active) {
+          setCancelledItems(current => ({ ...current, loading: false, error: e.message }))
+        }
+      }
+    })()
+
+    return () => {
+      active = false
+    }
+  }, [cancelledFilter])
 
   const handleSoldPageChange = (e, page) => {
     setSoldFilter({ ...soldFilter, page })
@@ -91,7 +126,7 @@ export default function MyHistory() {
     setCompletedFilter({ ...completedFilter, page })
   }
   const handleCancelledPageChange = (e, page) => {
-    setCancelledFilter({ ...soldFilter, page })
+    setCancelledFilter({ ...cancelledFilter, page })
   }
 
   return (

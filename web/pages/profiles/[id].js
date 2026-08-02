@@ -91,6 +91,27 @@ export default function UserDetails({
   const [error, setError] = React.useState(marketError)
   const { isMobile } = React.useContext(AppContext)
 
+  const router = useRouter()
+
+  // Handle market request on page change.
+  React.useEffect(() => {
+    if (profileError || (has(profile, 'is_registered') && !profile.is_registered)) {
+      return
+    }
+
+    ;(async () => {
+      setError(null)
+      setLoading(true)
+      try {
+        const res = await marketSearch(filter)
+        setMarkets(res)
+      } catch (e) {
+        setError(e.message)
+      }
+      setLoading(false)
+    })()
+  }, [filter, profileError, profile])
+
   if (profileError) {
     return (
       <ErrorPage>
@@ -106,22 +127,6 @@ export default function UserDetails({
     return <NotRegisteredProfile profile={profile} canonicalURL={canonicalURL} />
   }
 
-  // Handle market request on page change.
-  React.useEffect(() => {
-    ;(async () => {
-      setError(null)
-      setLoading(true)
-      try {
-        const res = await marketSearch(filter)
-        setMarkets(res)
-      } catch (e) {
-        setError(e.message)
-      }
-      setLoading(false)
-    })()
-  }, [filter])
-
-  const router = useRouter()
   const qFilter = router.query.filter
   const linkProps = {
     href: `/profiles/${profile.steam_id}`,
@@ -190,7 +195,8 @@ export default function UserDetails({
                   fontSize: '1rem',
                   borderColor: '#c13830',
                   borderWidth: 2,
-                }}>
+                }}
+              >
                 This is user has been flagged as <strong>BANNED</strong> or{' '}
                 <strong>SUSPENDED</strong>. <br />
                 Website is not liable for any lost in-game items and money and should avoid any
@@ -204,7 +210,8 @@ export default function UserDetails({
             className={classes.details}
             style={
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
-            }>
+            }
+          >
             <Avatar
               large
               badge={userBadge}
@@ -217,7 +224,8 @@ export default function UserDetails({
                 className={classes.profileName}
                 component="h1"
                 variant="h4"
-                color={isProfileReported ? 'error' : 'textPrimary'}>
+                color={isProfileReported ? 'error' : 'textPrimary'}
+              >
                 {profile.name}
                 {!USER_SUBSCRIPTION_BADGE_MODE && Boolean(userBadge) && (
                   <SubscriberBadge
@@ -308,6 +316,7 @@ export default function UserDetails({
           )}
         </Container>
 
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={trackProfileViewURL(profile.id)} height={1} width={1} alt="" />
       </main>
 

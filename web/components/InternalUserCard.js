@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import moment from 'moment'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
@@ -50,17 +51,25 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
             target="_blank"
             rel="noreferrer noopener"
             size="small"
-            href={discordURL}>
+            href={discordURL}
+          >
             Discord
           </Button>
           &nbsp;
           <Button
             startIcon={
-              <img src="/icon_2x.png" style={{ height: 16, filter: 'brightness(10)' }} alt="dgx" />
+              <Image
+                src="/icon_2x.png"
+                width={16}
+                height={16}
+                style={{ height: 16, filter: 'brightness(10)' }}
+                alt="dgx"
+              />
             }
             component={Link}
             size="small"
-            href={`/profiles/${id}`}>
+            href={`/profiles/${id}`}
+          >
             DotagiftX
           </Button>
         </Box>
