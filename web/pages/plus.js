@@ -248,6 +248,7 @@ export default function Plus() {
                   <Image
                     src="/assets/refresher-shard.png"
                     alt="assets/refresher-shard.png"
+                    width={48}
                     height={48}
                   />
                   <Typography>Refresher Shard</Typography>
@@ -262,6 +263,7 @@ export default function Plus() {
                   <Image
                     src="/assets/refresher-orb.png"
                     alt="assets/refresher-orb.png"
+                    width={48}
                     height={48}
                   />
                   <Typography>Refresher Orb</Typography>
@@ -273,7 +275,7 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <Image src="/assets/recipe.png" alt="assets/recipe.png" height={48} />
+                  <Image src="/assets/recipe.png" alt="assets/recipe.png" height={48} width={48} />
                   <Typography>Shopkeeper&apos;s Contract</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Grants the ability to resell items outside your inventory
@@ -283,7 +285,12 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <Image src="/assets/courier.png" alt="assets/courier.png" height={48} />
+                  <Image
+                    src="/assets/courier.png"
+                    alt="assets/courier.png"
+                    height={48}
+                    width={48}
+                  />
                   <Typography>Dedicated Pos-5</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Exclusive support channel on Discord and Steam

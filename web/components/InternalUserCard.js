@@ -60,6 +60,8 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
             startIcon={
               <Image
                 src="/icon_2x.png"
+                width={60}
+                height={60}
                 style={{ height: 16, filter: 'brightness(10)' }}
                 alt="dgx"
               />

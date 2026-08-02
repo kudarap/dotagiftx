@@ -100,6 +100,8 @@ export default function About({ build }) {
               <Image
                 src="/icon_2x.png"
                 style={{ height: 22, filter: 'brightness(10)' }}
+                width={60}
+                height={60}
                 alt="dgx"
               />
             }
