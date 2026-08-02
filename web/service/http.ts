@@ -1,6 +1,7 @@
 import FormData from 'form-data'
 import querystring from 'querystring'
 import * as Auth from './auth'
+import type { Auth as AuthData } from './auth'
 import { authRenew, API_URL } from './api'
 
 export const GET = 'GET'
@@ -8,16 +9,26 @@ export const POST = 'POST'
 export const PATCH = 'PATCH'
 export const DELETE = 'DELETE'
 
-const defaultRequestOpts = {
+export type Method = typeof GET | typeof POST | typeof PATCH | typeof DELETE
+
+export type QueryFilter = querystring.ParsedUrlQueryInput
+
+interface RequestOptions {
+  method?: Method
+  mode: RequestMode
+  headers: Record<string, string>
+  body?: unknown
+}
+
+const defaultRequestOpts: RequestOptions = {
   mode: 'cors',
-  // signal: controller.signal,
   headers: {
     'Content-Type': 'application/json; charSet=utf-8',
   },
 }
 
 // fetch with retry
-const fetchRetry = async (url, options, n) => {
+const fetchRetry = async (url: string, options: RequestInit, n: number): Promise<Response> => {
   try {
     return await fetch(url, options)
   } catch (err) {
@@ -26,16 +37,16 @@ const fetchRetry = async (url, options, n) => {
   }
 }
 // default fetch retry with maximum of 3
-const defaultFetchRetry = (url, options) => fetchRetry(url, options, 3)
+const defaultFetchRetry = (url: string, options: RequestInit) => fetchRetry(url, options, 3)
 
 // base http request handle json responses and internal error
-const baseRequest = (method, endpoint, body, token = null) => {
-  if (method === '') {
+const baseRequest = async <T>(method: Method, endpoint: string, body?: unknown, token?: string | null) => {
+  if (!method) {
     throw Error('Request method required')
   }
 
   // setup request options
-  const opts = { ...defaultRequestOpts, method }
+  const opts: RequestOptions = { ...defaultRequestOpts, method }
   // set access token when available
   if (token) {
     opts.headers.Authorization = `Bearer ${token}`
@@ -50,13 +61,13 @@ const baseRequest = (method, endpoint, body, token = null) => {
     }
   }
 
-  return defaultFetchRetry(API_URL + endpoint, opts)
+  return defaultFetchRetry(API_URL + endpoint, opts as RequestInit)
     .then(response => {
       // Catch auth error to force logout.
       if (response.status === 401) {
         Auth.clear()
 
-        window.location = '/login'
+        window.location.assign('/login')
         throw Error('Authentication error')
       }
       // Catch internal error.
@@ -73,17 +84,17 @@ const baseRequest = (method, endpoint, body, token = null) => {
         throw Error(json.msg || json.type || 'server error')
       }
 
-      return json
+      return json as T
     })
 }
 
 // http request that handles JSON payload.
-export function request(method, endpoint, data) {
+export function request<T>(method: Method, endpoint: string, data?: unknown): Promise<T> {
   return baseRequest(method, endpoint, data)
 }
 
 // http request and handles authentication token.
-export const authnRequest = async (method, endpoint, data) => {
+export const authnRequest = async <T>(method: Method, endpoint: string, data?: unknown): Promise<T> => {
   // check and set access token.
   let auth = Auth.get()
   if (auth.refresh_token && (Auth.isAccessTokenExpired() || auth.token === null)) {
@@ -96,7 +107,7 @@ export const authnRequest = async (method, endpoint, data) => {
 }
 
 // Upload form file with authorization.
-export function uploadFile(endpoint, file) {
+export function uploadFile<T>(endpoint: string, file: File): Promise<T> {
   // Blob file handling and form data composition.
   const data = new FormData()
   if (file.constructor === Blob) {
@@ -109,35 +120,17 @@ export function uploadFile(endpoint, file) {
 }
 
 // Basic domain object request that supports all request method.
-export function baseObjectRequest(endpoint) {
+export function baseObjectRequest<T>(endpoint: string) {
   return {
-    [GET]: id => authnRequest(GET, `${endpoint}/${id}`),
-    [POST]: obj => authnRequest(POST, endpoint, obj),
-    [PATCH]: (id, obj) => authnRequest(PATCH, `${endpoint}/${id}`, obj),
-    [DELETE]: id => authnRequest(DELETE, `${endpoint}/${id}`),
+    [GET]: (id: string | number) => authnRequest<T>(GET, `${endpoint}/${id}`),
+    [POST]: (obj: unknown) => authnRequest<T>(POST, endpoint, obj),
+    [PATCH]: (id: string | number, obj: unknown) => authnRequest<T>(PATCH, `${endpoint}/${id}`, obj),
+    [DELETE]: (id: string | number) => authnRequest<T>(DELETE, `${endpoint}/${id}`),
   }
 }
 
 // Basic domain search request.
-export function baseSearchRequest(endpoint) {
-  return (filter = {}) => authnRequest(GET, `${endpoint}?${querystring.stringify(filter)}`)
+export function baseSearchRequest<T>(endpoint: string) {
+  return (filter: QueryFilter = {}) =>
+    authnRequest<T>(GET, `${endpoint}?${querystring.stringify(filter)}`)
 }
-
-// HTTP Interceptor
-// fetch = (originalFetch => {
-//   return (...args) => {
-//     console.log('before send')
-//
-//     const result = originalFetch(...args)
-//     return result.then(resp => {
-//       console.log('Request was sent', resp.status)
-//       return resp
-//     })
-//   }
-// })(fetch)
-
-// Response timeout
-// const timeout = 4000
-// const controller = new AbortController()
-// // eslint-disable-next-line no-unused-vars
-// const timeoutId = setTimeout(() => controller.abort(), timeout)

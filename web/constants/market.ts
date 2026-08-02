@@ -3,7 +3,7 @@
 export const MARKET_TYPE_ASK = 10
 export const MARKET_TYPE_BID = 20
 
-export const MARKET_TYPE_MAP_TEXT = {
+export const MARKET_TYPE_MAP_TEXT: Record<number, string> = {
   [MARKET_TYPE_ASK]: 'Offer',
   [MARKET_TYPE_BID]: 'Buy Order',
 }
@@ -17,7 +17,7 @@ export const MARKET_STATUS_REMOVED = 500
 export const MARKET_STATUS_CANCELLED = 600
 export const MARKET_STATUS_EXPIRED = 700
 
-export const MARKET_STATUS_MAP_TEXT = {
+export const MARKET_STATUS_MAP_TEXT: Record<number, string> = {
   [MARKET_STATUS_PENDING]: 'Pending',
   [MARKET_STATUS_LIVE]: 'Listed',
   [MARKET_STATUS_RESERVED]: 'Reserved',
@@ -28,14 +28,14 @@ export const MARKET_STATUS_MAP_TEXT = {
   [MARKET_STATUS_EXPIRED]: 'Expired',
 }
 
-export const MARKET_BID_STATUS_MAP_TEXT = {
+export const MARKET_BID_STATUS_MAP_TEXT: Record<number, string> = {
   [MARKET_STATUS_LIVE]: 'Ordered',
   [MARKET_STATUS_BID_COMPLETED]: 'Order Completed',
   [MARKET_STATUS_REMOVED]: 'Order Removed',
   [MARKET_STATUS_CANCELLED]: 'Order Cancelled',
 }
 
-export const MARKET_STATUS_MAP_COLOR = {
+export const MARKET_STATUS_MAP_COLOR: Record<number, string> = {
   [MARKET_STATUS_PENDING]: 'yellow',
   [MARKET_STATUS_LIVE]: 'lightgreen',
   [MARKET_STATUS_RESERVED]: 'violet',

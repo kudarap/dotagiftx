@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "bun --bun next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write ."
   },
   "engines": {
@@ -40,11 +41,17 @@
     "unfetch": "^5.0.0"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/lodash": "^4.17.25",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.1.6",
     "husky": "^4.3.8",
     "prettier": "3.8.1",
-    "pretty-quick": "^4.2.2"
+    "pretty-quick": "^4.2.2",
+    "typescript": "^5.9.3"
   },
   "husky": {
     "hooks": {

@@ -3,17 +3,17 @@
 export const USER_STATUS_SUSPENDED = 300
 export const USER_STATUS_BANNED = 400
 
-export const USER_STATUS_MAP_LABEL = {
+export const USER_STATUS_MAP_LABEL: Record<number, string> = {
   [USER_STATUS_SUSPENDED]: 'Suspended',
   [USER_STATUS_BANNED]: 'Banned',
 }
 
-export const USER_STATUS_MAP_TEXT = {
+export const USER_STATUS_MAP_TEXT: Record<number, string> = {
   [USER_STATUS_SUSPENDED]: 'This account was suspended over scam report and under investigation.',
   [USER_STATUS_BANNED]: 'This account was banned over scam incident.',
 }
 
-export const USER_STATUS_MAP_COLOR = {
+export const USER_STATUS_MAP_COLOR: Record<number, string> = {
   [USER_STATUS_SUSPENDED]: '#aa6600',
   [USER_STATUS_BANNED]: '#a00',
 }
@@ -29,13 +29,13 @@ export const USER_SUBSCRIPTION_LIST = [
   USER_SUBSCRIPTION_PARTNER,
 ]
 
-export const USER_SUBSCRIPTION_MAP_COLOR = {
+export const USER_SUBSCRIPTION_MAP_COLOR: Record<number, string> = {
   [USER_SUBSCRIPTION_SUPPORTER]: '#596b95',
   [USER_SUBSCRIPTION_TRADER]: '#629cbd',
   [USER_SUBSCRIPTION_PARTNER]: '#C79123',
 }
 
-export const USER_SUBSCRIPTION_MAP_LABEL = {
+export const USER_SUBSCRIPTION_MAP_LABEL: Record<number, string> = {
   [USER_SUBSCRIPTION_FREE]: 'Free',
   [USER_SUBSCRIPTION_SUPPORTER]: 'Supporter',
   [USER_SUBSCRIPTION_TRADER]: 'Trader',

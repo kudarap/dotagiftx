@@ -5,8 +5,15 @@ import moment from 'moment'
 const AUTH_KEY = 'dgAu'
 const userIDKey = 'user_id'
 
-export const get = () => {
-  let raw = Cookies.get(AUTH_KEY)
+export interface Auth {
+  user_id?: number | string
+  token?: string | null
+  refresh_token?: string
+  expires_at?: string
+}
+
+export const get = (): Auth => {
+  const raw = Cookies.get(AUTH_KEY)
   if (!raw) {
     return {}
   }
@@ -17,7 +24,7 @@ export const isOk = () => {
   return get().hasOwnProperty(userIDKey)
 }
 
-export const set = data => {
+export const set = (data: Auth) => {
   Cookies.set(AUTH_KEY, JSON.stringify(data), { expires: 365, secure: true, sameSite: 'strict' })
 }
 
