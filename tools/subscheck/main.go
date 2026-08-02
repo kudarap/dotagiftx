@@ -48,7 +48,7 @@ func main() {
 			}
 
 			printPretty(user, subs)
-			//fixData(false, rethinkClient.Session(), user, subs)
+			fixData(true, rethinkClient.Session(), user, subs)
 		}
 	}
 
@@ -130,6 +130,8 @@ func paypalSubscribers(
 	// cache paypal subs response
 	if len(paypalSubs) != 0 {
 		b, err := json.MarshalIndent(paypalSubs, "", "  ")
+		errCheck(err)
+
 		err = os.WriteFile(cachePaypalSubscriptionFile, b, 0644)
 		errCheck(err)
 	}
