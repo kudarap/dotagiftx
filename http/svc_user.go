@@ -59,30 +59,6 @@ func handlePublicProfile(svc dotagiftx.UserService, cache cacheManager) http.Han
 	}
 }
 
-func handleProcSubscription(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		form := struct {
-			SubscriptionID string `json:"subscription_id"`
-		}{}
-		if err := parseForm(r, &form); err != nil {
-			respondError(w, err)
-			return
-		}
-
-		u, err := svc.ProcessSubscription(r.Context(), form.SubscriptionID)
-		if err != nil {
-			respondError(w, err)
-			return
-		}
-
-		go func() {
-			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
-			cache.BulkDel(marketCacheKeyPrefix)
-		}()
-		respondOK(w, u)
-	}
-}
-
 func handleBlacklisted(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
@@ -168,6 +144,52 @@ func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamC
 
 		go cache.Set(cacheKey, vUser, userVanityCacheExpr)
 		respondOK(w, vUser)
+	}
+}
+
+func handleCreateSubscription(svc dotagiftx.UserService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		form := struct {
+			PlanID string `json:"plan_id"`
+		}{}
+		if err := parseForm(r, &form); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		subID, err := svc.CreateSubscription(r.Context(), form.PlanID)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		respondOK(w, struct {
+			ID string `json:"id"`
+		}{subID})
+	}
+}
+
+func handleProcSubscription(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		form := struct {
+			SubscriptionID string `json:"subscription_id"`
+		}{}
+		if err := parseForm(r, &form); err != nil {
+			respondError(w, err)
+			return
+		}
+
+		u, err := svc.ProcessSubscription(r.Context(), form.SubscriptionID)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+
+		go func() {
+			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
+			cache.BulkDel(marketCacheKeyPrefix)
+		}()
+		respondOK(w, u)
 	}
 }
 

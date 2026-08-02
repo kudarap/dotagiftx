@@ -61,12 +61,15 @@ func (s *Server) privateRouter(r chi.Router) {
 		r.Use(s.authorizer)
 		r.Route("/my", func(r chi.Router) {
 			r.Get("/profile", handleProfile(s.userSvc, s.cache))
-			r.Post("/process_subscription", handleProcSubscription(s.userSvc, s.cache))
 			r.Route("/markets", func(r chi.Router) {
 				r.Get("/", handleMarketList(s.marketSvc, s.trackSvc, true, s.cache, s.logger))
 				r.Post("/", handleMarketCreate(s.marketSvc, s.cache))
 				r.Get("/{id}", handleMarketDetail(s.marketSvc, s.cache, s.logger))
 				r.Patch("/{id}", handleMarketUpdate(s.marketSvc, s.cache))
+			})
+			r.Route("/subscription", func(r chi.Router) {
+				r.Post("/create", handleCreateSubscription(s.userSvc))
+				r.Post("/process", handleProcSubscription(s.userSvc, s.cache))
 			})
 		})
 		r.Post("/items", handleItemCreate(s.itemSvc, s.cache, s.divineKey))

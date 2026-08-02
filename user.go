@@ -109,6 +109,8 @@ type (
 		// UpdateSubscriptionFromWebhook handles user subscription updates form http request.
 		UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error)
 
+		CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error)
+
 		ProcessManualSubscription(ctx context.Context, form ManualSubscriptionParam) (*User, error)
 	}
 
@@ -280,14 +282,14 @@ func UserSubscriptionFromString(s string) UserSubscription {
 }
 
 // NewUserService returns a new User service.
-func NewUserService(us UserStorage, fm FileManager, sc subscriptionChecker) UserService {
+func NewUserService(us UserStorage, fm FileManager, sc paymentManager) UserService {
 	return &userService{us, fm, sc}
 }
 
 type userService struct {
-	userStg     UserStorage
-	fileMgr     FileManager
-	subsChecker subscriptionChecker
+	userStg UserStorage
+	fileMgr FileManager
+	payment paymentManager
 }
 
 func (s *userService) Users(opts FindOpts) ([]User, error) {
@@ -363,6 +365,23 @@ func (s *userService) SteamSync(sp *SteamPlayer) (*User, error) {
 	return u, nil
 }
 
+func (s *userService) CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error) {
+	au := AuthFromContext(ctx)
+	if au == nil {
+		return "", AuthErrNoAccess
+	}
+	user, err := s.userStg.Get(au.UserID)
+	if err != nil {
+		return "", err
+	}
+
+	subID, err := s.payment.CreateSubscription(ctx, planID, user.SteamID)
+	if err != nil {
+		return "", err
+	}
+	return subID, nil
+}
+
 func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
@@ -373,16 +392,16 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 		return nil, err
 	}
 
-	plan, steamID, err := s.subsChecker.Subscription(subscriptionID)
+	plan, steamID, err := s.payment.Subscription(ctx, subscriptionID)
 	if err != nil {
 		return nil, err
 	}
 	if user.SteamID != steamID {
-		return nil, fmt.Errorf("could not validate subscription steam id")
+		return nil, fmt.Errorf("could not validate subscription steam id: %s", steamID)
 	}
 	userSubs := UserSubscriptionFromString(plan)
 	if userSubs == 0 {
-		return nil, fmt.Errorf("could not validate subscription plan")
+		return nil, fmt.Errorf("could not validate subscription plan: %s", plan)
 	}
 
 	if user.SubscribedAt != nil && user.Subscription == userSubs {
@@ -405,7 +424,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 // extending expiration.
 func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error) {
 	// get user by steam id and increment their cycles.
-	steamID, cancelled, err := s.subsChecker.IsCancelled(ctx, r)
+	steamID, cancelled, lastPayment, err := s.payment.IsCancelled(ctx, r)
 	if err != nil {
 		return nil, fmt.Errorf("checking cancelled subscription: %v", err)
 	}
@@ -418,15 +437,11 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	log.Println("cancelling subscription", steamID, "by marking expiration")
 	user, err := s.userStg.Get(steamID)
 	if err != nil {
-		return nil, fmt.Errorf("getting user: %v", err)
-	}
-	expiresAt := user.SubscribedAt.AddDate(0, 1, 0)
-	user.SubscriptionEndsAt = &expiresAt
-	if user.Subscription == UserSubscriptionPartner {
-		t := time.Now()
-		user.SubscriptionEndsAt = &t
+		return nil, fmt.Errorf("getting user %s: %w", steamID, err)
 	}
 
+	ex := lastPayment.AddDate(0, 1, 0)
+	user.SubscriptionEndsAt = &ex
 	if err = s.userStg.Update(user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
@@ -480,7 +495,8 @@ func (s *userService) downloadProfileImage(url string) (filename string, err err
 	return filename, nil
 }
 
-type subscriptionChecker interface {
-	Subscription(id string) (plan, steamID string, err error)
-	IsCancelled(ctx context.Context, r *http.Request) (steamID string, cancelled bool, err error)
+type paymentManager interface {
+	Subscription(ctx context.Context, id string) (plan, steamID string, err error)
+	IsCancelled(ctx context.Context, r *http.Request) (steamID string, cancelled bool, lastPayment time.Time, err error)
+	CreateSubscription(ctx context.Context, planID, customID string) (subscriptionID string, err error)
 }
