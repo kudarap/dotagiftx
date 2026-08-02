@@ -104,18 +104,21 @@ export default function Header() {
   // load profile data if logged in.
   const [profile, setProfile] = React.useState(defaultProfile)
 
-  const setProfileAnalytics = userData => {
-    // analytics identify user session
-    if (!!window.umami && isLoggedIn) {
-      window.umami.identify(userData.steam_id, {
-        id: userData.steam_id,
-        user_id: userData.id,
-        name: userData.name,
-        subscription: USER_SUBSCRIPTION_MAP_LABEL[userData.subscription],
-      })
-    }
-    setProfile(userData)
-  }
+  const setProfileAnalytics = React.useCallback(
+    userData => {
+      if (!!window.umami && isLoggedIn) {
+        window.umami.identify(userData.steam_id, {
+          id: userData.steam_id,
+          user_id: userData.id,
+          name: userData.name,
+          subscription: USER_SUBSCRIPTION_MAP_LABEL[userData.subscription],
+        })
+      }
+
+      setProfile(userData)
+    },
+    [isLoggedIn, setProfile]
+  )
 
   React.useEffect(() => {
     ;(async () => {
@@ -133,7 +136,7 @@ export default function Header() {
       Storage.save(APP_CACHE_PROFILE, res)
       setProfileAnalytics(res)
     })()
-  }, [])
+  }, [isLoggedIn, setProfileAnalytics])
 
   const [openDrawer, setOpenDrawer] = useState(false)
   const [openSearchDialog, setOpenSearchDialog] = useState(false)
@@ -199,7 +202,8 @@ export default function Header() {
                   display: 'block',
                   marginTop: '-0.24rem',
                   marginLeft: -14,
-                }}>
+                }}
+              >
                 New Winter Treasure
               </span>
             )}
@@ -243,7 +247,8 @@ export default function Header() {
               color="secondary"
               component={Link}
               href="/post-item"
-              disableUnderline>
+              disableUnderline
+            >
               Post item
             </Button>
             <Button
@@ -256,7 +261,8 @@ export default function Header() {
                   xs: 'inherit',
                   md: 'none',
                 },
-              }}>
+              }}
+            >
               <MenuIcon fontSize="small" />
             </Button>
             <span className={classes.spacer} />
@@ -275,7 +281,8 @@ export default function Header() {
                 startIcon={<SteamIcon />}
                 component={Link}
                 href="/login"
-                disableUnderline>
+                disableUnderline
+              >
                 Sign in
               </Button>
             )}
@@ -312,7 +319,8 @@ function AvatarMenu({ profile, onLogout }) {
         className={classes.avatarMenu}
         {...bindMenu(popupState)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
         <NavItems profile={profile} onClose={popupState.close} onLogout={onLogout} />
       </HoverMenu>
     </>
@@ -352,20 +360,23 @@ function MoreMenu() {
           },
         }}
         className={classes.nav}
-        {...bindHover(popupState)}>
+        {...bindHover(popupState)}
+      >
         <span>More</span> <MoreIcon />
       </Box>
       <HoverMenu
         {...bindMenu(popupState)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
         <MenuItem
           onClick={popupState.close}
           component={Link}
           href="https://discord.gg/UFt9Ny42kM"
           target="_blank"
           rel="noreferrer noopener"
-          disableUnderline>
+          disableUnderline
+        >
           Discord
         </MenuItem>
 
@@ -375,7 +386,8 @@ function MoreMenu() {
             onClick={popupState.close}
             component={Link}
             href={menu.path}
-            disableUnderline>
+            disableUnderline
+          >
             {menu.label}
           </MenuItem>
         ))}

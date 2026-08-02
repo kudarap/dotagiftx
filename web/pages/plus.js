@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import Head from 'next/head'
+import Image from 'next/image'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -59,7 +60,7 @@ export default function Plus() {
         subscriptionColor: USER_SUBSCRIPTION_MAP_COLOR[res.subscription],
       })
     })()
-  }, [])
+  }, [isLoggedIn])
 
   return (
     <div className="container">
@@ -85,7 +86,8 @@ export default function Plus() {
               variant="h3"
               component="h1"
               fontWeight="bold"
-              color="secondary">
+              color="secondary"
+            >
               Dotagift Plus
             </Typography>
             <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
@@ -101,7 +103,8 @@ export default function Plus() {
                   transition: `box-shadow .5s ease-in-out, border .2s`,
                   borderTop: `0 solid ${profile.subscriptionColor}`,
                   boxShadow: `0 0 10px ${profile.subscriptionColor}`,
-                }}>
+                }}
+              >
                 <strong>
                   You have an active {profile.subscriptionLabel} subscription in{' '}
                   {profile.subscription_type}{' '}
@@ -123,7 +126,8 @@ export default function Plus() {
                   borderTop: '2px solid #596b95',
                   backgroundImage: 'linear-gradient(#4654755c, #465475)',
                   borderRadius: 2,
-                }}>
+                }}
+              >
                 <Typography variant="h6">Supporter</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
                   <li>Supporter Badge</li>
@@ -136,7 +140,8 @@ export default function Plus() {
                   fullWidth
                   sx={{ mt: 10, bgcolor: 'rgb(78, 93, 128)' }}
                   component={Link}
-                  href="/transmute/subscription?id=supporter">
+                  href="/transmute/subscription?id=supporter"
+                >
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
                     $1
                   </Typography>
@@ -153,7 +158,8 @@ export default function Plus() {
                   borderTop: '2px solid #629cbd',
                   backgroundImage: 'linear-gradient(#578ba863, #578ba8)',
                   borderRadius: 2,
-                }}>
+                }}
+              >
                 <Typography variant="h6">Trader</Typography>
                 <Box component={FeatureList} sx={{ height: 97 }}>
                   <li>Trader Badge</li>
@@ -166,7 +172,8 @@ export default function Plus() {
                   fullWidth
                   sx={{ mt: 10, bgcolor: 'rgb(100, 159, 192)' }}
                   component={Link}
-                  href="/transmute/subscription?id=trader">
+                  href="/transmute/subscription?id=trader"
+                >
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
                     $3
                   </Typography>
@@ -185,7 +192,8 @@ export default function Plus() {
                   borderRadius: 2,
                   maxWidth: 500,
                   margin: 'auto',
-                }}>
+                }}
+              >
                 <Typography variant="h6">Partner</Typography>
                 <Box component={FeatureList}>
                   <li>Partner Badge</li>
@@ -204,7 +212,8 @@ export default function Plus() {
                   fullWidth
                   sx={{ mt: 10, bgcolor: 'rgb(197, 144, 35)' }}
                   component={Link}
-                  href="/transmute/subscription?id=partner">
+                  href="/transmute/subscription?id=partner"
+                >
                   <Typography variant="h6" sx={{ mr: 0.2 }}>
                     $20
                   </Typography>
@@ -236,7 +245,7 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img
+                  <Image
                     src="/assets/refresher-shard.png"
                     alt="assets/refresher-shard.png"
                     height={48}
@@ -250,7 +259,11 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img src="/assets/refresher-orb.png" alt="assets/refresher-orb.png" height={48} />
+                  <Image
+                    src="/assets/refresher-orb.png"
+                    alt="assets/refresher-orb.png"
+                    height={48}
+                  />
                   <Typography>Refresher Orb</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Automatically refreshes expiring buy orders and listings
@@ -260,7 +273,7 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img src="/assets/recipe.png" alt="assets/recipe.png" height={48} />
+                  <Image src="/assets/recipe.png" alt="assets/recipe.png" height={48} />
                   <Typography>Shopkeeper&apos;s Contract</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Grants the ability to resell items outside your inventory
@@ -270,7 +283,7 @@ export default function Plus() {
 
               <Grid item md={3} sm={4} xs={6}>
                 <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
-                  <img src="/assets/courier.png" alt="assets/courier.png" height={48} />
+                  <Image src="/assets/courier.png" alt="assets/courier.png" height={48} />
                   <Typography>Dedicated Pos-5</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Exclusive support channel on Discord and Steam
@@ -287,7 +300,8 @@ export default function Plus() {
               p: 4,
               textAlign: 'center',
               background: 'url(/assets/plus-banner.png) no-repeat top center',
-            }}>
+            }}
+          >
             <Typography variant="h6">Partnership Goals</Typography>
             <FeatureUnlockables />
             <Typography variant="caption">

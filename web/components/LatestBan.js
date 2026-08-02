@@ -35,7 +35,7 @@ export default function LatestBan() {
         console.warn('failed getting lastest ban', error)
       }
     })()
-  }, [])
+  }, [value])
 
   if (!value) {
     return null
@@ -51,7 +51,8 @@ export default function LatestBan() {
         marginTop: '-0.16rem',
         color: '#FF6464',
         filter: `grayscale(${grayscale}%)`,
-      }}>
+      }}
+    >
       {moment(value).fromNow()}
     </span>
   )

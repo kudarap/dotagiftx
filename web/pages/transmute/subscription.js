@@ -56,6 +56,7 @@ function ButtonWrapper({ type, planId, customId, onSuccess }) {
         intent: 'subscription',
       },
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type])
 
   return (

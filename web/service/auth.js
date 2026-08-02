@@ -61,9 +61,11 @@ export function isAccessTokenExpired() {
 //     })
 // }
 
-export default {
+const authService = {
   isOk,
   set,
   get,
   clear,
 }
+
+export default authService

@@ -316,6 +316,7 @@ export default function UserDetails({
           )}
         </Container>
 
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={trackProfileViewURL(profile.id)} height={1} width={1} alt="" />
       </main>
 

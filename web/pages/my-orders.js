@@ -61,7 +61,7 @@ export default function MyOrders() {
       res.bids.reserved = linkedMarket.reserved
       setMarketStats(res.bids)
     })()
-  }, [tick])
+  }, [tick, currentAuth.user_id, currentAuth.steam_id])
 
   // handling tab changes
   const router = useRouter()

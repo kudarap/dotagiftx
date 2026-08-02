@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import Image from 'next/image'
 import { makeStyles, withStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import SvgIcon from '@mui/material/SvgIcon'
@@ -73,7 +74,7 @@ export default function Faq() {
           <br />
 
           <Typography color="textSecondary">
-            <img src="/assets/midas.png" style={{ float: 'right' }} alt="tango" />I had this idea
+            <Image src="/assets/midas.png" style={{ float: 'right' }} alt="tango" />I had this idea
             once to create a community market for Dota 2 Giftables items and now here we are,
             although the idea is free(had fun writing it) and server isn&apos;t. BUT! thanks to
             someone else&apos;s server running this website. <br />
@@ -88,7 +89,8 @@ export default function Faq() {
             size="large"
             target="_blank"
             rel="noreferrer noopener"
-            href="https://www.paypal.com/donate?hosted_button_id=QHWKBTN4VGDR6">
+            href="https://www.paypal.com/donate?hosted_button_id=QHWKBTN4VGDR6"
+          >
             Donate with PayPal
           </PaypalButton>
           <Typography color="textSecondary" style={{ marginTop: 6 }}>
