@@ -56,8 +56,18 @@ export interface Market {
 export interface SearchResponse<T> {
   data: T[]
   total_count: number
+  result_count?: number
   count?: number
   limit?: number
+}
+
+export interface MarketSummary {
+  live: string | number
+  reserved: string | number
+  sold: string | number
+  bids: {
+    bid_live: string | number
+  }
 }
 
 export interface Item {
@@ -79,8 +89,23 @@ export interface Item {
 export interface Profile extends UserSummary {
   subscription?: number
   status?: number
+  notes?: string
+  is_registered?: boolean
+  market_stats?: {
+    live: number
+    reserved: number
+    sold: number
+    bid_completed: number
+  }
+  stats?: {
+    live: number
+    reserved: number
+    sold: number
+    bid_completed: number
+  }
   created_at?: string
   updated_at?: string
+  donated_at?: string
   donation?: string
 }
 

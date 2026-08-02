@@ -94,7 +94,7 @@ export const trackProfileViewURL = (userID: string | number) => `${API_URL}${TRA
 export const getLoginURL = `${API_URL}${AUTH_STEAM}`
 
 const donationGlowExpr = 30 // days
-export const isDonationGlowExpired = (donatedAt: string) => {
+export const isDonationGlowExpired = (donatedAt?: string) => {
   if (!donatedAt) {
     return false
   }

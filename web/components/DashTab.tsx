@@ -27,7 +27,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }))
 
 interface DashTabProps extends TabProps {
-  label: string
+  label: ReactNode
   badgeContent?: ReactNode
 }
 

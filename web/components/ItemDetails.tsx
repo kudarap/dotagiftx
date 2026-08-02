@@ -56,7 +56,7 @@ const DEFAULT_SORT = 'price'
 const OFFERS_PARAM_KEY = 'offers'
 const BUYORDERS_PARAM_KEY = 'buyorders'
 
-interface ItemDetailsProps {
+export interface ItemDetailsProps {
   item: Item
   error?: string | null
   filter: { page: number } & Record<string, unknown>

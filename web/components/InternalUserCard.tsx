@@ -12,7 +12,7 @@ import DiscordIcon from '@/components/DiscordIcon'
 import { CDN_URL } from '@/service/api'
 import { getUserTagFromBoons } from '@/lib/badge'
 
-interface InternalUserCardProps {
+export interface InternalUserCardProps {
   name?: string
   id?: string
   img?: string

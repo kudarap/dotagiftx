@@ -26,6 +26,8 @@ interface TablePaginationRouterProps {
   count: number
   page: number
   rowsPerPage?: number
+  colSpan?: number
+  style?: React.CSSProperties
   onPageChange?: (event: unknown, page: number) => void
   linkProps: LinkProps
 }

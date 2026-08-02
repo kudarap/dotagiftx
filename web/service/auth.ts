@@ -7,6 +7,7 @@ const userIDKey = 'user_id'
 
 export interface Auth {
   user_id?: number | string
+  steam_id?: string
   token?: string | null
   refresh_token?: string
   expires_at?: string

@@ -61,7 +61,7 @@ export const remove = (key: string) => {
 }
 
 // remove entries with matched prefix key.
-export const removeAll = (key: string) => {
+export const removeAll = (key: string = '') => {
   matchKeys(keyPrefix(key || '')).forEach(k => localStorage.removeItem(k))
 }
 

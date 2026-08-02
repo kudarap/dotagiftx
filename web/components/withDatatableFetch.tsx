@@ -46,7 +46,11 @@ function withDataFetch<P>(
   initFilter: QueryFilter = {},
   searchFn: SearchFn = myMarketSearch
 ) {
-  function Wrapped({ filter: propFilter, onReload = () => {}, ...props }: WrappedProps & P) {
+  function Wrapped({
+    filter: propFilter,
+    onReload = () => {},
+    ...props
+  }: WrappedProps & Omit<P, keyof DatatableFetchProps>) {
     const [data, setData] = React.useState<Datatable<never>>(initialDatatable)
     const [filter, setFilter] = React.useState<QueryFilter & { page?: number; q?: string }>({
       ...datatableBaseFilter,
