@@ -17,7 +17,8 @@ const AUTH_RENEW = '/auth/renew'
 const AUTH_REVOKE = '/auth/revoke'
 export const MY_PROFILE = '/my/profile'
 export const MY_MARKETS = '/my/markets'
-export const MY_PROC_SUBSCRIPTION = '/my/process_subscription'
+export const MY_SUBSCRIPTION_PROCESS = '/my/subscription/process'
+export const MY_SUBSCRIPTION_CREATE = '/my/subscription/create'
 export const USERS = '/users'
 export const VANITY = '/vanity'
 export const ITEMS = '/items'
@@ -65,8 +66,10 @@ export const myProfile = {
     http.authnRequest(http.GET, `${MY_PROFILE}?${nocache ? 'nocache' : ''}`),
   PATCH: profile => http.authnRequest(http.PATCH, MY_PROFILE, profile),
 }
+export const createMySubscription = planId =>
+  http.authnRequest(http.POST, MY_SUBSCRIPTION_CREATE, { plan_id: planId })
 export const processMySubscription = subId =>
-  http.authnRequest(http.POST, MY_PROC_SUBSCRIPTION, { subscription_id: subId })
+  http.authnRequest(http.POST, MY_SUBSCRIPTION_PROCESS, { subscription_id: subId })
 export const reportCreate = payload => http.authnRequest(http.POST, REPORTS, payload)
 
 export const itemSearch = http.baseSearchRequest(ITEMS)

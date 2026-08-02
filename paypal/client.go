@@ -327,6 +327,7 @@ type (
 
 	// SubscriptionDetailResp struct
 	SubscriptionDetailResp struct {
+		ID       string `json:"id"`
 		PlanID   string `json:"plan_id"`
 		CustomID string `json:"custom_id,omitempty"`
 	}
@@ -334,20 +335,66 @@ type (
 
 // GetSubscriptionDetails shows details for a subscription, by ID.
 // Endpoint: GET /v1/billing/subscriptions/
-func (c *paypalClient) GetSubscriptionDetails(ctx context.Context, subscriptionID string) (*SubscriptionDetailResp, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/v1/billing/subscriptions/%s", c.APIBase, subscriptionID), nil)
-	response := &SubscriptionDetailResp{}
+func (c *paypalClient) GetSubscriptionDetails(
+	ctx context.Context, subscriptionID string,
+) (*SubscriptionDetailResp, error) {
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		fmt.Sprintf("%s/v1/billing/subscriptions/%s", c.APIBase, subscriptionID),
+		nil,
+	)
 	if err != nil {
-		return response, err
+		return nil, err
 	}
-	err = c.SendWithAuth(req, response)
-	return response, err
+
+	res := new(SubscriptionDetailResp)
+	if err = c.SendWithAuth(req, res); err != nil {
+		return nil, err
+	}
+	return res, err
+}
+
+func (c *paypalClient) CreateSubscription(
+	ctx context.Context,
+	planID string,
+	customID string,
+) (*SubscriptionDetailResp, error) {
+	v := struct {
+		PlanID   string `json:"plan_id"`
+		CustomID string `json:"custom_id"`
+	}{planID, customID}
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	body := bytes.NewReader(b)
+
+	req, err := http.NewRequestWithContext(
+		ctx, http.MethodPost,
+		fmt.Sprintf("%s/v1/billing/subscriptions", c.APIBase),
+		body,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	res := new(SubscriptionDetailResp)
+	if err = c.SendWithAuth(req, res); err != nil {
+		return nil, err
+	}
+	return res, err
 }
 
 // GetSubscriptionPlan get subscription plan
 // Endpoint: GET /v1/billing/plans/:plan_id
 func (c *paypalClient) GetSubscriptionPlan(ctx context.Context, planId string) (*SubscriptionPlan, error) {
-	req, err := c.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s%s%s", c.APIBase, "/v1/billing/plans/", planId), nil)
+	req, err := c.NewRequest(
+		ctx,
+		http.MethodGet,
+		fmt.Sprintf("%s%s%s", c.APIBase, "/v1/billing/plans/", planId),
+		nil,
+	)
 	response := &SubscriptionPlan{}
 	if err != nil {
 		return response, err
@@ -356,9 +403,13 @@ func (c *paypalClient) GetSubscriptionPlan(ctx context.Context, planId string) (
 	return response, err
 }
 
-// VerifyWebhookSignature - Use this to verify the signature of a webhook recieved from paypal.
+// VerifyWebhookSignature - Use this to verify the signature of a webhook received from paypal.
 // Endpoint: POST /v1/notifications/verify-webhook-signature
-func (c *paypalClient) VerifyWebhookSignature(ctx context.Context, httpReq *http.Request, webhookID string) (*VerifyWebhookResponse, error) {
+func (c *paypalClient) VerifyWebhookSignature(
+	ctx context.Context,
+	httpReq *http.Request,
+	webhookID string,
+) (*VerifyWebhookResponse, error) {
 	type verifyWebhookSignatureRequest struct {
 		AuthAlgo         string          `json:"auth_algo,omitempty"`
 		CertURL          string          `json:"cert_url,omitempty"`

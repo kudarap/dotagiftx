@@ -3,11 +3,13 @@ package paypal
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"slices"
 	"strings"
+	"time"
 )
 
 const customIDPrefix = "STEAMID-"
@@ -40,7 +42,7 @@ func New(conf Config) (*Client, error) {
 	return &Client{c, conf.WebhookID}, nil
 }
 
-func (c *Client) Subscription(id string) (plan, steamID string, err error) {
+func (c *Client) Subscription(ctx context.Context, id string) (plan, steamID string, err error) {
 	if c.pc.Token == nil {
 		_, err = c.pc.GetAccessToken(context.Background())
 		if err != nil {
@@ -48,7 +50,6 @@ func (c *Client) Subscription(id string) (plan, steamID string, err error) {
 		}
 	}
 
-	ctx := context.Background()
 	sub, err := c.pc.GetSubscriptionDetails(ctx, id)
 	if err != nil {
 		return
@@ -60,36 +61,85 @@ func (c *Client) Subscription(id string) (plan, steamID string, err error) {
 	return plan, strings.TrimPrefix(sub.CustomID, customIDPrefix), nil
 }
 
+// CreateSubscription creates a new subscription for the given plan ID
+func (c *Client) CreateSubscription(ctx context.Context, planID, customID string) (id string, err error) {
+	if planID == "" || customID == "" {
+		return "", errors.New("missing plan ID or custom ID")
+	}
+
+	if c.pc.Token == nil {
+		_, err = c.pc.GetAccessToken(context.Background())
+		if err != nil {
+			return
+		}
+	}
+
+	sub, err := c.pc.CreateSubscription(ctx, planID, customIDPrefix+customID)
+	if err != nil {
+		return
+	}
+
+	return sub.ID, nil
+}
+
 type subscriptionPayload struct {
 	Resource struct {
-		ID       string `json:"id"`
-		CustomID string `json:"custom_id"`
-		Status   string `json:"status"`
+		ID          string `json:"id"`
+		CustomID    string `json:"custom_id"`
+		Status      string `json:"status"`
+		BillingInfo struct {
+			OutstandingBalance struct {
+				CurrencyCode string `json:"currency_code"`
+				Value        string `json:"value"`
+			} `json:"outstanding_balance"`
+			CycleExecutions []struct {
+				TenureType                  string `json:"tenure_type"`
+				Sequence                    int    `json:"sequence"`
+				CyclesCompleted             int    `json:"cycles_completed"`
+				CyclesRemaining             int    `json:"cycles_remaining"`
+				CurrentPricingSchemeVersion int    `json:"current_pricing_scheme_version"`
+				TotalCycles                 int    `json:"total_cycles"`
+			} `json:"cycle_executions"`
+			LastPayment struct {
+				Amount struct {
+					CurrencyCode string `json:"currency_code"`
+					Value        string `json:"value"`
+				} `json:"amount"`
+				Time time.Time `json:"time"`
+			} `json:"last_payment"`
+			FailedPaymentsCount int `json:"failed_payments_count"`
+		} `json:"billing_info"`
 	} `json:"resource"`
 }
 
-func (c *Client) IsCancelled(ctx context.Context, req *http.Request) (steamID string, cancelled bool, err error) {
+func (c *Client) IsCancelled(
+	ctx context.Context,
+	req *http.Request,
+) (steamID string, cancelled bool, lastPayment time.Time, err error) {
 	res, err := c.pc.VerifyWebhookSignature(ctx, req, c.webhookID)
 	if err != nil {
-		return "", false, fmt.Errorf("invalid signature: %s", err)
+		err = fmt.Errorf("invalid signature: %s", err)
+		return
 	}
 	if strings.ToUpper(res.VerificationStatus) != "SUCCESS" {
-		return "", false, fmt.Errorf("verification failed: %s", res.VerificationStatus)
+		err = fmt.Errorf("verification failed: %s", res.VerificationStatus)
+		return
 	}
 
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
-		return "", false, err
+		return
 	}
 	defer req.Body.Close()
 
 	var sub subscriptionPayload
 	if err = json.Unmarshal(body, &sub); err != nil {
-		return "", false, err
+		return
 	}
 
 	cancelled = slices.Contains([]string{"CANCELLED", "SUSPENDED"}, sub.Resource.Status)
-	return sub.Resource.CustomID, cancelled, nil
+	lastPayment = sub.Resource.BillingInfo.LastPayment.Time
+	return strings.TrimPrefix(sub.Resource.CustomID, customIDPrefix), cancelled, lastPayment, nil
 }
 
 func (c *Client) planName(ctx context.Context, planID string) (name string, err error) {

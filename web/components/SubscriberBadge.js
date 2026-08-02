@@ -43,6 +43,9 @@ export default function SubscriberBadge({ style: initialStyle, size, type, ...ot
   if (size === 'medium') {
     currentStyle.fontSize = '0.875rem'
   }
+  if (size === 'large') {
+    currentStyle.fontSize = '1rem'
+  }
   if (type) {
     currentStyle.background = badgeSettings[type].color
     currentStyle.borderColor = badgeSettings[type].color
