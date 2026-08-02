@@ -143,8 +143,7 @@ export default function Login() {
             startIcon={loading ? <CircularProgress color="secondary" size={22} /> : <SteamIcon />}
             variant="outlined"
             size="large"
-            href={getLoginURL}
-          >
+            href={getLoginURL}>
             Sign in through Steam
           </Button>
           {error && <Typography color="error">{error.message}</Typography>}
@@ -157,8 +156,7 @@ export default function Login() {
               target="_blank"
               rel="noreferrer noopener"
               href="https://developer.valvesoftware.com/wiki/Steam_Web_API"
-              color="secondary"
-            >
+              color="secondary">
               Steam Web API
             </Link>{' '}
             this includes (<em>steam id, profile name, and avatar image</em>) and use cookies to

@@ -135,8 +135,7 @@ export default function UserDelivered({ profile, stats, canonicalURL }) {
               <Typography
                 component={Link}
                 href={`${profileURL}/delivered`}
-                style={{ textDecoration: 'underline' }}
-              >
+                style={{ textDecoration: 'underline' }}>
                 {stats.sold} Delivered
               </Typography>
               &nbsp;&middot;&nbsp;

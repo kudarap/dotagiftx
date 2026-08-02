@@ -118,8 +118,7 @@ export default function About() {
                   color="secondary"
                   target="_blank"
                   rel="noreferrer noopener"
-                  href="https://discord.gg/UFt9Ny42kM"
-                >
+                  href="https://discord.gg/UFt9Ny42kM">
                   Discord
                 </Link>{' '}
                 if you want to discuss more on your feedback.
@@ -139,8 +138,7 @@ export default function About() {
                   id="demo-simple-select"
                   value={payload.type}
                   onChange={handleSelectChange}
-                  disabled={loading}
-                >
+                  disabled={loading}>
                   <MenuItem value={REPORT_TYPE_FEEDBACK}>Feedback</MenuItem>
                   <MenuItem value={REPORT_TYPE_BUG}>Bug Report</MenuItem>
                   <MenuItem value={REPORT_TYPE_SCAM_INCIDENT}>Scam Incident</MenuItem>
@@ -193,8 +191,7 @@ export default function About() {
                 fullWidth
                 size="large"
                 onClick={handleSubmit}
-                disabled={loading}
-              >
+                disabled={loading}>
                 {loading ? 'Submitting...' : 'Submit'}
               </Button>
             </form>

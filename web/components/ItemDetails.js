@@ -289,8 +289,7 @@ export default function ItemDetails({
                 color="secondary"
                 component={Link}
                 href={`/post-item?s=${item.slug}`}
-                disableUnderline
-              >
+                disableUnderline>
                 Post this item
               </Button>
             </Grid>

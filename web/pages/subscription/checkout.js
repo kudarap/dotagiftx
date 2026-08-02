@@ -179,9 +179,7 @@ export default function Checkout() {
                     </span>
                   )}
                   {currentProfile.subscription_type == 'manual' && (
-                    <span>
-                      please be noted that it will be overriden and not refundable
-                    </span>
+                    <span>please be noted that it will be overriden and not refundable</span>
                   )}
                   . Any remaining days from the previous subscription will not be carried over.
                 </Alert>

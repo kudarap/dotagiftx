@@ -168,8 +168,7 @@ export default function FixSteamIDDialog(props) {
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
+      aria-describedby="alert-dialog-description">
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
           Fix Listing Data
@@ -199,8 +198,7 @@ export default function FixSteamIDDialog(props) {
                     <Link
                       href={steamProfileBaseURL + market.seller_steam_id}
                       target="_blank"
-                      rel="noreferrer noopener"
-                    >
+                      rel="noreferrer noopener">
                       {market.seller_steam_id}
                     </Link>
                     <br />
@@ -271,8 +269,7 @@ export default function FixSteamIDDialog(props) {
             disabled={loadingCancel}
             startIcon={loadingCancel ? <CircularProgress size={22} /> : <CancelIcon />}
             onClick={handleCancelClick}
-            variant="outlined"
-          >
+            variant="outlined">
             Mark as Cancelled
           </Button>
           <Button
@@ -282,8 +279,7 @@ export default function FixSteamIDDialog(props) {
             }
             variant="outlined"
             color="secondary"
-            type="submit"
-          >
+            type="submit">
             Apply Fix
           </Button>
         </DialogActions>

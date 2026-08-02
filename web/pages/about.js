@@ -56,8 +56,7 @@ export default function About({ build }) {
             <Link
               href="https://www.reddit.com/r/Dota2Trade"
               rel="noreferrer noopener"
-              target="_blank"
-            >
+              target="_blank">
               r/Dota2Trade
             </Link>
             .
@@ -80,8 +79,7 @@ export default function About({ build }) {
             component={Link}
             target="_blank"
             rel="noreferrer noopener"
-            href="https://discord.gg/UFt9Ny42kM"
-          >
+            href="https://discord.gg/UFt9Ny42kM">
             Discord
           </Button>
           <Button
@@ -91,8 +89,7 @@ export default function About({ build }) {
             component={Link}
             target="_blank"
             rel="noreferrer noopener"
-            href="https://steamcommunity.com/profiles/76561198088587178"
-          >
+            href="https://steamcommunity.com/profiles/76561198088587178">
             Steam
           </Button>
           <Button
@@ -107,8 +104,7 @@ export default function About({ build }) {
             }
             size="large"
             component={Link}
-            href="/profiles/76561198088587178"
-          >
+            href="/profiles/76561198088587178">
             DotagiftX
           </Button>
           <br />

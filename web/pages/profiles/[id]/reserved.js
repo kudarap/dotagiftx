@@ -131,8 +131,7 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
               <Typography
                 component={Link}
                 href={`${profileURL}/reserved`}
-                style={{ textDecoration: 'underline' }}
-              >
+                style={{ textDecoration: 'underline' }}>
                 {stats.reserved} Reserved
               </Typography>
               &nbsp;&middot;&nbsp;

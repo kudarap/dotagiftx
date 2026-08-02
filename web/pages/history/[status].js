@@ -138,16 +138,14 @@ export default function History({ status, summary, error }) {
             <Typography
               component={Link}
               href="/history/reserved"
-              style={status === MARKET_STATUS_RESERVED ? { textDecoration: 'underline' } : null}
-            >
+              style={status === MARKET_STATUS_RESERVED ? { textDecoration: 'underline' } : null}>
               {summaryReserved} Reserved
             </Typography>
             &nbsp;&middot;&nbsp;
             <Typography
               component={Link}
               href="/history/delivered"
-              style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : null}
-            >
+              style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : null}>
               {summarySold} Delivered
             </Typography>
           </Typography>

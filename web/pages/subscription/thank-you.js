@@ -48,7 +48,7 @@ export default function ThanksSubscriber() {
       Storage.save(APP_CACHE_PROFILE, remote)
       setProfile(remote)
     })()
-  }, [])
+  }, [isLoggedIn])
 
   const [subscription, setSubscription] = React.useState(null)
   React.useEffect(() => {

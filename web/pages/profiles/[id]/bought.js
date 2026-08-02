@@ -139,8 +139,7 @@ export default function UserReserved({ profile, stats, canonicalURL }) {
               <Typography
                 component={Link}
                 href={`${profileURL}/bought`}
-                style={{ textDecoration: 'underline' }}
-              >
+                style={{ textDecoration: 'underline' }}>
                 {stats.bid_completed} Bought
               </Typography>
             </div>

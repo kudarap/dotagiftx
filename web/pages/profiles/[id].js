@@ -195,8 +195,7 @@ export default function UserDetails({
                   fontSize: '1rem',
                   borderColor: '#c13830',
                   borderWidth: 2,
-                }}
-              >
+                }}>
                 This is user has been flagged as <strong>BANNED</strong> or{' '}
                 <strong>SUSPENDED</strong>. <br />
                 Website is not liable for any lost in-game items and money and should avoid any
@@ -210,8 +209,7 @@ export default function UserDetails({
             className={classes.details}
             style={
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
-            }
-          >
+            }>
             <Avatar
               large
               badge={userBadge}
@@ -224,8 +222,7 @@ export default function UserDetails({
                 className={classes.profileName}
                 component="h1"
                 variant="h4"
-                color={isProfileReported ? 'error' : 'textPrimary'}
-              >
+                color={isProfileReported ? 'error' : 'textPrimary'}>
                 {profile.name}
                 {!USER_SUBSCRIPTION_BADGE_MODE && Boolean(userBadge) && (
                   <SubscriberBadge

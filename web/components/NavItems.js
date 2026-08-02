@@ -18,8 +18,7 @@ export default function NavItems({ profile, onClose, onLogout }) {
       onClick={handleClose}
       component={Link}
       href={`/profiles/${profile.steam_id}`}
-      disableUnderline
-    >
+      disableUnderline>
       View Profile
     </MenuItem>,
     <MenuItem
@@ -27,8 +26,7 @@ export default function NavItems({ profile, onClose, onLogout }) {
       onClick={handleClose}
       component={Link}
       href="/my-listings"
-      disableUnderline
-    >
+      disableUnderline>
       Listings
     </MenuItem>,
     <MenuItem
@@ -36,8 +34,7 @@ export default function NavItems({ profile, onClose, onLogout }) {
       onClick={handleClose}
       component={Link}
       href="/my-orders"
-      disableUnderline
-    >
+      disableUnderline>
       Orders
     </MenuItem>,
     <MenuItem
@@ -45,8 +42,7 @@ export default function NavItems({ profile, onClose, onLogout }) {
       onClick={handleClose}
       component={Link}
       href="/submit-feedback"
-      disableUnderline
-    >
+      disableUnderline>
       Feedback
     </MenuItem>,
     // <MenuItem key={key++} onClick={handleClose} component={Link} href="/updates" disableUnderline>

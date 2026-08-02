@@ -110,8 +110,7 @@ export default function Plus() {
               variant="h3"
               component="h1"
               fontWeight="bold"
-              color="secondary"
-            >
+              color="secondary">
               Dotagift Plus
             </Typography>
             <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
@@ -313,7 +312,12 @@ export default function Plus() {
                     borderRadius: 2,
                     filter: 'grayscale(100%)',
                   }}>
-                  <img src="/assets/courier.png" alt="assets/courier.png" height={48} />
+                  <Image
+                    src="/assets/courier.png"
+                    alt="assets/courier.png"
+                    height={48}
+                    width={66}
+                  />
                   <Typography>Dedicated Pos-5</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Exclusive support channel on Discord and Steam
@@ -330,8 +334,7 @@ export default function Plus() {
               p: 4,
               textAlign: 'center',
               background: 'url(/assets/plus-banner.png) no-repeat top center',
-            }}
-          >
+            }}>
             <Typography variant="h6">Partnership Goals</Typography>
             <FeatureUnlockables />
             <Typography variant="caption">
