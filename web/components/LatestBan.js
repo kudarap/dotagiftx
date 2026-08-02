@@ -26,7 +26,7 @@ export default function LatestBan() {
 
       try {
         const res = await blacklistSearch({ limit: 1, sort: 'updated_at:desc' })
-        if (res) {
+        if (res && res.length > 0) {
           const latest = res[0].updated_at
           setValue(latest)
           save(CACHE_KEY, latest, 3600)
