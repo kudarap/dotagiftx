@@ -24,17 +24,13 @@ type Config struct {
 
 // Client represents paypal client.
 type Client struct {
-	pc *paypalClient
+	pc *BaseClient
 
 	webhookID string
 }
 
 func New(conf Config) (*Client, error) {
-	base := apiBaseSandbox
-	if conf.Live {
-		base = apiBaseLive
-	}
-	c, err := NewClient(conf.ClientID, conf.Secret, base)
+	c, err := NewBaseClient(conf.ClientID, conf.Secret, conf.Live)
 	if err != nil {
 		return nil, err
 	}
@@ -82,34 +78,8 @@ func (c *Client) CreateSubscription(ctx context.Context, planID, customID string
 	return sub.ID, nil
 }
 
-type subscriptionPayload struct {
-	Resource struct {
-		ID          string `json:"id"`
-		CustomID    string `json:"custom_id"`
-		Status      string `json:"status"`
-		BillingInfo struct {
-			OutstandingBalance struct {
-				CurrencyCode string `json:"currency_code"`
-				Value        string `json:"value"`
-			} `json:"outstanding_balance"`
-			CycleExecutions []struct {
-				TenureType                  string `json:"tenure_type"`
-				Sequence                    int    `json:"sequence"`
-				CyclesCompleted             int    `json:"cycles_completed"`
-				CyclesRemaining             int    `json:"cycles_remaining"`
-				CurrentPricingSchemeVersion int    `json:"current_pricing_scheme_version"`
-				TotalCycles                 int    `json:"total_cycles"`
-			} `json:"cycle_executions"`
-			LastPayment struct {
-				Amount struct {
-					CurrencyCode string `json:"currency_code"`
-					Value        string `json:"value"`
-				} `json:"amount"`
-				Time time.Time `json:"time"`
-			} `json:"last_payment"`
-			FailedPaymentsCount int `json:"failed_payments_count"`
-		} `json:"billing_info"`
-	} `json:"resource"`
+type SubscriptionEventPayload struct {
+	Resource Subscription `json:"resource"`
 }
 
 func (c *Client) IsCancelled(
@@ -132,7 +102,7 @@ func (c *Client) IsCancelled(
 	}
 	defer req.Body.Close()
 
-	var sub subscriptionPayload
+	var sub SubscriptionEventPayload
 	if err = json.Unmarshal(body, &sub); err != nil {
 		return
 	}

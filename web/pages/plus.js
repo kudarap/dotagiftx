@@ -78,6 +78,7 @@ export default function Plus() {
 
     return {
       ...style,
+      marginTop: '-2px',
       transition: `all .5s ease-in-out, border .2s`,
       MozTransition: `all .5s ease-in-out, border .2s`,
       boxShadow: `0 0 40px ${profile.subscriptionColor}`,
