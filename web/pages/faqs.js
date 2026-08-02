@@ -113,7 +113,7 @@ export default function Faqs() {
           <Question>Can I trust the users on this website?</Question>
           <Answer>
             Not really, its open for anyone so please be vigilant to scammers. User&apos;s
-            transaction history are open and links to their SteamRep, Steam, and Dotabuff are listed
+            transaction history are open and links to their Steam, and Dotabuff are listed
             for you to checkout.
           </Answer>
 
@@ -154,15 +154,7 @@ export default function Faqs() {
               color="secondary">
               contact kudarap
             </Link>{' '}
-            to ban the account on this site and you can submit a report on{' '}
-            <Link
-              href="https://steamrep.com/"
-              target="_blank"
-              color="secondary"
-              rel="noreferrer noopener">
-              SteamRep
-            </Link>{' '}
-            or inquire on{' '}
+            to ban the account on this site or inquire on{' '}
             <Link
               href="https://www.reddit.com/r/Dota2Trade/"
               target="_blank"

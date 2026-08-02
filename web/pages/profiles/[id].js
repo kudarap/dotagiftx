@@ -14,7 +14,6 @@ import {
   APP_URL,
   DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
 import {
   USER_AGE_CAUTION,
@@ -145,7 +144,6 @@ export default function UserDetails({
   }
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
-  const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
   const dotabuffURL = `${DOTABUFF_PROFILE_BASE_URL}/${profile.steam_id}`
 
   const metaTitle = `${APP_NAME} :: ${profile.name}`
@@ -276,8 +274,6 @@ export default function UserDetails({
                     </>
                   )}
                   <ChipLink label="Steam Profile" href={profileURL} />
-                  &nbsp;
-                  <ChipLink label="SteamRep" href={steamRepURL} />
                   &nbsp;
                   <ChipLink label="Dotabuff" href={dotabuffURL} />
                 </Box>
