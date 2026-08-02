@@ -1,0 +1,356 @@
+import React from 'react'
+import Head from 'next/head'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+import { makeStyles } from 'tss-react/mui'
+import useInView from 'react-cool-inview'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import schemaOrgProduct from '@/lib/richdata'
+import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
+import { APP_NAME } from '@/constants/strings'
+import { CDN_URL, marketSearch, trackItemViewURL } from '@/service/api'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import Container from '@/components/Container'
+import MarketList from '@/components/MarketList'
+import type { MarketDatatable } from '@/components/MarketList'
+import Link from '@/components/Link'
+import TablePagination from '@/components/TablePagination'
+import BuyOrderDialog from '@/components/BuyOrderDialog'
+import ItemViewCard from '@/components/ItemViewCard'
+import type { Item } from '@/lib/types'
+
+const ItemGraph = dynamic(() => import('@/components/ItemGraph'))
+
+const useStyles = makeStyles()(theme => ({
+  main: {
+    [theme.breakpoints.down('md')]: {
+      marginTop: theme.spacing(1),
+    },
+    marginTop: theme.spacing(4),
+  },
+  details: {
+    [theme.breakpoints.down('sm')]: {
+      textAlign: 'center',
+      display: 'block',
+    },
+    display: 'inline-flex',
+  },
+  postItemButton: {
+    [theme.breakpoints.down('sm')]: {
+      width: '50%',
+    },
+    width: 172,
+  },
+}))
+
+const marketBuyOrderFilter = {
+  type: MARKET_TYPE_BID,
+  status: MARKET_STATUS_LIVE,
+  sort: 'highest',
+}
+
+const DEFAULT_SORT = 'price'
+const OFFERS_PARAM_KEY = 'offers'
+const BUYORDERS_PARAM_KEY = 'buyorders'
+
+interface ItemDetailsProps {
+  item: Item
+  error?: string | null
+  filter: { page: number } & Record<string, unknown>
+  marketType: string
+  sortParam?: string
+  initialAsks: MarketDatatable
+  initialBids: MarketDatatable
+  canonicalURL: string
+}
+
+export default function ItemDetails({
+  item,
+  error: initialError,
+  filter: initialFilter,
+  marketType,
+  sortParam = DEFAULT_SORT,
+  initialAsks = { data: [], total_count: 0 },
+  initialBids = { data: [], total_count: 0 },
+  canonicalURL,
+}: ItemDetailsProps) {
+  const { classes } = useStyles()
+  const [offers, setOffers] = React.useState<MarketDatatable>(initialAsks)
+  const [orders, setOrders] = React.useState<MarketDatatable>(initialBids)
+  const [error, setError] = React.useState<string | null>(null)
+  const [loading, setLoading] = React.useState<string | null>(null)
+  const [openBuyOrderDialog, setOpenBuyOrderDialog] = React.useState(false)
+  const [tabIndex, setTabIndex] = React.useState(0)
+
+  const router = useRouter()
+
+  // Set active tab on load
+  React.useEffect(() => {
+    switch (marketType) {
+      case OFFERS_PARAM_KEY:
+        setTabIndex(0)
+        break
+      case BUYORDERS_PARAM_KEY:
+        setTabIndex(1)
+        break
+      default:
+        setTabIndex(0)
+    }
+  }, [marketType])
+
+  // Handle offers data on load. when its available display immediately.
+  React.useEffect(() => {
+    setOffers(initialAsks)
+  }, [initialAsks])
+
+  // Handle filter changes
+  const [sort, setSort] = React.useState(sortParam || DEFAULT_SORT)
+  const [page, setPage] = React.useState(initialFilter.page)
+  const handleTabChange = (idx: number) => {
+    setTabIndex(idx)
+    setSort('price')
+    setPage(1)
+
+    // process offers
+    if (idx === 0) {
+      router.push(`/${item.slug}/${OFFERS_PARAM_KEY}`, undefined, { shallow: true })
+      return
+    }
+
+    // process buy orders
+    router.push(`/${item.slug}/${BUYORDERS_PARAM_KEY}`, undefined, { shallow: true })
+  }
+  const handleSortChange = (sortValue: string) => {
+    setSort(sortValue)
+    setPage(1)
+
+    // process offers
+    if (tabIndex === 0) {
+      router.push(`/${item.slug}/${OFFERS_PARAM_KEY}/${sortValue}`, undefined, { shallow: true })
+      return
+    }
+
+    // process buy orders
+    router.push(`/${item.slug}/${BUYORDERS_PARAM_KEY}/${sortValue}`, undefined, { shallow: true })
+  }
+  const handlePageChange = (_e: unknown, pageValue: number) => {
+    setPage(pageValue)
+    // scroll to top when page change
+    window.scrollTo(0, 0)
+    router.push(
+      { pathname: router.pathname, query: { ...router.query, page: pageValue } },
+      undefined,
+      { shallow: true }
+    )
+  }
+
+  const getOffers = React.useCallback(
+    async (sortValue: string, pageValue: number) => {
+      setLoading('ask')
+      try {
+        const res = (await marketSearch({
+          ...initialFilter,
+          sort: sortValue === 'price' ? 'lowest' : sortValue,
+          page: pageValue,
+          index: 'item_id',
+        })) as MarketDatatable
+        setOffers(res)
+      } catch (e) {
+        setError((e as Error).message)
+      }
+      setLoading(null)
+    },
+    [initialFilter]
+  )
+  const getBuyOrders = React.useCallback(
+    async (sortValue: string) => {
+      setLoading('bid')
+      try {
+        const res = (await marketSearch({
+          ...marketBuyOrderFilter,
+          sort: sortValue === 'price' ? 'highest' : sortValue,
+          item_id: item.id,
+          index: 'item_id',
+        })) as MarketDatatable & { loaded?: boolean }
+        res.loaded = true
+        setOrders(res)
+      } catch (e) {
+        setError((e as Error).message)
+      }
+      setLoading(null)
+    },
+    [item.id]
+  )
+  const handleBuyOrderClick = () => {
+    setOpenBuyOrderDialog(true)
+  }
+  const handleBuyerChange = () => {
+    getBuyOrders(sort)
+  }
+
+  // Handle initial buy orders on page load.
+  React.useEffect(() => {
+    getBuyOrders(sort)
+  }, [getBuyOrders, sort])
+
+  // Handles update offers and buy orders on filter change
+  React.useEffect(() => {
+    // process offers
+    if (tabIndex === 0) {
+      // check initial props is same and skip the fetch
+      if (sort === sortParam && page === initialFilter.page) {
+        setOffers(initialAsks)
+        return
+      }
+
+      getOffers(sort, page)
+      return
+    }
+
+    // process buy orders
+    getBuyOrders(sort)
+  }, [tabIndex, sort, page, getBuyOrders, getOffers, initialAsks, initialFilter.page, sortParam])
+
+  const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
+  const rarityText = item.rarity === 'regular' ? '' : ` — ${(item.rarity || '').toString().toUpperCase()}`
+  let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
+  const jsonLD = schemaOrgProduct(canonicalURL, item, { description: metaDesc })
+  if (item.lowest_ask) {
+    const startingPrice = item.lowest_ask.toFixed(2)
+    metaDesc += ` Price starting at $${startingPrice}`
+  }
+
+  const { observe, inView } = useInView({
+    onEnter: ({ unobserve }) => unobserve(), // only run once
+  })
+
+  if (initialError) {
+    return (
+      <>
+        <Header />
+
+        <main className={classes.main}>
+          <Container>
+            <Typography variant="h5" component="h1" gutterBottom align="center">
+              Item Error
+            </Typography>
+            <Typography color="textSecondary" align="center">
+              {initialError}
+            </Typography>
+          </Container>
+        </main>
+
+        <Footer />
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Head>
+        <meta charSet="UTF-8" />
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={canonicalURL} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDesc} />
+        <meta name="twitter:image" content={`${CDN_URL}/${item.image}`} />
+        <meta name="twitter:site" content={`${APP_NAME}`} />
+        {/* OpenGraph */}
+        <meta property="og:site_name" content={APP_NAME} />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:image" content={`${CDN_URL}/${item.image}`} />
+        {/* Rich Results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
+        />
+
+        {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
+        <link
+          rel="preload"
+          fetchPriority="high"
+          as="image"
+          href={`${CDN_URL}/${item.image}`}
+          type="image/png"
+        />
+      </Head>
+
+      <Header />
+
+      <main className={classes.main}>
+        <Container>
+          {/* Item Details */}
+          <ItemViewCard item={item} />
+
+          {/* Action Buttons */}
+          <Grid container alignItems="center" spacing={1} sx={{ mb: 3 }}>
+            <Grid item className={classes.postItemButton}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="secondary"
+                component={Link}
+                href={`/post-item?s=${item.slug}`}
+                disableUnderline>
+                Post this item
+              </Button>
+            </Grid>
+            <Grid item className={classes.postItemButton}>
+              <Button fullWidth onClick={handleBuyOrderClick} variant="outlined" color="bid">
+                Place buy order
+              </Button>
+            </Grid>
+          </Grid>
+
+          {/* Listings */}
+          <MarketList
+            offers={offers}
+            buyOrders={orders}
+            error={error}
+            loadingType={loading}
+            onSortChange={handleSortChange}
+            tabIndex={tabIndex}
+            onTabChange={handleTabChange}
+            sort={sort}
+            pagination={
+              !error && (
+                <TablePagination
+                  onPageChange={handlePageChange}
+                  style={{ textAlign: 'right' }}
+                  count={offers.total_count || 0}
+                  page={page}
+                />
+              )
+            }
+          />
+
+          {/* History */}
+          <div ref={observe}>{inView && <ItemGraph itemId={String(item.id)} itemName={item.name} />}</div>
+        </Container>
+      </main>
+
+      <BuyOrderDialog
+        catalog={item as Item & { id: string; bid_count?: number }}
+        open={openBuyOrderDialog}
+        onClose={() => {
+          setOpenBuyOrderDialog(false)
+        }}
+        onChange={handleBuyerChange}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={trackItemViewURL(item.id)} height={1} width={1} alt="" />
+
+      <Footer />
+    </>
+  )
+}
