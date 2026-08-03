@@ -61,10 +61,12 @@ export default function InternalUserCard({
           <Button
             startIcon={<DiscordIcon />}
             component={Link}
+            nativeButton={false}
             target="_blank"
             rel="noreferrer noopener"
             size="small"
-            href={discordURL}>
+            href={discordURL}
+          >
             Discord
           </Button>
           &nbsp;
@@ -79,8 +81,10 @@ export default function InternalUserCard({
               />
             }
             component={Link}
+            nativeButton={false}
             size="small"
-            href={`/profiles/${id}`}>
+            href={`/profiles/${id}`}
+          >
             DotagiftX
           </Button>
         </Box>

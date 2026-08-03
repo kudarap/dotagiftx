@@ -30,7 +30,8 @@ function ExpiringPostsBanner({ userID }: { userID?: string }) {
   return (
     <Alert
       severity="warning"
-      action={<BasicMenu color="inherit" size="small" onClose={handleSubmit} />}>
+      action={<BasicMenu color="inherit" size="small" onClose={handleSubmit} />}
+    >
       <strong>Major update</strong>: We will roll out Expiring items on May 1, 2022 —{' '}
       <Link href="/expiring-posts">Read more</Link>
     </Alert>
@@ -64,7 +65,8 @@ function BasicMenu({
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}>
+        onClick={handleClick}
+      >
         <MoreVertIcon fontSize="inherit" />
       </IconButton>
       <Menu
@@ -72,9 +74,12 @@ function BasicMenu({
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}>
+        slotProps={{
+          list: {
+            'aria-labelledby': 'basic-button',
+          },
+        }}
+      >
         <MenuItem onClick={onClose}>Close</MenuItem>
       </Menu>
     </div>

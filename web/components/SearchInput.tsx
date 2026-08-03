@@ -77,28 +77,6 @@ export default function SearchInput(props: SearchInputProps) {
       <TextField
         id="search_input"
         className={classes.searchBar}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon className={classes.actionIcons} />
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <InputAdornment position="end">
-              {keyword !== '' && (
-                <>
-                  <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
-                  <span className={classes.verticalDivider} />
-                </>
-              )}
-
-              <ArrowForwardIcon
-                className={classes.iconButtons}
-                onClick={handleSubmit as unknown as React.MouseEventHandler}
-              />
-            </InputAdornment>
-          ),
-        }}
         placeholder="Search for item name, hero, treasure"
         variant="outlined"
         color="secondary"
@@ -106,6 +84,30 @@ export default function SearchInput(props: SearchInputProps) {
         value={keyword}
         onChange={handleChange}
         {...other}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon className={classes.actionIcons} />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                {keyword !== '' && (
+                  <>
+                    <CloseIcon className={classes.iconButtons} onClick={handleClearValue} />
+                    <span className={classes.verticalDivider} />
+                  </>
+                )}
+
+                <ArrowForwardIcon
+                  className={classes.iconButtons}
+                  onClick={handleSubmit as unknown as React.MouseEventHandler}
+                />
+              </InputAdornment>
+            ),
+          },
+        }}
       />
       {label && (
         <Typography
@@ -113,7 +115,8 @@ export default function SearchInput(props: SearchInputProps) {
           variant="caption"
           color="textSecondary"
           component="label"
-          htmlFor="search_input">
+          htmlFor="search_input"
+        >
           {label}
         </Typography>
       )}

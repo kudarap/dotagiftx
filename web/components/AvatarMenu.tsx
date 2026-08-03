@@ -43,7 +43,8 @@ export default function AvatarMenu({ profile }: { profile: Profile }) {
             glow={Boolean(profile.donation)}
             {...retinaSrcSet(profile.avatar, 24, 24)}
           />
-        }>
+        }
+      >
         {profile && profile.name}
       </Button>
       <Menu
@@ -52,8 +53,9 @@ export default function AvatarMenu({ profile }: { profile: Profile }) {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}>
-        <MenuItem onClick={handleClose} component={Link} href={`/profiles/${profile.steam_id}`}>
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleClose} component={Link} nativeButton={false} href={`/profiles/${profile.steam_id}`}>
           Profile
         </MenuItem>
         <MenuItem onClick={handleClose}>Listings</MenuItem>

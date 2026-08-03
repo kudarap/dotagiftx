@@ -101,7 +101,8 @@ export default function Rules() {
               href="https://discord.gg/UFt9Ny42kM"
               target="_blank"
               color="secondary"
-              rel="noreferrer noopener">
+              rel="noreferrer noopener"
+            >
               Discord
             </Link>{' '}
             or submit a comment on feedback.

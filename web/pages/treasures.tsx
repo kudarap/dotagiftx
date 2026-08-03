@@ -73,7 +73,8 @@ export default function Treasures({
             WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 90%)',
             position: 'relative',
             zIndex: 0,
-          }}>
+          }}
+        >
           <div
             style={{
               // background:
@@ -90,11 +91,17 @@ export default function Treasures({
 
         <Container style={{ position: 'relative' }}>
           <Typography
-            sx={{ mt: -54.5, mb: 2, letterSpacing: 3, textShadow: '0 0 8px #000000b0' }}
             variant="h3"
             component="h1"
-            fontWeight="bold"
-            color="primary">
+            color="primary"
+            sx={{
+              fontWeight: 'bold',
+              mt: -54.5,
+              mb: 2,
+              letterSpacing: 3,
+              textShadow: '0 0 8px #000000b0',
+            }}
+          >
             {`All Treasures (${treasures.length})`}
           </Typography>
 
@@ -106,14 +113,23 @@ export default function Treasures({
 
           <Grid container spacing={1}>
             {treasures.map(treasure => (
-              <Grid item xs={6} md={3} key={treasure.name}>
+              <Grid
+                key={treasure.name}
+                size={{
+                  xs: 6,
+                  md: 3,
+                }}
+              >
                 <Link href={`/search?origin=${treasure.name}`} underline="none">
                   <Item
                     style={{
                       borderBottom: `2px solid ${rarityColorMap[treasure.rarity as string]}`,
-                      borderTop: isTreasureNew(treasure?.release_date) ? '2px solid green' : undefined,
+                      borderTop: isTreasureNew(treasure?.release_date)
+                        ? '2px solid green'
+                        : undefined,
                       marginTop: isTreasureNew(treasure?.release_date) ? -2 : undefined,
-                    }}>
+                    }}
+                  >
                     {isTreasureNew(treasure?.release_date) && (
                       <span
                         style={{
@@ -127,7 +143,8 @@ export default function Treasures({
                           marginLeft: -18,
                           borderBottomLeftRadius: 4,
                           borderBottomRightRadius: 4,
-                        }}>
+                        }}
+                      >
                         new
                       </span>
                     )}
@@ -136,7 +153,8 @@ export default function Treasures({
                         position: 'relative',
                         width: '100%',
                         aspectRatio: '256 / 171',
-                      }}>
+                      }}
+                    >
                       <Image
                         src={`/assets/treasures/${treasure.image}`}
                         alt={treasure.name}

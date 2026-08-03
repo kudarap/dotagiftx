@@ -24,32 +24,40 @@ export default function NavItems({
       key="profile"
       onClick={handleClose}
       component={Link}
+      nativeButton={false}
       href={`/profiles/${profile.steam_id}`}
-      disableUnderline>
+      disableUnderline
+    >
       View Profile
     </MenuItem>,
     <MenuItem
       key="listings"
       onClick={handleClose}
       component={Link}
+      nativeButton={false}
       href="/my-listings"
-      disableUnderline>
+      disableUnderline
+    >
       Listings
     </MenuItem>,
     <MenuItem
       key="orders"
       onClick={handleClose}
       component={Link}
+      nativeButton={false}
       href="/my-orders"
-      disableUnderline>
+      disableUnderline
+    >
       Orders
     </MenuItem>,
     <MenuItem
       key="feedback"
       onClick={handleClose}
       component={Link}
+      nativeButton={false}
       href="/submit-feedback"
-      disableUnderline>
+      disableUnderline
+    >
       Feedback
     </MenuItem>,
     // <MenuItem key={key++} onClick={handleClose} component={Link} href="/updates" disableUnderline>

@@ -103,10 +103,7 @@ const minimumCycle: Record<string, number> = {
   supporter: 12,
 }
 
-const subscriptionStyleCard: Record<
-  string,
-  { borderTop: string; backgroundImage: string }
-> = {
+const subscriptionStyleCard: Record<string, { borderTop: string; backgroundImage: string }> = {
   partner: {
     borderTop: '2px solid #ae7f1e',
     backgroundImage: 'linear-gradient(#a6791d63, #a6791d)',
@@ -144,9 +141,7 @@ export default function Checkout() {
   const subscription = subscriptionId ? subscriptions[subscriptionId] : undefined
   const minimumSubscriptionCycle = subscriptionId ? minimumCycle[subscriptionId] : undefined
   const subscriptionPrice = subscriptionId ? priceTable[subscriptionId] : undefined
-  const cardStyle = subscriptionId
-    ? subscriptionStyleCard[subscriptionId]
-    : undefined
+  const cardStyle = subscriptionId ? subscriptionStyleCard[subscriptionId] : undefined
   const [currentProfile, setCurrentProfile] = React.useState<SubscriptionProfile>(defaultProfile)
   useEffect(() => {
     if (!query.id) {
@@ -179,7 +174,8 @@ export default function Checkout() {
       clientId={PAYPAL_CLIENT_ID}
       environment={isPaypalLive ? 'production' : 'sandbox'}
       components={['paypal-subscriptions']}
-      pageType="checkout">
+      pageType="checkout"
+    >
       <div className="container">
         <Header />
 
@@ -210,7 +206,6 @@ export default function Checkout() {
               )}
 
               <Typography
-                sx={{ mt: 8 }}
                 style={{
                   background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
                   WebkitBackgroundClip: 'text',
@@ -219,8 +214,12 @@ export default function Checkout() {
                 }}
                 variant="h3"
                 component="h1"
-                fontWeight="bold"
-                color="secondary">
+                color="secondary"
+                sx={{
+                  fontWeight: 'bold',
+                  mt: 8,
+                }}
+              >
                 Dotagift Plus
               </Typography>
 
@@ -235,14 +234,21 @@ export default function Checkout() {
                       borderRadius: 2,
                       width: 500,
                       m: '30px auto',
-                    }}>
-                    <Typography variant="h5" fontWeight="bold">
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {subscription.name} Subscription
                     </Typography>
 
                     <Box
                       component={FeatureList}
-                      sx={{ height: 160, textAlign: 'justify', display: 'inline-table' }}>
+                      sx={{ height: 160, textAlign: 'justify', display: 'inline-table' }}
+                    >
                       {subscription.features.map(v => (
                         <li key={v}>{v}</li>
                       ))}
@@ -269,7 +275,13 @@ export default function Checkout() {
             <Divider sx={{ mt: 5, mb: 5 }} />
 
             {isReady && subscriptionPrice && minimumSubscriptionCycle && (
-              <Box sx={{ maxWidth: 600, m: 'auto' }} textAlign="center">
+              <Box
+                sx={{
+                  textAlign: 'center',
+                  maxWidth: 600,
+                  m: 'auto',
+                }}
+              >
                 <Typography variant="h6" sx={{ mb: 1 }}>
                   PayPal not supported?
                 </Typography>
@@ -279,7 +291,8 @@ export default function Checkout() {
                     color="secondary"
                     target="_blank"
                     rel="noreferrer noopener"
-                    href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key">
+                    href="https://steamcommunity.com/market/listings/440/Mann%20Co.%20Supply%20Crate%20Key"
+                  >
                     TF2 Keys
                   </Link>{' '}
                   or{' '}
@@ -287,7 +300,8 @@ export default function Checkout() {
                     color="secondary"
                     target="_blank"
                     rel="noreferrer noopener"
-                    href="https://steamcommunity.com/market/listings/570/Fractal%20Horns%20of%20Inner%20Abysm">
+                    href="https://steamcommunity.com/market/listings/570/Fractal%20Horns%20of%20Inner%20Abysm"
+                  >
                     TB Arcanas
                   </Link>{' '}
                   with minimum of {minimumSubscriptionCycle} months and +{manualPriceOverhead * 100}
@@ -310,7 +324,11 @@ export default function Checkout() {
                   </Typography>
                 </Box>
 
-                <Box textAlign="left">
+                <Box
+                  sx={{
+                    textAlign: 'left',
+                  }}
+                >
                   <ol>
                     <li>
                       Acquire your TF2 keys and/or TB Arcanas and total should equal to{' '}
@@ -328,7 +346,8 @@ export default function Checkout() {
                         color="secondary"
                         target="_blank"
                         rel="noreferrer noopener"
-                        href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW">
+                        href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW"
+                      >
                         trade offer
                       </Link>{' '}
                       and indicate your subscription plan.
@@ -339,7 +358,8 @@ export default function Checkout() {
                         color="secondary"
                         target="_blank"
                         rel="noreferrer noopener"
-                        href="https://discord.gg/3JVU2EumRw">
+                        href="https://discord.gg/3JVU2EumRw"
+                      >
                         Discord
                       </Link>{' '}
                       that you made a trade offer and allow us to process in 2-3 days.

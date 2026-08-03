@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import Link from './Link'
@@ -27,7 +27,15 @@ const secondaryLinks = [
   ['Mobile', '/download'],
 ].map(convertToNav)
 
-function MenuDrawer({ profile, open, onClose }: { profile: Profile; open: boolean; onClose: () => void }) {
+function MenuDrawer({
+  profile,
+  open,
+  onClose,
+}: {
+  profile: Profile
+  open: boolean
+  onClose: () => void
+}) {
   const links = [...primaryLinks]
   if (!profile.id) {
     links.splice(1, 0, convertToNav(['Login', '/login']))
@@ -38,30 +46,41 @@ function MenuDrawer({ profile, open, onClose }: { profile: Profile; open: boolea
       <Box sx={{ width: 250 }} role="presentation" onClick={onClose} onKeyDown={onClose}>
         <List>
           {links.map(link => (
-            <ListItem button key={link.path} component={Link} href={link.path}>
+            <ListItemButton
+              key={link.path}
+              component={Link}
+              nativeButton={false}
+              href={link.path}
+            >
               <ListItemText primary={link.label} />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
         <Divider />
         <List>
           {secondaryLinks.map(link => (
-            <ListItem button key={link.path} component={Link} href={link.path}>
+            <ListItemButton
+              key={link.path}
+              component={Link}
+              nativeButton={false}
+              href={link.path}
+            >
               <ListItemText primary={link.label} />
-            </ListItem>
+            </ListItemButton>
           ))}
-          <ListItem
-            button
+          <ListItemButton
             key="discord"
             component={Link}
+            nativeButton={false}
             href="https://discord.gg/UFt9Ny42kM"
             target="_blank"
-            rel="noreferrer noopener">
+            rel="noreferrer noopener"
+          >
             <ListItemText primary="Discord" />
-          </ListItem>
+          </ListItemButton>
         </List>
         <Divider />
-        <ListItem button component={Link} href="/plus">
+        <ListItemButton component={Link} nativeButton={false} href="/plus">
           <ListItemText
             primary={
               <span>
@@ -69,7 +88,7 @@ function MenuDrawer({ profile, open, onClose }: { profile: Profile; open: boolea
               </span>
             }
           />
-        </ListItem>
+        </ListItemButton>
       </Box>
     </Drawer>
   )

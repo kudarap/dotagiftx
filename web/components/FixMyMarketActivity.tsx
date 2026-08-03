@@ -124,11 +124,7 @@ export default function FixMyMarketActivity({
         placeholder="Filter heroes, items, notes, reference id, and steam id"
       />
 
-      {error && (
-        <Typography color="error">
-          Error {error}
-        </Typography>
-      )}
+      {error && <Typography color="error">Error {error}</Typography>}
 
       {!loading && datatable.data.length === 0 && (
         <Typography align="center" sx={{ m: 5 }}>
@@ -139,7 +135,8 @@ export default function FixMyMarketActivity({
             onClick={() => {
               window.location.replace('/my-listings')
             }}
-            variant="outlined">
+            variant="outlined"
+          >
             Reload
           </Button>
         </Typography>
@@ -169,7 +166,8 @@ export default function FixMyMarketActivity({
                 aria-haspopup="true"
                 data-index={marketIdx}
                 onMouseLeave={debouncePopoverClose}
-                onMouseEnter={handlePopoverOpen}>
+                onMouseEnter={handlePopoverOpen}
+              >
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
                   VERIFIED_INVENTORY_MAP_ICON[market.inventory_status! + Number(market.resell)]}
@@ -193,7 +191,8 @@ export default function FixMyMarketActivity({
                 component="span"
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
-                }>
+                }
+              >
                 {amount(market.price || 0, market.currency)}
               </Typography>
               &nbsp;
@@ -211,7 +210,8 @@ export default function FixMyMarketActivity({
                   onClick={() => handleUpdateClick(marketIdx)}
                   size="small"
                   variant="outlined"
-                  color="warning">
+                  color="warning"
+                >
                   Fix Steam ID
                 </Button>
               </Box>
@@ -221,11 +221,13 @@ export default function FixMyMarketActivity({
               component="pre"
               color="textSecondary"
               variant="caption"
-              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
+              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}
+            >
               {market.partner_steam_id && (
                 <Link
                   color="textSecondary"
-                  href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
+                  href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+                >
                   {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
                   {market.notes && '\n'}
                 </Link>
@@ -248,11 +250,7 @@ export default function FixMyMarketActivity({
         ))}
       </ul>
 
-      {(loading || !datatable.data) && (
-        <Typography color="textSecondary">
-          Loading...
-        </Typography>
-      )}
+      {(loading || !datatable.data) && <Typography color="textSecondary">Loading...</Typography>}
 
       <FixSteamIDDialog
         open={!!currentMarket}

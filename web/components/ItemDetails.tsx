@@ -215,7 +215,8 @@ export default function ItemDetails({
   }, [tabIndex, sort, page, getBuyOrders, getOffers, initialAsks, initialFilter.page, sortParam])
 
   const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
-  const rarityText = item.rarity === 'regular' ? '' : ` — ${(item.rarity || '').toString().toUpperCase()}`
+  const rarityText =
+    item.rarity === 'regular' ? '' : ` — ${(item.rarity || '').toString().toUpperCase()}`
   let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
   const jsonLD = schemaOrgProduct(canonicalURL, item, { description: metaDesc })
   if (item.lowest_ask) {
@@ -293,19 +294,28 @@ export default function ItemDetails({
           <ItemViewCard item={item} />
 
           {/* Action Buttons */}
-          <Grid container alignItems="center" spacing={1} sx={{ mb: 3 }}>
-            <Grid item className={classes.postItemButton}>
+          <Grid
+            container
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+              mb: 3,
+            }}
+          >
+            <Grid className={classes.postItemButton}>
               <Button
                 fullWidth
                 variant="outlined"
                 color="secondary"
                 component={Link}
+                nativeButton={false}
                 href={`/post-item?s=${item.slug}`}
-                disableUnderline>
+                disableUnderline
+              >
                 Post this item
               </Button>
             </Grid>
-            <Grid item className={classes.postItemButton}>
+            <Grid className={classes.postItemButton}>
               <Button fullWidth onClick={handleBuyOrderClick} variant="outlined" color="bid">
                 Place buy order
               </Button>
@@ -335,7 +345,9 @@ export default function ItemDetails({
           />
 
           {/* History */}
-          <div ref={observe}>{inView && <ItemGraph itemId={String(item.id)} itemName={item.name} />}</div>
+          <div ref={observe}>
+            {inView && <ItemGraph itemId={String(item.id)} itemName={item.name} />}
+          </div>
         </Container>
       </main>
 

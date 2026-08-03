@@ -49,7 +49,8 @@ export default function Privacy() {
               href="https://www.google.com/policies/privacy/partners/"
               target="_blank"
               color="secondary"
-              rel="noreferrer noopener">
+              rel="noreferrer noopener"
+            >
               Google&rsquo;s privacy terms
             </Link>
             .

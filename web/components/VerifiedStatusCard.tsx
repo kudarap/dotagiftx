@@ -93,7 +93,11 @@ interface VerifiedStatusCardProps {
   onMouseLeave?: () => void
 }
 
-export default function VerifiedStatusCard({ market, onMouseLeave, ...other }: VerifiedStatusCardProps) {
+export default function VerifiedStatusCard({
+  market,
+  onMouseLeave,
+  ...other
+}: VerifiedStatusCardProps) {
   const { classes } = useStyles()
 
   if (market === null) {
@@ -127,9 +131,7 @@ export default function VerifiedStatusCard({ market, onMouseLeave, ...other }: V
   }
 
   const steamInvProfile =
-    market.status === MARKET_STATUS_SOLD
-      ? market.partner_steam_id || ''
-      : market.user.steam_id
+    market.status === MARKET_STATUS_SOLD ? market.partner_steam_id || '' : market.user.steam_id
 
   return (
     <CardX className={classes.root} onMouseLeave={onMouseLeave} {...other}>
@@ -142,9 +144,7 @@ export default function VerifiedStatusCard({ market, onMouseLeave, ...other }: V
           {source?.elapsed_ms ? <span>&nbsp;in {formatDuration(source.elapsed_ms)}</span> : null}
         </Typography>
 
-        <Typography component="p">
-          {mapText[source.status]}.
-        </Typography>
+        <Typography component="p">{mapText[source.status]}.</Typography>
 
         {source.steam_assets && (
           <>
@@ -175,7 +175,8 @@ export default function VerifiedStatusCard({ market, onMouseLeave, ...other }: V
                         target="_blank"
                         rel="noreferrer noopener"
                         underline="none"
-                        href={`${inventoryURL}_${asset.asset_id}`}>
+                        href={`${inventoryURL}_${asset.asset_id}`}
+                      >
                         <strong>{asset.displayName || asset.name}</strong>
                       </Link>
                     </TableCell>
@@ -208,7 +209,8 @@ export default function VerifiedStatusCard({ market, onMouseLeave, ...other }: V
             target="_blank"
             rel="noreferrer noopener"
             underline="none"
-            href={`https://steaminventory.org/?profile=${steamInvProfile}`}>
+            href={`https://steaminventory.org/?profile=${steamInvProfile}`}
+          >
             Powered by <strong>SteamInventory.org</strong>
           </Link>
         )}
@@ -249,7 +251,8 @@ export function VerifiedStatusPopover({
           },
         },
       ]}
-      {...other}>
+      {...other}
+    >
       <VerifiedStatusCard market={market} onMouseLeave={onClose} />
     </Popper>
   )

@@ -52,7 +52,8 @@ export default function SearchButton({ style, onClick, ...other }: SearchButtonP
             xs: 'none',
             md: 'inherit',
           },
-        }}>
+        }}
+      >
         <SearchIcon className={classes.iconButtons} />
         <Input
           size="small"
@@ -73,7 +74,8 @@ export default function SearchButton({ style, onClick, ...other }: SearchButtonP
             md: 'none',
           },
         }}
-        onClick={onClick}>
+        onClick={onClick}
+      >
         <SearchIcon fontSize="small" />
       </Button>
     </>

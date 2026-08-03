@@ -28,8 +28,16 @@ export default function ExpiringPosts() {
                 md: 8,
               },
               mb: 4,
-            }}>
-            <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+            }}
+          >
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Expiring posts
             </Typography>
             <Typography>
@@ -41,16 +49,36 @@ export default function ExpiringPosts() {
           </Box>
 
           <Box sx={{ mb: 2 }}>
-            <Typography fontWeight="bold">Listings - 30 days</Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              Listings - 30 days
+            </Typography>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Seller listings will be available on site for 30 days from posted date, they need to
               re-list their items and make necessary updates if needed and will reset the
               expiration.
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">Buy orders - 7 days</Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              Buy orders - 7 days
+            </Typography>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Buyer orders on the other hand will have 7 days validity and same with the item
               listings, they need to re-post their order if they still require it.
             </Typography>
@@ -63,7 +91,8 @@ export default function ExpiringPosts() {
               underline="always"
               target="_blank"
               rel="noreferrer noopener"
-              href="https://discord.gg/UFt9Ny42kM">
+              href="https://discord.gg/UFt9Ny42kM"
+            >
               Discord
             </Link>{' '}
             or send us a{' '}
@@ -92,35 +121,83 @@ export default function ExpiringPosts() {
             <Typography variant="h6" sx={{ mb: 2 }}>
               Frequently Asked Questions
             </Typography>
-            <Typography fontWeight="bold">What will happen with my current listings?</Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              What will happen with my current listings?
+            </Typography>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               No change but all your listing older than 30 days on effective date will be removed.
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">What will happen with my current buy orders?</Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              What will happen with my current buy orders?
+            </Typography>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               No change but all your orders older than 7 days on effective date will be removed.
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">Do I need to re-post after it expires?</Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              Do I need to re-post after it expires?
+            </Typography>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Yes, as it will be automatically removed after the expiration date.
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Does updating the price resets the expiration?
             </Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Yes, because that is the point of this update. Updating the listing with same pricing
               will also reset the expiration.
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">What should I do to avoid re-posting?</Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              What should I do to avoid re-posting?
+            </Typography>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               We do have new features on site where you need to subscribe a month for your items to
               not expire. Please refer to{' '}
               <Link href="/plus" underline="always">
@@ -130,8 +207,18 @@ export default function ExpiringPosts() {
             </Typography>
             <br />
 
-            <Typography fontWeight="bold">Why the sudden change?</Typography>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              Why the sudden change?
+            </Typography>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               This is to ensure that all items posted on site is updated and active users will be
               prioritize.
             </Typography>

@@ -32,7 +32,12 @@ interface TableSearchInputProps extends Omit<InputBaseProps, 'onInput'> {
   loading?: boolean
 }
 
-export default function TableSearchInput({ value: externalValue, onInput, loading, ...other }: TableSearchInputProps) {
+export default function TableSearchInput({
+  value: externalValue,
+  onInput,
+  loading,
+  ...other
+}: TableSearchInputProps) {
   const { classes } = useStyles()
 
   const [value, setValue] = React.useState(externalValue || '')

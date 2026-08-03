@@ -10,6 +10,7 @@ export default function ChipLink(props: ChipProps & { href?: string }) {
       variant="outlined"
       clickable
       component={MuiLink}
+      nativeButton={false}
       target="_blank"
       rel="noreferrer noopener"
       style={{ textDecoration: 'none' }}

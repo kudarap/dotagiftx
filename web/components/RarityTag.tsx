@@ -34,7 +34,11 @@ const getRarityStyle = (value: string): CSSProperties | undefined => {
     return undefined
   }
 
-  return { ...rarityStylerMap[value], textTransform: 'capitalize', display: 'inline' } as CSSProperties
+  return {
+    ...rarityStylerMap[value],
+    textTransform: 'capitalize',
+    display: 'inline',
+  } as CSSProperties
 }
 
 interface RarityTagProps extends TypographyProps {

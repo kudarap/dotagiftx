@@ -82,7 +82,10 @@ export default function Plus() {
     })()
   }, [isLoggedIn])
 
-  const injectActiveStyle = (subscriptionId: number, style: { borderTop: string } & Record<string, unknown>) => {
+  const injectActiveStyle = (
+    subscriptionId: number,
+    style: { borderTop: string } & Record<string, unknown>
+  ) => {
     if (!profile.subscription || subscriptionId != profile.subscription) {
       return {
         ...style,
@@ -114,7 +117,6 @@ export default function Plus() {
         <Container>
           <Box>
             <Typography
-              sx={{ mt: 8, mb: 1, letterSpacing: 3 }}
               style={{
                 background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
                 WebkitBackgroundClip: 'text',
@@ -123,8 +125,14 @@ export default function Plus() {
               }}
               variant="h3"
               component="h1"
-              fontWeight="bold"
-              color="secondary">
+              color="secondary"
+              sx={{
+                fontWeight: 'bold',
+                mt: 8,
+                mb: 1,
+                letterSpacing: 3,
+              }}
+            >
               Dotagift Plus
             </Typography>
             <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
@@ -134,7 +142,13 @@ export default function Plus() {
           </Box>
 
           <Grid container spacing={2} sx={{ mt: 0 }}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 4,
+              }}
+            >
               <Box
                 sx={injectActiveStyle(USER_SUBSCRIPTION_SUPPORTER, {
                   py: 2,
@@ -142,7 +156,8 @@ export default function Plus() {
                   borderTop: '2px solid #596b95',
                   backgroundImage: 'linear-gradient(#4654755c, #465475)',
                   borderRadius: 2,
-                })}>
+                })}
+              >
                 {profile.subscription == USER_SUBSCRIPTION_SUPPORTER && <ActiveSubscriptionLabel />}
 
                 <Typography variant="h6">Supporter</Typography>
@@ -162,7 +177,9 @@ export default function Plus() {
                     fullWidth
                     sx={{ mt: 10, bgcolor: 'rgb(78, 93, 128)' }}
                     component={Link}
-                    href="/subscription/checkout?id=supporter">
+nativeButton={false}
+                    href="/subscription/checkout?id=supporter"
+                  >
                     <Typography variant="h6" sx={{ mr: 0.2 }}>
                       $1
                     </Typography>
@@ -172,7 +189,13 @@ export default function Plus() {
               </Box>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 4,
+              }}
+            >
               <Box
                 sx={injectActiveStyle(USER_SUBSCRIPTION_TRADER, {
                   py: 2,
@@ -180,7 +203,8 @@ export default function Plus() {
                   borderTop: '2px solid #629cbd',
                   backgroundImage: 'linear-gradient(#578ba863, #578ba8)',
                   borderRadius: 2,
-                })}>
+                })}
+              >
                 {profile.subscription == USER_SUBSCRIPTION_TRADER && <ActiveSubscriptionLabel />}
 
                 <Typography variant="h6">Trader</Typography>
@@ -200,7 +224,9 @@ export default function Plus() {
                     fullWidth
                     sx={{ mt: 10, bgcolor: 'rgb(100, 159, 192)' }}
                     component={Link}
-                    href="/subscription/checkout?id=trader">
+nativeButton={false}
+                    href="/subscription/checkout?id=trader"
+                  >
                     <Typography variant="h6" sx={{ mr: 0.2 }}>
                       $3
                     </Typography>
@@ -210,7 +236,13 @@ export default function Plus() {
               </Box>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+                md: 4,
+              }}
+            >
               <Box
                 sx={injectActiveStyle(USER_SUBSCRIPTION_PARTNER, {
                   py: 2,
@@ -220,7 +252,8 @@ export default function Plus() {
                   borderRadius: 2,
                   maxWidth: 500,
                   margin: 'auto',
-                })}>
+                })}
+              >
                 {profile.subscription == USER_SUBSCRIPTION_PARTNER && <ActiveSubscriptionLabel />}
 
                 <Typography variant="h6">Partner</Typography>
@@ -246,7 +279,9 @@ export default function Plus() {
                     fullWidth
                     sx={{ mt: 10, bgcolor: 'rgb(197, 144, 35)' }}
                     component={Link}
-                    href="/subscription/checkout?id=partner">
+nativeButton={false}
+                    href="/subscription/checkout?id=partner"
+                  >
                     <Typography variant="h6" sx={{ mr: 0.2 }}>
                       $20
                     </Typography>
@@ -257,7 +292,14 @@ export default function Plus() {
             </Grid>
           </Grid>
           <br />
-          <Typography variant="body2" paragraph textAlign="center" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              textAlign: 'center',
+              color: 'text.secondary',
+              marginBottom: '16px',
+            }}
+          >
             Subscriptions automatically renew and you can cancel your subscription on your
             Paypal&apos;s dashboard.
           </Typography>
@@ -267,8 +309,21 @@ export default function Plus() {
               Exclusive Features
             </Typography>
             <Grid container spacing={1.5}>
-              <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
+              <Grid
+                size={{
+                  md: 3,
+                  sm: 4,
+                  xs: 6,
+                }}
+              >
+                <Box
+                  sx={{
+                    textAlign: 'center',
+                    bgcolor: 'background.paper',
+                    p: 2,
+                    borderRadius: 2,
+                  }}
+                >
                   <Image
                     src="/assets/refresher-shard.png"
                     alt="assets/refresher-shard.png"
@@ -276,14 +331,32 @@ export default function Plus() {
                     height={48}
                   />
                   <Typography>Refresher Shard</Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Automatically refreshes expiring buy orders
                   </Typography>
                 </Box>
               </Grid>
 
-              <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
+              <Grid
+                size={{
+                  md: 3,
+                  sm: 4,
+                  xs: 6,
+                }}
+              >
+                <Box
+                  sx={{
+                    textAlign: 'center',
+                    bgcolor: 'background.paper',
+                    p: 2,
+                    borderRadius: 2,
+                  }}
+                >
                   <Image
                     src="/assets/refresher-orb.png"
                     alt="assets/refresher-orb.png"
@@ -291,31 +364,61 @@ export default function Plus() {
                     height={48}
                   />
                   <Typography>Refresher Orb</Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Automatically refreshes expiring buy orders and listings
                   </Typography>
                 </Box>
               </Grid>
 
-              <Grid item md={3} sm={4} xs={6}>
-                <Box textAlign="center" sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 2 }}>
+              <Grid
+                size={{
+                  md: 3,
+                  sm: 4,
+                  xs: 6,
+                }}
+              >
+                <Box
+                  sx={{
+                    textAlign: 'center',
+                    bgcolor: 'background.paper',
+                    p: 2,
+                    borderRadius: 2,
+                  }}
+                >
                   <Image src="/assets/recipe.png" alt="assets/recipe.png" height={48} width={66} />
                   <Typography>Shopkeeper&apos;s Contract</Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Grants the ability to resell items outside your inventory
                   </Typography>
                 </Box>
               </Grid>
 
-              <Grid item md={3} sm={4} xs={6}>
+              <Grid
+                size={{
+                  md: 3,
+                  sm: 4,
+                  xs: 6,
+                }}
+              >
                 <Box
-                  textAlign="center"
                   sx={{
+                    textAlign: 'center',
                     bgcolor: 'background.paper',
                     p: 2,
                     borderRadius: 2,
                     filter: 'grayscale(100%)',
-                  }}>
+                  }}
+                >
                   <Image
                     src="/assets/courier.png"
                     alt="assets/courier.png"
@@ -323,7 +426,12 @@ export default function Plus() {
                     width={66}
                   />
                   <Typography>Dedicated Pos-5</Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Exclusive support channel on Discord and Steam
                   </Typography>
                 </Box>
@@ -342,46 +450,85 @@ function FeatureUnlockables() {
   return (
     <Timeline>
       <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">5 subscribers</TimelineOppositeContent>
+        <TimelineOppositeContent
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
+          5 subscribers
+        </TimelineOppositeContent>
         <TimelineSeparator>
           <TimelineDot />
           <TimelineConnector />
         </TimelineSeparator>
         <TimelineContent>
           <Typography>Gem of Truesight</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Grants vision to all buy orders
           </Typography>
         </TimelineContent>
       </TimelineItem>
       <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">10 subscribers</TimelineOppositeContent>
+        <TimelineOppositeContent
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
+          10 subscribers
+        </TimelineOppositeContent>
         <TimelineSeparator>
           <TimelineDot />
           <TimelineConnector />
         </TimelineSeparator>
         <TimelineContent>
           <Typography>Seer Stone</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Provides an analytics and monitoring dashboard
           </Typography>
         </TimelineContent>
       </TimelineItem>
       <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">??</TimelineOppositeContent>
+        <TimelineOppositeContent
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
+          ??
+        </TimelineOppositeContent>
         <TimelineSeparator>
           <TimelineDot />
           <TimelineConnector />
         </TimelineSeparator>
         <TimelineContent>
           <Typography>Fusion Rune</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Ability to create your own cache
           </Typography>
         </TimelineContent>
       </TimelineItem>
       <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">???</TimelineOppositeContent>
+        <TimelineOppositeContent
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
+          ???
+        </TimelineOppositeContent>
         <TimelineSeparator>
           <TimelineDot />
         </TimelineSeparator>

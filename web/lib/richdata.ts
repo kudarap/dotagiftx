@@ -1,6 +1,10 @@
 import { CDN_URL } from '@/service/api'
 
-function schemaOrgProduct(canonicalURL: string, item: { id?: string | number; name?: string; image?: string; lowest_ask?: number } = {}, other: object) {
+function schemaOrgProduct(
+  canonicalURL: string,
+  item: { id?: string | number; name?: string; image?: string; lowest_ask?: number } = {},
+  other: object
+) {
   const data: {
     '@context': string
     '@type': string

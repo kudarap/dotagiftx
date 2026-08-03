@@ -150,7 +150,8 @@ export default function ReservationList({
                     scope="row"
                     padding="none"
                     className={classes.item}
-                    onClick={() => handleUpdateClick(idx)}>
+                    onClick={() => handleUpdateClick(idx)}
+                  >
                     <ItemImage
                       className={classes.image}
                       image={market.item.image || ''}
@@ -166,7 +167,8 @@ export default function ReservationList({
                         aria-haspopup="true"
                         data-index={idx}
                         onMouseLeave={debouncePopoverClose}
-                        onMouseEnter={handlePopoverOpen}>
+                        onMouseEnter={handlePopoverOpen}
+                      >
                         {market.resell
                           ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                           : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status!]}
@@ -201,7 +203,8 @@ export default function ReservationList({
                     <TableCell
                       align="right"
                       onClick={() => handleUpdateClick(idx)}
-                      style={{ cursor: 'pointer' }}>
+                      style={{ cursor: 'pointer' }}
+                    >
                       <Typography variant="body2" color="secondary">
                         {format.amount(market.price || 0, market.currency)}
                       </Typography>

@@ -27,8 +27,16 @@ export default function DataLossIncident() {
                 md: 8,
               },
               mb: 4,
-            }}>
-            <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+            }}
+          >
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Data Loss Incident
             </Typography>
             <Typography>Oct 24, 2025</Typography>
@@ -59,7 +67,8 @@ export default function DataLossIncident() {
                 <Link
                   href="https://discord.gg/JbAm39ubSr"
                   target="_blank"
-                  rel="noreferrer noopener">
+                  rel="noreferrer noopener"
+                >
                   #incident-data-loss-login
                 </Link>
               </u>{' '}
@@ -75,7 +84,8 @@ export default function DataLossIncident() {
                 <Link
                   href="https://discord.gg/zdwA3zD5NH"
                   target="_blank"
-                  rel="noreferrer noopener">
+                  rel="noreferrer noopener"
+                >
                   #incident-data-loss-concern
                 </Link>
               </u>{' '}

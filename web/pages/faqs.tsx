@@ -44,7 +44,8 @@ export function Question({ children }: { children: React.ReactNode }) {
       component="h2"
       id={id}
       gutterBottom
-      style={{ fontWeight: 'bold' }}>
+      style={{ fontWeight: 'bold' }}
+    >
       <MuiLink href={`#${id}`} color="textPrimary">
         {children}
       </MuiLink>
@@ -140,7 +141,8 @@ export default function Faqs() {
               href="https://discord.gg/UFt9Ny42kM"
               target="_blank"
               rel="noreferrer noopener"
-              color="secondary">
+              color="secondary"
+            >
               contact kudarap
             </Link>{' '}
             to ban the account on this site or inquire on{' '}
@@ -148,7 +150,8 @@ export default function Faqs() {
               href="https://www.reddit.com/r/Dota2Trade/"
               target="_blank"
               color="secondary"
-              rel="noreferrer noopener">
+              rel="noreferrer noopener"
+            >
               r/Dota2Trade
             </Link>
             .

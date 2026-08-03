@@ -68,7 +68,10 @@ export default function ReserveUpdateDialog({
     onClose()
   }
 
-  const marketUpdate = (payload: { status: number; notes: string }, setLoader: (v: boolean) => void) => {
+  const marketUpdate = (
+    payload: { status: number; notes: string },
+    setLoader: (v: boolean) => void
+  ) => {
     if (loading || !market) {
       return
     }
@@ -128,7 +131,8 @@ export default function ReserveUpdateDialog({
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
           Update Reservation
@@ -158,7 +162,8 @@ export default function ReserveUpdateDialog({
                     <Link
                       href={steamProfileBaseURL + market.seller_steam_id}
                       target="_blank"
-                      rel="noreferrer noopener">
+                      rel="noreferrer noopener"
+                    >
                       {market.seller_steam_id}
                     </Link>
                     <br />
@@ -192,12 +197,14 @@ export default function ReserveUpdateDialog({
           <div>
             <TextField
               style={{ marginTop: 16 }}
-              InputProps={{ readOnly: true }}
               fullWidth
               color="secondary"
               variant="outlined"
               label="Buyer's Steam profile URL"
               value={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+              slotProps={{
+                input: { readOnly: true },
+              }}
             />
             <br />
             <br />
@@ -211,7 +218,12 @@ export default function ReserveUpdateDialog({
               helperText="Screenshot URL for verification or reason for cancellation"
               placeholder="https://imgur.com/a/..."
               value={notes}
-              onInput={((e: React.FormEvent<HTMLInputElement>) => setNotes(e.currentTarget.value)) as unknown as NonNullable<TextFieldProps["onInput"]>}
+              onInput={
+                ((e: React.FormEvent<HTMLInputElement>) =>
+                  setNotes(e.currentTarget.value)) as unknown as NonNullable<
+                  TextFieldProps['onInput']
+                >
+              }
             />
           </div>
         </DialogContent>
@@ -225,7 +237,8 @@ export default function ReserveUpdateDialog({
             disabled={loadingCancel}
             startIcon={loadingCancel ? <CircularProgress size={22} /> : <CancelIcon />}
             onClick={handleCancelClick}
-            variant="outlined">
+            variant="outlined"
+          >
             Cancel Reservation
           </Button>
           <Button
@@ -235,7 +248,8 @@ export default function ReserveUpdateDialog({
             }
             variant="outlined"
             color="secondary"
-            type="submit">
+            type="submit"
+          >
             {isMobile ? 'Item Delivered' : 'Item Delivered to Buyer'}
           </Button>
         </DialogActions>

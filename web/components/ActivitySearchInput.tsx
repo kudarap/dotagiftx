@@ -29,7 +29,11 @@ interface ActivitySearchInputProps extends Omit<InputBaseProps, 'onInput'> {
   loading?: boolean
 }
 
-export default function ActivitySearchInput({ onInput, loading, ...other }: ActivitySearchInputProps) {
+export default function ActivitySearchInput({
+  onInput,
+  loading,
+  ...other
+}: ActivitySearchInputProps) {
   const { classes } = useStyles()
 
   const [value, setValue] = React.useState('')

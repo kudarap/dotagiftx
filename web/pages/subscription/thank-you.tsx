@@ -62,7 +62,9 @@ export default function ThanksSubscriber() {
       try {
         const res = (await processMySubscription(subscriptionID as string)) as Profile
         Storage.save(APP_CACHE_PROFILE, res)
-        setSubscription(String(USER_SUBSCRIPTION_MAP_LABEL[res.subscription as number]).toLowerCase())
+        setSubscription(
+          String(USER_SUBSCRIPTION_MAP_LABEL[res.subscription as number]).toLowerCase()
+        )
       } catch (e) {
         setSubscription(false)
       }
@@ -82,7 +84,6 @@ export default function ThanksSubscriber() {
         <Container>
           <Box sx={{ mt: 8, textAlign: 'center', visibility: subscription ? 'inherit' : 'hidden' }}>
             <Typography
-              sx={{ mt: 8 }}
               style={{
                 background: 'linear-gradient( to right, #CB8F37 20%, #F0CF59 50%, #B5793D 80% )',
                 WebkitBackgroundClip: 'text',
@@ -91,8 +92,12 @@ export default function ThanksSubscriber() {
               }}
               variant="h3"
               component="h1"
-              fontWeight="bold"
-              color="secondary">
+              color="secondary"
+              sx={{
+                fontWeight: 'bold',
+                mt: 8,
+              }}
+            >
               Thank you!
             </Typography>
             <Typography
@@ -102,7 +107,8 @@ export default function ThanksSubscriber() {
                 WebkitTextFillColor: 'transparent',
                 letterSpacing: 3,
               }}
-              variant="h6">
+              variant="h6"
+            >
               for keeping the servers on
             </Typography>
           </Box>
@@ -126,7 +132,8 @@ export default function ThanksSubscriber() {
                     size="large"
                     onClick={() => {
                       router.reload()
-                    }}>
+                    }}
+                  >
                     Try again
                   </Button>
                 </>
@@ -158,9 +165,11 @@ export default function ThanksSubscriber() {
               variant="outlined"
               size="large"
               component={Link}
+              nativeButton={false}
               target="_blank"
               rel="noreferrer noopener"
-              href="https://discord.gg/UFt9Ny42kM">
+              href="https://discord.gg/UFt9Ny42kM"
+            >
               Join our Discord
             </Button>
             <Button
@@ -168,7 +177,9 @@ export default function ThanksSubscriber() {
               variant="outlined"
               size="large"
               component={Link}
-              href={`/profiles/${profile?.steam_id}`}>
+              nativeButton={false}
+              href={`/profiles/${profile?.steam_id}`}
+            >
               Check your profile
             </Button>
           </Box>

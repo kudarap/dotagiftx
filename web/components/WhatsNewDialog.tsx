@@ -20,7 +20,8 @@ export default function WhatsNewDialog({ userID }: { userID?: string }) {
   const [clientUpdateID, setClientUpdateID] = useLocalStorage(wuid, 0)
 
   const [open, setOpen] = useState(targetUpdateID > clientUpdateID)
-  const handleClose = () => {
+  const handleClose = (_event?: {}, reason?: string) => {
+    if (reason === 'escapeKeyDown') return
     setClientUpdateID(targetUpdateID)
     setOpen(false)
   }
@@ -32,12 +33,12 @@ export default function WhatsNewDialog({ userID }: { userID?: string }) {
   return (
     <Dialog
       fullWidth
-      disableEscapeKeyDown
       fullScreen={isMobile}
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <DialogTitle id="alert-dialog-title">
         {/* What&apos;s new? */}
         Important announcement
@@ -54,7 +55,8 @@ export default function WhatsNewDialog({ userID }: { userID?: string }) {
             href="/rules"
             color="secondary"
             target="_blank"
-            onClick={() => setClientUpdateID(targetUpdateID)}>
+            onClick={() => setClientUpdateID(targetUpdateID)}
+          >
             Rules
           </Link>{' '}
           page.

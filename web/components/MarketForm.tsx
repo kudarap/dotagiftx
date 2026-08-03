@@ -232,11 +232,17 @@ export default function MarketForm() {
           borderTop: subscribersColor ? `5px solid ${subscribersColor}` : undefined,
           boxShadow: subscribersColor ? `0 0 15px ${subscribersColor}` : undefined,
         })}
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <Typography variant="h5" component="h1">
           Post your item on {APP_NAME}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Only verified ({VERIFIED_DELIVERY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED]}) items from your
           inventory will be listed on Item page. All your posts will still be visible on your
           profile.
@@ -281,7 +287,8 @@ export default function MarketForm() {
                   style={{
                     textTransform: 'capitalize',
                     color: itemRarityColorMap[item.rarity || ''],
-                  }}>
+                  }}
+                >
                   {item.rarity}
                 </Typography>
               </Typography>
@@ -303,7 +310,8 @@ export default function MarketForm() {
                   sx={{
                     color: 'accent.main',
                   }}
-                  href={`/${item.slug}/buyorders`}>
+                  href={`/${item.slug}/buyorders`}
+                >
                   {item.highest_bid ? format.amount(item.highest_bid, 'USD') : 'no orders yet'}
                 </Link>
               </Typography>
@@ -319,8 +327,12 @@ export default function MarketForm() {
             label="Seller Profile URL"
             placeholder="https://steamcommunity.com/..."
             value={partnerSteamID || ''}
-            onInput={((e: React.FormEvent<HTMLInputElement>) =>
-              setPartnerSteamID(e.currentTarget.value)) as unknown as NonNullable<TextFieldProps['onInput']>}
+            onInput={
+              ((e: React.FormEvent<HTMLInputElement>) =>
+                setPartnerSteamID(e.currentTarget.value)) as unknown as NonNullable<
+                TextFieldProps['onInput']
+              >
+            }
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
           />
         )}
@@ -372,8 +384,12 @@ export default function MarketForm() {
           label="Notes"
           value={payload.notes}
           helperText="Keep it short, This will be displayed when they check your offer."
-          onInput={((e: React.FormEvent<HTMLInputElement>) =>
-            setPayload({ ...payload, notes: e.currentTarget.value })) as unknown as NonNullable<TextFieldProps['onInput']>}
+          onInput={
+            ((e: React.FormEvent<HTMLInputElement>) =>
+              setPayload({ ...payload, notes: e.currentTarget.value })) as unknown as NonNullable<
+              TextFieldProps['onInput']
+            >
+          }
           disabled={loading || !isLoggedIn || Boolean(newMarketID)}
         />
         <br />
@@ -386,7 +402,8 @@ export default function MarketForm() {
             type="submit"
             size="large"
             disabled={loading || !isLoggedIn || Boolean(newMarketID)}
-            startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}>
+            startIcon={loading ? <CircularProgress size={22} /> : <SubmitIcon />}
+          >
             Post Item
           </Button>
         )}
@@ -401,7 +418,8 @@ export default function MarketForm() {
                 <Button color="inherit" size="small" onClick={handleFormReset}>
                   Post More
                 </Button>
-              }>
+              }
+            >
               Item posted successfully! Check your{' '}
               <Link style={{ textDecoration: 'underline' }} href="/my-listings">
                 Item Listings

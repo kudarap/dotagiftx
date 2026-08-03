@@ -44,7 +44,8 @@ export function Title({ children }: { children: React.ReactNode }) {
       component="h2"
       id={id}
       gutterBottom
-      style={{ fontWeight: 'bold' }}>
+      style={{ fontWeight: 'bold' }}
+    >
       <MuiLink href={`#${id}`} color="textPrimary">
         {children}
       </MuiLink>
@@ -67,11 +68,16 @@ export default function Download() {
       <main className={classes.main}>
         <Container>
           <Typography
-            sx={{ mt: 8, mb: 1, letterSpacing: 3 }}
             variant="h3"
             component="h1"
-            fontWeight="bold"
-            color="primary">
+            color="primary"
+            sx={{
+              fontWeight: 'bold',
+              mt: 8,
+              mb: 1,
+              letterSpacing: 3,
+            }}
+          >
             DotagiftX for Mobile
           </Typography>
 
@@ -80,7 +86,8 @@ export default function Download() {
             <Link
               href="https://github.com/tentenponce/dotagiftx-mobile"
               target="_blank"
-              rel="noreferrer noopener">
+              rel="noreferrer noopener"
+            >
               https://github.com/tentenponce/dotagiftx-mobile
             </Link>
             {` `} and you can download the latest release on:
@@ -93,7 +100,8 @@ export default function Download() {
           <Link
             href="https://play.google.com/store/apps/details?id=com.dotagiftx"
             target="_blank"
-            rel="noreferrer noopener">
+            rel="noreferrer noopener"
+          >
             <Button size="large" variant="contained" color="primary">
               Android
             </Button>
@@ -106,7 +114,8 @@ export default function Download() {
           <Link
             href="https://github.com/tentenponce/dotagiftx-mobile/releases"
             target="_blank"
-            rel="noreferrer noopener">
+            rel="noreferrer noopener"
+          >
             <Button size="large" variant="contained" color="primary">
               Build Release
             </Button>
@@ -118,7 +127,8 @@ export default function Download() {
             <Link
               href="https://github.com/tentenponce/dotagiftx-mobile/issues"
               target="_blank"
-              rel="noreferrer noopener">
+              rel="noreferrer noopener"
+            >
               https://github.com/tentenponce/dotagiftx-mobile/issues
             </Link>
             .

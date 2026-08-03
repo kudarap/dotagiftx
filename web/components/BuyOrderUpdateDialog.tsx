@@ -144,7 +144,8 @@ export default function BuyOrderUpdateDialog({
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
           Update Buy Order
@@ -203,7 +204,12 @@ export default function BuyOrderUpdateDialog({
               helperText="Records seller history for tracking good and bad reputation."
               placeholder="https://steamcommunity.com/..."
               value={steamProfileURL}
-              onInput={((e: React.FormEvent<HTMLInputElement>) => setSteamProfileURL(e.currentTarget.value)) as unknown as NonNullable<TextFieldProps["onInput"]>}
+              onInput={
+                ((e: React.FormEvent<HTMLInputElement>) =>
+                  setSteamProfileURL(e.currentTarget.value)) as unknown as NonNullable<
+                  TextFieldProps['onInput']
+                >
+              }
             />
             <br />
             <br />
@@ -214,7 +220,12 @@ export default function BuyOrderUpdateDialog({
               variant="outlined"
               label="Notes"
               value={notes}
-              onInput={((e: React.FormEvent<HTMLInputElement>) => setNotes(e.currentTarget.value)) as unknown as NonNullable<TextFieldProps["onInput"]>}
+              onInput={
+                ((e: React.FormEvent<HTMLInputElement>) =>
+                  setNotes(e.currentTarget.value)) as unknown as NonNullable<
+                  TextFieldProps['onInput']
+                >
+              }
             />
           </div>
         </DialogContent>
@@ -228,14 +239,16 @@ export default function BuyOrderUpdateDialog({
             disabled={loading}
             startIcon={<RemoveIcon />}
             onClick={handleRemoveClick}
-            variant="outlined">
+            variant="outlined"
+          >
             {isMobile ? 'Remove' : 'Remove order'}
           </Button>
           <Button
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
             variant="outlined"
             color="secondary"
-            type="submit">
+            type="submit"
+          >
             {isMobile ? 'Complete' : 'Mark as complete'}
           </Button>
         </DialogActions>

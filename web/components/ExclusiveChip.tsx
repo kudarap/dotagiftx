@@ -58,6 +58,7 @@ export default function ExclusiveChip({ tag, ...props }: ExclusiveChipProps) {
       variant="outlined"
       clickable
       component={MuiLink}
+      nativeButton={false}
       style={{
         textDecoration: 'none',
         backgroundColor: color,

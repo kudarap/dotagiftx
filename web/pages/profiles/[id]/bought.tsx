@@ -159,7 +159,8 @@ export default function UserBought({
               <Typography
                 component={Link}
                 href={`${profileURL}/bought`}
-                style={{ textDecoration: 'underline' }}>
+                style={{ textDecoration: 'underline' }}
+              >
                 {s.bid_completed} Bought
               </Typography>
             </div>

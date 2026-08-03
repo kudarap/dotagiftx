@@ -175,7 +175,8 @@ export default function BuyOrderDialog({
   const handlePriceChange = (evt: React.ChangeEvent<HTMLInputElement>) => setPrice(evt.target.value)
   const isInputDisabled = loading || Boolean(market) || !isLoggedIn
 
-  const subscribersColor = subscription !== null ? USER_SUBSCRIPTION_MAP_COLOR[subscription] : undefined
+  const subscribersColor =
+    subscription !== null ? USER_SUBSCRIPTION_MAP_COLOR[subscription] : undefined
 
   const refresherOrbOnly =
     (boons.indexOf('REFRESHER_ORB') !== -1 && boons.indexOf('REFRESHER_SHARD') !== -1) ||
@@ -187,7 +188,8 @@ export default function BuyOrderDialog({
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <Paper
         component="form"
         onSubmit={handleSubmit}
@@ -195,7 +197,8 @@ export default function BuyOrderDialog({
           transition: `box-shadow .5s ease-in-out, border .2s`,
           borderTop: subscribersColor ? `5px solid ${subscribersColor}` : 'none',
           boxShadow: subscribersColor ? `0 0 15px ${subscribersColor}` : 'none',
-        }}>
+        }}
+      >
         <DialogTitle id="alert-dialog-title">
           <DialogCloseButton onClick={handleClose} />
           Buy - {catalog.name}
@@ -234,7 +237,8 @@ export default function BuyOrderDialog({
                 style={{
                   textTransform: 'capitalize',
                   color: catalog.rarity ? itemRarityColorMap[catalog.rarity] : undefined,
-                }}>
+                }}
+              >
                 {catalog.rarity}
               </Typography>
             </Typography>
@@ -292,8 +296,12 @@ export default function BuyOrderDialog({
             label="Notes"
             helperText="Keep it short, This will be displayed when they check your order."
             value={notes}
-            onInput={((e: React.FormEvent<HTMLInputElement>) =>
-              setNotes(e.currentTarget.value)) as unknown as NonNullable<TextFieldProps['onInput']>}
+            onInput={
+              ((e: React.FormEvent<HTMLInputElement>) =>
+                setNotes(e.currentTarget.value)) as unknown as NonNullable<
+                TextFieldProps['onInput']
+              >
+            }
           />
           <br />
           <br />
@@ -304,7 +312,8 @@ export default function BuyOrderDialog({
               type="submit"
               variant="contained"
               disabled={isInputDisabled}
-              startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}>
+              startIcon={loading ? <CircularProgress size={22} color="inherit" /> : <SubmitIcon />}
+            >
               Place Order
             </Button>
           )}
@@ -325,7 +334,8 @@ export default function BuyOrderDialog({
                   <Button color="inherit" size="small" onClick={handleDone}>
                     Done
                   </Button>
-                }>
+                }
+              >
                 Your buy order has been placed and now open for sellers. Check your{' '}
                 <Link style={{ textDecoration: 'underline' }} href="/my-orders">
                   Buy orders

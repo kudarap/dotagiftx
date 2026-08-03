@@ -44,7 +44,8 @@ export default function ContactDialog({
         open={open}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
+        aria-describedby="alert-dialog-description"
+      >
         <DialogTitle id="alert-dialog-title">
           Contact Seller
           <DialogCloseButton onClick={onClose} />
@@ -69,14 +70,16 @@ export default function ContactDialog({
               component="ul"
               variant="body2"
               color="textSecondary"
-              style={{ lineHeight: 1.7 }}>
+              style={{ lineHeight: 1.7 }}
+            >
               <li>
                 Always check the item or set availability on seller&apos;s Dota 2 {` `}
                 <Link
                   style={{ textDecoration: 'underline' }}
                   href={dota2Inventory}
                   target="_blank"
-                  rel="noreferrer noopener">
+                  rel="noreferrer noopener"
+                >
                   inventory
                 </Link>
                 .
@@ -109,7 +112,8 @@ export default function ContactDialog({
                 reputation through&nbsp;
                 <Link
                   style={{ textDecoration: 'underline' }}
-                  href={`/profiles/${market.user.steam_id}/delivered`}>
+                  href={`/profiles/${market.user.steam_id}/delivered`}
+                >
                   transaction history
                 </Link>
                 .
@@ -126,17 +130,19 @@ export default function ContactDialog({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button component="a" href={storeProfile}>
+          <Button component="a" nativeButton={false} href={storeProfile}>
             Seller Profile
           </Button>
           <Button
             color="secondary"
             variant="outlined"
             component={Link}
+            nativeButton={false}
             disableUnderline
             target="_blank"
             rel="noreferrer noopener"
-            href={steamProfileURL}>
+            href={steamProfileURL}
+          >
             Steam Profile
           </Button>
         </DialogActions>

@@ -158,7 +158,8 @@ export default function MyOrderActivity({ datatable, loading, error }: MyOrderAc
                 aria-haspopup="true"
                 data-index={idx}
                 onMouseLeave={debouncePopoverClose}
-                onMouseEnter={handlePopoverOpen}>
+                onMouseEnter={handlePopoverOpen}
+              >
                 {VERIFIED_INVENTORY_MAP_ICON[market.inventory_status!]}
               </span>
               &nbsp;
@@ -176,18 +177,22 @@ export default function MyOrderActivity({ datatable, loading, error }: MyOrderAc
               &nbsp;
               {daysFromNow(market.updated_at || '')}
               &nbsp;for&nbsp;
-              <span className={classes.bidPriceTag}>{amount(market.price || 0, market.currency)}</span>
+              <span className={classes.bidPriceTag}>
+                {amount(market.price || 0, market.currency)}
+              </span>
             </Typography>
 
             <Typography
               component="pre"
               color="textSecondary"
               variant="caption"
-              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
+              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}
+            >
               {market.user.steam_id && (
                 <Link
                   color="textSecondary"
-                  href={`${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`}>
+                  href={`${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`}
+                >
                   {`${STEAM_PROFILE_BASE_URL}/${market.user.steam_id}`}
                   {market.notes && '\n'}
                 </Link>

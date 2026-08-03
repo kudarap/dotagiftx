@@ -84,43 +84,52 @@ function TablePaginationRouter({
         className={classes.caption}
         component="span"
         variant="body2"
-        color="textSecondary">
+        color="textSecondary"
+      >
         {resultMinCount}-{resultMaxCount >= count ? count : resultMaxCount} of {count}
       </Typography>
       <IconButton
         component={Link}
+        nativeButton={false}
         {...getLinkProps(1)}
         onClick={handleFirstPageButtonClick}
         disabled={page === 1}
         aria-label="First Page"
-        size="large">
+        size="large"
+      >
         {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
       <IconButton
         component={Link}
+        nativeButton={false}
         {...getLinkProps(page - 1)}
         onClick={handleBackButtonClick}
         disabled={page === 1}
         aria-label="Previous Page"
-        size="large">
+        size="large"
+      >
         {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
       <IconButton
         component={Link}
+        nativeButton={false}
         {...getLinkProps(page + 1)}
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage)}
         aria-label="Next Page"
-        size="large">
+        size="large"
+      >
         {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
       <IconButton
         component={Link}
+        nativeButton={false}
         {...getLinkProps(Math.ceil(count / rowsPerPage))}
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage)}
         aria-label="Last Page"
-        size="large">
+        size="large"
+      >
         {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
     </div>

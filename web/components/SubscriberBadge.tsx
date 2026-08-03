@@ -45,7 +45,12 @@ interface SubscriberBadgeProps {
   className?: string
 }
 
-export default function SubscriberBadge({ style: initialStyle, size, type, ...other }: SubscriberBadgeProps) {
+export default function SubscriberBadge({
+  style: initialStyle,
+  size,
+  type,
+  ...other
+}: SubscriberBadgeProps) {
   const { classes } = useStyles()
 
   const currentStyle: CSSProperties = { ...initialStyle }

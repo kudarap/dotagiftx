@@ -40,7 +40,8 @@ function SearchDialog({ open, onClose }: { open: boolean; onClose: () => void })
       open={open}
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <DialogTitle id="alert-dialog-title" component="form" onSubmit={handleSubmit}>
         <InputBase
           autoFocus
@@ -60,11 +61,18 @@ function SearchDialog({ open, onClose }: { open: boolean; onClose: () => void })
         <Grid container spacing={{ xs: 2, sm: 1 }}>
           {topKeywords &&
             topKeywords.map(item => (
-              <Grid key={item.keyword} item sm={6} xs={12}>
+              <Grid
+                key={item.keyword}
+                size={{
+                  sm: 6,
+                  xs: 12,
+                }}
+              >
                 <Link
                   href={`/search?q=${item.keyword}`}
                   style={{ textTransform: 'capitalize' }}
-                  onClick={onClose}>
+                  onClick={onClose}
+                >
                   {item.keyword}
                 </Link>
               </Grid>

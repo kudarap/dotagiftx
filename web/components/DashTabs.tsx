@@ -4,7 +4,12 @@ import type { TabsProps } from '@mui/material/Tabs'
 import { styled } from '@mui/material/styles'
 
 const StyledTabs = styled((props: TabsProps) => (
-  <Tabs {...props} TabIndicatorProps={{ children: <span /> }} />
+  <Tabs
+    {...props}
+    slotProps={{
+      indicator: { children: <span /> },
+    }}
+  />
 ))(({ theme }) => ({
   indicator: {
     display: 'flex',

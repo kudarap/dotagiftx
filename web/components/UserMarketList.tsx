@@ -151,7 +151,8 @@ export default function UserMarketList({
                           aria-haspopup="true"
                           data-index={idx}
                           onMouseLeave={debouncePopoverClose}
-                          onMouseEnter={handlePopoverOpen}>
+                          onMouseEnter={handlePopoverOpen}
+                        >
                           {market.resell
                             ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                             : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status!]}
@@ -168,9 +169,7 @@ export default function UserMarketList({
                   {!isMobile ? (
                     <>
                       <TableCell align="right">
-                        <Typography variant="body2">
-                          ${(market.price || 0).toFixed(2)}
-                        </Typography>
+                        <Typography variant="body2">${(market.price || 0).toFixed(2)}</Typography>
                       </TableCell>
                       <TableCell align="right">
                         <BuyButton variant="contained" onClick={() => handleContactClick(idx)}>
@@ -182,10 +181,9 @@ export default function UserMarketList({
                     <TableCell
                       align="right"
                       onClick={() => handleContactClick(idx)}
-                      style={{ cursor: 'pointer' }}>
-                      <Typography variant="body2">
-                        ${(market.price || 0).toFixed(2)}
-                      </Typography>
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <Typography variant="body2">${(market.price || 0).toFixed(2)}</Typography>
                       <Typography variant="caption" color="textSecondary">
                         <u>View</u>
                       </Typography>

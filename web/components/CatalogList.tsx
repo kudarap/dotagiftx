@@ -110,7 +110,8 @@ export default function CatalogList({
                   <Link
                     className={classes.link}
                     href={`/${item.slug}${itemURLSuffix}`}
-                    disableUnderline>
+                    disableUnderline
+                  >
                     <ItemImage
                       className={classes.image}
                       image={item.image || ''}
@@ -144,7 +145,10 @@ export default function CatalogList({
                 )}
 
                 <TableCell align="right">
-                  <Typography variant="body2" style={bidType ? { color: bidColor.A200 } : undefined}>
+                  <Typography
+                    variant="body2"
+                    style={bidType ? { color: bidColor.A200 } : undefined}
+                  >
                     {format.amount(bidType ? item.highest_bid || 0 : item.lowest_ask || 0, 'USD')}
                   </Typography>
                 </TableCell>

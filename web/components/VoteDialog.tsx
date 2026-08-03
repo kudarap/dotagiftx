@@ -48,7 +48,8 @@ export default function VoteDialog(props: { open: boolean; onClose: () => void }
   const [loading, setLoading] = React.useState(false)
 
   const { onClose } = props
-  const handleClose = () => {
+  const handleClose = (_event: React.SyntheticEvent<unknown>, reason?: string) => {
+    if (reason === 'escapeKeyDown') return
     setValue('')
     setError('')
     setLoading(false)
@@ -87,12 +88,12 @@ export default function VoteDialog(props: { open: boolean; onClose: () => void }
   return (
     <Dialog
       fullWidth
-      disableEscapeKeyDown
       fullScreen={isMobile}
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <DialogTitle id="alert-dialog-title">
         Vote what&apos;s next
         <DialogCloseButton onClick={handleClose} />
@@ -107,7 +108,8 @@ export default function VoteDialog(props: { open: boolean; onClose: () => void }
                 <Button size="small" onClick={handleClose}>
                   Close
                 </Button>
-              }>
+              }
+            >
               {message}
             </Alert>
             <br />
@@ -146,9 +148,11 @@ export default function VoteDialog(props: { open: boolean; onClose: () => void }
             variant="outlined"
             color="secondary"
             value={notes}
-            onInput={((e: React.FormEvent<HTMLInputElement>) => {
-              setNotes(e.currentTarget.value)
-            }) as unknown as NonNullable<TextFieldProps['onInput']>}
+            onInput={
+              ((e: React.FormEvent<HTMLInputElement>) => {
+                setNotes(e.currentTarget.value)
+              }) as unknown as NonNullable<TextFieldProps['onInput']>
+            }
           />
         )}
       </DialogContent>
@@ -162,7 +166,8 @@ export default function VoteDialog(props: { open: boolean; onClose: () => void }
           disabled={loading}
           startIcon={<RemoveIcon />}
           onClick={handleClose}
-          variant="outlined">
+          variant="outlined"
+        >
           Close
         </Button>
         <Button
@@ -170,7 +175,8 @@ export default function VoteDialog(props: { open: boolean; onClose: () => void }
           variant="outlined"
           color="secondary"
           disabled={Boolean(message)}
-          onClick={handleSubmit}>
+          onClick={handleSubmit}
+        >
           Submit
         </Button>
       </DialogActions>

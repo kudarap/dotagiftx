@@ -108,7 +108,7 @@ export async function getServerSideProps(props: {
   // this can be reduce on API server level
   delete catalog.asks
   for (let i = 0; i < initialAsks.data.length; i++) {
-    const market = initialAsks.data[i] as Partial<typeof initialAsks.data[number]> & {
+    const market = initialAsks.data[i] as Partial<(typeof initialAsks.data)[number]> & {
       inventory?: { steam_assets?: unknown }
     }
     delete market.item

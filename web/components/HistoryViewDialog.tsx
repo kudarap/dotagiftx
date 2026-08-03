@@ -53,7 +53,8 @@ export default function HistoryViewDialog({
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <DialogTitle id="alert-dialog-title">
         Item Details
         <DialogCloseButton onClick={handleClose} />
@@ -111,12 +112,14 @@ export default function HistoryViewDialog({
         <div>
           <TextField
             style={{ marginTop: 16, marginBottom: 16 }}
-            InputProps={{ readOnly: true }}
             fullWidth
             color="secondary"
             variant="outlined"
             label={`${market.type === MARKET_TYPE_BID ? 'Seller' : 'Buyer'}'s Steam profile URL`}
             value={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+            slotProps={{
+              input: { readOnly: true },
+            }}
           />
         </div>
       </DialogContent>

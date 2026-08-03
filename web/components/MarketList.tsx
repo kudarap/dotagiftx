@@ -247,7 +247,18 @@ interface BaseTableProps {
   onSort?: (v: string) => void
 }
 
-type ListActionProps = Omit<BaseTableProps, 'datatable' | 'error' | 'isMobile' | 'loading' | 'sort' | 'onSort' | 'bidMode' | 'onRemove' | 'onContact'> & {
+type ListActionProps = Omit<
+  BaseTableProps,
+  | 'datatable'
+  | 'error'
+  | 'isMobile'
+  | 'loading'
+  | 'sort'
+  | 'onSort'
+  | 'bidMode'
+  | 'onRemove'
+  | 'onContact'
+> & {
   market: ActivityMarket
   onRemove: () => void
   onContact: () => void
@@ -353,9 +364,13 @@ function baseTable(Component: React.ComponentType<ListActionProps>) {
                   <Link
                     disableUnderline
                     disabled={!market.user.id}
-                    href={`/profiles/${market.user.steam_id}`}>
+                    href={`/profiles/${market.user.steam_id}`}
+                  >
                     <Avatar
-                      badge={(getUserBadgeFromBoons(market.user.boons) || undefined) as SubscriberBadgeType}
+                      badge={
+                        (getUserBadgeFromBoons(market.user.boons) ||
+                          undefined) as SubscriberBadgeType
+                      }
                       className={classes.avatar}
                       alt={market.user.name}
                       glow={isDonationGlowExpired(market.user.donated_at || '')}
@@ -367,7 +382,10 @@ function baseTable(Component: React.ComponentType<ListActionProps>) {
                     {market.user.id && Boolean(getUserBadgeFromBoons(market.user.boons)) && (
                       <SubscriberBadge
                         style={{ marginLeft: '0.375rem' }}
-                        type={(getUserBadgeFromBoons(market.user.boons) || undefined) as SubscriberBadgeType}
+                        type={
+                          (getUserBadgeFromBoons(market.user.boons) ||
+                            undefined) as SubscriberBadgeType
+                        }
                       />
                     )}
                     {displayProfileJoinedDate && (
@@ -384,7 +402,8 @@ function baseTable(Component: React.ComponentType<ListActionProps>) {
                           <Typography
                             variant="caption"
                             color="textSecondary"
-                            style={{ zIndex: 100 }}>
+                            style={{ zIndex: 100 }}
+                          >
                             {market.id.split('-')[0]}
                           </Typography>
                         </Tooltip>
@@ -405,7 +424,8 @@ function baseTable(Component: React.ComponentType<ListActionProps>) {
                         aria-owns={popoverElementID}
                         aria-haspopup="true"
                         onMouseLeave={debouncePopoverClose}
-                        onMouseEnter={handlePopoverOpen}>
+                        onMouseEnter={handlePopoverOpen}
+                      >
                         {market.resell
                           ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                           : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status!]}
@@ -439,13 +459,59 @@ function baseTable(Component: React.ComponentType<ListActionProps>) {
   return Wrapped
 }
 
-const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
-  <TableCell align="right">
-    <NoSsr>
+const OfferListDesktop = baseTable(
+  ({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
+    <TableCell align="right">
+      <NoSsr>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+          <Typography variant="body2" style={{ marginRight: 16 }}>
+            {amount(market.price || 0, market.currency)}
+          </Typography>
+          {currentUserID === market.user.id ? (
+            // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
+            <div>
+              <Button variant="outlined" onClick={onRemove}>
+                Remove
+              </Button>
+            </div>
+          ) : (
+            <BuyButton variant="contained" onClick={onContact}>
+              Contact Seller
+            </BuyButton>
+          )}
+        </div>
+      </NoSsr>
+    </TableCell>
+  )
+)
+
+const OfferListMini = baseTable(
+  ({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
+    <TableCell
+      align="right"
+      style={{ cursor: 'pointer' }}
+      onClick={currentUserID === market.user.id ? onRemove : onContact}
+    >
+      <Typography variant="body2">{amount(market.price || 0, market.currency)}</Typography>
+      <Typography
+        variant="caption"
+        color="textSecondary"
+        style={{ color: currentUserID === market.user.id ? 'tomato' : '' }}
+      >
+        <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
+      </Typography>
+    </TableCell>
+  )
+)
+
+const OrderListDesktop = baseTable(
+  ({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
+    <TableCell align="right">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
         <Typography variant="body2" style={{ marginRight: 16 }}>
           {amount(market.price || 0, market.currency)}
         </Typography>
+
         {currentUserID === market.user.id ? (
           // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
           <div>
@@ -454,87 +520,53 @@ const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact
             </Button>
           </div>
         ) : (
-          <BuyButton variant="contained" onClick={onContact}>
-            Contact Seller
-          </BuyButton>
+          <SellButton
+            // Check for redacted user and disable them for opening the dialog.
+            disabled={!market.user.id}
+            variant="contained"
+            onClick={onContact}
+          >
+            {market.user.id ? `Contact Buyer` : `Sign in to view`}
+          </SellButton>
         )}
       </div>
-    </NoSsr>
-  </TableCell>
-))
+    </TableCell>
+  )
+)
 
-const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
-  <TableCell
-    align="right"
-    style={{ cursor: 'pointer' }}
-    onClick={currentUserID === market.user.id ? onRemove : onContact}>
-    <Typography variant="body2">{amount(market.price || 0, market.currency)}</Typography>
-    <Typography
-      variant="caption"
-      color="textSecondary"
-      style={{ color: currentUserID === market.user.id ? 'tomato' : '' }}>
-      <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
-    </Typography>
-  </TableCell>
-))
+const OrderListMini = baseTable(
+  ({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
+    <TableCell
+      align="right"
+      onClick={() => {
+        // Data was redacted, so we can do nothing about it.
+        if (!market.user.id) {
+          return
+        }
 
-const OrderListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
-  <TableCell align="right">
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-      <Typography variant="body2" style={{ marginRight: 16 }}>
+        // Logged in user matched th data id, we can invoke remove callback.
+        if (currentUserID === market.user.id) {
+          onRemove()
+          return
+        }
+
+        onContact()
+      }}
+      style={{ cursor: 'pointer' }}
+    >
+      <Typography variant="body2" style={{ color: bidColor.A200 }}>
         {amount(market.price || 0, market.currency)}
       </Typography>
 
       {currentUserID === market.user.id ? (
-        // HOTFIX! wrapped button on div to prevent mixing up the styles(variant) of 2 buttons.
-        <div>
-          <Button variant="outlined" onClick={onRemove}>
-            Remove
-          </Button>
-        </div>
+        <Typography variant="caption" color="textSecondary" style={{ color: 'tomato' }}>
+          <u>Remove</u>
+        </Typography>
       ) : (
-        <SellButton
-          // Check for redacted user and disable them for opening the dialog.
-          disabled={!market.user.id}
-          variant="contained"
-          onClick={onContact}>
-          {market.user.id ? `Contact Buyer` : `Sign in to view`}
-        </SellButton>
+        <Typography variant="caption" color="textSecondary">
+          <u>{market.user.id ? 'View' : 'Sign in to view'}</u>
+        </Typography>
       )}
-    </div>
-  </TableCell>
-))
-
-const OrderListMini = baseTable(({ market, currentUserID, onRemove, onContact }: ListActionProps) => (
-  <TableCell
-    align="right"
-    onClick={() => {
-      // Data was redacted, so we can do nothing about it.
-      if (!market.user.id) {
-        return
-      }
-
-      // Logged in user matched th data id, we can invoke remove callback.
-      if (currentUserID === market.user.id) {
-        onRemove()
-        return
-      }
-
-      onContact()
-    }}
-    style={{ cursor: 'pointer' }}>
-    <Typography variant="body2" style={{ color: bidColor.A200 }}>
-      {amount(market.price || 0, market.currency)}
-    </Typography>
-
-    {currentUserID === market.user.id ? (
-      <Typography variant="caption" color="textSecondary" style={{ color: 'tomato' }}>
-        <u>Remove</u>
-      </Typography>
-    ) : (
-      <Typography variant="caption" color="textSecondary">
-        <u>{market.user.id ? 'View' : 'Sign in to view'}</u>
-      </Typography>
-    )}
-  </TableCell>
-))
+    </TableCell>
+  )
+)

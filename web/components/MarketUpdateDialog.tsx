@@ -151,7 +151,8 @@ export default function MarketUpdateDialog({
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
           Update Listing
@@ -181,7 +182,8 @@ export default function MarketUpdateDialog({
                     <Link
                       href={steamProfileBaseURL + market.seller_steam_id}
                       target="_blank"
-                      rel="noreferrer noopener">
+                      rel="noreferrer noopener"
+                    >
                       {market.seller_steam_id}
                     </Link>
                     <br />
@@ -223,7 +225,12 @@ export default function MarketUpdateDialog({
               label="Buyer's Steam profile URL"
               placeholder="https://steamcommunity.com/..."
               value={steamProfileURL}
-              onInput={((e: React.FormEvent<HTMLInputElement>) => setSteamProfileURL(e.currentTarget.value)) as unknown as NonNullable<TextFieldProps["onInput"]>}
+              onInput={
+                ((e: React.FormEvent<HTMLInputElement>) =>
+                  setSteamProfileURL(e.currentTarget.value)) as unknown as NonNullable<
+                  TextFieldProps['onInput']
+                >
+              }
             />
             <br />
             <br />
@@ -236,7 +243,12 @@ export default function MarketUpdateDialog({
               helperText="Delivery date and deposit details"
               placeholder={`${moment().add(30, 'days').format('MMM D')} - $1 deposit`}
               value={notes}
-              onInput={((e: React.FormEvent<HTMLInputElement>) => setNotes(e.currentTarget.value)) as unknown as NonNullable<TextFieldProps["onInput"]>}
+              onInput={
+                ((e: React.FormEvent<HTMLInputElement>) =>
+                  setNotes(e.currentTarget.value)) as unknown as NonNullable<
+                  TextFieldProps['onInput']
+                >
+              }
             />
           </div>
         </DialogContent>
@@ -250,7 +262,8 @@ export default function MarketUpdateDialog({
             disabled={loadingRemove}
             startIcon={loadingRemove ? <CircularProgress size={22} /> : <RemoveIcon />}
             onClick={handleRemoveClick}
-            variant="outlined">
+            variant="outlined"
+          >
             Remove Listing
           </Button>
           <Button
@@ -258,7 +271,8 @@ export default function MarketUpdateDialog({
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
             variant="outlined"
             color="secondary"
-            type="submit">
+            type="submit"
+          >
             Reserve to Buyer
           </Button>
         </DialogActions>

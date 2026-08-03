@@ -15,10 +15,7 @@ import {
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 import ChipLink from '@/components/ChipLink'
-import {
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import { DOTABUFF_PROFILE_BASE_URL, STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
@@ -102,7 +99,10 @@ export default function ProfileCard({
   return (
     <div
       className={classes.details}
-      style={isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : undefined}>
+      style={
+        isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : undefined
+      }
+    >
       <a href={storeProfile} target="_blank" rel="noreferrer noopener">
         <Avatar
           large
@@ -117,7 +117,8 @@ export default function ProfileCard({
           className={classes.profileName}
           component="h3"
           variant="h4"
-          color={isProfileReported ? 'error' : 'inherit'}>
+          color={isProfileReported ? 'error' : 'inherit'}
+        >
           {user.name}
           {!USER_SUBSCRIPTION_BADGE_MODE && !isMobile && (
             <SubscriberBadge

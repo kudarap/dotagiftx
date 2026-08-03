@@ -217,7 +217,8 @@ export default function UserDetails({
                   fontSize: '1rem',
                   borderColor: '#c13830',
                   borderWidth: 2,
-                }}>
+                }}
+              >
                 This is user has been flagged as <strong>BANNED</strong> or{' '}
                 <strong>SUSPENDED</strong>. <br />
                 Website is not liable for any lost in-game items and money and should avoid any
@@ -231,7 +232,8 @@ export default function UserDetails({
             className={classes.details}
             style={
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : {}
-            }>
+            }
+          >
             <Avatar
               large
               badge={userBadge}
@@ -244,7 +246,8 @@ export default function UserDetails({
                 className={classes.profileName}
                 component="h1"
                 variant="h4"
-                color={isProfileReported ? 'error' : 'textPrimary'}>
+                color={isProfileReported ? 'error' : 'textPrimary'}
+              >
                 {profile.name}
                 {!USER_SUBSCRIPTION_BADGE_MODE && Boolean(userBadge) && (
                   <SubscriberBadge
@@ -276,8 +279,9 @@ export default function UserDetails({
               <Box sx={{ mb: 1 }}>
                 <Typography variant="body2" component="span">
                   <Link href={`${linkProps.href}`}>{stats.live} Items</Link> &middot;{' '}
-                  <Link href={`${linkProps.href}/reserved`}>{stats.reserved} Reserved</Link> &middot;{' '}
-                  <Link href={`${linkProps.href}/delivered`}>{stats.sold} Delivered</Link> &middot;{' '}
+                  <Link href={`${linkProps.href}/reserved`}>{stats.reserved} Reserved</Link>{' '}
+                  &middot; <Link href={`${linkProps.href}/delivered`}>{stats.sold} Delivered</Link>{' '}
+                  &middot;{' '}
                   <Link href={`${linkProps.href}/bought`}>{stats.bid_completed} Bought</Link>
                 </Typography>
                 <Box sx={{ '& > *': { mt: 0.5 } }}>
@@ -304,7 +308,7 @@ export default function UserDetails({
           {isProfileReported ? (
             <Typography align="center">
               <br />
-              <Button component={Link} href={`${linkProps.href}/activity`}>
+              <Button component={Link} nativeButton={false} href={`${linkProps.href}/activity`}>
                 Show All Activity
               </Button>
             </Typography>

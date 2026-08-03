@@ -26,7 +26,15 @@ interface ItemImageProps {
   style?: CSSProperties
 }
 
-export default function ItemImage({ image, title, rarity, className, width, height, ...other }: ItemImageProps) {
+export default function ItemImage({
+  image,
+  title,
+  rarity,
+  className,
+  width,
+  height,
+  ...other
+}: ItemImageProps) {
   const containerStyle: CSSProperties = {
     lineHeight: 1,
     flexShrink: 0,

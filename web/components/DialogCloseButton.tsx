@@ -11,7 +11,8 @@ export default function DialogCloseButton(props: IconButtonProps) {
       edge="start"
       color="inherit"
       aria-label="close"
-      size="small">
+      size="small"
+    >
       <CloseIcon />
     </IconButton>
   )

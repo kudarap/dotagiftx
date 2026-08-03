@@ -89,7 +89,8 @@ export default function DonateCoin() {
             size="large"
             target="_blank"
             rel="noreferrer noopener"
-            href="https://www.paypal.com/donate?hosted_button_id=QHWKBTN4VGDR6">
+            href="https://www.paypal.com/donate?hosted_button_id=QHWKBTN4VGDR6"
+          >
             Donate with PayPal
           </PaypalButton>
           <Typography color="textSecondary" style={{ marginTop: 6 }}>

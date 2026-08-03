@@ -150,7 +150,8 @@ export default function Footer() {
                 variant="body2"
                 component="span"
                 color="secondary"
-                className={classes.highlight}>
+                className={classes.highlight}
+              >
                 {APP_NAME}
               </Typography>{' '}
               by kudarap
@@ -164,7 +165,8 @@ export default function Footer() {
           <li style={{ float: 'right' }}>
             <Link
               href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224"
-              style={{ color: '#ffc83d' }}>
+              style={{ color: '#ffc83d' }}
+            >
               <SteamAwardIcon
                 style={{ margin: '0 2px -8px 0' }}
                 fill="#ffc83d"
@@ -180,7 +182,8 @@ export default function Footer() {
           className={classes.vavleCopyright}
           variant="caption"
           color="textSecondary"
-          component="p">
+          component="p"
+        >
           {APP_NAME} is a community website and not affiliated with Valve or Steam.
           <br />
           Game content and materials are trademarks and copyrights of their respective publisher and

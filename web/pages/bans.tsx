@@ -8,11 +8,7 @@ import startsWith from 'lodash/startsWith'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import {
-  APP_NAME,
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import { APP_NAME, DOTABUFF_PROFILE_BASE_URL, STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -179,7 +175,8 @@ function UserCard({ data }: { data: BlacklistUser }) {
                 marginTop: -2,
                 fontSize: '0.785em',
                 fontWeight: 500,
-              }}>
+              }}
+            >
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
@@ -192,7 +189,8 @@ function UserCard({ data }: { data: BlacklistUser }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Steam Profile
           </Link>
           &nbsp;&middot;&nbsp;
@@ -201,7 +199,8 @@ function UserCard({ data }: { data: BlacklistUser }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Dotabuff
           </Link>
         </Typography>

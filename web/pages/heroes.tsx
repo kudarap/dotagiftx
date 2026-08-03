@@ -70,11 +70,17 @@ export default function Heroes({
           )}
 
           <Typography
-            sx={{ mt: -54.5, mb: 2, letterSpacing: 3, textShadow: '0 0 8px #000000b0' }}
             variant="h3"
             component="h1"
-            fontWeight="bold"
-            color="primary">
+            color="primary"
+            sx={{
+              fontWeight: 'bold',
+              mt: -54.5,
+              mb: 2,
+              letterSpacing: 3,
+              textShadow: '0 0 8px #000000b0',
+            }}
+          >
             {`All Heroes (${allHeroes.length})`}
           </Typography>
 
@@ -87,7 +93,13 @@ export default function Heroes({
 
           <Grid container spacing={1} sx={{ mt: 2 }}>
             {heroes.map(hero => (
-              <Grid item xs={4} md={2} key={hero.name}>
+              <Grid
+                key={hero.name}
+                size={{
+                  xs: 4,
+                  md: 2,
+                }}
+              >
                 <Link href={`/search?hero=${hero.name}`} underline="none">
                   <Item>
                     <div>

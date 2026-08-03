@@ -44,7 +44,8 @@ export default function Guides() {
                 component="em"
                 color="textPrimary"
                 variant="body2"
-                style={{ fontWeight: 500 }}>
+                style={{ fontWeight: 500 }}
+              >
                 steamcommunity.com
               </Typography>{' '}
               to{' '}
@@ -52,7 +53,8 @@ export default function Guides() {
                 component="em"
                 color="textPrimary"
                 variant="body2"
-                style={{ fontWeight: 500 }}>
+                style={{ fontWeight: 500 }}
+              >
                 dotagiftx.com
               </Typography>{' '}
               that will lead you to their Dotagiftx profile with transaction history and links to
@@ -93,7 +95,8 @@ export default function Guides() {
                 href="https://dota2.fandom.com/wiki/Wrapped_Gift"
                 target="_blank"
                 color="secondary"
-                rel="noreferrer noopener">
+                rel="noreferrer noopener"
+              >
                 dota2.fandom.com
               </Link>
             </Typography>

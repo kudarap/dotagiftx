@@ -183,7 +183,8 @@ export default function MarketActivity({
                 aria-haspopup="true"
                 data-index={idx}
                 onMouseLeave={debouncePopoverClose}
-                onMouseEnter={handlePopoverOpen}>
+                onMouseEnter={handlePopoverOpen}
+              >
                 {(market.status === MARKET_STATUS_LIVE ||
                   market.status === MARKET_STATUS_RESERVED) &&
                   VERIFIED_INVENTORY_MAP_ICON[market.inventory_status! + Number(market.resell)]}
@@ -208,7 +209,8 @@ export default function MarketActivity({
                 hidden={disablePrice}
                 className={
                   market.type === MARKET_TYPE_ASK ? classes.askPriceTag : classes.bidPriceTag
-                }>
+                }
+              >
                 {amount(market.price || 0, market.currency)}
               </Typography>
               &nbsp;
@@ -216,7 +218,8 @@ export default function MarketActivity({
                 sx={{ float: 'right' }}
                 variant="inherit"
                 color="textSecondary"
-                component="pre">
+                component="pre"
+              >
                 {market.id.split('-')[0]}
                 <CopyButton
                   className={classes.copyButton}
@@ -231,11 +234,13 @@ export default function MarketActivity({
               component="div"
               color="textSecondary"
               variant="caption"
-              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
+              style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}
+            >
               {market.partner_steam_id && (
                 <Link
                   color="textSecondary"
-                  href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}>
+                  href={`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
+                >
                   {`${STEAM_PROFILE_BASE_URL}/${market.partner_steam_id}`}
                   {market.notes && '\n'}
                 </Link>

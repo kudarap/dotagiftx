@@ -26,7 +26,12 @@ interface Release {
   contents: string[]
 }
 
-const releaseItem = (releaseDate: string, tag: string, label: string, contents: string[]): Release => ({
+const releaseItem = (
+  releaseDate: string,
+  tag: string,
+  label: string,
+  contents: string[]
+): Release => ({
   releaseDate,
   tag,
   label,
@@ -139,7 +144,8 @@ export default function Updates() {
               <Link
                 target="_blank"
                 rel="noreferrer noopener"
-                href={`https://github.com/kudarap/dotagiftx/releases/tag/${release.tag}`}>
+                href={`https://github.com/kudarap/dotagiftx/releases/tag/${release.tag}`}
+              >
                 <Typography color="secondary" component="span">
                   {release.tag}
                 </Typography>{' '}
@@ -164,7 +170,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.22.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.22.0"
+          >
             {' '}
             v0.22.0: 5th year anniversary - Spring forward and Phantasm Crawl{' '}
             <LaunchIcon fontSize="small" />
@@ -180,7 +187,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.21.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.21.0"
+          >
             {' '}
             v0.21.0: Auto Subscription Crackdown and Crownfall Treasure{' '}
             <LaunchIcon fontSize="small" />
@@ -196,7 +204,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.20.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.20.0"
+          >
             {' '}
             v0.20.0: Span tracing, Task Queue, and Optimizations <LaunchIcon fontSize="small" />
           </Link>
@@ -211,7 +220,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.19.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.19.0"
+          >
             {' '}
             v0.19.0: Task verification + bunch of fixes and optimizations{' '}
             <LaunchIcon fontSize="small" />

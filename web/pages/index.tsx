@@ -147,7 +147,8 @@ export default function Index({
             maskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
             WebkitMaskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
             overflow: 'hidden',
-          }}>
+          }}
+        >
           <video
             style={{
               width: '100%',
@@ -160,7 +161,8 @@ export default function Index({
             autoPlay
             muted
             loop
-            playsInline>
+            playsInline
+          >
             <source
               type="video/webm"
               src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
@@ -175,13 +177,15 @@ export default function Index({
               xs: -78,
             },
             position: 'relative',
-          }}>
+          }}
+        >
           <div className={classes.banner} hidden>
             <Typography
               className={classes.bannerText}
               component="h1"
               variant="body2"
-              color="textSecondary">
+              color="textSecondary"
+            >
               <Typography className={classes.bannerHighlight} color="secondary" component="span">
                 {APP_NAME}
               </Typography>{' '}
@@ -194,7 +198,8 @@ export default function Index({
               <Link
                 href="https://www.reddit.com/r/Dota2Trade"
                 rel="noreferrer noopener"
-                target="_blank">
+                target="_blank"
+              >
                 r/Dota2Trade
               </Link>
               .
@@ -228,7 +233,8 @@ export default function Index({
             <Link
               href={`/search?sort=${recentBidItemsFilter.sort}`}
               color="secondary"
-              style={{ float: 'right' }}>
+              style={{ float: 'right' }}
+            >
               See All
             </Link>
           </Typography>
@@ -245,7 +251,8 @@ export default function Index({
             <Link
               href={`/search?sort=${recentItemsFilter.sort}`}
               color="secondary"
-              style={{ float: 'right' }}>
+              style={{ float: 'right' }}
+            >
               See All
             </Link>
           </Typography>
@@ -255,9 +262,23 @@ export default function Index({
           <br />
 
           {/* Market stats */}
-          <Divider className={classes.divider} light variant="middle" />
+          <Divider
+            className={classes.divider}
+            variant="middle"
+            sx={{
+              opacity: '0.6',
+            }}
+          />
           <Grid container spacing={2} style={{ textAlign: 'center' }}>
-            <Grid item sm={3} xs={6} component={Link} href="/search" disableUnderline>
+            <Grid
+              component={Link}
+              href="/search"
+              disableUnderline
+              size={{
+                sm: 3,
+                xs: 6,
+              }}
+            >
               <Typography variant="h4" component="span">
                 {marketSummary.live}
               </Typography>
@@ -267,12 +288,14 @@ export default function Index({
               </Typography>
             </Grid>
             <Grid
-              item
-              sm={3}
-              xs={6}
               component={Link}
               href="/search?sort=recent-bid"
-              disableUnderline>
+              disableUnderline
+              size={{
+                sm: 3,
+                xs: 6,
+              }}
+            >
               <Typography variant="h4" component="span">
                 {marketSummary.bids.bid_live}
               </Typography>
@@ -281,7 +304,15 @@ export default function Index({
                 <em>Buy Orders</em>
               </Typography>
             </Grid>
-            <Grid item sm={3} xs={6} component={Link} href="/history/reserved" disableUnderline>
+            <Grid
+              component={Link}
+              href="/history/reserved"
+              disableUnderline
+              size={{
+                sm: 3,
+                xs: 6,
+              }}
+            >
               <Typography variant="h4" component="span">
                 {marketSummary.reserved}
               </Typography>
@@ -290,7 +321,15 @@ export default function Index({
                 <em>On Reserved</em>
               </Typography>
             </Grid>
-            <Grid item sm={3} xs={6} component={Link} href="/history/delivered" disableUnderline>
+            <Grid
+              component={Link}
+              href="/history/delivered"
+              disableUnderline
+              size={{
+                sm: 3,
+                xs: 6,
+              }}
+            >
               <Typography variant="h4" component="span">
                 {marketSummary.sold}
               </Typography>
@@ -300,13 +339,24 @@ export default function Index({
               </Typography>
             </Grid>
           </Grid>
-          <Divider className={classes.divider} light variant="middle" />
+          <Divider
+            className={classes.divider}
+            variant="middle"
+            sx={{
+              opacity: '0.6',
+            }}
+          />
           <br />
 
           {/* Top 10 foot links */}
           <Grid container spacing={2}>
             {/* Top 10 Heroes */}
-            <Grid item sm={4} xs={12}>
+            <Grid
+              size={{
+                sm: 4,
+                xs: 12,
+              }}
+            >
               <Typography className={classes.footLinks}>Top Heroes</Typography>
               {topHeroes &&
                 topHeroes.map(hero => (
@@ -314,7 +364,8 @@ export default function Index({
                     key={hero}
                     href={`/search?hero=${hero}`}
                     color="secondary"
-                    className={classes.footLinks}>
+                    className={classes.footLinks}
+                  >
                     <Typography variant="subtitle1" component="p">
                       {hero}
                     </Typography>
@@ -322,7 +373,12 @@ export default function Index({
                 ))}
             </Grid>
             {/* Top 10 Sellers */}
-            <Grid item sm={4} xs={12}>
+            <Grid
+              size={{
+                sm: 4,
+                xs: 12,
+              }}
+            >
               <Typography className={classes.footLinks}>Top Sellers</Typography>
               {topSellers &&
                 topSellers.data.map(item => (
@@ -330,7 +386,8 @@ export default function Index({
                     key={item.slug}
                     href={`/${item.slug}`}
                     color="secondary"
-                    className={classes.footLinks}>
+                    className={classes.footLinks}
+                  >
                     <Typography variant="subtitle1" component="p">
                       {item.name}
                     </Typography>
@@ -338,7 +395,12 @@ export default function Index({
                 ))}
             </Grid>
             {/* Top 10 Treasures */}
-            <Grid item sm={4} xs={12}>
+            <Grid
+              size={{
+                sm: 4,
+                xs: 12,
+              }}
+            >
               <Typography className={classes.footLinks}>Top Treasures</Typography>
               {topOrigins &&
                 topOrigins.map(origin => (
@@ -346,7 +408,8 @@ export default function Index({
                     key={origin}
                     href={`/search?origin=${origin}`}
                     color="secondary"
-                    className={classes.footLinks}>
+                    className={classes.footLinks}
+                  >
                     <Typography variant="subtitle1" component="p">
                       {origin}
                     </Typography>

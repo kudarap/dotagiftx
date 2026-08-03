@@ -149,17 +149,17 @@ export default function History({
               component={Link}
               href="/history/reserved"
               style={
-                status === MARKET_STATUS_RESERVED
-                  ? { textDecoration: 'underline' }
-                  : undefined
-              }>
+                status === MARKET_STATUS_RESERVED ? { textDecoration: 'underline' } : undefined
+              }
+            >
               {summaryReserved} Reserved
             </Typography>
             &nbsp;&middot;&nbsp;
             <Typography
               component={Link}
               href="/history/delivered"
-              style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : undefined}>
+              style={status === MARKET_STATUS_SOLD ? { textDecoration: 'underline' } : undefined}
+            >
               {summarySold} Delivered
             </Typography>
           </Typography>
@@ -171,11 +171,7 @@ export default function History({
           )}
 
           {error && <Typography color="error">{error.split(':')[0]}</Typography>}
-          <MarketActivity
-            datatable={datatable}
-            loading={loading}
-            disablePrice={status !== null}
-          />
+          <MarketActivity datatable={datatable} loading={loading} disablePrice={status !== null} />
         </Container>
       </main>
 

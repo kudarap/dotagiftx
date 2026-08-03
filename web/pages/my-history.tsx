@@ -103,7 +103,11 @@ export default function MyHistory() {
         }
       } catch (e) {
         if (active) {
-          setCompletedItems(current => ({ ...current, loading: false, error: (e as Error).message }))
+          setCompletedItems(current => ({
+            ...current,
+            loading: false,
+            error: (e as Error).message,
+          }))
         }
       }
     })()
@@ -123,7 +127,11 @@ export default function MyHistory() {
         }
       } catch (e) {
         if (active) {
-          setCancelledItems(current => ({ ...current, loading: false, error: (e as Error).message }))
+          setCancelledItems(current => ({
+            ...current,
+            loading: false,
+            error: (e as Error).message,
+          }))
         }
       }
     })()

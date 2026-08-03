@@ -179,7 +179,8 @@ export default function FixSteamIDDialog(props: FixSteamIDDialogProps) {
       open={!!open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
           Fix Listing Data
@@ -209,7 +210,8 @@ export default function FixSteamIDDialog(props: FixSteamIDDialogProps) {
                     <Link
                       href={steamProfileBaseURL + market.seller_steam_id}
                       target="_blank"
-                      rel="noreferrer noopener">
+                      rel="noreferrer noopener"
+                    >
                       {market.seller_steam_id}
                     </Link>
                     <br />
@@ -252,7 +254,12 @@ export default function FixSteamIDDialog(props: FixSteamIDDialogProps) {
               label="Buyer's Steam profile URL"
               placeholder="https://steamcommunity.com/..."
               value={steamProfileURL}
-              onInput={((e: React.FormEvent<HTMLInputElement>) => setSteamProfileURL(e.currentTarget.value)) as unknown as NonNullable<import('@mui/material/TextField').TextFieldProps['onInput']>}
+              onInput={
+                ((e: React.FormEvent<HTMLInputElement>) =>
+                  setSteamProfileURL(e.currentTarget.value)) as unknown as NonNullable<
+                  import('@mui/material/TextField').TextFieldProps['onInput']
+                >
+              }
             />
             <br />
             <br />
@@ -266,7 +273,12 @@ export default function FixSteamIDDialog(props: FixSteamIDDialogProps) {
               helperText="Notes for cancellation. eg: duplicate of 2bc2f55b"
               placeholder="duplicate of 2bc2f55b-4b1b-4276-b15f..."
               value={notes}
-              onInput={((e: React.FormEvent<HTMLInputElement>) => setNotes(e.currentTarget.value)) as unknown as NonNullable<import('@mui/material/TextField').TextFieldProps['onInput']>}
+              onInput={
+                ((e: React.FormEvent<HTMLInputElement>) =>
+                  setNotes(e.currentTarget.value)) as unknown as NonNullable<
+                  import('@mui/material/TextField').TextFieldProps['onInput']
+                >
+              }
             />
           </div>
         </DialogContent>
@@ -280,7 +292,8 @@ export default function FixSteamIDDialog(props: FixSteamIDDialogProps) {
             disabled={loadingCancel}
             startIcon={loadingCancel ? <CircularProgress size={22} /> : <CancelIcon />}
             onClick={handleCancelClick}
-            variant="outlined">
+            variant="outlined"
+          >
             Mark as Cancelled
           </Button>
           <Button
@@ -290,7 +303,8 @@ export default function FixSteamIDDialog(props: FixSteamIDDialogProps) {
             }
             variant="outlined"
             color="secondary"
-            type="submit">
+            type="submit"
+          >
             Apply Fix
           </Button>
         </DialogActions>

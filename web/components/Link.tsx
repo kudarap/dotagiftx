@@ -13,16 +13,20 @@ type NextComposedProps = Omit<NextLinkProps, 'as' | 'href'> &
     disabled?: boolean
   }
 
-const NextComposed = React.forwardRef<HTMLAnchorElement, NextComposedProps>(function NextComposed(
-  props,
-  ref
-) {
-  const { as, href, disabled, ...other } = props
+const NextComposed = React.forwardRef<HTMLAnchorElement, NextComposedProps>(
+  function NextComposed(props, ref) {
+    const { as, href, disabled, ...other } = props
 
-  return (
-    <NextLink href={disabled ? '#' : (href as NonNullable<NextLinkProps['href']>)} as={as} ref={ref} {...(other as object)} />
-  )
-})
+    return (
+      <NextLink
+        href={disabled ? '#' : (href as NonNullable<NextLinkProps['href']>)}
+        as={as}
+        ref={ref}
+        {...(other as object)}
+      />
+    )
+  }
+)
 
 export type LinkProps = Omit<NextLinkProps, 'as' | 'href'> &
   Omit<MuiLinkProps, 'href'> & {

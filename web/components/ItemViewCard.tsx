@@ -35,7 +35,7 @@ export default function ItemViewCard({ item }: { item: Item }) {
   const wikiLink = `https://liquipedia.net/dota2/${(item.name || '').replace(/ +/gi, '_')}`
   return (
     <Grid container spacing={1.5}>
-      <Grid item className={classes.mediaContainer}>
+      <Grid className={classes.mediaContainer}>
         <div style={{ background: 'rgba(0, 0, 0, 0.15)' }}>
           {item.image && (
             <a href={wikiLink} target="_blank" rel="noreferrer noopener">
@@ -51,7 +51,7 @@ export default function ItemViewCard({ item }: { item: Item }) {
           )}
         </div>
       </Grid>
-      <Grid item>
+      <Grid>
         <div>
           <Typography component="h1" variant="h4">
             {item.name}

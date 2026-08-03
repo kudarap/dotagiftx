@@ -24,7 +24,8 @@ export default function PostItem() {
             marginTop: theme.spacing(2),
           },
           marginTop: 4,
-        })}>
+        })}
+      >
         <Container maxWidth="sm">
           <MarketForm />
         </Container>

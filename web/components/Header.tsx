@@ -106,7 +106,10 @@ export default function Header() {
 
   const setProfileAnalytics = React.useCallback(
     (userData: Profile) => {
-      const umami = (window as Window & typeof globalThis & { umami?: { identify: (id: string, data: object) => void } }).umami
+      const umami = (
+        window as Window &
+          typeof globalThis & { umami?: { identify: (id: string, data: object) => void } }
+      ).umami
       if (!!umami && isLoggedIn) {
         umami.identify(userData.steam_id, {
           id: userData.steam_id,
@@ -206,7 +209,8 @@ export default function Header() {
                   display: 'block',
                   marginTop: '-0.24rem',
                   marginLeft: -14,
-                }}>
+                }}
+              >
                 New Winter Treasure
               </span>
             )}
@@ -249,8 +253,10 @@ export default function Header() {
               variant="outlined"
               color="secondary"
               component={Link}
+              nativeButton={false}
               href="/post-item"
-              disableUnderline>
+              disableUnderline
+            >
               Post item
             </Button>
             <Button
@@ -263,7 +269,8 @@ export default function Header() {
                   xs: 'inherit',
                   md: 'none',
                 },
-              }}>
+              }}
+            >
               <MenuIcon fontSize="small" />
             </Button>
             <span className={classes.spacer} />
@@ -281,8 +288,10 @@ export default function Header() {
                 }}
                 startIcon={<SteamIcon />}
                 component={Link}
+                nativeButton={false}
                 href="/login"
-                disableUnderline>
+                disableUnderline
+              >
                 Sign in
               </Button>
             )}
@@ -317,7 +326,8 @@ function AvatarMenu({ profile, onLogout }: { profile: Profile; onLogout: () => v
         className={classes.avatarMenu}
         {...bindMenu(popupState)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
         <NavItems profile={profile} onClose={popupState.close} onLogout={onLogout} />
       </HoverMenu>
     </>
@@ -349,20 +359,24 @@ function MoreMenu() {
           },
         }}
         className={classes.nav}
-        {...bindHover(popupState)}>
+        {...bindHover(popupState)}
+      >
         <span>More</span> <MoreIcon />
       </Box>
       <HoverMenu
         {...bindMenu(popupState)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
         <MenuItem
           onClick={popupState.close}
           component={Link}
+          nativeButton={false}
           href="https://discord.gg/UFt9Ny42kM"
           target="_blank"
           rel="noreferrer noopener"
-          disableUnderline>
+          disableUnderline
+        >
           Discord
         </MenuItem>
 
@@ -371,8 +385,10 @@ function MoreMenu() {
             key={menu.path}
             onClick={popupState.close}
             component={Link}
+            nativeButton={false}
             href={menu.path}
-            disableUnderline>
+            disableUnderline
+          >
             {menu.label}
           </MenuItem>
         ))}

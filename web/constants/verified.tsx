@@ -8,8 +8,8 @@ import CheckIcon from '@mui/icons-material/Done'
 import DoubleCheckIcon from '@mui/icons-material/DoneAll'
 import Private from '@mui/icons-material/VisibilityOff'
 // import Private from '@mui/icons-material/Block'
-import Error from '@mui/icons-material/ErrorOutline'
-import ManualCheckIcon from '@mui/icons-material/CheckCircleOutline'
+import Error from '@mui/icons-material/ErrorOutlined'
+import ManualCheckIcon from '@mui/icons-material/CheckCircleOutlined'
 import PendingIcon from '@mui/icons-material/Pending'
 
 const iconStyle: { style: CSSProperties } = {

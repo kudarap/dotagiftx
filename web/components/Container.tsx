@@ -32,11 +32,7 @@ export default function Container({ children, disableMinHeight, ...other }: Cont
   }
 
   return (
-    <MuiContainer
-      className={classes.root}
-      disableGutters
-      style={style}
-      {...other}>
+    <MuiContainer className={classes.root} disableGutters style={style} {...other}>
       {children}
     </MuiContainer>
   )

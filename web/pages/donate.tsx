@@ -70,7 +70,8 @@ export default function Donate() {
                 rel="noreferrer noopener"
                 href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224"
                 color="secondary"
-                size="small">
+                size="small"
+              >
                 Give Award
               </Button>
             </Typography>
@@ -96,7 +97,8 @@ export default function Donate() {
                 rel="noreferrer noopener"
                 href="https://steamcommunity.com/tradeoffer/new/?partner=128321450&token=38BJlyuW"
                 color="secondary"
-                size="small">
+                size="small"
+              >
                 Send Trade offer
               </Button>
             </Typography>
@@ -119,10 +121,12 @@ export default function Donate() {
               <span style={{ textDecoration: 'line-through' }}>donator badge</span>.
               <Button
                 component={Link}
+                nativeButton={false}
                 href="/donate-coin"
                 color="secondary"
                 size="small"
-                underline="none">
+                underline="none"
+              >
                 Donate Coin
               </Button>
             </Typography>
@@ -132,7 +136,8 @@ export default function Donate() {
           <Typography
             color="textSecondary"
             component="em"
-            style={{ textDecoration: 'line-through' }}>
+            style={{ textDecoration: 'line-through' }}
+          >
             Donator badge will be on your profile forever and make your avatar glow for 30 days.
           </Typography>
         </Container>

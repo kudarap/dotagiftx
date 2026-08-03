@@ -49,7 +49,13 @@ export default function About({ build }: { build: Build }) {
             What about it?
           </Typography>
           <Typography component="h1" color="textSecondary">
-            <Typography color="secondary" component="span" fontWeight="bold">
+            <Typography
+              color="secondary"
+              component="span"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               {APP_NAME}
             </Typography>{' '}
             is short for Dota 2 giftables exchange, it was made to provide better search and pricing
@@ -61,7 +67,8 @@ export default function About({ build }: { build: Build }) {
             <Link
               href="https://www.reddit.com/r/Dota2Trade"
               rel="noreferrer noopener"
-              target="_blank">
+              target="_blank"
+            >
               r/Dota2Trade
             </Link>
             .
@@ -75,16 +82,17 @@ export default function About({ build }: { build: Build }) {
           <Typography color="textSecondary">
             <strong>kudarap</strong> &mdash; author
             <br />
-            Feel free to contact <s>me</s> us on Discord if you have issues or
-            suggestions.
+            Feel free to contact <s>me</s> us on Discord if you have issues or suggestions.
           </Typography>
           <Button
             startIcon={<DiscordIcon />}
             size="large"
             component={Link}
+            nativeButton={false}
             target="_blank"
             rel="noreferrer noopener"
-            href="https://discord.gg/UFt9Ny42kM">
+            href="https://discord.gg/UFt9Ny42kM"
+          >
             Discord
           </Button>
           <Button
@@ -92,9 +100,11 @@ export default function About({ build }: { build: Build }) {
             startIcon={<SteamIcon />}
             size="large"
             component={Link}
+            nativeButton={false}
             target="_blank"
             rel="noreferrer noopener"
-            href="https://steamcommunity.com/profiles/76561198088587178">
+            href="https://steamcommunity.com/profiles/76561198088587178"
+          >
             Steam
           </Button>
           <Button
@@ -109,7 +119,9 @@ export default function About({ build }: { build: Build }) {
             }
             size="large"
             component={Link}
-            href="/profiles/76561198088587178">
+            nativeButton={false}
+            href="/profiles/76561198088587178"
+          >
             DotagiftX
           </Button>
           <br />

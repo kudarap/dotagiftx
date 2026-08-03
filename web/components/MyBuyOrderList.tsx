@@ -123,7 +123,8 @@ export default function MyBuyOrderList({
                     scope="row"
                     padding="none"
                     className={classes.item}
-                    onClick={() => handleUpdateClick(idx)}>
+                    onClick={() => handleUpdateClick(idx)}
+                  >
                     <ItemImage
                       className={classes.image}
                       image={market.item.image || ''}
@@ -163,7 +164,8 @@ export default function MyBuyOrderList({
                     <TableCell
                       align="right"
                       onClick={() => handleUpdateClick(idx)}
-                      style={{ cursor: 'pointer' }}>
+                      style={{ cursor: 'pointer' }}
+                    >
                       <Typography variant="body2" color="secondary">
                         {format.amount(market.price || 0, market.currency)}
                       </Typography>

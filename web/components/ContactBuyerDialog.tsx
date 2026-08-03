@@ -42,7 +42,8 @@ export default function ContactBuyerDialog({
         open={open}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
+        aria-describedby="alert-dialog-description"
+      >
         <DialogTitle id="alert-dialog-title">
           Contact Buyer
           <DialogCloseButton onClick={onClose} />
@@ -58,7 +59,8 @@ export default function ContactBuyerDialog({
               component="ul"
               variant="body2"
               color="textSecondary"
-              style={{ lineHeight: 1.7 }}>
+              style={{ lineHeight: 1.7 }}
+            >
               <li>Please be respectful on the price stated by the buyer.</li>
               <li>Make sure your item exist in your inventory.</li>
               <li>
@@ -73,16 +75,18 @@ export default function ContactBuyerDialog({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button component="a" href={storeProfile}>
+          <Button component="a" nativeButton={false} href={storeProfile}>
             Buyer Profile
           </Button>
           <BidButton
             variant="outlined"
             component={Link}
+            nativeButton={false}
             target="_blank"
             rel="noreferrer noopener"
             disableUnderline
-            href={steamProfileURL}>
+            href={steamProfileURL}
+          >
             Steam Profile
           </BidButton>
         </DialogActions>
