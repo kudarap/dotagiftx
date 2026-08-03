@@ -197,7 +197,10 @@ func (app *application) setup() error {
 		}
 	}
 
-	fixUserData(slogger, userStg, marketSvc, rethinkClient)
+	sids := []string{
+		"76561198285300085",
+	}
+	fixUserData(sids, slogger, userStg, marketSvc, rethinkClient)
 	app.closerFn()
 	fmt.Println("DONE!")
 	os.Exit(0)
