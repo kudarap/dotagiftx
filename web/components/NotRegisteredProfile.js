@@ -9,11 +9,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Container from '@/components/Container'
 import ChipLink from '@/components/ChipLink'
-import {
-  APP_NAME,
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import { APP_NAME, DOTABUFF_PROFILE_BASE_URL, STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import { dateFromNow } from '@/lib/format'
 

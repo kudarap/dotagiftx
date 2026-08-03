@@ -56,7 +56,7 @@ export default function Blacklist() {
                 dotagiftx.com
               </Typography>{' '}
               that will lead you to their Dotagiftx profile with transaction history and links to
-               can search scammers on{' '}
+              can search scammers on{' '}
               <Link href="/bans" color="secondary">
                 Banned users
               </Link>
@@ -79,8 +79,8 @@ export default function Blacklist() {
             Prepare evidences
             <Typography color="textSecondary">
               Prepare in-case the seller scam you. Take screenshots of things during transaction
-              that you can use to submit a case. If you buying here on DotagiftX make
-              sure that you have a record of reservation so we could track the transaction.
+              that you can use to submit a case. If you buying here on DotagiftX make sure that you
+              have a record of reservation so we could track the transaction.
             </Typography>
           </Typography>
           <br />

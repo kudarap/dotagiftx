@@ -43,8 +43,8 @@ export default function WelcomeDialog() {
     setOpen(false)
   }
 
-  const handleCheck = (evt) => {
-      setSeen(evt.target.checked);
+  const handleCheck = evt => {
+    setSeen(evt.target.checked)
   }
 
   return (
@@ -61,9 +61,9 @@ export default function WelcomeDialog() {
       </DialogTitle>
       <DialogContent id="welcome-dialog-description" className={classes.content}>
         <Typography gutterBottom>
-          DotagiftX is a peer-to-peer marketplace, trades happen directly between buyer and
-          seller. We don&apos;t hold funds or verify identities, so a little caution goes a long
-          way before your first trade.
+          DotagiftX is a peer-to-peer marketplace, trades happen directly between buyer and seller.
+          We don&apos;t hold funds or verify identities, so a little caution goes a long way before
+          your first trade.
         </Typography>
 
         <Typography style={{ fontWeight: 'bold' }} gutterBottom>
@@ -77,8 +77,8 @@ export default function WelcomeDialog() {
             </li>
             <li>
               Before paying, check the seller&apos;s DotagiftX profile by changing their Steam
-              profile URL&apos;s domain to dotagiftx.com, using their Steam ID64 (not a custom
-              URL), to see their transaction history and any{' '}
+              profile URL&apos;s domain to dotagiftx.com, using their Steam ID64 (not a custom URL),
+              to see their transaction history and any{' '}
               <Link href="/bans" color="secondary" onClick={handleClose}>
                 scam alerts
               </Link>
@@ -89,8 +89,8 @@ export default function WelcomeDialog() {
               seller&apos;s profile again before finalizing.
             </li>
             <li>
-              Prefer top sellers or Trader/Partner subscribers. If trading with someone new,
-              paying via PayPal Goods &amp; Services offers some dispute protection.
+              Prefer top sellers or Trader/Partner subscribers. If trading with someone new, paying
+              via PayPal Goods &amp; Services offers some dispute protection.
             </li>
             <li>
               For high-value trades, consider using a trusted{' '}
@@ -138,7 +138,10 @@ export default function WelcomeDialog() {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <FormControlLabel control={<Checkbox onChange={handleCheck} />} label="Don't show it again" />
+        <FormControlLabel
+          control={<Checkbox onChange={handleCheck} />}
+          label="Don't show it again"
+        />
         <Button variant="outlined" color="secondary" onClick={handleClose}>
           Got it
         </Button>

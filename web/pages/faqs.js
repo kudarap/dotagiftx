@@ -113,8 +113,8 @@ export default function Faqs() {
           <Question>Can I trust the users on this website?</Question>
           <Answer>
             Not really, its open for anyone so please be vigilant to scammers. User&apos;s
-            transaction history are open and links to their Steam, and Dotabuff are listed
-            for you to checkout.
+            transaction history are open and links to their Steam, and Dotabuff are listed for you
+            to checkout.
           </Answer>
 
           <Question>What is reservation / reservation fee / deposit?</Question>
