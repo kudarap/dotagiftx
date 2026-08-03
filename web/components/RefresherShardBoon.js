@@ -1,4 +1,4 @@
-import moment from '@/lib/moment'
+import { dateCalendarInDays } from '@/lib/format'
 import PropTypes from 'prop-types'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -15,7 +15,7 @@ export default function RefresherShardBoon({ boons }) {
           variant="body2"
           href="/expiring-posts">
           This buy order will expires in {MARKET_BID_EXPR_DAYS} days -{' '}
-          {moment().add(MARKET_BID_EXPR_DAYS, 'days').calendar()}
+          {dateCalendarInDays(MARKET_BID_EXPR_DAYS)}
         </Typography>
       </Box>
     )

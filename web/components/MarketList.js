@@ -13,13 +13,12 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
-import moment from '@/lib/moment'
 import {
   VERIFIED_INVENTORY_MAP_ICON,
   VERIFIED_INVENTORY_VERIFIED_RESELL,
 } from '@/constants/verified'
 import { isDonationGlowExpired, myMarket } from '@/service/api'
-import { amount, dateFromNow } from '@/lib/format'
+import { amount, dateFromNow, fromNow } from '@/lib/format'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
@@ -377,7 +376,7 @@ function baseTable(Component) {
                     )}
                     {displayProfileJoinedDate && (
                       <Typography variant="caption" sx={{ ml: 0.5 }}>
-                        joined {moment(market.user.created_at).fromNow()}
+                        joined {fromNow(market.user.created_at)}
                       </Typography>
                     )}
                     <br />

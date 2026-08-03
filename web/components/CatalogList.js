@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import moment from '@/lib/moment'
+import { fromNow } from '@/lib/format'
 import PropTypes from 'prop-types'
 import { teal as bidColor } from '@mui/material/colors'
 import { makeStyles } from 'tss-react/mui'
@@ -114,7 +114,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                   <TableCell align="right">
                     <Typography variant="body2" color="textSecondary">
                       {isRecentMode
-                        ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
+                        ? fromNow(bidType ? item.recent_bid : item.recent_ask)
                         : bidType
                           ? item.bid_count
                           : item.quantity}

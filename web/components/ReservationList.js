@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import moment from '@/lib/moment'
 import { makeStyles } from 'tss-react/mui'
 import { debounce } from '@mui/material'
 import Table from '@mui/material/Table'
@@ -167,9 +166,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                   {!isMobile ? (
                     <>
                       <TableCell align="right">
-                        <Typography variant="body2">
-                          {moment(market.updated_at).fromNow()}
-                        </Typography>
+                        <Typography variant="body2">{format.fromNow(market.updated_at)}</Typography>
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="body2">
@@ -191,7 +188,7 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                         {format.amount(market.price, market.currency)}
                       </Typography>
                       <Typography variant="caption" color="textSecondary" noWrap>
-                        {moment(market.updated_at).fromNow()}
+                        {format.fromNow(market.updated_at)}
                       </Typography>
                     </TableCell>
                   )}

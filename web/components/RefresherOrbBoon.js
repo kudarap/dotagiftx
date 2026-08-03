@@ -1,4 +1,4 @@
-import moment from '@/lib/moment'
+import { dateCalendarInDays } from '@/lib/format'
 import PropTypes from 'prop-types'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -15,7 +15,7 @@ export default function RefresherOrbBoon({ boons }) {
           variant="body2"
           href="/expiring-posts">
           This listing will expires in {MARKET_ASK_EXPR_DAYS} days -{' '}
-          {moment().add(MARKET_ASK_EXPR_DAYS, 'days').calendar()}
+          {dateCalendarInDays(MARKET_ASK_EXPR_DAYS)}
         </Typography>
       </Box>
     )

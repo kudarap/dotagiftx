@@ -4,7 +4,7 @@ import map from 'lodash/map'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import { Box, Card, CardContent } from '@mui/material'
-import moment from '@/lib/moment'
+import { fromNow } from '@/lib/format'
 import { fetcher, REPORTS } from '@/service/api'
 import { REPORT_TYPE_MAP_TEXT, REPORT_TYPE_SURVEY } from '@/constants/report'
 import Header from '@/components/Header'
@@ -87,7 +87,7 @@ export default function Feedback() {
                     <Typography color="textSecondary">{` ${report.text} `}</Typography>
                     <Box sx={{ mt: 1 }}>
                       <Typography variant="caption" color="textSecondary">
-                        {moment(report.created_at).fromNow()}
+                        {fromNow(report.created_at)}
                       </Typography>
                       <Typography variant="caption" sx={{ float: 'right' }}>
                         {report.id}
