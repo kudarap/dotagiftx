@@ -76,7 +76,7 @@ func fixData(dryRun bool, db *r.Session, user dotagiftx.User, subs paypal.Subscr
 		payload["subscription_ends_at"] = subs.BillingInfo.LastPayment.Time.Add(time.Hour * 24 * 30)
 	}
 
-	payload["notes_aug_2026"] = "bulk fix subscription"
+	payload["notes_aug_2026_v1"] = "bulk fix subscription post update"
 
 	if dryRun {
 		fmt.Println("[dry-run] ", user.SteamID, user.Name)
