@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import { teal as bidColor } from '@mui/material/colors'
 import { makeStyles } from 'tss-react/mui'
@@ -46,7 +45,6 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
   const isRecentMode = variant === 'recent'
 
   const itemURLSuffix = bidType ? '/buyorders' : ''
-
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="items table">
@@ -114,7 +112,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                   <TableCell align="right">
                     <Typography variant="body2" color="textSecondary">
                       {isRecentMode
-                        ? moment(bidType ? item.recent_bid : item.recent_ask).fromNow()
+                        ? format.fromNow(bidType ? item.recent_bid : item.recent_ask)
                         : bidType
                           ? item.bid_count
                           : item.quantity}

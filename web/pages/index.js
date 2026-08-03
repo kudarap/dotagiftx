@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
 import Head from 'next/head'
+import Image from 'next/image'
 import Router from 'next/router'
 import dynamic from 'next/dynamic'
 import { makeStyles } from 'tss-react/mui'
@@ -26,6 +27,7 @@ const SearchInput = dynamic(() => import('@/components/SearchInput'))
 const CatalogList = dynamic(() => import('@/components/CatalogList'))
 const Link = dynamic(() => import('@/components/Link'))
 const Footer = dynamic(() => import('@/components/Footer'))
+const HeroVideo = dynamic(() => import('@/components/HeroVideo'))
 
 const useStyles = makeStyles()(theme => ({
   main: {},
@@ -86,15 +88,12 @@ export default function Index({ marketSummary, trendingItems }) {
     fetcher
   )
   const { data: recentItems, error: recentError } = useSWR(
-    recentBidItems ? [CATALOGS, recentItemsFilter] : null,
+    [CATALOGS, recentItemsFilter],
     fetcher
   )
-  const { data: topSellers } = useSWR(
-    recentItems ? [CATALOGS, topSellerItemsFilter] : null,
-    fetcher
-  )
-  const { data: topOrigins } = useSWR(topSellers ? STATS_TOP_ORIGINS : null, fetcher)
-  const { data: topHeroes } = useSWR(topOrigins ? STATS_TOP_HEROES : null, fetcher)
+  const { data: topSellers } = useSWR([CATALOGS, topSellerItemsFilter], fetcher)
+  const { data: topOrigins } = useSWR(STATS_TOP_ORIGINS, fetcher)
+  const { data: topHeroes } = useSWR(STATS_TOP_HEROES, fetcher)
 
   const handleSubmit = keyword => {
     Router.push(`/search?q=${keyword}`)
@@ -136,6 +135,7 @@ export default function Index({ marketSummary, trendingItems }) {
         {/* Splash banner */}
         <div
           style={{
+            position: 'relative',
             width: '100%',
             height: 640,
             marginBottom: 500 - 640,
@@ -143,24 +143,29 @@ export default function Index({ marketSummary, trendingItems }) {
             WebkitMaskImage: 'linear-gradient(to top, transparent 25%, black 90%)',
             overflow: 'hidden',
           }}>
-          <video
+          <Image
+            src="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            style={{ objectFit: 'cover', userSelect: 'none' }}
+          />
+          <HeroVideo
+            sources={[
+              'https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4',
+            ]}
             style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
               width: '100%',
+              height: '100%',
+              objectFit: 'cover',
               userSelect: 'none',
-              zIndex: -1,
-              marginTop: '-10vw',
             }}
-            preload="auto"
-            poster="https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/header/dark_carnival_header_background.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline>
-            <source
-              type="video/webm"
-              src="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/darkcarnival/dark_carnival_header_background.mp4"
-            />
-          </video>
+          />
         </div>
 
         <Container
@@ -360,7 +365,10 @@ Index.propTypes = {
 }
 
 // This gets called on every request
-export async function getServerSideProps() {
+export async function getServerSideProps({ res }) {
+  // Cache the SSR response on the CDN/edge so repeat visits skip the API round-trip.
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600')
+
   const marketSummary = await statsMarketSummaryOverall()
   marketSummary.live = format.numberWithCommas(marketSummary.live)
   marketSummary.reserved = format.numberWithCommas(marketSummary.reserved)
@@ -378,7 +386,6 @@ export async function getServerSideProps() {
     props: {
       marketSummary,
       trendingItems,
-      unstable_revalidate: 60,
     },
   }
 }

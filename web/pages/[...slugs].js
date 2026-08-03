@@ -39,8 +39,11 @@ const marketSearchFilter = {
 
 // This gets called on every request
 export async function getServerSideProps(props) {
-  const { params, query } = props
+  const { params, query, res } = props
   const { slugs } = params
+
+  // Cache the SSR response on the CDN/edge so repeat visits skip the API round-trip.
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600')
 
   // NOTE: this is weird routing bug. maybe happening during page transition.
   if (slugs.indexOf('undefined') !== -1) {

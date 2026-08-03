@@ -3,6 +3,9 @@ import { Html, Head, Main, NextScript } from 'next/document'
 import { DocumentHeadTags, documentGetInitialProps } from '@mui/material-nextjs/v15-pagesRouter'
 import theme from '@/lib/theme'
 
+const apiOrigin = process.env.NEXT_PUBLIC_API_URL
+const cdnOrigin = process.env.NEXT_PUBLIC_CDN_URL
+
 export default function MyDocument(props) {
   return (
     <Html lang="en">
@@ -10,10 +13,9 @@ export default function MyDocument(props) {
         <DocumentHeadTags {...props} />
 
         {/* resolves dns for fast load time from other resources */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://www.googleanalytics.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://cdn.steamstatic.com" />
+        {apiOrigin && <link rel="preconnect" href={apiOrigin} />}
+        {cdnOrigin && <link rel="preconnect" href={cdnOrigin} />}
 
         {/* PWA primary color */}
         <meta name="theme-color" content={theme.palette.primary.main} />

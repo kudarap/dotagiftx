@@ -1,9 +1,9 @@
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { MARKET_BID_EXPR_DAYS } from '@/constants/market'
 import Link from '@/components/Link'
+import { addDays, calendar } from '@/lib/format'
 
 export default function RefresherShardBoon({ boons }) {
   if (!boons || boons.indexOf('REFRESHER_SHARD') === -1) {
@@ -15,7 +15,7 @@ export default function RefresherShardBoon({ boons }) {
           variant="body2"
           href="/expiring-posts">
           This buy order will expires in {MARKET_BID_EXPR_DAYS} days -{' '}
-          {moment().add(MARKET_BID_EXPR_DAYS, 'days').calendar()}
+          {calendar(addDays(null, MARKET_BID_EXPR_DAYS))}
         </Typography>
       </Box>
     )

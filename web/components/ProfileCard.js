@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import NewbieIcon from '@mui/icons-material/NewReleases'
-import moment from 'moment'
 import { Box } from '@mui/material'
 import Avatar from '@/components/Avatar'
 import {
@@ -25,6 +24,7 @@ import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
 import ExclusiveChip from '@/components/ExclusiveChip'
+import { daysDiff, fromNow } from '@/lib/format'
 
 const useStyles = makeStyles()(theme => ({
   details: {
@@ -117,8 +117,8 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           <Typography component="span" variant="caption">
             {user.steam_id}
           </Typography>{' '}
-          &middot; Joined {moment(user.created_at).fromNow()}{' '}
-          {moment().diff(moment(user.created_at), 'days') <= USER_AGE_CAUTION && (
+          &middot; Joined {fromNow(user.created_at)}{' '}
+          {daysDiff(user.created_at) <= USER_AGE_CAUTION && (
             <NewbieIcon color="info" fontSize="inherit" sx={{ mb: -0.3 }} />
           )}
         </Typography>

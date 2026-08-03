@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import moment from 'moment'
+import { msUntil } from '@/lib/format'
 // import { authRenew } from './api'
 
 const AUTH_KEY = 'dgAu'
@@ -38,7 +38,7 @@ const renewLeeway = 60 // seconds before expiration
 
 export function isAccessTokenExpired() {
   const auth = get()
-  return moment(auth.expires_at).diff(moment()) <= renewLeeway
+  return msUntil(auth.expires_at) <= renewLeeway
 }
 
 // export function renewAccessToken(onSuccess = () => {}, onError = () => {}) {

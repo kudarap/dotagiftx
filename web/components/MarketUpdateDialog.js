@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import startsWith from 'lodash/startsWith'
 import { makeStyles } from 'tss-react/mui'
@@ -13,7 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import ReserveIcon from '@mui/icons-material/EventAvailable'
 import RemoveIcon from '@mui/icons-material/Delete'
 import * as url from '@/lib/url'
-import { amount, dateTime } from '@/lib/format'
+import { addDays, amount, dateTime, formatMonthDay } from '@/lib/format'
 import { myMarket } from '@/service/api'
 import Button from '@/components/Button'
 import Link from '@/components/Link'
@@ -213,7 +212,7 @@ export default function MarketUpdateDialog(props) {
               variant="outlined"
               label="Reservation Notes"
               helperText="Delivery date and deposit details"
-              placeholder={`${moment().add(30, 'days').format('MMM D')} - $1 deposit`}
+              placeholder={`${formatMonthDay(addDays(null, 30))} - $1 deposit`}
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />

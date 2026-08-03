@@ -6,7 +6,6 @@ import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
-import moment from 'moment'
 import NewbieIcon from '@mui/icons-material/NewReleases'
 import { Box } from '@mui/material'
 import {
@@ -30,6 +29,7 @@ import {
   vanity,
 } from '@/service/api'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
+import { daysDiff, fromNow } from '@/lib/format'
 import Avatar from '@/components/Avatar'
 import ExclusiveChip from '@/components/ExclusiveChip'
 import Header from '@/components/Header'
@@ -243,8 +243,8 @@ export default function UserDetails({
                 <Typography component="span" variant="caption">
                   {profile.steam_id}
                 </Typography>{' '}
-                &middot; Joined {moment(profile.created_at).fromNow()}{' '}
-                {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (
+                &middot; Joined {fromNow(profile.created_at)}{' '}
+                {daysDiff(profile.created_at) <= USER_AGE_CAUTION && (
                   <NewbieIcon color="info" fontSize="inherit" sx={{ mb: -0.3 }} />
                 )}
               </Typography>

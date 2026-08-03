@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
-import moment from 'moment'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
@@ -22,6 +21,7 @@ import Avatar from '@/components/Avatar'
 import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
 import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
+import { fromNow } from '@/lib/format'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -176,7 +176,7 @@ function UserCard({ data }) {
                 fontSize: '0.785em',
                 fontWeight: 500,
               }}>
-              {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
+              {USER_STATUS_MAP_LABEL[data.status]} {fromNow(data.updated_at)}
             </span>
           </Typography>
           <Link variant="body2" href={`/profiles/${data.steam_id}`}>

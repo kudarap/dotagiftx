@@ -1,16 +1,13 @@
 import React, { useState } from 'react'
-import moment from 'moment'
 import { blacklistSearch } from '@/service/api'
 import { save, get } from '@/service/storage'
+import { daysAgoCeil, fromNow } from '@/lib/format'
 
 const sinceDayMin = 1
 const sinceDayMax = 30
 const sinceRate = sinceDayMax / sinceDayMin
 
-const getDaysFromTs = datetime => {
-  const ts = moment().diff(datetime)
-  return Math.ceil(ts / 86400000)
-}
+const getDaysFromTs = datetime => daysAgoCeil(datetime)
 
 const CACHE_KEY = 'latest-ban'
 
@@ -52,7 +49,7 @@ export default function LatestBan() {
         color: '#FF6464',
         filter: `grayscale(${grayscale}%)`,
       }}>
-      {moment(value).fromNow()}
+      {fromNow(value)}
     </span>
   )
 }

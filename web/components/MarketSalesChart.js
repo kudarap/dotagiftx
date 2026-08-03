@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
 import {
   LineChart,
   Line,
@@ -14,10 +13,10 @@ import {
 import Paper from '@mui/material/Paper'
 import { lightGreen as graphColor } from '@mui/material/colors'
 
-import { amount } from '@/lib/format'
+import { amount, formatMonthDay, toUnixMs } from '@/lib/format'
 
 function formatDateUnix(unix) {
-  return moment(unix).format('MMM D')
+  return formatMonthDay(unix)
 }
 
 function formatXAxis(tickItem) {
@@ -56,7 +55,7 @@ export default function MarketSalesChart({ data }) {
   }
 
   const format = data.map(v => ({
-    unix: moment(v.date).unix() * 1000,
+    unix: toUnixMs(v.date),
     avg: Number(v.avg.toFixed(2)),
     count: v.count,
   }))

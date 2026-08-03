@@ -78,26 +78,29 @@ function ItemAutoComplete({ onSelect, forwardedRef, required, ...other }) {
       getOptionLabel={option => option.text}
       options={options}
       loading={loading}
-      renderInput={params => (
-        <TextField
-          {...params}
-          ref={forwardedRef}
-          required={required}
-          color="secondary"
-          label="Item name"
-          helperText="Search item you want to post from your inventory."
-          variant="outlined"
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </>
-            ),
-          }}
-        />
-      )}
+      renderInput={params => {
+        const { InputProps: muiInputProps = {} } = params
+        return (
+          <TextField
+            {...params}
+            ref={forwardedRef}
+            required={required}
+            color="secondary"
+            label="Item name"
+            helperText="Search item you want to post from your inventory."
+            variant="outlined"
+            InputProps={{
+              ...muiInputProps,
+              endAdornment: (
+                <>
+                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {muiInputProps.endAdornment}
+                </>
+              ),
+            }}
+          />
+        )
+      }}
       {...other}
     />
   )

@@ -2,6 +2,8 @@
 
 const CACHE_KEY = 'cache'
 
+const canUseStorage = () => typeof window !== 'undefined' && typeof localStorage !== 'undefined'
+
 const hash = str => {
   str = JSON.stringify(str)
   let hash = 0
@@ -31,6 +33,10 @@ const isExpired = ttl => {
 const matchKeys = prefix => {
   const keys = []
 
+  if (!canUseStorage()) {
+    return keys
+  }
+
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
     if (!key.startsWith(prefix)) {
@@ -57,15 +63,25 @@ const sweep = () => {
 
 // remove by exact key.
 export const remove = key => {
+  if (!canUseStorage()) {
+    return
+  }
   localStorage.removeItem(cKey(key))
 }
 
 // remove entries with matched prefix key.
 export const removeAll = key => {
+  if (!canUseStorage()) {
+    return
+  }
   matchKeys(keyPrefix(key || '')).forEach(k => localStorage.removeItem(k))
 }
 
 export const get = key => {
+  if (!canUseStorage()) {
+    return null
+  }
+
   const item = JSON.parse(localStorage.getItem(cKey(key)))
   if (item === null) {
     return null
@@ -87,6 +103,10 @@ export const get = key => {
 }
 
 export const save = (key, data, sec = null) => {
+  if (!canUseStorage()) {
+    return
+  }
+
   // Free up expired items.
   sweep()
 
