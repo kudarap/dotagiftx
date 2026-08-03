@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from '@/lib/moment'
 import PropTypes from 'prop-types'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'

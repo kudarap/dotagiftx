@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
-import moment from 'moment'
+import moment from '@/lib/moment'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'

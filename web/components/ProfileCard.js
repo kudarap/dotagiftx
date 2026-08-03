@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import NewbieIcon from '@mui/icons-material/NewReleases'
-import moment from 'moment'
+import moment from '@/lib/moment'
 import { Box } from '@mui/material'
 import Avatar from '@/components/Avatar'
 import {

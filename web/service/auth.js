@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import moment from 'moment'
+import moment from '@/lib/moment'
 // import { authRenew } from './api'
 
 const AUTH_KEY = 'dgAu'

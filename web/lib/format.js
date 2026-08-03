@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from '@/lib/moment'
 
 export function amount(n, currency = '') {
   let sign = ''

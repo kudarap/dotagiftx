@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import moment from 'moment'
+import moment from '@/lib/moment'
 import { blacklistSearch } from '@/service/api'
 import { save, get } from '@/service/storage'
 

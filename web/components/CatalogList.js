@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import moment from 'moment'
+import moment from '@/lib/moment'
 import PropTypes from 'prop-types'
 import { teal as bidColor } from '@mui/material/colors'
 import { makeStyles } from 'tss-react/mui'

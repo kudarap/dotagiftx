@@ -6,7 +6,7 @@ import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
-import moment from 'moment'
+import moment from '@/lib/moment'
 import NewbieIcon from '@mui/icons-material/NewReleases'
 import { Box } from '@mui/material'
 import {

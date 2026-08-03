@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
+import moment from '@/lib/moment'
 import { makeStyles } from 'tss-react/mui'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
