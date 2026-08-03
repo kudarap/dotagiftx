@@ -5,6 +5,8 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
 import AppContext from '@/components/AppContext'
@@ -38,8 +40,11 @@ export default function WelcomeDialog() {
   const [open, setOpen] = useState(!seen)
 
   const handleClose = () => {
-    setSeen(true)
     setOpen(false)
+  }
+
+  const handleCheck = (evt) => {
+      setSeen(evt.target.checked);
   }
 
   return (
@@ -133,6 +138,7 @@ export default function WelcomeDialog() {
         </Typography>
       </DialogContent>
       <DialogActions>
+        <FormControlLabel control={<Checkbox onChange={handleCheck} />} label="Don't show it again" />
         <Button variant="outlined" color="secondary" onClick={handleClose}>
           Got it
         </Button>
