@@ -168,7 +168,7 @@ export default function MarketActivity({
               />
             </Link>
 
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" color="textSecondary" component="div">
               <Link href={`/profiles/${market.user.steam_id}`} color="textPrimary">
                 {market.user.name}
               </Link>

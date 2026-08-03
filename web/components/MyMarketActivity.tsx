@@ -132,7 +132,7 @@ export default function MyMarketActivity({
                 rarity={market.item.rarity}
               />
             </Link>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" color="textSecondary" component="div">
               <span style={{ color: MARKET_STATUS_MAP_COLOR[market.status] }}>
                 {market.type === MARKET_TYPE_BID
                   ? MARKET_BID_STATUS_MAP_TEXT[market.status]
