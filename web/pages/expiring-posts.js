@@ -14,7 +14,7 @@ export default function ThanksSubscriber() {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Expiring posts</title>
+        <title>Expiring posts :: {APP_NAME}</title>
       </Head>
 
       <Header />

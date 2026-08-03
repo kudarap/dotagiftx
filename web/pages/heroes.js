@@ -41,7 +41,7 @@ export default function Heroes({ heroes: allHeroes, error }) {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{`${APP_NAME} :: Heroes`}</title>
+        <title>{`Heroes :: ${APP_NAME}`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />

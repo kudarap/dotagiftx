@@ -65,7 +65,7 @@ export default function Faqs() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: DotagiftX for Mobile</title>
+        <title>DotagiftX for Mobile :: {APP_NAME}</title>
       </Head>
 
       <Header />

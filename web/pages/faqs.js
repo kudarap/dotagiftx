@@ -78,7 +78,7 @@ export default function Faqs() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Frequently Asked Questions</title>
+        <title>Frequently Asked Questions :: {APP_NAME}</title>
       </Head>
 
       <Header />

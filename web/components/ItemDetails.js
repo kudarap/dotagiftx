@@ -202,7 +202,7 @@ export default function ItemDetails({
     getBuyOrders(sort)
   }, [tabIndex, sort, page, getBuyOrders, getOffers, initialAsks, initialFilter.page, sortParam])
 
-  const metaTitle = `${APP_NAME} :: Listings for ${item.name}`
+  const metaTitle = `Listings for ${item.name} :: ${APP_NAME}`
   const rarityText = item.rarity === 'regular' ? '' : ` — ${item.rarity.toString().toUpperCase()}`
   let metaDesc = `Buy ${item.name} from ${item.origin}${rarityText} item for ${item.hero}.`
   const jsonLD = schemaOrgProduct(canonicalURL, item, { description: metaDesc })

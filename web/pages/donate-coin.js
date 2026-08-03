@@ -61,7 +61,7 @@ export default function Faq() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Donate</title>
+        <title>Donate :: {APP_NAME}</title>
       </Head>
 
       <Header />
