@@ -101,7 +101,7 @@ export default function About({ build }: { build: Build }) {
             startIcon={
               <Image
                 src="/icon_2x.png"
-                style={{ height: 22, filter: 'brightness(10)' }}
+                style={{ height: 22, width: 'auto', filter: 'brightness(10)' }}
                 width={60}
                 height={60}
                 alt="dgx"

@@ -98,7 +98,7 @@ export default function HistoryList({
                       className={classes.image}
                       image={market.item.image || ''}
                       width={77}
-                      height={55}
+                      height={51}
                       title={market.item.name}
                       rarity={market.item.rarity}
                     />

@@ -14,7 +14,7 @@ const useStyles = makeStyles()(theme => ({
     [theme.breakpoints.down('sm')]: {
       margin: '0 auto !important',
       width: 300,
-      height: 170,
+      height: 200,
     },
     width: 165,
     height: 110,
@@ -30,7 +30,7 @@ export default function ItemImageDialog({ item }: { item: Item }) {
   let height = 110
   if (isMobile) {
     width = 300
-    height = 170
+    height = 200
   }
 
   return (

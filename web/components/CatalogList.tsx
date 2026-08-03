@@ -115,7 +115,7 @@ export default function CatalogList({
                       className={classes.image}
                       image={item.image || ''}
                       width={77}
-                      height={55}
+                      height={51}
                       title={item.name}
                       rarity={item.rarity}
                     />

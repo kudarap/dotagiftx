@@ -131,16 +131,18 @@ export default function Treasures({
                         new
                       </span>
                     )}
-                    <div>
+                    <div
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        aspectRatio: '256 / 171',
+                      }}>
                       <Image
                         src={`/assets/treasures/${treasure.image}`}
                         alt={treasure.name}
-                        width={256}
-                        height={171}
-                        style={{
-                          maxWidth: '100%',
-                          height: 'auto',
-                        }}
+                        fill
+                        sizes="(max-width: 600px) 50vw, 25vw"
+                        style={{ objectFit: 'cover' }}
                       />
                     </div>
                     <Typography noWrap>{treasure.name}</Typography>

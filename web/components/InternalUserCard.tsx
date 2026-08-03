@@ -74,7 +74,7 @@ export default function InternalUserCard({
                 src="/icon_2x.png"
                 width={16}
                 height={16}
-                style={{ height: 16, filter: 'brightness(10)' }}
+                style={{ height: 16, width: 'auto', filter: 'brightness(10)' }}
                 alt="dgx"
               />
             }
