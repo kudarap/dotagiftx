@@ -411,13 +411,12 @@ func (s *Service) sendCrawlRequest(
 	var summary CrawlSummary
 	statusCode, err := sendRequest(req, &summary)
 	if err != nil {
-		if statusCode == http.StatusForbidden {
+		if statusCode == http.StatusForbidden || statusCode == http.StatusTooManyRequests {
 			return nil, steam.ErrInventoryPrivate
 		}
 
-		// only elect new crawler when not found and too much request
 		var shouldRetry bool
-		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
+		if statusCode == http.StatusNotFound {
 			shouldRetry = true
 		}
 
@@ -426,7 +425,7 @@ func (s *Service) sendCrawlRequest(
 				current := s.currentCrawlerID()
 				next := s.electNewCrawler(ctx)
 				s.logger.InfoContext(ctx,
-					"current crawler unavailable, new crawler elected and retying",
+					"current crawler unavailable, new crawler elected and retrying",
 					"current", current,
 					"next", next,
 					"err", err,
