@@ -525,7 +525,7 @@ func extractCrawlerID(addr string) string {
 func retryRequest(fn func(attempt int) error, maxAttempt int) error {
 	var err error
 	for i := range maxAttempt {
-		time.Sleep((time.Second * 2) * time.Duration(i+1))
+		time.Sleep((time.Second) * time.Duration(i+1))
 		// return immediately on success with nil error
 		if err = fn(i + 1); err == nil {
 			return nil
