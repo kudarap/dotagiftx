@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -22,6 +23,11 @@ const (
 )
 
 func main() {
+	var final, ignoreCache bool
+	flag.BoolVar(&final, "final", false, "final mode")
+	flag.BoolVar(&ignoreCache, "ignore-cache", false, "use cache")
+	flag.Parse()
+
 	config.EnvPrefix = configPrefix
 	var conf config.Config
 	errCheck(config.Load(&conf))
@@ -34,7 +40,7 @@ func main() {
 	session := rethinkClient.Session()
 
 	ctx := context.Background()
-	paypalSubsIndex := paypalSubscribers(ctx, paypalClient, "ACTIVE", true)
+	paypalSubsIndex := paypalSubscribers(ctx, paypalClient, "ACTIVE", !ignoreCache)
 
 	for _, dgxSubs := range []dotagiftx.UserSubscription{
 		dotagiftx.UserSubscriptionPartner,
@@ -48,13 +54,13 @@ func main() {
 			}
 
 			printPretty(user, subs)
-			fixData(true, rethinkClient.Session(), user, subs)
+			fixData(final, rethinkClient.Session(), user, subs)
 		}
 	}
 
 }
 
-func fixData(dryRun bool, db *r.Session, user dotagiftx.User, subs paypal.Subscription) {
+func fixData(final bool, db *r.Session, user dotagiftx.User, subs paypal.Subscription) {
 	if user.SubscriptionType == "manual" {
 		return
 	}
@@ -78,7 +84,7 @@ func fixData(dryRun bool, db *r.Session, user dotagiftx.User, subs paypal.Subscr
 
 	payload["notes_aug_2026"] = "bulk fix subscription"
 
-	if dryRun {
+	if !final {
 		fmt.Println("[dry-run] ", user.SteamID, user.Name)
 		jsonData, err := json.MarshalIndent(payload, "", "  ")
 		errCheck(err)
@@ -86,6 +92,7 @@ func fixData(dryRun bool, db *r.Session, user dotagiftx.User, subs paypal.Subscr
 		fmt.Println("----")
 		return
 	}
+
 	err := r.Table("user").Get(user.ID).Update(payload).Exec(db)
 	errCheck(err)
 }
