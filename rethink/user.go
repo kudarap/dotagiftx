@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	tableUser        = "user"
-	userFieldSteamID = "steam_id"
+	tableUser              = "user"
+	userFieldSteamID       = "steam_id"
+	userSubscriptionEndsAt = "subscription_ends_at"
 )
 
 var userSearchFields = []string{"name", "steam_id", "url"}
@@ -146,7 +147,7 @@ func (s *userStorage) BaseUpdate(in *dotagiftx.User) error {
 // ExpiringSubscribers return expiring subscribers on given t time.
 func (s *userStorage) ExpiringSubscribers(ctx context.Context, t time.Time) ([]dotagiftx.User, error) {
 	var res []dotagiftx.User
-	q := s.table().HasFields("subscription_ends_at")
+	q := s.table().HasFields(userSubscriptionEndsAt)
 	if err := s.db.list(q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
@@ -168,13 +169,24 @@ func (s *userStorage) PurgeSubscription(ctx context.Context, userID string) erro
 		"boons":                r.Literal(),
 		"subscription":         r.Literal(),
 		"subscribed_at":        r.Literal(),
-		"subscription_ends_at": r.Literal(),
+		userSubscriptionEndsAt: r.Literal(),
 		"subscription_notes":   fmt.Sprintf("purged at %s", t),
 		"updated_at":           t,
 	}))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
+	return nil
+}
+
+func (s *userStorage) ClearSubscriptionEndsAt(userID string) error {
+	q := s.table().Get(userID).Update(map[string]any{
+		userSubscriptionEndsAt: r.Literal(),
+	})
+	if err := s.db.update(q); err != nil {
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+	}
+
 	return nil
 }
 

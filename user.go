@@ -144,6 +144,9 @@ type (
 
 		// PurgeSubscription removes subscription data and boons.
 		PurgeSubscription(ctx context.Context, userID string) error
+
+		// ClearSubscriptionEndsAt clears subscription expiration.
+		ClearSubscriptionEndsAt(id string) error
 	}
 )
 
@@ -423,8 +426,15 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	if err = user.CheckUpdate(); err != nil {
 		return nil, err
 	}
+	if err = s.userStg.Update(user); err != nil {
+		return nil, err
+	}
+	if err = s.userStg.ClearSubscriptionEndsAt(user.ID); err != nil {
+		return nil, err
+	}
 
-	return user, s.userStg.Update(user)
+	user.SubscriptionEndsAt = nil
+	return user, nil
 }
 
 // UpdateSubscriptionFromWebhook manage updates from webhook payload, most often use in incrementing cycles or
