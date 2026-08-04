@@ -74,7 +74,7 @@ func SWR(steamID string, strict bool) (*steam.AllInventory, error) {
 		sharedLogger.Info("try", "steam_id", steamID, "count", i)
 		m, err = GetMeta(steamID)
 		if err != nil {
-			if errors.Is(err, errNotFound) {
+			if errors.Is(err, errNotFound) || errors.Is(err, errTooManyRequests) {
 				sharedLogger.Error("stop retrying", "steam_id", steamID, "err", err)
 				break
 			}

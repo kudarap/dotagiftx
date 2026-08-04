@@ -131,7 +131,7 @@ func cleanProfileURL(rawURL string) (url string, ok bool) {
 }
 
 func ValidateSteamID(steamID string) error {
-	if reSteamID.MatchString(steamID) {
+	if reSteamID.MatchString(steamID) && len(steamID) == 17 {
 		return nil
 	}
 

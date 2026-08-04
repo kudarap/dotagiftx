@@ -52,6 +52,7 @@ func TestValidateSteamID(t *testing.T) {
 	}{
 		{"", true},
 		{"http:", true},
+		{"76561198068062691/inventory", true},
 		{"76561198068062691", false},
 	}
 	for _, tt := range tests {

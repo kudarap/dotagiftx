@@ -411,38 +411,31 @@ func (s *Service) sendCrawlRequest(
 	var summary CrawlSummary
 	statusCode, err := sendRequest(req, &summary)
 	if err != nil {
-		if statusCode == http.StatusForbidden  {
+		if statusCode == http.StatusForbidden {
 			return nil, steam.ErrInventoryPrivate
 		}
-		if statusCode == http.StatusNotFound {
+		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
 			return nil, errors.New(http.StatusText(statusCode))
 		}
 
-		var shouldRetry bool
-		if statusCode == http.StatusTooManyRequests {
-			shouldRetry = true
-		}
+		err = retryRequest(func(attempt int) error {
+			current := s.currentCrawlerID()
+			next := s.electNewCrawler(ctx)
+			s.logger.InfoContext(ctx,
+				"current crawler unavailable, new crawler elected and retrying",
+				"current", current,
+				"next", next,
+				"err", err,
+				"attempt", attempt,
+			)
 
-		if shouldRetry {
-			err = retryRequest(func(attempt int) error {
-				current := s.currentCrawlerID()
-				next := s.electNewCrawler(ctx)
-				s.logger.InfoContext(ctx,
-					"current crawler unavailable, new crawler elected and retrying",
-					"current", current,
-					"next", next,
-					"err", err,
-					"attempt", attempt,
-				)
-
-				req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
-				_, err1 := sendRequest(req, &summary)
-				return err1
-			}, s.config.MaxFetchRetryAttempt)
-			// check success
-			if err == nil {
-				return &summary, nil
-			}
+			req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
+			_, err1 := sendRequest(req, &summary)
+			return err1
+		}, s.config.MaxFetchRetryAttempt)
+		// check success
+		if err == nil {
+			return &summary, nil
 		}
 
 		return nil, err
