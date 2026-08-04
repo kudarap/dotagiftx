@@ -9,11 +9,7 @@ import startsWith from 'lodash/startsWith'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import {
-  APP_NAME,
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import { APP_NAME, DOTABUFF_PROFILE_BASE_URL, STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -87,7 +83,7 @@ export default function Blacklist() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Banned users</title>
+        <title>Banned users :: {APP_NAME}</title>
       </Head>
 
       <Header />

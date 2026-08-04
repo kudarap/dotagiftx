@@ -31,6 +31,7 @@ import brandImage from '../public/brand_darkcarnival_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
+import WelcomeDialog from './WelcomeDialog'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -290,6 +291,7 @@ export default function Header() {
 
       <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
       <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
+      <WelcomeDialog />
     </AppBar>
   )
 }

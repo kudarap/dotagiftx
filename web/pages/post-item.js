@@ -12,7 +12,7 @@ export default function About() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Post Item</title>
+        <title>Post Item :: {APP_NAME}</title>
       </Head>
 
       <Header />

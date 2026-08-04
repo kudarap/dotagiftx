@@ -13,7 +13,7 @@ export default function ThanksSubscriber() {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Data Loss Incident</title>
+        <title>Data Loss Incident :: {APP_NAME}</title>
       </Head>
 
       <Header />

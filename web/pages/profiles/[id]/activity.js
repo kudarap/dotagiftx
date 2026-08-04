@@ -104,7 +104,7 @@ export default function UserActivity({ profile, canonicalURL }) {
 
       <Head>
         <meta charSet="UTF-8" />
-        <title>{`${APP_NAME} :: ${profile.name} items`}</title>
+        <title>{`${profile.name} items :: ${APP_NAME}`}</title>
         <meta name="description" content={`${profile.name}'s delivered Giftable items`} />
         <link rel="canonical" href={canonicalURL} />
       </Head>

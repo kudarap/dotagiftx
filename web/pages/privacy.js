@@ -24,7 +24,7 @@ export default function Privacy() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Privacy Policy</title>
+        <title>Privacy Policy :: {APP_NAME}</title>
       </Head>
 
       <Header />
