@@ -19,3 +19,4 @@
 
 # configs
 .env
+.vercel

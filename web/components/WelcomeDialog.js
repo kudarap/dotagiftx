@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -37,7 +37,20 @@ export default function WelcomeDialog() {
   const { isMobile } = useContext(AppContext)
 
   const [seen, setSeen] = useLocalStorage(storageKey, false)
-  const [open, setOpen] = useState(!seen)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (seen) {
+      return
+    }
+
+    const timeoutId = setTimeout(() => {
+      setOpen(true)
+    }, 1000)
+
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId)
+  }, [seen])
 
   const handleClose = () => {
     setOpen(false)
@@ -140,7 +153,7 @@ export default function WelcomeDialog() {
       <DialogActions>
         <FormControlLabel
           control={<Checkbox onChange={handleCheck} />}
-          label="Don't show it again"
+          label={<Typography variant="subtitle2">Don&apos;t show it again</Typography>}
         />
         <Button variant="outlined" color="secondary" onClick={handleClose}>
           Got it
