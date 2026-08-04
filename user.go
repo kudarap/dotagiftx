@@ -38,7 +38,6 @@ const (
 )
 
 const (
-	UserSubscriptionResell    UserSubscription = 1
 	UserSubscriptionSupporter UserSubscription = 100
 	UserSubscriptionTrader    UserSubscription = 101
 	UserSubscriptionPartner   UserSubscription = 109
@@ -72,6 +71,12 @@ type (
 		SubscriptionEndsAt *time.Time       `json:"subscription_ends_at" db:"subscription_ends_at,omitempty"`
 		Boons              []string         `json:"boons"                db:"boons,omitempty"`
 		Hammer             bool             `json:"hammer"               db:"hammer,omitempty"`
+
+		// paypal metadata
+		Paypal struct {
+			SubscriptionID        string    `json:"subscription_id" db:"subscription_id"`
+			SubscriptionLastPayed time.Time `json:"subscription_last_payed" db:"subscription_last_payed"`
+		} `json:"paypal" db:"paypal"`
 	}
 
 	ManualSubscriptionParam struct {
@@ -392,7 +397,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 		return nil, err
 	}
 
-	plan, steamID, err := s.payment.Subscription(ctx, subscriptionID)
+	plan, steamID, subscriptionID, lastPayed, err := s.payment.Subscription(ctx, subscriptionID)
 	if err != nil {
 		return nil, err
 	}
@@ -413,6 +418,8 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	user.SubscribedAt = &t
 	user.Boons = userSubs.Boons()
 	user.SubscriptionType = "paypal"
+	user.Paypal.SubscriptionID = subscriptionID
+	user.Paypal.SubscriptionLastPayed = lastPayed
 	if err = user.CheckUpdate(); err != nil {
 		return nil, err
 	}
@@ -496,7 +503,7 @@ func (s *userService) downloadProfileImage(url string) (filename string, err err
 }
 
 type paymentManager interface {
-	Subscription(ctx context.Context, id string) (plan, steamID string, err error)
+	Subscription(ctx context.Context, id string) (plan, steamID, subscriptionID string, lastPayment time.Time, err error)
 	IsCancelled(ctx context.Context, r *http.Request) (steamID string, cancelled bool, lastPayment time.Time, err error)
 	CreateSubscription(ctx context.Context, planID, customID string) (subscriptionID string, err error)
 }

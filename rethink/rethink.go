@@ -56,6 +56,10 @@ func New(c Config) (*Client, error) {
 	return &Client{sess, ts, feed, nil}, nil
 }
 
+func (c *Client) Session() *r.Session {
+	return c.db
+}
+
 func (c *Client) SetTracer(t *tracing.Tracer) {
 	c.tracing = t
 }
