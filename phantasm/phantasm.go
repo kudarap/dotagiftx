@@ -37,7 +37,7 @@ const (
 	defaultCrawlerCD        = time.Minute
 
 	maxWaitRetry                = 5
-	defaultMaxFetchRetryAttempt = 10
+	defaultMaxFetchRetryAttempt = 5
 )
 
 var (
@@ -415,7 +415,8 @@ func (s *Service) sendCrawlRequest(
 			return nil, steam.ErrInventoryPrivate
 		}
 		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
-			return nil, errors.New(http.StatusText(statusCode))
+			// return nil, errors.New(http.StatusText(statusCode))
+			s.logger.WarnContext(ctx, fmt.Sprintf("crawler failed will retry with %d error", statusCode))
 		}
 
 		err = retryRequest(func(attempt int) error {
