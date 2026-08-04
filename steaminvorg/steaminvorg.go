@@ -18,7 +18,7 @@ import (
 const (
 	providerID = "steaminvorg"
 
-	maxGetRetries = 10
+	maxGetRetries = 5
 	retrySleepDur = time.Second * 5
 	// freshCacheDur = time.Hour
 	freshCacheDur = time.Minute * 15
