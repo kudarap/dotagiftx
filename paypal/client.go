@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httputil"
 	"sync"
@@ -27,8 +28,8 @@ const (
 )
 
 type (
-	// paypalClient represents a Paypal REST API paypalClient
-	paypalClient struct {
+	// BaseClient represents a Paypal REST API BaseClient
+	BaseClient struct {
 		// sync.Mutex
 		mu                   sync.Mutex
 		Client               *http.Client
@@ -39,6 +40,8 @@ type (
 		Token                *TokenResponse
 		tokenExpiresAt       time.Time
 		returnRepresentation bool
+
+		logger *slog.Logger
 	}
 
 	// TokenResponse is for API response for the /oauth2/token endpoint
@@ -122,25 +125,32 @@ func (e *expirationTime) ToDuration() time.Duration {
 	return time.Duration(seconds) * time.Second
 }
 
-// NewClient returns new paypalClient struct
+// NewBaseClient returns new paypalClient struct
 // APIBase is a base API URL, for testing you can use paypal.apiBaseSandbox
-func NewClient(clientID string, secret string, apiBase string) (*paypalClient, error) {
-	if clientID == "" || secret == "" || apiBase == "" {
-		return nil, errors.New("ClientID, Secret and apiBase are required to create a paypalClient")
+func NewBaseClient(clientID, secret string, live bool) (*BaseClient, error) {
+	apiBase := apiBaseSandbox
+	if live {
+		apiBase = apiBaseLive
 	}
 
-	return &paypalClient{
+	if clientID == "" || secret == "" {
+		return nil, errors.New("ClientID and Secret are required to create a paypalClient")
+	}
+
+	return &BaseClient{
 		Client:   &http.Client{},
 		ClientID: clientID,
 		Secret:   secret,
 		APIBase:  apiBase,
+
+		logger: slog.Default(),
 	}, nil
 }
 
 // GetAccessToken returns struct of TokenResponse
 // No need to call SetAccessToken to apply new access token for current paypalClient
 // Endpoint: POST /v1/oauth2/token
-func (c *paypalClient) GetAccessToken(ctx context.Context) (*TokenResponse, error) {
+func (c *BaseClient) GetAccessToken(ctx context.Context) (*TokenResponse, error) {
 	buf := bytes.NewBuffer([]byte("grant_type=client_credentials"))
 	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf("%s%s", c.APIBase, "/v1/oauth2/token"), buf)
 	if err != nil {
@@ -162,12 +172,12 @@ func (c *paypalClient) GetAccessToken(ctx context.Context) (*TokenResponse, erro
 }
 
 // SetHTTPClient sets *http.Client to current client
-func (c *paypalClient) SetHTTPClient(client *http.Client) {
+func (c *BaseClient) SetHTTPClient(client *http.Client) {
 	c.Client = client
 }
 
 // SetAccessToken sets saved token to current client
-func (c *paypalClient) SetAccessToken(token string) {
+func (c *BaseClient) SetAccessToken(token string) {
 	c.Token = &TokenResponse{
 		Token: token,
 	}
@@ -176,20 +186,20 @@ func (c *paypalClient) SetAccessToken(token string) {
 
 // SetLog will set/change the output destination.
 // If log file is set paypal will log all requests and responses to this Writer
-func (c *paypalClient) SetLog(log io.Writer) {
+func (c *BaseClient) SetLog(log io.Writer) {
 	c.Log = log
 }
 
 // SetReturnRepresentation enables verbose response
 // Verbose response: https://developer.paypal.com/docs/api/orders/v2/#orders-authorize-header-parameters
-func (c *paypalClient) SetReturnRepresentation() {
+func (c *BaseClient) SetReturnRepresentation() {
 	c.returnRepresentation = true
 }
 
 // Send makes a request to the API, the response body will be
 // unmarshalled into v, or if v is an io.Writer, the response will
 // be written to it without decoding
-func (c *paypalClient) Send(req *http.Request, v any) (retErr error) {
+func (c *BaseClient) Send(req *http.Request, v any) (retErr error) {
 	var (
 		err  error
 		resp *http.Response
@@ -270,7 +280,7 @@ func (c *paypalClient) Send(req *http.Request, v any) (retErr error) {
 // If the access token soon to be expired or already expired, it will try to get a new one before
 // making the main request
 // client.Token will be updated when changed
-func (c *paypalClient) SendWithAuth(req *http.Request, v any) error {
+func (c *BaseClient) SendWithAuth(req *http.Request, v any) error {
 	// c.Lock()
 	c.mu.Lock()
 	// Note: Here we do not want to `defer c.Unlock()` because we need `c.Send(...)`
@@ -294,7 +304,7 @@ func (c *paypalClient) SendWithAuth(req *http.Request, v any) error {
 }
 
 // SendWithBasicAuth makes a request to the API using clientID:secret basic auth
-func (c *paypalClient) SendWithBasicAuth(req *http.Request, v any) error {
+func (c *BaseClient) SendWithBasicAuth(req *http.Request, v any) error {
 	req.SetBasicAuth(c.ClientID, c.Secret)
 
 	return c.Send(req, v)
@@ -302,7 +312,7 @@ func (c *paypalClient) SendWithBasicAuth(req *http.Request, v any) error {
 
 // NewRequest constructs a request
 // Convert payload to a JSON
-func (c *paypalClient) NewRequest(ctx context.Context, method, url string, payload any) (*http.Request, error) {
+func (c *BaseClient) NewRequest(ctx context.Context, method, url string, payload any) (*http.Request, error) {
 	var buf io.Reader
 	if payload != nil {
 		b, err := json.Marshal(&payload)
@@ -321,23 +331,43 @@ type (
 		Name      string `json:"name"`
 	}
 
+	// Subscription represents a PayPal subscription
 	Subscription struct {
-		SubscriptionDetailResp
-	}
-
-	// SubscriptionDetailResp struct
-	SubscriptionDetailResp struct {
 		ID       string `json:"id"`
+		CustomID string `json:"custom_id"`
+		Status   string `json:"status"`
 		PlanID   string `json:"plan_id"`
-		CustomID string `json:"custom_id,omitempty"`
+
+		BillingInfo struct {
+			OutstandingBalance struct {
+				CurrencyCode string `json:"currency_code"`
+				Value        string `json:"value"`
+			} `json:"outstanding_balance"`
+			CycleExecutions []struct {
+				TenureType                  string `json:"tenure_type"`
+				Sequence                    int    `json:"sequence"`
+				CyclesCompleted             int    `json:"cycles_completed"`
+				CyclesRemaining             int    `json:"cycles_remaining"`
+				CurrentPricingSchemeVersion int    `json:"current_pricing_scheme_version"`
+				TotalCycles                 int    `json:"total_cycles"`
+			} `json:"cycle_executions"`
+			LastPayment struct {
+				Amount struct {
+					CurrencyCode string `json:"currency_code"`
+					Value        string `json:"value"`
+				} `json:"amount"`
+				Time time.Time `json:"time"`
+			} `json:"last_payment"`
+			FailedPaymentsCount int `json:"failed_payments_count"`
+		} `json:"billing_info"`
 	}
 )
 
 // GetSubscriptionDetails shows details for a subscription, by ID.
 // Endpoint: GET /v1/billing/subscriptions/
-func (c *paypalClient) GetSubscriptionDetails(
+func (c *BaseClient) GetSubscriptionDetails(
 	ctx context.Context, subscriptionID string,
-) (*SubscriptionDetailResp, error) {
+) (*Subscription, error) {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
@@ -348,18 +378,18 @@ func (c *paypalClient) GetSubscriptionDetails(
 		return nil, err
 	}
 
-	res := new(SubscriptionDetailResp)
+	res := new(Subscription)
 	if err = c.SendWithAuth(req, res); err != nil {
 		return nil, err
 	}
 	return res, err
 }
 
-func (c *paypalClient) CreateSubscription(
+func (c *BaseClient) CreateSubscription(
 	ctx context.Context,
 	planID string,
 	customID string,
-) (*SubscriptionDetailResp, error) {
+) (*Subscription, error) {
 	v := struct {
 		PlanID   string `json:"plan_id"`
 		CustomID string `json:"custom_id"`
@@ -379,7 +409,7 @@ func (c *paypalClient) CreateSubscription(
 		return nil, err
 	}
 
-	res := new(SubscriptionDetailResp)
+	res := new(Subscription)
 	if err = c.SendWithAuth(req, res); err != nil {
 		return nil, err
 	}
@@ -388,7 +418,7 @@ func (c *paypalClient) CreateSubscription(
 
 // GetSubscriptionPlan get subscription plan
 // Endpoint: GET /v1/billing/plans/:plan_id
-func (c *paypalClient) GetSubscriptionPlan(ctx context.Context, planId string) (*SubscriptionPlan, error) {
+func (c *BaseClient) GetSubscriptionPlan(ctx context.Context, planId string) (*SubscriptionPlan, error) {
 	req, err := c.NewRequest(
 		ctx,
 		http.MethodGet,
@@ -405,7 +435,7 @@ func (c *paypalClient) GetSubscriptionPlan(ctx context.Context, planId string) (
 
 // VerifyWebhookSignature - Use this to verify the signature of a webhook received from paypal.
 // Endpoint: POST /v1/notifications/verify-webhook-signature
-func (c *paypalClient) VerifyWebhookSignature(
+func (c *BaseClient) VerifyWebhookSignature(
 	ctx context.Context,
 	httpReq *http.Request,
 	webhookID string,
@@ -456,7 +486,7 @@ func (c *paypalClient) VerifyWebhookSignature(
 
 // GetWebhookEventTypes - Lists all webhook event types.
 // Endpoint: GET /v1/notifications/webhooks-event-types
-func (c *paypalClient) GetWebhookEventTypes(ctx context.Context) (*WebhookEventTypesResponse, error) {
+func (c *BaseClient) GetWebhookEventTypes(ctx context.Context) (*WebhookEventTypesResponse, error) {
 	req, err := c.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s%s", c.APIBase, "/v1/notifications/webhooks-event-types"), nil)
 	q := req.URL.Query()
 
@@ -468,4 +498,68 @@ func (c *paypalClient) GetWebhookEventTypes(ctx context.Context) (*WebhookEventT
 
 	err = c.SendWithAuth(req, resp)
 	return resp, err
+}
+
+// ListSubscriptions list subscriptions
+// Endpoint: GET /v1/billing/v1/billing/subscriptions
+func (c *BaseClient) ListSubscriptions(ctx context.Context, status string) ([]Subscription, error) {
+	var subscriptions []Subscription
+
+	var page int
+	for {
+		page++
+		subIDs, err := c.listSubscriptionsPagination(ctx, status, page)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(subIDs) == 0 {
+			break
+		}
+
+		for _, subID := range subIDs {
+			c.logger.InfoContext(ctx, "retrieving subscription details", "id", subID)
+
+			res, err := c.GetSubscriptionDetails(ctx, subID)
+			if err != nil {
+				return nil, err
+			}
+			subscriptions = append(subscriptions, *res)
+		}
+	}
+
+	return subscriptions, nil
+}
+
+func (c *BaseClient) listSubscriptionsPagination(ctx context.Context, status string, page int) ([]string, error) {
+	c.logger.InfoContext(ctx, "pulling subscriptions by pagination",
+		"status", status,
+		"page", page,
+	)
+
+	pageQuery := fmt.Sprintf("&page=%d", page)
+	req, err := c.NewRequest(
+		ctx,
+		http.MethodGet,
+		fmt.Sprintf("%s%s", c.APIBase, "/v1/billing/subscriptions?page_size=20"+pageQuery),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	response := struct {
+		Subscriptions []struct {
+			ID string `json:"id"`
+		} `json:"subscriptions"`
+	}{}
+	if err = c.SendWithAuth(req, &response); err != nil {
+		return nil, err
+	}
+
+	var ids []string
+	for _, subscription := range response.Subscriptions {
+		ids = append(ids, subscription.ID)
+	}
+	return ids, nil
 }

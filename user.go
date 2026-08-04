@@ -38,7 +38,6 @@ const (
 )
 
 const (
-	UserSubscriptionResell    UserSubscription = 1
 	UserSubscriptionSupporter UserSubscription = 100
 	UserSubscriptionTrader    UserSubscription = 101
 	UserSubscriptionPartner   UserSubscription = 109
