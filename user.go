@@ -74,7 +74,7 @@ type (
 
 		// paypal metadata
 		Paypal struct {
-			SubscriptionID        string    `json:"subscription_id" db:"subscription_id"`
+			SubscriptionID        string    `json:"subscription_id"         db:"subscription_id"`
 			SubscriptionLastPayed time.Time `json:"subscription_last_payed" db:"subscription_last_payed"`
 		} `json:"paypal" db:"paypal"`
 	}
