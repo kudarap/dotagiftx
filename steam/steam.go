@@ -129,3 +129,11 @@ func cleanProfileURL(rawURL string) (url string, ok bool) {
 	}
 	return fmt.Sprintf("%s%s", profileURLPrefix, id), true
 }
+
+func ValidateSteamID(steamID string) error {
+	if reSteamID.MatchString(steamID) {
+		return nil
+	}
+
+	return fmt.Errorf("invalid steam id: %s", steamID)
+}

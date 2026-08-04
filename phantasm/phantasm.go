@@ -411,12 +411,15 @@ func (s *Service) sendCrawlRequest(
 	var summary CrawlSummary
 	statusCode, err := sendRequest(req, &summary)
 	if err != nil {
-		if statusCode == http.StatusForbidden || statusCode == http.StatusTooManyRequests {
+		if statusCode == http.StatusForbidden  {
 			return nil, steam.ErrInventoryPrivate
+		}
+		if statusCode == http.StatusNotFound {
+			return nil, errors.New(http.StatusText(statusCode))
 		}
 
 		var shouldRetry bool
-		if statusCode == http.StatusNotFound {
+		if statusCode == http.StatusTooManyRequests {
 			shouldRetry = true
 		}
 
