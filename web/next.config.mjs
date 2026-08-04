@@ -14,6 +14,10 @@ const config = (phase, { defaultConfig }) => {
           source: '/id/:slug',
           destination: '/profiles/:slug?vanity=:slug',
         },
+        {
+          source: '/sitemap.xml',
+          destination: 'https://api.dotagiftx.com/sitemap.xml',
+        },
       ]
     },
 

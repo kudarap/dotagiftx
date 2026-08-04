@@ -31,6 +31,7 @@ import brandImage from '../public/brand_darkcarnival_2x.png'
 import SearchDialog from './SearchDialog'
 import SearchButton from './SearchButton'
 import MenuDrawer from './MenuDrawer'
+import WelcomeDialog from './WelcomeDialog'
 
 const useStyles = makeStyles()(theme => ({
   root: {},
@@ -104,18 +105,21 @@ export default function Header() {
   // load profile data if logged in.
   const [profile, setProfile] = React.useState(defaultProfile)
 
-  const setProfileAnalytics = userData => {
-    // analytics identify user session
-    if (!!window.umami && isLoggedIn) {
-      window.umami.identify(userData.steam_id, {
-        id: userData.steam_id,
-        user_id: userData.id,
-        name: userData.name,
-        subscription: USER_SUBSCRIPTION_MAP_LABEL[userData.subscription],
-      })
-    }
-    setProfile(userData)
-  }
+  const setProfileAnalytics = React.useCallback(
+    userData => {
+      if (!!window.umami && isLoggedIn) {
+        window.umami.identify(userData.steam_id, {
+          id: userData.steam_id,
+          user_id: userData.id,
+          name: userData.name,
+          subscription: USER_SUBSCRIPTION_MAP_LABEL[userData.subscription],
+        })
+      }
+
+      setProfile(userData)
+    },
+    [isLoggedIn, setProfile]
+  )
 
   React.useEffect(() => {
     ;(async () => {
@@ -133,7 +137,7 @@ export default function Header() {
       Storage.save(APP_CACHE_PROFILE, res)
       setProfileAnalytics(res)
     })()
-  }, [])
+  }, [isLoggedIn, setProfileAnalytics])
 
   const [openDrawer, setOpenDrawer] = useState(false)
   const [openSearchDialog, setOpenSearchDialog] = useState(false)
@@ -287,6 +291,7 @@ export default function Header() {
 
       <SearchDialog open={openSearchDialog} onClose={() => setOpenSearchDialog(false)} />
       <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} profile={profile} />
+      <WelcomeDialog />
     </AppBar>
   )
 }

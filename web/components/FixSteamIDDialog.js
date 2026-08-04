@@ -78,7 +78,7 @@ export default function FixSteamIDDialog(props) {
     }
 
     setNotes(`${MARKET_STATUS_MAP_TEXT[market.status]} at ${dateTime(market.updated_at)}`)
-  })
+  }, [market, setNotes, steamProfileURL])
 
   const { onClose } = props
   const handleClose = () => {

@@ -56,6 +56,10 @@ SelectSort.propTypes = {
   className: PropTypes.string,
   style: PropTypes.string,
 }
+SelectSort.defaultProps = {
+  className: null,
+  style: null,
+}
 
 export default function Search({ catalogs: initialCatalogs, filter, canonicalURL }) {
   const { classes } = useStyles()
@@ -79,21 +83,27 @@ export default function Search({ catalogs: initialCatalogs, filter, canonicalURL
     })()
   }, [filter])
 
-  let metaTitle = `${APP_NAME} :: Search`
+  let metaTitle = 'Search'
   let metaDesc = `Search for item name, hero, treasure`
   const searchTerm = filter.q || filter.hero || filter.origin || filter.rarity
   if (searchTerm) {
     metaTitle += ` ${searchTerm}`
     metaDesc = `${catalogs && catalogs.total_count} results for "${searchTerm}"`
   }
+  metaTitle += ` :: ${APP_NAME}`
 
   const linkProps = { href: '/search', query: filter }
 
   const router = useRouter()
   const handleSelectSortChange = e => {
     setSort(e.target.value)
-    linkProps.query.sort = e.target.value
-    router.push(linkProps)
+    router.push({
+      href: '/search',
+      query: {
+        ...filter,
+        sort: e.target.value,
+      },
+    })
   }
 
   const isBidType = filter.sort === 'recent-bid'

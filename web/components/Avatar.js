@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import PropTypes from 'prop-types'
 import MuiAvatar from '@mui/material/Avatar'
 import { badgeSettings } from './SubscriberBadge'
@@ -46,10 +47,10 @@ export default function Avatar(props) {
 
   return (
     <MuiAvatar style={style} {...other}>
-      <img src={src} alt="" style={{ width: '100%', height: '100%' }} />
+      <Image src={src} alt="" style={{ width: '100%', height: '100%' }} />
       {glow && (
         <div style={{ position: 'absolute', margin: '-12%' }}>
-          <img
+          <Image
             style={{ width: '100%', height: '100%', display: 'block' }}
             alt=""
             src={glowFrame.frame}

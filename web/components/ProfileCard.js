@@ -16,11 +16,7 @@ import {
 import Link from '@/components/Link'
 import { retinaSrcSet } from '@/components/ItemImage'
 import ChipLink from '@/components/ChipLink'
-import {
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import { DOTABUFF_PROFILE_BASE_URL, STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
@@ -166,8 +162,6 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
               &nbsp;
             </>
           )}
-          <ChipLink label="SteamRep" href={`${STEAMREP_PROFILE_BASE_URL}/${user.steam_id}`} />
-          &nbsp;
           <ChipLink label="Dotabuff" href={`${DOTABUFF_PROFILE_BASE_URL}/${user.steam_id}`} />
           {other.children}
         </Box>

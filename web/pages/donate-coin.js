@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import Image from 'next/image'
 import { makeStyles, withStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import SvgIcon from '@mui/material/SvgIcon'
@@ -60,7 +61,7 @@ export default function Faq() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Donate</title>
+        <title>Donate :: {APP_NAME}</title>
       </Head>
 
       <Header />
@@ -73,7 +74,7 @@ export default function Faq() {
           <br />
 
           <Typography color="textSecondary">
-            <img src="/assets/midas.png" style={{ float: 'right' }} alt="tango" />I had this idea
+            <Image src="/assets/midas.png" style={{ float: 'right' }} alt="tango" />I had this idea
             once to create a community market for Dota 2 Giftables items and now here we are,
             although the idea is free(had fun writing it) and server isn&apos;t. BUT! thanks to
             someone else&apos;s server running this website. <br />

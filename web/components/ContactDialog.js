@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { Alert } from '@mui/material'
 import moment from 'moment'
-import { STEAM_PROFILE_BASE_URL, STEAMREP_PROFILE_BASE_URL } from '@/constants/strings'
+import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
 import DialogCloseButton from '@/components/DialogCloseButton'
@@ -100,14 +100,6 @@ export default function ContactDialog(props) {
               <li>
                 As Giftables involves a party having to go first, please always check seller&apos;s
                 reputation through&nbsp;
-                <Link
-                  style={{ textDecoration: 'underline' }}
-                  href={`${STEAMREP_PROFILE_BASE_URL}/${market.user.steam_id}`}
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  SteamRep
-                </Link>
-                &nbsp;and{' '}
                 <Link
                   style={{ textDecoration: 'underline' }}
                   href={`/profiles/${market.user.steam_id}/delivered`}>

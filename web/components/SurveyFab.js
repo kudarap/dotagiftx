@@ -61,7 +61,7 @@ export default function SurveyFab({ userID, label }) {
         }, 2310) // average time on page base on GA
       }
     })()
-  }, [userID])
+  }, [userID, label])
 
   const handleClose = () => {
     setOpen(false)

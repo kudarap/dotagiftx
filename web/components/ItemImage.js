@@ -32,7 +32,8 @@ export default function ItemImage({ image, title, rarity, className, width, heig
   const imageStyle = {
     color: 'transparent',
     width: '100%',
-    height: 'auto',
+    height: '100%',
+    objectFit: 'cover',
   }
 
   let baseSrc = CDN_URL + image

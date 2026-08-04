@@ -41,7 +41,7 @@ type (
 		ReservedCount int        `json:"reserved_count" db:"reserved_count,omitempty"`
 		SoldCount     int        `json:"sold_count"     db:"sold_count,omitempty"`
 		// Sale summary details are derived from reserved and sold status and not the same as sold.
-		SaleCount  int        `json:"sale_count"  db:"sale_count,omitempty"`
+		SaleCount  int        `json:"sale_count"  db:"sale_count,omitempty,indexed"`
 		AvgSale    float64    `json:"avg_sale"    db:"avg_sale,omitempty"`
 		RecentSale *time.Time `json:"recent_sale" db:"recent_sale,omitempty"`
 		CreatedAt  *time.Time `json:"created_at"  db:"created_at,omitempty,indexed"`

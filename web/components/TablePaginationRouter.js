@@ -119,4 +119,9 @@ TablePaginationRouter.propTypes = {
   rowsPerPage: PropTypes.number,
 }
 
+TablePaginationRouter.defaultProps = {
+  onPageChange: () => {},
+  rowsPerPage: 10,
+}
+
 export default TablePaginationRouter

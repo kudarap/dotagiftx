@@ -73,7 +73,7 @@ export default function Moderators() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Moderators</title>
+        <title>Moderators :: {APP_NAME}</title>
       </Head>
 
       <Header />

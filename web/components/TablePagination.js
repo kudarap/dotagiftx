@@ -90,4 +90,8 @@ TablePagination.propTypes = {
   rowsPerPage: PropTypes.number,
 }
 
+TablePagination.defaultProps = {
+  rowsPerPage: 10,
+}
+
 export default TablePagination

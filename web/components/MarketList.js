@@ -245,7 +245,7 @@ OrderList.propTypes = OfferList.propTypes
 OrderList.defaultProps = OfferList.defaultProps
 
 function baseTable(Component) {
-  function wrapped(props) {
+  function Wrapped(props) {
     const { classes } = useStyles()
 
     const { currentUserID } = props
@@ -440,27 +440,31 @@ function baseTable(Component) {
       </>
     )
   }
-  wrapped.propTypes = {
+  Wrapped.propTypes = {
+    bidMode: PropTypes.bool,
+    currentUserID: PropTypes.string,
     datatable: PropTypes.object.isRequired,
     error: PropTypes.string,
-    loading: PropTypes.bool,
-    currentUserID: PropTypes.string,
     isMobile: PropTypes.bool,
+    loading: PropTypes.bool,
     onContact: PropTypes.func,
     onRemove: PropTypes.func,
-    bidMode: PropTypes.bool,
+    sort: PropTypes.string,
+    onSort: PropTypes.func,
   }
-  wrapped.defaultProps = {
-    error: null,
-    loading: false,
+  Wrapped.defaultProps = {
+    bidMode: false,
     currentUserID: null,
+    error: null,
     isMobile: false,
+    loading: false,
     onContact: () => {},
     onRemove: () => {},
-    bidMode: false,
+    onSort: () => {},
+    sort: null,
   }
 
-  return wrapped
+  return Wrapped
 }
 
 const OfferListDesktop = baseTable(({ market, currentUserID, onRemove, onContact }) => (

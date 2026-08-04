@@ -9,12 +9,7 @@ import startsWith from 'lodash/startsWith'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import {
-  APP_NAME,
-  DOTABUFF_PROFILE_BASE_URL,
-  STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
-} from '@/constants/strings'
+import { APP_NAME, DOTABUFF_PROFILE_BASE_URL, STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
@@ -32,11 +27,6 @@ const useStyles = makeStyles()(theme => ({
     marginTop: theme.spacing(4),
   },
 }))
-
-const filter = {
-  sort: 'updated_at:desc',
-  limit: 100,
-}
 
 const STEAMURL = 'https://steamcommunity.com'
 
@@ -72,8 +62,12 @@ export default function Blacklist() {
   const { classes } = useStyles()
 
   const [query, setQuery] = React.useState('')
-  filter.q = query
-  const url = parseParams(BLACKLIST, filter)
+  const url = parseParams(BLACKLIST, {
+    sort: 'updated_at:desc',
+    limit: 100,
+    q: query,
+  })
+
   const { data, error } = useSWR(url, fetcherBase)
 
   const router = useRouter()
@@ -89,7 +83,7 @@ export default function Blacklist() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Banned users</title>
+        <title>Banned users :: {APP_NAME}</title>
       </Head>
 
       <Header />
@@ -127,7 +121,7 @@ export default function Blacklist() {
 }
 
 function SearchBar({ onInput, ...other }) {
-  const debounceSearch = React.useCallback(debounce(onInput, 500), [])
+  const debounceSearch = React.useMemo(() => debounce(onInput, 500), [onInput])
 
   const [value, setValue] = React.useState('')
   const handleInput = e => {
@@ -192,15 +186,6 @@ function UserCard({ data }) {
             rel="noreferrer noopener"
             href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
             Steam Profile
-          </Link>
-          &nbsp;&middot;&nbsp;
-          <Link
-            variant="body2"
-            gutterBottom
-            target="_blank"
-            rel="noreferrer noopener"
-            href={`${STEAMREP_PROFILE_BASE_URL}/${data.steam_id}`}>
-            SteamRep
           </Link>
           &nbsp;&middot;&nbsp;
           <Link

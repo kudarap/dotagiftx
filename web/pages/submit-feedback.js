@@ -57,8 +57,7 @@ export default function About() {
     if (!isLoggedIn) {
       router.push('/')
     }
-    return null
-  }, [])
+  }, [isLoggedIn, router])
 
   const handleSubmit = () => {
     setError(null)
@@ -72,9 +71,11 @@ export default function About() {
     }
 
     ;(async () => {
-      payload.text = `${payload.profile} -- ${payload.text}`
       try {
-        await reportCreate(payload)
+        await reportCreate({
+          ...payload,
+          text: `${payload.profile} -- ${payload.text}`,
+        })
         setMessage('Submitted successfully!')
         setPayload(defaultPayload)
       } catch (e) {
@@ -101,7 +102,7 @@ export default function About() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Feedback and Report</title>
+        <title>Feedback and Report :: {APP_NAME}</title>
       </Head>
 
       <Header />

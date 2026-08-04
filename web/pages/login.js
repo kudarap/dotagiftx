@@ -66,13 +66,20 @@ export default function Login() {
   const [error, setError] = React.useState(null)
 
   const router = useRouter()
-  if (isLoggedIn) {
-    router.push('/my-listings')
-    return null
-  }
+
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      router.push('/my-listings')
+    }
+  }, [isLoggedIn, router])
 
   React.useEffect(() => {
     const query = window.location.search
+
+    if (isLoggedIn || !query) {
+      return
+    }
+
     const login = async () => {
       setLoading(true)
       try {
@@ -95,13 +102,17 @@ export default function Login() {
     if (query) {
       login()
     }
-  }, [])
+  }, [isLoggedIn])
+
+  if (isLoggedIn) {
+    return null
+  }
 
   return (
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Sign In</title>
+        <title>Sign In :: {APP_NAME}</title>
       </Head>
 
       <Header />

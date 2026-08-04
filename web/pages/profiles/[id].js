@@ -14,7 +14,6 @@ import {
   APP_URL,
   DOTABUFF_PROFILE_BASE_URL,
   STEAM_PROFILE_BASE_URL,
-  STEAMREP_PROFILE_BASE_URL,
 } from '@/constants/strings'
 import {
   USER_AGE_CAUTION,
@@ -91,6 +90,27 @@ export default function UserDetails({
   const [error, setError] = React.useState(marketError)
   const { isMobile } = React.useContext(AppContext)
 
+  const router = useRouter()
+
+  // Handle market request on page change.
+  React.useEffect(() => {
+    if (profileError || (has(profile, 'is_registered') && !profile.is_registered)) {
+      return
+    }
+
+    ;(async () => {
+      setError(null)
+      setLoading(true)
+      try {
+        const res = await marketSearch(filter)
+        setMarkets(res)
+      } catch (e) {
+        setError(e.message)
+      }
+      setLoading(false)
+    })()
+  }, [filter, profileError, profile])
+
   if (profileError) {
     return (
       <ErrorPage>
@@ -106,22 +126,6 @@ export default function UserDetails({
     return <NotRegisteredProfile profile={profile} canonicalURL={canonicalURL} />
   }
 
-  // Handle market request on page change.
-  React.useEffect(() => {
-    ;(async () => {
-      setError(null)
-      setLoading(true)
-      try {
-        const res = await marketSearch(filter)
-        setMarkets(res)
-      } catch (e) {
-        setError(e.message)
-      }
-      setLoading(false)
-    })()
-  }, [filter])
-
-  const router = useRouter()
   const qFilter = router.query.filter
   const linkProps = {
     href: `/profiles/${profile.steam_id}`,
@@ -140,10 +144,9 @@ export default function UserDetails({
   }
 
   const profileURL = `${STEAM_PROFILE_BASE_URL}/${profile.steam_id}`
-  const steamRepURL = `${STEAMREP_PROFILE_BASE_URL}/${profile.steam_id}`
   const dotabuffURL = `${DOTABUFF_PROFILE_BASE_URL}/${profile.steam_id}`
 
-  const metaTitle = `${APP_NAME} :: ${profile.name}`
+  const metaTitle = `${profile.name} :: ${APP_NAME}`
   let metaDesc = `${profile.name}'s Dota 2 Giftable`
   if (profile.stats) {
     metaDesc += ` ${profile.stats.live} Items · ${profile.stats.reserved} Reserved · ${profile.stats.sold} Delivered`
@@ -272,8 +275,6 @@ export default function UserDetails({
                   )}
                   <ChipLink label="Steam Profile" href={profileURL} />
                   &nbsp;
-                  <ChipLink label="SteamRep" href={steamRepURL} />
-                  &nbsp;
                   <ChipLink label="Dotabuff" href={dotabuffURL} />
                 </Box>
               </Box>
@@ -308,6 +309,7 @@ export default function UserDetails({
           )}
         </Container>
 
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={trackProfileViewURL(profile.id)} height={1} width={1} alt="" />
       </main>
 

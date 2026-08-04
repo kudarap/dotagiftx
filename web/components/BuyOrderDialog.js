@@ -335,18 +335,6 @@ export default function BuyOrderDialog(props) {
                 to signed in website users.
               </li>
               <li>
-                As Giftables involves a party having to go first, please always check seller&apos;s
-                reputation through&nbsp;
-                <Link
-                  style={{ textDecoration: 'underline' }}
-                  href="https://steamrep.com"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  SteamRep
-                </Link>
-                .
-              </li>
-              <li>
                 Payment agreements will be done between you and the seller. This website does not
                 accept or integrate any payment service.
               </li>

@@ -61,14 +61,14 @@ export default function MyOrders() {
       res.bids.reserved = linkedMarket.reserved
       setMarketStats(res.bids)
     })()
-  }, [tick])
+  }, [tick, currentAuth.user_id, currentAuth.steam_id])
 
   // handling tab changes
   const router = useRouter()
   React.useEffect(() => {
     const hash = router.asPath.replace(router.pathname, '')
     setTabValue(hash)
-  }, [router.asPath])
+  }, [router.asPath, router.pathname])
 
   const handleTabChange = (e, v) => {
     setTabValue(v)

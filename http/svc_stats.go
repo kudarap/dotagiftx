@@ -153,8 +153,13 @@ func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.H
 			respondError(w, err)
 			return
 		}
-		top10 := l[:10]
 
+		if len(l) <= 10 {
+			respondOK(w, l)
+			return
+		}
+
+		top10 := l[:10]
 		go cache.Set(cacheKey, top10, statsCacheExpr)
 		respondOK(w, top10)
 	}

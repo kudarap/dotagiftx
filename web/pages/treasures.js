@@ -49,7 +49,7 @@ export default function Treasures({ treasures, error }) {
     <div className="container">
       <Head>
         <meta charSet="UTF-8" />
-        <title>{`${APP_NAME} :: All Treasures`}</title>
+        <title>{`All Treasures :: ${APP_NAME}`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
@@ -66,7 +66,7 @@ export default function Treasures({ treasures, error }) {
           <div
             style={{
               // background:
-              // 'url(https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
+              // 'url(https://cdn.steamstatic.com/steam/apps/570/library_hero.jpg?t=1724395576617) no-repeat center center',
               background:
                 'url(https://cdn.steamstatic.com/apps/dota2/images/dota_react/darkcarnival/backgrounds/sky_backdrop.png) no-repeat center top',
               backgroundColor: '#2a2638ff',

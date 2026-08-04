@@ -89,7 +89,7 @@ export default function Middleman() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Middleman</title>
+        <title>Middleman :: {APP_NAME}</title>
       </Head>
 
       <Header />

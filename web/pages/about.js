@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import Image from 'next/image'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
@@ -32,7 +33,7 @@ export default function About({ build }) {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: About</title>
+        <title>About :: {APP_NAME}</title>
       </Head>
 
       <Header />
@@ -93,7 +94,13 @@ export default function About({ build }) {
           </Button>
           <Button
             startIcon={
-              <img src="/icon_2x.png" style={{ height: 22, filter: 'brightness(10)' }} alt="dgx" />
+              <Image
+                src="/icon_2x.png"
+                style={{ height: 22, filter: 'brightness(10)' }}
+                width={60}
+                height={60}
+                alt="dgx"
+              />
             }
             size="large"
             component={Link}

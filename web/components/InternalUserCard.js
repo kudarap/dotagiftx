@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import moment from 'moment'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
@@ -40,8 +41,6 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
           <ExclusiveChip tag={userTag} />
           &nbsp;
           <ChipLink href={`https://steamcommunity.com/profiles/${id}`} label="Steam Profile" />
-          &nbsp;
-          <ChipLink href={`https://steamrep.com/profiles/${id}`} label="SteamRep" />
         </Box>
         <Box>
           <Button
@@ -56,7 +55,13 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
           &nbsp;
           <Button
             startIcon={
-              <img src="/icon_2x.png" style={{ height: 16, filter: 'brightness(10)' }} alt="dgx" />
+              <Image
+                src="/icon_2x.png"
+                width={16}
+                height={16}
+                style={{ height: 16, filter: 'brightness(10)' }}
+                alt="dgx"
+              />
             }
             component={Link}
             size="small"

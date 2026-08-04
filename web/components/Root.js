@@ -2,11 +2,8 @@ import React, { useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import * as Auth from '@/service/auth'
 import AppContext from '@/components/AppContext'
-
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 
 function Root({ children }) {
   const theme = useTheme()
@@ -36,19 +33,7 @@ function Root({ children }) {
     return null
   }
 
-  return (
-    <AppContext.Provider value={contextValue}>
-      <PayPalScriptProvider
-        options={{
-          'client-id': PAYPAL_CLIENT_ID,
-          components: 'buttons',
-          intent: 'subscription',
-          vault: true,
-        }}>
-        {children}
-      </PayPalScriptProvider>
-    </AppContext.Provider>
-  )
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
 }
 
 Root.propTypes = {

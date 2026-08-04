@@ -24,7 +24,7 @@ export default function Blacklist() {
     <>
       <Head>
         <meta charSet="UTF-8" />
-        <title>{APP_NAME} :: Guides</title>
+        <title>Guides :: {APP_NAME}</title>
       </Head>
 
       <Header />
@@ -56,7 +56,7 @@ export default function Blacklist() {
                 dotagiftx.com
               </Typography>{' '}
               that will lead you to their Dotagiftx profile with transaction history and links to
-              SteamRep and Dotabuff. You can search scammers on{' '}
+              can search scammers on{' '}
               <Link href="/bans" color="secondary">
                 Banned users
               </Link>
@@ -79,8 +79,8 @@ export default function Blacklist() {
             Prepare evidences
             <Typography color="textSecondary">
               Prepare in-case the seller scam you. Take screenshots of things during transaction
-              that you can use to submit a case on SteamRep. If you buying here on DotagiftX make
-              sure that you have a record of reservation so we could track the transaction.
+              that you can use to submit a case. If you buying here on DotagiftX make sure that you
+              have a record of reservation so we could track the transaction.
             </Typography>
           </Typography>
           <br />
@@ -127,7 +127,7 @@ export default function Blacklist() {
               </li>
               <li>
                 As Giftables involves a party having to go first, please always check seller&apos;s
-                reputation through&nbsp; SteamRep and transaction history.
+                reputation through&nbsp; their transaction history.
               </li>
 
               <li>

@@ -51,24 +51,26 @@ export default function UserActivity({ profile, canonicalURL }) {
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
 
+  const busyRef = React.useRef(false)
+
   React.useEffect(() => {
-    if (loading) {
+    if (busyRef.current) {
       return
     }
 
+    busyRef.current = true
     setLoading(true)
     ;(async () => {
       try {
         const res = await marketSearch(filter)
-        if (datatable.data.length === 0) {
-          setDatatable(res)
-        } else {
-          const data = [...datatable.data, ...res.data]
-          setDatatable({ ...datatable, data })
-        }
+        setDatatable(current =>
+          current.data.length === 0 ? res : { ...current, data: [...current.data, ...res.data] }
+        )
       } catch (e) {
         setError(e.message)
       }
+
+      busyRef.current = false
       setLoading(false)
     })()
   }, [filter])
@@ -102,7 +104,7 @@ export default function UserActivity({ profile, canonicalURL }) {
 
       <Head>
         <meta charSet="UTF-8" />
-        <title>{`${APP_NAME} :: ${profile.name} items`}</title>
+        <title>{`${profile.name} items :: ${APP_NAME}`}</title>
         <meta name="description" content={`${profile.name}'s delivered Giftable items`} />
         <link rel="canonical" href={canonicalURL} />
       </Head>
