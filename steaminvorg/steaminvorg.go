@@ -48,10 +48,6 @@ func InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []
 
 // SWR stale-while-re-invalidating crawled data.
 func SWR(steamID string, strict bool) (*steam.AllInventory, error) {
-	if err := steam.ValidateSteamID(steamID); err != nil {
-		return nil, fmt.Errorf("invalid steam id: %s", steamID)
-	}
-
 	// check for freshly cached inventory
 	m, err := GetMeta(steamID)
 	if err != nil && strict {
