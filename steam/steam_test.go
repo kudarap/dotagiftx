@@ -44,3 +44,22 @@ func Test_cleanProfileURL(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateSteamID(t *testing.T) {
+	tests := []struct {
+		steamID string
+		wantErr bool
+	}{
+		{"", true},
+		{"http:", true},
+		{"76561198068062691/inventory", true},
+		{"76561198068062691", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.steamID, func(t *testing.T) {
+			if err := ValidateSteamID(tt.steamID); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateSteamID() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

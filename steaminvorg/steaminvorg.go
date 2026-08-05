@@ -3,6 +3,7 @@ package steaminvorg
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -17,7 +18,7 @@ import (
 const (
 	providerID = "steaminvorg"
 
-	maxGetRetries = 10
+	maxGetRetries = 5
 	retrySleepDur = time.Second * 5
 	// freshCacheDur = time.Hour
 	freshCacheDur = time.Minute * 15
@@ -69,6 +70,11 @@ func SWR(steamID string, strict bool) (*steam.AllInventory, error) {
 		sharedLogger.Info("try", "steam_id", steamID, "count", i)
 		m, err = GetMeta(steamID)
 		if err != nil {
+			if errors.Is(err, errNotFound) || errors.Is(err, errTooManyRequests) {
+				sharedLogger.Error("stop retrying", "steam_id", steamID, "err", err)
+				break
+			}
+
 			sharedLogger.Error("try err", "steam_id", steamID, "err", err)
 			return nil, err
 		}
@@ -232,6 +238,11 @@ func (d *rawMetadata) format() *Metadata {
 	return m
 }
 
+var (
+	errTooManyRequests = errors.New("too many requests")
+	errNotFound        = errors.New("not found")
+)
+
 func getRequest(url string, data any) error {
 	res, err := http.Get(url)
 	if err != nil {
@@ -240,7 +251,10 @@ func getRequest(url string, data any) error {
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound {
-		return fmt.Errorf("not found")
+		return errNotFound
+	}
+	if res.StatusCode == http.StatusTooManyRequests {
+		return errTooManyRequests
 	}
 
 	body, err := io.ReadAll(res.Body)

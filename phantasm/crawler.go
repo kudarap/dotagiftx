@@ -225,6 +225,15 @@ func get(ctx context.Context, steamID string, count int, lastAssetID string) (i 
 		return nil, http.StatusInternalServerError, err
 	}
 
+	// inject steam community headers, hopefully reduce 429 errors
+	req.Header.Add("Connection", "keep-alive")
+	req.Header.Add("Referer", fmt.Sprintf("https://steamcommunity.com/profiles/%s/inventory/", steamID))
+	req.Header.Add("Sec-Fetch-Dest", "empty")
+	req.Header.Add("Sec-Fetch-Mode", "cors")
+	req.Header.Add("Sec-Fetch-Site", "same-origin")
+	req.Header.Add("Sec-GPC", "1")
+	req.Header.Add("Pragma", "no-cache")
+
 	var inv inventory
 	statusCode, err = sendRequest(req, &inv)
 	if err != nil {
