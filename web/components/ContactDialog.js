@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { Alert } from '@mui/material'
-import moment from 'moment'
+import { diffDays, fromNow } from '@/lib/date'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
@@ -43,10 +43,10 @@ export default function ContactDialog(props) {
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
-          {moment().diff(moment(market.user.created_at), 'days') <= USER_AGE_CAUTION && (
+          {diffDays(new Date(), market.user.created_at) <= USER_AGE_CAUTION && (
             <>
               <Alert severity="warning">
-                {`This user just joined ${moment(market.user.created_at).fromNow()}. Please transact with caution.`}
+                {`This user just joined ${fromNow(market.user.created_at)}. Please transact with caution.`}
               </Alert>
               <br />
             </>

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import moment from 'moment'
 import PropTypes from 'prop-types'
+import { addDays, format } from '@/lib/date'
 import startsWith from 'lodash/startsWith'
 import { makeStyles } from 'tss-react/mui'
 import Dialog from '@mui/material/Dialog'
@@ -213,7 +213,7 @@ export default function MarketUpdateDialog(props) {
               variant="outlined"
               label="Reservation Notes"
               helperText="Delivery date and deposit details"
-              placeholder={`${moment().add(30, 'days').format('MMM D')} - $1 deposit`}
+              placeholder={`${format(addDays(new Date(), 30), 'MMM D')} - $1 deposit`}
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />

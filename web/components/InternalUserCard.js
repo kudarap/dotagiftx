@@ -1,6 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
-import moment from 'moment'
+import { fromNow } from '@/lib/date'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
@@ -35,7 +35,7 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
           <Typography component="span" variant="caption">
             {id}
           </Typography>{' '}
-          &middot; Joined {moment(createdAt).fromNow()}{' '}
+          &middot; Joined {fromNow(createdAt)}{' '}
         </Typography>
         <Box sx={{ mb: 1, mt: 1 }}>
           <ExclusiveChip tag={userTag} />

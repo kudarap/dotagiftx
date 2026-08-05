@@ -1,4 +1,4 @@
-import moment from 'moment'
+import { fromNow, format, unix } from '@/lib/date'
 
 export function amount(n, currency = '') {
   let sign = ''
@@ -18,40 +18,43 @@ export function numberWithCommas(n) {
 }
 
 export function dateFromNow(date) {
-  const d = moment(date)
-  const dc = d.clone()
-  const now = moment()
+  const d = new Date(date)
+  const now = new Date()
 
-  if (now < dc.add(1, 'day')) {
-    return d.fromNow()
+  const plusOneDay = new Date(d)
+  plusOneDay.setDate(plusOneDay.getDate() + 1)
+  if (now < plusOneDay) {
+    return fromNow(date)
   }
-  if (now < dc.add(1, 'month')) {
-    // return `${((now.unix() - d.unix()) / 86400).toFixed()} days ago`
+
+  const plusOneMonth = new Date(plusOneDay)
+  plusOneMonth.setMonth(plusOneMonth.getMonth() + 1)
+
+  const plusOneYear = new Date(plusOneMonth)
+  plusOneYear.setFullYear(plusOneYear.getFullYear() + 1)
+  if (now < plusOneYear) {
+    return format(date, 'MMM DD')
   }
-  if (now < dc.add(1, 'year')) {
-    return d.format('MMM DD')
-  }
-  return d.format('MMM DD, YYYY')
+  return format(date, 'MMM DD, YYYY')
 }
 
 export function daysFromNow(d) {
-  const date = moment(d)
+  const diffDays = Math.round((unix(new Date()) - unix(d)) / 86400)
 
-  const diffDays = ((moment().unix() - date.unix()) / 86400).toFixed()
   // if (diffDays >= 20 && diffDays <= 60) {
   if (diffDays >= 20 && diffDays <= 60) {
     return `${diffDays} days ago`
   }
 
-  return date.fromNow()
+  return fromNow(d)
 }
 
 export function dateCalendar(date) {
-  return moment(date).format('MMMM DD, YYYY')
+  return format(date, 'MMMM DD, YYYY')
 }
 
 export function dateTime(date) {
-  return moment(date).format('MMM DD, YYYY - h:mm A')
+  return format(date, 'MMM DD, YYYY - h:mm A')
 }
 
 export function errorSimple(error) {

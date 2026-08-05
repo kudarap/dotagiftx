@@ -6,8 +6,8 @@ import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
-import moment from 'moment'
 import NewbieIcon from '@mui/icons-material/NewReleases'
+import { diffDays, fromNow } from '@/lib/date'
 import { Box } from '@mui/material'
 import {
   APP_NAME,
@@ -253,8 +253,8 @@ export default function UserDetails({
                   }}>
                   SteamID: {profile.steam_id}
                 </Typography>{' '}
-                &middot; Joined {moment(profile.created_at).fromNow()}{' '}
-                {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (
+                &middot; Joined {fromNow(profile.created_at)}{' '}
+                {diffDays(new Date(), profile.created_at) <= USER_AGE_CAUTION && (
                   <NewbieIcon color="info" fontSize="inherit" sx={{ mb: -0.3 }} />
                 )}
               </Typography>

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
-import moment from 'moment'
+import { fromNow } from '@/lib/date'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
@@ -172,7 +172,7 @@ function UserCard({ data }) {
                 fontSize: '0.785em',
                 fontWeight: 500,
               }}>
-              {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
+              {USER_STATUS_MAP_LABEL[data.status]} {fromNow(data.updated_at)}
             </span>
           </Typography>
           <Link variant="body2" href={`/profiles/${data.steam_id}`}>
