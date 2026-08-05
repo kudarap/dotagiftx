@@ -240,8 +240,18 @@ export default function UserDetails({
                 </Typography>
               )}
               <Typography variant="body2" component="p" color="textSecondary">
-                <Typography component="span" variant="caption">
-                  {profile.steam_id}
+                <Typography
+                  component="span"
+                  variant="caption"
+                  sx={{
+                    color: 'secondary.main',
+                    border: '1px solid',
+                    borderColor: 'secondary.main',
+                    borderRadius: 1,
+                    px: 0.75,
+                    py: 0.25,
+                  }}>
+                  SteamID: {profile.steam_id}
                 </Typography>{' '}
                 &middot; Joined {moment(profile.created_at).fromNow()}{' '}
                 {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (

@@ -71,6 +71,12 @@ type (
 		SubscriptionEndsAt *time.Time       `json:"subscription_ends_at" db:"subscription_ends_at,omitempty"`
 		Boons              []string         `json:"boons"                db:"boons,omitempty"`
 		Hammer             bool             `json:"hammer"               db:"hammer,omitempty"`
+
+		// paypal metadata
+		Paypal struct {
+			SubscriptionID        string    `json:"subscription_id"         db:"subscription_id"`
+			SubscriptionLastPayed time.Time `json:"subscription_last_payed" db:"subscription_last_payed"`
+		} `json:"paypal" db:"paypal"`
 	}
 
 	ManualSubscriptionParam struct {
@@ -138,6 +144,9 @@ type (
 
 		// PurgeSubscription removes subscription data and boons.
 		PurgeSubscription(ctx context.Context, userID string) error
+
+		// ClearSubscriptionEndsAt clears subscription expiration.
+		ClearSubscriptionEndsAt(id string) error
 	}
 )
 
@@ -391,7 +400,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 		return nil, err
 	}
 
-	plan, steamID, err := s.payment.Subscription(ctx, subscriptionID)
+	plan, steamID, subscriptionID, lastPayed, err := s.payment.Subscription(ctx, subscriptionID)
 	if err != nil {
 		return nil, err
 	}
@@ -412,11 +421,20 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	user.SubscribedAt = &t
 	user.Boons = userSubs.Boons()
 	user.SubscriptionType = "paypal"
+	user.Paypal.SubscriptionID = subscriptionID
+	user.Paypal.SubscriptionLastPayed = lastPayed
 	if err = user.CheckUpdate(); err != nil {
 		return nil, err
 	}
+	if err = s.userStg.Update(user); err != nil {
+		return nil, err
+	}
+	if err = s.userStg.ClearSubscriptionEndsAt(user.ID); err != nil {
+		return nil, err
+	}
 
-	return user, s.userStg.Update(user)
+	user.SubscriptionEndsAt = nil
+	return user, nil
 }
 
 // UpdateSubscriptionFromWebhook manage updates from webhook payload, most often use in incrementing cycles or
@@ -495,7 +513,7 @@ func (s *userService) downloadProfileImage(url string) (filename string, err err
 }
 
 type paymentManager interface {
-	Subscription(ctx context.Context, id string) (plan, steamID string, err error)
+	Subscription(ctx context.Context, id string) (plan, steamID, subscriptionID string, lastPayment time.Time, err error)
 	IsCancelled(ctx context.Context, r *http.Request) (steamID string, cancelled bool, lastPayment time.Time, err error)
 	CreateSubscription(ctx context.Context, planID, customID string) (subscriptionID string, err error)
 }

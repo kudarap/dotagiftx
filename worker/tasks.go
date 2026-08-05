@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -148,6 +149,9 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data any) error
 func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data any) error {
 	var market dotagiftx.Market
 	if err := marshallTaskPayload(data, &market); err != nil {
+		return err
+	}
+	if err := steam.ValidateSteamID(market.PartnerSteamID); err != nil {
 		return err
 	}
 	if market.User == nil || market.Item == nil {

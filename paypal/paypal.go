@@ -38,7 +38,10 @@ func New(conf Config) (*Client, error) {
 	return &Client{c, conf.WebhookID}, nil
 }
 
-func (c *Client) Subscription(ctx context.Context, id string) (plan, steamID string, err error) {
+func (c *Client) Subscription(
+	ctx context.Context,
+	id string,
+) (plan, steamID, subscriptionID string, lastPayment time.Time, err error) {
 	if c.pc.Token == nil {
 		_, err = c.pc.GetAccessToken(context.Background())
 		if err != nil {
@@ -54,7 +57,7 @@ func (c *Client) Subscription(ctx context.Context, id string) (plan, steamID str
 	if err != nil {
 		return
 	}
-	return plan, strings.TrimPrefix(sub.CustomID, customIDPrefix), nil
+	return plan, strings.TrimPrefix(sub.CustomID, customIDPrefix), sub.ID, sub.BillingInfo.LastPayment.Time, nil
 }
 
 // CreateSubscription creates a new subscription for the given plan ID
