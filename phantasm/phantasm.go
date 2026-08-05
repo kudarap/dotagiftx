@@ -37,7 +37,7 @@ const (
 	defaultCrawlerCD        = time.Minute
 
 	maxWaitRetry                = 5
-	defaultMaxFetchRetryAttempt = 10
+	defaultMaxFetchRetryAttempt = 5
 )
 
 var (
@@ -414,33 +414,29 @@ func (s *Service) sendCrawlRequest(
 		if statusCode == http.StatusForbidden {
 			return nil, steam.ErrInventoryPrivate
 		}
-
-		// only elect new crawler when not found and too much request
-		var shouldRetry bool
 		if statusCode == http.StatusNotFound || statusCode == http.StatusTooManyRequests {
-			shouldRetry = true
+			// return nil, errors.New(http.StatusText(statusCode))
+			s.logger.WarnContext(ctx, fmt.Sprintf("crawler failed will retry with %d error", statusCode))
 		}
 
-		if shouldRetry {
-			err = retryRequest(func(attempt int) error {
-				current := s.currentCrawlerID()
-				next := s.electNewCrawler(ctx)
-				s.logger.InfoContext(ctx,
-					"current crawler unavailable, new crawler elected and retying",
-					"current", current,
-					"next", next,
-					"err", err,
-					"attempt", attempt,
-				)
+		err = retryRequest(func(attempt int) error {
+			current := s.currentCrawlerID()
+			next := s.electNewCrawler(ctx)
+			s.logger.InfoContext(ctx,
+				"current crawler unavailable, new crawler elected and retrying",
+				"current", current,
+				"next", next,
+				"err", err,
+				"attempt", attempt,
+			)
 
-				req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
-				_, err1 := sendRequest(req, &summary)
-				return err1
-			}, s.config.MaxFetchRetryAttempt)
-			// check success
-			if err == nil {
-				return &summary, nil
-			}
+			req.URL.Path = strings.ReplaceAll(req.URL.Path, current, next)
+			_, err1 := sendRequest(req, &summary)
+			return err1
+		}, s.config.MaxFetchRetryAttempt)
+		// check success
+		if err == nil {
+			return &summary, nil
 		}
 
 		return nil, err
@@ -526,7 +522,7 @@ func extractCrawlerID(addr string) string {
 func retryRequest(fn func(attempt int) error, maxAttempt int) error {
 	var err error
 	for i := range maxAttempt {
-		time.Sleep((time.Second * 2) * time.Duration(i+1))
+		time.Sleep((time.Second) * time.Duration(i+1))
 		// return immediately on success with nil error
 		if err = fn(i + 1); err == nil {
 			return nil
