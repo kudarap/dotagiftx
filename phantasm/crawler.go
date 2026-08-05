@@ -19,6 +19,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/kudarap/dotagiftx/steamcrawl"
 )
 
 const (
@@ -35,6 +37,8 @@ const (
 var (
 	webhookURL string
 	secret     string
+
+	crawlClient = steamcrawl.New(steamcrawl.DefaultConfig())
 )
 
 func Main(args map[string]any) map[string]any {
@@ -220,22 +224,13 @@ func merge(res ...*inventory) *inventory {
 
 func get(ctx context.Context, steamID string, count int, lastAssetID string) (i *inventory, statusCode int, err error) {
 	url := fmt.Sprintf(steamURL, steamID, count, lastAssetID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(steamcrawl.WithSteamID(ctx, steamID), http.MethodGet, url, nil)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
 	}
 
-	// inject steam community headers, hopefully reduce 429 errors
-	req.Header.Add("Connection", "keep-alive")
-	req.Header.Add("Referer", fmt.Sprintf("https://steamcommunity.com/profiles/%s/inventory/", steamID))
-	req.Header.Add("Sec-Fetch-Dest", "empty")
-	req.Header.Add("Sec-Fetch-Mode", "cors")
-	req.Header.Add("Sec-Fetch-Site", "same-origin")
-	req.Header.Add("Sec-GPC", "1")
-	req.Header.Add("Pragma", "no-cache")
-
 	var inv inventory
-	statusCode, err = sendRequest(req, &inv)
+	statusCode, _, err = crawlClient.Do(ctx, req, &inv)
 	if err != nil {
 		return nil, statusCode, err
 	}

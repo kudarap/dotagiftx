@@ -1,6 +1,7 @@
 package steam
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/steamcrawl"
 )
 
 const providerID = "steam"
@@ -25,12 +27,11 @@ type Asset = dotagiftx.SteamAsset
 
 // InventoryAsset returns a compact format from raw inventory data.
 func InventoryAsset(ctx context.Context, steamID string) ([]Asset, error) {
-	r, err := reqDota2Inventory(steamID)
+	b, err := fetchInventory(ctx, steamID)
 	if err != nil {
 		return nil, fmt.Errorf("could send request: %s", err)
 	}
-	defer r.Body.Close()
-	return assetParser(r.Body)
+	return assetParser(bytes.NewReader(b))
 }
 
 func InventoryAssetWithProvider(ctx context.Context, steamID string) (string, []Asset, error) {
@@ -142,12 +143,11 @@ func (i *RawInventory) ToAssets() []Asset {
 
 // Inventory retrieve data from API and parse into RawInventory.
 func Inventory(steamID string) (*RawInventory, error) {
-	r, err := reqDota2Inventory(steamID)
+	b, err := fetchInventory(context.Background(), steamID)
 	if err != nil {
 		return nil, fmt.Errorf("could send request: %s", err)
 	}
-	defer r.Body.Close()
-	return inventoryParser(r.Body)
+	return inventoryParser(bytes.NewReader(b))
 }
 
 func inventoryParser(r io.Reader) (*RawInventory, error) {
@@ -277,9 +277,22 @@ func (po *RawInventoryPageOffset) UnmarshalJSON(data []byte) error {
 const Dota2AppID = 570
 const inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json/%d/2"
 
-func reqDota2Inventory(steamID string) (*http.Response, error) {
+var crawlClient = steamcrawl.New(steamcrawl.DefaultConfig())
+
+// fetchInventory fetches and returns the raw inventory response body
+// retrying on rate limit errors.
+func fetchInventory(ctx context.Context, steamID string) ([]byte, error) {
 	url := fmt.Sprintf(inventoryEndpoint, steamID, Dota2AppID)
-	return http.Get(url)
+	req, err := http.NewRequestWithContext(steamcrawl.WithSteamID(ctx, steamID), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, body, err := crawlClient.Do(ctx, req, nil)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
 
 func extractValueFromPrefix(s, prefix string) (value string, ok bool) {

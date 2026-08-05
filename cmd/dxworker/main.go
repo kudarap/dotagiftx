@@ -123,7 +123,7 @@ func (app *application) setup() error {
 			WebhookURL:           app.config.Phantasm.WebhookURL,
 			Secret:               app.config.Phantasm.Secret,
 			Path:                 app.config.Phantasm.Path,
-			MaxFetchRetryAttempt: 1,
+			MaxFetchRetryAttempt: 5,
 		}, redisClient, slogger)
 		verifySources = append(verifySources, phantasmSvcExp.InventoryAssetWithProvider)
 	}
