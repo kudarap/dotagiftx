@@ -200,7 +200,7 @@ export default function MarketActivity({ datatable, loading, error, disablePrice
                 sx={{ float: 'right' }}
                 variant="inherit"
                 color="textSecondary"
-                component="pre">
+                component="span">
                 {market.id.split('-')[0]}
                 <CopyButton
                   className={classes.copyButton}

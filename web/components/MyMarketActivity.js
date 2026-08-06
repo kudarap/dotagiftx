@@ -161,7 +161,7 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
                 sx={{ float: 'right' }}
                 variant="inherit"
                 color="textSecondary"
-                component="pre">
+                component="span">
                 {market.id.split('-')[0]}
                 <CopyButton
                   className={classes.copyButton}
@@ -173,7 +173,7 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
             </Typography>
 
             <Typography
-              component="pre"
+              component="div"
               color="textSecondary"
               variant="caption"
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>

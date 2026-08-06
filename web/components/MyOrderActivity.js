@@ -172,7 +172,7 @@ export default function MyOrderActivity({ datatable, loading, error }) {
             </Typography>
 
             <Typography
-              component="pre"
+              component="div"
               color="textSecondary"
               variant="caption"
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>

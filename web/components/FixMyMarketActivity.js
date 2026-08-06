@@ -184,7 +184,7 @@ export default function FixMyMarketActivity({
               </Typography>
               &nbsp;
               <Box sx={{ float: 'right' }}>
-                <Typography variant="inherit" color="textSecondary" component="pre">
+                <Typography variant="inherit" color="textSecondary" component="span">
                   {market.id.split('-')[0]}
                   <CopyButton
                     className={classes.copyButton}
@@ -204,7 +204,7 @@ export default function FixMyMarketActivity({
             </Typography>
 
             <Typography
-              component="pre"
+              component="div"
               color="textSecondary"
               variant="caption"
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>
