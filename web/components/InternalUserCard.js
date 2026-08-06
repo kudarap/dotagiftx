@@ -49,7 +49,8 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
             target="_blank"
             rel="noreferrer noopener"
             size="small"
-            href={discordURL}>
+            href={discordURL}
+          >
             Discord
           </Button>
           &nbsp;
@@ -59,13 +60,14 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
                 src="/icon_2x.png"
                 width={16}
                 height={16}
-                style={{ height: 16, filter: 'brightness(10)' }}
+                style={{ height: 16, width: 16, filter: 'brightness(10)' }}
                 alt="dgx"
               />
             }
             component={Link}
             size="small"
-            href={`/profiles/${id}`}>
+            href={`/profiles/${id}`}
+          >
             DotagiftX
           </Button>
         </Box>
