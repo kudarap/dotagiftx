@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Table from '@mui/material/Table'
@@ -8,14 +9,25 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
+import Alert from '@mui/material/Alert'
 import Skeleton from '@mui/material/Skeleton'
+import Grid from '@mui/material/Grid'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'
 import InternalUserCard from '@/components/InternalUserCard'
+import Button from '@/components/Button'
 import { user } from '@/service/api'
+import { amount, dateCalendar, dateTimeFull } from '@/lib/format'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -34,18 +46,55 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-function createRate(payment, serviceFee, minimumFee, pulloutFee, disputeFee) {
-  return { payment, serviceFee, minimumFee, pulloutFee, disputeFee }
+function createRate(
+  payment,
+  serviceFee,
+  minimumFee,
+  pulloutFee,
+  disputeFee,
+  percent = 0,
+  flatFee = 0
+) {
+  return { payment, serviceFee, minimumFee, pulloutFee, disputeFee, percent, flatFee }
 }
 
 // paypal fees 4.4% + 0.30
-const tableRates = [
+const tableRatesRev0 = [
   createRate('PayPal', '+10%', '$1.00', '10% + 4.4% + $0.30', '4.4% + $0.30'),
   createRate('Mann Co. Supply Crate Key (TF key)', '+15%', '1 Key', '15%', 'None'),
   createRate('Crypto', 'TBD', 'TBD', 'TBD', 'TBD'),
 ]
 
-const middlemanUserIds = ['76561198088587178']
+const tableRates = [
+  createRate('PayPal', '15% + $0.60', 'None', 'None', 'None'),
+  createRate('TF keys, Dota 2 and Rust items', '10%', 'None', 'None', 'None'),
+  createRate('Crypto', '5%', 'None', 'None', 'None'),
+]
+
+const computeRates = [
+  {
+    id: 'paypal',
+    label: 'PayPal 15% + $0.60',
+    percetage: 0.15,
+    flat: 0.6,
+  },
+  {
+    id: 'steamItems',
+    label: 'TF keys, Dota 2 and Rust items 10%',
+    percetage: 0.1,
+    flat: 0,
+  },
+  {
+    id: 'crypto',
+    label: 'Crypto 5%',
+    percetage: 0.05,
+    flat: 0,
+  },
+]
+
+const middlemanUserIds = ['76561198078354099']
+const updatedAt = new Date('2026-08-08')
+const middlemanDiscordURL = 'https://discord.gg/b79zMpjjc5'
 
 export default function Middleman() {
   const { classes } = useStyles()
@@ -62,7 +111,7 @@ export default function Middleman() {
             name: u.name,
             img: u.avatar,
             boons: ['MIDDLEMAN_TAG'],
-            discordURL: 'https://discord.gg/b79zMpjjc5',
+            discordURL: middlemanDiscordURL,
             createdAt: u.created_at,
           })
         })
@@ -99,14 +148,13 @@ export default function Middleman() {
           <Typography variant="h5" component="h1" gutterBottom>
             Middleman
             <Typography variant="body2" color="textSecondary">
-              Updated June 25, 2025
+              {dateCalendar(updatedAt)}
             </Typography>
           </Typography>
-          <Typography color="textSecondary">
+          <Typography gutterBottom>
             The profile listed below is the only official middleman service provider of the site.
             Please read the terms of this service carefully.
           </Typography>
-          <br />
 
           {loading &&
             middlemanUserIds.map(id => (
@@ -119,38 +167,17 @@ export default function Middleman() {
             <InternalUserCard key={row.id} {...row} />
           ))}
 
-          {/* <Typography component="h2" variant="h6">
-            Calculator
-          </Typography>
-          <Typography color="textSecondary">
-            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
-            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
-            with a kick.
-          </Typography>
-          <br />
-
-          <Typography component="h2" variant="h6">
-            Process
-          </Typography>
-          <Typography color="textSecondary" gutterBottom>
-            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
-            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
-            with a kick.
-          </Typography>
-          <Typography color="textSecondary">
-            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
-            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
-            with a kick.
-          </Typography>
-          <br /> */}
-
-          <Typography component="h2" variant="h6">
+          <Typography component="h2" variant="h6" gutterBottom>
             Service rates
+            <Typography variant="body2" color="orange">
+              {dateTimeFull(updatedAt)}
+            </Typography>
           </Typography>
-          <Typography color="textSecondary">
-            Rates updated at Sep 17, 2025 and subject to change without prior notice, outstanding
-            transaction fees will remain as it is.
-          </Typography>
+          <Alert severity="warning">
+            Rates are subject to change without prior notice, outstanding transaction fees will
+            remain as it is.
+          </Alert>
+
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -181,38 +208,116 @@ export default function Middleman() {
           </TableContainer>
           <br />
 
-          {/* <Typography component="h2" variant="h6">
-            Terms
+          <Calculator rates={computeRates} />
+
+          <Typography component="h2" variant="h6">
+            How to proceed?
           </Typography>
           <Typography color="textSecondary">
-            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
-            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
-            with a kick.
+            The middleman service is recommended if you want to pay a seller after the 30 day friend
+            requirement has been completed and both parties are available to complete the trade.
+            Simply join the Discord server and request a{' '}
+            <strong style={{ color: '#2ecc71', fontFamily: 'monospace' }}>@middleman</strong> to
+            ensure a secure transaction.
           </Typography>
           <br />
 
-          <Typography component="h2" variant="h6">
-            FAQs
-          </Typography>
           <Box>
-            <Typography>What is DotagiftX?</Typography>
-            <Typography color="textSecondary" gutterBottom>
-              Market place for Dota 2 Giftables, items that can only be gift or gift-once are
-              probably belong here. If you are on Dota2Trade subreddit, its basically the Giftable
-              Megathread with a kick.
-            </Typography>
-
-            <Typography>What is DotagiftX?</Typography>
-            <Typography color="textSecondary" gutterBottom>
-              Market place for Dota 2 Giftables, items that can only be gift or gift-once are
-              probably belong here. If you are on Dota2Trade subreddit, its basically the Giftable
-              Megathread with a kick.
-            </Typography>
-          </Box> */}
+            <Button
+              component={Link}
+              target="_blank"
+              rel="noreferrer noopener"
+              href={middlemanDiscordURL}
+              size="large"
+              variant="outlined"
+              color="secondary">
+              Continue To Discord
+            </Button>
+          </Box>
         </Container>
       </main>
 
       <Footer />
     </>
   )
+}
+
+function Calculator({ rates }) {
+  const [payment, setPayment] = React.useState(rates[0] ? rates[0].id : '')
+  const [price, setPrice] = React.useState(1)
+
+  const [computed, setComputed] = React.useState({ fee: 0, total: 0 })
+  React.useEffect(() => {
+    const rate = rates.find(rate => rate.id == payment)
+    const fee = Number(rate.flat + price * rate.percetage)
+    const total = Number(price) + fee
+    setComputed({ fee, total })
+  }, [payment, price, rates])
+
+  return (
+    <>
+      <Typography component="h2" variant="h6" gutterBottom>
+        Calculator
+      </Typography>
+      <Alert severity="info">
+        Estimate the service fee for your transaction. Fee is computed based on the rates above.
+      </Alert>
+      <br />
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth color="secondary" variant="outlined">
+            <InputLabel id="calculator-payment-type-label">Payment type</InputLabel>
+            <Select
+              labelId="calculator-payment-type-label"
+              id="calculator-payment-type"
+              variant="outlined"
+              value={payment}
+              onChange={e => setPayment(e.target.value)}
+              label="Payment type">
+              {rates.map(row => (
+                <MenuItem key={row.id} value={row.id}>
+                  {row.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            color="secondary"
+            variant="outlined"
+            label="Price"
+            type="number"
+            inputProps={{ min: 0, step: 'any' }}
+            value={price}
+            onChange={e => setPrice(e.target.value)}
+          />
+        </Grid>
+      </Grid>
+      <br />
+      <Paper
+        sx={{ padding: 2, display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+        <div>
+          <Typography variant="body2" color="textSecondary">
+            Service fee
+          </Typography>
+          <Typography variant="h6">{amount(computed.fee, 'USD')}</Typography>
+        </div>
+        <div>
+          <Typography variant="body2" color="textSecondary">
+            Total amount
+          </Typography>
+          <Typography variant="h6">{amount(computed.total, 'USD')}</Typography>
+        </div>
+      </Paper>
+      <br />
+    </>
+  )
+}
+Calculator.propTypes = {
+  rates: PropTypes.array,
+}
+Calculator.defaultProps = {
+  rates: [],
 }
