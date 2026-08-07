@@ -9,6 +9,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import Alert from '@mui/material/Alert'
 import Skeleton from '@mui/material/Skeleton'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
@@ -16,6 +17,7 @@ import Header from '@/components/Header'
 import Container from '@/components/Container'
 import InternalUserCard from '@/components/InternalUserCard'
 import { user } from '@/service/api'
+import { dateCalendar, dateTime } from '@/lib/format'
 
 const useStyles = makeStyles()(theme => ({
   main: {
@@ -39,13 +41,21 @@ function createRate(payment, serviceFee, minimumFee, pulloutFee, disputeFee) {
 }
 
 // paypal fees 4.4% + 0.30
-const tableRates = [
+const tableRatesRev0 = [
   createRate('PayPal', '+10%', '$1.00', '10% + 4.4% + $0.30', '4.4% + $0.30'),
   createRate('Mann Co. Supply Crate Key (TF key)', '+15%', '1 Key', '15%', 'None'),
   createRate('Crypto', 'TBD', 'TBD', 'TBD', 'TBD'),
 ]
 
-const middlemanUserIds = ['76561198088587178']
+const tableRates = [
+  createRate('PayPal', '15% + $0.60', 'None', 'None', 'None'),
+  createRate('Mann Co. Supply Crate Key (TF key)', '10%', 'None', 'None', 'None'),
+  createRate('Crypto', '5%', 'None', 'None', 'None'),
+]
+
+const middlemanUserIds = ['76561198078354099']
+
+const updatedAt = new Date('2026-08-08')
 
 export default function Middleman() {
   const { classes } = useStyles()
@@ -99,14 +109,13 @@ export default function Middleman() {
           <Typography variant="h5" component="h1" gutterBottom>
             Middleman
             <Typography variant="body2" color="textSecondary">
-              Updated June 25, 2025
+              {dateCalendar(updatedAt)}
             </Typography>
           </Typography>
-          <Typography color="textSecondary">
+          <Typography gutterBottom>
             The profile listed below is the only official middleman service provider of the site.
             Please read the terms of this service carefully.
           </Typography>
-          <br />
 
           {loading &&
             middlemanUserIds.map(id => (
@@ -119,38 +128,17 @@ export default function Middleman() {
             <InternalUserCard key={row.id} {...row} />
           ))}
 
-          {/* <Typography component="h2" variant="h6">
-            Calculator
-          </Typography>
-          <Typography color="textSecondary">
-            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
-            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
-            with a kick.
-          </Typography>
-          <br />
-
-          <Typography component="h2" variant="h6">
-            Process
-          </Typography>
-          <Typography color="textSecondary" gutterBottom>
-            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
-            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
-            with a kick.
-          </Typography>
-          <Typography color="textSecondary">
-            Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
-            belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
-            with a kick.
-          </Typography>
-          <br /> */}
-
-          <Typography component="h2" variant="h6">
+          <Typography component="h2" variant="h6" gutterBottom>
             Service rates
+            <Typography variant="body2" color="orange">
+              {dateTime(updatedAt)}
+            </Typography>
           </Typography>
-          <Typography color="textSecondary">
-            Rates updated at Sep 17, 2025 and subject to change without prior notice, outstanding
-            transaction fees will remain as it is.
-          </Typography>
+          <Alert severity="warning">
+            Rates are subject to change without prior notice, outstanding transaction fees will
+            remain as it is.
+          </Alert>
+
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -182,33 +170,24 @@ export default function Middleman() {
           <br />
 
           {/* <Typography component="h2" variant="h6">
-            Terms
+            Calculator
           </Typography>
           <Typography color="textSecondary">
             Market place for Dota 2 Giftables, items that can only be gift or gift-once are probably
             belong here. If you are on Dota2Trade subreddit, its basically the Giftable Megathread
             with a kick.
           </Typography>
-          <br />
+          <br />*/}
 
           <Typography component="h2" variant="h6">
-            FAQs
+            How to proceed?
           </Typography>
-          <Box>
-            <Typography>What is DotagiftX?</Typography>
-            <Typography color="textSecondary" gutterBottom>
-              Market place for Dota 2 Giftables, items that can only be gift or gift-once are
-              probably belong here. If you are on Dota2Trade subreddit, its basically the Giftable
-              Megathread with a kick.
-            </Typography>
-
-            <Typography>What is DotagiftX?</Typography>
-            <Typography color="textSecondary" gutterBottom>
-              Market place for Dota 2 Giftables, items that can only be gift or gift-once are
-              probably belong here. If you are on Dota2Trade subreddit, its basically the Giftable
-              Megathread with a kick.
-            </Typography>
-          </Box> */}
+          <Typography color="textSecondary">
+            The middleman service is recommended if you want to pay a seller after the 30 day friend
+            requirement has been completed and both parties are available to complete the trade.
+            Simply join the Discord server and request a middleman to ensure a secure transaction.
+          </Typography>
+          <br />
         </Container>
       </main>
 
