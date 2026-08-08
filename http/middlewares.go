@@ -83,10 +83,6 @@ func logger(logger *slog.Logger) func(next http.Handler) http.Handler {
 			return status == 404 || status == 405
 		},
 
-		// Optionally, log selected request/response headers explicitly.
-		LogRequestHeaders:  []string{"Origin", requestIDHeader},
-		LogResponseHeaders: []string{},
-
 		// Optionally, enable logging of request/response body based on custom conditions.
 		// Useful for debugging payload issues in development.
 		LogRequestBody:  isDebugHeaderSet,

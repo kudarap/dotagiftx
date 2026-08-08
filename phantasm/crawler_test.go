@@ -138,11 +138,11 @@ func parseInventory(r io.Reader) (*inventory, error) {
 func parseInventoryFiles(paths ...string) ([]*inventory, error) {
 	var invs []*inventory
 	for _, path := range paths {
-		f, err := os.Open(path)
+		f, err := os.Open(path) //nolint:gosec // test helper reading fixture files
 		if err != nil {
 			return nil, err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		i, err := parseInventory(f)
 		if err != nil {
 			return nil, err

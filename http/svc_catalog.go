@@ -51,7 +51,7 @@ func handleMarketCatalogList(
 		opts.IndexKey = "item_id"
 
 		go func() {
-			if err := trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
+			if err := trackSvc.CreateSearchKeyword(context.WithoutCancel(r.Context()), r, opts.Keyword); err != nil {
 				logger.ErrorContext(r.Context(), "search keyword tracking error", "error", err)
 			}
 		}()

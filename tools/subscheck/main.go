@@ -116,7 +116,7 @@ func paypalSubscribers(
 			err = json.Unmarshal(body, &paypalSubs)
 			errCheck(err)
 		}
-		defer file.Close()
+		defer func() { _ = file.Close() }()
 	}
 
 	if len(paypalSubs) == 0 {
@@ -139,7 +139,7 @@ func paypalSubscribers(
 		b, err := json.MarshalIndent(paypalSubs, "", "  ")
 		errCheck(err)
 
-		err = os.WriteFile(cachePaypalSubscriptionFile, b, 0644)
+		err = os.WriteFile(cachePaypalSubscriptionFile, b, 0600)
 		errCheck(err)
 	}
 

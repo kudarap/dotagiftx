@@ -3,6 +3,7 @@ package steam
 import (
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -101,11 +102,15 @@ func (id *OpenId) ValidateAndGetId() (string, error) {
 	}
 	params.Set("openid.mode", "check_authentication")
 
-	resp, err := http.PostForm(steamLogin, params)
+	resp, err := http.PostForm(steamLogin, params) //nolint:gosec // steamLogin is a fixed openid endpoint
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			slog.Error("closing body", "error", err)
+		}
+	}()
 	content, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err

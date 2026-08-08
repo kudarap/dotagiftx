@@ -2,7 +2,8 @@ package dotagiftx
 
 import (
 	"context"
-	"crypto/sha1"
+	"crypto/sha1" //nolint:gosec // legacy password/token hashing for backward compatibility
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -116,7 +117,7 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 			return nil, err
 		}
 
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, url, http.StatusTemporaryRedirect) //nolint:gosec // steam openid login redirect flow
 		return nil, nil
 	}
 
@@ -134,8 +135,18 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 
 	// Account existed and checked login credentials.
 	if authData != nil {
-		if authData.Password != s.composePassword(steamPlayer.ID, authData.UserID) {
+		// try logging with both password v1 and v2
+		passwordV1 := s.composePassword(steamPlayer.ID, authData.UserID)
+		passwordV2 := s.composePasswordV2(steamPlayer.ID, authData.UserID)
+		if authData.Password != passwordV1 && authData.Password != passwordV2 {
 			return nil, AuthErrLogin
+		}
+		// when successful, upgrade password to v2
+		if err := s.authRepo.Update(ctx, &Auth{
+			ID:       authData.ID,
+			Password: passwordV2,
+		}); err != nil {
+			s.logger.ErrorContext(ctx, "upgrade password v2 failed", "error", err)
 		}
 
 		u, err := s.userSvc.User(ctx, authData.UserID)
@@ -238,7 +249,7 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 
 	au := &Auth{UserID: user.ID, Username: sp.ID}
 	au.RefreshToken = s.generateRefreshToken()
-	au.Password = s.composePassword(sp.ID, user.ID)
+	au.Password = s.composePasswordV2(sp.ID, user.ID)
 	if err := s.authRepo.Create(ctx, au); err != nil {
 		return nil, err
 	}
@@ -248,13 +259,19 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 
 func (s *AuthService) generateRefreshToken() string {
 	t := fmt.Sprintf("%d%s", time.Now().UnixNano(), s.salt)
-	h := sha1.New()
+	h := sha256.New()
 	h.Write([]byte(t))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
 func (s *AuthService) composePassword(steamID, userID string) string {
-	h := sha1.New()
+	h := sha1.New() //nolint:gosec // legacy password hashing for backward compatibility
+	h.Write([]byte(steamID + userID + s.salt))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func (s *AuthService) composePasswordV2(steamID, userID string) string {
+	h := sha256.New()
 	h.Write([]byte(steamID + userID + s.salt))
 	return hex.EncodeToString(h.Sum(nil))
 }

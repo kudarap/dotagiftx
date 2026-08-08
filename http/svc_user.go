@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 
 const userCacheExpr = time.Minute * 5
 
-func handleProfile(svc userService, cache cacheManager) http.HandlerFunc {
+func handleProfile(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -29,13 +30,17 @@ func handleProfile(svc userService, cache cacheManager) http.HandlerFunc {
 			return
 		}
 
-		go cache.Set(cacheKey, u, userCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, u, userCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on profile", "error", err)
+			}
+		}()
 
 		respondOK(w, u)
 	}
 }
 
-func handlePublicProfile(svc userService, cache cacheManager) http.HandlerFunc {
+func handlePublicProfile(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -53,13 +58,17 @@ func handlePublicProfile(svc userService, cache cacheManager) http.HandlerFunc {
 			return
 		}
 
-		go cache.Set(cacheKey, u, userCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, u, userCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on public profile", "error", err)
+			}
+		}()
 
 		respondOK(w, u)
 	}
 }
 
-func handleBlacklisted(svc userService, cache cacheManager) http.HandlerFunc {
+func handleBlacklisted(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -84,7 +93,11 @@ func handleBlacklisted(svc userService, cache cacheManager) http.HandlerFunc {
 			list = []dotagiftx.User{}
 		}
 
-		go cache.Set(cacheKey, list, time.Hour*24)
+		go func() {
+			if err := cache.Set(cacheKey, list, time.Hour*24); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on blacklists", "error", err)
+			}
+		}()
 
 		respondOK(w, list)
 	}
@@ -101,7 +114,7 @@ type vanityUserResp struct {
 }
 
 // TODO this should be place on service
-func handleVanityProfile(svc userService, steamClient steamClient, cache cacheManager) http.HandlerFunc {
+func handleVanityProfile(svc userService, steamClient steamClient, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -142,7 +155,11 @@ func handleVanityProfile(svc userService, steamClient steamClient, cache cacheMa
 
 		vUser.LastUpdatedAt = time.Now()
 
-		go cache.Set(cacheKey, vUser, userVanityCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, vUser, userVanityCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on vanity profile", "error", err)
+			}
+		}()
 		respondOK(w, vUser)
 	}
 }
@@ -169,7 +186,7 @@ func handleCreateSubscription(svc userService) http.HandlerFunc {
 	}
 }
 
-func handleProcSubscription(svc userService, cache cacheManager) http.HandlerFunc {
+func handleProcSubscription(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			SubscriptionID string `json:"subscription_id"`
@@ -186,8 +203,12 @@ func handleProcSubscription(svc userService, cache cacheManager) http.HandlerFun
 		}
 
 		go func() {
-			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
-			cache.BulkDel(marketCacheKeyPrefix)
+			if err := cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID)); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate user cache", "error", err)
+			}
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
 		}()
 		respondOK(w, u)
 	}
@@ -203,7 +224,7 @@ func handleUserSubscriptionWebhook(svc userService) http.HandlerFunc {
 	}
 }
 
-func handleUserManualSubscription(svc userService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleUserManualSubscription(svc userService, cache cacheManager, divineKey string, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
@@ -223,8 +244,12 @@ func handleUserManualSubscription(svc userService, cache cacheManager, divineKey
 		}
 
 		go func() {
-			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
-			cache.BulkDel(marketCacheKeyPrefix)
+			if err := cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID)); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate user cache", "error", err)
+			}
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
 		}()
 		respondOK(w, u)
 	}

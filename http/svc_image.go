@@ -2,13 +2,14 @@ package http
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func handleImageUpload(svc imageService) http.HandlerFunc {
+func handleImageUpload(svc imageService, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get uploaded file.
 		form, _, err := r.FormFile("file")
@@ -16,7 +17,11 @@ func handleImageUpload(svc imageService) http.HandlerFunc {
 			respondError(w, fmt.Errorf("could not find 'file' on form-data: %s", err))
 			return
 		}
-		defer form.Close()
+		defer func() {
+			if err := form.Close(); err != nil {
+				logger.ErrorContext(r.Context(), "closing upload file", "error", err)
+			}
+		}()
 
 		id, err := svc.Upload(r.Context(), form)
 		if err != nil {
@@ -47,7 +52,7 @@ func handleImage(svc imageService) http.HandlerFunc {
 
 		cc := fmt.Sprintf("max-age=%d, public", imageCacheMaxAge)
 		w.Header().Add("Cache-Control", cc)
-		http.ServeFile(w, r, path)
+		http.ServeFile(w, r, path) //nolint:gosec // path is resolved by file manager within save dir
 	}
 }
 
@@ -65,6 +70,6 @@ func handleImageThumbnail(svc imageService) http.HandlerFunc {
 
 		cc := fmt.Sprintf("max-age=%d, public", imageCacheItemMaxAge)
 		w.Header().Add("Cache-Control", cc)
-		http.ServeFile(w, r, path)
+		http.ServeFile(w, r, path) //nolint:gosec // path is resolved by file manager within save dir
 	}
 }

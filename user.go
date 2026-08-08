@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -256,14 +257,16 @@ func UserSubscriptionFromString(s string) UserSubscription {
 }
 
 // NewUserService returns a new User service.
-func NewUserService(us userRepository, fm FileManager, sc paymentManager) *UserService {
-	return &UserService{us, fm, sc}
+func NewUserService(us userRepository, fm FileManager, sc paymentManager, sl *slog.Logger) *UserService {
+	return &UserService{us, fm, sc, sl}
 }
 
 type UserService struct {
 	userRepo userRepository
 	fileMgr  FileManager
 	payment  paymentManager
+
+	logger *slog.Logger
 }
 
 func (s *UserService) Users(ctx context.Context, opts FindOpts) ([]User, error) {
@@ -413,11 +416,11 @@ func (s *UserService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	}
 	if !cancelled {
 		// ignore if not canceled.
-		log.Println("ignoring subscription update because its not cancelled:", steamID)
+		log.Println("ignoring subscription update because its not cancelled:", steamID) //nolint:gosec // internal webhook logs
 		return nil, nil
 	}
 
-	log.Println("cancelling subscription", steamID, "by marking expiration")
+	log.Println("cancelling subscription", steamID, "by marking expiration") //nolint:gosec // internal webhook logs
 	user, err := s.userRepo.Get(ctx, steamID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user %s: %w", steamID, err)
@@ -461,11 +464,15 @@ func (s *UserService) ProcessManualSubscription(ctx context.Context, param Manua
 
 // downloadProfileImage saves an image file from url.
 func (s *UserService) downloadProfileImage(ctx context.Context, url string) (filename string, err error) {
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec // url is user-provided steam avatar, expected external fetch
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			s.logger.ErrorContext(ctx, "closing body", "err", err)
+		}
+	}()
 
 	uu := strings.Split(url, "/")
 	name := uu[len(uu)-1]

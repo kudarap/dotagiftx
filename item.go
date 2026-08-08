@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	neturl "net/url"
 	"regexp"
@@ -139,8 +140,8 @@ func (i Item) ToCatalog() Catalog {
 }
 
 // NewItemService returns new Item service.
-func NewItemService(allowedDomains []string, is itemRepository, fm FileManager) *ItemService {
-	return &ItemService{is, fm, allowedDomains}
+func NewItemService(allowedDomains []string, is itemRepository, fm FileManager, lg *slog.Logger) *ItemService {
+	return &ItemService{is, fm, allowedDomains, lg}
 }
 
 type ItemService struct {
@@ -148,6 +149,7 @@ type ItemService struct {
 	fileMgr  FileManager
 
 	allowedDomains []string
+	logger         *slog.Logger
 }
 
 func (s *ItemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error) {
@@ -345,11 +347,15 @@ func (s *ItemService) downloadItemImage(ctx context.Context, baseName, url strin
 		return url, fmt.Errorf("item image download for %s is not allowed", url)
 	}
 
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec // url is validated against allowed domains above
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			s.logger.ErrorContext(ctx, "closing response body", "err", err)
+		}
+	}()
 
 	n, err := s.fileMgr.SaveWithName(resp.Body, baseName)
 	if err != nil {

@@ -52,7 +52,7 @@ func respond(w http.ResponseWriter, code int, body any) {
 
 	// Check for string response body.
 	if s, ok := body.(string); ok {
-		_, _ = w.Write([]byte(s))
+		_, _ = w.Write([]byte(s)) //nolint:gosec // response body is server-generated, not user input
 		return
 	}
 

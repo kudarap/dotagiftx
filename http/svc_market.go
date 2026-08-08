@@ -60,7 +60,7 @@ func handleMarketList(
 		}
 
 		go func() {
-			if err := trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
+			if err := trackSvc.CreateSearchKeyword(context.WithoutCancel(r.Context()), r, opts.Keyword); err != nil {
 				logger.ErrorContext(r.Context(), "search keyword tracking error", "error", err)
 			}
 		}()
@@ -149,7 +149,7 @@ func handleMarketDetail(svc marketService, cache cacheManager, logger *slog.Logg
 	}
 }
 
-func handleMarketCreate(svc marketService, cache cacheManager) http.HandlerFunc {
+func handleMarketCreate(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -162,13 +162,17 @@ func handleMarketCreate(svc marketService, cache cacheManager) http.HandlerFunc 
 			return
 		}
 
-		go cache.BulkDel(marketCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
+		}()
 
 		respondOK(w, m)
 	}
 }
 
-func handleMarketUpdate(svc marketService, cache cacheManager) http.HandlerFunc {
+func handleMarketUpdate(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -182,7 +186,11 @@ func handleMarketUpdate(svc marketService, cache cacheManager) http.HandlerFunc 
 			return
 		}
 
-		go cache.BulkDel(marketCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
+		}()
 		respondOK(w, m)
 	}
 }

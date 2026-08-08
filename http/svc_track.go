@@ -32,6 +32,6 @@ func handleTracker(svc trackService, logger *slog.Logger) http.HandlerFunc {
 
 		// output image
 		w.Header().Set("Content-Type", "image/gif")
-		w.Write(image)
+		_, _ = w.Write(image)
 	}
 }

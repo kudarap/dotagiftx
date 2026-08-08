@@ -42,7 +42,7 @@ func handleItemList(
 		}
 
 		go func() {
-			if err = trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
+			if err = trackSvc.CreateSearchKeyword(context.WithoutCancel(r.Context()), r, opts.Keyword); err != nil {
 				logger.ErrorContext(r.Context(), "search keyword tracking error", "error", err)
 			}
 		}()
@@ -92,7 +92,7 @@ func handleItemDetail(svc itemService, cache cacheManager, logger *slog.Logger) 
 	}
 }
 
-func handleItemCreate(svc itemService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleItemCreate(svc itemService, cache cacheManager, divineKey string, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
@@ -110,13 +110,17 @@ func handleItemCreate(svc itemService, cache cacheManager, divineKey string) htt
 			return
 		}
 
-		go cache.BulkDel(itemCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(itemCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate item cache", "error", err)
+			}
+		}()
 
 		respondOK(w, i)
 	}
 }
 
-func handleItemImport(svc itemService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleItemImport(svc itemService, cache cacheManager, divineKey string, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
@@ -129,7 +133,11 @@ func handleItemImport(svc itemService, cache cacheManager, divineKey string) htt
 			respondError(w, fmt.Errorf("could not find 'file' on form-data: %s", err))
 			return
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				logger.ErrorContext(r.Context(), "closing import file", "error", err)
+			}
+		}()
 
 		// Check and read yaml file.
 		ct := fh.Header.Get("content-type")
@@ -144,7 +152,11 @@ func handleItemImport(svc itemService, cache cacheManager, divineKey string) htt
 			return
 		}
 
-		go cache.BulkDel(itemCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(itemCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate item cache", "error", err)
+			}
+		}()
 
 		respondOK(w, res)
 	}

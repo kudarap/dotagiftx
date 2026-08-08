@@ -10,7 +10,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func handleStatsMarketSummaryV2(svc statsService, cache cacheManager) http.HandlerFunc {
+func handleStatsMarketSummaryV2(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -27,7 +27,11 @@ func handleStatsMarketSummaryV2(svc statsService, cache cacheManager) http.Handl
 			return
 		}
 
-		go cache.Set(cacheKey, res, time.Minute*5)
+		go func() {
+			if err := cache.Set(cacheKey, res, time.Minute*5); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on market summary", "error", err)
+			}
+		}()
 		respondOK(w, res)
 	}
 }
@@ -79,7 +83,7 @@ func handleStatsMarketSummaryOverall(svc statsService, cache cacheManager, logge
 	}
 }
 
-func handleGraphMarketSales(svc statsService, cache cacheManager) http.HandlerFunc {
+func handleGraphMarketSales(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -103,22 +107,26 @@ func handleGraphMarketSales(svc statsService, cache cacheManager) http.HandlerFu
 		}
 
 		const expiration = time.Hour * 4
-		go cache.Set(cacheKey, res, expiration)
+		go func() {
+			if err := cache.Set(cacheKey, res, expiration); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on market sales graph", "error", err)
+			}
+		}()
 		respondOK(w, res)
 	}
 }
 
 const statsCacheExpr = time.Hour
 
-func handleStatsTopOrigins(itemSvc itemService, cache cacheManager) http.HandlerFunc {
-	return topStatsBaseHandler(itemSvc.TopOrigins, cache)
+func handleStatsTopOrigins(itemSvc itemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
+	return topStatsBaseHandler(itemSvc.TopOrigins, cache, logger)
 }
 
-func handleStatsTopHeroes(itemSvc itemService, cache cacheManager) http.HandlerFunc {
-	return topStatsBaseHandler(itemSvc.TopHeroes, cache)
+func handleStatsTopHeroes(itemSvc itemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
+	return topStatsBaseHandler(itemSvc.TopHeroes, cache, logger)
 }
 
-func handleStatsTopKeywords(statsSvc statsService, cache cacheManager) http.HandlerFunc {
+func handleStatsTopKeywords(statsSvc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	const expiration = time.Hour * 12
 	return func(w http.ResponseWriter, r *http.Request) {
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -135,12 +143,16 @@ func handleStatsTopKeywords(statsSvc statsService, cache cacheManager) http.Hand
 			return
 		}
 
-		go cache.Set(cacheKey, res, expiration)
+		go func() {
+			if err := cache.Set(cacheKey, res, expiration); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on top keywords", "error", err)
+			}
+		}()
 		respondOK(w, res)
 	}
 }
 
-func topStatsBaseHandler(fn func(context.Context) ([]string, error), cache cacheManager) http.HandlerFunc {
+func topStatsBaseHandler(fn func(context.Context) ([]string, error), cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -163,7 +175,11 @@ func topStatsBaseHandler(fn func(context.Context) ([]string, error), cache cache
 		}
 
 		top10 := l[:10]
-		go cache.Set(cacheKey, top10, statsCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, top10, statsCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on top stats", "error", err)
+			}
+		}()
 		respondOK(w, top10)
 	}
 }

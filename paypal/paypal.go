@@ -103,7 +103,7 @@ func (c *Client) IsCancelled(
 	if err != nil {
 		return
 	}
-	defer req.Body.Close()
+	defer func() { _ = req.Body.Close() }()
 
 	var sub SubscriptionEventPayload
 	if err = json.Unmarshal(body, &sub); err != nil {

@@ -28,7 +28,7 @@ func Thumbnail(path string, width, height uint) (newPath string, err error) {
 
 	// Make a cache path writable
 	dir, _ := filepath.Split(newPath)
-	if err = os.MkdirAll(dir, os.ModePerm); err != nil {
+	if err = os.MkdirAll(dir, 0o750); err != nil {
 		return
 	}
 
@@ -38,11 +38,11 @@ func Thumbnail(path string, width, height uint) (newPath string, err error) {
 	}
 
 	m := resize.Thumbnail(width, height, img, resize.Lanczos3)
-	out, err := os.Create(newPath)
+	out, err := os.Create(newPath) //nolint:gosec // newPath is composed from validated base path
 	if err != nil {
 		return
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
 	// Write new image to file
 	if err = encodeImage(newPath, out, m); err != nil {
@@ -70,11 +70,11 @@ func encodeImage(newPath string, file *os.File, img image.Image) error {
 
 func decodeImage(path string) (image.Image, error) {
 	// Open file
-	file, err := os.Open(path)
+	file, err := os.Open(path) //nolint:gosec // path is a file-manager resolved image path
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	// Decode base on type
 	var img image.Image

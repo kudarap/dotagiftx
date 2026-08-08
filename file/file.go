@@ -2,7 +2,7 @@ package file
 
 import (
 	"bytes"
-	"crypto/sha1"
+	"crypto/sha1" //nolint:gosec // legacy file name hashing for consistency, not security critical
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -37,7 +37,7 @@ func (l *Local) SaveWithName(r io.Reader, baseName string) (name string, err err
 
 // Save saves bytes into file and returns a unique filename.
 func (l *Local) Save(r io.Reader) (name string, err error) {
-	return l.baseSave(r, generateSha1Name())
+	return l.baseSave(r, generateHashName())
 }
 
 // Save saves bytes into file and returns an unique filename.
@@ -49,7 +49,7 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 	}
 	// Make upload path writable.
 	dir := strings.TrimSuffix(l.Dir(), "/") + "/"
-	_ = os.Mkdir(dir, os.ModePerm)
+	_ = os.Mkdir(dir, 0o750)
 
 	// Get bytes content from Reader.
 	buf := new(bytes.Buffer)
@@ -82,11 +82,11 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 	if err != nil {
 		return
 	}
-	out, err := os.Create(dst)
+	out, err := os.Create(dst) //nolint:gosec // dst is validated by resolvePath against save dir
 	if err != nil {
 		return
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
 	// Write contents to file.
 	_, err = out.Write(data)
@@ -165,8 +165,8 @@ func (l *Local) resolvePath(name string) (string, error) {
 	return path, nil
 }
 
-func generateSha1Name() string {
-	h := sha1.New()
+func generateHashName() string {
+	h := sha1.New() //nolint:gosec // legacy file name hashing for consistency
 	s := fmt.Sprintf("%d", time.Now().Nanosecond())
 	h.Write([]byte(s))
 	sum := h.Sum(nil)

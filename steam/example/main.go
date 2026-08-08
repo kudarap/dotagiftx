@@ -17,7 +17,7 @@ func main() {
 	client = c
 
 	http.HandleFunc("/login", loginHandler)
-	http.ListenAndServe(":9000", nil)
+	_ = http.ListenAndServe(":9000", nil) //nolint:gosec // minimal example server without timeouts
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +27,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatalln(err)
 		}
 
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, url, http.StatusTemporaryRedirect) //nolint:gosec // steam openid login redirect flow
 		return
 	}
 
@@ -36,6 +36,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	log.Println(sp)
-	w.Write([]byte(sp.Name))
+	log.Println(sp)                 //nolint:gosec // example tool logging player info
+	_, _ = w.Write([]byte(sp.Name)) //nolint:gosec // example tool rendering player name
 }
