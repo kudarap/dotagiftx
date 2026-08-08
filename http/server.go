@@ -101,7 +101,7 @@ func (s *Server) setup() {
 	r.Use(middleware.RequestID)
 	r.Use(vercelRequestID)
 	r.Use(middleware.ClientIPFromHeader("X-Real-IP"))
-	r.Use(NewStructuredLogger(s.logger))
+	r.Use(logger(s.logger))
 	r.Use(cors)
 	r.Use(requestIDWriter)
 	r.Use(middleware.Recoverer)
@@ -159,21 +159,6 @@ func (s *Server) Run() error {
 		s.logger.InfoContext(ctx, "server stopped!")
 		return nil
 	}
-}
-
-func NewStructuredLogger(logger *slog.Logger) func(next http.Handler) http.Handler {
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{
-		Logger: slogPrintAdapter{logger},
-	})
-}
-
-// slogPrintAdapter adapts *slog.Logger to chi's LoggerInterface.
-type slogPrintAdapter struct {
-	l *slog.Logger
-}
-
-func (a slogPrintAdapter) Print(v ...any) {
-	a.l.Info(fmt.Sprint(v...))
 }
 
 func isValidDivineKey(r *http.Request, divineKey string) error {
