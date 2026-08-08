@@ -6,13 +6,12 @@ import (
 
 	"log/slog"
 
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/assets"
 )
 
 const pixelImage = "image/pixel.gif"
 
-func handleTracker(svc dotagiftx.TrackService, logger *slog.Logger) http.HandlerFunc {
+func handleTracker(svc trackService, logger *slog.Logger) http.HandlerFunc {
 	image, _ := assets.Content.ReadFile(pixelImage)
 	return func(w http.ResponseWriter, r *http.Request) {
 		go func(r *http.Request) {

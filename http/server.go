@@ -27,16 +27,16 @@ const (
 func NewServer(
 	sigKey string,
 	divineKey string,
-	us dotagiftx.UserService,
-	au dotagiftx.AuthService,
-	is dotagiftx.ImageService,
-	its dotagiftx.ItemService,
-	ms dotagiftx.MarketService,
-	ts dotagiftx.TrackService,
-	ss dotagiftx.StatsService,
-	rs dotagiftx.ReportService,
-	hs dotagiftx.HammerService,
-	sc dotagiftx.SteamClient,
+	us userService,
+	au authService,
+	is imageService,
+	its itemService,
+	ms marketService,
+	ts trackService,
+	ss statsService,
+	rs reportService,
+	hs hammerService,
+	sc steamClient,
 	ps *phantasm.Service,
 	t *tracing.Tracer,
 	c cacheManager,
@@ -70,16 +70,16 @@ type Server struct {
 	Addr    string
 	handler http.Handler
 	// Service resources.
-	userSvc   dotagiftx.UserService
-	authSvc   dotagiftx.AuthService
-	imageSvc  dotagiftx.ImageService
-	itemSvc   dotagiftx.ItemService
-	marketSvc dotagiftx.MarketService
-	trackSvc  dotagiftx.TrackService
-	statsSvc  dotagiftx.StatsService
-	reportSvc dotagiftx.ReportService
-	hammerSvc dotagiftx.HammerService
-	steam     dotagiftx.SteamClient
+	userSvc   userService
+	authSvc   authService
+	imageSvc  imageService
+	itemSvc   itemService
+	marketSvc marketService
+	trackSvc  trackService
+	statsSvc  statsService
+	reportSvc reportService
+	hammerSvc hammerService
+	steam     steamClient
 
 	phantasmSvc *phantasm.Service
 

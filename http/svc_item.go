@@ -20,8 +20,8 @@ const (
 )
 
 func handleItemList(
-	svc dotagiftx.ItemService,
-	trackSvc dotagiftx.TrackService,
+	svc itemService,
+	trackSvc trackService,
 	cache cacheManager,
 	logger *slog.Logger,
 ) http.HandlerFunc {
@@ -66,7 +66,7 @@ func handleItemList(
 	}
 }
 
-func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
+func handleItemDetail(svc itemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
@@ -92,7 +92,7 @@ func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *slo
 	}
 }
 
-func handleItemCreate(svc dotagiftx.ItemService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleItemCreate(svc itemService, cache cacheManager, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
@@ -116,7 +116,7 @@ func handleItemCreate(svc dotagiftx.ItemService, cache cacheManager, divineKey s
 	}
 }
 
-func handleItemImport(svc dotagiftx.ItemService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleItemImport(svc itemService, cache cacheManager, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)

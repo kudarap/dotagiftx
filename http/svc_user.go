@@ -12,7 +12,7 @@ import (
 
 const userCacheExpr = time.Minute * 5
 
-func handleProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+func handleProfile(svc userService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -35,7 +35,7 @@ func handleProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFu
 	}
 }
 
-func handlePublicProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+func handlePublicProfile(svc userService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -59,7 +59,7 @@ func handlePublicProfile(svc dotagiftx.UserService, cache cacheManager) http.Han
 	}
 }
 
-func handleBlacklisted(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+func handleBlacklisted(svc userService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -101,7 +101,7 @@ type vanityUserResp struct {
 }
 
 // TODO this should be place on service
-func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamClient, cache cacheManager) http.HandlerFunc {
+func handleVanityProfile(svc userService, steamClient steamClient, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -147,7 +147,7 @@ func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamC
 	}
 }
 
-func handleCreateSubscription(svc dotagiftx.UserService) http.HandlerFunc {
+func handleCreateSubscription(svc userService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			PlanID string `json:"plan_id"`
@@ -169,7 +169,7 @@ func handleCreateSubscription(svc dotagiftx.UserService) http.HandlerFunc {
 	}
 }
 
-func handleProcSubscription(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+func handleProcSubscription(svc userService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			SubscriptionID string `json:"subscription_id"`
@@ -193,7 +193,7 @@ func handleProcSubscription(svc dotagiftx.UserService, cache cacheManager) http.
 	}
 }
 
-func handleUserSubscriptionWebhook(svc dotagiftx.UserService) http.HandlerFunc {
+func handleUserSubscriptionWebhook(svc userService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, err := svc.UpdateSubscriptionFromWebhook(r.Context(), r); err != nil {
 			respondError(w, err)
@@ -203,7 +203,7 @@ func handleUserSubscriptionWebhook(svc dotagiftx.UserService) http.HandlerFunc {
 	}
 }
 
-func handleUserManualSubscription(svc dotagiftx.UserService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleUserManualSubscription(svc userService, cache cacheManager, divineKey string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)

@@ -10,7 +10,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func handleStatsMarketSummaryV2(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
+func handleStatsMarketSummaryV2(svc statsService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -37,7 +37,7 @@ const (
 	overallStatsRehydrationDur = overallStatsCacheExpr / 2
 )
 
-func hydrateStatsMarketSummaryOverall(cacheKey string, svc dotagiftx.StatsService, cache cacheManager, logger *slog.Logger) {
+func hydrateStatsMarketSummaryOverall(cacheKey string, svc statsService, cache cacheManager, logger *slog.Logger) {
 	ctx := context.Background()
 	logger.InfoContext(ctx, "REHYDRATING OVERALL STATS: started")
 	res, err := collectMarketStats(ctx, svc, nil)
@@ -53,7 +53,7 @@ func hydrateStatsMarketSummaryOverall(cacheKey string, svc dotagiftx.StatsServic
 	logger.InfoContext(ctx, "REHYDRATING OVERALL STATS: completed")
 }
 
-func handleStatsMarketSummaryOverall(svc dotagiftx.StatsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
+func handleStatsMarketSummaryOverall(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	const cacheKey = "stats_market_summary_overall"
 
 	// hydration setup since this is a long-running process
@@ -79,7 +79,7 @@ func handleStatsMarketSummaryOverall(svc dotagiftx.StatsService, cache cacheMana
 	}
 }
 
-func handleGraphMarketSales(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
+func handleGraphMarketSales(svc statsService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -110,15 +110,15 @@ func handleGraphMarketSales(svc dotagiftx.StatsService, cache cacheManager) http
 
 const statsCacheExpr = time.Hour
 
-func handleStatsTopOrigins(itemSvc dotagiftx.ItemService, cache cacheManager) http.HandlerFunc {
+func handleStatsTopOrigins(itemSvc itemService, cache cacheManager) http.HandlerFunc {
 	return topStatsBaseHandler(itemSvc.TopOrigins, cache)
 }
 
-func handleStatsTopHeroes(itemSvc dotagiftx.ItemService, cache cacheManager) http.HandlerFunc {
+func handleStatsTopHeroes(itemSvc itemService, cache cacheManager) http.HandlerFunc {
 	return topStatsBaseHandler(itemSvc.TopHeroes, cache)
 }
 
-func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
+func handleStatsTopKeywords(statsSvc statsService, cache cacheManager) http.HandlerFunc {
 	const expiration = time.Hour * 12
 	return func(w http.ResponseWriter, r *http.Request) {
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -181,7 +181,7 @@ func newMarketStats(asks *dotagiftx.MarketStatusCount, bids *dotagiftx.MarketSta
 	return &marketStats{asks, bids}
 }
 
-func collectMarketStats(ctx context.Context, svc dotagiftx.StatsService, r *http.Request) (*marketStats, error) {
+func collectMarketStats(ctx context.Context, svc statsService, r *http.Request) (*marketStats, error) {
 	var err error
 	opts := [2]dotagiftx.FindOpts{
 		{Filter: &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}},

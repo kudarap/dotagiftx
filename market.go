@@ -123,40 +123,6 @@ type (
 	// Markets represents a collection of market.
 	Markets []Market
 
-	// MarketService provides access to market service.
-	MarketService interface {
-		// Markets returns a list of markets.
-		Markets(ctx context.Context, opts FindOpts) ([]Market, *FindMetadata, error)
-
-		// Market returns market details by id.
-		Market(ctx context.Context, id string) (*Market, error)
-
-		// Create saves new market details.
-		Create(context.Context, *Market) error
-
-		// Update saves market details changes.
-		Update(context.Context, *Market) error
-
-		// UpdateUserRankScore sets new user ranking score on all live markets by user id.
-		UpdateUserRankScore(ctx context.Context, userID string) error
-
-		// Index composes market data for faster search and retrieval.
-		// Index(ctx context.Context, id string) (*Market, error)
-
-		// AutoCompleteBid detects if there's a matching reservation on buy order and automatically
-		// resolve it by setting complete-bid status.
-		AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error
-
-		// Catalog returns a list of catalogs.
-		Catalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error)
-
-		// CatalogDetails returns catalog details by item id.
-		CatalogDetails(ctx context.Context, id string, opts FindOpts) (*Catalog, error)
-
-		// TrendingCatalog returns a top 10 trending catalogs.
-		TrendingCatalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error)
-	}
-
 	// MarketStorage defines operation for market records.
 	MarketStorage interface {
 		// Find returns a list of markets from data store.
@@ -307,13 +273,13 @@ func NewMarketService(
 	ts TrackStorage,
 	cs CatalogStorage,
 	st StatsStorage,
-	vd DeliveryService,
-	vi InventoryService,
+	vd *DeliveryService,
+	vi *InventoryService,
 	sc SteamClient,
 	tp taskProcessor,
 	lg *slog.Logger,
-) MarketService {
-	return &marketService{
+) *MarketService {
+	return &MarketService{
 		ss, us,
 		is,
 		ts,
@@ -327,21 +293,21 @@ func NewMarketService(
 	}
 }
 
-type marketService struct {
+type MarketService struct {
 	marketStg    MarketStorage
 	userStg      UserStorage
 	itemStg      ItemStorage
 	trackStg     TrackStorage
 	catalogStg   CatalogStorage
 	statsStg     StatsStorage
-	deliverySvc  DeliveryService
-	inventorySvc InventoryService
+	deliverySvc  *DeliveryService
+	inventorySvc *InventoryService
 	steam        SteamClient
 	taskProc     taskProcessor
 	logger       *slog.Logger
 }
 
-func (s *marketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *FindMetadata, error) {
+func (s *MarketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *FindMetadata, error) {
 	// Set market owner result.
 	if au := AuthFromContext(ctx); au != nil {
 		opts.UserID = au.UserID
@@ -368,7 +334,7 @@ func (s *marketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 	}, nil
 }
 
-func (s *marketService) Market(ctx context.Context, id string) (*Market, error) {
+func (s *MarketService) Market(ctx context.Context, id string) (*Market, error) {
 	mkt, err := s.marketStg.Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -382,7 +348,7 @@ func (s *marketService) Market(ctx context.Context, id string) (*Market, error) 
 	return mkt, nil
 }
 
-func (s *marketService) Create(ctx context.Context, market *Market) error {
+func (s *MarketService) Create(ctx context.Context, market *Market) error {
 	// Set market ownership.
 	au := AuthFromContext(ctx)
 	if au == nil {
@@ -465,7 +431,7 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 	return nil
 }
 
-func (s *marketService) Update(ctx context.Context, market *Market) error {
+func (s *MarketService) Update(ctx context.Context, market *Market) error {
 	cur, err := s.checkOwnership(ctx, market.ID)
 	if err != nil {
 		return err
@@ -561,7 +527,7 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 	return nil
 }
 
-func (s *marketService) UpdateUserRankScore(ctx context.Context, userID string) error {
+func (s *MarketService) UpdateUserRankScore(ctx context.Context, userID string) error {
 	opts := FindOpts{
 		IndexKey: "user_id",
 		Filter:   Market{UserID: userID},
@@ -583,7 +549,7 @@ func (s *marketService) UpdateUserRankScore(ctx context.Context, userID string) 
 
 // AutoCompleteBid detects if there's a matching reservation on buy order and automatically resolve it by setting
 // complete-bid status.
-func (s *marketService) AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error {
+func (s *MarketService) AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error {
 	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
 		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
 	}
@@ -620,7 +586,7 @@ func (s *marketService) AutoCompleteBid(ctx context.Context, ask Market, partner
 	return s.marketStg.Update(ctx, &b)
 }
 
-func (s *marketService) checkFlaggedUser(ctx context.Context, userID string) error {
+func (s *MarketService) checkFlaggedUser(ctx context.Context, userID string) error {
 	u, err := s.userStg.Get(ctx, userID)
 	if err != nil {
 		return err
@@ -632,7 +598,7 @@ func (s *marketService) checkFlaggedUser(ctx context.Context, userID string) err
 	return nil
 }
 
-func (s *marketService) processShopkeepersContract(ctx context.Context, m *Market) (*Market, error) {
+func (s *MarketService) processShopkeepersContract(ctx context.Context, m *Market) (*Market, error) {
 	user, err := s.userStg.Get(ctx, m.UserID)
 	if err != nil {
 		return nil, err
@@ -656,7 +622,7 @@ func (s *marketService) processShopkeepersContract(ctx context.Context, m *Marke
 	return m, nil
 }
 
-func (s *marketService) checkAskType(ctx context.Context, ask *Market) error {
+func (s *MarketService) checkAskType(ctx context.Context, ask *Market) error {
 	user, err := s.userStg.Get(ctx, ask.UserID)
 	if err != nil {
 		return err
@@ -690,7 +656,7 @@ func (s *marketService) checkAskType(ctx context.Context, ask *Market) error {
 	return nil
 }
 
-func (s *marketService) checkBidType(ctx context.Context, bid *Market) error {
+func (s *MarketService) checkBidType(ctx context.Context, bid *Market) error {
 	// Remove existing buy order if exists.
 	res, err := s.marketStg.Find(ctx, FindOpts{
 		IndexKey: "user_id",
@@ -714,7 +680,7 @@ func (s *marketService) checkBidType(ctx context.Context, bid *Market) error {
 	return nil
 }
 
-func (s *marketService) checkOwnership(ctx context.Context, id string) (*Market, error) {
+func (s *MarketService) checkOwnership(ctx context.Context, id string) (*Market, error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return nil, AuthErrNoAccess
@@ -732,7 +698,7 @@ func (s *marketService) checkOwnership(ctx context.Context, id string) (*Market,
 	return mkt, nil
 }
 
-func (s *marketService) userMarket(ctx context.Context, userID, id string) (*Market, error) {
+func (s *MarketService) userMarket(ctx context.Context, userID, id string) (*Market, error) {
 	cur, err := s.marketStg.Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -744,7 +710,7 @@ func (s *marketService) userMarket(ctx context.Context, userID, id string) (*Mar
 	return cur, nil
 }
 
-func (s *marketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
+func (s *MarketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
 	opts.Keyword = strings.ReplaceAll(opts.Keyword, `\`, "")
 	if err := opts.validate(); err != nil {
 		return nil, nil, err
@@ -771,7 +737,7 @@ func (s *marketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, 
 	}, nil
 }
 
-func (s *marketService) TrendingCatalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
+func (s *MarketService) TrendingCatalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
 	res, err := s.catalogStg.Trending(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -787,7 +753,7 @@ func (s *marketService) TrendingCatalog(ctx context.Context, opts FindOpts) ([]C
 	}, nil
 }
 
-func (s *marketService) CatalogDetails(ctx context.Context, slug string, opts FindOpts) (*Catalog, error) {
+func (s *MarketService) CatalogDetails(ctx context.Context, slug string, opts FindOpts) (*Catalog, error) {
 	if slug == "" {
 		return nil, CatalogErrNotFound
 	}

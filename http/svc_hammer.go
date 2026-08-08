@@ -7,7 +7,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func handleHammerBan(svc dotagiftx.HammerService, cache cacheManager) http.HandlerFunc {
+func handleHammerBan(svc hammerService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var p dotagiftx.HammerParams
 		if err := parseForm(r, &p); err != nil {
@@ -26,7 +26,7 @@ func handleHammerBan(svc dotagiftx.HammerService, cache cacheManager) http.Handl
 	}
 }
 
-func handleHammerSuspend(svc dotagiftx.HammerService, cache cacheManager) http.HandlerFunc {
+func handleHammerSuspend(svc hammerService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var p dotagiftx.HammerParams
 		if err := parseForm(r, &p); err != nil {
@@ -45,7 +45,7 @@ func handleHammerSuspend(svc dotagiftx.HammerService, cache cacheManager) http.H
 	}
 }
 
-func handleHammerLift(svc dotagiftx.HammerService, cache cacheManager) http.HandlerFunc {
+func handleHammerLift(svc hammerService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		p := struct {
 			SteamID         string `json:"steam_id"`

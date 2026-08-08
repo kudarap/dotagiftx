@@ -6,10 +6,9 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kudarap/dotagiftx"
 )
 
-func handleImageUpload(svc dotagiftx.ImageService) http.HandlerFunc {
+func handleImageUpload(svc imageService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get uploaded file.
 		form, _, err := r.FormFile("file")
@@ -37,7 +36,7 @@ const (
 	imageCacheItemMaxAge = dayAge * 365 // 1 year for item images
 )
 
-func handleImage(svc dotagiftx.ImageService) http.HandlerFunc {
+func handleImage(svc imageService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 		path, err := svc.Image(r.Context(), id)
@@ -52,7 +51,7 @@ func handleImage(svc dotagiftx.ImageService) http.HandlerFunc {
 	}
 }
 
-func handleImageThumbnail(svc dotagiftx.ImageService) http.HandlerFunc {
+func handleImageThumbnail(svc imageService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 		width, _ := strconv.Atoi(chi.URLParam(r, "w"))

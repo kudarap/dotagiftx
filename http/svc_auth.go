@@ -17,7 +17,7 @@ type authResp struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
-func handleAuthSteam(svc dotagiftx.AuthService) http.HandlerFunc {
+func handleAuthSteam(svc authService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Handle steam auth.
 		au, err := svc.SteamLogin(r.Context(), w, r)
@@ -42,7 +42,7 @@ func handleAuthSteam(svc dotagiftx.AuthService) http.HandlerFunc {
 	}
 }
 
-func handleAuthRenew(svc dotagiftx.AuthService) http.HandlerFunc {
+func handleAuthRenew(svc authService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := new(struct {
 			RefreshToken string `json:"refresh_token"`
@@ -69,7 +69,7 @@ func handleAuthRenew(svc dotagiftx.AuthService) http.HandlerFunc {
 	}
 }
 
-func handleAuthRevoke(svc dotagiftx.AuthService) http.HandlerFunc {
+func handleAuthRevoke(svc authService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := new(struct {
 			RefreshToken string `json:"refresh_token"`

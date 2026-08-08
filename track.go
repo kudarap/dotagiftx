@@ -57,21 +57,6 @@ type (
 		CreatedAt  time.Time `json:"created_at"   db:"created_at,omitempty,indexed"`
 	}
 
-	// TrackService provides access to track service.
-	TrackService interface {
-		// Tracks returns a list of tracks.
-		Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error)
-
-		// Track returns track details by id.
-		Track(ctx context.Context, id string) (*Track, error)
-
-		// CreateFromRequest saves new track from http request. Primarily used on client side.
-		CreateFromRequest(ctx context.Context, r *http.Request) error
-
-		// CreateSearchKeyword saves new keyword tracking data.
-		CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error
-	}
-
 	// TrackStorage defines operation for track records.
 	TrackStorage interface {
 		// Find returns a list of tracks from data store.
@@ -135,16 +120,16 @@ func (t *Track) SetDefaults(r *http.Request) {
 }
 
 // NewTrackService returns new track service.
-func NewTrackService(ts TrackStorage, ps ItemStorage) TrackService {
-	return &trackService{ts, ps}
+func NewTrackService(ts TrackStorage, ps ItemStorage) *TrackService {
+	return &TrackService{ts, ps}
 }
 
-type trackService struct {
+type TrackService struct {
 	trackStg TrackStorage
 	itemStg  ItemStorage
 }
 
-func (s *trackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error) {
+func (s *TrackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error) {
 	res, err := s.trackStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
@@ -166,11 +151,11 @@ func (s *trackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *Fin
 	}, nil
 }
 
-func (s *trackService) Track(ctx context.Context, id string) (*Track, error) {
+func (s *TrackService) Track(ctx context.Context, id string) (*Track, error) {
 	return s.trackStg.Get(ctx, id)
 }
 
-func (s *trackService) CreateFromRequest(ctx context.Context, r *http.Request) error {
+func (s *TrackService) CreateFromRequest(ctx context.Context, r *http.Request) error {
 	t := new(Track)
 	t.SetDefaults(r)
 
@@ -184,7 +169,7 @@ func (s *trackService) CreateFromRequest(ctx context.Context, r *http.Request) e
 	return s.trackStg.Create(ctx, t)
 }
 
-func (s *trackService) CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error {
+func (s *TrackService) CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error {
 	if r.Method != http.MethodGet {
 		return nil
 	}

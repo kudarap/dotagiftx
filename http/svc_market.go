@@ -17,8 +17,8 @@ const (
 )
 
 func handleMarketList(
-	svc dotagiftx.MarketService,
-	trackSvc dotagiftx.TrackService,
+	svc marketService,
+	trackSvc trackService,
 	private bool,
 	cache cacheManager,
 	logger *slog.Logger,
@@ -107,7 +107,7 @@ func sortQueryModifier(r *http.Request) {
 	r.URL.RawQuery = query.Encode()
 }
 
-func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
+func handleMarketDetail(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
@@ -149,7 +149,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger 
 	}
 }
 
-func handleMarketCreate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
+func handleMarketCreate(svc marketService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -168,7 +168,7 @@ func handleMarketCreate(svc dotagiftx.MarketService, cache cacheManager) http.Ha
 	}
 }
 
-func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
+func handleMarketUpdate(svc marketService, cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {

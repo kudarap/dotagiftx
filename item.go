@@ -64,30 +64,6 @@ type (
 		Total   int `json:"total"`
 	}
 
-	// ItemService provides access to item service.
-	ItemService interface {
-		// Items returns a list of items.
-		Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error)
-
-		// Item returns item details by id.
-		Item(ctx context.Context, id string) (*Item, error)
-
-		// Create saves new item details.
-		Create(context.Context, *Item) error
-
-		// Update saves item details changes.
-		Update(context.Context, *Item) error
-
-		// Import creates new item from yaml format.
-		Import(ctx context.Context, f io.Reader) (ItemImportResult, error)
-
-		// TopOrigins returns a list of top origin/treasure base on view count.
-		TopOrigins(ctx context.Context) ([]string, error)
-
-		// TopHeroes returns a list of top heroes base on view count.
-		TopHeroes(ctx context.Context) ([]string, error)
-	}
-
 	// ItemStorage defines operation for item records.
 	ItemStorage interface {
 		// Find returns a list of items from data store.
@@ -163,18 +139,18 @@ func (i Item) ToCatalog() Catalog {
 }
 
 // NewItemService returns new Item service.
-func NewItemService(allowedDomains []string, is ItemStorage, fm FileManager) ItemService {
-	return &itemService{is, fm, allowedDomains}
+func NewItemService(allowedDomains []string, is ItemStorage, fm FileManager) *ItemService {
+	return &ItemService{is, fm, allowedDomains}
 }
 
-type itemService struct {
+type ItemService struct {
 	itemStg ItemStorage
 	fileMgr FileManager
 
 	allowedDomains []string
 }
 
-func (s *itemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error) {
+func (s *ItemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error) {
 	res, err := s.itemStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
@@ -196,11 +172,11 @@ func (s *itemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMe
 	}, nil
 }
 
-func (s *itemService) Item(ctx context.Context, id string) (*Item, error) {
+func (s *ItemService) Item(ctx context.Context, id string) (*Item, error) {
 	return s.itemStg.Get(ctx, id)
 }
 
-func (s *itemService) TopOrigins(ctx context.Context) ([]string, error) {
+func (s *ItemService) TopOrigins(ctx context.Context) ([]string, error) {
 	items, err := s.itemStg.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
@@ -217,7 +193,7 @@ func (s *itemService) TopOrigins(ctx context.Context) ([]string, error) {
 	return pt, nil
 }
 
-func (s *itemService) TopHeroes(ctx context.Context) ([]string, error) {
+func (s *ItemService) TopHeroes(ctx context.Context) ([]string, error) {
 	items, err := s.itemStg.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
@@ -233,7 +209,7 @@ func (s *itemService) TopHeroes(ctx context.Context) ([]string, error) {
 	return ph, nil
 }
 
-func (s *itemService) Create(ctx context.Context, itm *Item) error {
+func (s *ItemService) Create(ctx context.Context, itm *Item) error {
 	// TODO check moderator/contributors
 	au := AuthFromContext(ctx)
 	if au == nil {
@@ -271,7 +247,7 @@ func (s *itemService) Create(ctx context.Context, itm *Item) error {
 	return s.itemStg.Create(ctx, itm)
 }
 
-func (s *itemService) Update(ctx context.Context, itm *Item) error {
+func (s *ItemService) Update(ctx context.Context, itm *Item) error {
 	// TODO check moderator/contributors
 	au := AuthFromContext(ctx)
 	if au == nil {
@@ -298,7 +274,7 @@ func (s *itemService) Update(ctx context.Context, itm *Item) error {
 	return s.itemStg.Update(ctx, itm)
 }
 
-func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
+func (s *ItemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
 	var result ItemImportResult
 
 	b, err := io.ReadAll(f)
@@ -346,7 +322,7 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 	return result, nil
 }
 
-func (s *itemService) getItemByName(ctx context.Context, name string) (*Item, error) {
+func (s *ItemService) getItemByName(ctx context.Context, name string) (*Item, error) {
 	itm, err := s.itemStg.Find(ctx, FindOpts{Filter: Item{Name: name}})
 	if err != nil {
 		return nil, err
@@ -360,7 +336,7 @@ func (s *itemService) getItemByName(ctx context.Context, name string) (*Item, er
 }
 
 // downloadItemImage saves an image file from a url.
-func (s *itemService) downloadItemImage(ctx context.Context, baseName, url string) (string, error) {
+func (s *ItemService) downloadItemImage(ctx context.Context, baseName, url string) (string, error) {
 	u, err := neturl.Parse(url)
 	if err != nil {
 		return "", err

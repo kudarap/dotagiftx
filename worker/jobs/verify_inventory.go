@@ -12,7 +12,7 @@ import (
 
 // VerifyInventory represents an inventory verification job.
 type VerifyInventory struct {
-	inventorySvc dotagiftx.InventoryService
+	inventorySvc *dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
 	source       *verify.Source
 	logger       *slog.Logger
@@ -23,7 +23,7 @@ type VerifyInventory struct {
 }
 
 func NewVerifyInventory(
-	is dotagiftx.InventoryService,
+	is *dotagiftx.InventoryService,
 	ms dotagiftx.MarketStorage,
 	vs *verify.Source,
 	lg *slog.Logger,

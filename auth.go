@@ -45,23 +45,7 @@ type (
 		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}
 
-	// AuthService provides access to service.
-	AuthService interface {
-		// SteamLogin redirects for authorization and process creation of auth.
-		SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error)
-
-		// RevokeRefreshToken invalidates refresh token that will prevent on renewing
-		// short-lived access token and will result user have to re-login.
-		RevokeRefreshToken(ctx context.Context, refreshToken string) error
-
-		// RenewToken checks refresh token validity that allows to get new short-lived access token.
-		RenewToken(ctx context.Context, refreshToken string) (*Auth, error)
-
-		// Auth returns an auth details by id.
-		Auth(ctx context.Context, id string) (*Auth, error)
-	}
-
-	// AuthStorage defines operation for auth records.
+	// AuthStorage defines operation for auth records.	// AuthStorage defines operation for auth records.
 	AuthStorage interface {
 		// Get returns an auth details by id from data store.
 		Get(ctx context.Context, id string) (*Auth, error)
@@ -109,22 +93,22 @@ func NewAuthService(
 	salt string,
 	sc SteamClient,
 	as AuthStorage,
-	us UserService,
+	us *UserService,
 	logger *slog.Logger,
-) AuthService {
-	return &authService{salt, sc, as, us, logger}
+) *AuthService {
+	return &AuthService{salt, sc, as, us, logger}
 }
 
-type authService struct {
+type AuthService struct {
 	salt string
 
 	steamClient SteamClient
 	authStg     AuthStorage
-	userSvc     UserService
+	userSvc     *UserService
 	logger      *slog.Logger
 }
 
-func (s *authService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error) {
+func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error) {
 	// Handle authorization redirect.
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := s.steamClient.AuthorizeURL(r)
@@ -203,7 +187,7 @@ func (s *authService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 	return authData, nil
 }
 
-func (s *authService) RenewToken(ctx context.Context, refreshToken string) (*Auth, error) {
+func (s *AuthService) RenewToken(ctx context.Context, refreshToken string) (*Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
 		return nil, AuthErrRefreshToken
 	}
@@ -216,7 +200,7 @@ func (s *authService) RenewToken(ctx context.Context, refreshToken string) (*Aut
 	return au, nil
 }
 
-func (s *authService) RevokeRefreshToken(ctx context.Context, refreshToken string) error {
+func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken string) error {
 	if strings.TrimSpace(refreshToken) == "" {
 		return AuthErrRefreshToken
 	}
@@ -230,7 +214,7 @@ func (s *authService) RevokeRefreshToken(ctx context.Context, refreshToken strin
 	return s.authStg.Update(ctx, au)
 }
 
-func (s *authService) Auth(ctx context.Context, id string) (*Auth, error) {
+func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
 	u, err := s.authStg.Get(ctx, id)
 	if err != nil {
 		return nil, AuthErrNotFound.X(err)
@@ -239,7 +223,7 @@ func (s *authService) Auth(ctx context.Context, id string) (*Auth, error) {
 	return u, nil
 }
 
-func (s *authService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
+func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
 	if user == nil {
 		user = &User{
 			SteamID: sp.ID,
@@ -262,14 +246,14 @@ func (s *authService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 	return au, nil
 }
 
-func (s *authService) generateRefreshToken() string {
+func (s *AuthService) generateRefreshToken() string {
 	t := fmt.Sprintf("%d%s", time.Now().UnixNano(), s.salt)
 	h := sha1.New()
 	h.Write([]byte(t))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func (s *authService) composePassword(steamID, userID string) string {
+func (s *AuthService) composePassword(steamID, userID string) string {
 	h := sha1.New()
 	h.Write([]byte(steamID + userID + s.salt))
 	return hex.EncodeToString(h.Sum(nil))

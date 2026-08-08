@@ -85,40 +85,6 @@ type (
 		Cycles int    `json:"cycles"`
 	}
 
-	// UserService provides access to user service.
-	UserService interface {
-		// Users returns a list of users.
-		Users(ctx context.Context, opts FindOpts) ([]User, error)
-
-		// FlaggedUsers returns a list of flagged/reported users.
-		FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error)
-
-		// User returns user details by id.
-		User(ctx context.Context, id string) (*User, error)
-
-		// Create saves new user and download profile image to local file.
-		Create(context.Context, *User) error
-
-		// UserFromContext returns user details from context.
-		UserFromContext(context.Context) (*User, error)
-
-		// Update saves user changes.
-		Update(context.Context, *User) error
-
-		// SteamSync saves updated steam info.
-		SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error)
-
-		// ProcessSubscription validates and process subscription features.
-		ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error)
-
-		// UpdateSubscriptionFromWebhook handles user subscription updates form http request.
-		UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error)
-
-		CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error)
-
-		ProcessManualSubscription(ctx context.Context, form ManualSubscriptionParam) (*User, error)
-	}
-
 	// UserStorage defines operation for user records.
 	UserStorage interface {
 		// Find returns a list of users from data store.
@@ -290,29 +256,29 @@ func UserSubscriptionFromString(s string) UserSubscription {
 }
 
 // NewUserService returns a new User service.
-func NewUserService(us UserStorage, fm FileManager, sc paymentManager) UserService {
-	return &userService{us, fm, sc}
+func NewUserService(us UserStorage, fm FileManager, sc paymentManager) *UserService {
+	return &UserService{us, fm, sc}
 }
 
-type userService struct {
+type UserService struct {
 	userStg UserStorage
 	fileMgr FileManager
 	payment paymentManager
 }
 
-func (s *userService) Users(ctx context.Context, opts FindOpts) ([]User, error) {
+func (s *UserService) Users(ctx context.Context, opts FindOpts) ([]User, error) {
 	return s.userStg.Find(ctx, opts)
 }
 
-func (s *userService) FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error) {
+func (s *UserService) FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error) {
 	return s.userStg.FindFlagged(ctx, opts)
 }
 
-func (s *userService) User(ctx context.Context, id string) (*User, error) {
+func (s *UserService) User(ctx context.Context, id string) (*User, error) {
 	return s.userStg.Get(ctx, id)
 }
 
-func (s *userService) UserFromContext(ctx context.Context) (*User, error) {
+func (s *UserService) UserFromContext(ctx context.Context) (*User, error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return nil, UserErrNotFound
@@ -321,7 +287,7 @@ func (s *userService) UserFromContext(ctx context.Context) (*User, error) {
 	return s.User(ctx, au.UserID)
 }
 
-func (s *userService) Create(ctx context.Context, u *User) error {
+func (s *UserService) Create(ctx context.Context, u *User) error {
 	url, err := s.downloadProfileImage(ctx, u.Avatar)
 	if err != nil {
 		return NewXError(UserErrProfileImageDL, err)
@@ -341,7 +307,7 @@ func (s *userService) Create(ctx context.Context, u *User) error {
 	return s.userStg.Create(ctx, u)
 }
 
-func (s *userService) Update(ctx context.Context, u *User) error {
+func (s *UserService) Update(ctx context.Context, u *User) error {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return AuthErrNoAccess
@@ -355,7 +321,7 @@ func (s *userService) Update(ctx context.Context, u *User) error {
 	return s.userStg.Update(ctx, u)
 }
 
-func (s *userService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error) {
+func (s *UserService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error) {
 	u, err := s.userStg.Get(ctx, sp.ID)
 	if err != nil {
 		return nil, err
@@ -373,7 +339,7 @@ func (s *userService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, er
 	return u, nil
 }
 
-func (s *userService) CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error) {
+func (s *UserService) CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return "", AuthErrNoAccess
@@ -390,7 +356,7 @@ func (s *userService) CreateSubscription(ctx context.Context, planID string) (su
 	return subID, nil
 }
 
-func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error) {
+func (s *UserService) ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return nil, AuthErrNoAccess
@@ -439,7 +405,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 
 // UpdateSubscriptionFromWebhook manage updates from webhook payload, most often use in incrementing cycles or
 // extending expiration.
-func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error) {
+func (s *UserService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error) {
 	// get user by steam id and increment their cycles.
 	steamID, cancelled, lastPayment, err := s.payment.IsCancelled(ctx, r)
 	if err != nil {
@@ -472,7 +438,7 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 //	    - 3 months (+60% overhead)
 //	    - 6 months (+60% overhead)
 //	    - 12 months (+60% overhead)
-func (s *userService) ProcessManualSubscription(ctx context.Context, param ManualSubscriptionParam) (*User, error) {
+func (s *UserService) ProcessManualSubscription(ctx context.Context, param ManualSubscriptionParam) (*User, error) {
 	user, err := s.userStg.Get(ctx, param.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user: %v", err)
@@ -494,7 +460,7 @@ func (s *userService) ProcessManualSubscription(ctx context.Context, param Manua
 }
 
 // downloadProfileImage saves an image file from url.
-func (s *userService) downloadProfileImage(ctx context.Context, url string) (filename string, err error) {
+func (s *UserService) downloadProfileImage(ctx context.Context, url string) (filename string, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

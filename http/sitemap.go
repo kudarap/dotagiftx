@@ -50,7 +50,7 @@ func buildSitemap(items []dotagiftx.Item) *stm.Sitemap {
 	return sitemap
 }
 
-func handleSitemap(itemSvc dotagiftx.ItemService) http.HandlerFunc {
+func handleSitemap(itemSvc itemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, _, _ := itemSvc.Items(r.Context(), dotagiftx.FindOpts{})
 		sm := buildSitemap(items).XMLContent()

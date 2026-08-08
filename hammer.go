@@ -26,23 +26,6 @@ func (p HammerParams) Validate() error {
 	return nil
 }
 
-// HammerService represents operation for banning and suspending accounts.
-type HammerService interface {
-	// Ban updates user status to ban and cancels all listings.
-	//
-	// "Drops the hammer to its eternal doom" is most likely to be permanent.
-	Ban(context.Context, HammerParams) (*User, error)
-
-	// Suspend updates user status to suspend and cancels all listings.
-	//
-	// Fits for those light and abusive offenders. might forget to lift if not reminded.
-	Suspend(context.Context, HammerParams) (*User, error)
-
-	// Lift update user status to "marked" and remove its ban or suspend a flag
-	// and will restore items if requested.
-	Lift(ctx context.Context, steamID string, restoreListings bool) error
-}
-
 // NewHammerService returns a new Ban service.
 func NewHammerService(us UserStorage, ms MarketStorage) *BanService {
 	return &BanService{us, ms}

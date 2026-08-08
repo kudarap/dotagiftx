@@ -17,8 +17,8 @@ type TaskProcessor struct {
 	queue taskQueue
 	rate  time.Duration
 
-	inventorySvc         dotagiftx.InventoryService
-	deliverySvc          dotagiftx.DeliveryService
+	inventorySvc         *dotagiftx.InventoryService
+	deliverySvc          *dotagiftx.DeliveryService
 	verify               *verify.Source
 	inventoryInvalidator inventoryInvalidator
 
@@ -28,8 +28,8 @@ type TaskProcessor struct {
 func NewTaskProcessor(
 	rate time.Duration,
 	queue taskQueue,
-	inventorySvc dotagiftx.InventoryService,
-	deliverySvc dotagiftx.DeliveryService,
+	inventorySvc *dotagiftx.InventoryService,
+	deliverySvc *dotagiftx.DeliveryService,
 	source *verify.Source,
 	invInvalidator inventoryInvalidator,
 	logger *slog.Logger,

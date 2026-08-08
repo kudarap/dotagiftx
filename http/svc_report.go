@@ -7,7 +7,7 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
-func handleReportList(svc dotagiftx.ReportService) http.HandlerFunc {
+func handleReportList(svc reportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts, err := findOptsFromURL(r.URL, &dotagiftx.Report{})
 		if err != nil {
@@ -29,7 +29,7 @@ func handleReportList(svc dotagiftx.ReportService) http.HandlerFunc {
 	}
 }
 
-func handleReportDetail(svc dotagiftx.ReportService) http.HandlerFunc {
+func handleReportDetail(svc reportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rep, err := svc.Report(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
@@ -41,7 +41,7 @@ func handleReportDetail(svc dotagiftx.ReportService) http.HandlerFunc {
 	}
 }
 
-func handleReportCreate(svc dotagiftx.ReportService) http.HandlerFunc {
+func handleReportCreate(svc reportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rep := new(dotagiftx.Report)
 		if err := parseForm(r, rep); err != nil {

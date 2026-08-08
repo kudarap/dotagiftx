@@ -54,18 +54,6 @@ type (
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 	}
 
-	// ReportService provides access to report service.
-	ReportService interface {
-		// Reports returns a list of reports.
-		Reports(ctx context.Context, opts FindOpts) ([]Report, *FindMetadata, error)
-
-		// Report returns report details by id.
-		Report(ctx context.Context, id string) (*Report, error)
-
-		// Create saves new report details.
-		Create(context.Context, *Report) error
-	}
-
 	// ReportStorage defines operation for report records.
 	ReportStorage interface {
 		// Find returns a list of reports from the data store.
@@ -110,16 +98,16 @@ func (t ReportType) String() string {
 }
 
 // NewReportService returns new report service.
-func NewReportService(rs ReportStorage, wp webhookPoster) ReportService {
-	return &reportService{rs, wp}
+func NewReportService(rs ReportStorage, wp webhookPoster) *ReportService {
+	return &ReportService{rs, wp}
 }
 
-type reportService struct {
+type ReportService struct {
 	reportStg     ReportStorage
 	webhookPoster webhookPoster
 }
 
-func (s *reportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *FindMetadata, error) {
+func (s *ReportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *FindMetadata, error) {
 	res, err := s.reportStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
@@ -141,16 +129,16 @@ func (s *reportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *
 	}, nil
 }
 
-func (s *reportService) Report(ctx context.Context, id string) (*Report, error) {
+func (s *ReportService) Report(ctx context.Context, id string) (*Report, error) {
 	return s.reportStg.Get(ctx, id)
 }
 
-func (s *reportService) CreateSurvey(ctx context.Context, rep *Report) error {
+func (s *ReportService) CreateSurvey(ctx context.Context, rep *Report) error {
 	rep.Type = ReportTypeSurvey
 	return s.Create(ctx, rep)
 }
 
-func (s *reportService) Create(ctx context.Context, rep *Report) error {
+func (s *ReportService) Create(ctx context.Context, rep *Report) error {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return AuthErrNoAccess
@@ -176,7 +164,7 @@ func (s *reportService) Create(ctx context.Context, rep *Report) error {
 	return nil
 }
 
-func (s *reportService) shootToDiscord(ctx context.Context, reportID string) error {
+func (s *ReportService) shootToDiscord(ctx context.Context, reportID string) error {
 	reps, _, err := s.Reports(ctx, FindOpts{Filter: Report{ID: reportID}})
 	if err != nil {
 		return err
