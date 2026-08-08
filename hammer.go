@@ -66,7 +66,7 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 	if au == nil {
 		return AuthErrNoAccess
 	}
-	if err := s.wieldingHammer(au.UserID); err != nil {
+	if err := s.wieldingHammer(ctx, au.UserID); err != nil {
 		return err
 	}
 
@@ -84,7 +84,7 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 	}
 
 	// Listing restoration
-	return s.restoreListings(u.ID)
+	return s.restoreListings(ctx, u.ID)
 }
 
 func (s *BanService) hilt(ctx context.Context, p HammerParams, us UserStatus) (*User, error) {
@@ -92,7 +92,7 @@ func (s *BanService) hilt(ctx context.Context, p HammerParams, us UserStatus) (*
 	if au == nil {
 		return nil, AuthErrNoAccess
 	}
-	if err := s.wieldingHammer(au.UserID); err != nil {
+	if err := s.wieldingHammer(ctx, au.UserID); err != nil {
 		return nil, err
 	}
 
@@ -111,22 +111,22 @@ func (s *BanService) hilt(ctx context.Context, p HammerParams, us UserStatus) (*
 		return nil, err
 	}
 
-	if err := s.cancelListings(u.ID); err != nil {
+	if err := s.cancelListings(ctx, u.ID); err != nil {
 		return nil, err
 	}
 
 	return u, nil
 }
 
-func (s *BanService) cancelListings(userID string) error {
-	return s.sunderListings(userID, MarketStatusLive, MarketStatusCancelled)
+func (s *BanService) cancelListings(ctx context.Context, userID string) error {
+	return s.sunderListings(ctx, userID, MarketStatusLive, MarketStatusCancelled)
 }
 
-func (s *BanService) restoreListings(userID string) error {
-	return s.sunderListings(userID, MarketStatusCancelled, MarketStatusLive)
+func (s *BanService) restoreListings(ctx context.Context, userID string) error {
+	return s.sunderListings(ctx, userID, MarketStatusCancelled, MarketStatusLive)
 }
 
-func (s *BanService) sunderListings(userID string, from, to MarketStatus) error {
+func (s *BanService) sunderListings(ctx context.Context, userID string, from, to MarketStatus) error {
 	f := Market{
 		UserID: userID,
 		Status: from,
@@ -145,7 +145,7 @@ func (s *BanService) sunderListings(userID string, from, to MarketStatus) error 
 	return nil
 }
 
-func (s *BanService) wieldingHammer(userID string) error {
+func (s *BanService) wieldingHammer(ctx context.Context, userID string) error {
 	u, err := s.userStg.Get(userID)
 	if err != nil {
 		return err

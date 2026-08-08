@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -40,12 +41,12 @@ func handleItemList(
 		}
 
 		go func() {
-			if err = trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+			if err = trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
 				logger.Errorf("search keyword tracking error: %s", err)
 			}
 		}()
 
-		list, md, err := svc.Items(opts)
+		list, md, err := svc.Items(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -75,7 +76,7 @@ func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *log
 			}
 		}
 
-		i, err := svc.Item(chi.URLParam(r, "id"))
+		i, err := svc.Item(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return

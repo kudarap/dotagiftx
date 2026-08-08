@@ -1,6 +1,9 @@
 package dotagiftx
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type (
 	// MarketStatusCount represents the total number of records per status.
@@ -66,15 +69,15 @@ type (
 
 	// StatsService provides access to stats service.
 	StatsService interface {
-		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
-		CountMarketStatusV2(opts FindOpts) (*MarketStatusCount, error)
+		CountMarketStatus(ctx context.Context, opts FindOpts) (*MarketStatusCount, error)
+		CountMarketStatusV2(ctx context.Context, opts FindOpts) (*MarketStatusCount, error)
 
-		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
+		GraphMarketSales(ctx context.Context, opts FindOpts) ([]MarketSalesGraph, error)
 
-		TopKeywords() ([]SearchKeywordScore, error)
+		TopKeywords(ctx context.Context) ([]SearchKeywordScore, error)
 
-		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
-		CountUserMarketStatusBySteamID(partnerSteamID string) (*MarketStatusCount, error)
+		CountUserMarketStatus(ctx context.Context, userID string) (*MarketStatusCount, error)
+		CountUserMarketStatusBySteamID(ctx context.Context, partnerSteamID string) (*MarketStatusCount, error)
 	}
 
 	StatsStorage interface {
@@ -99,26 +102,26 @@ type statsService struct {
 	trackStg TrackStorage
 }
 
-func (s *statsService) CountUserMarketStatusBySteamID(partnerSteamID string) (*MarketStatusCount, error) {
+func (s *statsService) CountUserMarketStatusBySteamID(ctx context.Context, partnerSteamID string) (*MarketStatusCount, error) {
 	return s.statsStg.CountUserMarketStatusBySteamID(partnerSteamID)
 }
 
-func (s *statsService) CountMarketStatus(opts FindOpts) (*MarketStatusCount, error) {
+func (s *statsService) CountMarketStatus(ctx context.Context, opts FindOpts) (*MarketStatusCount, error) {
 	return s.statsStg.CountMarketStatus(opts)
 }
 
-func (s *statsService) CountMarketStatusV2(opts FindOpts) (*MarketStatusCount, error) {
+func (s *statsService) CountMarketStatusV2(ctx context.Context, opts FindOpts) (*MarketStatusCount, error) {
 	return s.statsStg.CountMarketStatusV2(opts)
 }
 
-func (s *statsService) CountUserMarketStatus(userID string) (*MarketStatusCount, error) {
+func (s *statsService) CountUserMarketStatus(ctx context.Context, userID string) (*MarketStatusCount, error) {
 	return s.statsStg.CountUserMarketStatus(userID)
 }
 
-func (s *statsService) GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error) {
+func (s *statsService) GraphMarketSales(ctx context.Context, opts FindOpts) ([]MarketSalesGraph, error) {
 	return s.statsStg.GraphMarketSales(opts)
 }
 
-func (s *statsService) TopKeywords() ([]SearchKeywordScore, error) {
+func (s *statsService) TopKeywords(ctx context.Context) ([]SearchKeywordScore, error) {
 	return s.trackStg.TopKeywords()
 }

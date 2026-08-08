@@ -15,7 +15,7 @@ func handleReportList(svc dotagiftx.ReportService) http.HandlerFunc {
 			return
 		}
 
-		list, md, err := svc.Reports(opts)
+		list, md, err := svc.Reports(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -31,7 +31,7 @@ func handleReportList(svc dotagiftx.ReportService) http.HandlerFunc {
 
 func handleReportDetail(svc dotagiftx.ReportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rep, err := svc.Report(chi.URLParam(r, "id"))
+		rep, err := svc.Report(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return

@@ -40,7 +40,7 @@ const (
 func handleImage(svc dotagiftx.ImageService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
-		path, err := svc.Image(id)
+		path, err := svc.Image(r.Context(), id)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -58,7 +58,7 @@ func handleImageThumbnail(svc dotagiftx.ImageService) http.HandlerFunc {
 		width, _ := strconv.Atoi(chi.URLParam(r, "w"))
 		height, _ := strconv.Atoi(chi.URLParam(r, "h"))
 
-		path, err := svc.Thumbnail(id, uint(width), uint(height))
+		path, err := svc.Thumbnail(r.Context(), id, uint(width), uint(height))
 		if err != nil {
 			respondError(w, err)
 			return

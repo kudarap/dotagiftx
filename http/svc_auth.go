@@ -20,7 +20,7 @@ type authResp struct {
 func handleAuthSteam(svc dotagiftx.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Handle steam auth.
-		au, err := svc.SteamLogin(w, r)
+		au, err := svc.SteamLogin(r.Context(), w, r)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -52,7 +52,7 @@ func handleAuthRenew(svc dotagiftx.AuthService) http.HandlerFunc {
 			return
 		}
 
-		au, err := svc.RenewToken(form.RefreshToken)
+		au, err := svc.RenewToken(r.Context(), form.RefreshToken)
 		if err != nil {
 			respond(w, http.StatusUnauthorized, newError(err))
 			return
@@ -79,7 +79,7 @@ func handleAuthRevoke(svc dotagiftx.AuthService) http.HandlerFunc {
 			return
 		}
 
-		if err := svc.RevokeRefreshToken(form.RefreshToken); err != nil {
+		if err := svc.RevokeRefreshToken(r.Context(), form.RefreshToken); err != nil {
 			respondError(w, err)
 			return
 		}

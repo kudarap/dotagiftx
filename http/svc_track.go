@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/kudarap/dotagiftx"
@@ -14,7 +15,7 @@ func handleTracker(svc dotagiftx.TrackService, logger *logrus.Logger) http.Handl
 	image, _ := assets.Content.ReadFile(pixelImage)
 	return func(w http.ResponseWriter, r *http.Request) {
 		go func(r *http.Request) {
-			if err := svc.CreateFromRequest(r); err != nil {
+			if err := svc.CreateFromRequest(context.Background(), r); err != nil {
 				logger.Errorf("tracker error: %s", err)
 			}
 		}(r)

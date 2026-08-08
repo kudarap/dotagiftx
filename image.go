@@ -34,11 +34,11 @@ type (
 		Upload(context.Context, io.Reader) (fileID string, err error)
 
 		// Image returns image details by id.
-		Image(fileID string) (path string, err error)
+		Image(ctx context.Context, fileID string) (path string, err error)
 
 		// Thumbnail downscales an image preserving its aspect ratio to the maximum dimensions.
 		// It will return the original image if original sizes are smaller than the provided dimensions.
-		Thumbnail(fileID string, width, height uint) (path string, err error)
+		Thumbnail(ctx context.Context, fileID string, width, height uint) (path string, err error)
 
 		// Delete purges image record and from local file system.
 		Delete(ctx context.Context, fileID string) error
@@ -87,8 +87,8 @@ func (s *imageService) Upload(ctx context.Context, r io.Reader) (fileID string, 
 	return fileID, nil
 }
 
-func (s *imageService) Thumbnail(fileID string, width, height uint) (path string, err error) {
-	f, err := s.Image(fileID)
+func (s *imageService) Thumbnail(ctx context.Context, fileID string, width, height uint) (path string, err error) {
+	f, err := s.Image(ctx, fileID)
 	if err != nil {
 		return
 	}
@@ -102,7 +102,7 @@ func (s *imageService) Thumbnail(fileID string, width, height uint) (path string
 	return t, nil
 }
 
-func (s *imageService) Image(fileID string) (path string, err error) {
+func (s *imageService) Image(ctx context.Context, fileID string) (path string, err error) {
 	path, err = s.fileMgr.Get(fileID)
 	if err != nil {
 		err = NewXError(ImageErrNotFound, err)

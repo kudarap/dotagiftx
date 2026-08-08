@@ -48,17 +48,17 @@ type (
 	// AuthService provides access to service.
 	AuthService interface {
 		// SteamLogin redirects for authorization and process creation of auth.
-		SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth, error)
+		SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error)
 
 		// RevokeRefreshToken invalidates refresh token that will prevent on renewing
 		// short-lived access token and will result user have to re-login.
-		RevokeRefreshToken(refreshToken string) error
+		RevokeRefreshToken(ctx context.Context, refreshToken string) error
 
 		// RenewToken checks refresh token validity that allows to get new short-lived access token.
-		RenewToken(refreshToken string) (*Auth, error)
+		RenewToken(ctx context.Context, refreshToken string) (*Auth, error)
 
 		// Auth returns an auth details by id.
-		Auth(id string) (*Auth, error)
+		Auth(ctx context.Context, id string) (*Auth, error)
 	}
 
 	// AuthStorage defines operation for auth records.
@@ -124,7 +124,7 @@ type authService struct {
 	logger      *slog.Logger
 }
 
-func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth, error) {
+func (s *authService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error) {
 	// Handle authorization redirect.
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := s.steamClient.AuthorizeURL(r)
@@ -154,7 +154,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 			return nil, AuthErrLogin
 		}
 
-		u, err := s.userSvc.User(authData.UserID)
+		u, err := s.userSvc.User(ctx, authData.UserID)
 		if err != nil {
 			if errors.Is(err, UserErrNotFound) {
 				s.logger.Warn("user not found, but auth exists. re-creating user.",
@@ -171,7 +171,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 					URL:       steamPlayer.URL,
 					Avatar:    steamPlayer.Avatar,
 				}
-				if err = s.userSvc.Create(u); err != nil {
+				if err = s.userSvc.Create(ctx, u); err != nil {
 					return nil, err
 				}
 
@@ -184,7 +184,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 		if err = u.CheckStatus(); err != nil {
 			return nil, err
 		}
-		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
+		if _, err = s.userSvc.SteamSync(ctx, steamPlayer); err != nil {
 			return nil, UserErrSteamSync.X(err)
 		}
 
@@ -192,10 +192,10 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 	}
 
 	// HOTFIX for missing user data
-	existingUser, _ := s.userSvc.User(steamPlayer.ID)
+	existingUser, _ := s.userSvc.User(ctx, steamPlayer.ID)
 
 	// Process account registration and save details.
-	authData, err = s.createAccountFromSteam(steamPlayer, existingUser)
+	authData, err = s.createAccountFromSteam(ctx, steamPlayer, existingUser)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 	return authData, nil
 }
 
-func (s *authService) RenewToken(refreshToken string) (*Auth, error) {
+func (s *authService) RenewToken(ctx context.Context, refreshToken string) (*Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
 		return nil, AuthErrRefreshToken
 	}
@@ -216,12 +216,12 @@ func (s *authService) RenewToken(refreshToken string) (*Auth, error) {
 	return au, nil
 }
 
-func (s *authService) RevokeRefreshToken(refreshToken string) error {
+func (s *authService) RevokeRefreshToken(ctx context.Context, refreshToken string) error {
 	if strings.TrimSpace(refreshToken) == "" {
 		return AuthErrRefreshToken
 	}
 
-	au, err := s.RenewToken(refreshToken)
+	au, err := s.RenewToken(ctx, refreshToken)
 	if err != nil {
 		return err
 	}
@@ -230,7 +230,7 @@ func (s *authService) RevokeRefreshToken(refreshToken string) error {
 	return s.authStg.Update(au)
 }
 
-func (s *authService) Auth(id string) (*Auth, error) {
+func (s *authService) Auth(ctx context.Context, id string) (*Auth, error) {
 	u, err := s.authStg.Get(id)
 	if err != nil {
 		return nil, AuthErrNotFound.X(err)
@@ -239,7 +239,7 @@ func (s *authService) Auth(id string) (*Auth, error) {
 	return u, nil
 }
 
-func (s *authService) createAccountFromSteam(sp *SteamPlayer, user *User) (*Auth, error) {
+func (s *authService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
 	if user == nil {
 		user = &User{
 			SteamID: sp.ID,
@@ -247,7 +247,7 @@ func (s *authService) createAccountFromSteam(sp *SteamPlayer, user *User) (*Auth
 			URL:     sp.URL,
 			Avatar:  sp.Avatar,
 		}
-		if err := s.userSvc.Create(user); err != nil {
+		if err := s.userSvc.Create(ctx, user); err != nil {
 			return nil, err
 		}
 	}

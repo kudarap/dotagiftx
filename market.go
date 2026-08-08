@@ -139,7 +139,7 @@ type (
 		Update(context.Context, *Market) error
 
 		// UpdateUserRankScore sets new user ranking score on all live markets by user id.
-		UpdateUserRankScore(userID string) error
+		UpdateUserRankScore(ctx context.Context, userID string) error
 
 		// Index composes market data for faster search and retrieval.
 		// Index(ctx context.Context, id string) (*Market, error)
@@ -149,13 +149,13 @@ type (
 		AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error
 
 		// Catalog returns a list of catalogs.
-		Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
+		Catalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error)
 
 		// CatalogDetails returns catalog details by item id.
-		CatalogDetails(id string, opts FindOpts) (*Catalog, error)
+		CatalogDetails(ctx context.Context, id string, opts FindOpts) (*Catalog, error)
 
 		// TrendingCatalog returns a top 10 trending catalogs.
-		TrendingCatalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
+		TrendingCatalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error)
 	}
 
 	// MarketStorage defines operation for market records.
@@ -391,7 +391,7 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 	}
 	market.UserID = au.UserID
 	// Prevents access to create a new market when an account is flagged.
-	if err := s.checkFlaggedUser(au.UserID); err != nil {
+	if err := s.checkFlaggedUser(ctx, au.UserID); err != nil {
 		return err
 	}
 
@@ -410,17 +410,17 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 	// Check market details by type.
 	switch market.Type {
 	case MarketTypeAsk:
-		if err := s.checkAskType(market); err != nil {
+		if err := s.checkAskType(ctx, market); err != nil {
 			return err
 		}
 
-		m, err := s.processShopkeepersContract(market)
+		m, err := s.processShopkeepersContract(ctx, market)
 		if err != nil {
 			return err
 		}
 		market = m
 	case MarketTypeBid:
-		if err := s.checkBidType(market); err != nil {
+		if err := s.checkBidType(ctx, market); err != nil {
 			return fmt.Errorf("could not check bid type: %s", err)
 		}
 	}
@@ -430,7 +430,7 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 	}
 
 	bench(s.logger, "market create :: UpdateUserRankScore", func() {
-		if err := s.UpdateUserRankScore(market.UserID); err != nil {
+		if err := s.UpdateUserRankScore(ctx, market.UserID); err != nil {
 			s.logger.Errorf("could not update user rank %s: %s", market.UserID, err)
 		}
 	})
@@ -472,7 +472,7 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 		return err
 	}
 	// Prevents access to update existing market when account is flagged.
-	if err = s.checkFlaggedUser(cur.UserID); err != nil {
+	if err = s.checkFlaggedUser(ctx, cur.UserID); err != nil {
 		return err
 	}
 
@@ -544,7 +544,7 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 	}
 
 	bench(s.logger, "market update :: UpdateUserRankScore", func() {
-		if err = s.UpdateUserRankScore(market.UserID); err != nil {
+		if err = s.UpdateUserRankScore(ctx, market.UserID); err != nil {
 			s.logger.Errorf("could not update user rank %s: %s", market.UserID, err)
 		}
 	})
@@ -562,7 +562,7 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 	return nil
 }
 
-func (s *marketService) UpdateUserRankScore(userID string) error {
+func (s *marketService) UpdateUserRankScore(ctx context.Context, userID string) error {
 	opts := FindOpts{
 		IndexKey: "user_id",
 		Filter:   Market{UserID: userID},
@@ -621,7 +621,7 @@ func (s *marketService) AutoCompleteBid(_ context.Context, ask Market, partnerSt
 	return s.marketStg.Update(&b)
 }
 
-func (s *marketService) checkFlaggedUser(userID string) error {
+func (s *marketService) checkFlaggedUser(ctx context.Context, userID string) error {
 	u, err := s.userStg.Get(userID)
 	if err != nil {
 		return err
@@ -633,7 +633,7 @@ func (s *marketService) checkFlaggedUser(userID string) error {
 	return nil
 }
 
-func (s *marketService) processShopkeepersContract(m *Market) (*Market, error) {
+func (s *marketService) processShopkeepersContract(ctx context.Context, m *Market) (*Market, error) {
 	user, err := s.userStg.Get(m.UserID)
 	if err != nil {
 		return nil, err
@@ -657,7 +657,7 @@ func (s *marketService) processShopkeepersContract(m *Market) (*Market, error) {
 	return m, nil
 }
 
-func (s *marketService) checkAskType(ask *Market) error {
+func (s *marketService) checkAskType(ctx context.Context, ask *Market) error {
 	user, err := s.userStg.Get(ask.UserID)
 	if err != nil {
 		return err
@@ -691,7 +691,7 @@ func (s *marketService) checkAskType(ask *Market) error {
 	return nil
 }
 
-func (s *marketService) checkBidType(bid *Market) error {
+func (s *marketService) checkBidType(ctx context.Context, bid *Market) error {
 	// Remove existing buy order if exists.
 	res, err := s.marketStg.Find(FindOpts{
 		IndexKey: "user_id",
@@ -721,7 +721,7 @@ func (s *marketService) checkOwnership(ctx context.Context, id string) (*Market,
 		return nil, AuthErrNoAccess
 	}
 
-	mkt, err := s.userMarket(au.UserID, id)
+	mkt, err := s.userMarket(ctx, au.UserID, id)
 	if err != nil {
 		return nil, NewXError(AuthErrForbidden, err)
 	}
@@ -733,7 +733,7 @@ func (s *marketService) checkOwnership(ctx context.Context, id string) (*Market,
 	return mkt, nil
 }
 
-func (s *marketService) userMarket(userID, id string) (*Market, error) {
+func (s *marketService) userMarket(ctx context.Context, userID, id string) (*Market, error) {
 	cur, err := s.marketStg.Get(id)
 	if err != nil {
 		return nil, err
@@ -745,7 +745,7 @@ func (s *marketService) userMarket(userID, id string) (*Market, error) {
 	return cur, nil
 }
 
-func (s *marketService) Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error) {
+func (s *marketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
 	opts.Keyword = strings.ReplaceAll(opts.Keyword, `\`, "")
 	if err := opts.validate(); err != nil {
 		return nil, nil, err
@@ -772,7 +772,7 @@ func (s *marketService) Catalog(opts FindOpts) ([]Catalog, *FindMetadata, error)
 	}, nil
 }
 
-func (s *marketService) TrendingCatalog(opts FindOpts) ([]Catalog, *FindMetadata, error) {
+func (s *marketService) TrendingCatalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
 	res, err := s.catalogStg.Trending()
 	if err != nil {
 		return nil, nil, err
@@ -788,7 +788,7 @@ func (s *marketService) TrendingCatalog(opts FindOpts) ([]Catalog, *FindMetadata
 	}, nil
 }
 
-func (s *marketService) CatalogDetails(slug string, opts FindOpts) (*Catalog, error) {
+func (s *marketService) CatalogDetails(ctx context.Context, slug string, opts FindOpts) (*Catalog, error) {
 	if slug == "" {
 		return nil, CatalogErrNotFound
 	}
@@ -811,7 +811,7 @@ func (s *marketService) CatalogDetails(slug string, opts FindOpts) (*Catalog, er
 	filter := opts.Filter.(*Market)
 	filter.ItemID = catalog.ID
 	opts.Filter = filter
-	res, meta, err := s.Markets(context.Background(), opts)
+	res, meta, err := s.Markets(ctx, opts)
 	if err != nil {
 		return nil, err
 	}

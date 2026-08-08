@@ -67,10 +67,10 @@ type (
 	// ItemService provides access to item service.
 	ItemService interface {
 		// Items returns a list of items.
-		Items(opts FindOpts) ([]Item, *FindMetadata, error)
+		Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error)
 
 		// Item returns item details by id.
-		Item(id string) (*Item, error)
+		Item(ctx context.Context, id string) (*Item, error)
 
 		// Create saves new item details.
 		Create(context.Context, *Item) error
@@ -82,10 +82,10 @@ type (
 		Import(ctx context.Context, f io.Reader) (ItemImportResult, error)
 
 		// TopOrigins returns a list of top origin/treasure base on view count.
-		TopOrigins() ([]string, error)
+		TopOrigins(ctx context.Context) ([]string, error)
 
 		// TopHeroes returns a list of top heroes base on view count.
-		TopHeroes() ([]string, error)
+		TopHeroes(ctx context.Context) ([]string, error)
 	}
 
 	// ItemStorage defines operation for item records.
@@ -174,7 +174,7 @@ type itemService struct {
 	allowedDomains []string
 }
 
-func (s *itemService) Items(opts FindOpts) ([]Item, *FindMetadata, error) {
+func (s *itemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error) {
 	res, err := s.itemStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -196,11 +196,11 @@ func (s *itemService) Items(opts FindOpts) ([]Item, *FindMetadata, error) {
 	}, nil
 }
 
-func (s *itemService) Item(id string) (*Item, error) {
+func (s *itemService) Item(ctx context.Context, id string) (*Item, error) {
 	return s.itemStg.Get(id)
 }
 
-func (s *itemService) TopOrigins() ([]string, error) {
+func (s *itemService) TopOrigins(ctx context.Context) ([]string, error) {
 	items, err := s.itemStg.Find(FindOpts{})
 	if err != nil {
 		return nil, err
@@ -217,7 +217,7 @@ func (s *itemService) TopOrigins() ([]string, error) {
 	return pt, nil
 }
 
-func (s *itemService) TopHeroes() ([]string, error) {
+func (s *itemService) TopHeroes(ctx context.Context) ([]string, error) {
 	items, err := s.itemStg.Find(FindOpts{})
 	if err != nil {
 		return nil, err
@@ -255,7 +255,7 @@ func (s *itemService) Create(ctx context.Context, itm *Item) error {
 
 	// Download image when available.
 	if itm.Image != "" {
-		img, err := s.downloadItemImage(itm.MakeSlug(), itm.Image)
+		img, err := s.downloadItemImage(ctx, itm.MakeSlug(), itm.Image)
 		if err != nil {
 			return err
 		}
@@ -288,7 +288,7 @@ func (s *itemService) Update(ctx context.Context, itm *Item) error {
 
 	// Download image when available.
 	if itm.Image != "" {
-		img, err := s.downloadItemImage(itm.MakeSlug(), itm.Image)
+		img, err := s.downloadItemImage(ctx, itm.MakeSlug(), itm.Image)
 		if err != nil {
 			return err
 		}
@@ -323,7 +323,7 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 		}
 
 		// Update current item if exists.
-		if cur, _ := s.getItemByName(ii.Name); cur != nil {
+		if cur, _ := s.getItemByName(ctx, ii.Name); cur != nil {
 			itm.ID = cur.ID
 			if err := s.Update(ctx, itm); err != nil {
 				errs = append(errs, err)
@@ -346,7 +346,7 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 	return result, nil
 }
 
-func (s *itemService) getItemByName(name string) (*Item, error) {
+func (s *itemService) getItemByName(ctx context.Context, name string) (*Item, error) {
 	itm, err := s.itemStg.Find(FindOpts{Filter: Item{Name: name}})
 	if err != nil {
 		return nil, err
@@ -360,7 +360,7 @@ func (s *itemService) getItemByName(name string) (*Item, error) {
 }
 
 // downloadItemImage saves an image file from a url.
-func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
+func (s *itemService) downloadItemImage(ctx context.Context, baseName, url string) (string, error) {
 	u, err := neturl.Parse(url)
 	if err != nil {
 		return "", err

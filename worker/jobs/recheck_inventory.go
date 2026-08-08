@@ -50,7 +50,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 	opts.IndexKey = "status"
 
-	invs, _, err := ri.inventorySvc.Inventories(opts)
+	invs, _, err := ri.inventorySvc.Inventories(ctx, opts)
 	if err != nil {
 		return err
 	}

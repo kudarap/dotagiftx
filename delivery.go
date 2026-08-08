@@ -99,10 +99,10 @@ type (
 	// DeliveryService provides access to Delivery service.
 	DeliveryService interface {
 		// Deliveries return a list of deliveries.
-		Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, error)
+		Deliveries(ctx context.Context, opts FindOpts) ([]Delivery, *FindMetadata, error)
 
 		// Delivery returns Delivery details by id.
-		Delivery(id string) (*Delivery, error)
+		Delivery(ctx context.Context, id string) (*Delivery, error)
 
 		// Set saves new Delivery details.
 		Set(context.Context, *Delivery) error
@@ -152,10 +152,10 @@ type (
 	// InventoryService provides access to Inventory service.
 	InventoryService interface {
 		// Inventories returns a list of deliveries.
-		Inventories(opts FindOpts) ([]Inventory, *FindMetadata, error)
+		Inventories(ctx context.Context, opts FindOpts) ([]Inventory, *FindMetadata, error)
 
 		// Inventory returns Inventory details by id.
-		Inventory(id string) (*Inventory, error)
+		Inventory(ctx context.Context, id string) (*Inventory, error)
 
 		// Set saves new Inventory details.
 		Set(context.Context, *Inventory) error
@@ -307,7 +307,7 @@ type deliveryService struct {
 	marketStg   MarketStorage
 }
 
-func (s *deliveryService) Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, error) {
+func (s *deliveryService) Deliveries(ctx context.Context, opts FindOpts) ([]Delivery, *FindMetadata, error) {
 	res, err := s.deliveryStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -329,7 +329,7 @@ func (s *deliveryService) Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, 
 	}, nil
 }
 
-func (s *deliveryService) Delivery(id string) (*Delivery, error) {
+func (s *deliveryService) Delivery(ctx context.Context, id string) (*Delivery, error) {
 	inv, err := s.deliveryStg.Get(id)
 	if err != nil && !errors.Is(err, DeliveryErrNotFound) {
 		return nil, err
@@ -342,11 +342,11 @@ func (s *deliveryService) Delivery(id string) (*Delivery, error) {
 	return s.deliveryStg.GetByMarketID(id)
 }
 
-func (s *deliveryService) DeliveryByMarketID(marketID string) (*Delivery, error) {
+func (s *deliveryService) DeliveryByMarketID(ctx context.Context, marketID string) (*Delivery, error) {
 	return s.deliveryStg.GetByMarketID(marketID)
 }
 
-func (s *deliveryService) Set(_ context.Context, del *Delivery) error {
+func (s *deliveryService) Set(ctx context.Context, del *Delivery) error {
 	if err := del.CheckCreate(); err != nil {
 		return NewXError(DeliveryErrRequiredFields, err)
 	}
@@ -368,7 +368,7 @@ func (s *deliveryService) Set(_ context.Context, del *Delivery) error {
 		return err
 	}
 
-	cur, _ := s.DeliveryByMarketID(del.MarketID)
+	cur, _ := s.DeliveryByMarketID(ctx, del.MarketID)
 	if cur != nil {
 		del.ID = cur.ID
 		del.Retries = cur.Retries + 1
@@ -390,7 +390,7 @@ type inventoryService struct {
 	catalogStg   CatalogStorage
 }
 
-func (s *inventoryService) Inventories(opts FindOpts) ([]Inventory, *FindMetadata, error) {
+func (s *inventoryService) Inventories(ctx context.Context, opts FindOpts) ([]Inventory, *FindMetadata, error) {
 	res, err := s.inventoryStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -412,7 +412,7 @@ func (s *inventoryService) Inventories(opts FindOpts) ([]Inventory, *FindMetadat
 	}, nil
 }
 
-func (s *inventoryService) Inventory(id string) (*Inventory, error) {
+func (s *inventoryService) Inventory(ctx context.Context, id string) (*Inventory, error) {
 	inv, err := s.inventoryStg.Get(id)
 	if err != nil && !errors.Is(err, InventoryErrNotFound) {
 		return nil, err
@@ -425,11 +425,11 @@ func (s *inventoryService) Inventory(id string) (*Inventory, error) {
 	return s.inventoryStg.GetByMarketID(id)
 }
 
-func (s *inventoryService) InventoryByMarketID(marketID string) (*Inventory, error) {
+func (s *inventoryService) InventoryByMarketID(ctx context.Context, marketID string) (*Inventory, error) {
 	return s.inventoryStg.GetByMarketID(marketID)
 }
 
-func (s *inventoryService) Set(_ context.Context, inv *Inventory) error {
+func (s *inventoryService) Set(ctx context.Context, inv *Inventory) error {
 	if err := inv.CheckCreate(); err != nil {
 		return NewXError(InventoryErrRequiredFields, err)
 	}
@@ -454,7 +454,7 @@ func (s *inventoryService) Set(_ context.Context, inv *Inventory) error {
 
 	// Process bundle count.
 	inv.BundleCount = inv.CountBundles()
-	cur, _ := s.InventoryByMarketID(inv.MarketID)
+	cur, _ := s.InventoryByMarketID(ctx, inv.MarketID)
 	if cur != nil {
 		inv.ID = cur.ID
 		inv.Retries = cur.Retries + 1

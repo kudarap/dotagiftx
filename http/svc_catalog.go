@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -49,7 +50,7 @@ func handleMarketCatalogList(
 		opts.IndexKey = "item_id"
 
 		go func() {
-			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+			if err := trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
 				logger.Errorf("search keyword tracking error: %s", err)
 			}
 		}()
@@ -63,7 +64,7 @@ func handleMarketCatalogList(
 			}
 		}
 
-		list, md, err := svc.Catalog(opts)
+		list, md, err := svc.Catalog(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -106,7 +107,7 @@ func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache cacheManager, 
 		// EXPERIMENTAL
 		opts.IndexKey = "item_id"
 
-		c, err := svc.CatalogDetails(chi.URLParam(r, "slug"), opts)
+		c, err := svc.CatalogDetails(r.Context(), chi.URLParam(r, "slug"), opts)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -129,7 +130,7 @@ const catalogTrendRehydrationDur = catalogTrendCacheExpr / 2
 
 func hydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) {
 	logger.Infoln("REHYDRATING EXP...")
-	list, _, err := svc.TrendingCatalog(dotagiftx.FindOpts{})
+	list, _, err := svc.TrendingCatalog(context.Background(), dotagiftx.FindOpts{})
 	if err != nil {
 		logger.Errorf("could not get catalog trend list: %s", err)
 		return

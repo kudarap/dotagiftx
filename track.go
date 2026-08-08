@@ -1,6 +1,7 @@
 package dotagiftx
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -59,16 +60,16 @@ type (
 	// TrackService provides access to track service.
 	TrackService interface {
 		// Tracks returns a list of tracks.
-		Tracks(FindOpts) ([]Track, *FindMetadata, error)
+		Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error)
 
 		// Track returns track details by id.
-		Track(id string) (*Track, error)
+		Track(ctx context.Context, id string) (*Track, error)
 
 		// CreateFromRequest saves new track from http request. Primarily used on client side.
-		CreateFromRequest(r *http.Request) error
+		CreateFromRequest(ctx context.Context, r *http.Request) error
 
 		// CreateSearchKeyword saves new keyword tracking data.
-		CreateSearchKeyword(r *http.Request, keyword string) error
+		CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error
 	}
 
 	// TrackStorage defines operation for track records.
@@ -143,7 +144,7 @@ type trackService struct {
 	itemStg  ItemStorage
 }
 
-func (s *trackService) Tracks(opts FindOpts) ([]Track, *FindMetadata, error) {
+func (s *trackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error) {
 	res, err := s.trackStg.Find(opts)
 	if err != nil {
 		return nil, nil, err
@@ -165,11 +166,11 @@ func (s *trackService) Tracks(opts FindOpts) ([]Track, *FindMetadata, error) {
 	}, nil
 }
 
-func (s *trackService) Track(id string) (*Track, error) {
+func (s *trackService) Track(ctx context.Context, id string) (*Track, error) {
 	return s.trackStg.Get(id)
 }
 
-func (s *trackService) CreateFromRequest(r *http.Request) error {
+func (s *trackService) CreateFromRequest(ctx context.Context, r *http.Request) error {
 	t := new(Track)
 	t.SetDefaults(r)
 
@@ -183,7 +184,7 @@ func (s *trackService) CreateFromRequest(r *http.Request) error {
 	return s.trackStg.Create(t)
 }
 
-func (s *trackService) CreateSearchKeyword(r *http.Request, keyword string) error {
+func (s *trackService) CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error {
 	if r.Method != http.MethodGet {
 		return nil
 	}

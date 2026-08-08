@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -58,7 +59,7 @@ func handleMarketList(
 		}
 
 		go func() {
-			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
+			if err := trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
 				logger.Errorf("search keyword tracking error: %s", err)
 			}
 		}()

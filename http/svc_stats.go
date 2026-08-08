@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -19,7 +20,7 @@ func handleStatsMarketSummaryV2(svc dotagiftx.StatsService, cache cacheManager) 
 			}
 		}
 
-		res, err := collectMarketStats(svc, r)
+		res, err := collectMarketStats(r.Context(), svc, r)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -37,7 +38,7 @@ const (
 
 func hydrateStatsMarketSummaryOverall(cacheKey string, svc dotagiftx.StatsService, cache cacheManager, logger *logrus.Logger) {
 	logger.Infoln("REHYDRATING OVERALL STATS: started")
-	res, err := collectMarketStats(svc, nil)
+	res, err := collectMarketStats(context.Background(), svc, nil)
 	if err != nil {
 		logger.Errorf("REHYDRATING OVERALL STATS: could not get overall market stats: %s", err)
 		return
@@ -93,7 +94,7 @@ func handleGraphMarketSales(svc dotagiftx.StatsService, cache cacheManager) http
 			return
 		}
 
-		res, err := svc.GraphMarketSales(dotagiftx.FindOpts{Filter: f})
+		res, err := svc.GraphMarketSales(r.Context(), dotagiftx.FindOpts{Filter: f})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -126,7 +127,7 @@ func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache cacheManager)
 			}
 		}
 
-		res, err := statsSvc.TopKeywords()
+		res, err := statsSvc.TopKeywords(r.Context())
 		if err != nil {
 			respondError(w, err)
 			return
@@ -137,7 +138,7 @@ func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache cacheManager)
 	}
 }
 
-func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.HandlerFunc {
+func topStatsBaseHandler(fn func(context.Context) ([]string, error), cache cacheManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -148,7 +149,7 @@ func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.H
 			}
 		}
 
-		l, err := fn()
+		l, err := fn(r.Context())
 		if err != nil {
 			respondError(w, err)
 			return
@@ -178,7 +179,7 @@ func newMarketStats(asks *dotagiftx.MarketStatusCount, bids *dotagiftx.MarketSta
 	return &marketStats{asks, bids}
 }
 
-func collectMarketStats(svc dotagiftx.StatsService, r *http.Request) (*marketStats, error) {
+func collectMarketStats(ctx context.Context, svc dotagiftx.StatsService, r *http.Request) (*marketStats, error) {
 	var err error
 	opts := [2]dotagiftx.FindOpts{
 		{Filter: &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}},
@@ -196,13 +197,13 @@ func collectMarketStats(svc dotagiftx.StatsService, r *http.Request) (*marketSta
 	}
 
 	// collect market sell stats
-	asks, err := svc.CountMarketStatusV2(opts[0])
+	asks, err := svc.CountMarketStatusV2(ctx, opts[0])
 	if err != nil {
 		return nil, err
 	}
 
 	// collect market buy stats
-	bids, err := svc.CountMarketStatusV2(opts[1])
+	bids, err := svc.CountMarketStatusV2(ctx, opts[1])
 	if err != nil {
 		return nil, err
 	}

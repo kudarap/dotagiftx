@@ -47,7 +47,7 @@ func handlePublicProfile(svc dotagiftx.UserService, cache cacheManager) http.Han
 		}
 
 		id := chi.URLParam(r, "id")
-		u, err := svc.User(id)
+		u, err := svc.User(r.Context(), id)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -75,7 +75,7 @@ func handleBlacklisted(svc dotagiftx.UserService, cache cacheManager) http.Handl
 			respondError(w, err)
 			return
 		}
-		list, err := svc.FlaggedUsers(opts)
+		list, err := svc.FlaggedUsers(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -124,7 +124,7 @@ func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamC
 		vUser.SteamID = steamID
 
 		// Get user data if its registered.
-		u, _ := svc.User(steamID)
+		u, _ := svc.User(r.Context(), steamID)
 		if u != nil {
 			vUser.User = *u
 			vUser.IsRegistered = true

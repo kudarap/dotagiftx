@@ -88,16 +88,16 @@ type (
 	// UserService provides access to user service.
 	UserService interface {
 		// Users returns a list of users.
-		Users(opts FindOpts) ([]User, error)
+		Users(ctx context.Context, opts FindOpts) ([]User, error)
 
 		// FlaggedUsers returns a list of flagged/reported users.
-		FlaggedUsers(opts FindOpts) ([]User, error)
+		FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error)
 
 		// User returns user details by id.
-		User(id string) (*User, error)
+		User(ctx context.Context, id string) (*User, error)
 
 		// Create saves new user and download profile image to local file.
-		Create(*User) error
+		Create(context.Context, *User) error
 
 		// UserFromContext returns user details from context.
 		UserFromContext(context.Context) (*User, error)
@@ -106,7 +106,7 @@ type (
 		Update(context.Context, *User) error
 
 		// SteamSync saves updated steam info.
-		SteamSync(sp *SteamPlayer) (*User, error)
+		SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error)
 
 		// ProcessSubscription validates and process subscription features.
 		ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error)
@@ -300,15 +300,15 @@ type userService struct {
 	payment paymentManager
 }
 
-func (s *userService) Users(opts FindOpts) ([]User, error) {
+func (s *userService) Users(ctx context.Context, opts FindOpts) ([]User, error) {
 	return s.userStg.Find(opts)
 }
 
-func (s *userService) FlaggedUsers(opts FindOpts) ([]User, error) {
+func (s *userService) FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error) {
 	return s.userStg.FindFlagged(opts)
 }
 
-func (s *userService) User(id string) (*User, error) {
+func (s *userService) User(ctx context.Context, id string) (*User, error) {
 	return s.userStg.Get(id)
 }
 
@@ -318,11 +318,11 @@ func (s *userService) UserFromContext(ctx context.Context) (*User, error) {
 		return nil, UserErrNotFound
 	}
 
-	return s.User(au.UserID)
+	return s.User(ctx, au.UserID)
 }
 
-func (s *userService) Create(u *User) error {
-	url, err := s.downloadProfileImage(u.Avatar)
+func (s *userService) Create(ctx context.Context, u *User) error {
+	url, err := s.downloadProfileImage(ctx, u.Avatar)
 	if err != nil {
 		return NewXError(UserErrProfileImageDL, err)
 	}
@@ -355,7 +355,7 @@ func (s *userService) Update(ctx context.Context, u *User) error {
 	return s.userStg.Update(u)
 }
 
-func (s *userService) SteamSync(sp *SteamPlayer) (*User, error) {
+func (s *userService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error) {
 	u, err := s.userStg.Get(sp.ID)
 	if err != nil {
 		return nil, err
@@ -363,7 +363,7 @@ func (s *userService) SteamSync(sp *SteamPlayer) (*User, error) {
 
 	u.Name = sp.Name
 	u.URL = sp.URL
-	u.Avatar, err = s.downloadProfileImage(sp.Avatar)
+	u.Avatar, err = s.downloadProfileImage(ctx, sp.Avatar)
 	if err != nil {
 		return nil, err
 	}
@@ -494,7 +494,7 @@ func (s *userService) ProcessManualSubscription(ctx context.Context, param Manua
 }
 
 // downloadProfileImage saves an image file from url.
-func (s *userService) downloadProfileImage(url string) (filename string, err error) {
+func (s *userService) downloadProfileImage(ctx context.Context, url string) (filename string, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
