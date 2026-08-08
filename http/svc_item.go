@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"log/slog"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -22,7 +23,7 @@ func handleItemList(
 	svc dotagiftx.ItemService,
 	trackSvc dotagiftx.TrackService,
 	cache cacheManager,
-	logger *logrus.Logger,
+	logger *slog.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
@@ -42,7 +43,7 @@ func handleItemList(
 
 		go func() {
 			if err = trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
-				logger.Errorf("search keyword tracking error: %s", err)
+				logger.Error("search keyword tracking error", "error", err)
 			}
 		}()
 
@@ -58,14 +59,14 @@ func handleItemList(
 		o := newDataWithMeta(list, md)
 		go func() {
 			if err = cache.Set(cacheKey, o, itemCacheExpr); err != nil {
-				logger.Errorf("could not save cache on catalog details: %s", err)
+				logger.Error("could not save cache on catalog details", "error", err)
 			}
 		}()
 		respondOK(w, o)
 	}
 }
 
-func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
@@ -84,7 +85,7 @@ func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *log
 
 		go func() {
 			if err := cache.Set(cacheKey, i, itemCacheExpr); err != nil {
-				logger.Errorf("could not save cache on catalog details: %s", err)
+				logger.Error("could not save cache on catalog details", "error", err)
 			}
 		}()
 		respondOK(w, i)

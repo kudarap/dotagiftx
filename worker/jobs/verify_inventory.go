@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
+	"log/slog"
+
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -14,7 +15,7 @@ type VerifyInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
 	source       *verify.Source
-	logger       logging.Logger
+	logger       *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -25,7 +26,7 @@ func NewVerifyInventory(
 	is dotagiftx.InventoryService,
 	ms dotagiftx.MarketStorage,
 	vs *verify.Source,
-	lg logging.Logger,
+	lg *slog.Logger,
 ) *VerifyInventory {
 	f := dotagiftx.Market{}
 	return &VerifyInventory{
@@ -40,7 +41,7 @@ func (vi *VerifyInventory) Interval() time.Duration { return vi.interval }
 func (vi *VerifyInventory) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		vi.logger.Println("VERIFIED INVENTORY BENCHMARK TIME", time.Since(bs))
+		vi.logger.Info("VERIFIED INVENTORY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
 	opts := dotagiftx.FindOpts{Filter: vi.filter}
@@ -68,7 +69,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 			}
 
 			if mkt.User == nil || mkt.Item == nil {
-				vi.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				vi.logger.Error("skipped process! missing data", "user", mkt.User, "item", mkt.Item)
 				continue
 			}
 
@@ -77,7 +78,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				continue
 			}
 
-			vi.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, result.Status)
+			vi.logger.Info("batch", "page", opts.Page, "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status)
 			err = vi.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 				MarketID:   mkt.ID,
 				Status:     result.Status,
@@ -86,7 +87,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
-				vi.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
+				vi.logger.Error("inventory update error", "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status, "error", err)
 			}
 
 			time.Sleep(time.Second / 4)

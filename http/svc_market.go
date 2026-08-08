@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"log/slog"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -20,7 +21,7 @@ func handleMarketList(
 	trackSvc dotagiftx.TrackService,
 	private bool,
 	cache cacheManager,
-	logger *logrus.Logger,
+	logger *slog.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Modify query params to inject and override private params.
@@ -60,7 +61,7 @@ func handleMarketList(
 
 		go func() {
 			if err := trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
-				logger.Errorf("search keyword tracking error: %s", err)
+				logger.Error("search keyword tracking error", "error", err)
 			}
 		}()
 
@@ -75,7 +76,7 @@ func handleMarketList(
 
 		data := newDataWithMeta(list, md)
 		if err = cache.Set(cacheKey, data, marketCacheExpr); err != nil {
-			logger.Errorf("could not save cache on market list: %s", err)
+			logger.Error("could not save cache on market list", "error", err)
 		}
 
 		if shouldRedactUser {
@@ -106,7 +107,7 @@ func sortQueryModifier(r *http.Request) {
 	r.URL.RawQuery = query.Encode()
 }
 
-func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
@@ -137,7 +138,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger 
 		}
 
 		if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
-			logger.Errorf("could not save cache on market list: %s", err)
+			logger.Error("could not save cache on market list", "error", err)
 		}
 
 		if shouldRedactUser {

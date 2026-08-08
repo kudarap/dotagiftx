@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
+	"log/slog"
+
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -15,7 +16,7 @@ type RecheckInventory struct {
 	inventorySvc dotagiftx.InventoryService
 	marketStg    dotagiftx.MarketStorage
 	source       *verify.Source
-	logger       logging.Logger
+	logger       *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -26,7 +27,7 @@ func NewRecheckInventory(
 	is dotagiftx.InventoryService,
 	ms dotagiftx.MarketStorage,
 	as *verify.Source,
-	lg logging.Logger,
+	lg *slog.Logger,
 ) *RecheckInventory {
 	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}
 	return &RecheckInventory{
@@ -41,7 +42,7 @@ func (ri *RecheckInventory) Interval() time.Duration { return ri.interval }
 func (ri *RecheckInventory) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		ri.logger.Println("RECHECK INVENTORY BENCHMARK TIME", time.Since(bs))
+		ri.logger.Info("RECHECK INVENTORY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
 	opts := dotagiftx.FindOpts{Filter: ri.filter}
@@ -68,17 +69,17 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 		}
 
 		if mkt.User == nil || mkt.Item == nil {
-			ri.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+			ri.logger.Error("skipped process! missing data", "user", mkt.User, "item", mkt.Item)
 			continue
 		}
 
 		result, err := ri.source.Inventory(ctx, mkt.User.SteamID, mkt.Item.Name)
 		if err != nil {
-			ri.logger.Errorf("skipped process! source error user:%#v item:%#v err:%#v", mkt.User, mkt.Item, err)
+			ri.logger.Error("skipped process! source error", "user", mkt.User, "item", mkt.Item, "error", err)
 			continue
 		}
 
-		ri.logger.Println("batch", opts.Page, mkt.User.SteamID, mkt.Item.Name, result.Status)
+		ri.logger.Info("batch", "page", opts.Page, "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status)
 		err = ri.inventorySvc.Set(ctx, &dotagiftx.Inventory{
 			MarketID:   mkt.ID,
 			Status:     result.Status,
@@ -87,7 +88,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 			ElapsedMs:  time.Since(start).Milliseconds(),
 		})
 		if err != nil {
-			ri.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
+			ri.logger.Error("inventory update error", "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status, "error", err)
 		}
 
 		time.Sleep(time.Second / 4)

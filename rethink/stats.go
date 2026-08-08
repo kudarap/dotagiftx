@@ -2,21 +2,21 @@ package rethink
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 // NewStats creates new instance of market data store.
-func NewStats(c *Client, lg logging.Logger) dotagiftx.StatsStorage {
+func NewStats(c *Client, lg *slog.Logger) dotagiftx.StatsStorage {
 	return &statsStorage{c, lg}
 }
 
 type statsStorage struct {
 	db     *Client
-	logger logging.Logger
+	logger *slog.Logger
 }
 
 func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string) (*dotagiftx.MarketStatusCount, error) {
@@ -48,7 +48,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 		Cancelled:    mktMap[dotagiftx.MarketStatusCancelled],
 		BidCompleted: mktMap[dotagiftx.MarketStatusBidCompleted],
 	}
-	s.logger.Println("rethink/stats count ask", time.Since(benchStart))
+	s.logger.Info("rethink/stats count ask", "elapsed", time.Since(benchStart))
 
 	benchStart = time.Now()
 	if err := s.db.list(ctx, baseQuery.
@@ -66,7 +66,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	marketStats.ResellReserved = resellMap[dotagiftx.MarketStatusReserved]
 	marketStats.ResellRemoved = resellMap[dotagiftx.MarketStatusRemoved]
 	marketStats.ResellCancelled = resellMap[dotagiftx.MarketStatusCancelled]
-	s.logger.Println("rethink/stats count resell", time.Since(benchStart))
+	s.logger.Info("rethink/stats count resell", "elapsed", time.Since(benchStart))
 
 	// Count market bid stats
 	benchStart = time.Now()
@@ -81,7 +81,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	}
 	marketStats.BidLive = mktMap[dotagiftx.MarketStatusLive]
 	marketStats.BidCompleted = mktMap[dotagiftx.MarketStatusBidCompleted]
-	s.logger.Println("rethink/stats count bid", time.Since(benchStart))
+	s.logger.Info("rethink/stats count bid", "elapsed", time.Since(benchStart))
 
 	// Count delivery stats
 	benchStart = time.Now()
@@ -101,7 +101,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	marketStats.DeliverySenderVerified = dlvMap[dotagiftx.DeliveryStatusSenderVerified]
 	marketStats.DeliveryPrivate = dlvMap[dotagiftx.DeliveryStatusPrivate]
 	marketStats.DeliveryError = dlvMap[dotagiftx.DeliveryStatusError]
-	s.logger.Println("rethink/stats count dlv", time.Since(benchStart))
+	s.logger.Info("rethink/stats count dlv", "elapsed", time.Since(benchStart))
 
 	// Count inventory stats
 	benchStart = time.Now()
@@ -120,7 +120,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	marketStats.InventoryVerified = invMap[dotagiftx.InventoryStatusVerified]
 	marketStats.InventoryPrivate = invMap[dotagiftx.InventoryStatusPrivate]
 	marketStats.InventoryError = invMap[dotagiftx.InventoryStatusError]
-	s.logger.Println("rethink/stats count inv", time.Since(benchStart))
+	s.logger.Info("rethink/stats count inv", "elapsed", time.Since(benchStart))
 
 	return marketStats, nil
 }

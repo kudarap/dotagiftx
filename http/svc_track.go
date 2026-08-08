@@ -4,19 +4,20 @@ import (
 	"context"
 	"net/http"
 
+	"log/slog"
+
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/assets"
-	"github.com/sirupsen/logrus"
 )
 
 const pixelImage = "image/pixel.gif"
 
-func handleTracker(svc dotagiftx.TrackService, logger *logrus.Logger) http.HandlerFunc {
+func handleTracker(svc dotagiftx.TrackService, logger *slog.Logger) http.HandlerFunc {
 	image, _ := assets.Content.ReadFile(pixelImage)
 	return func(w http.ResponseWriter, r *http.Request) {
 		go func(r *http.Request) {
 			if err := svc.CreateFromRequest(context.Background(), r); err != nil {
-				logger.Errorf("tracker error: %s", err)
+				logger.Error("tracker error", "error", err)
 			}
 		}(r)
 

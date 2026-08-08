@@ -1,43 +1,12 @@
 package logging
 
 import (
-	"github.com/sirupsen/logrus"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
+	"context"
+	"log/slog"
+	"os"
+
 	"gopkg.in/natefinch/lumberjack.v2"
 )
-
-// Logger provides access to logging service.
-type Logger interface {
-	// Standard Lib logger methods.
-	Print(v ...any)
-	Println(v ...any)
-	Printf(format string, v ...any)
-
-	Panic(v ...any)
-	Panicln(v ...any)
-	Panicf(format string, v ...any)
-
-	Fatal(v ...any)
-	Fatalln(v ...any)
-	Fatalf(format string, v ...any)
-
-	// Custom logger methods.
-	Info(v ...any)
-	Infoln(v ...any)
-	Infof(format string, v ...any)
-
-	Error(v ...any)
-	Errorln(v ...any)
-	Errorf(format string, v ...any)
-
-	Debug(v ...any)
-	Debugln(v ...any)
-	Debugf(format string, v ...any)
-
-	Warn(v ...any)
-	Warnln(v ...any)
-	Warnf(format string, v ...any)
-}
 
 const (
 	fileMaxBackups = 10
@@ -52,42 +21,32 @@ type Config struct {
 }
 
 // Default returns pre-configured logger.
-func Default() *logrus.Logger {
-	l := logrus.New()
-	// l.SetFormatter(&logrus.TextFormatter{
-	//	FullTimestamp: true,
-	// })
-	formatter := new(prefixed.TextFormatter)
-	formatter.FullTimestamp = true
-	l.Formatter = formatter
-	return l
+func Default() *slog.Logger {
+	return slog.New(slog.NewTextHandler(os.Stderr, nil))
 }
 
 // DefaultWithPrefix returns a default instance of logger with prefix.
-func DefaultWithPrefix(prefix string) *logrus.Entry {
+func DefaultWithPrefix(prefix string) *slog.Logger {
 	return WithPrefix(Default(), prefix)
 }
 
-func WithPrefix(lg *logrus.Logger, prefix string) *logrus.Entry {
-	return lg.WithField("prefix", prefix)
+// WithPrefix returns a logger with a prefix field.
+func WithPrefix(lg *slog.Logger, prefix string) *slog.Logger {
+	return lg.With("prefix", prefix)
 }
 
 // New returns logger with config.
-func New(cfg Config) (*logrus.Logger, error) {
-	l := Default()
+func New(cfg Config) (*slog.Logger, error) {
+	handlers := []slog.Handler{slog.NewTextHandler(os.Stderr, nil)}
 
 	if cfg.FileOut != "" {
 		outF, err := openLogfileWithRotator(cfg.FileOut)
 		if err != nil {
 			return nil, err
 		}
-		l.AddHook(&Hook{
-			Writer: outF,
-			LogLevels: []logrus.Level{
-				logrus.InfoLevel,
-				logrus.DebugLevel,
-				logrus.WarnLevel,
-			},
+		handlers = append(handlers, levelFilterHandler{
+			level:   slog.LevelDebug,
+			handler: slog.NewTextHandler(outF, nil),
 		})
 	}
 
@@ -96,17 +55,35 @@ func New(cfg Config) (*logrus.Logger, error) {
 		if err != nil {
 			return nil, err
 		}
-		l.AddHook(&Hook{
-			Writer: errF,
-			LogLevels: []logrus.Level{
-				logrus.PanicLevel,
-				logrus.FatalLevel,
-				logrus.ErrorLevel,
-			},
+		handlers = append(handlers, levelFilterHandler{
+			level:   slog.LevelError,
+			handler: slog.NewTextHandler(errF, nil),
 		})
 	}
 
-	return l, nil
+	return slog.New(slog.NewMultiHandler(handlers...)), nil
+}
+
+// levelFilterHandler only handles records at or above the configured level.
+type levelFilterHandler struct {
+	level   slog.Leveler
+	handler slog.Handler
+}
+
+func (h levelFilterHandler) Enabled(ctx context.Context, l slog.Level) bool {
+	return l >= h.level.Level() && h.handler.Enabled(ctx, l)
+}
+
+func (h levelFilterHandler) Handle(ctx context.Context, r slog.Record) error {
+	return h.handler.Handle(ctx, r)
+}
+
+func (h levelFilterHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return levelFilterHandler{h.level, h.handler.WithAttrs(attrs)}
+}
+
+func (h levelFilterHandler) WithGroup(name string) slog.Handler {
+	return levelFilterHandler{h.level, h.handler.WithGroup(name)}
 }
 
 func openLogfileWithRotator(path string) (*lumberjack.Logger, error) {

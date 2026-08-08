@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,7 +15,6 @@ import (
 	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/tracing"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -41,7 +41,7 @@ func NewServer(
 	t *tracing.Tracer,
 	c cacheManager,
 	v *dotagiftx.Version,
-	l *logrus.Logger,
+	l *slog.Logger,
 ) *Server {
 	SigKey = sigKey
 	return &Server{
@@ -85,7 +85,7 @@ type Server struct {
 
 	tracing *tracing.Tracer
 	cache   cacheManager
-	logger  *logrus.Logger
+	logger  *slog.Logger
 	version *dotagiftx.Version
 
 	// divineKey is a special access key for importing and creating items and
@@ -134,7 +134,7 @@ func (s *Server) Run() error {
 	// Handle error on server start.
 	errCh := make(chan error, 1)
 	go func() {
-		s.logger.Infoln("server running on", s.Addr)
+		s.logger.Info("server running on", "addr", s.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
@@ -152,17 +152,28 @@ func (s *Server) Run() error {
 	case err := <-errCh:
 		return err
 	case <-quit:
-		s.logger.Infoln("server shutting down...")
+		s.logger.Info("server shutting down...")
 		if err := srv.Shutdown(ctx); err != nil {
-			s.logger.Error("server shutdown error", err)
+			s.logger.Error("server shutdown error", "error", err)
 		}
-		s.logger.Infoln("server stopped!")
+		s.logger.Info("server stopped!")
 		return nil
 	}
 }
 
-func NewStructuredLogger(logger *logrus.Logger) func(next http.Handler) http.Handler {
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger})
+func NewStructuredLogger(logger *slog.Logger) func(next http.Handler) http.Handler {
+	return middleware.RequestLogger(&middleware.DefaultLogFormatter{
+		Logger: slogPrintAdapter{logger},
+	})
+}
+
+// slogPrintAdapter adapts *slog.Logger to chi's LoggerInterface.
+type slogPrintAdapter struct {
+	l *slog.Logger
+}
+
+func (a slogPrintAdapter) Print(v ...any) {
+	a.l.Info(fmt.Sprint(v...))
 }
 
 func isValidDivineKey(r *http.Request, divineKey string) error {

@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -19,7 +20,7 @@ type Worker struct {
 	closed   bool
 	taskProc *TaskProcessor
 
-	logger logging.Logger
+	logger *slog.Logger
 	tracer *tracing.Tracer
 }
 
@@ -55,7 +56,7 @@ func New(tp *TaskProcessor, jobs ...Job) *Worker {
 }
 
 // SetLogger overrides default logger.
-func (w *Worker) SetLogger(l logging.Logger) {
+func (w *Worker) SetLogger(l *slog.Logger) {
 	w.logger = l
 }
 
@@ -63,10 +64,10 @@ func (w *Worker) SetLogger(l logging.Logger) {
 //
 // All assigned jobs will be run concurrently.
 func (w *Worker) Start() {
-	w.logger.Infof("running task processor...")
+	w.logger.Info("running task processor...")
 	go w.taskProc.Run(&w.wg)
 
-	w.logger.Infof("running jobs...")
+	w.logger.Info("running jobs...")
 
 	ctx := context.Background()
 
@@ -83,7 +84,7 @@ func (w *Worker) Start() {
 			return
 		case job := <-w.queue:
 			if w.closed {
-				w.logger.Warnf("SKIP job:%s queue is closed", job)
+				w.logger.Warn("SKIP job queue is closed", "job", job)
 				continue
 			}
 
@@ -107,13 +108,13 @@ func (w *Worker) runner(ctx context.Context, job Job) {
 		}()
 	}
 
-	w.logger.Infof("RUNN job:%s", job)
+	w.logger.Info("RUNN job", "job", job)
 	w.wg.Add(1)
 
 	if err := job.Run(ctx); err != nil {
-		w.logger.Errorf("ERRO job:%s - %s", job, err)
+		w.logger.Error("ERRO job", "job", job, "error", err)
 	}
-	w.logger.Infof("DONE job:%s", job)
+	w.logger.Info("DONE job", "job", job)
 	w.wg.Done()
 
 	// Worker queue is now closed.
@@ -129,7 +130,7 @@ func (w *Worker) runner(ctx context.Context, job Job) {
 
 	// Job that has non-zero interval value means it's a recurring job
 	// and will be re-queued after its rest duration
-	w.logger.Infof("REST job:%s will re-queue in %s", job, rest)
+	w.logger.Info("REST job will re-queue", "job", job, "interval", rest)
 	w.queueJob(job, false)
 }
 
@@ -139,7 +140,7 @@ func (w *Worker) runner(ctx context.Context, job Job) {
 // waiting jobs will be vanished into abyss when the worker is done.
 func (w *Worker) queueJob(j Job, now bool) {
 	if w.closed {
-		w.logger.Warnf("SKIP job:%s queue is closed", j)
+		w.logger.Warn("SKIP job queue is closed", "job", j)
 		return
 	}
 
@@ -153,18 +154,18 @@ func (w *Worker) queueJob(j Job, now bool) {
 		if !now {
 			time.Sleep(j.Interval())
 		}
-		w.logger.Printf("TODO job:%s", j)
+		w.logger.Info("TODO job", "job", j)
 		w.queue <- j
 	}()
 }
 
 // Stop will stop accepting job and wait for processing job to finish.
 func (w *Worker) Stop() error {
-	w.logger.Infof("stopping and waiting for jobs to finish...")
+	w.logger.Info("stopping and waiting for jobs to finish...")
 	w.closed = true
 	w.quit <- struct{}{}
 	w.wg.Wait()
-	w.logger.Infof("all jobs done!")
+	w.logger.Info("all jobs done!")
 	return nil
 }
 

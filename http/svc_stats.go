@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"log/slog"
+
 	"github.com/kudarap/dotagiftx"
-	"github.com/sirupsen/logrus"
 )
 
 func handleStatsMarketSummaryV2(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
@@ -36,22 +37,22 @@ const (
 	overallStatsRehydrationDur = overallStatsCacheExpr / 2
 )
 
-func hydrateStatsMarketSummaryOverall(cacheKey string, svc dotagiftx.StatsService, cache cacheManager, logger *logrus.Logger) {
-	logger.Infoln("REHYDRATING OVERALL STATS: started")
+func hydrateStatsMarketSummaryOverall(cacheKey string, svc dotagiftx.StatsService, cache cacheManager, logger *slog.Logger) {
+	logger.Info("REHYDRATING OVERALL STATS: started")
 	res, err := collectMarketStats(context.Background(), svc, nil)
 	if err != nil {
-		logger.Errorf("REHYDRATING OVERALL STATS: could not get overall market stats: %s", err)
+		logger.Error("REHYDRATING OVERALL STATS: could not get overall market stats", "error", err)
 		return
 	}
 
 	if err = cache.Set(cacheKey, res, overallStatsCacheExpr); err != nil {
-		logger.Errorf("REHYDRATING OVERALL STATS: could not save cache on overall market stats: %s", err)
+		logger.Error("REHYDRATING OVERALL STATS: could not save cache on overall market stats", "error", err)
 		return
 	}
-	logger.Infoln("REHYDRATING OVERALL STATS: completed")
+	logger.Info("REHYDRATING OVERALL STATS: completed")
 }
 
-func handleStatsMarketSummaryOverall(svc dotagiftx.StatsService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleStatsMarketSummaryOverall(svc dotagiftx.StatsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	const cacheKey = "stats_market_summary_overall"
 
 	// hydration setup since this is a long-running process

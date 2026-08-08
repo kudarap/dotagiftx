@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"time"
 
+	"log/slog"
+
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
 )
 
 type ExpiringSubscription struct {
 	userStg dotagiftx.UserStorage
 	cache   cacheRemover
-	logger  logging.Logger
+	logger  *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -21,7 +22,7 @@ type ExpiringSubscription struct {
 func NewExpiringSubscription(
 	us dotagiftx.UserStorage,
 	cache cacheRemover,
-	lg logging.Logger,
+	lg *slog.Logger,
 ) *ExpiringSubscription {
 	return &ExpiringSubscription{
 		userStg:  us,
@@ -36,7 +37,7 @@ func NewExpiringSubscription(
 func (s *ExpiringSubscription) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		s.logger.Println("EXPIRING SUBSCRIPTION BENCHMARK TIME", time.Since(bs))
+		s.logger.Info("EXPIRING SUBSCRIPTION BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
 	// get all users that has subscription
@@ -52,12 +53,12 @@ func (s *ExpiringSubscription) Run(ctx context.Context) error {
 	// clear user cache
 	for _, u := range users {
 		if err = s.userStg.PurgeSubscription(ctx, u.ID); err != nil {
-			s.logger.Errorf("purging subscription: %w", err)
+			s.logger.Error("purging subscription", "user_id", u.ID, "error", err)
 		}
 
 		go func() {
 			if err := s.cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID)); err != nil {
-				s.logger.Errorf("invalidate user cache: %w", err)
+				s.logger.Error("invalidate user cache", "steam_id", u.SteamID, "error", err)
 			}
 		}()
 	}

@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"log/slog"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -20,7 +21,7 @@ func handleMarketCatalogList(
 	svc dotagiftx.MarketService,
 	trackSvc dotagiftx.TrackService,
 	cache cacheManager,
-	logger *logrus.Logger,
+	logger *slog.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var noCache bool
@@ -51,7 +52,7 @@ func handleMarketCatalogList(
 
 		go func() {
 			if err := trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
-				logger.Errorf("search keyword tracking error: %s", err)
+				logger.Error("search keyword tracking error", "error", err)
 			}
 		}()
 
@@ -77,7 +78,7 @@ func handleMarketCatalogList(
 		data := newDataWithMeta(list, md)
 		go func() {
 			if err := cache.Set(cacheKey, data, marketCacheExpr); err != nil {
-				logger.Errorf("could not save cache on catalog list: %s", err)
+				logger.Error("could not save cache on catalog list", "error", err)
 			}
 		}()
 
@@ -85,7 +86,7 @@ func handleMarketCatalogList(
 	}
 }
 
-func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, marketCacheKeyPrefix)
@@ -115,7 +116,7 @@ func handleMarketCatalogDetail(svc dotagiftx.MarketService, cache cacheManager, 
 
 		go func() {
 			if err := cache.Set(cacheKey, c, marketCacheExpr); err != nil {
-				logger.Errorf("could not save cache on catalog details: %s", err)
+				logger.Error("could not save cache on catalog details", "error", err)
 			}
 		}()
 
@@ -128,23 +129,23 @@ const catalogTrendCacheExpr = time.Hour * 2
 // TODO! this is hotfixed for slow query on trending catalog.
 const catalogTrendRehydrationDur = catalogTrendCacheExpr / 2
 
-func hydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) {
-	logger.Infoln("REHYDRATING EXP...")
+func hydrateCatalogTrend(cacheKey string, svc dotagiftx.MarketService, cache cacheManager, logger *slog.Logger) {
+	logger.Info("REHYDRATING EXP...")
 	list, _, err := svc.TrendingCatalog(context.Background(), dotagiftx.FindOpts{})
 	if err != nil {
-		logger.Errorf("could not get catalog trend list: %s", err)
+		logger.Error("could not get catalog trend list", "error", err)
 		return
 	}
 
 	trend := newDataWithMeta(list, &dotagiftx.FindMetadata{ResultCount: len(list), TotalCount: 10})
 	if err = cache.Set(cacheKey, trend, 0); err != nil {
-		logger.Errorf("could not save cache on catalog trend list: %s", err)
+		logger.Error("could not save cache on catalog trend list", "error", err)
 		return
 	}
-	logger.Infoln("REHYDRATED EXP", trend.ResultCount)
+	logger.Info("REHYDRATED EXP", "result_count", trend.ResultCount)
 }
 
-func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	const cacheKeyX = "catalog_trend_exp"
 
 	go func() {
@@ -156,7 +157,7 @@ func handleMarketCatalogTrendList(svc dotagiftx.MarketService, cache cacheManage
 	}()
 
 	if hit, _ := cache.Get(cacheKeyX); hit == "" {
-		logger.Infoln("no cached catalog trend")
+		logger.Info("no cached catalog trend")
 		go hydrateCatalogTrend(cacheKeyX, svc, cache, logger)
 	}
 

@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
+	"log/slog"
+
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -14,7 +15,7 @@ type VerifyDelivery struct {
 	deliverySvc dotagiftx.DeliveryService
 	marketStg   dotagiftx.MarketStorage
 	source      *verify.Source
-	logger      logging.Logger
+	logger      *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -25,7 +26,7 @@ func NewVerifyDelivery(
 	ds dotagiftx.DeliveryService,
 	ms dotagiftx.MarketStorage,
 	vs *verify.Source,
-	lg logging.Logger,
+	lg *slog.Logger,
 ) *VerifyDelivery {
 	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &VerifyDelivery{
@@ -40,7 +41,7 @@ func (vd *VerifyDelivery) Interval() time.Duration { return vd.interval }
 func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		vd.logger.Println("VERIFIED DELIVERY BENCHMARK TIME", time.Since(bs))
+		vd.logger.Info("VERIFIED DELIVERY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
 	opts := dotagiftx.FindOpts{Filter: vd.filter}
@@ -66,7 +67,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			}
 
 			if mkt.User == nil || mkt.Item == nil {
-				vd.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				vd.logger.Error("skipped process! missing data", "user", mkt.User, "item", mkt.Item)
 				continue
 			}
 
@@ -75,7 +76,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 				continue
 			}
 
-			vd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, result.Status)
+			vd.logger.Info("batch", "page", opts.Page, "user", mkt.User.Name, "partner_steam_id", mkt.PartnerSteamID, "item", mkt.Item.Name, "status", result.Status)
 			err = vd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID:   mkt.ID,
 				Status:     result.Status,
@@ -84,7 +85,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
-				vd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
+				vd.logger.Error("delivery update error", "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status, "error", err)
 			}
 
 			time.Sleep(time.Second / 4)
