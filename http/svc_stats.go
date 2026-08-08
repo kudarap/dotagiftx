@@ -38,18 +38,19 @@ const (
 )
 
 func hydrateStatsMarketSummaryOverall(cacheKey string, svc dotagiftx.StatsService, cache cacheManager, logger *slog.Logger) {
-	logger.Info("REHYDRATING OVERALL STATS: started")
-	res, err := collectMarketStats(context.Background(), svc, nil)
+	ctx := context.Background()
+	logger.InfoContext(ctx, "REHYDRATING OVERALL STATS: started")
+	res, err := collectMarketStats(ctx, svc, nil)
 	if err != nil {
-		logger.Error("REHYDRATING OVERALL STATS: could not get overall market stats", "error", err)
+		logger.ErrorContext(ctx, "REHYDRATING OVERALL STATS: could not get overall market stats", "error", err)
 		return
 	}
 
 	if err = cache.Set(cacheKey, res, overallStatsCacheExpr); err != nil {
-		logger.Error("REHYDRATING OVERALL STATS: could not save cache on overall market stats", "error", err)
+		logger.ErrorContext(ctx, "REHYDRATING OVERALL STATS: could not save cache on overall market stats", "error", err)
 		return
 	}
-	logger.Info("REHYDRATING OVERALL STATS: completed")
+	logger.InfoContext(ctx, "REHYDRATING OVERALL STATS: completed")
 }
 
 func handleStatsMarketSummaryOverall(svc dotagiftx.StatsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {

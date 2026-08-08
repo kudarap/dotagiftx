@@ -134,7 +134,7 @@ func (s *Server) Run() error {
 	// Handle error on server start.
 	errCh := make(chan error, 1)
 	go func() {
-		s.logger.Info("server running on", "addr", s.Addr)
+		s.logger.InfoContext(context.Background(), "server running on", "addr", s.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
@@ -152,11 +152,11 @@ func (s *Server) Run() error {
 	case err := <-errCh:
 		return err
 	case <-quit:
-		s.logger.Info("server shutting down...")
+		s.logger.InfoContext(ctx, "server shutting down...")
 		if err := srv.Shutdown(ctx); err != nil {
-			s.logger.Error("server shutdown error", "error", err)
+			s.logger.ErrorContext(ctx, "server shutdown error", "error", err)
 		}
-		s.logger.Info("server stopped!")
+		s.logger.InfoContext(ctx, "server stopped!")
 		return nil
 	}
 }

@@ -17,7 +17,7 @@ func handleTracker(svc dotagiftx.TrackService, logger *slog.Logger) http.Handler
 	return func(w http.ResponseWriter, r *http.Request) {
 		go func(r *http.Request) {
 			if err := svc.CreateFromRequest(context.Background(), r); err != nil {
-				logger.Error("tracker error", "error", err)
+				logger.ErrorContext(r.Context(), "tracker error", "error", err)
 			}
 		}(r)
 

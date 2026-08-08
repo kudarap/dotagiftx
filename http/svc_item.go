@@ -43,7 +43,7 @@ func handleItemList(
 
 		go func() {
 			if err = trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
-				logger.Error("search keyword tracking error", "error", err)
+				logger.ErrorContext(r.Context(), "search keyword tracking error", "error", err)
 			}
 		}()
 
@@ -59,7 +59,7 @@ func handleItemList(
 		o := newDataWithMeta(list, md)
 		go func() {
 			if err = cache.Set(cacheKey, o, itemCacheExpr); err != nil {
-				logger.Error("could not save cache on catalog details", "error", err)
+				logger.ErrorContext(r.Context(), "could not save cache on catalog details", "error", err)
 			}
 		}()
 		respondOK(w, o)
@@ -85,7 +85,7 @@ func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *slo
 
 		go func() {
 			if err := cache.Set(cacheKey, i, itemCacheExpr); err != nil {
-				logger.Error("could not save cache on catalog details", "error", err)
+				logger.ErrorContext(r.Context(), "could not save cache on catalog details", "error", err)
 			}
 		}()
 		respondOK(w, i)

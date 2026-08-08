@@ -61,7 +61,7 @@ func handleMarketList(
 
 		go func() {
 			if err := trackSvc.CreateSearchKeyword(context.Background(), r, opts.Keyword); err != nil {
-				logger.Error("search keyword tracking error", "error", err)
+				logger.ErrorContext(r.Context(), "search keyword tracking error", "error", err)
 			}
 		}()
 
@@ -76,7 +76,7 @@ func handleMarketList(
 
 		data := newDataWithMeta(list, md)
 		if err = cache.Set(cacheKey, data, marketCacheExpr); err != nil {
-			logger.Error("could not save cache on market list", "error", err)
+			logger.ErrorContext(r.Context(), "could not save cache on market list", "error", err)
 		}
 
 		if shouldRedactUser {
@@ -138,7 +138,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger 
 		}
 
 		if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
-			logger.Error("could not save cache on market list", "error", err)
+			logger.ErrorContext(r.Context(), "could not save cache on market list", "error", err)
 		}
 
 		if shouldRedactUser {

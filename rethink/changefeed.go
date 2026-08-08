@@ -41,13 +41,13 @@ func newChangeFeed(ctx context.Context, db *r.Session, table string, exec func(p
 	feed.closer = make(chan bool)
 	feed.cursor = cursor
 
-	slog.Info("change feed started", "table", table)
+	slog.InfoContext(ctx, "change feed started", "table", table)
 	go func() {
 		feed.cursor.Listen(feed.ch)
 		for {
 			select {
 			case <-feed.closer:
-				slog.Info("change feed closed", "table", table)
+				slog.InfoContext(ctx, "change feed closed", "table", table)
 				return
 
 			case event := <-feed.ch:
@@ -55,19 +55,19 @@ func newChangeFeed(ctx context.Context, db *r.Session, table string, exec func(p
 				if raw := event["old_val"]; raw != nil {
 					oldVal, err = json.Marshal(raw)
 					if err != nil {
-						slog.Error("could not marshal old_val", "error", err)
+						slog.ErrorContext(ctx, "could not marshal old_val", "error", err)
 						continue
 					}
 				}
 				if raw := event["new_val"]; raw != nil {
 					newVal, err = json.Marshal(raw)
 					if err != nil {
-						slog.Error("could not marshal new_val", "error", err)
+						slog.ErrorContext(ctx, "could not marshal new_val", "error", err)
 						continue
 					}
 				}
 				if err = exec(oldVal, newVal); err != nil {
-					slog.Error("could not process change", "error", err)
+					slog.ErrorContext(ctx, "could not process change", "error", err)
 				}
 			}
 		}

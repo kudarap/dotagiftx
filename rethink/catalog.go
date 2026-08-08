@@ -21,12 +21,12 @@ const tableCatalog = "catalog"
 func NewCatalog(c *Client, lg *slog.Logger) dotagiftx.CatalogStorage {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableCatalog); err != nil {
-		lg.Error("could not create catalog table", "table", tableCatalog, "error", err)
+		lg.ErrorContext(ctx, "could not create catalog table", "table", tableCatalog, "error", err)
 		os.Exit(1)
 	}
 
 	if err := c.autoIndex(ctx, tableCatalog, dotagiftx.Catalog{}); err != nil {
-		lg.Error("could not create index on catalog table", "table", tableCatalog, "error", err)
+		lg.ErrorContext(ctx, "could not create index on catalog table", "table", tableCatalog, "error", err)
 		os.Exit(1)
 	}
 
@@ -192,7 +192,7 @@ func (s *catalogStorage) getBySlug(ctx context.Context, slug string) (*dotagiftx
 func (s *catalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.Catalog, error) {
 	bs := time.Now()
 	defer func() {
-		s.logger.Info("catalog indexed", "item_id", itemID, "elapsed", time.Since(bs))
+		s.logger.InfoContext(ctx, "catalog indexed", "item_id", itemID, "elapsed", time.Since(bs))
 	}()
 
 	var benchStart time.Time
@@ -214,7 +214,7 @@ func (s *catalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.C
 	if err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
-	s.logger.Info("rethink/catalog getOffersSummary", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/catalog getOffersSummary", "elapsed", time.Since(benchStart))
 
 	benchStart = time.Now()
 	// Get market buy orders summary.
@@ -222,7 +222,7 @@ func (s *catalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.C
 	if err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
-	s.logger.Info("rethink/catalog getBuyOrdersSummary", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/catalog getBuyOrdersSummary", "elapsed", time.Since(benchStart))
 
 	benchStart = time.Now()
 	// Get market sales stats which calculated from RESERVED and SOLD statuses.
@@ -230,7 +230,7 @@ func (s *catalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.C
 	if err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
-	s.logger.Info("rethink/catalog getSaleSummary", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/catalog getSaleSummary", "elapsed", time.Since(benchStart))
 
 	benchStart = time.Now()
 	// Get reserved and sold count on the market by item ID.
@@ -239,7 +239,7 @@ func (s *catalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.C
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
 	cat.SoldCount = cat.SaleCount - cat.ReservedCount
-	s.logger.Info("rethink/catalog getReservedCounts", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/catalog getReservedCounts", "elapsed", time.Since(benchStart))
 
 	// Check for exiting entry for update or create.
 	if cur, _ := s.Get(ctx, itemID); cur == nil {

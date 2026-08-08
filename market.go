@@ -428,19 +428,19 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 		return err
 	}
 
-	bench(s.logger, "market create :: UpdateUserRankScore", func() {
+	bench(ctx, s.logger, "market create :: UpdateUserRankScore", func() {
 		if err := s.UpdateUserRankScore(ctx, market.UserID); err != nil {
-			s.logger.Error("could not update user rank", "user_id", market.UserID, "error", err)
+			s.logger.ErrorContext(ctx, "could not update user rank", "user_id", market.UserID, "error", err)
 		}
 	})
-	bench(s.logger, "market create :: marketStg.Index", func() {
+	bench(ctx, s.logger, "market create :: marketStg.Index", func() {
 		if _, err := s.marketStg.Index(ctx, market.ID); err != nil {
-			s.logger.Error("could not index market", "item_id", market.ItemID, "error", err)
+			s.logger.ErrorContext(ctx, "could not index market", "item_id", market.ItemID, "error", err)
 		}
 	})
-	bench(s.logger, "market create :: catalogStg.Index", func() {
+	bench(ctx, s.logger, "market create :: catalogStg.Index", func() {
 		if _, err := s.catalogStg.Index(ctx, market.ItemID); err != nil {
-			s.logger.Error("could not index item", "item_id", market.ItemID, "error", err)
+			s.logger.ErrorContext(ctx, "could not index item", "item_id", market.ItemID, "error", err)
 		}
 	})
 
@@ -457,7 +457,7 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 		// Resells should not verify items.
 		if !market.IsResell() {
 			if _, err = s.taskProc.Queue(ctx, user.TaskPriorityQueue(), TaskTypeVerifyInventory, market); err != nil {
-				s.logger.Error("could not queue task", "market_id", market.ID, "error", err)
+				s.logger.ErrorContext(ctx, "could not queue task", "market_id", market.ID, "error", err)
 			}
 		}
 	}
@@ -532,29 +532,29 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 			// Resells should not verify items.
 			if !market.IsResell() {
 				if _, err = s.taskProc.Queue(ctx, priority, TaskTypeVerifyInventory, market); err != nil {
-					s.logger.Error("could not queue task", "market_id", market.ID, "error", err)
+					s.logger.ErrorContext(ctx, "could not queue task", "market_id", market.ID, "error", err)
 				}
 			}
 		case MarketStatusSold:
 			if _, err = s.taskProc.Queue(ctx, priority, TaskTypeVerifyDelivery, market); err != nil {
-				s.logger.Error("could not queue task", "market_id", market.ID, "error", err)
+				s.logger.ErrorContext(ctx, "could not queue task", "market_id", market.ID, "error", err)
 			}
 		}
 	}
 
-	bench(s.logger, "market update :: UpdateUserRankScore", func() {
+	bench(ctx, s.logger, "market update :: UpdateUserRankScore", func() {
 		if err = s.UpdateUserRankScore(ctx, market.UserID); err != nil {
-			s.logger.Error("could not update user rank", "user_id", market.UserID, "error", err)
+			s.logger.ErrorContext(ctx, "could not update user rank", "user_id", market.UserID, "error", err)
 		}
 	})
-	bench(s.logger, "market update :: marketStg.Index", func() {
+	bench(ctx, s.logger, "market update :: marketStg.Index", func() {
 		if _, err = s.marketStg.Index(ctx, market.ID); err != nil {
-			s.logger.Error("could not index market", "item_id", market.ItemID, "error", err)
+			s.logger.ErrorContext(ctx, "could not index market", "item_id", market.ItemID, "error", err)
 		}
 	})
-	bench(s.logger, "market update :: catalogStg.Index", func() {
+	bench(ctx, s.logger, "market update :: catalogStg.Index", func() {
 		if _, err = s.catalogStg.Index(ctx, market.ItemID); err != nil {
-			s.logger.Error("could not index item", "item_id", market.ItemID, "error", err)
+			s.logger.ErrorContext(ctx, "could not index item", "item_id", market.ItemID, "error", err)
 		}
 	})
 
@@ -577,7 +577,7 @@ func (s *marketService) UpdateUserRankScore(ctx context.Context, userID string) 
 	if err = s.marketStg.UpdateUserScore(ctx, u.ID, u.RankScore); err != nil {
 		return err
 	}
-	s.logger.Info("service/market UpdateUserScore", "elapsed", time.Since(benchS))
+	s.logger.InfoContext(ctx, "service/market UpdateUserScore", "elapsed", time.Since(benchS))
 	return s.userStg.BaseUpdate(ctx, u)
 }
 
@@ -824,10 +824,10 @@ type taskProcessor interface {
 	Queue(ctx context.Context, p TaskPriority, t TaskType, payload any) (id string, err error)
 }
 
-func bench(l *slog.Logger, name string, fn func()) {
+func bench(ctx context.Context, l *slog.Logger, name string, fn func()) {
 	s := time.Now()
 	fn()
-	l.Info("BENCH service/market", "name", name, "elapsed", time.Since(s))
+	l.InfoContext(ctx, "BENCH service/market", "name", name, "elapsed", time.Since(s))
 }
 
 func priceToTenths(n float64) float64 {

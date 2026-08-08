@@ -157,7 +157,7 @@ func (s *authService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 		u, err := s.userSvc.User(ctx, authData.UserID)
 		if err != nil {
 			if errors.Is(err, UserErrNotFound) {
-				s.logger.Warn("user not found, but auth exists. re-creating user.",
+				s.logger.WarnContext(ctx, "user not found, but auth exists. re-creating user.",
 					"auth_id", authData.ID,
 					"user_id", authData.UserID,
 					"username", authData.Username,
@@ -175,7 +175,7 @@ func (s *authService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 					return nil, err
 				}
 
-				s.logger.Debug("user re-created", "user", u)
+				s.logger.DebugContext(ctx, "user re-created", "user", u)
 				return authData, nil
 			}
 

@@ -48,7 +48,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 		Cancelled:    mktMap[dotagiftx.MarketStatusCancelled],
 		BidCompleted: mktMap[dotagiftx.MarketStatusBidCompleted],
 	}
-	s.logger.Info("rethink/stats count ask", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/stats count ask", "elapsed", time.Since(benchStart))
 
 	benchStart = time.Now()
 	if err := s.db.list(ctx, baseQuery.
@@ -66,7 +66,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	marketStats.ResellReserved = resellMap[dotagiftx.MarketStatusReserved]
 	marketStats.ResellRemoved = resellMap[dotagiftx.MarketStatusRemoved]
 	marketStats.ResellCancelled = resellMap[dotagiftx.MarketStatusCancelled]
-	s.logger.Info("rethink/stats count resell", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/stats count resell", "elapsed", time.Since(benchStart))
 
 	// Count market bid stats
 	benchStart = time.Now()
@@ -81,7 +81,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	}
 	marketStats.BidLive = mktMap[dotagiftx.MarketStatusLive]
 	marketStats.BidCompleted = mktMap[dotagiftx.MarketStatusBidCompleted]
-	s.logger.Info("rethink/stats count bid", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/stats count bid", "elapsed", time.Since(benchStart))
 
 	// Count delivery stats
 	benchStart = time.Now()
@@ -101,7 +101,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	marketStats.DeliverySenderVerified = dlvMap[dotagiftx.DeliveryStatusSenderVerified]
 	marketStats.DeliveryPrivate = dlvMap[dotagiftx.DeliveryStatusPrivate]
 	marketStats.DeliveryError = dlvMap[dotagiftx.DeliveryStatusError]
-	s.logger.Info("rethink/stats count dlv", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/stats count dlv", "elapsed", time.Since(benchStart))
 
 	// Count inventory stats
 	benchStart = time.Now()
@@ -120,7 +120,7 @@ func (s *statsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	marketStats.InventoryVerified = invMap[dotagiftx.InventoryStatusVerified]
 	marketStats.InventoryPrivate = invMap[dotagiftx.InventoryStatusPrivate]
 	marketStats.InventoryError = invMap[dotagiftx.InventoryStatusError]
-	s.logger.Info("rethink/stats count inv", "elapsed", time.Since(benchStart))
+	s.logger.InfoContext(ctx, "rethink/stats count inv", "elapsed", time.Since(benchStart))
 
 	return marketStats, nil
 }
