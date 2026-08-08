@@ -294,12 +294,12 @@ func NewMarketService(
 }
 
 type MarketService struct {
-	marketStg    marketRepository
-	userStg      userRepository
-	itemStg      itemRepository
-	trackStg     trackRepository
-	catalogStg   catalogRepository
-	statsStg     statsRepository
+	marketRepo   marketRepository
+	userRepo     userRepository
+	itemRepo     itemRepository
+	trackRepo    trackRepository
+	catalogRepo  catalogRepository
+	statsRepo    statsRepository
 	deliverySvc  *DeliveryService
 	inventorySvc *InventoryService
 	steam        SteamClient
@@ -313,7 +313,7 @@ func (s *MarketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 		opts.UserID = au.UserID
 	}
 
-	res, err := s.marketStg.Find(ctx, opts)
+	res, err := s.marketRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -323,7 +323,7 @@ func (s *MarketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 	}
 
 	// Get total count for metadata.
-	tc, err := s.marketStg.Count(ctx, opts)
+	tc, err := s.marketRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -335,7 +335,7 @@ func (s *MarketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 }
 
 func (s *MarketService) Market(ctx context.Context, id string) (*Market, error) {
-	mkt, err := s.marketStg.Get(ctx, id)
+	mkt, err := s.marketRepo.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -366,7 +366,7 @@ func (s *MarketService) Create(ctx context.Context, market *Market) error {
 	}
 
 	// Check Item existence.
-	item, _ := s.itemStg.Get(ctx, market.ItemID)
+	item, _ := s.itemRepo.Get(ctx, market.ItemID)
 	if item == nil || !item.IsActive() {
 		return ItemErrNotFound
 	}
@@ -390,7 +390,7 @@ func (s *MarketService) Create(ctx context.Context, market *Market) error {
 		}
 	}
 
-	if err := s.marketStg.Create(ctx, market); err != nil {
+	if err := s.marketRepo.Create(ctx, market); err != nil {
 		return err
 	}
 
@@ -399,20 +399,20 @@ func (s *MarketService) Create(ctx context.Context, market *Market) error {
 			s.logger.ErrorContext(ctx, "could not update user rank", "user_id", market.UserID, "error", err)
 		}
 	})
-	bench(ctx, s.logger, "market create :: marketStg.Index", func() {
-		if _, err := s.marketStg.Index(ctx, market.ID); err != nil {
+	bench(ctx, s.logger, "market create :: marketRepo.Index", func() {
+		if _, err := s.marketRepo.Index(ctx, market.ID); err != nil {
 			s.logger.ErrorContext(ctx, "could not index market", "item_id", market.ItemID, "error", err)
 		}
 	})
-	bench(ctx, s.logger, "market create :: catalogStg.Index", func() {
-		if _, err := s.catalogStg.Index(ctx, market.ItemID); err != nil {
+	bench(ctx, s.logger, "market create :: catalogRepo.Index", func() {
+		if _, err := s.catalogRepo.Index(ctx, market.ItemID); err != nil {
 			s.logger.ErrorContext(ctx, "could not index item", "item_id", market.ItemID, "error", err)
 		}
 	})
 
 	// Queueing tasks for verifying post to prepare task payload.
 	if market.Type == MarketTypeAsk {
-		user, err := s.userStg.Get(ctx, market.UserID)
+		user, err := s.userRepo.Get(ctx, market.UserID)
 		if err != nil {
 			return err
 		}
@@ -452,7 +452,7 @@ func (s *MarketService) Update(ctx context.Context, market *Market) error {
 			return err
 		}
 
-		u, err := s.userStg.Get(ctx, cur.UserID)
+		u, err := s.userRepo.Get(ctx, cur.UserID)
 		if err != nil {
 			return err
 		}
@@ -475,17 +475,17 @@ func (s *MarketService) Update(ctx context.Context, market *Market) error {
 	market.ItemID = ""
 	market.Price = 0
 	market.Currency = ""
-	if err = s.marketStg.Update(ctx, market); err != nil {
+	if err = s.marketRepo.Update(ctx, market); err != nil {
 		return err
 	}
 
 	// Queueing tasks for verifications on inventory and delivery to prepare task payload.
 	if market.Type == MarketTypeAsk {
-		user, err := s.userStg.Get(ctx, market.UserID)
+		user, err := s.userRepo.Get(ctx, market.UserID)
 		if err != nil {
 			return err
 		}
-		item, err := s.itemStg.Get(ctx, market.ItemID)
+		item, err := s.itemRepo.Get(ctx, market.ItemID)
 		if err != nil {
 			return err
 		}
@@ -513,13 +513,13 @@ func (s *MarketService) Update(ctx context.Context, market *Market) error {
 			s.logger.ErrorContext(ctx, "could not update user rank", "user_id", market.UserID, "error", err)
 		}
 	})
-	bench(ctx, s.logger, "market update :: marketStg.Index", func() {
-		if _, err = s.marketStg.Index(ctx, market.ID); err != nil {
+	bench(ctx, s.logger, "market update :: marketRepo.Index", func() {
+		if _, err = s.marketRepo.Index(ctx, market.ID); err != nil {
 			s.logger.ErrorContext(ctx, "could not index market", "item_id", market.ItemID, "error", err)
 		}
 	})
-	bench(ctx, s.logger, "market update :: catalogStg.Index", func() {
-		if _, err = s.catalogStg.Index(ctx, market.ItemID); err != nil {
+	bench(ctx, s.logger, "market update :: catalogRepo.Index", func() {
+		if _, err = s.catalogRepo.Index(ctx, market.ItemID); err != nil {
 			s.logger.ErrorContext(ctx, "could not index item", "item_id", market.ItemID, "error", err)
 		}
 	})
@@ -532,7 +532,7 @@ func (s *MarketService) UpdateUserRankScore(ctx context.Context, userID string) 
 		IndexKey: "user_id",
 		Filter:   Market{UserID: userID},
 	}
-	stats, err := s.statsStg.CountMarketStatusV2(ctx, opts)
+	stats, err := s.statsRepo.CountMarketStatusV2(ctx, opts)
 	if err != nil {
 		return fmt.Errorf("error getting user market stats: %s", err)
 	}
@@ -540,11 +540,11 @@ func (s *MarketService) UpdateUserRankScore(ctx context.Context, userID string) 
 	benchS := time.Now()
 	u := &User{ID: userID, MarketStats: *stats}
 	u = u.CalcRankScore(*stats)
-	if err = s.marketStg.UpdateUserScore(ctx, u.ID, u.RankScore); err != nil {
+	if err = s.marketRepo.UpdateUserScore(ctx, u.ID, u.RankScore); err != nil {
 		return err
 	}
 	s.logger.InfoContext(ctx, "service/market UpdateUserScore", "elapsed", time.Since(benchS))
-	return s.userStg.BaseUpdate(ctx, u)
+	return s.userRepo.BaseUpdate(ctx, u)
 }
 
 // AutoCompleteBid detects if there's a matching reservation on buy order and automatically resolve it by setting
@@ -555,7 +555,7 @@ func (s *MarketService) AutoCompleteBid(ctx context.Context, ask Market, partner
 	}
 
 	// Use buyer ID to get the matching market.
-	buyer, err := s.userStg.Get(ctx, partnerSteamID)
+	buyer, err := s.userRepo.Get(ctx, partnerSteamID)
 	if err != nil {
 		return nil
 	}
@@ -570,24 +570,24 @@ func (s *MarketService) AutoCompleteBid(ctx context.Context, ask Market, partner
 			UserID: buyer.ID,
 		},
 	}
-	bids, _ := s.marketStg.Find(ctx, fo)
+	bids, _ := s.marketRepo.Find(ctx, fo)
 	if len(bids) == 0 {
 		return nil
 	}
 
 	// Set complete status and seller steam id on matching bid.
-	seller, err := s.userStg.Get(ctx, ask.UserID)
+	seller, err := s.userRepo.Get(ctx, ask.UserID)
 	if err != nil {
 		return err
 	}
 	b := bids[0]
 	b.Status = MarketStatusBidCompleted
 	b.PartnerSteamID = seller.SteamID
-	return s.marketStg.Update(ctx, &b)
+	return s.marketRepo.Update(ctx, &b)
 }
 
 func (s *MarketService) checkFlaggedUser(ctx context.Context, userID string) error {
-	u, err := s.userStg.Get(ctx, userID)
+	u, err := s.userRepo.Get(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -599,7 +599,7 @@ func (s *MarketService) checkFlaggedUser(ctx context.Context, userID string) err
 }
 
 func (s *MarketService) processShopkeepersContract(ctx context.Context, m *Market) (*Market, error) {
-	user, err := s.userStg.Get(ctx, m.UserID)
+	user, err := s.userRepo.Get(ctx, m.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -623,7 +623,7 @@ func (s *MarketService) processShopkeepersContract(ctx context.Context, m *Marke
 }
 
 func (s *MarketService) checkAskType(ctx context.Context, ask *Market) error {
-	user, err := s.userStg.Get(ctx, ask.UserID)
+	user, err := s.userRepo.Get(ctx, ask.UserID)
 	if err != nil {
 		return err
 	}
@@ -637,7 +637,7 @@ func (s *MarketService) checkAskType(ctx context.Context, ask *Market) error {
 	}
 
 	// Check Item max offer limit.
-	qty, err := s.marketStg.Count(ctx, FindOpts{
+	qty, err := s.marketRepo.Count(ctx, FindOpts{
 		IndexKey: "user_id",
 		Filter: Market{
 			UserID: ask.UserID,
@@ -658,7 +658,7 @@ func (s *MarketService) checkAskType(ctx context.Context, ask *Market) error {
 
 func (s *MarketService) checkBidType(ctx context.Context, bid *Market) error {
 	// Remove existing buy order if exists.
-	res, err := s.marketStg.Find(ctx, FindOpts{
+	res, err := s.marketRepo.Find(ctx, FindOpts{
 		IndexKey: "user_id",
 		Filter: Market{
 			UserID: bid.UserID,
@@ -672,7 +672,7 @@ func (s *MarketService) checkBidType(ctx context.Context, bid *Market) error {
 	}
 	for _, m := range res {
 		m.Status = MarketStatusRemoved
-		if err = s.marketStg.Update(ctx, &m); err != nil {
+		if err = s.marketRepo.Update(ctx, &m); err != nil {
 			return err
 		}
 	}
@@ -699,7 +699,7 @@ func (s *MarketService) checkOwnership(ctx context.Context, id string) (*Market,
 }
 
 func (s *MarketService) userMarket(ctx context.Context, userID, id string) (*Market, error) {
-	cur, err := s.marketStg.Get(ctx, id)
+	cur, err := s.marketRepo.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -716,7 +716,7 @@ func (s *MarketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, 
 		return nil, nil, err
 	}
 
-	res, err := s.catalogStg.Find(ctx, opts)
+	res, err := s.catalogRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -726,7 +726,7 @@ func (s *MarketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, 
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.catalogStg.Count(ctx, opts)
+	tc, err := s.catalogRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -738,7 +738,7 @@ func (s *MarketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, 
 }
 
 func (s *MarketService) TrendingCatalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
-	res, err := s.catalogStg.Trending(ctx)
+	res, err := s.catalogRepo.Trending(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -758,9 +758,9 @@ func (s *MarketService) CatalogDetails(ctx context.Context, slug string, opts Fi
 		return nil, CatalogErrNotFound
 	}
 
-	catalog, err := s.catalogStg.Get(ctx, slug)
+	catalog, err := s.catalogRepo.Get(ctx, slug)
 	if errors.Is(err, CatalogErrNotFound) {
-		i, err := s.itemStg.GetBySlug(ctx, slug)
+		i, err := s.itemRepo.GetBySlug(ctx, slug)
 		if err != nil {
 			return nil, err
 		}

@@ -13,7 +13,7 @@ import (
 // VerifyInventory represents an inventory verification job.
 type VerifyInventory struct {
 	inventorySvc inventoryService
-	marketStg    marketRepository
+	marketRepo   marketRepository
 	source       *verify.Source
 	logger       *slog.Logger
 	// job settings
@@ -52,7 +52,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 
 	for {
-		res, err := vi.marketStg.PendingInventoryStatus(ctx, opts)
+		res, err := vi.marketRepo.PendingInventoryStatus(ctx, opts)
 		if err != nil {
 			return err
 		}

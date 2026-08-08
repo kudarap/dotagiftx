@@ -32,8 +32,8 @@ func NewHammerService(us userRepository, ms marketRepository) *BanService {
 }
 
 type BanService struct {
-	userStg   userRepository
-	marketStg marketRepository
+	userRepo   userRepository
+	marketRepo marketRepository
 }
 
 func (s *BanService) Ban(ctx context.Context, p HammerParams) (*User, error) {
@@ -53,12 +53,12 @@ func (s *BanService) Lift(ctx context.Context, steamID string, restoreListings b
 		return err
 	}
 
-	u, err := s.userStg.Get(ctx, steamID)
+	u, err := s.userRepo.Get(ctx, steamID)
 	if err != nil {
 		return err
 	}
 	u.Status += markOfBaal // Marked! I could use this to track what was the last offense.
-	if err := s.userStg.Update(ctx, u); err != nil {
+	if err := s.userRepo.Update(ctx, u); err != nil {
 		return err
 	}
 
@@ -83,14 +83,14 @@ func (s *BanService) hilt(ctx context.Context, p HammerParams, us UserStatus) (*
 		return nil, err
 	}
 
-	u, err := s.userStg.Get(ctx, p.SteamID)
+	u, err := s.userRepo.Get(ctx, p.SteamID)
 	if err != nil {
 		return nil, err
 	}
 
 	u.Status = us
 	u.Notes = p.Reason
-	if err := s.userStg.Update(ctx, u); err != nil {
+	if err := s.userRepo.Update(ctx, u); err != nil {
 		return nil, err
 	}
 
@@ -114,14 +114,14 @@ func (s *BanService) sunderListings(ctx context.Context, userID string, from, to
 		UserID: userID,
 		Status: from,
 	}
-	ms, err := s.marketStg.Find(ctx, FindOpts{Filter: f})
+	ms, err := s.marketRepo.Find(ctx, FindOpts{Filter: f})
 	if err != nil {
 		return err
 	}
 
 	for _, mm := range ms {
 		mm.Status = to
-		if err := s.marketStg.BaseUpdate(ctx, &mm); err != nil {
+		if err := s.marketRepo.BaseUpdate(ctx, &mm); err != nil {
 			return err
 		}
 	}
@@ -129,7 +129,7 @@ func (s *BanService) sunderListings(ctx context.Context, userID string, from, to
 }
 
 func (s *BanService) wieldingHammer(ctx context.Context, userID string) error {
-	u, err := s.userStg.Get(ctx, userID)
+	u, err := s.userRepo.Get(ctx, userID)
 	if err != nil {
 		return err
 	}

@@ -125,12 +125,12 @@ func NewTrackService(ts trackRepository, ps itemRepository) *TrackService {
 }
 
 type TrackService struct {
-	trackStg trackRepository
-	itemStg  itemRepository
+	trackRepo trackRepository
+	itemRepo  itemRepository
 }
 
 func (s *TrackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error) {
-	res, err := s.trackStg.Find(ctx, opts)
+	res, err := s.trackRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -140,7 +140,7 @@ func (s *TrackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *Fin
 	}
 
 	// Get total count for metadata.
-	total, err := s.trackStg.Count(ctx, opts)
+	total, err := s.trackRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -152,7 +152,7 @@ func (s *TrackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *Fin
 }
 
 func (s *TrackService) Track(ctx context.Context, id string) (*Track, error) {
-	return s.trackStg.Get(ctx, id)
+	return s.trackRepo.Get(ctx, id)
 }
 
 func (s *TrackService) CreateFromRequest(ctx context.Context, r *http.Request) error {
@@ -161,12 +161,12 @@ func (s *TrackService) CreateFromRequest(ctx context.Context, r *http.Request) e
 
 	// Track post view.
 	if t.Type == TrackTypeView && t.ItemID != "" {
-		if err := s.itemStg.AddViewCount(ctx, t.ItemID); err != nil {
+		if err := s.itemRepo.AddViewCount(ctx, t.ItemID); err != nil {
 			return err
 		}
 	}
 
-	return s.trackStg.Create(ctx, t)
+	return s.trackRepo.Create(ctx, t)
 }
 
 func (s *TrackService) CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error {
@@ -183,7 +183,7 @@ func (s *TrackService) CreateSearchKeyword(ctx context.Context, r *http.Request,
 	t.SetDefaults(r)
 	t.Type = TrackTypeSearch
 	t.Keyword = keyword
-	return s.trackStg.Create(ctx, t)
+	return s.trackRepo.Create(ctx, t)
 }
 
 func userIPFromRequest(req *http.Request) (net.IP, error) {

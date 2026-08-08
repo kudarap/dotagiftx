@@ -144,14 +144,14 @@ func NewItemService(allowedDomains []string, is itemRepository, fm FileManager) 
 }
 
 type ItemService struct {
-	itemStg itemRepository
-	fileMgr FileManager
+	itemRepo itemRepository
+	fileMgr  FileManager
 
 	allowedDomains []string
 }
 
 func (s *ItemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error) {
-	res, err := s.itemStg.Find(ctx, opts)
+	res, err := s.itemRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -161,7 +161,7 @@ func (s *ItemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMe
 	}
 
 	// Get result and total count for metadata.
-	tc, err := s.itemStg.Count(ctx, opts)
+	tc, err := s.itemRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -173,11 +173,11 @@ func (s *ItemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMe
 }
 
 func (s *ItemService) Item(ctx context.Context, id string) (*Item, error) {
-	return s.itemStg.Get(ctx, id)
+	return s.itemRepo.Get(ctx, id)
 }
 
 func (s *ItemService) TopOrigins(ctx context.Context) ([]string, error) {
-	items, err := s.itemStg.Find(ctx, FindOpts{})
+	items, err := s.itemRepo.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func (s *ItemService) TopOrigins(ctx context.Context) ([]string, error) {
 }
 
 func (s *ItemService) TopHeroes(ctx context.Context) ([]string, error) {
-	items, err := s.itemStg.Find(ctx, FindOpts{})
+	items, err := s.itemRepo.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +225,7 @@ func (s *ItemService) Create(ctx context.Context, itm *Item) error {
 		return NewXError(ItemErrRequiredFields, err)
 	}
 
-	if err := s.itemStg.IsItemExist(ctx, itm.Name); err != nil {
+	if err := s.itemRepo.IsItemExist(ctx, itm.Name); err != nil {
 		return err
 	}
 
@@ -244,7 +244,7 @@ func (s *ItemService) Create(ctx context.Context, itm *Item) error {
 		}
 	}()
 
-	return s.itemStg.Create(ctx, itm)
+	return s.itemRepo.Create(ctx, itm)
 }
 
 func (s *ItemService) Update(ctx context.Context, itm *Item) error {
@@ -271,7 +271,7 @@ func (s *ItemService) Update(ctx context.Context, itm *Item) error {
 		itm.Image = img
 	}
 
-	return s.itemStg.Update(ctx, itm)
+	return s.itemRepo.Update(ctx, itm)
 }
 
 func (s *ItemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
@@ -323,7 +323,7 @@ func (s *ItemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 }
 
 func (s *ItemService) getItemByName(ctx context.Context, name string) (*Item, error) {
-	itm, err := s.itemStg.Find(ctx, FindOpts{Filter: Item{Name: name}})
+	itm, err := s.itemRepo.Find(ctx, FindOpts{Filter: Item{Name: name}})
 	if err != nil {
 		return nil, err
 	}

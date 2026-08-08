@@ -85,30 +85,30 @@ func NewStatsService(ss statsRepository, ts trackRepository) *StatsService {
 }
 
 type StatsService struct {
-	statsStg statsRepository
-	trackStg trackRepository
+	statsRepo statsRepository
+	trackRepo trackRepository
 }
 
 func (s *StatsService) CountUserMarketStatusBySteamID(ctx context.Context, partnerSteamID string) (*MarketStatusCount, error) {
-	return s.statsStg.CountUserMarketStatusBySteamID(ctx, partnerSteamID)
+	return s.statsRepo.CountUserMarketStatusBySteamID(ctx, partnerSteamID)
 }
 
 func (s *StatsService) CountMarketStatus(ctx context.Context, opts FindOpts) (*MarketStatusCount, error) {
-	return s.statsStg.CountMarketStatus(ctx, opts)
+	return s.statsRepo.CountMarketStatus(ctx, opts)
 }
 
 func (s *StatsService) CountMarketStatusV2(ctx context.Context, opts FindOpts) (*MarketStatusCount, error) {
-	return s.statsStg.CountMarketStatusV2(ctx, opts)
+	return s.statsRepo.CountMarketStatusV2(ctx, opts)
 }
 
 func (s *StatsService) CountUserMarketStatus(ctx context.Context, userID string) (*MarketStatusCount, error) {
-	return s.statsStg.CountUserMarketStatus(ctx, userID)
+	return s.statsRepo.CountUserMarketStatus(ctx, userID)
 }
 
 func (s *StatsService) GraphMarketSales(ctx context.Context, opts FindOpts) ([]MarketSalesGraph, error) {
-	return s.statsStg.GraphMarketSales(ctx, opts)
+	return s.statsRepo.GraphMarketSales(ctx, opts)
 }
 
 func (s *StatsService) TopKeywords(ctx context.Context) ([]SearchKeywordScore, error) {
-	return s.trackStg.TopKeywords(ctx)
+	return s.trackRepo.TopKeywords(ctx)
 }

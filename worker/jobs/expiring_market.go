@@ -12,10 +12,10 @@ const dayHours = time.Hour * 24
 
 // ExpiringMarket represents setting expiration of a market entry job.
 type ExpiringMarket struct {
-	marketStg  marketRepository
-	catalogStg catalogRepository
-	cache      cacheRemover
-	logger     *slog.Logger
+	marketRepo  marketRepository
+	catalogRepo catalogRepository
+	cache       cacheRemover
+	logger      *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -23,12 +23,12 @@ type ExpiringMarket struct {
 
 func NewExpiringMarket(ms marketRepository, cs catalogRepository, cc cacheRemover, lg *slog.Logger) *ExpiringMarket {
 	return &ExpiringMarket{
-		marketStg:  ms,
-		catalogStg: cs,
-		cache:      cc,
-		logger:     lg,
-		name:       "expiring_market",
-		interval:   time.Hour * 24,
+		marketRepo:  ms,
+		catalogRepo: cs,
+		cache:       cc,
+		logger:      lg,
+		name:        "expiring_market",
+		interval:    time.Hour * 24,
 	}
 }
 
@@ -43,7 +43,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	// Process expiring bids.
 	bidExpr := now.Add(-dayHours * dotagiftx.MarketBidExpirationDays)
 	em.logger.Info("updating expiring bids", "cutoff", bidExpr)
-	ids, err := em.marketStg.UpdateExpiring(ctx, dotagiftx.MarketTypeBid, dotagiftx.BoonRefresherShard, bidExpr)
+	ids, err := em.marketRepo.UpdateExpiring(ctx, dotagiftx.MarketTypeBid, dotagiftx.BoonRefresherShard, bidExpr)
 	if err != nil {
 		em.logger.Error("could not update expiring bids", "error", err)
 		return err
@@ -54,7 +54,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	// Process expiring asks.
 	askExpr := now.Add(-dayHours * dotagiftx.MarketAskExpirationDays)
 	em.logger.Info("updating expiring asks", "cutoff", askExpr)
-	ids, err = em.marketStg.UpdateExpiring(ctx, dotagiftx.MarketTypeAsk, dotagiftx.BoonRefresherOrb, askExpr)
+	ids, err = em.marketRepo.UpdateExpiring(ctx, dotagiftx.MarketTypeAsk, dotagiftx.BoonRefresherOrb, askExpr)
 	if err != nil {
 		em.logger.Error("could not update expiring asks", "error", err)
 		return err
@@ -64,7 +64,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 
 	// Process expiring resells.
 	em.logger.Info("updating expiring resells", "cutoff", askExpr)
-	ids, err = em.marketStg.UpdateExpiringResell(ctx, dotagiftx.BoonShopKeepersContract)
+	ids, err = em.marketRepo.UpdateExpiringResell(ctx, dotagiftx.BoonShopKeepersContract)
 	if err != nil {
 		em.logger.Error("could not update expiring resells", "error", err)
 		return err
@@ -81,7 +81,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 		}
 		itemIndexed[id] = struct{}{}
 
-		if _, err = em.catalogStg.Index(ctx, id); err != nil {
+		if _, err = em.catalogRepo.Index(ctx, id); err != nil {
 			em.logger.Error("could not index expired item", "error", err)
 			continue
 		}

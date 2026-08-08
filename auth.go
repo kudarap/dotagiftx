@@ -103,7 +103,7 @@ type AuthService struct {
 	salt string
 
 	steamClient SteamClient
-	authStg     authRepository
+	authRepo    authRepository
 	userSvc     *UserService
 	logger      *slog.Logger
 }
@@ -127,7 +127,7 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 	}
 
 	// Check account existence.
-	authData, err := s.authStg.GetByUsername(ctx, steamPlayer.ID)
+	authData, err := s.authRepo.GetByUsername(ctx, steamPlayer.ID)
 	if err != nil && !errors.Is(err, AuthErrNotFound) {
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
@@ -192,7 +192,7 @@ func (s *AuthService) RenewToken(ctx context.Context, refreshToken string) (*Aut
 		return nil, AuthErrRefreshToken
 	}
 
-	au, err := s.authStg.GetByRefreshToken(ctx, refreshToken)
+	au, err := s.authRepo.GetByRefreshToken(ctx, refreshToken)
 	if err != nil {
 		return nil, AuthErrRefreshToken
 	}
@@ -211,11 +211,11 @@ func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken strin
 	}
 
 	au.RefreshToken = s.generateRefreshToken()
-	return s.authStg.Update(ctx, au)
+	return s.authRepo.Update(ctx, au)
 }
 
 func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
-	u, err := s.authStg.Get(ctx, id)
+	u, err := s.authRepo.Get(ctx, id)
 	if err != nil {
 		return nil, AuthErrNotFound.X(err)
 	}
@@ -239,7 +239,7 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 	au := &Auth{UserID: user.ID, Username: sp.ID}
 	au.RefreshToken = s.generateRefreshToken()
 	au.Password = s.composePassword(sp.ID, user.ID)
-	if err := s.authStg.Create(ctx, au); err != nil {
+	if err := s.authRepo.Create(ctx, au); err != nil {
 		return nil, err
 	}
 

@@ -261,21 +261,21 @@ func NewUserService(us userRepository, fm FileManager, sc paymentManager) *UserS
 }
 
 type UserService struct {
-	userStg userRepository
-	fileMgr FileManager
-	payment paymentManager
+	userRepo userRepository
+	fileMgr  FileManager
+	payment  paymentManager
 }
 
 func (s *UserService) Users(ctx context.Context, opts FindOpts) ([]User, error) {
-	return s.userStg.Find(ctx, opts)
+	return s.userRepo.Find(ctx, opts)
 }
 
 func (s *UserService) FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error) {
-	return s.userStg.FindFlagged(ctx, opts)
+	return s.userRepo.FindFlagged(ctx, opts)
 }
 
 func (s *UserService) User(ctx context.Context, id string) (*User, error) {
-	return s.userStg.Get(ctx, id)
+	return s.userRepo.Get(ctx, id)
 }
 
 func (s *UserService) UserFromContext(ctx context.Context) (*User, error) {
@@ -304,7 +304,7 @@ func (s *UserService) Create(ctx context.Context, u *User) error {
 		}
 	}()
 
-	return s.userStg.Create(ctx, u)
+	return s.userRepo.Create(ctx, u)
 }
 
 func (s *UserService) Update(ctx context.Context, u *User) error {
@@ -318,11 +318,11 @@ func (s *UserService) Update(ctx context.Context, u *User) error {
 		return err
 	}
 
-	return s.userStg.Update(ctx, u)
+	return s.userRepo.Update(ctx, u)
 }
 
 func (s *UserService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error) {
-	u, err := s.userStg.Get(ctx, sp.ID)
+	u, err := s.userRepo.Get(ctx, sp.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -333,7 +333,7 @@ func (s *UserService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, er
 	if err != nil {
 		return nil, err
 	}
-	if err = s.userStg.Update(ctx, u); err != nil {
+	if err = s.userRepo.Update(ctx, u); err != nil {
 		return nil, err
 	}
 	return u, nil
@@ -344,7 +344,7 @@ func (s *UserService) CreateSubscription(ctx context.Context, planID string) (su
 	if au == nil {
 		return "", AuthErrNoAccess
 	}
-	user, err := s.userStg.Get(ctx, au.UserID)
+	user, err := s.userRepo.Get(ctx, au.UserID)
 	if err != nil {
 		return "", err
 	}
@@ -361,7 +361,7 @@ func (s *UserService) ProcessSubscription(ctx context.Context, subscriptionID st
 	if au == nil {
 		return nil, AuthErrNoAccess
 	}
-	user, err := s.userStg.Get(ctx, au.UserID)
+	user, err := s.userRepo.Get(ctx, au.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -392,10 +392,10 @@ func (s *UserService) ProcessSubscription(ctx context.Context, subscriptionID st
 	if err = user.CheckUpdate(); err != nil {
 		return nil, err
 	}
-	if err = s.userStg.Update(ctx, user); err != nil {
+	if err = s.userRepo.Update(ctx, user); err != nil {
 		return nil, err
 	}
-	if err = s.userStg.ClearSubscriptionEndsAt(ctx, user.ID); err != nil {
+	if err = s.userRepo.ClearSubscriptionEndsAt(ctx, user.ID); err != nil {
 		return nil, err
 	}
 
@@ -418,14 +418,14 @@ func (s *UserService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	}
 
 	log.Println("cancelling subscription", steamID, "by marking expiration")
-	user, err := s.userStg.Get(ctx, steamID)
+	user, err := s.userRepo.Get(ctx, steamID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user %s: %w", steamID, err)
 	}
 
 	ex := lastPayment.AddDate(0, 1, 0)
 	user.SubscriptionEndsAt = &ex
-	if err = s.userStg.Update(ctx, user); err != nil {
+	if err = s.userRepo.Update(ctx, user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
 	return user, nil
@@ -439,7 +439,7 @@ func (s *UserService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 //	    - 6 months (+60% overhead)
 //	    - 12 months (+60% overhead)
 func (s *UserService) ProcessManualSubscription(ctx context.Context, param ManualSubscriptionParam) (*User, error) {
-	user, err := s.userStg.Get(ctx, param.UserID)
+	user, err := s.userRepo.Get(ctx, param.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user: %v", err)
 	}
@@ -453,7 +453,7 @@ func (s *UserService) ProcessManualSubscription(ctx context.Context, param Manua
 	end := now.AddDate(0, param.Cycles, 0)
 	user.SubscribedAt = &now
 	user.SubscriptionEndsAt = &end
-	if err = s.userStg.Update(ctx, user); err != nil {
+	if err = s.userRepo.Update(ctx, user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
 	return user, nil

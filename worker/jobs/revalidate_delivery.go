@@ -13,7 +13,7 @@ import (
 // RevalidateDelivery represents a delivery verification job.
 type RevalidateDelivery struct {
 	deliverySvc deliveryService
-	marketStg   marketRepository
+	marketRepo  marketRepository
 	source      *verify.Source
 	logger      *slog.Logger
 	// job settings
@@ -51,7 +51,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	for {
-		res, err := rd.marketStg.PendingDeliveryStatus(ctx, opts)
+		res, err := rd.marketRepo.PendingDeliveryStatus(ctx, opts)
 		if err != nil {
 			return err
 		}

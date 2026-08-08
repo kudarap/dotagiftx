@@ -14,7 +14,7 @@ import (
 // Crawling from SteamInventory.org tends to fail sometimes.
 type RecheckInventory struct {
 	inventorySvc inventoryService
-	marketStg    marketRepository
+	marketRepo   marketRepository
 	source       *verify.Source
 	logger       *slog.Logger
 	// job settings
@@ -99,7 +99,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 
 func (ri *RecheckInventory) market(ctx context.Context, id string) (*dotagiftx.Market, error) {
 	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
-	markets, err := ri.marketStg.Find(ctx, f)
+	markets, err := ri.marketRepo.Find(ctx, f)
 	if err != nil {
 		return nil, err
 	}

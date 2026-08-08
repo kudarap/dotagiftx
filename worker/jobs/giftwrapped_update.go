@@ -12,11 +12,11 @@ import (
 
 // GiftWrappedUpdate represents a job that will update delivered items that still unopened.
 type GiftWrappedUpdate struct {
-	deliverySvc deliveryService
-	deliveryStg deliveryRepository
-	marketStg   marketRepository
-	source      *verify.Source
-	logger      *slog.Logger
+	deliverySvc  deliveryService
+	deliveryRepo deliveryRepository
+	marketRepo   marketRepository
+	source       *verify.Source
+	logger       *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -57,7 +57,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	for {
-		deliveries, err := gw.deliveryStg.ToVerify(ctx, opts)
+		deliveries, err := gw.deliveryRepo.ToVerify(ctx, opts)
 		if err != nil {
 			return err
 		}
@@ -112,7 +112,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 
 func (gw *GiftWrappedUpdate) market(ctx context.Context, id string) (*dotagiftx.Market, error) {
 	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
-	markets, err := gw.marketStg.Find(ctx, f)
+	markets, err := gw.marketRepo.Find(ctx, f)
 	if err != nil {
 		return nil, err
 	}

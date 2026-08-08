@@ -11,8 +11,8 @@ import (
 
 // SweepMarket represents setting expiration of a market entry job.
 type SweepMarket struct {
-	marketStg marketRepository
-	logger    *slog.Logger
+	marketRepo marketRepository
+	logger     *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -20,10 +20,10 @@ type SweepMarket struct {
 
 func NewSweepMarket(ms marketRepository, lg *slog.Logger) *SweepMarket {
 	return &SweepMarket{
-		marketStg: ms,
-		logger:    lg,
-		name:      "clean_market",
-		interval:  time.Hour * 24,
+		marketRepo: ms,
+		logger:     lg,
+		name:       "clean_market",
+		interval:   time.Hour * 24,
 	}
 }
 
@@ -38,7 +38,7 @@ func (cm *SweepMarket) Run(ctx context.Context) error {
 	// Clean up expiring markets.
 	t := now.Add(-dayHours * dotagiftx.MarketSweepExpiredDays)
 	cm.logger.Info("sweeping old expired market", "cutoff", t)
-	if err := cm.marketStg.BulkDeleteByStatus(ctx, dotagiftx.MarketStatusExpired, t, limitPerBatch); err != nil {
+	if err := cm.marketRepo.BulkDeleteByStatus(ctx, dotagiftx.MarketStatusExpired, t, limitPerBatch); err != nil {
 		cm.logger.Error("could not clean expired market", "error", err)
 		return err
 	}
@@ -47,7 +47,7 @@ func (cm *SweepMarket) Run(ctx context.Context) error {
 	// Clean up removed markets.
 	t = now.Add(-dayHours * dotagiftx.MarketSweepRemovedDays)
 	cm.logger.Info("sweeping old removed market", "cutoff", t)
-	if err := cm.marketStg.BulkDeleteByStatus(ctx, dotagiftx.MarketStatusRemoved, t, limitPerBatch); err != nil {
+	if err := cm.marketRepo.BulkDeleteByStatus(ctx, dotagiftx.MarketStatusRemoved, t, limitPerBatch); err != nil {
 		cm.logger.Error("could not clean removed market", "error", err)
 		return err
 	}

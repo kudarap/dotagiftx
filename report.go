@@ -103,12 +103,12 @@ func NewReportService(rs reportRepository, wp webhookPoster) *ReportService {
 }
 
 type ReportService struct {
-	reportStg     reportRepository
+	reportRepo    reportRepository
 	webhookPoster webhookPoster
 }
 
 func (s *ReportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *FindMetadata, error) {
-	res, err := s.reportStg.Find(ctx, opts)
+	res, err := s.reportRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -118,7 +118,7 @@ func (s *ReportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.reportStg.Count(ctx, opts)
+	tc, err := s.reportRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -130,7 +130,7 @@ func (s *ReportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *
 }
 
 func (s *ReportService) Report(ctx context.Context, id string) (*Report, error) {
-	return s.reportStg.Get(ctx, id)
+	return s.reportRepo.Get(ctx, id)
 }
 
 func (s *ReportService) CreateSurvey(ctx context.Context, rep *Report) error {
@@ -151,7 +151,7 @@ func (s *ReportService) Create(ctx context.Context, rep *Report) error {
 		return NewXError(ReportErrRequiredFields, err)
 	}
 
-	if err := s.reportStg.Create(ctx, rep); err != nil {
+	if err := s.reportRepo.Create(ctx, rep); err != nil {
 		return err
 	}
 

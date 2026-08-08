@@ -13,7 +13,7 @@ import (
 // VerifyDelivery represents a delivery verification job.
 type VerifyDelivery struct {
 	deliverySvc deliveryService
-	marketStg   marketRepository
+	marketRepo  marketRepository
 	source      *verify.Source
 	logger      *slog.Logger
 	// job settings
@@ -52,7 +52,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts.Page = 0
 
 	for {
-		res, err := vd.marketStg.PendingDeliveryStatus(ctx, opts)
+		res, err := vd.marketRepo.PendingDeliveryStatus(ctx, opts)
 		if err != nil {
 			return err
 		}
