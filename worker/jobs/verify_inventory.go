@@ -51,7 +51,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 	opts.Page = 0
 
 	for {
-		res, err := vi.marketStg.PendingInventoryStatus(opts)
+		res, err := vi.marketStg.PendingInventoryStatus(ctx, opts)
 		if err != nil {
 			return err
 		}

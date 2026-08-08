@@ -1,14 +1,15 @@
 package rethink
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/sirupsen/logrus"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-func (c *Client) ListenChangeFeed(table string, exec func(prev, next []byte) error) error {
-	feed, err := newChangeFeed(c.db, table, exec)
+func (c *Client) ListenChangeFeed(ctx context.Context, table string, exec func(prev, next []byte) error) error {
+	feed, err := newChangeFeed(ctx, c.db, table, exec)
 	if err != nil {
 		return err
 	}
@@ -28,9 +29,9 @@ func (f *changeFeed) close() error {
 	return f.cursor.Close()
 }
 
-func newChangeFeed(db *r.Session, table string, exec func(prev, next []byte) error) (*changeFeed, error) {
+func newChangeFeed(ctx context.Context, db *r.Session, table string, exec func(prev, next []byte) error) (*changeFeed, error) {
 	t := r.Table(table).Changes()
-	cursor, err := t.Run(db)
+	cursor, err := t.Run(db, r.RunOpts{Context: ctx})
 	if err != nil {
 		return nil, err
 	}

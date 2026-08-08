@@ -1,12 +1,14 @@
 package rethink
 
 import (
+	"context"
+
 	"github.com/kudarap/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 // CountMarketStatusV2 manually manages indexing for performance reasons.
-func (s *statsStorage) CountMarketStatusV2(opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+func (s *statsStorage) CountMarketStatusV2(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	opts = dotagiftx.FindOpts{
 		Filter:   opts.Filter,
 		IndexKey: opts.IndexKey,
@@ -27,7 +29,7 @@ func (s *statsStorage) CountMarketStatusV2(opts dotagiftx.FindOpts) (*dotagiftx.
 		marketFieldInventoryStatus,
 		marketFieldResell,
 	).Count()
-	if err := s.db.list(q, &groups); err != nil {
+	if err := s.db.list(ctx, q, &groups); err != nil {
 		return nil, err
 	}
 	statusResult := map[dotagiftx.MarketStatus]int{}

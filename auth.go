@@ -64,22 +64,22 @@ type (
 	// AuthStorage defines operation for auth records.
 	AuthStorage interface {
 		// Get returns an auth details by id from data store.
-		Get(id string) (*Auth, error)
+		Get(ctx context.Context, id string) (*Auth, error)
 
 		// GetByUsername returns an auth details by username from data store.
-		GetByUsername(username string) (*Auth, error)
+		GetByUsername(ctx context.Context, username string) (*Auth, error)
 
 		// GetByUsernameAndPassword returns an auth details by username and password from data store.
-		GetByUsernameAndPassword(username, password string) (*Auth, error)
+		GetByUsernameAndPassword(ctx context.Context, username, password string) (*Auth, error)
 
 		// GetByRefreshToken returns an auth details by refreshToken from data store.
-		GetByRefreshToken(refreshToken string) (*Auth, error)
+		GetByRefreshToken(ctx context.Context, refreshToken string) (*Auth, error)
 
 		// Create persists a new auth to data store.
-		Create(*Auth) error
+		Create(context.Context, *Auth) error
 
 		// Update persists auth changes to data store.
-		Update(*Auth) error
+		Update(context.Context, *Auth) error
 	}
 )
 
@@ -143,7 +143,7 @@ func (s *authService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 	}
 
 	// Check account existence.
-	authData, err := s.authStg.GetByUsername(steamPlayer.ID)
+	authData, err := s.authStg.GetByUsername(ctx, steamPlayer.ID)
 	if err != nil && !errors.Is(err, AuthErrNotFound) {
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
@@ -208,7 +208,7 @@ func (s *authService) RenewToken(ctx context.Context, refreshToken string) (*Aut
 		return nil, AuthErrRefreshToken
 	}
 
-	au, err := s.authStg.GetByRefreshToken(refreshToken)
+	au, err := s.authStg.GetByRefreshToken(ctx, refreshToken)
 	if err != nil {
 		return nil, AuthErrRefreshToken
 	}
@@ -227,11 +227,11 @@ func (s *authService) RevokeRefreshToken(ctx context.Context, refreshToken strin
 	}
 
 	au.RefreshToken = s.generateRefreshToken()
-	return s.authStg.Update(au)
+	return s.authStg.Update(ctx, au)
 }
 
 func (s *authService) Auth(ctx context.Context, id string) (*Auth, error) {
-	u, err := s.authStg.Get(id)
+	u, err := s.authStg.Get(ctx, id)
 	if err != nil {
 		return nil, AuthErrNotFound.X(err)
 	}
@@ -255,7 +255,7 @@ func (s *authService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 	au := &Auth{UserID: user.ID, Username: sp.ID}
 	au.RefreshToken = s.generateRefreshToken()
 	au.Password = s.composePassword(sp.ID, user.ID)
-	if err := s.authStg.Create(au); err != nil {
+	if err := s.authStg.Create(ctx, au); err != nil {
 		return nil, err
 	}
 

@@ -161,46 +161,46 @@ type (
 	// MarketStorage defines operation for market records.
 	MarketStorage interface {
 		// Find returns a list of markets from data store.
-		Find(opts FindOpts) ([]Market, error)
+		Find(ctx context.Context, opts FindOpts) ([]Market, error)
 
 		// Count returns number of market from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns a market details by id from data store.
-		Get(id string) (*Market, error)
+		Get(ctx context.Context, id string) (*Market, error)
 
 		// Create persists a new market to data store.
-		Create(*Market) error
+		Create(context.Context, *Market) error
 
 		// Update persists market changes to data store.
-		Update(*Market) error
+		Update(context.Context, *Market) error
 
 		// BaseUpdate persists market changes to data store and
 		// will not update updated_at field.
-		BaseUpdate(*Market) error
+		BaseUpdate(context.Context, *Market) error
 
 		// PendingInventoryStatus returns market entries that is pending for checking
 		// inventory status or needs re-processing of re-process error status.
-		PendingInventoryStatus(o FindOpts) ([]Market, error)
+		PendingInventoryStatus(ctx context.Context, o FindOpts) ([]Market, error)
 
 		// PendingDeliveryStatus returns market entries that is pending for checking
 		// delivery status or needs re-processing of re-process error status.
-		PendingDeliveryStatus(o FindOpts) ([]Market, error)
+		PendingDeliveryStatus(ctx context.Context, o FindOpts) ([]Market, error)
 
-		RevalidateDeliveryStatus(o FindOpts) ([]Market, error)
+		RevalidateDeliveryStatus(ctx context.Context, o FindOpts) ([]Market, error)
 
 		// Index composes market data for faster search and retrieval.
-		Index(id string) (*Market, error)
+		Index(ctx context.Context, id string) (*Market, error)
 
 		// UpdateUserScore sets new rank score value of all live markets by user ID.
-		UpdateUserScore(userID string, rankScore int) error
+		UpdateUserScore(ctx context.Context, userID string, rankScore int) error
 
 		// UpdateExpiring sets live items to expired status by expiration time.
-		UpdateExpiring(t MarketType, b UserBoon, expiration time.Time) (itemIDs []string, err error)
+		UpdateExpiring(ctx context.Context, t MarketType, b UserBoon, expiration time.Time) (itemIDs []string, err error)
 
-		BulkDeleteByStatus(ms MarketStatus, cutOff time.Time, limit int) error
+		BulkDeleteByStatus(ctx context.Context, ms MarketStatus, cutOff time.Time, limit int) error
 
-		UpdateExpiringResell(b UserBoon) (itemIDs []string, err error)
+		UpdateExpiringResell(ctx context.Context, b UserBoon) (itemIDs []string, err error)
 	}
 )
 
@@ -348,7 +348,7 @@ func (s *marketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 		opts.UserID = au.UserID
 	}
 
-	res, err := s.marketStg.Find(opts)
+	res, err := s.marketStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -358,7 +358,7 @@ func (s *marketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 	}
 
 	// Get total count for metadata.
-	tc, err := s.marketStg.Count(opts)
+	tc, err := s.marketStg.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -370,7 +370,7 @@ func (s *marketService) Markets(ctx context.Context, opts FindOpts) ([]Market, *
 }
 
 func (s *marketService) Market(ctx context.Context, id string) (*Market, error) {
-	mkt, err := s.marketStg.Get(id)
+	mkt, err := s.marketStg.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -401,7 +401,7 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 	}
 
 	// Check Item existence.
-	item, _ := s.itemStg.Get(market.ItemID)
+	item, _ := s.itemStg.Get(ctx, market.ItemID)
 	if item == nil || !item.IsActive() {
 		return ItemErrNotFound
 	}
@@ -425,7 +425,7 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 		}
 	}
 
-	if err := s.marketStg.Create(market); err != nil {
+	if err := s.marketStg.Create(ctx, market); err != nil {
 		return err
 	}
 
@@ -435,19 +435,19 @@ func (s *marketService) Create(ctx context.Context, market *Market) error {
 		}
 	})
 	bench(s.logger, "market create :: marketStg.Index", func() {
-		if _, err := s.marketStg.Index(market.ID); err != nil {
+		if _, err := s.marketStg.Index(ctx, market.ID); err != nil {
 			s.logger.Errorf("could not index market %s: %s", market.ItemID, err)
 		}
 	})
 	bench(s.logger, "market create :: catalogStg.Index", func() {
-		if _, err := s.catalogStg.Index(market.ItemID); err != nil {
+		if _, err := s.catalogStg.Index(ctx, market.ItemID); err != nil {
 			s.logger.Errorf("could not index item %s: %s", market.ItemID, err)
 		}
 	})
 
 	// Queueing tasks for verifying post to prepare task payload.
 	if market.Type == MarketTypeAsk {
-		user, err := s.userStg.Get(market.UserID)
+		user, err := s.userStg.Get(ctx, market.UserID)
 		if err != nil {
 			return err
 		}
@@ -487,7 +487,7 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 			return err
 		}
 
-		u, err := s.userStg.Get(cur.UserID)
+		u, err := s.userStg.Get(ctx, cur.UserID)
 		if err != nil {
 			return err
 		}
@@ -510,17 +510,17 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 	market.ItemID = ""
 	market.Price = 0
 	market.Currency = ""
-	if err = s.marketStg.Update(market); err != nil {
+	if err = s.marketStg.Update(ctx, market); err != nil {
 		return err
 	}
 
 	// Queueing tasks for verifications on inventory and delivery to prepare task payload.
 	if market.Type == MarketTypeAsk {
-		user, err := s.userStg.Get(market.UserID)
+		user, err := s.userStg.Get(ctx, market.UserID)
 		if err != nil {
 			return err
 		}
-		item, err := s.itemStg.Get(market.ItemID)
+		item, err := s.itemStg.Get(ctx, market.ItemID)
 		if err != nil {
 			return err
 		}
@@ -549,12 +549,12 @@ func (s *marketService) Update(ctx context.Context, market *Market) error {
 		}
 	})
 	bench(s.logger, "market update :: marketStg.Index", func() {
-		if _, err = s.marketStg.Index(market.ID); err != nil {
+		if _, err = s.marketStg.Index(ctx, market.ID); err != nil {
 			s.logger.Errorf("could not index market %s: %s", market.ItemID, err)
 		}
 	})
 	bench(s.logger, "market update :: catalogStg.Index", func() {
-		if _, err = s.catalogStg.Index(market.ItemID); err != nil {
+		if _, err = s.catalogStg.Index(ctx, market.ItemID); err != nil {
 			s.logger.Errorf("could not index item %s: %s", market.ItemID, err)
 		}
 	})
@@ -567,7 +567,7 @@ func (s *marketService) UpdateUserRankScore(ctx context.Context, userID string) 
 		IndexKey: "user_id",
 		Filter:   Market{UserID: userID},
 	}
-	stats, err := s.statsStg.CountMarketStatusV2(opts)
+	stats, err := s.statsStg.CountMarketStatusV2(ctx, opts)
 	if err != nil {
 		return fmt.Errorf("error getting user market stats: %s", err)
 	}
@@ -575,22 +575,22 @@ func (s *marketService) UpdateUserRankScore(ctx context.Context, userID string) 
 	benchS := time.Now()
 	u := &User{ID: userID, MarketStats: *stats}
 	u = u.CalcRankScore(*stats)
-	if err = s.marketStg.UpdateUserScore(u.ID, u.RankScore); err != nil {
+	if err = s.marketStg.UpdateUserScore(ctx, u.ID, u.RankScore); err != nil {
 		return err
 	}
 	s.logger.Println("service/market UpdateUserScore", time.Since(benchS))
-	return s.userStg.BaseUpdate(u)
+	return s.userStg.BaseUpdate(ctx, u)
 }
 
 // AutoCompleteBid detects if there's a matching reservation on buy order and automatically resolve it by setting
 // complete-bid status.
-func (s *marketService) AutoCompleteBid(_ context.Context, ask Market, partnerSteamID string) error {
+func (s *marketService) AutoCompleteBid(ctx context.Context, ask Market, partnerSteamID string) error {
 	if ask.ItemID == "" || ask.UserID == "" || partnerSteamID == "" {
 		return fmt.Errorf("ask market item id, user id, and partner steam id are required")
 	}
 
 	// Use buyer ID to get the matching market.
-	buyer, err := s.userStg.Get(partnerSteamID)
+	buyer, err := s.userStg.Get(ctx, partnerSteamID)
 	if err != nil {
 		return nil
 	}
@@ -605,24 +605,24 @@ func (s *marketService) AutoCompleteBid(_ context.Context, ask Market, partnerSt
 			UserID: buyer.ID,
 		},
 	}
-	bids, _ := s.marketStg.Find(fo)
+	bids, _ := s.marketStg.Find(ctx, fo)
 	if len(bids) == 0 {
 		return nil
 	}
 
 	// Set complete status and seller steam id on matching bid.
-	seller, err := s.userStg.Get(ask.UserID)
+	seller, err := s.userStg.Get(ctx, ask.UserID)
 	if err != nil {
 		return err
 	}
 	b := bids[0]
 	b.Status = MarketStatusBidCompleted
 	b.PartnerSteamID = seller.SteamID
-	return s.marketStg.Update(&b)
+	return s.marketStg.Update(ctx, &b)
 }
 
 func (s *marketService) checkFlaggedUser(ctx context.Context, userID string) error {
-	u, err := s.userStg.Get(userID)
+	u, err := s.userStg.Get(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -634,7 +634,7 @@ func (s *marketService) checkFlaggedUser(ctx context.Context, userID string) err
 }
 
 func (s *marketService) processShopkeepersContract(ctx context.Context, m *Market) (*Market, error) {
-	user, err := s.userStg.Get(m.UserID)
+	user, err := s.userStg.Get(ctx, m.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -658,7 +658,7 @@ func (s *marketService) processShopkeepersContract(ctx context.Context, m *Marke
 }
 
 func (s *marketService) checkAskType(ctx context.Context, ask *Market) error {
-	user, err := s.userStg.Get(ask.UserID)
+	user, err := s.userStg.Get(ctx, ask.UserID)
 	if err != nil {
 		return err
 	}
@@ -672,7 +672,7 @@ func (s *marketService) checkAskType(ctx context.Context, ask *Market) error {
 	}
 
 	// Check Item max offer limit.
-	qty, err := s.marketStg.Count(FindOpts{
+	qty, err := s.marketStg.Count(ctx, FindOpts{
 		IndexKey: "user_id",
 		Filter: Market{
 			UserID: ask.UserID,
@@ -693,7 +693,7 @@ func (s *marketService) checkAskType(ctx context.Context, ask *Market) error {
 
 func (s *marketService) checkBidType(ctx context.Context, bid *Market) error {
 	// Remove existing buy order if exists.
-	res, err := s.marketStg.Find(FindOpts{
+	res, err := s.marketStg.Find(ctx, FindOpts{
 		IndexKey: "user_id",
 		Filter: Market{
 			UserID: bid.UserID,
@@ -707,7 +707,7 @@ func (s *marketService) checkBidType(ctx context.Context, bid *Market) error {
 	}
 	for _, m := range res {
 		m.Status = MarketStatusRemoved
-		if err = s.marketStg.Update(&m); err != nil {
+		if err = s.marketStg.Update(ctx, &m); err != nil {
 			return err
 		}
 	}
@@ -734,7 +734,7 @@ func (s *marketService) checkOwnership(ctx context.Context, id string) (*Market,
 }
 
 func (s *marketService) userMarket(ctx context.Context, userID, id string) (*Market, error) {
-	cur, err := s.marketStg.Get(id)
+	cur, err := s.marketStg.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -751,7 +751,7 @@ func (s *marketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, 
 		return nil, nil, err
 	}
 
-	res, err := s.catalogStg.Find(opts)
+	res, err := s.catalogStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -761,7 +761,7 @@ func (s *marketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, 
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.catalogStg.Count(opts)
+	tc, err := s.catalogStg.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -773,7 +773,7 @@ func (s *marketService) Catalog(ctx context.Context, opts FindOpts) ([]Catalog, 
 }
 
 func (s *marketService) TrendingCatalog(ctx context.Context, opts FindOpts) ([]Catalog, *FindMetadata, error) {
-	res, err := s.catalogStg.Trending()
+	res, err := s.catalogStg.Trending(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -793,9 +793,9 @@ func (s *marketService) CatalogDetails(ctx context.Context, slug string, opts Fi
 		return nil, CatalogErrNotFound
 	}
 
-	catalog, err := s.catalogStg.Get(slug)
+	catalog, err := s.catalogStg.Get(ctx, slug)
 	if errors.Is(err, CatalogErrNotFound) {
-		i, err := s.itemStg.GetBySlug(slug)
+		i, err := s.itemStg.GetBySlug(ctx, slug)
 		if err != nil {
 			return nil, err
 		}

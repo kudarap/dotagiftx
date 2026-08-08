@@ -75,19 +75,19 @@ type (
 	// TrackStorage defines operation for track records.
 	TrackStorage interface {
 		// Find returns a list of tracks from data store.
-		Find(FindOpts) ([]Track, error)
+		Find(ctx context.Context, opts FindOpts) ([]Track, error)
 
 		// Count returns number of tracks from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns track details by id from data store.
-		Get(id string) (*Track, error)
+		Get(ctx context.Context, id string) (*Track, error)
 
 		// Create persists a new track to data store.
-		Create(*Track) error
+		Create(context.Context, *Track) error
 
 		// TopKeywords returns top search keywords this week.
-		TopKeywords() ([]SearchKeywordScore, error)
+		TopKeywords(ctx context.Context) ([]SearchKeywordScore, error)
 	}
 )
 
@@ -145,7 +145,7 @@ type trackService struct {
 }
 
 func (s *trackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error) {
-	res, err := s.trackStg.Find(opts)
+	res, err := s.trackStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -155,7 +155,7 @@ func (s *trackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *Fin
 	}
 
 	// Get total count for metadata.
-	total, err := s.trackStg.Count(opts)
+	total, err := s.trackStg.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -167,7 +167,7 @@ func (s *trackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *Fin
 }
 
 func (s *trackService) Track(ctx context.Context, id string) (*Track, error) {
-	return s.trackStg.Get(id)
+	return s.trackStg.Get(ctx, id)
 }
 
 func (s *trackService) CreateFromRequest(ctx context.Context, r *http.Request) error {
@@ -176,12 +176,12 @@ func (s *trackService) CreateFromRequest(ctx context.Context, r *http.Request) e
 
 	// Track post view.
 	if t.Type == TrackTypeView && t.ItemID != "" {
-		if err := s.itemStg.AddViewCount(t.ItemID); err != nil {
+		if err := s.itemStg.AddViewCount(ctx, t.ItemID); err != nil {
 			return err
 		}
 	}
 
-	return s.trackStg.Create(t)
+	return s.trackStg.Create(ctx, t)
 }
 
 func (s *trackService) CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error {
@@ -198,7 +198,7 @@ func (s *trackService) CreateSearchKeyword(ctx context.Context, r *http.Request,
 	t.SetDefaults(r)
 	t.Type = TrackTypeSearch
 	t.Keyword = keyword
-	return s.trackStg.Create(t)
+	return s.trackStg.Create(ctx, t)
 }
 
 func userIPFromRequest(req *http.Request) (net.IP, error) {

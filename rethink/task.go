@@ -34,7 +34,7 @@ func (s *taskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, er
 		OrderBy(tableTaskFieldPriority).Limit(limit)
 
 	var res []dotagiftx.Task
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	return res, nil
@@ -42,7 +42,7 @@ func (s *taskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, er
 
 func (s *taskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
 	in.Retry++
-	err := s.db.update(s.table().Get(in.ID).Update(in))
+	err := s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
@@ -52,7 +52,7 @@ func (s *taskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
 
 func (s *taskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload any) (id string, err error) {
 	n := now()
-	id, err = s.db.insert(s.table().Insert(dotagiftx.Task{
+	id, err = s.db.insert(ctx, s.table().Insert(dotagiftx.Task{
 		Status:    0,
 		Priority:  p,
 		Type:      t,
@@ -67,11 +67,12 @@ func (s *taskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dot
 }
 
 func NewQueue(c *Client) *taskStorage {
-	if err := c.autoMigrate(tableTask); err != nil {
+	ctx := context.Background()
+	if err := c.autoMigrate(ctx, tableTask); err != nil {
 		log.Fatalf("could not create %s table: %s", tableTask, err)
 	}
 
-	if err := c.autoIndex(tableTask, dotagiftx.Task{}); err != nil {
+	if err := c.autoIndex(ctx, tableTask, dotagiftx.Task{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableTask, err)
 	}
 

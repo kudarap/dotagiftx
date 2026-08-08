@@ -62,7 +62,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 			continue
 		}
 
-		mkt, _ := ri.market(ii.MarketID)
+		mkt, _ := ri.market(ctx, ii.MarketID)
 		if mkt == nil {
 			continue
 		}
@@ -96,9 +96,9 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	return nil
 }
 
-func (ri *RecheckInventory) market(id string) (*dotagiftx.Market, error) {
+func (ri *RecheckInventory) market(ctx context.Context, id string) (*dotagiftx.Market, error) {
 	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
-	markets, err := ri.marketStg.Find(f)
+	markets, err := ri.marketStg.Find(ctx, f)
 	if err != nil {
 		return nil, err
 	}

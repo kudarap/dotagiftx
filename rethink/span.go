@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"regexp"
@@ -22,22 +23,22 @@ type span struct {
 }
 
 func NewSpan(c *Client) *SpanStorage {
-	if err := c.autoMigrate(tableSpan); err != nil {
+	if err := c.autoMigrate(context.Background(), tableSpan); err != nil {
 		log.Fatalf("could not create %s table: %s", tableSpan, err)
 	}
 
-	if err := c.autoIndex(tableSpan, span{}); err != nil {
+	if err := c.autoIndex(context.Background(), tableSpan, span{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableSpan, err)
 	}
 
 	return &SpanStorage{c}
 }
 
-func (s *SpanStorage) Add(name string, elapsedMs int64, t time.Time) {
+func (s *SpanStorage) Add(ctx context.Context, name string, elapsedMs int64, t time.Time) {
 	name = spanCleanUUIDs(name)
 	name = spanCleanSteamIDs(name)
 	i := span{name, elapsedMs, t}
-	_, err := s.db.insert(r.Table("span").Insert(i))
+	_, err := s.db.insert(ctx, r.Table("span").Insert(i))
 	if err != nil {
 		fmt.Println("ERR SPAN", err)
 	}

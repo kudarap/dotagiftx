@@ -56,7 +56,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	for {
-		deliveries, err := gw.deliveryStg.ToVerify(opts)
+		deliveries, err := gw.deliveryStg.ToVerify(ctx, opts)
 		if err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 				continue
 			}
 
-			mkt, _ := gw.market(dd.MarketID)
+			mkt, _ := gw.market(ctx, dd.MarketID)
 			if mkt == nil {
 				gw.logger.Errorf("skipped process! market not found")
 				continue
@@ -109,9 +109,9 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	}
 }
 
-func (gw *GiftWrappedUpdate) market(id string) (*dotagiftx.Market, error) {
+func (gw *GiftWrappedUpdate) market(ctx context.Context, id string) (*dotagiftx.Market, error) {
 	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
-	markets, err := gw.marketStg.Find(f)
+	markets, err := gw.marketStg.Find(ctx, f)
 	if err != nil {
 		return nil, err
 	}

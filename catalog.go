@@ -1,6 +1,7 @@
 package dotagiftx
 
 import (
+	"context"
 	"time"
 )
 
@@ -54,18 +55,18 @@ type (
 	// CatalogStorage defines operation for market indexed items.
 	CatalogStorage interface {
 		// Find returns a list of catalogs from data store.
-		Find(opts FindOpts) ([]Catalog, error)
+		Find(ctx context.Context, opts FindOpts) ([]Catalog, error)
 
 		// Count returns number of catalog from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns catalog details by id from data store.
-		Get(id string) (*Catalog, error)
+		Get(ctx context.Context, id string) (*Catalog, error)
 
 		// Index persists a new catalog to data store.
-		Index(itemID string) (*Catalog, error)
+		Index(ctx context.Context, itemID string) (*Catalog, error)
 
 		// Trending returns a list if top 10 trending catalog.
-		Trending() ([]Catalog, error)
+		Trending(ctx context.Context) ([]Catalog, error)
 	}
 )

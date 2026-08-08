@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -17,11 +18,12 @@ const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
 func NewCatalog(c *Client, lg logging.Logger) dotagiftx.CatalogStorage {
-	if err := c.autoMigrate(tableCatalog); err != nil {
+	ctx := context.Background()
+	if err := c.autoMigrate(ctx, tableCatalog); err != nil {
 		lg.Fatalf("could not create %s table: %s", tableCatalog, err)
 	}
 
-	if err := c.autoIndex(tableCatalog, dotagiftx.Catalog{}); err != nil {
+	if err := c.autoIndex(ctx, tableCatalog, dotagiftx.Catalog{}); err != nil {
 		lg.Fatalf("could not create index on %s table: %s", tableCatalog, err)
 	}
 
@@ -34,7 +36,7 @@ type catalogStorage struct {
 	logger        logging.Logger
 }
 
-func (s *catalogStorage) Trending() ([]dotagiftx.Catalog, error) {
+func (s *catalogStorage) Trending(ctx context.Context) ([]dotagiftx.Catalog, error) {
 	/*
 		r.db('dotagiftables')
 		  .table('track')
@@ -120,26 +122,26 @@ func (s *catalogStorage) Trending() ([]dotagiftx.Catalog, error) {
 		OrderBy(r.Desc(scoreFieldName)).Limit(10)
 
 	var res []dotagiftx.Catalog
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, err
 	}
 
 	return res, nil
 }
 
-func (s *catalogStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error) {
+func (s *catalogStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error) {
 	var res []dotagiftx.Catalog
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
 	// q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	return res, nil
 }
 
-func (s *catalogStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
+func (s *catalogStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		KeywordFields: s.keywordFields,
 		IndexSorting:  true,
@@ -148,18 +150,18 @@ func (s *catalogStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 		Sort:          o.Sort,
 	}
 	q := newFindOptsQuery(s.table(), o)
-	err = s.db.one(q.Count(), &num)
+	err = s.db.one(ctx, q.Count(), &num)
 	return
 }
 
-func (s *catalogStorage) Get(id string) (*dotagiftx.Catalog, error) {
-	row, _ := s.getBySlug(id)
+func (s *catalogStorage) Get(ctx context.Context, id string) (*dotagiftx.Catalog, error) {
+	row, _ := s.getBySlug(ctx, id)
 	if row != nil {
 		return row, nil
 	}
 
 	row = &dotagiftx.Catalog{}
-	if err := s.db.one(s.table().Get(id), row); err != nil {
+	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.CatalogErrNotFound
 		}
@@ -170,10 +172,10 @@ func (s *catalogStorage) Get(id string) (*dotagiftx.Catalog, error) {
 	return row, nil
 }
 
-func (s *catalogStorage) getBySlug(slug string) (*dotagiftx.Catalog, error) {
+func (s *catalogStorage) getBySlug(ctx context.Context, slug string) (*dotagiftx.Catalog, error) {
 	row := &dotagiftx.Catalog{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
-	if err := s.db.one(q, row); err != nil {
+	if err := s.db.one(ctx, q, row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.CatalogErrNotFound
 		}
@@ -184,7 +186,7 @@ func (s *catalogStorage) getBySlug(slug string) (*dotagiftx.Catalog, error) {
 	return row, nil
 }
 
-func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
+func (s *catalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.Catalog, error) {
 	bs := time.Now()
 	defer func() {
 		s.logger.Infof("catalog indexed %s @ %s\n", itemID, time.Since(bs))
@@ -199,13 +201,13 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 
 	// Get item details by item ID.
 	q = r.Table(tableItem).Get(itemID)
-	if err = s.db.one(q, cat); err != nil {
+	if err = s.db.one(ctx, q, cat); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
 
 	benchStart = time.Now()
 	// Get market offers summary from LIVE status.
-	cat.Quantity, cat.LowestAsk, cat.MedianAsk, cat.RecentAsk, err = s.getOffersSummary(itemID)
+	cat.Quantity, cat.LowestAsk, cat.MedianAsk, cat.RecentAsk, err = s.getOffersSummary(ctx, itemID)
 	if err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
@@ -213,7 +215,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 
 	benchStart = time.Now()
 	// Get market buy orders summary.
-	cat.BidCount, cat.HighestBid, cat.RecentBid, err = s.getBuyOrdersSummary(itemID)
+	cat.BidCount, cat.HighestBid, cat.RecentBid, err = s.getBuyOrdersSummary(ctx, itemID)
 	if err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
@@ -221,7 +223,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 
 	benchStart = time.Now()
 	// Get market sales stats which calculated from RESERVED and SOLD statuses.
-	cat.SaleCount, cat.AvgSale, cat.RecentSale, err = s.getSaleSummary(itemID)
+	cat.SaleCount, cat.AvgSale, cat.RecentSale, err = s.getSaleSummary(ctx, itemID)
 	if err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
@@ -229,7 +231,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 
 	benchStart = time.Now()
 	// Get reserved and sold count on the market by item ID.
-	cat.ReservedCount, err = s.getReservedCounts(itemID)
+	cat.ReservedCount, err = s.getReservedCounts(ctx, itemID)
 	if err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
 	}
@@ -237,10 +239,10 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 	s.logger.Println("rethink/catalog getReservedCounts", time.Since(benchStart))
 
 	// Check for exiting entry for update or create.
-	if cur, _ := s.Get(itemID); cur == nil {
-		err = s.create(cat)
+	if cur, _ := s.Get(ctx, itemID); cur == nil {
+		err = s.create(ctx, cat)
 	} else {
-		err = s.update(cat)
+		err = s.update(ctx, cat)
 	}
 
 	if err != nil {
@@ -251,7 +253,7 @@ func (s *catalogStorage) Index(itemID string) (*dotagiftx.Catalog, error) {
 }
 
 // getOffersSummary returns market offers summary from LIVE status.
-func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
+func (s *catalogStorage) getOffersSummary(ctx context.Context, itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
 	// Get market offers from LIVE status.
 	offer := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
@@ -262,7 +264,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 		})
 	// Get offer count on the market by item ID.
 	q := offer.Count()
-	if err = s.db.one(q, &count); err != nil {
+	if err = s.db.one(ctx, q, &count); err != nil {
 		err = fmt.Errorf("could not get ask count: %s", err)
 		return
 	}
@@ -272,14 +274,14 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 
 	// Get the lowest ask price on the market by item ID.
 	q = offer.Min(marketFieldPrice).Field(marketFieldPrice).Default(0)
-	if err = s.db.one(q, &lowest); err != nil {
+	if err = s.db.one(ctx, q, &lowest); err != nil {
 		err = fmt.Errorf("could not get lowest ask price: %s", err)
 		return
 	}
 
 	// Get median ask price on the market by item ID.
 	q = s.medianPriceQuery(count, offer).Default(0)
-	if err = s.db.one(q, &median); err != nil {
+	if err = s.db.one(ctx, q, &median); err != nil {
 		err = fmt.Errorf("could not get median ask price: %s", err)
 		return
 	}
@@ -287,7 +289,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 	// Get recent ask on the market by item ID.
 	q = offer.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
 	t := &time.Time{}
-	if err = s.db.one(q, t); err != nil {
+	if err = s.db.one(ctx, q, t); err != nil {
 		err = fmt.Errorf("could not get recent ask date: %s", err)
 		return
 	}
@@ -296,7 +298,7 @@ func (s *catalogStorage) getOffersSummary(itemID string) (count int, lowest, med
 }
 
 // getBuyOrdersSummary returns market buy orders from BID type and LIVE status.
-func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max float64, recent *time.Time, err error) {
+func (s *catalogStorage) getBuyOrdersSummary(ctx context.Context, itemID string) (count int, max float64, recent *time.Time, err error) {
 	buyOrder := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(dotagiftx.Market{
@@ -305,7 +307,7 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 		})
 	// Get bid count on the market by item ID.
 	q := buyOrder.Count()
-	if err = s.db.one(q, &count); err != nil {
+	if err = s.db.one(ctx, q, &count); err != nil {
 		err = fmt.Errorf("could not get bid count: %s", err)
 		return
 	}
@@ -315,7 +317,7 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 
 	// Get the highest bid price on the market by item ID.
 	q = buyOrder.Max(marketFieldPrice).Field(marketFieldPrice).Default(0)
-	if err = s.db.one(q, &max); err != nil {
+	if err = s.db.one(ctx, q, &max); err != nil {
 		err = fmt.Errorf("could not get highest bid price: %s", err)
 		return
 	}
@@ -323,7 +325,7 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 	// Get recent bid on the market by item ID.
 	q = buyOrder.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
 	t := &time.Time{}
-	if err = s.db.one(q, t); err != nil {
+	if err = s.db.one(ctx, q, t); err != nil {
 		err = fmt.Errorf("could not get recent bid date: %s", err)
 		return
 	}
@@ -332,7 +334,7 @@ func (s *catalogStorage) getBuyOrdersSummary(itemID string) (count int, max floa
 }
 
 // getSaleSummary returns market sales stats which calculated from RESERVED and SOLD statuses.
-func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, recent *time.Time, err error) {
+func (s *catalogStorage) getSaleSummary(ctx context.Context, itemID string) (count int, avg float64, recent *time.Time, err error) {
 	sale := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(dotagiftx.Market{
@@ -344,7 +346,7 @@ func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, 
 
 	// Get sale count on the market by item ID.
 	q := sale.Count()
-	if err = s.db.one(q, &count); err != nil {
+	if err = s.db.one(ctx, q, &count); err != nil {
 		err = fmt.Errorf("could not get sales count: %s", err)
 		return
 	}
@@ -354,14 +356,14 @@ func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, 
 
 	// Get average sale price on the market by item ID.
 	q = sale.Avg(marketFieldPrice).Default(0)
-	if err = s.db.one(q, &avg); err != nil {
+	if err = s.db.one(ctx, q, &avg); err != nil {
 		err = fmt.Errorf("could not get avg sales price: %s", err)
 		return
 	}
 	// Get recent sale data on the market by item ID.
 	q = sale.Max(marketFieldCreatedAt).Field(marketFieldCreatedAt).Default(nil)
 	t := &time.Time{}
-	if err = s.db.one(q, t); err != nil {
+	if err = s.db.one(ctx, q, t); err != nil {
 		err = fmt.Errorf("could not get recent sale date: %s", err)
 		return
 	}
@@ -369,7 +371,7 @@ func (s *catalogStorage) getSaleSummary(itemID string) (count int, avg float64, 
 	return
 }
 
-func (s *catalogStorage) getReservedCounts(itemID string) (count int, err error) {
+func (s *catalogStorage) getReservedCounts(ctx context.Context, itemID string) (count int, err error) {
 	reserved := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(dotagiftx.Market{
@@ -377,7 +379,7 @@ func (s *catalogStorage) getReservedCounts(itemID string) (count int, err error)
 			Status: dotagiftx.MarketStatusReserved,
 		}).Count()
 
-	if err = s.db.one(reserved, &count); err != nil {
+	if err = s.db.one(ctx, reserved, &count); err != nil {
 		err = fmt.Errorf("could not get reserved count: %s", err)
 	}
 
@@ -400,7 +402,7 @@ func (s *catalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
 	return q.Skip(skip).Limit(limit).Avg(marketFieldPrice)
 }
 
-func (s *catalogStorage) create(in *dotagiftx.Catalog) error {
+func (s *catalogStorage) create(ctx context.Context, in *dotagiftx.Catalog) error {
 	// Fixes missing item in catalog that does not have views yet.
 	in.ViewCount = 1
 	t := now()
@@ -409,15 +411,15 @@ func (s *catalogStorage) create(in *dotagiftx.Catalog) error {
 	// Convert catalog into map to insert zero value fields.
 	m := catalogToMap(in)
 
-	if _, err := s.db.insert(s.table().Insert(m)); err != nil {
+	if _, err := s.db.insert(ctx, s.table().Insert(m)); err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return nil
 }
 
-func (s *catalogStorage) update(in *dotagiftx.Catalog) error {
-	cur, err := s.Get(in.ID)
+func (s *catalogStorage) update(ctx context.Context, in *dotagiftx.Catalog) error {
+	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
 	}
@@ -426,7 +428,7 @@ func (s *catalogStorage) update(in *dotagiftx.Catalog) error {
 	// Convert catalog into map to insert zero value fields.
 	m := catalogToMap(in)
 
-	err = s.db.update(s.table().Get(in.ID).Update(m))
+	err = s.db.update(ctx, s.table().Get(in.ID).Update(m))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}

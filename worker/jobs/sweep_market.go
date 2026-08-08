@@ -37,7 +37,7 @@ func (cm *SweepMarket) Run(ctx context.Context) error {
 	// Clean up expiring markets.
 	t := now.Add(-dayHours * dotagiftx.MarketSweepExpiredDays)
 	cm.logger.Println("sweeping old expired market", t)
-	if err := cm.marketStg.BulkDeleteByStatus(dotagiftx.MarketStatusExpired, t, limitPerBatch); err != nil {
+	if err := cm.marketStg.BulkDeleteByStatus(ctx, dotagiftx.MarketStatusExpired, t, limitPerBatch); err != nil {
 		cm.logger.Errorf("could not clean expired market: %s", err)
 		return err
 	}
@@ -46,7 +46,7 @@ func (cm *SweepMarket) Run(ctx context.Context) error {
 	// Clean up removed markets.
 	t = now.Add(-dayHours * dotagiftx.MarketSweepRemovedDays)
 	cm.logger.Println("sweeping old removed market", t)
-	if err := cm.marketStg.BulkDeleteByStatus(dotagiftx.MarketStatusRemoved, t, limitPerBatch); err != nil {
+	if err := cm.marketStg.BulkDeleteByStatus(ctx, dotagiftx.MarketStatusRemoved, t, limitPerBatch); err != nil {
 		cm.logger.Errorf("could not clean removed market: %s", err)
 		return err
 	}

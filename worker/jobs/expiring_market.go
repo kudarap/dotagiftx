@@ -43,7 +43,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	// Process expiring bids.
 	bidExpr := now.Add(-dayHours * dotagiftx.MarketBidExpirationDays)
 	em.logger.Println("updating expiring bids", bidExpr)
-	ids, err := em.marketStg.UpdateExpiring(dotagiftx.MarketTypeBid, dotagiftx.BoonRefresherShard, bidExpr)
+	ids, err := em.marketStg.UpdateExpiring(ctx, dotagiftx.MarketTypeBid, dotagiftx.BoonRefresherShard, bidExpr)
 	if err != nil {
 		em.logger.Errorf("could not update expiring bids: %s", err)
 		return err
@@ -54,7 +54,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	// Process expiring asks.
 	askExpr := now.Add(-dayHours * dotagiftx.MarketAskExpirationDays)
 	em.logger.Println("updating expiring asks", askExpr)
-	ids, err = em.marketStg.UpdateExpiring(dotagiftx.MarketTypeAsk, dotagiftx.BoonRefresherOrb, askExpr)
+	ids, err = em.marketStg.UpdateExpiring(ctx, dotagiftx.MarketTypeAsk, dotagiftx.BoonRefresherOrb, askExpr)
 	if err != nil {
 		em.logger.Errorf("could not update expiring asks: %s", err)
 		return err
@@ -64,7 +64,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 
 	// Process expiring resells.
 	em.logger.Println("updating expiring resells", askExpr)
-	ids, err = em.marketStg.UpdateExpiringResell(dotagiftx.BoonShopKeepersContract)
+	ids, err = em.marketStg.UpdateExpiringResell(ctx, dotagiftx.BoonShopKeepersContract)
 	if err != nil {
 		em.logger.Errorf("could not update expiring resells: %s", err)
 		return err
@@ -81,7 +81,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 		}
 		itemIndexed[id] = struct{}{}
 
-		if _, err = em.catalogStg.Index(id); err != nil {
+		if _, err = em.catalogStg.Index(ctx, id); err != nil {
 			em.logger.Errorf("could not index expired item: %s", err)
 			continue
 		}

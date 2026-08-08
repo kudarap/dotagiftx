@@ -51,7 +51,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 	opts.Page = 0
 
 	for {
-		res, err := vd.marketStg.PendingDeliveryStatus(opts)
+		res, err := vd.marketStg.PendingDeliveryStatus(ctx, opts)
 		if err != nil {
 			return err
 		}

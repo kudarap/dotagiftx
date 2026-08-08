@@ -69,16 +69,16 @@ type (
 	// ReportStorage defines operation for report records.
 	ReportStorage interface {
 		// Find returns a list of reports from the data store.
-		Find(opts FindOpts) ([]Report, error)
+		Find(ctx context.Context, opts FindOpts) ([]Report, error)
 
 		// Count returns number of reports from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns report details by id from data store.
-		Get(id string) (*Report, error)
+		Get(ctx context.Context, id string) (*Report, error)
 
 		// Create persists a new report to data store.
-		Create(*Report) error
+		Create(context.Context, *Report) error
 	}
 )
 
@@ -120,7 +120,7 @@ type reportService struct {
 }
 
 func (s *reportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *FindMetadata, error) {
-	res, err := s.reportStg.Find(opts)
+	res, err := s.reportStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -130,7 +130,7 @@ func (s *reportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.reportStg.Count(opts)
+	tc, err := s.reportStg.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -142,7 +142,7 @@ func (s *reportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *
 }
 
 func (s *reportService) Report(ctx context.Context, id string) (*Report, error) {
-	return s.reportStg.Get(id)
+	return s.reportStg.Get(ctx, id)
 }
 
 func (s *reportService) CreateSurvey(ctx context.Context, rep *Report) error {
@@ -163,7 +163,7 @@ func (s *reportService) Create(ctx context.Context, rep *Report) error {
 		return NewXError(ReportErrRequiredFields, err)
 	}
 
-	if err := s.reportStg.Create(rep); err != nil {
+	if err := s.reportStg.Create(ctx, rep); err != nil {
 		return err
 	}
 

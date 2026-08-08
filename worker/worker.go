@@ -101,7 +101,7 @@ func (w *Worker) AddJob(j Job) {
 // runner process the job and will re-queue them when recurring job.
 func (w *Worker) runner(ctx context.Context, job Job) {
 	if w.tracer != nil {
-		span := w.tracer.StartSpan(fmt.Sprintf("job-%s", job))
+		span := w.tracer.StartSpan(ctx, fmt.Sprintf("job-%s", job))
 		defer func() {
 			span.End()
 		}()

@@ -22,11 +22,12 @@ var userSearchFields = []string{"name", "steam_id", "url"}
 
 // NewUser creates new instance of user data store.
 func NewUser(c *Client) dotagiftx.UserStorage {
-	if err := c.autoMigrate(tableUser); err != nil {
+	ctx := context.Background()
+	if err := c.autoMigrate(ctx, tableUser); err != nil {
 		log.Fatalf("could not create %s table: %s", tableUser, err)
 	}
 
-	if err := c.autoIndex(tableUser, dotagiftx.User{}); err != nil {
+	if err := c.autoIndex(ctx, tableUser, dotagiftx.User{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableUser, err)
 	}
 
@@ -38,21 +39,21 @@ type userStorage struct {
 	keywordFields []string
 }
 
-func (s *userStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.User, error) {
+func (s *userStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.User, error) {
 	var res []dotagiftx.User
 	q := newFindOptsQuery(s.table(), o)
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *userStorage) FindFlagged(o dotagiftx.FindOpts) ([]dotagiftx.User, error) {
+func (s *userStorage) FindFlagged(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.User, error) {
 	var res []dotagiftx.User
 	o.KeywordFields = s.keywordFields
 	q := baseFindOptsQuery(s.table(), o, s.flaggedFilter)
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
@@ -65,23 +66,23 @@ func (s *userStorage) flaggedFilter(q r.Term) r.Term {
 	})
 }
 
-func (s *userStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
+func (s *userStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{Filter: o.Filter, UserID: o.UserID}
 	q := newFindOptsQuery(s.table(), o)
-	err = s.db.one(q.Count(), &num)
+	err = s.db.one(ctx, q.Count(), &num)
 	return
 }
 
-func (s *userStorage) Get(id string) (*dotagiftx.User, error) {
+func (s *userStorage) Get(ctx context.Context, id string) (*dotagiftx.User, error) {
 	// Check steam ID first exist.
-	row, _ := s.getBySteamID(id)
+	row, _ := s.getBySteamID(ctx, id)
 	if row != nil {
 		return row, nil
 	}
 
 	// Try to find it by user ID.
 	row = &dotagiftx.User{}
-	if err := s.db.one(s.table().Get(id), row); err != nil {
+	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.UserErrNotFound
 		}
@@ -92,10 +93,10 @@ func (s *userStorage) Get(id string) (*dotagiftx.User, error) {
 	return row, nil
 }
 
-func (s *userStorage) getBySteamID(steamID string) (*dotagiftx.User, error) {
+func (s *userStorage) getBySteamID(ctx context.Context, steamID string) (*dotagiftx.User, error) {
 	row := &dotagiftx.User{}
 	q := s.table().GetAllByIndex(userFieldSteamID, steamID).OrderBy("created_at").Limit(1)
-	if err := s.db.one(q, row); err != nil {
+	if err := s.db.one(ctx, q, row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.UserErrNotFound
 		}
@@ -106,13 +107,13 @@ func (s *userStorage) getBySteamID(steamID string) (*dotagiftx.User, error) {
 	return row, nil
 }
 
-func (s *userStorage) Create(in *dotagiftx.User) error {
+func (s *userStorage) Create(ctx context.Context, in *dotagiftx.User) error {
 	t := now()
 	if in.CreatedAt == nil {
 		in.CreatedAt = t
 	}
 	in.UpdatedAt = t
-	id, err := s.db.insert(s.table().Insert(in))
+	id, err := s.db.insert(ctx, s.table().Insert(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
@@ -121,18 +122,18 @@ func (s *userStorage) Create(in *dotagiftx.User) error {
 	return nil
 }
 
-func (s *userStorage) Update(in *dotagiftx.User) error {
+func (s *userStorage) Update(ctx context.Context, in *dotagiftx.User) error {
 	in.UpdatedAt = now()
-	return s.BaseUpdate(in)
+	return s.BaseUpdate(ctx, in)
 }
 
-func (s *userStorage) BaseUpdate(in *dotagiftx.User) error {
-	cur, err := s.Get(in.ID)
+func (s *userStorage) BaseUpdate(ctx context.Context, in *dotagiftx.User) error {
+	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
 	}
 
-	err = s.db.update(s.table().Get(in.ID).Update(in))
+	err = s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
@@ -148,7 +149,7 @@ func (s *userStorage) BaseUpdate(in *dotagiftx.User) error {
 func (s *userStorage) ExpiringSubscribers(ctx context.Context, t time.Time) ([]dotagiftx.User, error) {
 	var res []dotagiftx.User
 	q := s.table().HasFields(userSubscriptionEndsAt)
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
@@ -165,7 +166,7 @@ func (s *userStorage) ExpiringSubscribers(ctx context.Context, t time.Time) ([]d
 // PurgeSubscription clears subscription data.
 func (s *userStorage) PurgeSubscription(ctx context.Context, userID string) error {
 	t := time.Now()
-	err := s.db.update(s.table().Get(userID).Update(map[string]any{
+	err := s.db.update(ctx, s.table().Get(userID).Update(map[string]any{
 		"boons":                r.Literal(),
 		"subscription":         r.Literal(),
 		"subscribed_at":        r.Literal(),
@@ -179,11 +180,11 @@ func (s *userStorage) PurgeSubscription(ctx context.Context, userID string) erro
 	return nil
 }
 
-func (s *userStorage) ClearSubscriptionEndsAt(userID string) error {
+func (s *userStorage) ClearSubscriptionEndsAt(ctx context.Context, userID string) error {
 	q := s.table().Get(userID).Update(map[string]any{
 		userSubscriptionEndsAt: r.Literal(),
 	})
-	if err := s.db.update(q); err != nil {
+	if err := s.db.update(ctx, q); err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 

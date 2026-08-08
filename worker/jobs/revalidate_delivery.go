@@ -50,7 +50,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	for {
-		res, err := rd.marketStg.PendingDeliveryStatus(opts)
+		res, err := rd.marketStg.PendingDeliveryStatus(ctx, opts)
 		if err != nil {
 			return err
 		}

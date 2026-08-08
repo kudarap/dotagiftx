@@ -111,25 +111,25 @@ type (
 	// DeliveryStorage defines operation for Delivery records.
 	DeliveryStorage interface {
 		// Find returns a list of deliveries from data store.
-		Find(opts FindOpts) ([]Delivery, error)
+		Find(ctx context.Context, opts FindOpts) ([]Delivery, error)
 
 		// Count returns number of deliveries from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns Delivery details by id from data store.
-		Get(id string) (*Delivery, error)
+		Get(ctx context.Context, id string) (*Delivery, error)
 
 		// GetByMarketID returns Delivery details by market id from data store.
-		GetByMarketID(marketID string) (*Delivery, error)
+		GetByMarketID(ctx context.Context, marketID string) (*Delivery, error)
 
 		// Create persists a new Delivery to data store.
-		Create(*Delivery) error
+		Create(context.Context, *Delivery) error
 
 		// Update save changes of Delivery to data store.
-		Update(*Delivery) error
+		Update(context.Context, *Delivery) error
 
 		// ToVerify returns a list of deliveries to process from data store.
-		ToVerify(opts FindOpts) ([]Delivery, error)
+		ToVerify(ctx context.Context, opts FindOpts) ([]Delivery, error)
 	}
 
 	// InventoryStatus represents inventory status.
@@ -164,22 +164,22 @@ type (
 	// InventoryStorage defines operation for Inventory records.
 	InventoryStorage interface {
 		// Find returns a list of inventories from data store.
-		Find(opts FindOpts) ([]Inventory, error)
+		Find(ctx context.Context, opts FindOpts) ([]Inventory, error)
 
 		// Count returns number of inventories from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns an Inventory details by id from data store.
-		Get(id string) (*Inventory, error)
+		Get(ctx context.Context, id string) (*Inventory, error)
 
 		// GetByMarketID returns Inventory details by market id from data store.
-		GetByMarketID(marketID string) (*Inventory, error)
+		GetByMarketID(ctx context.Context, marketID string) (*Inventory, error)
 
 		// Create persists a new Inventory to data store.
-		Create(*Inventory) error
+		Create(context.Context, *Inventory) error
 
 		// Update save changes of Inventory to data store.
-		Update(*Inventory) error
+		Update(context.Context, *Inventory) error
 	}
 )
 
@@ -308,7 +308,7 @@ type deliveryService struct {
 }
 
 func (s *deliveryService) Deliveries(ctx context.Context, opts FindOpts) ([]Delivery, *FindMetadata, error) {
-	res, err := s.deliveryStg.Find(opts)
+	res, err := s.deliveryStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -318,7 +318,7 @@ func (s *deliveryService) Deliveries(ctx context.Context, opts FindOpts) ([]Deli
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.deliveryStg.Count(opts)
+	tc, err := s.deliveryStg.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -330,7 +330,7 @@ func (s *deliveryService) Deliveries(ctx context.Context, opts FindOpts) ([]Deli
 }
 
 func (s *deliveryService) Delivery(ctx context.Context, id string) (*Delivery, error) {
-	inv, err := s.deliveryStg.Get(id)
+	inv, err := s.deliveryStg.Get(ctx, id)
 	if err != nil && !errors.Is(err, DeliveryErrNotFound) {
 		return nil, err
 	}
@@ -339,11 +339,11 @@ func (s *deliveryService) Delivery(ctx context.Context, id string) (*Delivery, e
 	}
 
 	// If we can't find using id, let's try market id
-	return s.deliveryStg.GetByMarketID(id)
+	return s.deliveryStg.GetByMarketID(ctx, id)
 }
 
 func (s *deliveryService) DeliveryByMarketID(ctx context.Context, marketID string) (*Delivery, error) {
-	return s.deliveryStg.GetByMarketID(marketID)
+	return s.deliveryStg.GetByMarketID(ctx, marketID)
 }
 
 func (s *deliveryService) Set(ctx context.Context, del *Delivery) error {
@@ -352,7 +352,7 @@ func (s *deliveryService) Set(ctx context.Context, del *Delivery) error {
 	}
 
 	defer func() {
-		if _, err := s.marketStg.Index(del.MarketID); err != nil {
+		if _, err := s.marketStg.Index(ctx, del.MarketID); err != nil {
 			log.Printf("could not index market %s: %s", del.MarketID, err)
 		}
 	}()
@@ -361,7 +361,7 @@ func (s *deliveryService) Set(ctx context.Context, del *Delivery) error {
 	del = del.IsGiftOpened()
 
 	// Update market delivery status.
-	if err := s.marketStg.BaseUpdate(&Market{
+	if err := s.marketStg.BaseUpdate(ctx, &Market{
 		ID:             del.MarketID,
 		DeliveryStatus: del.Status,
 	}); err != nil {
@@ -373,10 +373,10 @@ func (s *deliveryService) Set(ctx context.Context, del *Delivery) error {
 		del.ID = cur.ID
 		del.Retries = cur.Retries + 1
 		del = del.AddAssets(cur.Assets)
-		return s.deliveryStg.Update(del)
+		return s.deliveryStg.Update(ctx, del)
 	}
 
-	return s.deliveryStg.Create(del)
+	return s.deliveryStg.Create(ctx, del)
 }
 
 // NewInventoryService returns new inventory service.
@@ -391,7 +391,7 @@ type inventoryService struct {
 }
 
 func (s *inventoryService) Inventories(ctx context.Context, opts FindOpts) ([]Inventory, *FindMetadata, error) {
-	res, err := s.inventoryStg.Find(opts)
+	res, err := s.inventoryStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -401,7 +401,7 @@ func (s *inventoryService) Inventories(ctx context.Context, opts FindOpts) ([]In
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.inventoryStg.Count(opts)
+	tc, err := s.inventoryStg.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -413,7 +413,7 @@ func (s *inventoryService) Inventories(ctx context.Context, opts FindOpts) ([]In
 }
 
 func (s *inventoryService) Inventory(ctx context.Context, id string) (*Inventory, error) {
-	inv, err := s.inventoryStg.Get(id)
+	inv, err := s.inventoryStg.Get(ctx, id)
 	if err != nil && !errors.Is(err, InventoryErrNotFound) {
 		return nil, err
 	}
@@ -422,11 +422,11 @@ func (s *inventoryService) Inventory(ctx context.Context, id string) (*Inventory
 	}
 
 	// If we can't find using id, let's try market id
-	return s.inventoryStg.GetByMarketID(id)
+	return s.inventoryStg.GetByMarketID(ctx, id)
 }
 
 func (s *inventoryService) InventoryByMarketID(ctx context.Context, marketID string) (*Inventory, error) {
-	return s.inventoryStg.GetByMarketID(marketID)
+	return s.inventoryStg.GetByMarketID(ctx, marketID)
 }
 
 func (s *inventoryService) Set(ctx context.Context, inv *Inventory) error {
@@ -435,17 +435,17 @@ func (s *inventoryService) Set(ctx context.Context, inv *Inventory) error {
 	}
 
 	defer func() {
-		mkt, err := s.marketStg.Index(inv.MarketID)
+		mkt, err := s.marketStg.Index(ctx, inv.MarketID)
 		if err != nil {
 			log.Printf("could not index market %s: %s", inv.MarketID, err)
 		}
-		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
+		if _, err = s.catalogStg.Index(ctx, mkt.ItemID); err != nil {
 			log.Printf("could not index catalog %s: %s", inv.MarketID, err)
 		}
 	}()
 
 	// Update market Inventory status.
-	if err := s.marketStg.BaseUpdate(&Market{
+	if err := s.marketStg.BaseUpdate(ctx, &Market{
 		ID:              inv.MarketID,
 		InventoryStatus: inv.Status,
 	}); err != nil {
@@ -458,8 +458,8 @@ func (s *inventoryService) Set(ctx context.Context, inv *Inventory) error {
 	if cur != nil {
 		inv.ID = cur.ID
 		inv.Retries = cur.Retries + 1
-		return s.inventoryStg.Update(inv)
+		return s.inventoryStg.Update(ctx, inv)
 	}
 
-	return s.inventoryStg.Create(inv)
+	return s.inventoryStg.Create(ctx, inv)
 }

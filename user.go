@@ -122,22 +122,22 @@ type (
 	// UserStorage defines operation for user records.
 	UserStorage interface {
 		// Find returns a list of users from data store.
-		Find(opts FindOpts) ([]User, error)
+		Find(ctx context.Context, opts FindOpts) ([]User, error)
 
 		// FindFlagged returns a list of flagged users from data store.
-		FindFlagged(opts FindOpts) ([]User, error)
+		FindFlagged(ctx context.Context, opts FindOpts) ([]User, error)
 
 		// Get returns user details by id from data store.
-		Get(id string) (*User, error)
+		Get(ctx context.Context, id string) (*User, error)
 
 		// Create persists a new user to data store.
-		Create(*User) error
+		Create(context.Context, *User) error
 
 		// Update persists user changes to data store.
-		Update(*User) error
+		Update(context.Context, *User) error
 
 		// BaseUpdate persists user changes to data store without updating metadata.
-		BaseUpdate(*User) error
+		BaseUpdate(context.Context, *User) error
 
 		// ExpiringSubscribers return a list of users that has expiring subscription.
 		ExpiringSubscribers(ctx context.Context, now time.Time) ([]User, error)
@@ -146,7 +146,7 @@ type (
 		PurgeSubscription(ctx context.Context, userID string) error
 
 		// ClearSubscriptionEndsAt clears subscription expiration.
-		ClearSubscriptionEndsAt(id string) error
+		ClearSubscriptionEndsAt(ctx context.Context, id string) error
 	}
 )
 
@@ -301,15 +301,15 @@ type userService struct {
 }
 
 func (s *userService) Users(ctx context.Context, opts FindOpts) ([]User, error) {
-	return s.userStg.Find(opts)
+	return s.userStg.Find(ctx, opts)
 }
 
 func (s *userService) FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error) {
-	return s.userStg.FindFlagged(opts)
+	return s.userStg.FindFlagged(ctx, opts)
 }
 
 func (s *userService) User(ctx context.Context, id string) (*User, error) {
-	return s.userStg.Get(id)
+	return s.userStg.Get(ctx, id)
 }
 
 func (s *userService) UserFromContext(ctx context.Context) (*User, error) {
@@ -338,7 +338,7 @@ func (s *userService) Create(ctx context.Context, u *User) error {
 		}
 	}()
 
-	return s.userStg.Create(u)
+	return s.userStg.Create(ctx, u)
 }
 
 func (s *userService) Update(ctx context.Context, u *User) error {
@@ -352,11 +352,11 @@ func (s *userService) Update(ctx context.Context, u *User) error {
 		return err
 	}
 
-	return s.userStg.Update(u)
+	return s.userStg.Update(ctx, u)
 }
 
 func (s *userService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error) {
-	u, err := s.userStg.Get(sp.ID)
+	u, err := s.userStg.Get(ctx, sp.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -367,7 +367,7 @@ func (s *userService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, er
 	if err != nil {
 		return nil, err
 	}
-	if err = s.userStg.Update(u); err != nil {
+	if err = s.userStg.Update(ctx, u); err != nil {
 		return nil, err
 	}
 	return u, nil
@@ -378,7 +378,7 @@ func (s *userService) CreateSubscription(ctx context.Context, planID string) (su
 	if au == nil {
 		return "", AuthErrNoAccess
 	}
-	user, err := s.userStg.Get(au.UserID)
+	user, err := s.userStg.Get(ctx, au.UserID)
 	if err != nil {
 		return "", err
 	}
@@ -395,7 +395,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	if au == nil {
 		return nil, AuthErrNoAccess
 	}
-	user, err := s.userStg.Get(au.UserID)
+	user, err := s.userStg.Get(ctx, au.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -426,10 +426,10 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	if err = user.CheckUpdate(); err != nil {
 		return nil, err
 	}
-	if err = s.userStg.Update(user); err != nil {
+	if err = s.userStg.Update(ctx, user); err != nil {
 		return nil, err
 	}
-	if err = s.userStg.ClearSubscriptionEndsAt(user.ID); err != nil {
+	if err = s.userStg.ClearSubscriptionEndsAt(ctx, user.ID); err != nil {
 		return nil, err
 	}
 
@@ -452,14 +452,14 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	}
 
 	log.Println("cancelling subscription", steamID, "by marking expiration")
-	user, err := s.userStg.Get(steamID)
+	user, err := s.userStg.Get(ctx, steamID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user %s: %w", steamID, err)
 	}
 
 	ex := lastPayment.AddDate(0, 1, 0)
 	user.SubscriptionEndsAt = &ex
-	if err = s.userStg.Update(user); err != nil {
+	if err = s.userStg.Update(ctx, user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
 	return user, nil
@@ -473,7 +473,7 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 //	    - 6 months (+60% overhead)
 //	    - 12 months (+60% overhead)
 func (s *userService) ProcessManualSubscription(ctx context.Context, param ManualSubscriptionParam) (*User, error) {
-	user, err := s.userStg.Get(param.UserID)
+	user, err := s.userStg.Get(ctx, param.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user: %v", err)
 	}
@@ -487,7 +487,7 @@ func (s *userService) ProcessManualSubscription(ctx context.Context, param Manua
 	end := now.AddDate(0, param.Cycles, 0)
 	user.SubscribedAt = &now
 	user.SubscriptionEndsAt = &end
-	if err = s.userStg.Update(user); err != nil {
+	if err = s.userStg.Update(ctx, user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
 	return user, nil

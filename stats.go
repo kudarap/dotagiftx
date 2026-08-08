@@ -81,14 +81,14 @@ type (
 	}
 
 	StatsStorage interface {
-		CountMarketStatus(opts FindOpts) (*MarketStatusCount, error)
-		CountMarketStatusV2(opts FindOpts) (*MarketStatusCount, error)
+		CountMarketStatus(ctx context.Context, opts FindOpts) (*MarketStatusCount, error)
+		CountMarketStatusV2(ctx context.Context, opts FindOpts) (*MarketStatusCount, error)
 
-		GraphMarketSales(opts FindOpts) ([]MarketSalesGraph, error)
+		GraphMarketSales(ctx context.Context, opts FindOpts) ([]MarketSalesGraph, error)
 
-		CountUserMarketStatus(userID string) (*MarketStatusCount, error)
+		CountUserMarketStatus(ctx context.Context, userID string) (*MarketStatusCount, error)
 
-		CountUserMarketStatusBySteamID(partnerSteamID string) (*MarketStatusCount, error)
+		CountUserMarketStatusBySteamID(ctx context.Context, partnerSteamID string) (*MarketStatusCount, error)
 	}
 )
 
@@ -103,25 +103,25 @@ type statsService struct {
 }
 
 func (s *statsService) CountUserMarketStatusBySteamID(ctx context.Context, partnerSteamID string) (*MarketStatusCount, error) {
-	return s.statsStg.CountUserMarketStatusBySteamID(partnerSteamID)
+	return s.statsStg.CountUserMarketStatusBySteamID(ctx, partnerSteamID)
 }
 
 func (s *statsService) CountMarketStatus(ctx context.Context, opts FindOpts) (*MarketStatusCount, error) {
-	return s.statsStg.CountMarketStatus(opts)
+	return s.statsStg.CountMarketStatus(ctx, opts)
 }
 
 func (s *statsService) CountMarketStatusV2(ctx context.Context, opts FindOpts) (*MarketStatusCount, error) {
-	return s.statsStg.CountMarketStatusV2(opts)
+	return s.statsStg.CountMarketStatusV2(ctx, opts)
 }
 
 func (s *statsService) CountUserMarketStatus(ctx context.Context, userID string) (*MarketStatusCount, error) {
-	return s.statsStg.CountUserMarketStatus(userID)
+	return s.statsStg.CountUserMarketStatus(ctx, userID)
 }
 
 func (s *statsService) GraphMarketSales(ctx context.Context, opts FindOpts) ([]MarketSalesGraph, error) {
-	return s.statsStg.GraphMarketSales(opts)
+	return s.statsStg.GraphMarketSales(ctx, opts)
 }
 
 func (s *statsService) TopKeywords(ctx context.Context) ([]SearchKeywordScore, error) {
-	return s.trackStg.TopKeywords()
+	return s.trackStg.TopKeywords(ctx)
 }

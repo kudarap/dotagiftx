@@ -91,28 +91,28 @@ type (
 	// ItemStorage defines operation for item records.
 	ItemStorage interface {
 		// Find returns a list of items from data store.
-		Find(opts FindOpts) ([]Item, error)
+		Find(ctx context.Context, opts FindOpts) ([]Item, error)
 
 		// Count returns number of items from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns item details by id from data store.
-		Get(id string) (*Item, error)
+		Get(ctx context.Context, id string) (*Item, error)
 
 		// GetBySlug returns item details slug id from data store.
-		GetBySlug(slug string) (*Item, error)
+		GetBySlug(ctx context.Context, slug string) (*Item, error)
 
 		// Create persists a new item to data store.
-		Create(*Item) error
+		Create(context.Context, *Item) error
 
 		// Update persists item changes to data store.
-		Update(*Item) error
+		Update(context.Context, *Item) error
 
 		// IsItemExist returns an error if item already exists by name.
-		IsItemExist(name string) error
+		IsItemExist(ctx context.Context, name string) error
 
 		// AddViewCount increments item view count to data store.
-		AddViewCount(id string) error
+		AddViewCount(ctx context.Context, id string) error
 	}
 )
 
@@ -175,7 +175,7 @@ type itemService struct {
 }
 
 func (s *itemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error) {
-	res, err := s.itemStg.Find(opts)
+	res, err := s.itemStg.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -185,7 +185,7 @@ func (s *itemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMe
 	}
 
 	// Get result and total count for metadata.
-	tc, err := s.itemStg.Count(opts)
+	tc, err := s.itemStg.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -197,11 +197,11 @@ func (s *itemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMe
 }
 
 func (s *itemService) Item(ctx context.Context, id string) (*Item, error) {
-	return s.itemStg.Get(id)
+	return s.itemStg.Get(ctx, id)
 }
 
 func (s *itemService) TopOrigins(ctx context.Context) ([]string, error) {
-	items, err := s.itemStg.Find(FindOpts{})
+	items, err := s.itemStg.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +218,7 @@ func (s *itemService) TopOrigins(ctx context.Context) ([]string, error) {
 }
 
 func (s *itemService) TopHeroes(ctx context.Context) ([]string, error) {
-	items, err := s.itemStg.Find(FindOpts{})
+	items, err := s.itemStg.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -249,7 +249,7 @@ func (s *itemService) Create(ctx context.Context, itm *Item) error {
 		return NewXError(ItemErrRequiredFields, err)
 	}
 
-	if err := s.itemStg.IsItemExist(itm.Name); err != nil {
+	if err := s.itemStg.IsItemExist(ctx, itm.Name); err != nil {
 		return err
 	}
 
@@ -268,7 +268,7 @@ func (s *itemService) Create(ctx context.Context, itm *Item) error {
 		}
 	}()
 
-	return s.itemStg.Create(itm)
+	return s.itemStg.Create(ctx, itm)
 }
 
 func (s *itemService) Update(ctx context.Context, itm *Item) error {
@@ -295,7 +295,7 @@ func (s *itemService) Update(ctx context.Context, itm *Item) error {
 		itm.Image = img
 	}
 
-	return s.itemStg.Update(itm)
+	return s.itemStg.Update(ctx, itm)
 }
 
 func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
@@ -347,7 +347,7 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 }
 
 func (s *itemService) getItemByName(ctx context.Context, name string) (*Item, error) {
-	itm, err := s.itemStg.Find(FindOpts{Filter: Item{Name: name}})
+	itm, err := s.itemStg.Find(ctx, FindOpts{Filter: Item{Name: name}})
 	if err != nil {
 		return nil, err
 	}
