@@ -67,7 +67,7 @@ type (
 		Score   int    `json:"score"`
 	}
 
-	StatsStorage interface {
+	statsStorage interface {
 		CountMarketStatus(ctx context.Context, opts FindOpts) (*MarketStatusCount, error)
 		CountMarketStatusV2(ctx context.Context, opts FindOpts) (*MarketStatusCount, error)
 
@@ -80,13 +80,13 @@ type (
 )
 
 // NewStatsService returns new Stats service.
-func NewStatsService(ss StatsStorage, ts TrackStorage) *StatsService {
+func NewStatsService(ss statsStorage, ts trackStorage) *StatsService {
 	return &StatsService{ss, ts}
 }
 
 type StatsService struct {
-	statsStg StatsStorage
-	trackStg TrackStorage
+	statsStg statsStorage
+	trackStg trackStorage
 }
 
 func (s *StatsService) CountUserMarketStatusBySteamID(ctx context.Context, partnerSteamID string) (*MarketStatusCount, error) {

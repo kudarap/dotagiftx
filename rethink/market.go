@@ -32,7 +32,7 @@ const (
 )
 
 // NewMarket creates new instance of market data store.
-func NewMarket(c *Client) dotagiftx.MarketStorage {
+func NewMarket(c *Client) *MarketStorage {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableMarket); err != nil {
 		log.Fatalf("could not create %s table: %s", tableMarket, err)
@@ -41,15 +41,15 @@ func NewMarket(c *Client) dotagiftx.MarketStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &marketStorage{c, []string{marketItemSearchTags}}
+	return &MarketStorage{c, []string{marketItemSearchTags}}
 }
 
-type marketStorage struct {
+type MarketStorage struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *marketStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
+func (s *MarketStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 	var res []dotagiftx.Market
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
@@ -65,7 +65,7 @@ func (s *marketStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotag
 
 // PendingInventoryStatus returns market entries that is pending for checking
 // inventory status or needs re-processing of re-process error status.
-func (s *marketStorage) PendingInventoryStatus(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
+func (s *MarketStorage) PendingInventoryStatus(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 	// Filters out already check or no need to check market
 	q := newFindOptsQuery(r.Table(tableMarket), o)
 	q = q.
@@ -91,7 +91,7 @@ func (s *marketStorage) PendingInventoryStatus(ctx context.Context, o dotagiftx.
 
 // PendingDeliveryStatus returns market entries that is pending for checking
 // delivery status or needs re-processing of re-process error status.
-func (s *marketStorage) PendingDeliveryStatus(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
+func (s *MarketStorage) PendingDeliveryStatus(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 	q := newFindOptsQuery(r.Table(tableMarket), o)
 	q = q.Filter(func(t r.Term) r.Term {
 		return t.HasFields(marketFieldDeliveryStatus).Not().
@@ -108,7 +108,7 @@ func (s *marketStorage) PendingDeliveryStatus(ctx context.Context, o dotagiftx.F
 	return res, nil
 }
 
-func (s *marketStorage) RevalidateDeliveryStatus(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
+func (s *MarketStorage) RevalidateDeliveryStatus(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Market, error) {
 	n := time.Now()
 	q := newFindOptsQuery(r.Table(tableMarket), o)
 	q = q.Filter(func(t r.Term) r.Term {
@@ -129,7 +129,7 @@ func (s *marketStorage) RevalidateDeliveryStatus(ctx context.Context, o dotagift
 	return res, nil
 }
 
-func (s *marketStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+func (s *MarketStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -143,7 +143,7 @@ func (s *marketStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num in
 	return
 }
 
-func (s *marketStorage) Get(ctx context.Context, id string) (*dotagiftx.Market, error) {
+func (s *MarketStorage) Get(ctx context.Context, id string) (*dotagiftx.Market, error) {
 	row := &dotagiftx.Market{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
@@ -157,13 +157,13 @@ func (s *marketStorage) Get(ctx context.Context, id string) (*dotagiftx.Market, 
 	return row, nil
 }
 
-func (s *marketStorage) includeUser(ctx context.Context, userID string) *dotagiftx.User {
+func (s *MarketStorage) includeUser(ctx context.Context, userID string) *dotagiftx.User {
 	var user dotagiftx.User
 	_ = s.db.one(ctx, r.Table(tableUser).Get(userID), &user)
 	return &user
 }
 
-func (s *marketStorage) Index(ctx context.Context, id string) (*dotagiftx.Market, error) {
+func (s *MarketStorage) Index(ctx context.Context, id string) (*dotagiftx.Market, error) {
 	mkt, err := s.Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -202,7 +202,7 @@ func (s *marketStorage) Index(ctx context.Context, id string) (*dotagiftx.Market
 	return mkt, nil
 }
 
-func (s *marketStorage) Create(ctx context.Context, in *dotagiftx.Market) error {
+func (s *MarketStorage) Create(ctx context.Context, in *dotagiftx.Market) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -218,12 +218,12 @@ func (s *marketStorage) Create(ctx context.Context, in *dotagiftx.Market) error 
 	return nil
 }
 
-func (s *marketStorage) Update(ctx context.Context, in *dotagiftx.Market) error {
+func (s *MarketStorage) Update(ctx context.Context, in *dotagiftx.Market) error {
 	in.UpdatedAt = now()
 	return s.BaseUpdate(ctx, in)
 }
 
-func (s *marketStorage) UpdateUserScore(ctx context.Context, userID string, rankScore int) error {
+func (s *MarketStorage) UpdateUserScore(ctx context.Context, userID string, rankScore int) error {
 	if userID == "" {
 		return fmt.Errorf("user id is required to update user score")
 	}
@@ -242,7 +242,7 @@ func (s *marketStorage) UpdateUserScore(ctx context.Context, userID string, rank
 	return nil
 }
 
-func (s *marketStorage) BaseUpdate(ctx context.Context, in *dotagiftx.Market) error {
+func (s *MarketStorage) BaseUpdate(ctx context.Context, in *dotagiftx.Market) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -261,7 +261,7 @@ func (s *marketStorage) BaseUpdate(ctx context.Context, in *dotagiftx.Market) er
 	return nil
 }
 
-func (s *marketStorage) UpdateExpiring(ctx context.Context, t dotagiftx.MarketType, b dotagiftx.UserBoon, cutOff time.Time) (ids []string, err error) {
+func (s *MarketStorage) UpdateExpiring(ctx context.Context, t dotagiftx.MarketType, b dotagiftx.UserBoon, cutOff time.Time) (ids []string, err error) {
 	// Collects exempted users ids.
 	q := r.Table(tableUser).
 		HasFields("boons").
@@ -298,7 +298,7 @@ func (s *marketStorage) UpdateExpiring(ctx context.Context, t dotagiftx.MarketTy
 	return itemIDs, nil
 }
 
-func (s *marketStorage) UpdateExpiringResell(ctx context.Context, b dotagiftx.UserBoon) (ids []string, err error) {
+func (s *MarketStorage) UpdateExpiringResell(ctx context.Context, b dotagiftx.UserBoon) (ids []string, err error) {
 	// Collects exempted users ids.
 	q := r.Table(tableUser).
 		HasFields("boons").
@@ -336,7 +336,7 @@ func (s *marketStorage) UpdateExpiringResell(ctx context.Context, b dotagiftx.Us
 	return itemIDs, nil
 }
 
-func (s *marketStorage) BulkDeleteByStatus(ctx context.Context, ms dotagiftx.MarketStatus, cutOff time.Time, limit int) error {
+func (s *MarketStorage) BulkDeleteByStatus(ctx context.Context, ms dotagiftx.MarketStatus, cutOff time.Time, limit int) error {
 	if ms != dotagiftx.MarketStatusRemoved && ms != dotagiftx.MarketStatusExpired {
 		return fmt.Errorf("market status %s not allowed to bulk delete", ms)
 	}
@@ -351,7 +351,7 @@ func (s *marketStorage) BulkDeleteByStatus(ctx context.Context, ms dotagiftx.Mar
 	return nil
 }
 
-func (s *marketStorage) fillUsers(ctx context.Context, markets []dotagiftx.Market) {
+func (s *MarketStorage) fillUsers(ctx context.Context, markets []dotagiftx.Market) {
 	userCache := make(map[string]*dotagiftx.User)
 	for i, mkt := range markets {
 		user, hit := userCache[mkt.UserID]
@@ -363,6 +363,6 @@ func (s *marketStorage) fillUsers(ctx context.Context, markets []dotagiftx.Marke
 	}
 }
 
-func (s *marketStorage) table() r.Term {
+func (s *MarketStorage) table() r.Term {
 	return r.Table(tableMarket)
 }

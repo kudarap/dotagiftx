@@ -14,11 +14,11 @@ const (
 	tableTaskFieldPriority = "priority"
 )
 
-type taskStorage struct {
+type TaskStorage struct {
 	db *Client
 }
 
-func (s *taskStorage) Get(ctx context.Context) (*dotagiftx.Task, error) {
+func (s *TaskStorage) Get(ctx context.Context) (*dotagiftx.Task, error) {
 	res, err := s.List(ctx, 1)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (s *taskStorage) Get(ctx context.Context) (*dotagiftx.Task, error) {
 	return &res[0], nil
 }
 
-func (s *taskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, error) {
+func (s *TaskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, error) {
 	q := s.table().GetAllByIndex(tableTaskFieldStatus, dotagiftx.TaskStatusPending).
 		OrderBy(tableTaskFieldPriority).Limit(limit)
 
@@ -40,7 +40,7 @@ func (s *taskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, er
 	return res, nil
 }
 
-func (s *taskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
+func (s *TaskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
 	in.Retry++
 	err := s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *taskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
 	return nil
 }
 
-func (s *taskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload any) (id string, err error) {
+func (s *TaskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload any) (id string, err error) {
 	n := now()
 	id, err = s.db.insert(ctx, s.table().Insert(dotagiftx.Task{
 		Status:    0,
@@ -66,7 +66,7 @@ func (s *taskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dot
 	return id, nil
 }
 
-func NewQueue(c *Client) *taskStorage {
+func NewQueue(c *Client) *TaskStorage {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableTask); err != nil {
 		log.Fatalf("could not create %s table: %s", tableTask, err)
@@ -76,9 +76,9 @@ func NewQueue(c *Client) *taskStorage {
 		log.Fatalf("could not create index on %s table: %s", tableTask, err)
 	}
 
-	return &taskStorage{c}
+	return &TaskStorage{c}
 }
 
-func (s *taskStorage) table() r.Term {
+func (s *TaskStorage) table() r.Term {
 	return r.Table(tableTask)
 }

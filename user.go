@@ -85,8 +85,8 @@ type (
 		Cycles int    `json:"cycles"`
 	}
 
-	// UserStorage defines operation for user records.
-	UserStorage interface {
+	// userStorage defines operation for user records.
+	userStorage interface {
 		// Find returns a list of users from data store.
 		Find(ctx context.Context, opts FindOpts) ([]User, error)
 
@@ -256,12 +256,12 @@ func UserSubscriptionFromString(s string) UserSubscription {
 }
 
 // NewUserService returns a new User service.
-func NewUserService(us UserStorage, fm FileManager, sc paymentManager) *UserService {
+func NewUserService(us userStorage, fm FileManager, sc paymentManager) *UserService {
 	return &UserService{us, fm, sc}
 }
 
 type UserService struct {
-	userStg UserStorage
+	userStg userStorage
 	fileMgr FileManager
 	payment paymentManager
 }

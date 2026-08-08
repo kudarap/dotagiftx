@@ -17,7 +17,7 @@ const (
 )
 
 // NewAuth creates a new instance of auth data store.
-func NewAuth(c *Client) *authStorage {
+func NewAuth(c *Client) *AuthStorage {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableAuth); err != nil {
 		log.Fatalf("could not create %s table: %s", tableAuth, err)
@@ -27,14 +27,14 @@ func NewAuth(c *Client) *authStorage {
 		log.Fatalf("could not create index on %s table: %s", tableAuth, err)
 	}
 
-	return &authStorage{c}
+	return &AuthStorage{c}
 }
 
-type authStorage struct {
+type AuthStorage struct {
 	db *Client
 }
 
-func (s *authStorage) Get(ctx context.Context, id string) (*dotagiftx.Auth, error) {
+func (s *AuthStorage) Get(ctx context.Context, id string) (*dotagiftx.Auth, error) {
 	row := &dotagiftx.Auth{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
@@ -47,7 +47,7 @@ func (s *authStorage) Get(ctx context.Context, id string) (*dotagiftx.Auth, erro
 	return row, nil
 }
 
-func (s *authStorage) GetByUsername(ctx context.Context, username string) (*dotagiftx.Auth, error) {
+func (s *AuthStorage) GetByUsername(ctx context.Context, username string) (*dotagiftx.Auth, error) {
 	row := &dotagiftx.Auth{}
 	q := s.table().GetAllByIndex(authFieldUsername, username).OrderBy("created_at").Limit(1)
 	if err := s.db.one(ctx, q, row); err != nil {
@@ -61,11 +61,11 @@ func (s *authStorage) GetByUsername(ctx context.Context, username string) (*dota
 	return row, nil
 }
 
-func (s *authStorage) GetByUsernameAndPassword(ctx context.Context, username, password string) (*dotagiftx.Auth, error) {
+func (s *AuthStorage) GetByUsernameAndPassword(ctx context.Context, username, password string) (*dotagiftx.Auth, error) {
 	return s.findOne(ctx, dotagiftx.Auth{Username: username, Password: password})
 }
 
-func (s *authStorage) GetByRefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error) {
+func (s *AuthStorage) GetByRefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error) {
 	row := &dotagiftx.Auth{}
 	q := s.table().GetAllByIndex(authFieldRefreshToken, refreshToken)
 	if err := s.db.one(ctx, q, row); err != nil {
@@ -75,7 +75,7 @@ func (s *authStorage) GetByRefreshToken(ctx context.Context, refreshToken string
 	return row, nil
 }
 
-func (s *authStorage) Create(ctx context.Context, in *dotagiftx.Auth) error {
+func (s *AuthStorage) Create(ctx context.Context, in *dotagiftx.Auth) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -88,7 +88,7 @@ func (s *authStorage) Create(ctx context.Context, in *dotagiftx.Auth) error {
 	return nil
 }
 
-func (s *authStorage) Update(ctx context.Context, in *dotagiftx.Auth) error {
+func (s *AuthStorage) Update(ctx context.Context, in *dotagiftx.Auth) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func (s *authStorage) Update(ctx context.Context, in *dotagiftx.Auth) error {
 	return nil
 }
 
-func (s *authStorage) find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Auth, error) {
+func (s *AuthStorage) find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Auth, error) {
 	var res []dotagiftx.Auth
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(ctx, q, &res); err != nil {
@@ -117,7 +117,7 @@ func (s *authStorage) find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagif
 	return res, nil
 }
 
-func (s *authStorage) findOne(ctx context.Context, filter dotagiftx.Auth) (*dotagiftx.Auth, error) {
+func (s *AuthStorage) findOne(ctx context.Context, filter dotagiftx.Auth) (*dotagiftx.Auth, error) {
 	o := dotagiftx.FindOpts{Filter: filter, Limit: 1}
 	res, err := s.find(ctx, o)
 	if err != nil {
@@ -130,6 +130,6 @@ func (s *authStorage) findOne(ctx context.Context, filter dotagiftx.Auth) (*dota
 	return &res[0], nil
 }
 
-func (s *authStorage) table() r.Term {
+func (s *AuthStorage) table() r.Term {
 	return r.Table(tableAuth)
 }

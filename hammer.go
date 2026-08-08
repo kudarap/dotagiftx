@@ -27,13 +27,13 @@ func (p HammerParams) Validate() error {
 }
 
 // NewHammerService returns a new Ban service.
-func NewHammerService(us UserStorage, ms MarketStorage) *BanService {
+func NewHammerService(us userStorage, ms marketStorage) *BanService {
 	return &BanService{us, ms}
 }
 
 type BanService struct {
-	userStg   UserStorage
-	marketStg MarketStorage
+	userStg   userStorage
+	marketStg marketStorage
 }
 
 func (s *BanService) Ban(ctx context.Context, p HammerParams) (*User, error) {

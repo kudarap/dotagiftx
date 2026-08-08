@@ -96,8 +96,8 @@ type (
 		UpdatedAt        *time.Time     `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
-	// DeliveryStorage defines operation for Delivery records.
-	DeliveryStorage interface {
+	// deliveryStorage defines operation for Delivery records.
+	deliveryStorage interface {
 		// Find returns a list of deliveries from data store.
 		Find(ctx context.Context, opts FindOpts) ([]Delivery, error)
 
@@ -137,8 +137,8 @@ type (
 		UpdatedAt   *time.Time      `json:"updated_at"   db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
-	// InventoryStorage defines operation for Inventory records.
-	InventoryStorage interface {
+	// inventoryStorage defines operation for Inventory records.
+	inventoryStorage interface {
 		// Find returns a list of inventories from data store.
 		Find(ctx context.Context, opts FindOpts) ([]Inventory, error)
 
@@ -274,13 +274,13 @@ func (s InventoryStatus) String() string {
 }
 
 // NewDeliveryService returns a new delivery service.
-func NewDeliveryService(rs DeliveryStorage, ms MarketStorage) *DeliveryService {
+func NewDeliveryService(rs deliveryStorage, ms marketStorage) *DeliveryService {
 	return &DeliveryService{rs, ms}
 }
 
 type DeliveryService struct {
-	deliveryStg DeliveryStorage
-	marketStg   MarketStorage
+	deliveryStg deliveryStorage
+	marketStg   marketStorage
 }
 
 func (s *DeliveryService) Deliveries(ctx context.Context, opts FindOpts) ([]Delivery, *FindMetadata, error) {
@@ -356,14 +356,14 @@ func (s *DeliveryService) Set(ctx context.Context, del *Delivery) error {
 }
 
 // NewInventoryService returns new inventory service.
-func NewInventoryService(rs InventoryStorage, ms MarketStorage, cs CatalogStorage) *InventoryService {
+func NewInventoryService(rs inventoryStorage, ms marketStorage, cs catalogStorage) *InventoryService {
 	return &InventoryService{rs, ms, cs}
 }
 
 type InventoryService struct {
-	inventoryStg InventoryStorage
-	marketStg    MarketStorage
-	catalogStg   CatalogStorage
+	inventoryStg inventoryStorage
+	marketStg    marketStorage
+	catalogStg   catalogStorage
 }
 
 func (s *InventoryService) Inventories(ctx context.Context, opts FindOpts) ([]Inventory, *FindMetadata, error) {

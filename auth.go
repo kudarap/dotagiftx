@@ -45,8 +45,8 @@ type (
 		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}
 
-	// AuthStorage defines operation for auth records.	// AuthStorage defines operation for auth records.
-	AuthStorage interface {
+	// authStorage defines operation for auth records.	// authStorage defines operation for auth records.
+	authStorage interface {
 		// Get returns an auth details by id from data store.
 		Get(ctx context.Context, id string) (*Auth, error)
 
@@ -92,7 +92,7 @@ func AuthFromContext(ctx context.Context) *Auth {
 func NewAuthService(
 	salt string,
 	sc SteamClient,
-	as AuthStorage,
+	as authStorage,
 	us *UserService,
 	logger *slog.Logger,
 ) *AuthService {
@@ -103,7 +103,7 @@ type AuthService struct {
 	salt string
 
 	steamClient SteamClient
-	authStg     AuthStorage
+	authStg     authStorage
 	userSvc     *UserService
 	logger      *slog.Logger
 }

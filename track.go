@@ -57,8 +57,8 @@ type (
 		CreatedAt  time.Time `json:"created_at"   db:"created_at,omitempty,indexed"`
 	}
 
-	// TrackStorage defines operation for track records.
-	TrackStorage interface {
+	// trackStorage defines operation for track records.
+	trackStorage interface {
 		// Find returns a list of tracks from data store.
 		Find(ctx context.Context, opts FindOpts) ([]Track, error)
 
@@ -120,13 +120,13 @@ func (t *Track) SetDefaults(r *http.Request) {
 }
 
 // NewTrackService returns new track service.
-func NewTrackService(ts TrackStorage, ps ItemStorage) *TrackService {
+func NewTrackService(ts trackStorage, ps itemStorage) *TrackService {
 	return &TrackService{ts, ps}
 }
 
 type TrackService struct {
-	trackStg TrackStorage
-	itemStg  ItemStorage
+	trackStg trackStorage
+	itemStg  itemStorage
 }
 
 func (s *TrackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error) {

@@ -20,7 +20,7 @@ const (
 var itemSearchFields = []string{"name", "hero", "origin", "rarity"}
 
 // NewItem creates new instance of item data store.
-func NewItem(c *Client) dotagiftx.ItemStorage {
+func NewItem(c *Client) *ItemStorage {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableItem); err != nil {
 		log.Fatalf("could not create %s table: %s", tableItem, err)
@@ -30,15 +30,15 @@ func NewItem(c *Client) dotagiftx.ItemStorage {
 		log.Fatalf("could not create index on %s table: %s", tableItem, err)
 	}
 
-	return &itemStorage{c, itemSearchFields}
+	return &ItemStorage{c, itemSearchFields}
 }
 
-type itemStorage struct {
+type ItemStorage struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *itemStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Item, error) {
+func (s *ItemStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Item, error) {
 	var res []dotagiftx.Item
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
@@ -49,7 +49,7 @@ func (s *itemStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagif
 	return res, nil
 }
 
-func (s *itemStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+func (s *ItemStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -61,7 +61,7 @@ func (s *itemStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int,
 	return
 }
 
-func (s *itemStorage) Get(ctx context.Context, id string) (*dotagiftx.Item, error) {
+func (s *ItemStorage) Get(ctx context.Context, id string) (*dotagiftx.Item, error) {
 	row, _ := s.GetBySlug(ctx, id)
 	if row != nil {
 		return row, nil
@@ -79,7 +79,7 @@ func (s *itemStorage) Get(ctx context.Context, id string) (*dotagiftx.Item, erro
 	return row, nil
 }
 
-func (s *itemStorage) GetBySlug(ctx context.Context, slug string) (*dotagiftx.Item, error) {
+func (s *ItemStorage) GetBySlug(ctx context.Context, slug string) (*dotagiftx.Item, error) {
 	row := &dotagiftx.Item{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(ctx, q, row); err != nil {
@@ -93,7 +93,7 @@ func (s *itemStorage) GetBySlug(ctx context.Context, slug string) (*dotagiftx.It
 	return row, nil
 }
 
-func (s *itemStorage) Create(ctx context.Context, in *dotagiftx.Item) error {
+func (s *ItemStorage) Create(ctx context.Context, in *dotagiftx.Item) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -107,7 +107,7 @@ func (s *itemStorage) Create(ctx context.Context, in *dotagiftx.Item) error {
 	return nil
 }
 
-func (s *itemStorage) Update(ctx context.Context, in *dotagiftx.Item) error {
+func (s *ItemStorage) Update(ctx context.Context, in *dotagiftx.Item) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -126,7 +126,7 @@ func (s *itemStorage) Update(ctx context.Context, in *dotagiftx.Item) error {
 	return nil
 }
 
-func (s *itemStorage) IsItemExist(ctx context.Context, name string) error {
+func (s *ItemStorage) IsItemExist(ctx context.Context, name string) error {
 	/*
 		r.table('item').filter(function(doc) {
 		  return doc.getField('name').match('(?i)^Gothic')
@@ -148,7 +148,7 @@ func (s *itemStorage) IsItemExist(ctx context.Context, name string) error {
 	return nil
 }
 
-func (s *itemStorage) AddViewCount(ctx context.Context, id string) error {
+func (s *ItemStorage) AddViewCount(ctx context.Context, id string) error {
 	cur, err := s.Get(ctx, id)
 	if err != nil {
 		return err
@@ -166,11 +166,11 @@ func (s *itemStorage) AddViewCount(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *itemStorage) updateCatalogViewCount(ctx context.Context, itemID string, viewCount int) error {
+func (s *ItemStorage) updateCatalogViewCount(ctx context.Context, itemID string, viewCount int) error {
 	q := r.Table(tableCatalog).Get(itemID).Update(&dotagiftx.Catalog{ViewCount: viewCount})
 	return s.db.update(ctx, q)
 }
 
-func (s *itemStorage) table() r.Term {
+func (s *ItemStorage) table() r.Term {
 	return r.Table(tableItem)
 }

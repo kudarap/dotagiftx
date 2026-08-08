@@ -54,8 +54,8 @@ type (
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 	}
 
-	// ReportStorage defines operation for report records.
-	ReportStorage interface {
+	// reportStorage defines operation for report records.
+	reportStorage interface {
 		// Find returns a list of reports from the data store.
 		Find(ctx context.Context, opts FindOpts) ([]Report, error)
 
@@ -98,12 +98,12 @@ func (t ReportType) String() string {
 }
 
 // NewReportService returns new report service.
-func NewReportService(rs ReportStorage, wp webhookPoster) *ReportService {
+func NewReportService(rs reportStorage, wp webhookPoster) *ReportService {
 	return &ReportService{rs, wp}
 }
 
 type ReportService struct {
-	reportStg     ReportStorage
+	reportStg     reportStorage
 	webhookPoster webhookPoster
 }
 
