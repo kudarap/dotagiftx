@@ -6,12 +6,10 @@ import (
 	"time"
 
 	"log/slog"
-
-	"github.com/kudarap/dotagiftx"
 )
 
 type ExpiringSubscription struct {
-	userStg dotagiftx.UserStorage
+	userStg userStorage
 	cache   cacheRemover
 	logger  *slog.Logger
 	// job settings
@@ -20,7 +18,7 @@ type ExpiringSubscription struct {
 }
 
 func NewExpiringSubscription(
-	us dotagiftx.UserStorage,
+	us userStorage,
 	cache cacheRemover,
 	lg *slog.Logger,
 ) *ExpiringSubscription {

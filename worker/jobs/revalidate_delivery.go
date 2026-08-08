@@ -12,8 +12,8 @@ import (
 
 // RevalidateDelivery represents a delivery verification job.
 type RevalidateDelivery struct {
-	deliverySvc *dotagiftx.DeliveryService
-	marketStg   dotagiftx.MarketStorage
+	deliverySvc deliveryService
+	marketStg   marketStorage
 	source      *verify.Source
 	logger      *slog.Logger
 	// job settings
@@ -23,8 +23,8 @@ type RevalidateDelivery struct {
 }
 
 func NewRevalidateDelivery(
-	ds *dotagiftx.DeliveryService,
-	ms dotagiftx.MarketStorage,
+	ds deliveryService,
+	ms marketStorage,
 	vs *verify.Source,
 	lg *slog.Logger,
 ) *RevalidateDelivery {

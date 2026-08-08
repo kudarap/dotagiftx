@@ -12,9 +12,9 @@ import (
 
 // GiftWrappedUpdate represents a job that will update delivered items that still unopened.
 type GiftWrappedUpdate struct {
-	deliverySvc *dotagiftx.DeliveryService
-	deliveryStg dotagiftx.DeliveryStorage
-	marketStg   dotagiftx.MarketStorage
+	deliverySvc deliveryService
+	deliveryStg deliveryStorage
+	marketStg   marketStorage
 	source      *verify.Source
 	logger      *slog.Logger
 	// job settings
@@ -24,9 +24,9 @@ type GiftWrappedUpdate struct {
 }
 
 func NewGiftWrappedUpdate(
-	ds *dotagiftx.DeliveryService,
-	dg dotagiftx.DeliveryStorage,
-	ms dotagiftx.MarketStorage,
+	ds deliveryService,
+	dg deliveryStorage,
+	ms marketStorage,
 	vs *verify.Source,
 	lg *slog.Logger,
 ) *GiftWrappedUpdate {

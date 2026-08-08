@@ -13,8 +13,8 @@ import (
 // RecheckInventory represents a job that rechecks no-hit items.
 // Crawling from SteamInventory.org tends to fail sometimes.
 type RecheckInventory struct {
-	inventorySvc *dotagiftx.InventoryService
-	marketStg    dotagiftx.MarketStorage
+	inventorySvc inventoryService
+	marketStg    marketStorage
 	source       *verify.Source
 	logger       *slog.Logger
 	// job settings
@@ -24,8 +24,8 @@ type RecheckInventory struct {
 }
 
 func NewRecheckInventory(
-	is *dotagiftx.InventoryService,
-	ms dotagiftx.MarketStorage,
+	is inventoryService,
+	ms marketStorage,
 	as *verify.Source,
 	lg *slog.Logger,
 ) *RecheckInventory {

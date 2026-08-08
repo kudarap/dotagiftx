@@ -11,14 +11,14 @@ import (
 
 // SweepMarket represents setting expiration of a market entry job.
 type SweepMarket struct {
-	marketStg dotagiftx.MarketStorage
+	marketStg marketStorage
 	logger    *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
 }
 
-func NewSweepMarket(ms dotagiftx.MarketStorage, lg *slog.Logger) *SweepMarket {
+func NewSweepMarket(ms marketStorage, lg *slog.Logger) *SweepMarket {
 	return &SweepMarket{
 		marketStg: ms,
 		logger:    lg,
