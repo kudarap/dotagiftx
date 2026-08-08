@@ -8,7 +8,7 @@ import (
 )
 
 // CountMarketStatusV2 manually manages indexing for performance reasons.
-func (s *StatsStorage) CountMarketStatusV2(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+func (s *StatsRepository) CountMarketStatusV2(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	opts = dotagiftx.FindOpts{
 		Filter:   opts.Filter,
 		IndexKey: opts.IndexKey,

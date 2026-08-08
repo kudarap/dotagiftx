@@ -12,8 +12,8 @@ const dayHours = time.Hour * 24
 
 // ExpiringMarket represents setting expiration of a market entry job.
 type ExpiringMarket struct {
-	marketStg  marketStorage
-	catalogStg catalogStorage
+	marketStg  marketRepository
+	catalogStg catalogRepository
 	cache      cacheRemover
 	logger     *slog.Logger
 	// job settings
@@ -21,7 +21,7 @@ type ExpiringMarket struct {
 	interval time.Duration
 }
 
-func NewExpiringMarket(ms marketStorage, cs catalogStorage, cc cacheRemover, lg *slog.Logger) *ExpiringMarket {
+func NewExpiringMarket(ms marketRepository, cs catalogRepository, cc cacheRemover, lg *slog.Logger) *ExpiringMarket {
 	return &ExpiringMarket{
 		marketStg:  ms,
 		catalogStg: cs,

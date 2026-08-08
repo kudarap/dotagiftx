@@ -14,11 +14,11 @@ const (
 	tableTaskFieldPriority = "priority"
 )
 
-type TaskStorage struct {
+type TaskRepository struct {
 	db *Client
 }
 
-func (s *TaskStorage) Get(ctx context.Context) (*dotagiftx.Task, error) {
+func (s *TaskRepository) Get(ctx context.Context) (*dotagiftx.Task, error) {
 	res, err := s.List(ctx, 1)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (s *TaskStorage) Get(ctx context.Context) (*dotagiftx.Task, error) {
 	return &res[0], nil
 }
 
-func (s *TaskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, error) {
+func (s *TaskRepository) List(ctx context.Context, limit int) ([]dotagiftx.Task, error) {
 	q := s.table().GetAllByIndex(tableTaskFieldStatus, dotagiftx.TaskStatusPending).
 		OrderBy(tableTaskFieldPriority).Limit(limit)
 
@@ -40,7 +40,7 @@ func (s *TaskStorage) List(ctx context.Context, limit int) ([]dotagiftx.Task, er
 	return res, nil
 }
 
-func (s *TaskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
+func (s *TaskRepository) Update(ctx context.Context, in dotagiftx.Task) error {
 	in.Retry++
 	err := s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *TaskStorage) Update(ctx context.Context, in dotagiftx.Task) error {
 	return nil
 }
 
-func (s *TaskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload any) (id string, err error) {
+func (s *TaskRepository) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload any) (id string, err error) {
 	n := now()
 	id, err = s.db.insert(ctx, s.table().Insert(dotagiftx.Task{
 		Status:    0,
@@ -66,7 +66,7 @@ func (s *TaskStorage) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dot
 	return id, nil
 }
 
-func NewQueue(c *Client) *TaskStorage {
+func NewQueue(c *Client) *TaskRepository {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableTask); err != nil {
 		log.Fatalf("could not create %s table: %s", tableTask, err)
@@ -76,9 +76,9 @@ func NewQueue(c *Client) *TaskStorage {
 		log.Fatalf("could not create index on %s table: %s", tableTask, err)
 	}
 
-	return &TaskStorage{c}
+	return &TaskRepository{c}
 }
 
-func (s *TaskStorage) table() r.Term {
+func (s *TaskRepository) table() r.Term {
 	return r.Table(tableTask)
 }

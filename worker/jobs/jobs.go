@@ -11,8 +11,8 @@ type cacheRemover interface {
 	BulkDel(keyPrefix string) error
 }
 
-// marketStorage provides access to market storage methods used by jobs.
-type marketStorage interface {
+// marketRepository provides access to market storage methods used by jobs.
+type marketRepository interface {
 	// Find returns a list of markets from data store.
 	Find(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Market, error)
 
@@ -34,20 +34,20 @@ type marketStorage interface {
 	UpdateExpiringResell(ctx context.Context, b dotagiftx.UserBoon) (itemIDs []string, err error)
 }
 
-// deliveryStorage provides access to delivery storage methods used by jobs.
-type deliveryStorage interface {
+// deliveryRepository provides access to delivery storage methods used by jobs.
+type deliveryRepository interface {
 	// ToVerify returns a list of deliveries to process from data store.
 	ToVerify(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Delivery, error)
 }
 
-// catalogStorage provides access to catalog storage methods used by jobs.
-type catalogStorage interface {
+// catalogRepository provides access to catalog storage methods used by jobs.
+type catalogRepository interface {
 	// Index persists a new catalog to data store.
 	Index(ctx context.Context, itemID string) (*dotagiftx.Catalog, error)
 }
 
-// userStorage provides access to user storage methods used by jobs.
-type userStorage interface {
+// userRepository provides access to user storage methods used by jobs.
+type userRepository interface {
 	// ExpiringSubscribers return a list of users that has expiring subscription.
 	ExpiringSubscribers(ctx context.Context, now time.Time) ([]dotagiftx.User, error)
 

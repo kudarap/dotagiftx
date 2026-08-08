@@ -52,8 +52,8 @@ type (
 		Bids []Market `json:"bids" db:"-"`
 	}
 
-	// catalogStorage defines operation for market indexed items.
-	catalogStorage interface {
+	// catalogRepository defines operation for market indexed items.
+	catalogRepository interface {
 		// Find returns a list of catalogs from data store.
 		Find(ctx context.Context, opts FindOpts) ([]Catalog, error)
 

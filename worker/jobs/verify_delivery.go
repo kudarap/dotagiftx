@@ -13,7 +13,7 @@ import (
 // VerifyDelivery represents a delivery verification job.
 type VerifyDelivery struct {
 	deliverySvc deliveryService
-	marketStg   marketStorage
+	marketStg   marketRepository
 	source      *verify.Source
 	logger      *slog.Logger
 	// job settings
@@ -24,7 +24,7 @@ type VerifyDelivery struct {
 
 func NewVerifyDelivery(
 	ds deliveryService,
-	ms marketStorage,
+	ms marketRepository,
 	vs *verify.Source,
 	lg *slog.Logger,
 ) *VerifyDelivery {

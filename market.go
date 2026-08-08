@@ -123,8 +123,8 @@ type (
 	// Markets represents a collection of market.
 	Markets []Market
 
-	// marketStorage defines operation for market records.
-	marketStorage interface {
+	// marketRepository defines operation for market records.
+	marketRepository interface {
 		// Find returns a list of markets from data store.
 		Find(ctx context.Context, opts FindOpts) ([]Market, error)
 
@@ -267,12 +267,12 @@ func (s MarketStatus) String() string {
 
 // NewMarketService returns new Market service.
 func NewMarketService(
-	ss marketStorage,
-	us userStorage,
-	is itemStorage,
-	ts trackStorage,
-	cs catalogStorage,
-	st statsStorage,
+	ss marketRepository,
+	us userRepository,
+	is itemRepository,
+	ts trackRepository,
+	cs catalogRepository,
+	st statsRepository,
 	vd *DeliveryService,
 	vi *InventoryService,
 	sc SteamClient,
@@ -294,12 +294,12 @@ func NewMarketService(
 }
 
 type MarketService struct {
-	marketStg    marketStorage
-	userStg      userStorage
-	itemStg      itemStorage
-	trackStg     trackStorage
-	catalogStg   catalogStorage
-	statsStg     statsStorage
+	marketStg    marketRepository
+	userStg      userRepository
+	itemStg      itemRepository
+	trackStg     trackRepository
+	catalogStg   catalogRepository
+	statsStg     statsRepository
 	deliverySvc  *DeliveryService
 	inventorySvc *InventoryService
 	steam        SteamClient

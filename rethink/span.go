@@ -12,7 +12,7 @@ import (
 
 const tableSpan = "span"
 
-type SpanStorage struct {
+type SpanRepository struct {
 	db *Client
 }
 
@@ -22,7 +22,7 @@ type span struct {
 	CreatedAt time.Time `db:"created_at,index"`
 }
 
-func NewSpan(c *Client) *SpanStorage {
+func NewSpan(c *Client) *SpanRepository {
 	if err := c.autoMigrate(context.Background(), tableSpan); err != nil {
 		log.Fatalf("could not create %s table: %s", tableSpan, err)
 	}
@@ -31,10 +31,10 @@ func NewSpan(c *Client) *SpanStorage {
 		log.Fatalf("could not create index on %s table: %s", tableSpan, err)
 	}
 
-	return &SpanStorage{c}
+	return &SpanRepository{c}
 }
 
-func (s *SpanStorage) Add(ctx context.Context, name string, elapsedMs int64, t time.Time) {
+func (s *SpanRepository) Add(ctx context.Context, name string, elapsedMs int64, t time.Time) {
 	name = spanCleanUUIDs(name)
 	name = spanCleanSteamIDs(name)
 	i := span{name, elapsedMs, t}

@@ -13,7 +13,7 @@ import (
 // VerifyInventory represents an inventory verification job.
 type VerifyInventory struct {
 	inventorySvc inventoryService
-	marketStg    marketStorage
+	marketStg    marketRepository
 	source       *verify.Source
 	logger       *slog.Logger
 	// job settings
@@ -24,7 +24,7 @@ type VerifyInventory struct {
 
 func NewVerifyInventory(
 	is inventoryService,
-	ms marketStorage,
+	ms marketRepository,
 	vs *verify.Source,
 	lg *slog.Logger,
 ) *VerifyInventory {

@@ -64,8 +64,8 @@ type (
 		Total   int `json:"total"`
 	}
 
-	// itemStorage defines operation for item records.
-	itemStorage interface {
+	// itemRepository defines operation for item records.
+	itemRepository interface {
 		// Find returns a list of items from data store.
 		Find(ctx context.Context, opts FindOpts) ([]Item, error)
 
@@ -139,12 +139,12 @@ func (i Item) ToCatalog() Catalog {
 }
 
 // NewItemService returns new Item service.
-func NewItemService(allowedDomains []string, is itemStorage, fm FileManager) *ItemService {
+func NewItemService(allowedDomains []string, is itemRepository, fm FileManager) *ItemService {
 	return &ItemService{is, fm, allowedDomains}
 }
 
 type ItemService struct {
-	itemStg itemStorage
+	itemStg itemRepository
 	fileMgr FileManager
 
 	allowedDomains []string

@@ -18,7 +18,7 @@ const (
 var deliverySearchFields = []string{"id", "market_id"}
 
 // NewDelivery creates new instance of delivery data store.
-func NewDelivery(c *Client) *DeliveryStorage {
+func NewDelivery(c *Client) *DeliveryRepository {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableDelivery); err != nil {
 		log.Fatalf("could not create %s table: %s", tableDelivery, err)
@@ -28,15 +28,15 @@ func NewDelivery(c *Client) *DeliveryStorage {
 		log.Fatalf("could not create index on %s table: %s", tableDelivery, err)
 	}
 
-	return &DeliveryStorage{c, deliverySearchFields}
+	return &DeliveryRepository{c, deliverySearchFields}
 }
 
-type DeliveryStorage struct {
+type DeliveryRepository struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *DeliveryStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
 	var res []dotagiftx.Delivery
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
@@ -47,7 +47,7 @@ func (s *DeliveryStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dot
 	return res, nil
 }
 
-func (s *DeliveryStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+func (s *DeliveryRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -59,7 +59,7 @@ func (s *DeliveryStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num 
 	return
 }
 
-func (s *DeliveryStorage) ToVerify(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) ToVerify(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
 	var res []dotagiftx.Delivery
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), func(t r.Term) r.Term {
@@ -75,7 +75,7 @@ func (s *DeliveryStorage) ToVerify(ctx context.Context, o dotagiftx.FindOpts) ([
 }
 
 // includeRelatedFields injects user details base on market foreign keys.
-func (s *DeliveryStorage) includeRelatedFields(q r.Term) r.Term {
+func (s *DeliveryRepository) includeRelatedFields(q r.Term) r.Term {
 	return q
 	// return q.
 	//	EqJoin(deliveryFieldMarketID, r.Table(tableMarket)).
@@ -86,7 +86,7 @@ func (s *DeliveryStorage) includeRelatedFields(q r.Term) r.Term {
 	//	})
 }
 
-func (s *DeliveryStorage) Get(ctx context.Context, id string) (*dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) Get(ctx context.Context, id string) (*dotagiftx.Delivery, error) {
 	row := &dotagiftx.Delivery{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
@@ -99,7 +99,7 @@ func (s *DeliveryStorage) Get(ctx context.Context, id string) (*dotagiftx.Delive
 	return row, nil
 }
 
-func (s *DeliveryStorage) GetByMarketID(ctx context.Context, marketID string) (*dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) GetByMarketID(ctx context.Context, marketID string) (*dotagiftx.Delivery, error) {
 	var res []dotagiftx.Delivery
 	var err error
 
@@ -115,7 +115,7 @@ func (s *DeliveryStorage) GetByMarketID(ctx context.Context, marketID string) (*
 	return &res[0], nil
 }
 
-func (s *DeliveryStorage) Create(ctx context.Context, in *dotagiftx.Delivery) error {
+func (s *DeliveryRepository) Create(ctx context.Context, in *dotagiftx.Delivery) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -129,7 +129,7 @@ func (s *DeliveryStorage) Create(ctx context.Context, in *dotagiftx.Delivery) er
 	return nil
 }
 
-func (s *DeliveryStorage) Update(ctx context.Context, in *dotagiftx.Delivery) error {
+func (s *DeliveryRepository) Update(ctx context.Context, in *dotagiftx.Delivery) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -148,6 +148,6 @@ func (s *DeliveryStorage) Update(ctx context.Context, in *dotagiftx.Delivery) er
 	return nil
 }
 
-func (s *DeliveryStorage) table() r.Term {
+func (s *DeliveryRepository) table() r.Term {
 	return r.Table(tableDelivery)
 }

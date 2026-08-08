@@ -9,7 +9,7 @@ import (
 )
 
 type ExpiringSubscription struct {
-	userStg userStorage
+	userStg userRepository
 	cache   cacheRemover
 	logger  *slog.Logger
 	// job settings
@@ -18,7 +18,7 @@ type ExpiringSubscription struct {
 }
 
 func NewExpiringSubscription(
-	us userStorage,
+	us userRepository,
 	cache cacheRemover,
 	lg *slog.Logger,
 ) *ExpiringSubscription {

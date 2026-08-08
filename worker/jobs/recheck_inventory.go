@@ -14,7 +14,7 @@ import (
 // Crawling from SteamInventory.org tends to fail sometimes.
 type RecheckInventory struct {
 	inventorySvc inventoryService
-	marketStg    marketStorage
+	marketStg    marketRepository
 	source       *verify.Source
 	logger       *slog.Logger
 	// job settings
@@ -25,7 +25,7 @@ type RecheckInventory struct {
 
 func NewRecheckInventory(
 	is inventoryService,
-	ms marketStorage,
+	ms marketRepository,
 	as *verify.Source,
 	lg *slog.Logger,
 ) *RecheckInventory {

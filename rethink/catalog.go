@@ -18,7 +18,7 @@ import (
 const tableCatalog = "catalog"
 
 // NewCatalog creates new instance of catalog data store.
-func NewCatalog(c *Client, lg *slog.Logger) *CatalogStorage {
+func NewCatalog(c *Client, lg *slog.Logger) *CatalogRepository {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableCatalog); err != nil {
 		lg.ErrorContext(ctx, "could not create catalog table", "table", tableCatalog, "error", err)
@@ -30,16 +30,16 @@ func NewCatalog(c *Client, lg *slog.Logger) *CatalogStorage {
 		os.Exit(1)
 	}
 
-	return &CatalogStorage{c, itemSearchFields, lg}
+	return &CatalogRepository{c, itemSearchFields, lg}
 }
 
-type CatalogStorage struct {
+type CatalogRepository struct {
 	db            *Client
 	keywordFields []string
 	logger        *slog.Logger
 }
 
-func (s *CatalogStorage) Trending(ctx context.Context) ([]dotagiftx.Catalog, error) {
+func (s *CatalogRepository) Trending(ctx context.Context) ([]dotagiftx.Catalog, error) {
 	/*
 		r.db('dotagiftables')
 		  .table('track')
@@ -132,7 +132,7 @@ func (s *CatalogStorage) Trending(ctx context.Context) ([]dotagiftx.Catalog, err
 	return res, nil
 }
 
-func (s *CatalogStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error) {
+func (s *CatalogRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error) {
 	var res []dotagiftx.Catalog
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
@@ -144,7 +144,7 @@ func (s *CatalogStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dota
 	return res, nil
 }
 
-func (s *CatalogStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+func (s *CatalogRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		KeywordFields: s.keywordFields,
 		IndexSorting:  true,
@@ -157,7 +157,7 @@ func (s *CatalogStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num i
 	return
 }
 
-func (s *CatalogStorage) Get(ctx context.Context, id string) (*dotagiftx.Catalog, error) {
+func (s *CatalogRepository) Get(ctx context.Context, id string) (*dotagiftx.Catalog, error) {
 	row, _ := s.getBySlug(ctx, id)
 	if row != nil {
 		return row, nil
@@ -175,7 +175,7 @@ func (s *CatalogStorage) Get(ctx context.Context, id string) (*dotagiftx.Catalog
 	return row, nil
 }
 
-func (s *CatalogStorage) getBySlug(ctx context.Context, slug string) (*dotagiftx.Catalog, error) {
+func (s *CatalogRepository) getBySlug(ctx context.Context, slug string) (*dotagiftx.Catalog, error) {
 	row := &dotagiftx.Catalog{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(ctx, q, row); err != nil {
@@ -189,7 +189,7 @@ func (s *CatalogStorage) getBySlug(ctx context.Context, slug string) (*dotagiftx
 	return row, nil
 }
 
-func (s *CatalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.Catalog, error) {
+func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagiftx.Catalog, error) {
 	bs := time.Now()
 	defer func() {
 		s.logger.InfoContext(ctx, "catalog indexed", "item_id", itemID, "elapsed", time.Since(bs))
@@ -256,7 +256,7 @@ func (s *CatalogStorage) Index(ctx context.Context, itemID string) (*dotagiftx.C
 }
 
 // getOffersSummary returns market offers summary from LIVE status.
-func (s *CatalogStorage) getOffersSummary(ctx context.Context, itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
+func (s *CatalogRepository) getOffersSummary(ctx context.Context, itemID string) (count int, lowest, median float64, recent *time.Time, err error) {
 	// Get market offers from LIVE status.
 	offer := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
@@ -301,7 +301,7 @@ func (s *CatalogStorage) getOffersSummary(ctx context.Context, itemID string) (c
 }
 
 // getBuyOrdersSummary returns market buy orders from BID type and LIVE status.
-func (s *CatalogStorage) getBuyOrdersSummary(ctx context.Context, itemID string) (count int, max float64, recent *time.Time, err error) {
+func (s *CatalogRepository) getBuyOrdersSummary(ctx context.Context, itemID string) (count int, max float64, recent *time.Time, err error) {
 	buyOrder := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(dotagiftx.Market{
@@ -337,7 +337,7 @@ func (s *CatalogStorage) getBuyOrdersSummary(ctx context.Context, itemID string)
 }
 
 // getSaleSummary returns market sales stats which calculated from RESERVED and SOLD statuses.
-func (s *CatalogStorage) getSaleSummary(ctx context.Context, itemID string) (count int, avg float64, recent *time.Time, err error) {
+func (s *CatalogRepository) getSaleSummary(ctx context.Context, itemID string) (count int, avg float64, recent *time.Time, err error) {
 	sale := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(dotagiftx.Market{
@@ -374,7 +374,7 @@ func (s *CatalogStorage) getSaleSummary(ctx context.Context, itemID string) (cou
 	return
 }
 
-func (s *CatalogStorage) getReservedCounts(ctx context.Context, itemID string) (count int, err error) {
+func (s *CatalogRepository) getReservedCounts(ctx context.Context, itemID string) (count int, err error) {
 	reserved := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
 		Filter(dotagiftx.Market{
@@ -389,7 +389,7 @@ func (s *CatalogStorage) getReservedCounts(ctx context.Context, itemID string) (
 	return
 }
 
-func (s *CatalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
+func (s *CatalogRepository) medianPriceQuery(qty int, t r.Term) r.Term {
 	q := t.OrderBy(marketFieldPrice)
 	if qty < 2 {
 		return q.Field(marketFieldPrice)
@@ -405,7 +405,7 @@ func (s *CatalogStorage) medianPriceQuery(qty int, t r.Term) r.Term {
 	return q.Skip(skip).Limit(limit).Avg(marketFieldPrice)
 }
 
-func (s *CatalogStorage) create(ctx context.Context, in *dotagiftx.Catalog) error {
+func (s *CatalogRepository) create(ctx context.Context, in *dotagiftx.Catalog) error {
 	// Fixes missing item in catalog that does not have views yet.
 	in.ViewCount = 1
 	t := now()
@@ -421,7 +421,7 @@ func (s *CatalogStorage) create(ctx context.Context, in *dotagiftx.Catalog) erro
 	return nil
 }
 
-func (s *CatalogStorage) update(ctx context.Context, in *dotagiftx.Catalog) error {
+func (s *CatalogRepository) update(ctx context.Context, in *dotagiftx.Catalog) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -443,7 +443,7 @@ func (s *CatalogStorage) update(ctx context.Context, in *dotagiftx.Catalog) erro
 	return nil
 }
 
-func (s *CatalogStorage) table() r.Term {
+func (s *CatalogRepository) table() r.Term {
 	return r.Table(tableCatalog)
 }
 

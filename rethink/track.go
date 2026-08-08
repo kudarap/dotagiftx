@@ -17,7 +17,7 @@ const (
 )
 
 // NewTrack creates new instance of track data store.
-func NewTrack(c *Client) *TrackStorage {
+func NewTrack(c *Client) *TrackRepository {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableTrack); err != nil {
 		log.Fatalf("could not create %s table: %s", tableTrack, err)
@@ -27,15 +27,15 @@ func NewTrack(c *Client) *TrackStorage {
 		log.Fatalf("could not create index on %s table: %s", tableMarket, err)
 	}
 
-	return &TrackStorage{c, []string{"item_id"}}
+	return &TrackRepository{c, []string{"item_id"}}
 }
 
-type TrackStorage struct {
+type TrackRepository struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *TrackStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Track, error) {
+func (s *TrackRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Track, error) {
 	var res []dotagiftx.Track
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
@@ -46,7 +46,7 @@ func (s *TrackStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagi
 	return res, nil
 }
 
-func (s *TrackStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+func (s *TrackRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -57,7 +57,7 @@ func (s *TrackStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int
 	return
 }
 
-func (s *TrackStorage) Get(ctx context.Context, id string) (*dotagiftx.Track, error) {
+func (s *TrackRepository) Get(ctx context.Context, id string) (*dotagiftx.Track, error) {
 	row := &dotagiftx.Track{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
@@ -70,7 +70,7 @@ func (s *TrackStorage) Get(ctx context.Context, id string) (*dotagiftx.Track, er
 	return row, nil
 }
 
-func (s *TrackStorage) Create(ctx context.Context, in *dotagiftx.Track) error {
+func (s *TrackRepository) Create(ctx context.Context, in *dotagiftx.Track) error {
 	_, err := s.db.insert(ctx, s.table().Insert(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
@@ -99,7 +99,7 @@ const last7days = 604800
 	   }
 	 })
 */
-func (s *TrackStorage) TopKeywords(ctx context.Context) ([]dotagiftx.SearchKeywordScore, error) {
+func (s *TrackRepository) TopKeywords(ctx context.Context) ([]dotagiftx.SearchKeywordScore, error) {
 	now := r.Now()
 	q := s.table().Between(now.Sub(last7days), now, r.BetweenOpts{Index: trackFieldCreatedAt}).
 		Filter(map[string]any{"type": "s"}).
@@ -122,6 +122,6 @@ func (s *TrackStorage) TopKeywords(ctx context.Context) ([]dotagiftx.SearchKeywo
 	return res, nil
 }
 
-func (s *TrackStorage) table() r.Term {
+func (s *TrackRepository) table() r.Term {
 	return r.Table(tableTrack)
 }

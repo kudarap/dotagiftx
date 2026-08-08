@@ -18,7 +18,7 @@ const (
 var inventorySearchFields = []string{"id", "market_id"}
 
 // NewInventory creates new instance of inventory data store.
-func NewInventory(c *Client) *InventoryStorage {
+func NewInventory(c *Client) *InventoryRepository {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableInventory); err != nil {
 		log.Fatalf("could not create %s table: %s", tableInventory, err)
@@ -28,15 +28,15 @@ func NewInventory(c *Client) *InventoryStorage {
 		log.Fatalf("could not create index on %s table: %s", tableInventory, err)
 	}
 
-	return &InventoryStorage{c, inventorySearchFields}
+	return &InventoryRepository{c, inventorySearchFields}
 }
 
-type InventoryStorage struct {
+type InventoryRepository struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *InventoryStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Inventory, error) {
+func (s *InventoryRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Inventory, error) {
 	var res []dotagiftx.Inventory
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
@@ -47,7 +47,7 @@ func (s *InventoryStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]do
 	return res, nil
 }
 
-func (s *InventoryStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+func (s *InventoryRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -60,7 +60,7 @@ func (s *InventoryStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num
 }
 
 // includeRelatedFields injects user details base on market foreign keys.
-func (s *InventoryStorage) includeRelatedFields(q r.Term) r.Term {
+func (s *InventoryRepository) includeRelatedFields(q r.Term) r.Term {
 	return q
 	// return q.
 	//	EqJoin(inventoryFieldMarketID, r.Table(tableMarket)).
@@ -71,7 +71,7 @@ func (s *InventoryStorage) includeRelatedFields(q r.Term) r.Term {
 	//	})
 }
 
-func (s *InventoryStorage) Get(ctx context.Context, id string) (*dotagiftx.Inventory, error) {
+func (s *InventoryRepository) Get(ctx context.Context, id string) (*dotagiftx.Inventory, error) {
 	row := &dotagiftx.Inventory{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
@@ -84,7 +84,7 @@ func (s *InventoryStorage) Get(ctx context.Context, id string) (*dotagiftx.Inven
 	return row, nil
 }
 
-func (s *InventoryStorage) GetByMarketID(ctx context.Context, marketID string) (*dotagiftx.Inventory, error) {
+func (s *InventoryRepository) GetByMarketID(ctx context.Context, marketID string) (*dotagiftx.Inventory, error) {
 	var res []dotagiftx.Inventory
 	var err error
 
@@ -100,7 +100,7 @@ func (s *InventoryStorage) GetByMarketID(ctx context.Context, marketID string) (
 	return &res[0], nil
 }
 
-func (s *InventoryStorage) Create(ctx context.Context, in *dotagiftx.Inventory) error {
+func (s *InventoryRepository) Create(ctx context.Context, in *dotagiftx.Inventory) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -114,7 +114,7 @@ func (s *InventoryStorage) Create(ctx context.Context, in *dotagiftx.Inventory) 
 	return nil
 }
 
-func (s *InventoryStorage) Update(ctx context.Context, in *dotagiftx.Inventory) error {
+func (s *InventoryRepository) Update(ctx context.Context, in *dotagiftx.Inventory) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -133,6 +133,6 @@ func (s *InventoryStorage) Update(ctx context.Context, in *dotagiftx.Inventory) 
 	return nil
 }
 
-func (s *InventoryStorage) table() r.Term {
+func (s *InventoryRepository) table() r.Term {
 	return r.Table(tableInventory)
 }

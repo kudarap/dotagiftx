@@ -17,7 +17,7 @@ const (
 var reportSearchFields = []string{"label", "text"}
 
 // NewReport creates new instance of report data store.
-func NewReport(c *Client) *ReportStorage {
+func NewReport(c *Client) *ReportRepository {
 	ctx := context.Background()
 	if err := c.autoMigrate(ctx, tableReport); err != nil {
 		log.Fatalf("could not create %s table: %s", tableReport, err)
@@ -27,15 +27,15 @@ func NewReport(c *Client) *ReportStorage {
 		log.Fatalf("could not create index on %s table: %s", tableReport, err)
 	}
 
-	return &ReportStorage{c, reportSearchFields}
+	return &ReportRepository{c, reportSearchFields}
 }
 
-type ReportStorage struct {
+type ReportRepository struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *ReportStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Report, error) {
+func (s *ReportRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Report, error) {
 	var res []dotagiftx.Report
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
@@ -46,7 +46,7 @@ func (s *ReportStorage) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotag
 	return res, nil
 }
 
-func (s *ReportStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+func (s *ReportRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -59,7 +59,7 @@ func (s *ReportStorage) Count(ctx context.Context, o dotagiftx.FindOpts) (num in
 }
 
 // includeRelatedFields injects user details base on market foreign keys.
-func (s *ReportStorage) includeRelatedFields(q r.Term) r.Term {
+func (s *ReportRepository) includeRelatedFields(q r.Term) r.Term {
 	return q.
 		EqJoin(reportFieldUserID, r.Table(tableUser)).
 		Map(func(t r.Term) r.Term {
@@ -69,7 +69,7 @@ func (s *ReportStorage) includeRelatedFields(q r.Term) r.Term {
 		})
 }
 
-func (s *ReportStorage) Get(ctx context.Context, id string) (*dotagiftx.Report, error) {
+func (s *ReportRepository) Get(ctx context.Context, id string) (*dotagiftx.Report, error) {
 	row := &dotagiftx.Report{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
@@ -82,7 +82,7 @@ func (s *ReportStorage) Get(ctx context.Context, id string) (*dotagiftx.Report, 
 	return row, nil
 }
 
-func (s *ReportStorage) Create(ctx context.Context, in *dotagiftx.Report) error {
+func (s *ReportRepository) Create(ctx context.Context, in *dotagiftx.Report) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
@@ -96,6 +96,6 @@ func (s *ReportStorage) Create(ctx context.Context, in *dotagiftx.Report) error 
 	return nil
 }
 
-func (s *ReportStorage) table() r.Term {
+func (s *ReportRepository) table() r.Term {
 	return r.Table(tableReport)
 }

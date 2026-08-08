@@ -10,16 +10,16 @@ import (
 )
 
 // NewStats creates new instance of market data store.
-func NewStats(c *Client, lg *slog.Logger) *StatsStorage {
-	return &StatsStorage{c, lg}
+func NewStats(c *Client, lg *slog.Logger) *StatsRepository {
+	return &StatsRepository{c, lg}
 }
 
-type StatsStorage struct {
+type StatsRepository struct {
 	db     *Client
 	logger *slog.Logger
 }
 
-func (s *StatsStorage) CountUserMarketStatus(ctx context.Context, userID string) (*dotagiftx.MarketStatusCount, error) {
+func (s *StatsRepository) CountUserMarketStatus(ctx context.Context, userID string) (*dotagiftx.MarketStatusCount, error) {
 	var benchStart time.Time
 
 	baseQuery := r.Table(tableMarket).GetAllByIndex(marketFieldUserID, userID)
@@ -125,7 +125,7 @@ func (s *StatsStorage) CountUserMarketStatus(ctx context.Context, userID string)
 	return marketStats, nil
 }
 
-func (s *StatsStorage) CountUserMarketStatusBySteamID(ctx context.Context, steamID string) (*dotagiftx.MarketStatusCount, error) {
+func (s *StatsRepository) CountUserMarketStatusBySteamID(ctx context.Context, steamID string) (*dotagiftx.MarketStatusCount, error) {
 	var user dotagiftx.User
 	if err := s.db.one(ctx, r.Table(tableUser).GetAllByIndex(userFieldSteamID, steamID), &user); err != nil {
 		return nil, err
@@ -135,7 +135,7 @@ func (s *StatsStorage) CountUserMarketStatusBySteamID(ctx context.Context, steam
 
 // CountMarketStatus returns market status counts.
 // TODO: optimize query because it's too slow around ~3000ms
-func (s *StatsStorage) CountMarketStatus(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+func (s *StatsRepository) CountMarketStatus(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	var result []struct {
 		Status dotagiftx.MarketStatus `db:"group"`
 		Count  int                    `db:"count"`
@@ -193,7 +193,7 @@ func (s *StatsStorage) CountMarketStatus(ctx context.Context, opts dotagiftx.Fin
 	return marketStats, nil
 }
 
-func (s *StatsStorage) countDeliveryStatus(ctx context.Context, o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+func (s *StatsRepository) countDeliveryStatus(ctx context.Context, o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	var res []struct {
 		Status dotagiftx.DeliveryStatus `db:"group"`
 		Count  int                      `db:"reduction"`
@@ -217,7 +217,7 @@ func (s *StatsStorage) countDeliveryStatus(ctx context.Context, o dotagiftx.Find
 	return msc, nil
 }
 
-func (s *StatsStorage) countInventoryStatus(ctx context.Context, o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+func (s *StatsRepository) countInventoryStatus(ctx context.Context, o dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	var res []struct {
 		Status dotagiftx.InventoryStatus `db:"group"`
 		Count  int                       `db:"reduction"`
@@ -259,7 +259,7 @@ productionDB.table('market')
 		}
 	  })
 */
-func (s *StatsStorage) GraphMarketSales(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.MarketSalesGraph, error) {
+func (s *StatsRepository) GraphMarketSales(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.MarketSalesGraph, error) {
 	o.IndexKey = marketFieldItemID
 	q := newFindOptsQuery(r.Table(tableMarket), o).Filter(func(t r.Term) r.Term {
 		f := t.Field(marketFieldStatus)
