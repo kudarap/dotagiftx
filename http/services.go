@@ -17,8 +17,8 @@ type authService interface {
 	// short-lived access token and will result user have to re-login.
 	RevokeRefreshToken(ctx context.Context, refreshToken string) error
 
-	// RenewToken checks refresh token validity that allows to get new short-lived access token.
-	RenewToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error)
+	// RefreshToken checks refresh token validity that allows to get new short-lived access token.
+	RefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error)
 }
 
 // imageService provides access to image service methods used by http handlers.

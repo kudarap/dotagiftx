@@ -52,7 +52,7 @@ func handleAuthRenew(svc authService) http.HandlerFunc {
 			return
 		}
 
-		au, err := svc.RenewToken(r.Context(), form.RefreshToken)
+		au, err := svc.RefreshToken(r.Context(), form.RefreshToken)
 		if err != nil {
 			respond(w, http.StatusUnauthorized, newError(err))
 			return
@@ -110,7 +110,7 @@ func refreshJWT(au *dotagiftx.Auth) (*authResp, error) {
 	a := &authResp{}
 	a.ExpiresAt = time.Now().Add(defaultTokenExpiration)
 
-	t, err := New(au.UserID, noLevel, a.ExpiresAt)
+	t, err := newAccessToken(au.UserID, noLevel, a.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}

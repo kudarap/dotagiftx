@@ -2,8 +2,10 @@ package dotagiftx
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/sha1" //nolint:gosec // legacy password/token hashing for backward compatibility
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -141,12 +143,15 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 		if authData.Password != passwordV1 && authData.Password != passwordV2 {
 			return nil, AuthErrLogin
 		}
-		// when successful, upgrade password to v2
-		if err := s.authRepo.Update(ctx, &Auth{
-			ID:       authData.ID,
-			Password: passwordV2,
-		}); err != nil {
-			s.logger.ErrorContext(ctx, "upgrade password v2 failed", "error", err)
+
+		// upgrade password to v2
+		if authData.Password == passwordV1 {
+			if err := s.authRepo.Update(ctx, &Auth{
+				ID:       authData.ID,
+				Password: passwordV2,
+			}); err != nil {
+				s.logger.ErrorContext(ctx, "upgrade password v2 failed", "error", err)
+			}
 		}
 
 		u, err := s.userSvc.User(ctx, authData.UserID)
@@ -183,6 +188,13 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 			return nil, UserErrSteamSync.X(err)
 		}
 
+		authData.RefreshToken = s.generateRefreshToken()
+		if err := s.authRepo.Update(ctx, &Auth{
+			ID:           authData.ID,
+			RefreshToken: s.hash(authData.RefreshToken),
+		}); err != nil {
+			return nil, err
+		}
 		return authData, nil
 	}
 
@@ -198,12 +210,12 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 	return authData, nil
 }
 
-func (s *AuthService) RenewToken(ctx context.Context, refreshToken string) (*Auth, error) {
+func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
 		return nil, AuthErrRefreshToken
 	}
 
-	au, err := s.authRepo.GetByRefreshToken(ctx, refreshToken)
+	au, err := s.authRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
 	if err != nil {
 		return nil, AuthErrRefreshToken
 	}
@@ -212,17 +224,8 @@ func (s *AuthService) RenewToken(ctx context.Context, refreshToken string) (*Aut
 }
 
 func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken string) error {
-	if strings.TrimSpace(refreshToken) == "" {
-		return AuthErrRefreshToken
-	}
-
-	au, err := s.RenewToken(ctx, refreshToken)
-	if err != nil {
-		return err
-	}
-
-	au.RefreshToken = s.generateRefreshToken()
-	return s.authRepo.Update(ctx, au)
+	_, err := s.renewRefreshToken(ctx, refreshToken)
+	return err
 }
 
 func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
@@ -232,6 +235,27 @@ func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
 	}
 
 	return u, nil
+}
+
+func (s *AuthService) renewRefreshToken(ctx context.Context, refreshToken string) (string, error) {
+	if strings.TrimSpace(refreshToken) == "" {
+		return "", AuthErrRefreshToken
+	}
+
+	au, err := s.RefreshToken(ctx, refreshToken)
+	if err != nil {
+		return "", err
+	}
+
+	au.RefreshToken = s.generateRefreshToken()
+	if err := s.authRepo.Update(ctx, &Auth{
+		ID:           au.ID,
+		RefreshToken: s.hash(au.RefreshToken),
+	}); err != nil {
+		return "", err
+	}
+
+	return au.RefreshToken, nil
 }
 
 func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
@@ -247,21 +271,22 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 		}
 	}
 
+	refreshToken := s.generateRefreshToken()
 	au := &Auth{UserID: user.ID, Username: sp.ID}
-	au.RefreshToken = s.generateRefreshToken()
+	au.RefreshToken = s.hash(refreshToken)
 	au.Password = s.composePasswordV2(sp.ID, user.ID)
 	if err := s.authRepo.Create(ctx, au); err != nil {
 		return nil, err
 	}
 
+	au.RefreshToken = refreshToken
 	return au, nil
 }
 
 func (s *AuthService) generateRefreshToken() string {
-	t := fmt.Sprintf("%d%s", time.Now().UnixNano(), s.salt)
-	h := sha256.New()
-	h.Write([]byte(t))
-	return hex.EncodeToString(h.Sum(nil))
+	buf := make([]byte, 48)
+	_, _ = rand.Read(buf)
+	return base64.RawURLEncoding.EncodeToString(buf)
 }
 
 func (s *AuthService) composePassword(steamID, userID string) string {
@@ -271,7 +296,11 @@ func (s *AuthService) composePassword(steamID, userID string) string {
 }
 
 func (s *AuthService) composePasswordV2(steamID, userID string) string {
+	return s.hash(steamID, userID)
+}
+
+func (s *AuthService) hash(a ...string) string {
 	h := sha256.New()
-	h.Write([]byte(steamID + userID + s.salt))
+	h.Write([]byte(fmt.Sprint(a) + s.salt))
 	return hex.EncodeToString(h.Sum(nil))
 }
