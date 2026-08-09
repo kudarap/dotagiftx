@@ -25,6 +25,10 @@ const (
 	AuthErrRefreshToken
 )
 
+// defaultAuthSessionTTL is the fallback refresh token session lifetime when no
+// session TTL is configured.
+const defaultAuthSessionTTL = 30 * 24 * time.Hour
+
 // sets error text definition.
 func init() {
 	appErrorText[AuthErrNotFound] = "auth not found"
@@ -124,6 +128,9 @@ func NewAuthService(
 	us *UserService,
 	logger *slog.Logger,
 ) *AuthService {
+	if sessionTTL <= 0 {
+		sessionTTL = defaultAuthSessionTTL
+	}
 	return &AuthService{salt, sessionTTL, sc, as, ss, us, logger}
 }
 

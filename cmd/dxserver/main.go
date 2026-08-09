@@ -141,7 +141,7 @@ func (app *application) setup() error {
 	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient, slogger)
 	authSvc := dotagiftx.NewAuthService(
 		app.config.SigKey,
-		defaultAuthSessionTTL(app.config.AuthSessionTTL),
+		app.config.AuthSessionTTL,
 		steamClient,
 		authStg,
 		sessionStg,
@@ -348,13 +348,4 @@ var tag, commit, built string
 func initVer(cfg config.Config) *dotagiftx.Version {
 	v := dotagiftx.NewVersion(cfg.Prod, tag, commit, built)
 	return v
-}
-
-const defaultAuthSessionTTLValue = 30 * 24 * time.Hour
-
-func defaultAuthSessionTTL(ttl time.Duration) time.Duration {
-	if ttl <= 0 {
-		return defaultAuthSessionTTLValue
-	}
-	return ttl
 }
