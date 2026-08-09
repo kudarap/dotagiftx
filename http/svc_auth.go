@@ -13,7 +13,8 @@ const defaultTokenExpiration = time.Minute * 5
 // authService provides access to auth service methods used by http handlers.
 type authService interface {
 	// SteamLogin redirects for authorization and process creation of auth.
-	SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*dotagiftx.Auth, error)
+	// Returns the auth details and its raw refresh token.
+	SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*dotagiftx.Auth, string, error)
 
 	// RevokeRefreshToken invalidates refresh token that will prevent on renewing
 	// short-lived access token and will result user have to re-login.
@@ -21,7 +22,7 @@ type authService interface {
 
 	// RefreshToken checks refresh token validity that allows to get new short-lived
 	// access token and rotates the refresh token to a new one.
-	RefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, string, error)
 }
 
 type authResp struct {
@@ -35,7 +36,7 @@ type authResp struct {
 func handleAuthSteam(svc authService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Handle steam auth.
-		au, err := svc.SteamLogin(r.Context(), w, r)
+		au, refreshToken, err := svc.SteamLogin(r.Context(), w, r)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -47,7 +48,7 @@ func handleAuthSteam(svc authService) http.HandlerFunc {
 		}
 
 		// Compose new JWT.
-		a, err := newAuth(au)
+		a, err := newAuth(au, refreshToken)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -67,14 +68,14 @@ func handleAuthRenew(svc authService) http.HandlerFunc {
 			return
 		}
 
-		au, err := svc.RefreshToken(r.Context(), form.RefreshToken)
+		au, refreshToken, err := svc.RefreshToken(r.Context(), form.RefreshToken)
 		if err != nil {
 			respond(w, http.StatusUnauthorized, newError(err))
 			return
 		}
 
 		// Refresh JWT and rotate refresh token.
-		a, err := newAuth(au)
+		a, err := newAuth(au, refreshToken)
 		if err != nil {
 			respond(w, http.StatusInternalServerError, newError(err))
 			return
@@ -107,7 +108,7 @@ func handleAuthRevoke(svc authService) http.HandlerFunc {
 	}
 }
 
-func newAuth(au *dotagiftx.Auth) (*authResp, error) {
+func newAuth(au *dotagiftx.Auth, refreshToken string) (*authResp, error) {
 	a, err := refreshJWT(au)
 	if err != nil {
 		return nil, err
@@ -115,7 +116,7 @@ func newAuth(au *dotagiftx.Auth) (*authResp, error) {
 
 	a.UserID = au.UserID
 	a.SteamID = au.Username
-	a.RefreshToken = au.RefreshToken
+	a.RefreshToken = refreshToken
 	return a, nil
 }
 

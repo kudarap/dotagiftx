@@ -43,13 +43,12 @@ func init() {
 type (
 	// Auth represents access authorization.
 	Auth struct {
-		ID           string     `json:"id"            db:"id,omitempty"`
-		UserID       string     `json:"user_id"       db:"user_id,indexed,omitempty"  valid:"required"`
-		Username     string     `json:"username"      db:"username,indexed,omitempty" valid:"required"`
-		Password     string     `json:"-"             db:"password,omitempty"         valid:"required"`
-		RefreshToken string     `json:"refresh_token" db:"refresh_token,omitempty"`
-		CreatedAt    *time.Time `json:"created_at"    db:"created_at,omitempty"`
-		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
+		ID        string     `json:"id"            db:"id,omitempty"`
+		UserID    string     `json:"user_id"       db:"user_id,indexed,omitempty"  valid:"required"`
+		Username  string     `json:"username"      db:"username,indexed,omitempty" valid:"required"`
+		Password  string     `json:"-"             db:"password,omitempty"         valid:"required"`
+		CreatedAt *time.Time `json:"created_at"    db:"created_at,omitempty"`
+		UpdatedAt *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}
 
 	// AuthSession represents a login session and its refresh token.
@@ -145,28 +144,28 @@ type AuthService struct {
 	logger      *slog.Logger
 }
 
-func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error) {
+func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, string, error) {
 	// Handle authorization redirect.
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := s.steamClient.AuthorizeURL(r)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect) //nolint:gosec // steam openid login redirect flow
-		return nil, nil
+		return nil, "", nil
 	}
 
 	// Validates auth and get player details and use SteamID as auth username.
 	steamPlayer, err := s.steamClient.Authenticate(r)
 	if err != nil {
-		return nil, fmt.Errorf("steam player not found: %s", err)
+		return nil, "", fmt.Errorf("steam player not found: %s", err)
 	}
 
 	// Check account existence.
 	authData, err := s.authRepo.GetByUsername(ctx, steamPlayer.ID)
 	if err != nil && !errors.Is(err, AuthErrNotFound) {
-		return nil, fmt.Errorf("auth not found: %s", err)
+		return nil, "", fmt.Errorf("auth not found: %s", err)
 	}
 
 	// Account existed and checked login credentials.
@@ -175,7 +174,7 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 		passwordV1 := s.composePassword(steamPlayer.ID, authData.UserID)
 		passwordV2 := s.composePasswordV2(steamPlayer.ID, authData.UserID)
 		if authData.Password != passwordV1 && authData.Password != passwordV2 {
-			return nil, AuthErrLogin
+			return nil, "", AuthErrLogin
 		}
 
 		// upgrade password to v2
@@ -206,56 +205,56 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 					Avatar:    steamPlayer.Avatar,
 				}
 				if err = s.userSvc.Create(ctx, u); err != nil {
-					return nil, err
+					return nil, "", err
 				}
 
 				s.logger.DebugContext(ctx, "user re-created", "user", u)
 
-				authData.RefreshToken, err = s.newSession(ctx, authData)
+				refreshToken, err := s.newSession(ctx, authData)
 				if err != nil {
-					return nil, err
+					return nil, "", err
 				}
-				return authData, nil
+				return authData, refreshToken, nil
 			}
 
-			return nil, err
+			return nil, "", err
 		}
 		if err = u.CheckStatus(); err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		if _, err = s.userSvc.SteamSync(ctx, steamPlayer); err != nil {
-			return nil, UserErrSteamSync.X(err)
+			return nil, "", UserErrSteamSync.X(err)
 		}
 
-		authData.RefreshToken, err = s.newSession(ctx, authData)
+		refreshToken, err := s.newSession(ctx, authData)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
-		return authData, nil
+		return authData, refreshToken, nil
 	}
 
 	// HOTFIX for missing user data
 	existingUser, _ := s.userSvc.User(ctx, steamPlayer.ID)
 
 	// Process account registration and save details.
-	authData, err = s.createAccountFromSteam(ctx, steamPlayer, existingUser)
+	authData, refreshToken, err := s.createAccountFromSteam(ctx, steamPlayer, existingUser)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return authData, nil
+	return authData, refreshToken, nil
 }
 
 // RefreshToken validates a session by its refresh token, rotates it to a new
-// one and returns the auth details with the new raw refresh token set.
-func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*Auth, error) {
+// one and returns the auth details with the new raw refresh token.
+func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*Auth, string, error) {
 	if strings.TrimSpace(refreshToken) == "" {
-		return nil, AuthErrRefreshToken
+		return nil, "", AuthErrRefreshToken
 	}
 
 	sess, err := s.sessionRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
 	if err != nil {
-		return nil, AuthErrRefreshToken
+		return nil, "", AuthErrRefreshToken
 	}
 	if sess == nil || !sess.ExpiresAt.After(time.Now()) {
 		// purge expired session on access attempt.
@@ -264,26 +263,25 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*A
 				s.logger.ErrorContext(ctx, "delete expired session failed", "error", err)
 			}
 		}
-		return nil, AuthErrRefreshToken
+		return nil, "", AuthErrRefreshToken
 	}
 
 	newToken, err := s.generateRefreshToken()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	sess.RefreshToken = s.hash(newToken)
 	sess.ExpiresAt = time.Now().Add(s.sessionTTL)
 	if err := s.sessionRepo.Update(ctx, sess); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	au, err := s.authRepo.Get(ctx, sess.AuthID)
 	if err != nil {
-		return nil, AuthErrRefreshToken
+		return nil, "", AuthErrRefreshToken
 	}
 
-	au.RefreshToken = newToken
-	return au, nil
+	return au, newToken, nil
 }
 
 // RevokeRefreshToken invalidates the session of the given refresh token so it
@@ -333,7 +331,7 @@ func (s *AuthService) newSession(ctx context.Context, au *Auth) (string, error) 
 	return refreshToken, nil
 }
 
-func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
+func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, string, error) {
 	if user == nil {
 		user = &User{
 			SteamID: sp.ID,
@@ -342,22 +340,21 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 			Avatar:  sp.Avatar,
 		}
 		if err := s.userSvc.Create(ctx, user); err != nil {
-			return nil, err
+			return nil, "", err
 		}
 	}
 
 	au := &Auth{UserID: user.ID, Username: sp.ID}
 	au.Password = s.composePasswordV2(sp.ID, user.ID)
 	if err := s.authRepo.Create(ctx, au); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	refreshToken, err := s.newSession(ctx, au)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	au.RefreshToken = refreshToken
-	return au, nil
+	return au, refreshToken, nil
 }
 
 func (s *AuthService) generateRefreshToken() (string, error) {

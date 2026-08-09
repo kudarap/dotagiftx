@@ -219,12 +219,12 @@ func TestAuthService_RefreshToken(t *testing.T) {
 		ExpiresAt:    time.Now().Add(time.Hour),
 	}
 
-	au, err := svc.RefreshToken(context.Background(), orig)
+	au, rotated, err := svc.RefreshToken(context.Background(), orig)
 	if err != nil {
 		t.Fatalf("RefreshToken() returned error: %v", err)
 	}
 
-	if au.RefreshToken == orig {
+	if rotated == orig {
 		t.Error("RefreshToken() expected rotated refresh token")
 	}
 	if au.UserID != "u1" {
@@ -236,7 +236,7 @@ func TestAuthService_RefreshToken(t *testing.T) {
 	if _, ok := sess.sessions[svc.hash(orig)]; ok {
 		t.Error("RefreshToken() old token should be removed")
 	}
-	stored, ok := sess.sessions[svc.hash(au.RefreshToken)]
+	stored, ok := sess.sessions[svc.hash(rotated)]
 	if !ok {
 		t.Error("RefreshToken() rotated token not persisted")
 	}
@@ -245,7 +245,7 @@ func TestAuthService_RefreshToken(t *testing.T) {
 	}
 
 	// already rotated token should fail.
-	if _, err := svc.RefreshToken(context.Background(), orig); !errors.Is(err, AuthErrRefreshToken) {
+	if _, _, err := svc.RefreshToken(context.Background(), orig); !errors.Is(err, AuthErrRefreshToken) {
 		t.Errorf("RefreshToken() after rotation error = %v, want AuthErrRefreshToken", err)
 	}
 }
@@ -263,7 +263,7 @@ func TestAuthService_RefreshTokenExpired(t *testing.T) {
 		ExpiresAt:    time.Now().Add(-time.Hour),
 	}
 
-	if _, err := svc.RefreshToken(context.Background(), expTok); !errors.Is(err, AuthErrRefreshToken) {
+	if _, _, err := svc.RefreshToken(context.Background(), expTok); !errors.Is(err, AuthErrRefreshToken) {
 		t.Errorf("RefreshToken() expired error = %v, want AuthErrRefreshToken", err)
 	}
 	if _, ok := sess.sessions[svc.hash(expTok)]; ok {
@@ -274,10 +274,10 @@ func TestAuthService_RefreshTokenExpired(t *testing.T) {
 func TestAuthService_RefreshTokenNotFound(t *testing.T) {
 	svc := newTestAuthService(&fakeSessionRepo{})
 
-	if _, err := svc.RefreshToken(context.Background(), "no-such-token"); !errors.Is(err, AuthErrRefreshToken) {
+	if _, _, err := svc.RefreshToken(context.Background(), "no-such-token"); !errors.Is(err, AuthErrRefreshToken) {
 		t.Errorf("RefreshToken() missing error = %v, want AuthErrRefreshToken", err)
 	}
-	if _, err := svc.RefreshToken(context.Background(), ""); !errors.Is(err, AuthErrRefreshToken) {
+	if _, _, err := svc.RefreshToken(context.Background(), ""); !errors.Is(err, AuthErrRefreshToken) {
 		t.Errorf("RefreshToken() empty error = %v, want AuthErrRefreshToken", err)
 	}
 }
@@ -303,10 +303,10 @@ func TestAuthService_MultipleSessions(t *testing.T) {
 		ExpiresAt:    time.Now().Add(time.Hour),
 	}
 
-	if _, err := svc.RefreshToken(context.Background(), tokA); err != nil {
+	if _, _, err := svc.RefreshToken(context.Background(), tokA); err != nil {
 		t.Fatalf("RefreshToken() session A error: %v", err)
 	}
-	if _, err := svc.RefreshToken(context.Background(), tokB); err != nil {
+	if _, _, err := svc.RefreshToken(context.Background(), tokB); err != nil {
 		t.Fatalf("RefreshToken() session B error: %v", err)
 	}
 }
