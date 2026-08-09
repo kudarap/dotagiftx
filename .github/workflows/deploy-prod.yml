@@ -33,6 +33,9 @@ jobs:
   test-web:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
