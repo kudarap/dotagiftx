@@ -3,13 +3,13 @@ package rethink
 import (
 	"context"
 
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 // CountMarketStatusV2 manually manages indexing for performance reasons.
-func (s *StatsRepository) CountMarketStatusV2(ctx context.Context, opts dotagiftx2.FindOpts) (*dotagiftx2.MarketStatusCount, error) {
-	opts = dotagiftx2.FindOpts{
+func (s *StatsRepository) CountMarketStatusV2(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
+	opts = dotagiftx.FindOpts{
 		Filter:   opts.Filter,
 		IndexKey: opts.IndexKey,
 		UserID:   opts.UserID,
@@ -32,12 +32,12 @@ func (s *StatsRepository) CountMarketStatusV2(ctx context.Context, opts dotagift
 	if err := s.db.list(ctx, q, &groups); err != nil {
 		return nil, err
 	}
-	statusResult := map[dotagiftx2.MarketStatus]int{}
-	inventoryResult := map[dotagiftx2.InventoryStatus]int{}
-	deliveryResult := map[dotagiftx2.DeliveryStatus]int{}
-	resellResult := map[dotagiftx2.MarketStatus]int{}
+	statusResult := map[dotagiftx.MarketStatus]int{}
+	inventoryResult := map[dotagiftx.InventoryStatus]int{}
+	deliveryResult := map[dotagiftx.DeliveryStatus]int{}
+	resellResult := map[dotagiftx.MarketStatus]int{}
 	for _, group := range groups {
-		statusKey := dotagiftx2.MarketStatus(group.Key[0])
+		statusKey := dotagiftx.MarketStatus(group.Key[0])
 		if _, ok := statusResult[statusKey]; !ok {
 			statusResult[statusKey] = group.Count
 		} else {
@@ -53,14 +53,14 @@ func (s *StatsRepository) CountMarketStatusV2(ctx context.Context, opts dotagift
 			}
 		}
 
-		deliveryKey := dotagiftx2.DeliveryStatus(group.Key[1])
+		deliveryKey := dotagiftx.DeliveryStatus(group.Key[1])
 		if _, ok := deliveryResult[deliveryKey]; !ok {
 			deliveryResult[deliveryKey] = group.Count
 		} else {
 			deliveryResult[deliveryKey] += group.Count
 		}
 
-		inventoryKey := dotagiftx2.InventoryStatus(group.Key[2])
+		inventoryKey := dotagiftx.InventoryStatus(group.Key[2])
 		if _, ok := inventoryResult[inventoryKey]; !ok {
 			inventoryResult[inventoryKey] = group.Count
 		} else {
@@ -69,38 +69,38 @@ func (s *StatsRepository) CountMarketStatusV2(ctx context.Context, opts dotagift
 
 	}
 
-	allStats := &dotagiftx2.MarketStatusCount{
+	allStats := &dotagiftx.MarketStatusCount{
 		// sells stats
-		Pending:   statusResult[dotagiftx2.MarketStatusPending],
-		Live:      statusResult[dotagiftx2.MarketStatusLive],
-		Sold:      statusResult[dotagiftx2.MarketStatusSold],
-		Reserved:  statusResult[dotagiftx2.MarketStatusReserved],
-		Removed:   statusResult[dotagiftx2.MarketStatusRemoved],
-		Cancelled: statusResult[dotagiftx2.MarketStatusCancelled],
+		Pending:   statusResult[dotagiftx.MarketStatusPending],
+		Live:      statusResult[dotagiftx.MarketStatusLive],
+		Sold:      statusResult[dotagiftx.MarketStatusSold],
+		Reserved:  statusResult[dotagiftx.MarketStatusReserved],
+		Removed:   statusResult[dotagiftx.MarketStatusRemoved],
+		Cancelled: statusResult[dotagiftx.MarketStatusCancelled],
 
 		// buys stats
-		BidLive:      statusResult[dotagiftx2.MarketStatusLive],
-		BidCompleted: statusResult[dotagiftx2.MarketStatusBidCompleted],
+		BidLive:      statusResult[dotagiftx.MarketStatusLive],
+		BidCompleted: statusResult[dotagiftx.MarketStatusBidCompleted],
 
 		// delivery stats
-		DeliveryNoHit:          deliveryResult[dotagiftx2.DeliveryStatusNoHit],
-		DeliveryNameVerified:   deliveryResult[dotagiftx2.DeliveryStatusNameVerified],
-		DeliverySenderVerified: deliveryResult[dotagiftx2.DeliveryStatusSenderVerified],
-		DeliveryPrivate:        deliveryResult[dotagiftx2.DeliveryStatusPrivate],
-		DeliveryError:          deliveryResult[dotagiftx2.DeliveryStatusError],
+		DeliveryNoHit:          deliveryResult[dotagiftx.DeliveryStatusNoHit],
+		DeliveryNameVerified:   deliveryResult[dotagiftx.DeliveryStatusNameVerified],
+		DeliverySenderVerified: deliveryResult[dotagiftx.DeliveryStatusSenderVerified],
+		DeliveryPrivate:        deliveryResult[dotagiftx.DeliveryStatusPrivate],
+		DeliveryError:          deliveryResult[dotagiftx.DeliveryStatusError],
 
 		// inventory stats
-		InventoryNoHit:    inventoryResult[dotagiftx2.InventoryStatusNoHit],
-		InventoryVerified: inventoryResult[dotagiftx2.InventoryStatusVerified],
-		InventoryPrivate:  inventoryResult[dotagiftx2.InventoryStatusPrivate],
-		InventoryError:    inventoryResult[dotagiftx2.InventoryStatusError],
+		InventoryNoHit:    inventoryResult[dotagiftx.InventoryStatusNoHit],
+		InventoryVerified: inventoryResult[dotagiftx.InventoryStatusVerified],
+		InventoryPrivate:  inventoryResult[dotagiftx.InventoryStatusPrivate],
+		InventoryError:    inventoryResult[dotagiftx.InventoryStatusError],
 
 		// resell stats
-		ResellLive:      resellResult[dotagiftx2.MarketStatusLive],
-		ResellSold:      resellResult[dotagiftx2.MarketStatusSold],
-		ResellReserved:  resellResult[dotagiftx2.MarketStatusReserved],
-		ResellRemoved:   resellResult[dotagiftx2.MarketStatusRemoved],
-		ResellCancelled: resellResult[dotagiftx2.MarketStatusCancelled],
+		ResellLive:      resellResult[dotagiftx.MarketStatusLive],
+		ResellSold:      resellResult[dotagiftx.MarketStatusSold],
+		ResellReserved:  resellResult[dotagiftx.MarketStatusReserved],
+		ResellRemoved:   resellResult[dotagiftx.MarketStatusRemoved],
+		ResellCancelled: resellResult[dotagiftx.MarketStatusCancelled],
 	}
 
 	return allStats, nil

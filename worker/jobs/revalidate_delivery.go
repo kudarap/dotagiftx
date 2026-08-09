@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -18,7 +18,7 @@ type RevalidateDelivery struct {
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dotagiftx2.Market
+	filter   dotagiftx.Market
 }
 
 func NewRevalidateDelivery(
@@ -27,7 +27,7 @@ func NewRevalidateDelivery(
 	vs *verify.Source,
 	lg *slog.Logger,
 ) *RevalidateDelivery {
-	f := dotagiftx2.Market{Type: dotagiftx2.MarketTypeAsk, Status: dotagiftx2.MarketStatusSold}
+	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &RevalidateDelivery{
 		ds, ms, vs, lg,
 		"revalidate_delivery", time.Hour * 12, f}
@@ -43,7 +43,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 		rd.logger.Info("REVALIDATE DELIVERY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
-	opts := dotagiftx2.FindOpts{Filter: rd.filter}
+	opts := dotagiftx.FindOpts{Filter: rd.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
@@ -78,7 +78,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 			}
 			rd.logger.Info("batch", "page", opts.Page, "user", mkt.User.Name, "partner_steam_id", mkt.PartnerSteamID, "item", mkt.Item.Name, "status", result.Status)
 
-			err = rd.deliverySvc.Set(ctx, &dotagiftx2.Delivery{
+			err = rd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID:   mkt.ID,
 				Status:     result.Status,
 				Assets:     result.Assets,

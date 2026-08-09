@@ -6,19 +6,19 @@ import (
 	"net/http"
 	"time"
 
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 // statsService provides access to stats service methods used by http handlers.
 type statsService interface {
 	// CountMarketStatusV2 returns market status count base on given options.
-	CountMarketStatusV2(ctx context.Context, opts dotagiftx2.FindOpts) (*dotagiftx2.MarketStatusCount, error)
+	CountMarketStatusV2(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error)
 
 	// GraphMarketSales returns market sales graph base on given options.
-	GraphMarketSales(ctx context.Context, opts dotagiftx2.FindOpts) ([]dotagiftx2.MarketSalesGraph, error)
+	GraphMarketSales(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.MarketSalesGraph, error)
 
 	// TopKeywords returns a list of top search keywords.
-	TopKeywords(ctx context.Context) ([]dotagiftx2.SearchKeywordScore, error)
+	TopKeywords(ctx context.Context) ([]dotagiftx.SearchKeywordScore, error)
 }
 
 func handleStatsMarketSummaryV2(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
@@ -89,7 +89,7 @@ func handleStatsMarketSummaryOverall(svc statsService, cache cacheManager, logge
 			return
 		}
 
-		res := marketStats{&dotagiftx2.MarketStatusCount{}, &dotagiftx2.MarketStatusCount{}}
+		res := marketStats{&dotagiftx.MarketStatusCount{}, &dotagiftx.MarketStatusCount{}}
 		respondOK(w, res)
 	}
 }
@@ -105,13 +105,13 @@ func handleGraphMarketSales(svc statsService, cache cacheManager, logger *slog.L
 			}
 		}
 
-		f := &dotagiftx2.Market{}
+		f := &dotagiftx.Market{}
 		if err := findOptsFilter(r.URL, f); err != nil {
 			respondError(w, err)
 			return
 		}
 
-		res, err := svc.GraphMarketSales(r.Context(), dotagiftx2.FindOpts{Filter: f})
+		res, err := svc.GraphMarketSales(r.Context(), dotagiftx.FindOpts{Filter: f})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -196,13 +196,13 @@ func topStatsBaseHandler(fn func(context.Context) ([]string, error), cache cache
 }
 
 type marketStats struct {
-	*dotagiftx2.MarketStatusCount
-	Bids *dotagiftx2.MarketStatusCount `json:"bids"`
+	*dotagiftx.MarketStatusCount
+	Bids *dotagiftx.MarketStatusCount `json:"bids"`
 }
 
 // newMarketStats aggregate market sell and buy stats
 // TODO: this should move to service layer.
-func newMarketStats(asks *dotagiftx2.MarketStatusCount, bids *dotagiftx2.MarketStatusCount) *marketStats {
+func newMarketStats(asks *dotagiftx.MarketStatusCount, bids *dotagiftx.MarketStatusCount) *marketStats {
 	asks.BidLive = bids.BidLive
 	asks.BidCompleted = bids.BidCompleted
 	return &marketStats{asks, bids}
@@ -210,16 +210,16 @@ func newMarketStats(asks *dotagiftx2.MarketStatusCount, bids *dotagiftx2.MarketS
 
 func collectMarketStats(ctx context.Context, svc statsService, r *http.Request) (*marketStats, error) {
 	var err error
-	opts := [2]dotagiftx2.FindOpts{
-		{Filter: &dotagiftx2.Market{Type: dotagiftx2.MarketTypeAsk}},
-		{Filter: &dotagiftx2.Market{Type: dotagiftx2.MarketTypeBid}},
+	opts := [2]dotagiftx.FindOpts{
+		{Filter: &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}},
+		{Filter: &dotagiftx.Market{Type: dotagiftx.MarketTypeBid}},
 	}
 	if r != nil {
-		opts[0], err = findOptsFromURL(r.URL, &dotagiftx2.Market{Type: dotagiftx2.MarketTypeAsk})
+		opts[0], err = findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk})
 		if err != nil {
 			return nil, err
 		}
-		opts[1], err = findOptsFromURL(r.URL, &dotagiftx2.Market{Type: dotagiftx2.MarketTypeBid})
+		opts[1], err = findOptsFromURL(r.URL, &dotagiftx.Market{Type: dotagiftx.MarketTypeBid})
 		if err != nil {
 			return nil, err
 		}

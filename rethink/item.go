@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"dario.cat/mergo"
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -38,19 +38,19 @@ type ItemRepository struct {
 	keywordFields []string
 }
 
-func (s *ItemRepository) Find(ctx context.Context, o dotagiftx2.FindOpts) ([]dotagiftx2.Item, error) {
-	var res []dotagiftx2.Item
+func (s *ItemRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Item, error) {
+	var res []dotagiftx.Item
 	o.KeywordFields = s.keywordFields
 	q := newFindOptsQuery(s.table(), o)
 	if err := s.db.list(ctx, q, &res); err != nil {
-		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *ItemRepository) Count(ctx context.Context, o dotagiftx2.FindOpts) (num int, err error) {
-	o = dotagiftx2.FindOpts{
+func (s *ItemRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
@@ -61,53 +61,53 @@ func (s *ItemRepository) Count(ctx context.Context, o dotagiftx2.FindOpts) (num 
 	return
 }
 
-func (s *ItemRepository) Get(ctx context.Context, id string) (*dotagiftx2.Item, error) {
+func (s *ItemRepository) Get(ctx context.Context, id string) (*dotagiftx.Item, error) {
 	row, _ := s.GetBySlug(ctx, id)
 	if row != nil {
 		return row, nil
 	}
 
-	row = &dotagiftx2.Item{}
+	row = &dotagiftx.Item{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
-			return nil, dotagiftx2.ItemErrNotFound
+			return nil, dotagiftx.ItemErrNotFound
 		}
 
-		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *ItemRepository) GetBySlug(ctx context.Context, slug string) (*dotagiftx2.Item, error) {
-	row := &dotagiftx2.Item{}
+func (s *ItemRepository) GetBySlug(ctx context.Context, slug string) (*dotagiftx.Item, error) {
+	row := &dotagiftx.Item{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(ctx, q, row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
-			return nil, dotagiftx2.ItemErrNotFound
+			return nil, dotagiftx.ItemErrNotFound
 		}
 
-		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *ItemRepository) Create(ctx context.Context, in *dotagiftx2.Item) error {
+func (s *ItemRepository) Create(ctx context.Context, in *dotagiftx.Item) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
 	id, err := s.db.insert(ctx, s.table().Insert(in))
 	if err != nil {
-		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
 	return nil
 }
 
-func (s *ItemRepository) Update(ctx context.Context, in *dotagiftx2.Item) error {
+func (s *ItemRepository) Update(ctx context.Context, in *dotagiftx.Item) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -116,11 +116,11 @@ func (s *ItemRepository) Update(ctx context.Context, in *dotagiftx2.Item) error 
 	in.UpdatedAt = now()
 	err = s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if err := mergo.Merge(in, cur); err != nil {
-		return dotagiftx2.NewXError(dotagiftx2.StorageMergeErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
 	}
 
 	return nil
@@ -138,11 +138,11 @@ func (s *ItemRepository) IsItemExist(ctx context.Context, name string) error {
 	})
 	var n int
 	if err := s.db.one(ctx, q.Count(), &n); err != nil {
-		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	if n != 0 {
-		return dotagiftx2.ItemErrCreateItemExists
+		return dotagiftx.ItemErrCreateItemExists
 	}
 
 	return nil
@@ -167,7 +167,7 @@ func (s *ItemRepository) AddViewCount(ctx context.Context, id string) error {
 }
 
 func (s *ItemRepository) updateCatalogViewCount(ctx context.Context, itemID string, viewCount int) error {
-	q := r.Table(tableCatalog).Get(itemID).Update(&dotagiftx2.Catalog{ViewCount: viewCount})
+	q := r.Table(tableCatalog).Get(itemID).Update(&dotagiftx.Catalog{ViewCount: viewCount})
 	return s.db.update(ctx, q)
 }
 

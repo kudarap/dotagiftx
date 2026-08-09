@@ -11,7 +11,7 @@ import (
 	"github.com/kudarap/dotagiftx/clickhouse"
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/discord"
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/file"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/logging"
@@ -30,7 +30,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := dotagiftx2.NewVersion(false, tag, commit, built)
+	v := dotagiftx.NewVersion(false, tag, commit, built)
 	logger.Info("version", "tag", v.Tag)
 	logger.Info("hash", "commit", v.Commit)
 	logger.Info("built", "built", v.Built)
@@ -135,13 +135,13 @@ func (app *application) setup() error {
 	// Service inits.
 	logSvc.Info("setting up services...")
 	fileMgr := setupFileManager(app.config)
-	userSvc := dotagiftx2.NewUserService(userStg, fileMgr, paypalClient, slogger)
-	authSvc := dotagiftx2.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc, slogger)
-	imageSvc := dotagiftx2.NewImageService(fileMgr)
-	itemSvc := dotagiftx2.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr, slogger)
-	inventorySvc := dotagiftx2.NewInventoryService(inventoryStg, marketStg, catalogStg)
-	deliverySvc := dotagiftx2.NewDeliveryService(deliveryStg, marketStg)
-	marketSvc := dotagiftx2.NewMarketService(
+	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient, slogger)
+	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc, slogger)
+	imageSvc := dotagiftx.NewImageService(fileMgr)
+	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr, slogger)
+	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
+	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
+	marketSvc := dotagiftx.NewMarketService(
 		marketStg,
 		userStg,
 		itemStg,
@@ -154,10 +154,10 @@ func (app *application) setup() error {
 		rethink.NewQueue(rethinkClient),
 		app.contextLog("service_market"),
 	)
-	trackSvc := dotagiftx2.NewTrackService(trackStg, itemStg)
-	reportSvc := dotagiftx2.NewReportService(reportStg, discordClient)
-	statsSvc := dotagiftx2.NewStatsService(statsStg, trackStg)
-	hammerSvc := dotagiftx2.NewHammerService(userStg, marketStg)
+	trackSvc := dotagiftx.NewTrackService(trackStg, itemStg)
+	reportSvc := dotagiftx.NewReportService(reportStg, discordClient)
+	statsSvc := dotagiftx.NewStatsService(statsStg, trackStg)
+	hammerSvc := dotagiftx.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 
 	// Server setup.
@@ -291,7 +291,7 @@ func setupClickHouse(cfg clickhouse.Config) (c *clickhouse.Client, err error) {
 func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhouse.Client) error {
 	ctx := context.Background()
 	err := rethinkClient.ListenChangeFeed(ctx, "track", func(prev, next []byte) error {
-		var v dotagiftx2.Track
+		var v dotagiftx.Track
 		if err := json.Unmarshal(next, &v); err != nil {
 			return err
 		}
@@ -302,7 +302,7 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 	}
 
 	err = rethinkClient.ListenChangeFeed(ctx, "market", func(prev, next []byte) error {
-		var v dotagiftx2.Market
+		var v dotagiftx.Market
 		if err := json.Unmarshal(next, &v); err != nil {
 			return err
 		}
@@ -334,7 +334,7 @@ func connRetry(name string, fn func() error) error {
 // version details used by ldflags.
 var tag, commit, built string
 
-func initVer(cfg config.Config) *dotagiftx2.Version {
-	v := dotagiftx2.NewVersion(cfg.Prod, tag, commit, built)
+func initVer(cfg config.Config) *dotagiftx.Version {
+	v := dotagiftx.NewVersion(cfg.Prod, tag, commit, built)
 	return v
 }

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/kudarap/dotagiftx/config"
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/steaminvorg"
@@ -72,13 +72,13 @@ func main() {
 		}
 
 		switch result.Status {
-		case dotagiftx2.DeliveryStatusPrivate:
+		case dotagiftx.DeliveryStatusPrivate:
 			privateCtr++
-		case dotagiftx2.DeliveryStatusNoHit:
+		case dotagiftx.DeliveryStatusNoHit:
 			noHitCtr++
-		case dotagiftx2.DeliveryStatusNameVerified:
+		case dotagiftx.DeliveryStatusNameVerified:
 			itemCtr++
-		case dotagiftx2.DeliveryStatusSenderVerified:
+		case dotagiftx.DeliveryStatusSenderVerified:
 			sellerCtr++
 		}
 
@@ -89,7 +89,7 @@ func main() {
 	fmt.Printf("%d private | %d nohit | %d item | %d seller\n", privateCtr, noHitCtr, itemCtr, sellerCtr)
 }
 
-func getDelivered(limit int) ([]dotagiftx2.Market, error) {
+func getDelivered(limit int) ([]dotagiftx.Market, error) {
 	resp, err := http.Get(fmt.Sprintf(
 		"https://api.dotagiftx.com/markets?sort=updated_at:desc&limit=%d&status=400&id=%s",
 		limit,
@@ -101,7 +101,7 @@ func getDelivered(limit int) ([]dotagiftx2.Market, error) {
 	defer func() { _ = resp.Body.Close() }()
 
 	data := struct {
-		Data []dotagiftx2.Market
+		Data []dotagiftx.Market
 	}{}
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {

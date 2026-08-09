@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const (
@@ -41,7 +41,7 @@ func handleMarketCatalogList(
 		}
 		sortQueryModifier(r)
 
-		opts, err := findOptsFromURL(r.URL, &dotagiftx2.Catalog{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Catalog{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -70,7 +70,7 @@ func handleMarketCatalogList(
 			return
 		}
 		if list == nil {
-			list = []dotagiftx2.Catalog{}
+			list = []dotagiftx.Catalog{}
 		}
 
 		// Save result to cache.
@@ -99,7 +99,7 @@ func handleMarketCatalogDetail(svc marketService, cache cacheManager, logger *sl
 		// Special query flags with findOpts
 		sortQueryModifier(r)
 
-		opts, err := findOptsFromURL(r.URL, &dotagiftx2.Market{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -130,13 +130,13 @@ const catalogTrendRehydrationDur = catalogTrendCacheExpr / 2
 
 func hydrateCatalogTrend(cacheKey string, svc marketService, cache cacheManager, logger *slog.Logger) {
 	logger.InfoContext(context.Background(), "REHYDRATING EXP...")
-	list, _, err := svc.TrendingCatalog(context.Background(), dotagiftx2.FindOpts{})
+	list, _, err := svc.TrendingCatalog(context.Background(), dotagiftx.FindOpts{})
 	if err != nil {
 		logger.ErrorContext(context.Background(), "could not get catalog trend list", "error", err)
 		return
 	}
 
-	trend := newDataWithMeta(list, &dotagiftx2.FindMetadata{ResultCount: len(list), TotalCount: 10})
+	trend := newDataWithMeta(list, &dotagiftx.FindMetadata{ResultCount: len(list), TotalCount: 10})
 	if err = cache.Set(cacheKey, trend, 0); err != nil {
 		logger.ErrorContext(context.Background(), "could not save cache on catalog trend list", "error", err)
 		return

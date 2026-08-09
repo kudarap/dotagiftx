@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
-func (c *Client) CaptureTrackStats(ctx context.Context, track dotagiftx2.Track) error {
+func (c *Client) CaptureTrackStats(ctx context.Context, track dotagiftx.Track) error {
 	const query = `INSERT INTO track (
 		id,
 		type,
@@ -46,7 +46,7 @@ func (c *Client) CaptureTrackStats(ctx context.Context, track dotagiftx2.Track) 
 	return nil
 }
 
-func (c *Client) CaptureMarketStats(ctx context.Context, market dotagiftx2.Market) error {
+func (c *Client) CaptureMarketStats(ctx context.Context, market dotagiftx.Market) error {
 	const query = `INSERT INTO market (
 		id,
 		user_id,
@@ -98,17 +98,17 @@ func (c *Client) DeleteMarketStats(ctx context.Context, id string) error {
 	return nil
 }
 
-func (c *Client) CountMarketStatus(ctx context.Context, opts dotagiftx2.FindOpts) (*dotagiftx2.MarketStatusCount, error) {
+func (c *Client) CountMarketStatus(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error) {
 	panic("implement me")
 }
 
-func (c *Client) TopKeywords(ctx context.Context) ([]dotagiftx2.SearchKeywordScore, error) {
+func (c *Client) TopKeywords(ctx context.Context) ([]dotagiftx.SearchKeywordScore, error) {
 	panic("implement me")
 }
 
 func (c *Client) TrendingCatalog(
 	ctx context.Context,
-	opts dotagiftx2.FindOpts,
-) ([]dotagiftx2.Catalog, *dotagiftx2.FindMetadata, error) {
+	opts dotagiftx.FindOpts,
+) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error) {
 	panic("implement me")
 }

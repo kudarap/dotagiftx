@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
-func buildSitemap(items []dotagiftx2.Item) *stm.Sitemap {
+func buildSitemap(items []dotagiftx.Item) *stm.Sitemap {
 	sitemap := stm.NewSitemap(1)
 	// sitemap.SetVerbose(false)
 	sitemap.SetDefaultHost("https://dotagiftx.com")
@@ -52,7 +52,7 @@ func buildSitemap(items []dotagiftx2.Item) *stm.Sitemap {
 
 func handleSitemap(itemSvc itemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		items, _, _ := itemSvc.Items(r.Context(), dotagiftx2.FindOpts{})
+		items, _, _ := itemSvc.Items(r.Context(), dotagiftx.FindOpts{})
 		sm := buildSitemap(items).XMLContent()
 		w.Header().Set("content-type", "text/xml")
 		if _, err := w.Write(sm); err != nil {

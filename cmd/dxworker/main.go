@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kudarap/dotagiftx/config"
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
@@ -32,7 +32,7 @@ var logger = logging.Default()
 func main() {
 	app := newApp()
 
-	v := dotagiftx2.NewVersion(false, tag, commit, built)
+	v := dotagiftx.NewVersion(false, tag, commit, built)
 	logger.Info("version", "tag", v.Tag)
 	logger.Info("hash", "commit", v.Commit)
 	logger.Info("built", "built", v.Built)
@@ -113,8 +113,8 @@ func (app *application) setup() error {
 	th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
 	slogger := slog.New(th)
 	logSvc.Info("setting up services...")
-	inventorySvc := dotagiftx2.NewInventoryService(inventoryStg, marketStg, catalogStg)
-	deliverySvc := dotagiftx2.NewDeliveryService(deliveryStg, marketStg)
+	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
+	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 	verifySources := []verify.AssetSource{phantasmSvc.InventoryAssetWithProvider}
 	// TODO: Use proper level of fallbacks. For experimental purposes only.

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log"
 
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -23,7 +23,7 @@ func NewReport(c *Client) *ReportRepository {
 		log.Fatalf("could not create %s table: %s", tableReport, err)
 	}
 
-	if err := c.autoIndex(ctx, tableReport, dotagiftx2.Report{}); err != nil {
+	if err := c.autoIndex(ctx, tableReport, dotagiftx.Report{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableReport, err)
 	}
 
@@ -35,19 +35,19 @@ type ReportRepository struct {
 	keywordFields []string
 }
 
-func (s *ReportRepository) Find(ctx context.Context, o dotagiftx2.FindOpts) ([]dotagiftx2.Report, error) {
-	var res []dotagiftx2.Report
+func (s *ReportRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Report, error) {
+	var res []dotagiftx.Report
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	if err := s.db.list(ctx, q, &res); err != nil {
-		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *ReportRepository) Count(ctx context.Context, o dotagiftx2.FindOpts) (num int, err error) {
-	o = dotagiftx2.FindOpts{
+func (s *ReportRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
+	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
@@ -69,27 +69,27 @@ func (s *ReportRepository) includeRelatedFields(q r.Term) r.Term {
 		})
 }
 
-func (s *ReportRepository) Get(ctx context.Context, id string) (*dotagiftx2.Report, error) {
-	row := &dotagiftx2.Report{}
+func (s *ReportRepository) Get(ctx context.Context, id string) (*dotagiftx.Report, error) {
+	row := &dotagiftx.Report{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
-			return nil, dotagiftx2.ReportErrNotFound
+			return nil, dotagiftx.ReportErrNotFound
 		}
 
-		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *ReportRepository) Create(ctx context.Context, in *dotagiftx2.Report) error {
+func (s *ReportRepository) Create(ctx context.Context, in *dotagiftx.Report) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
 	id, err := s.db.insert(ctx, s.table().Insert(in))
 	if err != nil {
-		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
 

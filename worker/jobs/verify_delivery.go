@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -18,7 +18,7 @@ type VerifyDelivery struct {
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dotagiftx2.Market
+	filter   dotagiftx.Market
 }
 
 func NewVerifyDelivery(
@@ -27,7 +27,7 @@ func NewVerifyDelivery(
 	vs *verify.Source,
 	lg *slog.Logger,
 ) *VerifyDelivery {
-	f := dotagiftx2.Market{Type: dotagiftx2.MarketTypeAsk, Status: dotagiftx2.MarketStatusSold}
+	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &VerifyDelivery{
 		ds, ms, vs, lg,
 		"verify_delivery", time.Hour * 12, f}
@@ -43,7 +43,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 		vd.logger.Info("VERIFIED DELIVERY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
-	opts := dotagiftx2.FindOpts{Filter: vd.filter}
+	opts := dotagiftx.FindOpts{Filter: vd.filter}
 	opts.IndexSorting = true
 	opts.Sort = "updated_at"
 	opts.Desc = true
@@ -60,8 +60,8 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			start := time.Now()
 
 			// Skip verified statuses.
-			if mkt.DeliveryStatus == dotagiftx2.DeliveryStatusNameVerified ||
-				mkt.DeliveryStatus == dotagiftx2.DeliveryStatusSenderVerified {
+			if mkt.DeliveryStatus == dotagiftx.DeliveryStatusNameVerified ||
+				mkt.DeliveryStatus == dotagiftx.DeliveryStatusSenderVerified {
 				continue
 			}
 
@@ -76,7 +76,7 @@ func (vd *VerifyDelivery) Run(ctx context.Context) error {
 			}
 
 			vd.logger.Info("batch", "page", opts.Page, "user", mkt.User.Name, "partner_steam_id", mkt.PartnerSteamID, "item", mkt.Item.Name, "status", result.Status)
-			err = vd.deliverySvc.Set(ctx, &dotagiftx2.Delivery{
+			err = vd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID:   mkt.ID,
 				Status:     result.Status,
 				Assets:     result.Assets,
