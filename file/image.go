@@ -6,6 +6,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -42,7 +43,11 @@ func Thumbnail(path string, width, height uint) (newPath string, err error) {
 	if err != nil {
 		return
 	}
-	defer func() { _ = out.Close() }()
+	defer func() {
+		if err := out.Close(); err != nil {
+			slog.Error("closing file", "error", err)
+		}
+	}()
 
 	// Write new image to file
 	if err = encodeImage(newPath, out, m); err != nil {
@@ -74,7 +79,11 @@ func decodeImage(path string) (image.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = file.Close() }()
+	defer func() {
+		if err := file.Close(); err != nil {
+			slog.Error("closing file", "error", err)
+		}
+	}()
 
 	// Decode base on type
 	var img image.Image

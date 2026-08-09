@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"os"
@@ -87,6 +88,11 @@ func (l *Local) baseSave(r io.Reader, baseName string) (name string, err error) 
 		return
 	}
 	defer func() { _ = out.Close() }()
+	defer func() {
+		if err := out.Close(); err != nil {
+			slog.Error("closing file", "error", err)
+		}
+	}()
 
 	// Write contents to file.
 	_, err = out.Write(data)
