@@ -3,9 +3,8 @@ package jobs
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"log/slog"
+	"time"
 )
 
 type ExpiringSubscription struct {

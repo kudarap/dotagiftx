@@ -2,9 +2,8 @@ package jobs
 
 import (
 	"context"
-	"time"
-
 	"log/slog"
+	"time"
 
 	"github.com/kudarap/dotagiftx"
 )

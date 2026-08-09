@@ -2,9 +2,8 @@ package jobs
 
 import (
 	"context"
-	"time"
-
 	"log/slog"
+	"time"
 )
 
 type CleanPhantasmCache struct {

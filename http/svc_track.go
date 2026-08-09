@@ -2,9 +2,8 @@ package http
 
 import (
 	"context"
-	"net/http"
-
 	"log/slog"
+	"net/http"
 
 	"github.com/kudarap/dotagiftx/assets"
 )

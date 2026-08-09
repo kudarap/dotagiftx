@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
-
-	"log/slog"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"

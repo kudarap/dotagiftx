@@ -2,10 +2,9 @@ package http
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"time"
-
-	"log/slog"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
