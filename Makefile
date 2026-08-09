@@ -19,7 +19,7 @@ run-worker: build-worker
 run-web:
 	cd ./web && yarn dev && cd ..
 
-test: lint
+test: lint vuln
 	go test -v ./
 	go test -v ./http/...
 	go test -v ./steam/...
