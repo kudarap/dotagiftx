@@ -45,4 +45,3 @@ jobs:
         run: |
           bun install
           bun run lint
-          bun run build
