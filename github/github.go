@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -78,7 +79,11 @@ func (c *Client) CreateIssue(ctx context.Context, title string, body string) (st
 		return "", fmt.Errorf("req err: %w", err)
 	}
 
-	defer res.Body.Close()
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			slog.Error("closing body from github", "error", err)
+		}
+	}()
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		body, _ := io.ReadAll(res.Body)
@@ -118,7 +123,11 @@ func (c *Client) getInstallationAccessToken(ctx context.Context) (string, error)
 		return "", err
 	}
 
-	defer res.Body.Close()
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			slog.Error("closing body from github", "error", err)
+		}
+	}()
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		body, _ := io.ReadAll(res.Body)
