@@ -39,9 +39,12 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Lint web
-        run: bun install && bun run lint
+      - name: Bun test build
         working-directory: web
+        run: |
+          bun install
+          bun run lint
+          bun run build
 
   deploy:
     runs-on: ubuntu-latest
