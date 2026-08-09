@@ -28,15 +28,17 @@ type (
 	}
 
 	Client struct {
-		http   *http.Client
-		config Config
+		http      *http.Client
+		config    Config
+		githubUrl string
 	}
 )
 
 func New(conf Config) *Client {
 	return &Client{
-		http:   &http.Client{},
-		config: conf,
+		http:      &http.Client{},
+		config:    conf,
+		githubUrl: "https://api.github.com",
 	}
 }
 
@@ -63,7 +65,7 @@ func (c *Client) CreateIssue(ctx context.Context, title string, body string) (st
 		return "", err
 	}
 
-	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/issues", c.config.Owner, c.config.Repository)
+	url := fmt.Sprintf("%s/repos/%s/%s/issues", c.githubUrl, c.config.Owner, c.config.Repository)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
 	if err != nil {
 		return "", err
@@ -102,7 +104,7 @@ func (c *Client) CreateIssue(ctx context.Context, title string, body string) (st
 }
 
 func (c *Client) getInstallationAccessToken(ctx context.Context) (string, error) {
-	url := fmt.Sprintf("https://api.github.com/app/installations/%s/access_tokens", c.config.InstallationID)
+	url := fmt.Sprintf("%s/app/installations/%s/access_tokens", c.githubUrl, c.config.InstallationID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, nil)
 	if err != nil {
@@ -170,6 +172,5 @@ func (c *Client) appJWT() (string, error) {
 		"exp": now + 9*60,
 		"iss": c.config.AppID,
 	}
-	return jwt.NewWithClaims(jwt.SigningMethodRS256, claims).
-		SignedString(key)
+	return jwt.NewWithClaims(jwt.SigningMethodRS256, claims).SignedString(key)
 }

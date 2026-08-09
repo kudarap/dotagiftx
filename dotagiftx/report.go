@@ -234,5 +234,5 @@ type webhookPoster interface {
 }
 
 type issuer interface {
-	CreateIssue(ctx context.Context, title, body string) (string, error)
+	CreateIssue(ctx context.Context, title string, body string) (issueUrl string, err error)
 }
