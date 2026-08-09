@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const dayHours = time.Hour * 24
@@ -41,9 +41,9 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	now := time.Now()
 
 	// Process expiring bids.
-	bidExpr := now.Add(-dayHours * dotagiftx.MarketBidExpirationDays)
+	bidExpr := now.Add(-dayHours * dotagiftx2.MarketBidExpirationDays)
 	em.logger.Info("updating expiring bids", "cutoff", bidExpr)
-	ids, err := em.marketRepo.UpdateExpiring(ctx, dotagiftx.MarketTypeBid, dotagiftx.BoonRefresherShard, bidExpr)
+	ids, err := em.marketRepo.UpdateExpiring(ctx, dotagiftx2.MarketTypeBid, dotagiftx2.BoonRefresherShard, bidExpr)
 	if err != nil {
 		em.logger.Error("could not update expiring bids", "error", err)
 		return err
@@ -52,9 +52,9 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 	em.logger.Info("updating expiring bids finished!")
 
 	// Process expiring asks.
-	askExpr := now.Add(-dayHours * dotagiftx.MarketAskExpirationDays)
+	askExpr := now.Add(-dayHours * dotagiftx2.MarketAskExpirationDays)
 	em.logger.Info("updating expiring asks", "cutoff", askExpr)
-	ids, err = em.marketRepo.UpdateExpiring(ctx, dotagiftx.MarketTypeAsk, dotagiftx.BoonRefresherOrb, askExpr)
+	ids, err = em.marketRepo.UpdateExpiring(ctx, dotagiftx2.MarketTypeAsk, dotagiftx2.BoonRefresherOrb, askExpr)
 	if err != nil {
 		em.logger.Error("could not update expiring asks", "error", err)
 		return err
@@ -64,7 +64,7 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 
 	// Process expiring resells.
 	em.logger.Info("updating expiring resells", "cutoff", askExpr)
-	ids, err = em.marketRepo.UpdateExpiringResell(ctx, dotagiftx.BoonShopKeepersContract)
+	ids, err = em.marketRepo.UpdateExpiringResell(ctx, dotagiftx2.BoonShopKeepersContract)
 	if err != nil {
 		em.logger.Error("could not update expiring resells", "error", err)
 		return err

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
@@ -17,31 +17,31 @@ const userCacheExpr = time.Minute * 5
 // userService provides access to user service methods used by http handlers.
 type userService interface {
 	// FlaggedUsers returns a list of flagged/reported users.
-	FlaggedUsers(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.User, error)
+	FlaggedUsers(ctx context.Context, opts dotagiftx2.FindOpts) ([]dotagiftx2.User, error)
 
 	// User returns user details by id.
-	User(ctx context.Context, id string) (*dotagiftx.User, error)
+	User(ctx context.Context, id string) (*dotagiftx2.User, error)
 
 	// UserFromContext returns user details from context.
-	UserFromContext(context.Context) (*dotagiftx.User, error)
+	UserFromContext(context.Context) (*dotagiftx2.User, error)
 
 	// CreateSubscription creates a subscription for the current user.
 	CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error)
 
 	// ProcessSubscription validates and processes subscription features.
-	ProcessSubscription(ctx context.Context, subscriptionID string) (*dotagiftx.User, error)
+	ProcessSubscription(ctx context.Context, subscriptionID string) (*dotagiftx2.User, error)
 
 	// UpdateSubscriptionFromWebhook handles user subscription updates from http request.
-	UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*dotagiftx.User, error)
+	UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*dotagiftx2.User, error)
 
 	// ProcessManualSubscription processes manual subscription.
-	ProcessManualSubscription(ctx context.Context, form dotagiftx.ManualSubscriptionParam) (*dotagiftx.User, error)
+	ProcessManualSubscription(ctx context.Context, form dotagiftx2.ManualSubscriptionParam) (*dotagiftx2.User, error)
 }
 
 // steamClient provides access to steam API methods used by http handlers.
 type steamClient interface {
 	// Player returns player summary base on steamID.
-	Player(steamID string) (*dotagiftx.SteamPlayer, error)
+	Player(steamID string) (*dotagiftx2.SteamPlayer, error)
 
 	// ResolveVanityURL returns steam id from profile url.
 	ResolveVanityURL(url string) (steamID string, err error)
@@ -113,7 +113,7 @@ func handleBlacklisted(svc userService, cache cacheManager, logger *slog.Logger)
 			}
 		}
 
-		opts, err := findOptsFromURL(r.URL, &dotagiftx.Item{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx2.Item{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -124,7 +124,7 @@ func handleBlacklisted(svc userService, cache cacheManager, logger *slog.Logger)
 			return
 		}
 		if list == nil {
-			list = []dotagiftx.User{}
+			list = []dotagiftx2.User{}
 		}
 
 		go func() {
@@ -140,7 +140,7 @@ func handleBlacklisted(svc userService, cache cacheManager, logger *slog.Logger)
 const userVanityCacheExpr = time.Hour
 
 type vanityUserResp struct {
-	dotagiftx.User
+	dotagiftx2.User
 
 	IsRegistered  bool      `json:"is_registered"`
 	SteamAvatar   string    `json:"steam_avatar"`
@@ -265,7 +265,7 @@ func handleUserManualSubscription(svc userService, cache cacheManager, divineKey
 			return
 		}
 
-		var form dotagiftx.ManualSubscriptionParam
+		var form dotagiftx2.ManualSubscriptionParam
 		if err := parseForm(r, &form); err != nil {
 			respondError(w, err)
 			return

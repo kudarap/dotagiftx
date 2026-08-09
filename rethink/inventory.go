@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"dario.cat/mergo"
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -24,7 +24,7 @@ func NewInventory(c *Client) *InventoryRepository {
 		log.Fatalf("could not create %s table: %s", tableInventory, err)
 	}
 
-	if err := c.autoIndex(ctx, tableInventory, dotagiftx.Inventory{}); err != nil {
+	if err := c.autoIndex(ctx, tableInventory, dotagiftx2.Inventory{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableInventory, err)
 	}
 
@@ -36,19 +36,19 @@ type InventoryRepository struct {
 	keywordFields []string
 }
 
-func (s *InventoryRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Inventory, error) {
-	var res []dotagiftx.Inventory
+func (s *InventoryRepository) Find(ctx context.Context, o dotagiftx2.FindOpts) ([]dotagiftx2.Inventory, error) {
+	var res []dotagiftx2.Inventory
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
 	if err := s.db.list(ctx, q, &res); err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *InventoryRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
-	o = dotagiftx.FindOpts{
+func (s *InventoryRepository) Count(ctx context.Context, o dotagiftx2.FindOpts) (num int, err error) {
+	o = dotagiftx2.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
 		Filter:        o.Filter,
@@ -71,21 +71,21 @@ func (s *InventoryRepository) includeRelatedFields(q r.Term) r.Term {
 	//	})
 }
 
-func (s *InventoryRepository) Get(ctx context.Context, id string) (*dotagiftx.Inventory, error) {
-	row := &dotagiftx.Inventory{}
+func (s *InventoryRepository) Get(ctx context.Context, id string) (*dotagiftx2.Inventory, error) {
+	row := &dotagiftx2.Inventory{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
-			return nil, dotagiftx.InventoryErrNotFound
+			return nil, dotagiftx2.InventoryErrNotFound
 		}
 
-		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *InventoryRepository) GetByMarketID(ctx context.Context, marketID string) (*dotagiftx.Inventory, error) {
-	var res []dotagiftx.Inventory
+func (s *InventoryRepository) GetByMarketID(ctx context.Context, marketID string) (*dotagiftx2.Inventory, error) {
+	var res []dotagiftx2.Inventory
 	var err error
 
 	q := s.table().GetAllByIndex(inventoryFieldMarketID, marketID)
@@ -94,27 +94,27 @@ func (s *InventoryRepository) GetByMarketID(ctx context.Context, marketID string
 	}
 
 	if len(res) == 0 {
-		return nil, dotagiftx.InventoryErrNotFound
+		return nil, dotagiftx2.InventoryErrNotFound
 	}
 
 	return &res[0], nil
 }
 
-func (s *InventoryRepository) Create(ctx context.Context, in *dotagiftx.Inventory) error {
+func (s *InventoryRepository) Create(ctx context.Context, in *dotagiftx2.Inventory) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
 	id, err := s.db.insert(ctx, s.table().Insert(in))
 	if err != nil {
-		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 	in.ID = id
 
 	return nil
 }
 
-func (s *InventoryRepository) Update(ctx context.Context, in *dotagiftx.Inventory) error {
+func (s *InventoryRepository) Update(ctx context.Context, in *dotagiftx2.Inventory) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -123,11 +123,11 @@ func (s *InventoryRepository) Update(ctx context.Context, in *dotagiftx.Inventor
 	in.UpdatedAt = now()
 	err = s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
+		return dotagiftx2.NewXError(dotagiftx2.StorageMergeErr, err)
 	}
 
 	return nil

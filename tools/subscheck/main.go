@@ -9,8 +9,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/rethink"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"

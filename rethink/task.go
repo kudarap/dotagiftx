@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -18,7 +18,7 @@ type TaskRepository struct {
 	db *Client
 }
 
-func (s *TaskRepository) Get(ctx context.Context) (*dotagiftx.Task, error) {
+func (s *TaskRepository) Get(ctx context.Context) (*dotagiftx2.Task, error) {
 	res, err := s.List(ctx, 1)
 	if err != nil {
 		return nil, err
@@ -29,30 +29,30 @@ func (s *TaskRepository) Get(ctx context.Context) (*dotagiftx.Task, error) {
 	return &res[0], nil
 }
 
-func (s *TaskRepository) List(ctx context.Context, limit int) ([]dotagiftx.Task, error) {
-	q := s.table().GetAllByIndex(tableTaskFieldStatus, dotagiftx.TaskStatusPending).
+func (s *TaskRepository) List(ctx context.Context, limit int) ([]dotagiftx2.Task, error) {
+	q := s.table().GetAllByIndex(tableTaskFieldStatus, dotagiftx2.TaskStatusPending).
 		OrderBy(tableTaskFieldPriority).Limit(limit)
 
-	var res []dotagiftx.Task
+	var res []dotagiftx2.Task
 	if err := s.db.list(ctx, q, &res); err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 	return res, nil
 }
 
-func (s *TaskRepository) Update(ctx context.Context, in dotagiftx.Task) error {
+func (s *TaskRepository) Update(ctx context.Context, in dotagiftx2.Task) error {
 	in.Retry++
 	err := s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
-		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	return nil
 }
 
-func (s *TaskRepository) Queue(ctx context.Context, p dotagiftx.TaskPriority, t dotagiftx.TaskType, payload any) (id string, err error) {
+func (s *TaskRepository) Queue(ctx context.Context, p dotagiftx2.TaskPriority, t dotagiftx2.TaskType, payload any) (id string, err error) {
 	n := now()
-	id, err = s.db.insert(ctx, s.table().Insert(dotagiftx.Task{
+	id, err = s.db.insert(ctx, s.table().Insert(dotagiftx2.Task{
 		Status:    0,
 		Priority:  p,
 		Type:      t,
@@ -72,7 +72,7 @@ func NewQueue(c *Client) *TaskRepository {
 		log.Fatalf("could not create %s table: %s", tableTask, err)
 	}
 
-	if err := c.autoIndex(ctx, tableTask, dotagiftx.Task{}); err != nil {
+	if err := c.autoIndex(ctx, tableTask, dotagiftx2.Task{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableTask, err)
 	}
 

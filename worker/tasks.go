@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/verify"
 )
@@ -64,7 +64,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 		task := *t
 		wg.Add(1)
 
-		task.Status = dotagiftx.TaskStatusProcessing
+		task.Status = dotagiftx2.TaskStatusProcessing
 		if err = p.queue.Update(ctx, task); err != nil {
 			p.logger.ErrorContext(ctx, "mark task status as processing", "err", err)
 			wg.Done()
@@ -78,9 +78,9 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 
 		var run func(context.Context, any) error
 		switch task.Type {
-		case dotagiftx.TaskTypeVerifyInventory:
+		case dotagiftx2.TaskTypeVerifyInventory:
 			run = p.taskVerifyInventory
-		case dotagiftx.TaskTypeVerifyDelivery:
+		case dotagiftx2.TaskTypeVerifyDelivery:
 			run = p.taskVerifyDelivery
 		}
 
@@ -91,7 +91,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 				"id", task.ID,
 				"err", err,
 			)
-			task.Status = dotagiftx.TaskStatusError
+			task.Status = dotagiftx2.TaskStatusError
 			task.Note = fmt.Sprintf("err: %s", err)
 			if err = p.queue.Update(ctx, task); err != nil {
 				p.logger.ErrorContext(ctx, "mark task status as error",
@@ -103,7 +103,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 			continue
 		}
 
-		task.Status = dotagiftx.TaskStatusDone
+		task.Status = dotagiftx2.TaskStatusDone
 		p.logger.InfoContext(ctx, "done",
 			"id", task.ID,
 			"type", task.Type,
@@ -120,7 +120,7 @@ func (p *TaskProcessor) Run(wg *sync.WaitGroup) {
 }
 
 func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data any) error {
-	var market dotagiftx.Market
+	var market dotagiftx2.Market
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data any) error
 	if err != nil {
 		return err
 	}
-	return p.inventorySvc.Set(ctx, &dotagiftx.Inventory{
+	return p.inventorySvc.Set(ctx, &dotagiftx2.Inventory{
 		MarketID:   market.ID,
 		Status:     result.Status,
 		Assets:     result.Assets,
@@ -147,7 +147,7 @@ func (p *TaskProcessor) taskVerifyInventory(ctx context.Context, data any) error
 }
 
 func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data any) error {
-	var market dotagiftx.Market
+	var market dotagiftx2.Market
 	if err := marshallTaskPayload(data, &market); err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data any) error 
 	if err != nil {
 		return err
 	}
-	err = p.deliverySvc.Set(ctx, &dotagiftx.Delivery{
+	err = p.deliverySvc.Set(ctx, &dotagiftx2.Delivery{
 		MarketID:   market.ID,
 		Status:     result.Status,
 		Assets:     result.Assets,
@@ -177,8 +177,8 @@ func (p *TaskProcessor) taskVerifyDelivery(ctx context.Context, data any) error 
 }
 
 type taskQueue interface {
-	Get(ctx context.Context) (*dotagiftx.Task, error)
-	Update(ctx context.Context, t dotagiftx.Task) error
+	Get(ctx context.Context) (*dotagiftx2.Task, error)
+	Update(ctx context.Context, t dotagiftx2.Task) error
 }
 
 type inventoryInvalidator interface {
@@ -188,13 +188,13 @@ type inventoryInvalidator interface {
 // deliveryService provides access to delivery service methods used by the task processor.
 type deliveryService interface {
 	// Set saves new Delivery details.
-	Set(context.Context, *dotagiftx.Delivery) error
+	Set(context.Context, *dotagiftx2.Delivery) error
 }
 
 // inventoryService provides access to inventory service methods used by the task processor.
 type inventoryService interface {
 	// Set saves new Inventory details.
-	Set(context.Context, *dotagiftx.Inventory) error
+	Set(context.Context, *dotagiftx2.Inventory) error
 }
 
 func marshallTaskPayload(in, out any) error {

@@ -11,7 +11,7 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/fatih/structs"
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
@@ -25,7 +25,7 @@ func NewCatalog(c *Client, lg *slog.Logger) *CatalogRepository {
 		os.Exit(1)
 	}
 
-	if err := c.autoIndex(ctx, tableCatalog, dotagiftx.Catalog{}); err != nil {
+	if err := c.autoIndex(ctx, tableCatalog, dotagiftx2.Catalog{}); err != nil {
 		lg.ErrorContext(ctx, "could not create index on catalog table", "table", tableCatalog, "error", err)
 		os.Exit(1)
 	}
@@ -39,7 +39,7 @@ type CatalogRepository struct {
 	logger        *slog.Logger
 }
 
-func (s *CatalogRepository) Trending(ctx context.Context) ([]dotagiftx.Catalog, error) {
+func (s *CatalogRepository) Trending(ctx context.Context) ([]dotagiftx2.Catalog, error) {
 	/*
 		r.db('dotagiftables')
 		  .table('track')
@@ -92,7 +92,7 @@ func (s *CatalogRepository) Trending(ctx context.Context) ([]dotagiftx.Catalog, 
 	const reductionField = "reduction"
 	q := r.Table(tableTrack).
 		Between(startTime, endTime, r.BetweenOpts{Index: trackFieldCreatedAt}).
-		Filter(map[string]string{trackFieldType: dotagiftx.TrackTypeView}).
+		Filter(map[string]string{trackFieldType: dotagiftx2.TrackTypeView}).
 		Group(trackFieldItemID).Count().
 		Ungroup().OrderBy(r.Desc(reductionField)).
 		Map(func(t r.Term) any {
@@ -100,19 +100,19 @@ func (s *CatalogRepository) Trending(ctx context.Context) ([]dotagiftx.Catalog, 
 			mq := r.Table(tableMarket).
 				Between(startTime, endTime, r.BetweenOpts{Index: marketFieldCreatedAt}).
 				Filter(map[string]any{marketFieldItemID: itemID})
-			askQ := mq.Filter(map[string]any{marketFieldType: dotagiftx.MarketTypeAsk})
+			askQ := mq.Filter(map[string]any{marketFieldType: dotagiftx2.MarketTypeAsk})
 			// Score rate evaluation.
 			viewScore := t.Field(reductionField)
 			entryScore := askQ.Count()
-			reserveScore := askQ.Filter(map[string]any{marketFieldStatus: dotagiftx.MarketStatusReserved}).Count()
-			soldScore := askQ.Filter(map[string]any{marketFieldStatus: dotagiftx.MarketStatusSold}).Count()
-			bidScore := mq.Filter(map[string]any{marketFieldType: dotagiftx.MarketTypeBid}).Count()
+			reserveScore := askQ.Filter(map[string]any{marketFieldStatus: dotagiftx2.MarketStatusReserved}).Count()
+			soldScore := askQ.Filter(map[string]any{marketFieldStatus: dotagiftx2.MarketStatusSold}).Count()
+			bidScore := mq.Filter(map[string]any{marketFieldType: dotagiftx2.MarketTypeBid}).Count()
 			finalScore := r.Expr([]r.Term{
-				viewScore.Mul(dotagiftx.TrendScoreRateView),
-				entryScore.Mul(dotagiftx.TrendScoreRateMarketEntry),
-				reserveScore.Mul(dotagiftx.TrendScoreRateReserved),
-				soldScore.Mul(dotagiftx.TrendScoreRateSold),
-				bidScore.Mul(dotagiftx.TrendScoreRateBid),
+				viewScore.Mul(dotagiftx2.TrendScoreRateView),
+				entryScore.Mul(dotagiftx2.TrendScoreRateMarketEntry),
+				reserveScore.Mul(dotagiftx2.TrendScoreRateReserved),
+				soldScore.Mul(dotagiftx2.TrendScoreRateSold),
+				bidScore.Mul(dotagiftx2.TrendScoreRateBid),
 			}).Sum()
 
 			return map[string]any{
@@ -124,7 +124,7 @@ func (s *CatalogRepository) Trending(ctx context.Context) ([]dotagiftx.Catalog, 
 		EqJoin(trackFieldItemID, r.Table(tableCatalog)).Zip().
 		OrderBy(r.Desc(scoreFieldName)).Limit(10)
 
-	var res []dotagiftx.Catalog
+	var res []dotagiftx2.Catalog
 	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, err
 	}
@@ -132,20 +132,20 @@ func (s *CatalogRepository) Trending(ctx context.Context) ([]dotagiftx.Catalog, 
 	return res, nil
 }
 
-func (s *CatalogRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Catalog, error) {
-	var res []dotagiftx.Catalog
+func (s *CatalogRepository) Find(ctx context.Context, o dotagiftx2.FindOpts) ([]dotagiftx2.Catalog, error) {
+	var res []dotagiftx2.Catalog
 	o.KeywordFields = s.keywordFields
 	o.IndexSorting = true
 	q := newFindOptsQuery(s.table(), o)
 	// q := newCatalogFindOptsQuery(s.table(), o, s.filterOutZeroQty)
 	if err := s.db.list(ctx, q, &res); err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 	return res, nil
 }
 
-func (s *CatalogRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
-	o = dotagiftx.FindOpts{
+func (s *CatalogRepository) Count(ctx context.Context, o dotagiftx2.FindOpts) (num int, err error) {
+	o = dotagiftx2.FindOpts{
 		KeywordFields: s.keywordFields,
 		IndexSorting:  true,
 		Keyword:       o.Keyword,
@@ -157,39 +157,39 @@ func (s *CatalogRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (nu
 	return
 }
 
-func (s *CatalogRepository) Get(ctx context.Context, id string) (*dotagiftx.Catalog, error) {
+func (s *CatalogRepository) Get(ctx context.Context, id string) (*dotagiftx2.Catalog, error) {
 	row, _ := s.getBySlug(ctx, id)
 	if row != nil {
 		return row, nil
 	}
 
-	row = &dotagiftx.Catalog{}
+	row = &dotagiftx2.Catalog{}
 	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
-			return nil, dotagiftx.CatalogErrNotFound
+			return nil, dotagiftx2.CatalogErrNotFound
 		}
 
-		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *CatalogRepository) getBySlug(ctx context.Context, slug string) (*dotagiftx.Catalog, error) {
-	row := &dotagiftx.Catalog{}
+func (s *CatalogRepository) getBySlug(ctx context.Context, slug string) (*dotagiftx2.Catalog, error) {
+	row := &dotagiftx2.Catalog{}
 	q := s.table().GetAllByIndex(itemFieldSlug, slug)
 	if err := s.db.one(ctx, q, row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
-			return nil, dotagiftx.CatalogErrNotFound
+			return nil, dotagiftx2.CatalogErrNotFound
 		}
 
-		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	return row, nil
 }
 
-func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagiftx.Catalog, error) {
+func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagiftx2.Catalog, error) {
 	bs := time.Now()
 	defer func() {
 		s.logger.InfoContext(ctx, "catalog indexed", "item_id", itemID, "elapsed", time.Since(bs))
@@ -197,7 +197,7 @@ func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagift
 
 	var benchStart time.Time
 
-	cat := &dotagiftx.Catalog{}
+	cat := &dotagiftx2.Catalog{}
 
 	var q r.Term
 	var err error
@@ -205,14 +205,14 @@ func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagift
 	// Get item details by item ID.
 	q = r.Table(tableItem).Get(itemID)
 	if err = s.db.one(ctx, q, cat); err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.CatalogErrIndexing, err)
 	}
 
 	benchStart = time.Now()
 	// Get market offers summary from LIVE status.
 	cat.Quantity, cat.LowestAsk, cat.MedianAsk, cat.RecentAsk, err = s.getOffersSummary(ctx, itemID)
 	if err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.CatalogErrIndexing, err)
 	}
 	s.logger.InfoContext(ctx, "rethink/catalog getOffersSummary", "elapsed", time.Since(benchStart))
 
@@ -220,7 +220,7 @@ func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagift
 	// Get market buy orders summary.
 	cat.BidCount, cat.HighestBid, cat.RecentBid, err = s.getBuyOrdersSummary(ctx, itemID)
 	if err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.CatalogErrIndexing, err)
 	}
 	s.logger.InfoContext(ctx, "rethink/catalog getBuyOrdersSummary", "elapsed", time.Since(benchStart))
 
@@ -228,7 +228,7 @@ func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagift
 	// Get market sales stats which calculated from RESERVED and SOLD statuses.
 	cat.SaleCount, cat.AvgSale, cat.RecentSale, err = s.getSaleSummary(ctx, itemID)
 	if err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.CatalogErrIndexing, err)
 	}
 	s.logger.InfoContext(ctx, "rethink/catalog getSaleSummary", "elapsed", time.Since(benchStart))
 
@@ -236,7 +236,7 @@ func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagift
 	// Get reserved and sold count on the market by item ID.
 	cat.ReservedCount, err = s.getReservedCounts(ctx, itemID)
 	if err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.CatalogErrIndexing, err)
 	}
 	cat.SoldCount = cat.SaleCount - cat.ReservedCount
 	s.logger.InfoContext(ctx, "rethink/catalog getReservedCounts", "elapsed", time.Since(benchStart))
@@ -249,7 +249,7 @@ func (s *CatalogRepository) Index(ctx context.Context, itemID string) (*dotagift
 	}
 
 	if err != nil {
-		return nil, dotagiftx.NewXError(dotagiftx.CatalogErrIndexing, err)
+		return nil, dotagiftx2.NewXError(dotagiftx2.CatalogErrIndexing, err)
 	}
 
 	return cat, nil
@@ -260,10 +260,10 @@ func (s *CatalogRepository) getOffersSummary(ctx context.Context, itemID string)
 	// Get market offers from LIVE status.
 	offer := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
-		Filter(dotagiftx.Market{
-			Type:            dotagiftx.MarketTypeAsk,
-			Status:          dotagiftx.MarketStatusLive,
-			InventoryStatus: dotagiftx.InventoryStatusVerified,
+		Filter(dotagiftx2.Market{
+			Type:            dotagiftx2.MarketTypeAsk,
+			Status:          dotagiftx2.MarketStatusLive,
+			InventoryStatus: dotagiftx2.InventoryStatusVerified,
 		})
 	// Get offer count on the market by item ID.
 	q := offer.Count()
@@ -304,9 +304,9 @@ func (s *CatalogRepository) getOffersSummary(ctx context.Context, itemID string)
 func (s *CatalogRepository) getBuyOrdersSummary(ctx context.Context, itemID string) (count int, max float64, recent *time.Time, err error) {
 	buyOrder := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
-		Filter(dotagiftx.Market{
-			Type:   dotagiftx.MarketTypeBid,
-			Status: dotagiftx.MarketStatusLive,
+		Filter(dotagiftx2.Market{
+			Type:   dotagiftx2.MarketTypeBid,
+			Status: dotagiftx2.MarketStatusLive,
 		})
 	// Get bid count on the market by item ID.
 	q := buyOrder.Count()
@@ -340,11 +340,11 @@ func (s *CatalogRepository) getBuyOrdersSummary(ctx context.Context, itemID stri
 func (s *CatalogRepository) getSaleSummary(ctx context.Context, itemID string) (count int, avg float64, recent *time.Time, err error) {
 	sale := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
-		Filter(dotagiftx.Market{
-			Type: dotagiftx.MarketTypeAsk,
+		Filter(dotagiftx2.Market{
+			Type: dotagiftx2.MarketTypeAsk,
 		}).Filter(func(doc r.Term) r.Term {
-		return doc.Field(marketFieldStatus).Eq(dotagiftx.MarketStatusReserved).
-			Or(doc.Field(marketFieldStatus).Eq(dotagiftx.MarketStatusSold))
+		return doc.Field(marketFieldStatus).Eq(dotagiftx2.MarketStatusReserved).
+			Or(doc.Field(marketFieldStatus).Eq(dotagiftx2.MarketStatusSold))
 	})
 
 	// Get sale count on the market by item ID.
@@ -377,9 +377,9 @@ func (s *CatalogRepository) getSaleSummary(ctx context.Context, itemID string) (
 func (s *CatalogRepository) getReservedCounts(ctx context.Context, itemID string) (count int, err error) {
 	reserved := r.Table(tableMarket).
 		GetAllByIndex(marketFieldItemID, itemID).
-		Filter(dotagiftx.Market{
-			Type:   dotagiftx.MarketTypeAsk,
-			Status: dotagiftx.MarketStatusReserved,
+		Filter(dotagiftx2.Market{
+			Type:   dotagiftx2.MarketTypeAsk,
+			Status: dotagiftx2.MarketStatusReserved,
 		}).Count()
 
 	if err = s.db.one(ctx, reserved, &count); err != nil {
@@ -405,7 +405,7 @@ func (s *CatalogRepository) medianPriceQuery(qty int, t r.Term) r.Term {
 	return q.Skip(skip).Limit(limit).Avg(marketFieldPrice)
 }
 
-func (s *CatalogRepository) create(ctx context.Context, in *dotagiftx.Catalog) error {
+func (s *CatalogRepository) create(ctx context.Context, in *dotagiftx2.Catalog) error {
 	// Fixes missing item in catalog that does not have views yet.
 	in.ViewCount = 1
 	t := now()
@@ -415,13 +415,13 @@ func (s *CatalogRepository) create(ctx context.Context, in *dotagiftx.Catalog) e
 	m := catalogToMap(in)
 
 	if _, err := s.db.insert(ctx, s.table().Insert(m)); err != nil {
-		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	return nil
 }
 
-func (s *CatalogRepository) update(ctx context.Context, in *dotagiftx.Catalog) error {
+func (s *CatalogRepository) update(ctx context.Context, in *dotagiftx2.Catalog) error {
 	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
@@ -433,11 +433,11 @@ func (s *CatalogRepository) update(ctx context.Context, in *dotagiftx.Catalog) e
 
 	err = s.db.update(ctx, s.table().Get(in.ID).Update(m))
 	if err != nil {
-		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+		return dotagiftx2.NewXError(dotagiftx2.StorageUncaughtErr, err)
 	}
 
 	if err = mergo.Merge(in, cur); err != nil {
-		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
+		return dotagiftx2.NewXError(dotagiftx2.StorageMergeErr, err)
 	}
 
 	return nil
@@ -447,7 +447,7 @@ func (s *CatalogRepository) table() r.Term {
 	return r.Table(tableCatalog)
 }
 
-func catalogToMap(cat *dotagiftx.Catalog) map[string]any {
+func catalogToMap(cat *dotagiftx2.Catalog) map[string]any {
 	s := structs.New(cat)
 	s.TagName = "json"
 	return s.Map()

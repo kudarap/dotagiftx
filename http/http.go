@@ -7,7 +7,7 @@ import (
 	"net/url"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 var json = jsoniter.ConfigFastest
@@ -37,7 +37,7 @@ type dataWithMeta struct {
 	TotalCount  int `json:"total_count"`
 }
 
-func newDataWithMeta(data any, md *dotagiftx.FindMetadata) dataWithMeta {
+func newDataWithMeta(data any, md *dotagiftx2.FindMetadata) dataWithMeta {
 	return dataWithMeta{data, md.ResultCount, md.TotalCount}
 }
 
@@ -78,9 +78,9 @@ func respondError(w http.ResponseWriter, err error) {
 		switch {
 		case xerr.Fatal:
 			status = http.StatusInternalServerError
-		case errors.Is(xerr.Type, dotagiftx.AuthErrNoAccess):
+		case errors.Is(xerr.Type, dotagiftx2.AuthErrNoAccess):
 			status = http.StatusUnauthorized
-		case errors.Is(xerr.Type, dotagiftx.AuthErrForbidden):
+		case errors.Is(xerr.Type, dotagiftx2.AuthErrForbidden):
 			status = http.StatusForbidden
 		}
 
@@ -116,7 +116,7 @@ func parseForm(r *http.Request, form any) error {
 // parseXError returns Errors value if available, else returns nil and ok is false.
 // When error is a core.Error type will create new error with that type to handle them gracefully.
 // Useful when checking errors types on Parse().
-func parseXError(err error) (e *dotagiftx.XErrors, ok bool) {
+func parseXError(err error) (e *dotagiftx2.XErrors, ok bool) {
 	// Try packaged error assertion.
 	if errors.As(err, &e) {
 		return
@@ -124,10 +124,10 @@ func parseXError(err error) (e *dotagiftx.XErrors, ok bool) {
 
 	// Try core error assertion as type and handles unpackaged error with valid type that can be used to
 	// check typed errors.
-	var t dotagiftx.Errors
+	var t dotagiftx2.Errors
 	if errors.As(err, &t) {
 		// Error with no details.
-		return &dotagiftx.XErrors{Type: t, Err: errors.New("")}, true
+		return &dotagiftx2.XErrors{Type: t, Err: errors.New("")}, true
 	}
 
 	// Cant parse the error.

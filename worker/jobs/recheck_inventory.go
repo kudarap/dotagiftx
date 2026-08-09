@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -19,7 +19,7 @@ type RecheckInventory struct {
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dotagiftx.Inventory
+	filter   dotagiftx2.Inventory
 }
 
 func NewRecheckInventory(
@@ -28,7 +28,7 @@ func NewRecheckInventory(
 	as *verify.Source,
 	lg *slog.Logger,
 ) *RecheckInventory {
-	f := dotagiftx.Inventory{Status: dotagiftx.InventoryStatusNoHit}
+	f := dotagiftx2.Inventory{Status: dotagiftx2.InventoryStatusNoHit}
 	return &RecheckInventory{
 		is, ms, as, lg,
 		"recheck_inventory", time.Hour, f}
@@ -44,7 +44,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 		ri.logger.Info("RECHECK INVENTORY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
-	opts := dotagiftx.FindOpts{Filter: ri.filter}
+	opts := dotagiftx2.FindOpts{Filter: ri.filter}
 	opts.Sort = "updated_at:desc"
 	// opts.Limit = 10
 	opts.Page = 0
@@ -79,7 +79,7 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 		}
 
 		ri.logger.Info("batch", "page", opts.Page, "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status)
-		err = ri.inventorySvc.Set(ctx, &dotagiftx.Inventory{
+		err = ri.inventorySvc.Set(ctx, &dotagiftx2.Inventory{
 			MarketID:   mkt.ID,
 			Status:     result.Status,
 			Assets:     result.Assets,
@@ -96,8 +96,8 @@ func (ri *RecheckInventory) Run(ctx context.Context) error {
 	return nil
 }
 
-func (ri *RecheckInventory) market(ctx context.Context, id string) (*dotagiftx.Market, error) {
-	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
+func (ri *RecheckInventory) market(ctx context.Context, id string) (*dotagiftx2.Market, error) {
+	f := dotagiftx2.FindOpts{Filter: dotagiftx2.Market{ID: id}}
 	markets, err := ri.marketRepo.Find(ctx, f)
 	if err != nil {
 		return nil, err

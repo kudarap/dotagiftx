@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -18,7 +18,7 @@ type VerifyInventory struct {
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dotagiftx.Market
+	filter   dotagiftx2.Market
 }
 
 func NewVerifyInventory(
@@ -27,7 +27,7 @@ func NewVerifyInventory(
 	vs *verify.Source,
 	lg *slog.Logger,
 ) *VerifyInventory {
-	f := dotagiftx.Market{}
+	f := dotagiftx2.Market{}
 	return &VerifyInventory{
 		is, ms, vs, lg,
 		"verify_inventory", time.Hour * 24, f}
@@ -43,7 +43,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 		vi.logger.Info("VERIFIED INVENTORY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
-	opts := dotagiftx.FindOpts{Filter: vi.filter}
+	opts := dotagiftx2.FindOpts{Filter: vi.filter}
 	opts.IndexSorting = true
 	opts.Sort = "updated_at"
 	opts.Desc = true
@@ -60,8 +60,8 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 			start := time.Now()
 
 			// Skip verified statuses.
-			if mkt.InventoryStatus == dotagiftx.InventoryStatusVerified ||
-				mkt.InventoryStatus == dotagiftx.InventoryStatusNoHit {
+			if mkt.InventoryStatus == dotagiftx2.InventoryStatusVerified ||
+				mkt.InventoryStatus == dotagiftx2.InventoryStatusNoHit {
 
 				// TODO! might remove items
 				continue
@@ -78,7 +78,7 @@ func (vi *VerifyInventory) Run(ctx context.Context) error {
 			}
 
 			vi.logger.Info("batch", "page", opts.Page, "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status)
-			err = vi.inventorySvc.Set(ctx, &dotagiftx.Inventory{
+			err = vi.inventorySvc.Set(ctx, &dotagiftx2.Inventory{
 				MarketID:   mkt.ID,
 				Status:     result.Status,
 				Assets:     result.Assets,

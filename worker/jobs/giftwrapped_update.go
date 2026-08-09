@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
@@ -19,7 +19,7 @@ type GiftWrappedUpdate struct {
 	// job settings
 	name     string
 	interval time.Duration
-	filter   dotagiftx.Delivery
+	filter   dotagiftx2.Delivery
 }
 
 func NewGiftWrappedUpdate(
@@ -30,9 +30,9 @@ func NewGiftWrappedUpdate(
 	lg *slog.Logger,
 ) *GiftWrappedUpdate {
 	falsePtr := false
-	f := dotagiftx.Delivery{
+	f := dotagiftx2.Delivery{
 		GiftOpened: &falsePtr,
-		Status:     dotagiftx.DeliveryStatusSenderVerified,
+		Status:     dotagiftx2.DeliveryStatusSenderVerified,
 	}
 	return &GiftWrappedUpdate{
 		ds, dg, ms, vs, lg,
@@ -49,7 +49,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 		gw.logger.Info("GIFT WRAPPED UPDATE BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
-	opts := dotagiftx.FindOpts{Filter: gw.filter}
+	opts := dotagiftx2.FindOpts{Filter: gw.filter}
 	opts.Sort = "updated_at:desc"
 	opts.Limit = 10
 	opts.Page = 0
@@ -87,7 +87,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 			}
 			gw.logger.Info("batch", "page", opts.Page, "user", mkt.User.Name, "partner_steam_id", mkt.PartnerSteamID, "item", mkt.Item.Name, "status", result.Status)
 
-			err = gw.deliverySvc.Set(ctx, &dotagiftx.Delivery{
+			err = gw.deliverySvc.Set(ctx, &dotagiftx2.Delivery{
 				MarketID:   mkt.ID,
 				Status:     result.Status,
 				Assets:     result.Assets,
@@ -109,8 +109,8 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	}
 }
 
-func (gw *GiftWrappedUpdate) market(ctx context.Context, id string) (*dotagiftx.Market, error) {
-	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
+func (gw *GiftWrappedUpdate) market(ctx context.Context, id string) (*dotagiftx2.Market, error) {
+	f := dotagiftx2.FindOpts{Filter: dotagiftx2.Market{ID: id}}
 	markets, err := gw.marketRepo.Find(ctx, f)
 	if err != nil {
 		return nil, err

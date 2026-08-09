@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const (
@@ -18,25 +18,25 @@ const (
 // marketService provides access to market service methods used by http handlers.
 type marketService interface {
 	// Markets returns a list of markets.
-	Markets(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Market, *dotagiftx.FindMetadata, error)
+	Markets(ctx context.Context, opts dotagiftx2.FindOpts) ([]dotagiftx2.Market, *dotagiftx2.FindMetadata, error)
 
 	// Market returns market details by id.
-	Market(ctx context.Context, id string) (*dotagiftx.Market, error)
+	Market(ctx context.Context, id string) (*dotagiftx2.Market, error)
 
 	// Create saves new market details.
-	Create(context.Context, *dotagiftx.Market) error
+	Create(context.Context, *dotagiftx2.Market) error
 
 	// Update saves market details changes.
-	Update(context.Context, *dotagiftx.Market) error
+	Update(context.Context, *dotagiftx2.Market) error
 
 	// Catalog returns a list of catalogs.
-	Catalog(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error)
+	Catalog(ctx context.Context, opts dotagiftx2.FindOpts) ([]dotagiftx2.Catalog, *dotagiftx2.FindMetadata, error)
 
 	// CatalogDetails returns catalog details by item id.
-	CatalogDetails(ctx context.Context, id string, opts dotagiftx.FindOpts) (*dotagiftx.Catalog, error)
+	CatalogDetails(ctx context.Context, id string, opts dotagiftx2.FindOpts) (*dotagiftx2.Catalog, error)
 
 	// TrendingCatalog returns a top 10 trending catalogs.
-	TrendingCatalog(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error)
+	TrendingCatalog(ctx context.Context, opts dotagiftx2.FindOpts) ([]dotagiftx2.Catalog, *dotagiftx2.FindMetadata, error)
 }
 
 func handleMarketList(
@@ -48,7 +48,7 @@ func handleMarketList(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Modify query params to inject and override private params.
-		auth := dotagiftx.AuthFromContext(r.Context())
+		auth := dotagiftx2.AuthFromContext(r.Context())
 		if private && auth != nil {
 			q := r.URL.Query()
 			q.Set("index", "user_id")
@@ -76,7 +76,7 @@ func handleMarketList(
 		// Special query flags with findOpts
 		sortQueryModifier(r)
 
-		opts, err := findOptsFromURL(r.URL, &dotagiftx.Market{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx2.Market{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -94,7 +94,7 @@ func handleMarketList(
 			return
 		}
 		if list == nil {
-			list = []dotagiftx.Market{}
+			list = []dotagiftx2.Market{}
 		}
 
 		data := newDataWithMeta(list, md)
@@ -103,7 +103,7 @@ func handleMarketList(
 		}
 
 		if shouldRedactUser {
-			data.Data = dotagiftx.Markets(list).RedactedUsers()
+			data.Data = dotagiftx2.Markets(list).RedactedUsers()
 		}
 
 		respondOK(w, data)
@@ -140,7 +140,7 @@ func handleMarketDetail(svc marketService, cache cacheManager, logger *slog.Logg
 		if !noCache {
 			if hit, _ := cache.Get(cacheKey); hit != "" {
 				if shouldRedactUser {
-					m := dotagiftx.Market{}
+					m := dotagiftx2.Market{}
 					if err := json.UnmarshalFromString(hit, &m); err != nil {
 						respondError(w, err)
 						return
@@ -174,7 +174,7 @@ func handleMarketDetail(svc marketService, cache cacheManager, logger *slog.Logg
 
 func handleMarketCreate(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		m := new(dotagiftx.Market)
+		m := new(dotagiftx2.Market)
 		if err := parseForm(r, m); err != nil {
 			respondError(w, err)
 			return
@@ -197,7 +197,7 @@ func handleMarketCreate(svc marketService, cache cacheManager, logger *slog.Logg
 
 func handleMarketUpdate(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		m := new(dotagiftx.Market)
+		m := new(dotagiftx2.Market)
 		if err := parseForm(r, m); err != nil {
 			respondError(w, err)
 			return
@@ -220,15 +220,15 @@ func handleMarketUpdate(svc marketService, cache cacheManager, logger *slog.Logg
 
 func redactBuyersFromCache(hit string) any {
 	d := struct {
-		Data        []dotagiftx.Market `json:"data"`
-		ResultCount int                `json:"result_count"`
-		TotalCount  int                `json:"total_count"`
+		Data        []dotagiftx2.Market `json:"data"`
+		ResultCount int                 `json:"result_count"`
+		TotalCount  int                 `json:"total_count"`
 	}{}
 	if err := json.UnmarshalFromString(hit, &d); err != nil {
 		return nil
 	}
 
-	d.Data = dotagiftx.Markets(d.Data).RedactedUsers()
+	d.Data = dotagiftx2.Markets(d.Data).RedactedUsers()
 	return d
 }
 

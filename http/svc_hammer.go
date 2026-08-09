@@ -6,16 +6,16 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 // hammerService provides access to hammer service methods used by http handlers.
 type hammerService interface {
 	// Ban updates user status to ban and cancels all listings.
-	Ban(context.Context, dotagiftx.HammerParams) (*dotagiftx.User, error)
+	Ban(context.Context, dotagiftx2.HammerParams) (*dotagiftx2.User, error)
 
 	// Suspend updates user status to suspend and cancels all listings.
-	Suspend(context.Context, dotagiftx.HammerParams) (*dotagiftx.User, error)
+	Suspend(context.Context, dotagiftx2.HammerParams) (*dotagiftx2.User, error)
 
 	// Lift update user status to "marked" and remove its ban or suspend a flag
 	// and will restore items if requested.
@@ -24,7 +24,7 @@ type hammerService interface {
 
 func handleHammerBan(svc hammerService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var p dotagiftx.HammerParams
+		var p dotagiftx2.HammerParams
 		if err := parseForm(r, &p); err != nil {
 			respondError(w, err)
 			return
@@ -43,7 +43,7 @@ func handleHammerBan(svc hammerService, cache cacheManager, logger *slog.Logger)
 
 func handleHammerSuspend(svc hammerService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var p dotagiftx.HammerParams
+		var p dotagiftx2.HammerParams
 		if err := parseForm(r, &p); err != nil {
 			respondError(w, err)
 			return

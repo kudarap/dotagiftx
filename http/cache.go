@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const cacheSkipKey = "nocache"

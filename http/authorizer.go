@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 func (s *Server) authorizer(next http.Handler) http.Handler {

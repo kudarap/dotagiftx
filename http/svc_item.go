@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kudarap/dotagiftx"
+	dotagiftx2 "github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const (
@@ -22,16 +22,16 @@ const (
 // itemService provides access to item service methods used by http handlers.
 type itemService interface {
 	// Items returns a list of items.
-	Items(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Item, *dotagiftx.FindMetadata, error)
+	Items(ctx context.Context, opts dotagiftx2.FindOpts) ([]dotagiftx2.Item, *dotagiftx2.FindMetadata, error)
 
 	// Item returns item details by id.
-	Item(ctx context.Context, id string) (*dotagiftx.Item, error)
+	Item(ctx context.Context, id string) (*dotagiftx2.Item, error)
 
 	// Create saves new item details.
-	Create(context.Context, *dotagiftx.Item) error
+	Create(context.Context, *dotagiftx2.Item) error
 
 	// Import creates new item from yaml format.
-	Import(ctx context.Context, f io.Reader) (dotagiftx.ItemImportResult, error)
+	Import(ctx context.Context, f io.Reader) (dotagiftx2.ItemImportResult, error)
 
 	// TopOrigins returns a list of top origin/treasure base on view count.
 	TopOrigins(ctx context.Context) ([]string, error)
@@ -56,7 +56,7 @@ func handleItemList(
 			}
 		}
 
-		opts, err := findOptsFromURL(r.URL, &dotagiftx.Item{})
+		opts, err := findOptsFromURL(r.URL, &dotagiftx2.Item{})
 		if err != nil {
 			respondError(w, err)
 			return
@@ -74,7 +74,7 @@ func handleItemList(
 			return
 		}
 		if list == nil {
-			list = []dotagiftx.Item{}
+			list = []dotagiftx2.Item{}
 		}
 
 		o := newDataWithMeta(list, md)
@@ -120,7 +120,7 @@ func handleItemCreate(svc itemService, cache cacheManager, divineKey string, log
 			return
 		}
 
-		i := new(dotagiftx.Item)
+		i := new(dotagiftx2.Item)
 		if err := parseForm(r, i); err != nil {
 			respondError(w, err)
 			return
