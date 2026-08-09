@@ -188,13 +188,6 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 			return nil, UserErrSteamSync.X(err)
 		}
 
-		authData.RefreshToken = s.generateRefreshToken()
-		if err := s.authRepo.Update(ctx, &Auth{
-			ID:           authData.ID,
-			RefreshToken: s.hash(authData.RefreshToken),
-		}); err != nil {
-			return nil, err
-		}
 		return authData, nil
 	}
 
@@ -247,7 +240,10 @@ func (s *AuthService) renewRefreshToken(ctx context.Context, refreshToken string
 		return "", err
 	}
 
-	au.RefreshToken = s.generateRefreshToken()
+	au.RefreshToken, err = s.generateRefreshToken()
+	if err != nil {
+		return "", err
+	}
 	if err := s.authRepo.Update(ctx, &Auth{
 		ID:           au.ID,
 		RefreshToken: s.hash(au.RefreshToken),
@@ -271,7 +267,10 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 		}
 	}
 
-	refreshToken := s.generateRefreshToken()
+	refreshToken, err := s.generateRefreshToken()
+	if err != nil {
+		return nil, err
+	}
 	au := &Auth{UserID: user.ID, Username: sp.ID}
 	au.RefreshToken = s.hash(refreshToken)
 	au.Password = s.composePasswordV2(sp.ID, user.ID)
@@ -283,10 +282,15 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 	return au, nil
 }
 
-func (s *AuthService) generateRefreshToken() string {
+func (s *AuthService) generateRefreshToken() (string, error) {
 	buf := make([]byte, 48)
-	_, _ = rand.Read(buf)
-	return base64.RawURLEncoding.EncodeToString(buf)
+	if _, err := rand.Read(buf); err != nil {
+		// try again
+		if _, err := rand.Read(buf); err != nil {
+			return "", err
+		}
+	}
+	return base64.RawURLEncoding.EncodeToString(buf), nil
 }
 
 func (s *AuthService) composePassword(steamID, userID string) string {
@@ -301,6 +305,7 @@ func (s *AuthService) composePasswordV2(steamID, userID string) string {
 
 func (s *AuthService) hash(a ...string) string {
 	h := sha256.New()
-	h.Write([]byte(fmt.Sprint(a) + s.salt))
+	a = append(a, s.salt)
+	h.Write([]byte(strings.Join(a, "")))
 	return hex.EncodeToString(h.Sum(nil))
 }
