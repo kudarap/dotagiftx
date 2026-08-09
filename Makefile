@@ -36,7 +36,7 @@ vuln:
 	govulncheck ./...
 
 generate:
-	go generate .
+	go generate ./dotagiftx/...
 
 build:
 	go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
