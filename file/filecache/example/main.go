@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/file/filecache"
 )
 

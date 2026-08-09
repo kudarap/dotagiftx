@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/steaminvorg"

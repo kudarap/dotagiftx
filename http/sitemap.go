@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 func buildSitemap(items []dotagiftx.Item) *stm.Sitemap {

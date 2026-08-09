@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 // statsService provides access to stats service methods used by http handlers.

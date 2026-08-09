@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 // SweepMarket represents setting expiration of a market entry job.

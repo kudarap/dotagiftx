@@ -7,7 +7,7 @@ import (
 	"net/url"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 var json = jsoniter.ConfigFastest

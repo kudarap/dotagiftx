@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/schema"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const defaultPageLimit = 10

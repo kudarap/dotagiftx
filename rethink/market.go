@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"dario.cat/mergo"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
