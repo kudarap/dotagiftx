@@ -106,9 +106,19 @@ export const authnRequest = async <T = unknown>(
   // check and set access token.
   let auth = Auth.get()
   if (auth.refresh_token && (Auth.isAccessTokenExpired() || auth.token === null)) {
-    const newAuth = await authRenew(auth.refresh_token)
-    auth = { ...auth, ...newAuth }
-    Auth.set(auth)
+    // Deduplicate concurrent renewals so the rotated refresh token is used once.
+    if (!renewPromise) {
+      renewPromise = authRenew(auth.refresh_token)
+        .then(newAuth => {
+          const updated = { ...Auth.get(), ...newAuth }
+          Auth.set(updated)
+          return updated
+        })
+        .finally(() => {
+          renewPromise = null
+        })
+    }
+    auth = await renewPromise
   }
 
   return baseRequest(method, endpoint, data, auth.token) as Promise<T>

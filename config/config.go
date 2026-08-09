@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -41,6 +42,7 @@ type Config struct {
 	Phantasm            phantasm.Config
 	DiscordWebhookURL   string `envconfig:"DISCORD_WEBHOOK_URL"`
 	Github              github.Config
+	AuthSessionTTL      time.Duration
 }
 
 // Load parses .env values into a struct.

@@ -43,7 +43,18 @@ type (
 		UserID       string     `json:"user_id"       db:"user_id,indexed,omitempty"  valid:"required"`
 		Username     string     `json:"username"      db:"username,indexed,omitempty" valid:"required"`
 		Password     string     `json:"-"             db:"password,omitempty"         valid:"required"`
+		RefreshToken string     `json:"refresh_token" db:"refresh_token,omitempty"`
+		CreatedAt    *time.Time `json:"created_at"    db:"created_at,omitempty"`
+		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
+	}
+
+	// AuthSession represents a login session and its refresh token.
+	AuthSession struct {
+		ID           string     `json:"id"            db:"id,omitempty"`
+		AuthID       string     `json:"auth_id"       db:"auth_id,indexed,omitempty"`
+		UserID       string     `json:"user_id"       db:"user_id,indexed,omitempty"`
 		RefreshToken string     `json:"refresh_token" db:"refresh_token,indexed,omitempty"`
+		ExpiresAt    time.Time  `json:"expires_at"    db:"expires_at,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"    db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}
@@ -59,14 +70,26 @@ type (
 		// GetByUsernameAndPassword returns an auth details by username and password from data store.
 		GetByUsernameAndPassword(ctx context.Context, username, password string) (*Auth, error)
 
-		// GetByRefreshToken returns an auth details by refreshToken from data store.
-		GetByRefreshToken(ctx context.Context, refreshToken string) (*Auth, error)
-
 		// Create persists a new auth to data store.
 		Create(context.Context, *Auth) error
 
 		// Update persists auth changes to data store.
 		Update(context.Context, *Auth) error
+	}
+
+	// authSessionRepository defines operation for login sessions.
+	authSessionRepository interface {
+		// GetByRefreshToken returns a session by its refreshToken from data store.
+		GetByRefreshToken(ctx context.Context, refreshToken string) (*AuthSession, error)
+
+		// Create persists a new session to data store.
+		Create(context.Context, *AuthSession) error
+
+		// Update persists session changes to data store.
+		Update(context.Context, *AuthSession) error
+
+		// Delete removes a session from data store.
+		Delete(ctx context.Context, id string) error
 	}
 )
 
@@ -94,19 +117,23 @@ func AuthFromContext(ctx context.Context) *Auth {
 // NewAuthService returns a new Auth service.
 func NewAuthService(
 	salt string,
+	sessionTTL time.Duration,
 	sc SteamClient,
 	as authRepository,
+	ss authSessionRepository,
 	us *UserService,
 	logger *slog.Logger,
 ) *AuthService {
-	return &AuthService{salt, sc, as, us, logger}
+	return &AuthService{salt, sessionTTL, sc, as, ss, us, logger}
 }
 
 type AuthService struct {
-	salt string
+	salt       string
+	sessionTTL time.Duration
 
 	steamClient SteamClient
 	authRepo    authRepository
+	sessionRepo authSessionRepository
 	userSvc     *UserService
 	logger      *slog.Logger
 }
@@ -176,6 +203,11 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 				}
 
 				s.logger.DebugContext(ctx, "user re-created", "user", u)
+
+				authData.RefreshToken, err = s.newSession(ctx, authData)
+				if err != nil {
+					return nil, err
+				}
 				return authData, nil
 			}
 
@@ -188,6 +220,10 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 			return nil, UserErrSteamSync.X(err)
 		}
 
+		authData.RefreshToken, err = s.newSession(ctx, authData)
+		if err != nil {
+			return nil, err
+		}
 		return authData, nil
 	}
 
@@ -203,22 +239,62 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 	return authData, nil
 }
 
+// RefreshToken validates a session by its refresh token, rotates it to a new
+// one and returns the auth details with the new raw refresh token set.
 func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
 		return nil, AuthErrRefreshToken
 	}
 
-	au, err := s.authRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
+	sess, err := s.sessionRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
+	if err != nil {
+		return nil, AuthErrRefreshToken
+	}
+	if sess == nil || !sess.ExpiresAt.After(time.Now()) {
+		// purge expired session on access attempt.
+		if sess != nil {
+			if err := s.sessionRepo.Delete(ctx, sess.ID); err != nil {
+				s.logger.ErrorContext(ctx, "delete expired session failed", "error", err)
+			}
+		}
+		return nil, AuthErrRefreshToken
+	}
+
+	newToken, err := s.generateRefreshToken()
+	if err != nil {
+		return nil, err
+	}
+	sess.RefreshToken = s.hash(newToken)
+	sess.ExpiresAt = time.Now().Add(s.sessionTTL)
+	if err := s.sessionRepo.Update(ctx, sess); err != nil {
+		return nil, err
+	}
+
+	au, err := s.authRepo.Get(ctx, sess.AuthID)
 	if err != nil {
 		return nil, AuthErrRefreshToken
 	}
 
+	au.RefreshToken = newToken
 	return au, nil
 }
 
+// RevokeRefreshToken invalidates the session of the given refresh token so it
+// can no longer be renewed. Other sessions of the same user stay valid.
 func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken string) error {
-	_, err := s.renewRefreshToken(ctx, refreshToken)
-	return err
+	if strings.TrimSpace(refreshToken) == "" {
+		return AuthErrRefreshToken
+	}
+
+	sess, err := s.sessionRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
+	if err != nil {
+		return AuthErrRefreshToken
+	}
+	if sess == nil {
+		return AuthErrRefreshToken
+	}
+
+	return s.sessionRepo.Delete(ctx, sess.ID)
 }
 
 func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
@@ -230,28 +306,24 @@ func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
 	return u, nil
 }
 
-func (s *AuthService) renewRefreshToken(ctx context.Context, refreshToken string) (string, error) {
-	if strings.TrimSpace(refreshToken) == "" {
-		return "", AuthErrRefreshToken
-	}
-
-	au, err := s.RefreshToken(ctx, refreshToken)
+// newSession creates a new login session for the given auth and returns the
+// raw refresh token bound to it.
+func (s *AuthService) newSession(ctx context.Context, au *Auth) (string, error) {
+	refreshToken, err := s.generateRefreshToken()
 	if err != nil {
 		return "", err
 	}
-
-	au.RefreshToken, err = s.generateRefreshToken()
-	if err != nil {
-		return "", err
+	sess := &AuthSession{
+		AuthID:       au.ID,
+		UserID:       au.UserID,
+		RefreshToken: s.hash(refreshToken),
+		ExpiresAt:    time.Now().Add(s.sessionTTL),
 	}
-	if err := s.authRepo.Update(ctx, &Auth{
-		ID:           au.ID,
-		RefreshToken: s.hash(au.RefreshToken),
-	}); err != nil {
+	if err := s.sessionRepo.Create(ctx, sess); err != nil {
 		return "", err
 	}
 
-	return au.RefreshToken, nil
+	return refreshToken, nil
 }
 
 func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
@@ -267,17 +339,16 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 		}
 	}
 
-	refreshToken, err := s.generateRefreshToken()
-	if err != nil {
-		return nil, err
-	}
 	au := &Auth{UserID: user.ID, Username: sp.ID}
-	au.RefreshToken = s.hash(refreshToken)
 	au.Password = s.composePasswordV2(sp.ID, user.ID)
 	if err := s.authRepo.Create(ctx, au); err != nil {
 		return nil, err
 	}
 
+	refreshToken, err := s.newSession(ctx, au)
+	if err != nil {
+		return nil, err
+	}
 	au.RefreshToken = refreshToken
 	return au, nil
 }

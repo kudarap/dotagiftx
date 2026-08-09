@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	tableAuth             = "auth"
-	authFieldUsername     = "username"
-	authFieldRefreshToken = "refresh_token"
+	tableAuth         = "auth"
+	authFieldUsername = "username"
 )
 
 // NewAuth creates a new instance of auth data store.
@@ -63,16 +62,6 @@ func (s *AuthRepository) GetByUsername(ctx context.Context, username string) (*d
 
 func (s *AuthRepository) GetByUsernameAndPassword(ctx context.Context, username, password string) (*dotagiftx.Auth, error) {
 	return s.findOne(ctx, dotagiftx.Auth{Username: username, Password: password})
-}
-
-func (s *AuthRepository) GetByRefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error) {
-	row := &dotagiftx.Auth{}
-	q := s.table().GetAllByIndex(authFieldRefreshToken, refreshToken)
-	if err := s.db.one(ctx, q, row); err != nil {
-		return nil, err
-	}
-
-	return row, nil
 }
 
 func (s *AuthRepository) Create(ctx context.Context, in *dotagiftx.Auth) error {

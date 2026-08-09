@@ -19,7 +19,8 @@ type authService interface {
 	// short-lived access token and will result user have to re-login.
 	RevokeRefreshToken(ctx context.Context, refreshToken string) error
 
-	// RefreshToken checks refresh token validity that allows to get new short-lived access token.
+	// RefreshToken checks refresh token validity that allows to get new short-lived
+	// access token and rotates the refresh token to a new one.
 	RefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error)
 }
 
@@ -72,8 +73,8 @@ func handleAuthRenew(svc authService) http.HandlerFunc {
 			return
 		}
 
-		// Refresh JWT.
-		a, err := refreshJWT(au)
+		// Refresh JWT and rotate refresh token.
+		a, err := newAuth(au)
 		if err != nil {
 			respond(w, http.StatusInternalServerError, newError(err))
 			return
