@@ -39,7 +39,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Bun test build
+      - name: Bun lint
         working-directory: web
         run: |
           bun install
