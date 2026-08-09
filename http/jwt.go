@@ -20,16 +20,16 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// New creates new JWT with claims payload.
-func New(userID, level string, expiration time.Time) (token string, err error) {
+// newAccessToken creates new JWT with claims payload.
+func newAccessToken(userID, level string, expiration time.Time) (token string, err error) {
 	c := Claims{UserID: userID, Level: level}
 	c.ExpiresAt = jwt.NewNumericDate(expiration)
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	return t.SignedString([]byte(SigKey))
 }
 
-// Parse validates and extracts claims from token.
-func Parse(token string) (*Claims, error) {
+// parseAccessToken validates and extracts claims from token.
+func parseAccessToken(token string) (*Claims, error) {
 	t, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (any, error) {
 		// Remember to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -74,5 +74,5 @@ func parseAuthFromHeader(h http.Header) (*Claims, error) {
 		return nil, errors.New("empty bearer token")
 	}
 
-	return Parse(parts[1])
+	return parseAccessToken(parts[1])
 }

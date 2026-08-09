@@ -17,7 +17,7 @@ import Link from '@/components/Link'
 import Avatar from '@/components/Avatar'
 import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
-import { USER_STATUS_MAP_LABEL, USER_STATUS_MAP_COLOR } from '@/constants/user'
+import { USER_STATUS_MAP_COLOR, USER_STATUS_MAP_LABEL } from '@/constants/user'
 
 const useStyles = makeStyles()(theme => ({
   main: {

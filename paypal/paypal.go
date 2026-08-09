@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"slices"
 	"strings"
@@ -103,7 +104,11 @@ func (c *Client) IsCancelled(
 	if err != nil {
 		return
 	}
-	defer req.Body.Close()
+	defer func() {
+		if err := req.Body.Close(); err != nil {
+			slog.ErrorContext(ctx, "closing req body", "error", err)
+		}
+	}()
 
 	var sub SubscriptionEventPayload
 	if err = json.Unmarshal(body, &sub); err != nil {

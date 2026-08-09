@@ -9,7 +9,7 @@ import {
   MARKET_STATUS_SOLD,
   MARKET_TYPE_ASK,
 } from '@/constants/market'
-import { statsMarketSummary, marketSearch } from '@/service/api'
+import { marketSearch, statsMarketSummary } from '@/service/api'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Container from '@/components/Container'

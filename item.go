@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	neturl "net/url"
 	"regexp"
@@ -64,55 +65,31 @@ type (
 		Total   int `json:"total"`
 	}
 
-	// ItemService provides access to item service.
-	ItemService interface {
-		// Items returns a list of items.
-		Items(opts FindOpts) ([]Item, *FindMetadata, error)
-
-		// Item returns item details by id.
-		Item(id string) (*Item, error)
-
-		// Create saves new item details.
-		Create(context.Context, *Item) error
-
-		// Update saves item details changes.
-		Update(context.Context, *Item) error
-
-		// Import creates new item from yaml format.
-		Import(ctx context.Context, f io.Reader) (ItemImportResult, error)
-
-		// TopOrigins returns a list of top origin/treasure base on view count.
-		TopOrigins() ([]string, error)
-
-		// TopHeroes returns a list of top heroes base on view count.
-		TopHeroes() ([]string, error)
-	}
-
-	// ItemStorage defines operation for item records.
-	ItemStorage interface {
+	// itemRepository defines operation for item records.
+	itemRepository interface {
 		// Find returns a list of items from data store.
-		Find(opts FindOpts) ([]Item, error)
+		Find(ctx context.Context, opts FindOpts) ([]Item, error)
 
 		// Count returns number of items from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns item details by id from data store.
-		Get(id string) (*Item, error)
+		Get(ctx context.Context, id string) (*Item, error)
 
 		// GetBySlug returns item details slug id from data store.
-		GetBySlug(slug string) (*Item, error)
+		GetBySlug(ctx context.Context, slug string) (*Item, error)
 
 		// Create persists a new item to data store.
-		Create(*Item) error
+		Create(context.Context, *Item) error
 
 		// Update persists item changes to data store.
-		Update(*Item) error
+		Update(context.Context, *Item) error
 
 		// IsItemExist returns an error if item already exists by name.
-		IsItemExist(name string) error
+		IsItemExist(ctx context.Context, name string) error
 
 		// AddViewCount increments item view count to data store.
-		AddViewCount(id string) error
+		AddViewCount(ctx context.Context, id string) error
 	}
 )
 
@@ -163,19 +140,20 @@ func (i Item) ToCatalog() Catalog {
 }
 
 // NewItemService returns new Item service.
-func NewItemService(allowedDomains []string, is ItemStorage, fm FileManager) ItemService {
-	return &itemService{is, fm, allowedDomains}
+func NewItemService(allowedDomains []string, is itemRepository, fm FileManager, lg *slog.Logger) *ItemService {
+	return &ItemService{is, fm, allowedDomains, lg}
 }
 
-type itemService struct {
-	itemStg ItemStorage
-	fileMgr FileManager
+type ItemService struct {
+	itemRepo itemRepository
+	fileMgr  FileManager
 
 	allowedDomains []string
+	logger         *slog.Logger
 }
 
-func (s *itemService) Items(opts FindOpts) ([]Item, *FindMetadata, error) {
-	res, err := s.itemStg.Find(opts)
+func (s *ItemService) Items(ctx context.Context, opts FindOpts) ([]Item, *FindMetadata, error) {
+	res, err := s.itemRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -185,7 +163,7 @@ func (s *itemService) Items(opts FindOpts) ([]Item, *FindMetadata, error) {
 	}
 
 	// Get result and total count for metadata.
-	tc, err := s.itemStg.Count(opts)
+	tc, err := s.itemRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -196,12 +174,12 @@ func (s *itemService) Items(opts FindOpts) ([]Item, *FindMetadata, error) {
 	}, nil
 }
 
-func (s *itemService) Item(id string) (*Item, error) {
-	return s.itemStg.Get(id)
+func (s *ItemService) Item(ctx context.Context, id string) (*Item, error) {
+	return s.itemRepo.Get(ctx, id)
 }
 
-func (s *itemService) TopOrigins() ([]string, error) {
-	items, err := s.itemStg.Find(FindOpts{})
+func (s *ItemService) TopOrigins(ctx context.Context) ([]string, error) {
+	items, err := s.itemRepo.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -217,8 +195,8 @@ func (s *itemService) TopOrigins() ([]string, error) {
 	return pt, nil
 }
 
-func (s *itemService) TopHeroes() ([]string, error) {
-	items, err := s.itemStg.Find(FindOpts{})
+func (s *ItemService) TopHeroes(ctx context.Context) ([]string, error) {
+	items, err := s.itemRepo.Find(ctx, FindOpts{})
 	if err != nil {
 		return nil, err
 	}
@@ -233,7 +211,7 @@ func (s *itemService) TopHeroes() ([]string, error) {
 	return ph, nil
 }
 
-func (s *itemService) Create(ctx context.Context, itm *Item) error {
+func (s *ItemService) Create(ctx context.Context, itm *Item) error {
 	// TODO check moderator/contributors
 	au := AuthFromContext(ctx)
 	if au == nil {
@@ -249,13 +227,13 @@ func (s *itemService) Create(ctx context.Context, itm *Item) error {
 		return NewXError(ItemErrRequiredFields, err)
 	}
 
-	if err := s.itemStg.IsItemExist(itm.Name); err != nil {
+	if err := s.itemRepo.IsItemExist(ctx, itm.Name); err != nil {
 		return err
 	}
 
 	// Download image when available.
 	if itm.Image != "" {
-		img, err := s.downloadItemImage(itm.MakeSlug(), itm.Image)
+		img, err := s.downloadItemImage(ctx, itm.MakeSlug(), itm.Image)
 		if err != nil {
 			return err
 		}
@@ -268,10 +246,10 @@ func (s *itemService) Create(ctx context.Context, itm *Item) error {
 		}
 	}()
 
-	return s.itemStg.Create(itm)
+	return s.itemRepo.Create(ctx, itm)
 }
 
-func (s *itemService) Update(ctx context.Context, itm *Item) error {
+func (s *ItemService) Update(ctx context.Context, itm *Item) error {
 	// TODO check moderator/contributors
 	au := AuthFromContext(ctx)
 	if au == nil {
@@ -288,17 +266,17 @@ func (s *itemService) Update(ctx context.Context, itm *Item) error {
 
 	// Download image when available.
 	if itm.Image != "" {
-		img, err := s.downloadItemImage(itm.MakeSlug(), itm.Image)
+		img, err := s.downloadItemImage(ctx, itm.MakeSlug(), itm.Image)
 		if err != nil {
 			return err
 		}
 		itm.Image = img
 	}
 
-	return s.itemStg.Update(itm)
+	return s.itemRepo.Update(ctx, itm)
 }
 
-func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
+func (s *ItemService) Import(ctx context.Context, f io.Reader) (ItemImportResult, error) {
 	var result ItemImportResult
 
 	b, err := io.ReadAll(f)
@@ -323,7 +301,7 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 		}
 
 		// Update current item if exists.
-		if cur, _ := s.getItemByName(ii.Name); cur != nil {
+		if cur, _ := s.getItemByName(ctx, ii.Name); cur != nil {
 			itm.ID = cur.ID
 			if err := s.Update(ctx, itm); err != nil {
 				errs = append(errs, err)
@@ -346,8 +324,8 @@ func (s *itemService) Import(ctx context.Context, f io.Reader) (ItemImportResult
 	return result, nil
 }
 
-func (s *itemService) getItemByName(name string) (*Item, error) {
-	itm, err := s.itemStg.Find(FindOpts{Filter: Item{Name: name}})
+func (s *ItemService) getItemByName(ctx context.Context, name string) (*Item, error) {
+	itm, err := s.itemRepo.Find(ctx, FindOpts{Filter: Item{Name: name}})
 	if err != nil {
 		return nil, err
 	}
@@ -360,7 +338,7 @@ func (s *itemService) getItemByName(name string) (*Item, error) {
 }
 
 // downloadItemImage saves an image file from a url.
-func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
+func (s *ItemService) downloadItemImage(ctx context.Context, baseName, url string) (string, error) {
 	u, err := neturl.Parse(url)
 	if err != nil {
 		return "", err
@@ -369,11 +347,15 @@ func (s *itemService) downloadItemImage(baseName, url string) (string, error) {
 		return url, fmt.Errorf("item image download for %s is not allowed", url)
 	}
 
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec // url is validated against allowed domains above
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			s.logger.ErrorContext(ctx, "closing response body", "err", err)
+		}
+	}()
 
 	n, err := s.fileMgr.SaveWithName(resp.Body, baseName)
 	if err != nil {

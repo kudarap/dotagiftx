@@ -17,7 +17,7 @@ func TestLocal_Save(t *testing.T) {
 		image, err := os.Open("testdata/profile.jpg")
 		errCheck(t, err)
 
-		want := generateSha1Name()
+		want := generateHashName()
 		name, err := local.SaveWithName(image, want)
 		errCheck(t, err)
 		if !strings.HasPrefix(name, want) {

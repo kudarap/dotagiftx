@@ -1,43 +1,13 @@
 package logging
 
 import (
-	"github.com/sirupsen/logrus"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
+	"fmt"
+	"log/slog"
+	"os"
+	"strings"
+
 	"gopkg.in/natefinch/lumberjack.v2"
 )
-
-// Logger provides access to logging service.
-type Logger interface {
-	// Standard Lib logger methods.
-	Print(v ...any)
-	Println(v ...any)
-	Printf(format string, v ...any)
-
-	Panic(v ...any)
-	Panicln(v ...any)
-	Panicf(format string, v ...any)
-
-	Fatal(v ...any)
-	Fatalln(v ...any)
-	Fatalf(format string, v ...any)
-
-	// Custom logger methods.
-	Info(v ...any)
-	Infoln(v ...any)
-	Infof(format string, v ...any)
-
-	Error(v ...any)
-	Errorln(v ...any)
-	Errorf(format string, v ...any)
-
-	Debug(v ...any)
-	Debugln(v ...any)
-	Debugf(format string, v ...any)
-
-	Warn(v ...any)
-	Warnln(v ...any)
-	Warnf(format string, v ...any)
-}
 
 const (
 	fileMaxBackups = 10
@@ -45,68 +15,73 @@ const (
 	fileMaxAge     = 90  // days
 )
 
+const defaultLevel = "info"
+
 // Config represents logger settings.
 type Config struct {
 	FileOut string `split_words:"true"`
 	FileErr string `split_words:"true"`
+	Level   string
+}
+
+func (c Config) setDefault() Config {
+	c.Level = strings.ToLower(strings.TrimSpace(c.Level))
+	if c.Level == "" {
+		c.Level = defaultLevel
+	}
+	return c
+}
+
+func (c Config) level() (slog.Level, error) {
+	v, ok := levels[c.Level]
+	if !ok {
+		return slog.LevelInfo, fmt.Errorf("un-supported level: %s", c.Level)
+	}
+	return v, nil
 }
 
 // Default returns pre-configured logger.
-func Default() *logrus.Logger {
-	l := logrus.New()
-	// l.SetFormatter(&logrus.TextFormatter{
-	//	FullTimestamp: true,
-	// })
-	formatter := new(prefixed.TextFormatter)
-	formatter.FullTimestamp = true
-	l.Formatter = formatter
-	return l
+func Default() *slog.Logger {
+	return slog.New(slog.NewTextHandler(os.Stderr, nil))
 }
 
 // DefaultWithPrefix returns a default instance of logger with prefix.
-func DefaultWithPrefix(prefix string) *logrus.Entry {
+func DefaultWithPrefix(prefix string) *slog.Logger {
 	return WithPrefix(Default(), prefix)
 }
 
-func WithPrefix(lg *logrus.Logger, prefix string) *logrus.Entry {
-	return lg.WithField("prefix", prefix)
+// WithPrefix returns a logger with a prefix field.
+func WithPrefix(lg *slog.Logger, prefix string) *slog.Logger {
+	return lg.With("prefix", prefix)
 }
 
 // New returns logger with config.
-func New(cfg Config) (*logrus.Logger, error) {
-	l := Default()
+func New(cfg Config) (*slog.Logger, error) {
+	cfg = cfg.setDefault()
+	level, err := cfg.level()
+	if err != nil {
+		return nil, err
+	}
 
+	opts := &slog.HandlerOptions{Level: level}
+	handlers := []slog.Handler{slog.NewTextHandler(os.Stderr, opts)}
 	if cfg.FileOut != "" {
 		outF, err := openLogfileWithRotator(cfg.FileOut)
 		if err != nil {
 			return nil, err
 		}
-		l.AddHook(&Hook{
-			Writer: outF,
-			LogLevels: []logrus.Level{
-				logrus.InfoLevel,
-				logrus.DebugLevel,
-				logrus.WarnLevel,
-			},
-		})
+		handlers = append(handlers, slog.NewTextHandler(outF, opts))
 	}
-
 	if cfg.FileErr != "" {
 		errF, err := openLogfileWithRotator(cfg.FileErr)
 		if err != nil {
 			return nil, err
 		}
-		l.AddHook(&Hook{
-			Writer: errF,
-			LogLevels: []logrus.Level{
-				logrus.PanicLevel,
-				logrus.FatalLevel,
-				logrus.ErrorLevel,
-			},
-		})
+		opts.Level = slog.LevelError
+		handlers = append(handlers, slog.NewTextHandler(errF, opts))
 	}
 
-	return l, nil
+	return slog.New(slog.NewMultiHandler(handlers...)), nil
 }
 
 func openLogfileWithRotator(path string) (*lumberjack.Logger, error) {
@@ -117,4 +92,11 @@ func openLogfileWithRotator(path string) (*lumberjack.Logger, error) {
 		MaxAge:     fileMaxAge, // days
 		Compress:   true,       // disabled by default
 	}, nil
+}
+
+var levels = map[string]slog.Level{
+	"info":  slog.LevelInfo,
+	"warn":  slog.LevelWarn,
+	"error": slog.LevelError,
+	"debug": slog.LevelDebug,
 }

@@ -2,33 +2,33 @@ package jobs
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
 )
 
 const dayHours = time.Hour * 24
 
 // ExpiringMarket represents setting expiration of a market entry job.
 type ExpiringMarket struct {
-	marketStg  dotagiftx.MarketStorage
-	catalogStg dotagiftx.CatalogStorage
-	cache      cacheRemover
-	logger     logging.Logger
+	marketRepo  marketRepository
+	catalogRepo catalogRepository
+	cache       cacheRemover
+	logger      *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
 }
 
-func NewExpiringMarket(ms dotagiftx.MarketStorage, cs dotagiftx.CatalogStorage, cc cacheRemover, lg logging.Logger) *ExpiringMarket {
+func NewExpiringMarket(ms marketRepository, cs catalogRepository, cc cacheRemover, lg *slog.Logger) *ExpiringMarket {
 	return &ExpiringMarket{
-		marketStg:  ms,
-		catalogStg: cs,
-		cache:      cc,
-		logger:     lg,
-		name:       "expiring_market",
-		interval:   time.Hour * 24,
+		marketRepo:  ms,
+		catalogRepo: cs,
+		cache:       cc,
+		logger:      lg,
+		name:        "expiring_market",
+		interval:    time.Hour * 24,
 	}
 }
 
@@ -42,38 +42,38 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 
 	// Process expiring bids.
 	bidExpr := now.Add(-dayHours * dotagiftx.MarketBidExpirationDays)
-	em.logger.Println("updating expiring bids", bidExpr)
-	ids, err := em.marketStg.UpdateExpiring(dotagiftx.MarketTypeBid, dotagiftx.BoonRefresherShard, bidExpr)
+	em.logger.Info("updating expiring bids", "cutoff", bidExpr)
+	ids, err := em.marketRepo.UpdateExpiring(ctx, dotagiftx.MarketTypeBid, dotagiftx.BoonRefresherShard, bidExpr)
 	if err != nil {
-		em.logger.Errorf("could not update expiring bids: %s", err)
+		em.logger.Error("could not update expiring bids", "error", err)
 		return err
 	}
 	itemIDs = append(itemIDs, ids...)
-	em.logger.Println("updating expiring bids finished!")
+	em.logger.Info("updating expiring bids finished!")
 
 	// Process expiring asks.
 	askExpr := now.Add(-dayHours * dotagiftx.MarketAskExpirationDays)
-	em.logger.Println("updating expiring asks", askExpr)
-	ids, err = em.marketStg.UpdateExpiring(dotagiftx.MarketTypeAsk, dotagiftx.BoonRefresherOrb, askExpr)
+	em.logger.Info("updating expiring asks", "cutoff", askExpr)
+	ids, err = em.marketRepo.UpdateExpiring(ctx, dotagiftx.MarketTypeAsk, dotagiftx.BoonRefresherOrb, askExpr)
 	if err != nil {
-		em.logger.Errorf("could not update expiring asks: %s", err)
+		em.logger.Error("could not update expiring asks", "error", err)
 		return err
 	}
 	itemIDs = append(itemIDs, ids...)
-	em.logger.Println("updating expiring asks finished!")
+	em.logger.Info("updating expiring asks finished!")
 
 	// Process expiring resells.
-	em.logger.Println("updating expiring resells", askExpr)
-	ids, err = em.marketStg.UpdateExpiringResell(dotagiftx.BoonShopKeepersContract)
+	em.logger.Info("updating expiring resells", "cutoff", askExpr)
+	ids, err = em.marketRepo.UpdateExpiringResell(ctx, dotagiftx.BoonShopKeepersContract)
 	if err != nil {
-		em.logger.Errorf("could not update expiring resells: %s", err)
+		em.logger.Error("could not update expiring resells", "error", err)
 		return err
 	}
 	itemIDs = append(itemIDs, ids...)
-	em.logger.Println("updating expiring resells finished!")
+	em.logger.Info("updating expiring resells finished!")
 
 	// Re-index affected items.
-	em.logger.Println("indexing affected expire items...", len(itemIDs))
+	em.logger.Info("indexing affected expire items", "count", len(itemIDs))
 	itemIndexed := map[string]struct{}{}
 	for _, id := range itemIDs {
 		if _, hit := itemIndexed[id]; hit {
@@ -81,24 +81,24 @@ func (em *ExpiringMarket) Run(ctx context.Context) error {
 		}
 		itemIndexed[id] = struct{}{}
 
-		if _, err = em.catalogStg.Index(id); err != nil {
-			em.logger.Errorf("could not index expired item: %s", err)
+		if _, err = em.catalogRepo.Index(ctx, id); err != nil {
+			em.logger.Error("could not index expired item", "error", err)
 			continue
 		}
 	}
-	em.logger.Println("affected items indexed!", len(itemIndexed))
+	em.logger.Info("affected items indexed", "count", len(itemIndexed))
 
 	// Invalidate market caches.
-	em.logger.Println("invalidating market cache...")
+	em.logger.Info("invalidating market cache...")
 	if err = em.cache.BulkDel("catalogs_trend"); err != nil {
-		em.logger.Errorf("could not perform bulk delete on catalog trend cache: %s", err)
+		em.logger.Error("could not perform bulk delete on catalog trend cache", "error", err)
 		return err
 	}
 	// svc_market market is the prefixed used for caching market related data.
 	if err = em.cache.BulkDel("svc_market"); err != nil {
-		em.logger.Errorf("could not perform bulk delete on market cache: %s", err)
+		em.logger.Error("could not perform bulk delete on market cache", "error", err)
 		return err
 	}
-	em.logger.Println("market cache invalidated!")
+	em.logger.Info("market cache invalidated!")
 	return nil
 }

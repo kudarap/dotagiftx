@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from 'recharts'
 import Paper from '@mui/material/Paper'
 import { lightGreen as graphColor } from '@mui/material/colors'

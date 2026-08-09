@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -85,59 +86,25 @@ type (
 		Cycles int    `json:"cycles"`
 	}
 
-	// UserService provides access to user service.
-	UserService interface {
-		// Users returns a list of users.
-		Users(opts FindOpts) ([]User, error)
-
-		// FlaggedUsers returns a list of flagged/reported users.
-		FlaggedUsers(opts FindOpts) ([]User, error)
-
-		// User returns user details by id.
-		User(id string) (*User, error)
-
-		// Create saves new user and download profile image to local file.
-		Create(*User) error
-
-		// UserFromContext returns user details from context.
-		UserFromContext(context.Context) (*User, error)
-
-		// Update saves user changes.
-		Update(context.Context, *User) error
-
-		// SteamSync saves updated steam info.
-		SteamSync(sp *SteamPlayer) (*User, error)
-
-		// ProcessSubscription validates and process subscription features.
-		ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error)
-
-		// UpdateSubscriptionFromWebhook handles user subscription updates form http request.
-		UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error)
-
-		CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error)
-
-		ProcessManualSubscription(ctx context.Context, form ManualSubscriptionParam) (*User, error)
-	}
-
-	// UserStorage defines operation for user records.
-	UserStorage interface {
+	// userRepository defines operation for user records.
+	userRepository interface {
 		// Find returns a list of users from data store.
-		Find(opts FindOpts) ([]User, error)
+		Find(ctx context.Context, opts FindOpts) ([]User, error)
 
 		// FindFlagged returns a list of flagged users from data store.
-		FindFlagged(opts FindOpts) ([]User, error)
+		FindFlagged(ctx context.Context, opts FindOpts) ([]User, error)
 
 		// Get returns user details by id from data store.
-		Get(id string) (*User, error)
+		Get(ctx context.Context, id string) (*User, error)
 
 		// Create persists a new user to data store.
-		Create(*User) error
+		Create(context.Context, *User) error
 
 		// Update persists user changes to data store.
-		Update(*User) error
+		Update(context.Context, *User) error
 
 		// BaseUpdate persists user changes to data store without updating metadata.
-		BaseUpdate(*User) error
+		BaseUpdate(context.Context, *User) error
 
 		// ExpiringSubscribers return a list of users that has expiring subscription.
 		ExpiringSubscribers(ctx context.Context, now time.Time) ([]User, error)
@@ -146,7 +113,7 @@ type (
 		PurgeSubscription(ctx context.Context, userID string) error
 
 		// ClearSubscriptionEndsAt clears subscription expiration.
-		ClearSubscriptionEndsAt(id string) error
+		ClearSubscriptionEndsAt(ctx context.Context, id string) error
 	}
 )
 
@@ -290,39 +257,41 @@ func UserSubscriptionFromString(s string) UserSubscription {
 }
 
 // NewUserService returns a new User service.
-func NewUserService(us UserStorage, fm FileManager, sc paymentManager) UserService {
-	return &userService{us, fm, sc}
+func NewUserService(us userRepository, fm FileManager, sc paymentManager, sl *slog.Logger) *UserService {
+	return &UserService{us, fm, sc, sl}
 }
 
-type userService struct {
-	userStg UserStorage
-	fileMgr FileManager
-	payment paymentManager
+type UserService struct {
+	userRepo userRepository
+	fileMgr  FileManager
+	payment  paymentManager
+
+	logger *slog.Logger
 }
 
-func (s *userService) Users(opts FindOpts) ([]User, error) {
-	return s.userStg.Find(opts)
+func (s *UserService) Users(ctx context.Context, opts FindOpts) ([]User, error) {
+	return s.userRepo.Find(ctx, opts)
 }
 
-func (s *userService) FlaggedUsers(opts FindOpts) ([]User, error) {
-	return s.userStg.FindFlagged(opts)
+func (s *UserService) FlaggedUsers(ctx context.Context, opts FindOpts) ([]User, error) {
+	return s.userRepo.FindFlagged(ctx, opts)
 }
 
-func (s *userService) User(id string) (*User, error) {
-	return s.userStg.Get(id)
+func (s *UserService) User(ctx context.Context, id string) (*User, error) {
+	return s.userRepo.Get(ctx, id)
 }
 
-func (s *userService) UserFromContext(ctx context.Context) (*User, error) {
+func (s *UserService) UserFromContext(ctx context.Context) (*User, error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return nil, UserErrNotFound
 	}
 
-	return s.User(au.UserID)
+	return s.User(ctx, au.UserID)
 }
 
-func (s *userService) Create(u *User) error {
-	url, err := s.downloadProfileImage(u.Avatar)
+func (s *UserService) Create(ctx context.Context, u *User) error {
+	url, err := s.downloadProfileImage(ctx, u.Avatar)
 	if err != nil {
 		return NewXError(UserErrProfileImageDL, err)
 	}
@@ -338,10 +307,10 @@ func (s *userService) Create(u *User) error {
 		}
 	}()
 
-	return s.userStg.Create(u)
+	return s.userRepo.Create(ctx, u)
 }
 
-func (s *userService) Update(ctx context.Context, u *User) error {
+func (s *UserService) Update(ctx context.Context, u *User) error {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return AuthErrNoAccess
@@ -352,33 +321,33 @@ func (s *userService) Update(ctx context.Context, u *User) error {
 		return err
 	}
 
-	return s.userStg.Update(u)
+	return s.userRepo.Update(ctx, u)
 }
 
-func (s *userService) SteamSync(sp *SteamPlayer) (*User, error) {
-	u, err := s.userStg.Get(sp.ID)
+func (s *UserService) SteamSync(ctx context.Context, sp *SteamPlayer) (*User, error) {
+	u, err := s.userRepo.Get(ctx, sp.ID)
 	if err != nil {
 		return nil, err
 	}
 
 	u.Name = sp.Name
 	u.URL = sp.URL
-	u.Avatar, err = s.downloadProfileImage(sp.Avatar)
+	u.Avatar, err = s.downloadProfileImage(ctx, sp.Avatar)
 	if err != nil {
 		return nil, err
 	}
-	if err = s.userStg.Update(u); err != nil {
+	if err = s.userRepo.Update(ctx, u); err != nil {
 		return nil, err
 	}
 	return u, nil
 }
 
-func (s *userService) CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error) {
+func (s *UserService) CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return "", AuthErrNoAccess
 	}
-	user, err := s.userStg.Get(au.UserID)
+	user, err := s.userRepo.Get(ctx, au.UserID)
 	if err != nil {
 		return "", err
 	}
@@ -390,12 +359,12 @@ func (s *userService) CreateSubscription(ctx context.Context, planID string) (su
 	return subID, nil
 }
 
-func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error) {
+func (s *UserService) ProcessSubscription(ctx context.Context, subscriptionID string) (*User, error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return nil, AuthErrNoAccess
 	}
-	user, err := s.userStg.Get(au.UserID)
+	user, err := s.userRepo.Get(ctx, au.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -426,10 +395,10 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 	if err = user.CheckUpdate(); err != nil {
 		return nil, err
 	}
-	if err = s.userStg.Update(user); err != nil {
+	if err = s.userRepo.Update(ctx, user); err != nil {
 		return nil, err
 	}
-	if err = s.userStg.ClearSubscriptionEndsAt(user.ID); err != nil {
+	if err = s.userRepo.ClearSubscriptionEndsAt(ctx, user.ID); err != nil {
 		return nil, err
 	}
 
@@ -439,7 +408,7 @@ func (s *userService) ProcessSubscription(ctx context.Context, subscriptionID st
 
 // UpdateSubscriptionFromWebhook manage updates from webhook payload, most often use in incrementing cycles or
 // extending expiration.
-func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error) {
+func (s *UserService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*User, error) {
 	// get user by steam id and increment their cycles.
 	steamID, cancelled, lastPayment, err := s.payment.IsCancelled(ctx, r)
 	if err != nil {
@@ -447,19 +416,19 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	}
 	if !cancelled {
 		// ignore if not canceled.
-		log.Println("ignoring subscription update because its not cancelled:", steamID)
+		s.logger.InfoContext(ctx, "ignoring subscription update because its not cancelled", "steam_id", steamID)
 		return nil, nil
 	}
 
-	log.Println("cancelling subscription", steamID, "by marking expiration")
-	user, err := s.userStg.Get(steamID)
+	s.logger.InfoContext(ctx, "cancelling subscription by marking expiration", "steam_id", steamID)
+	user, err := s.userRepo.Get(ctx, steamID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user %s: %w", steamID, err)
 	}
 
 	ex := lastPayment.AddDate(0, 1, 0)
 	user.SubscriptionEndsAt = &ex
-	if err = s.userStg.Update(user); err != nil {
+	if err = s.userRepo.Update(ctx, user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
 	return user, nil
@@ -472,8 +441,8 @@ func (s *userService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 //	    - 3 months (+60% overhead)
 //	    - 6 months (+60% overhead)
 //	    - 12 months (+60% overhead)
-func (s *userService) ProcessManualSubscription(ctx context.Context, param ManualSubscriptionParam) (*User, error) {
-	user, err := s.userStg.Get(param.UserID)
+func (s *UserService) ProcessManualSubscription(ctx context.Context, param ManualSubscriptionParam) (*User, error) {
+	user, err := s.userRepo.Get(ctx, param.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user: %v", err)
 	}
@@ -487,19 +456,23 @@ func (s *userService) ProcessManualSubscription(ctx context.Context, param Manua
 	end := now.AddDate(0, param.Cycles, 0)
 	user.SubscribedAt = &now
 	user.SubscriptionEndsAt = &end
-	if err = s.userStg.Update(user); err != nil {
+	if err = s.userRepo.Update(ctx, user); err != nil {
 		return nil, fmt.Errorf("updating user: %v", err)
 	}
 	return user, nil
 }
 
 // downloadProfileImage saves an image file from url.
-func (s *userService) downloadProfileImage(url string) (filename string, err error) {
-	resp, err := http.Get(url)
+func (s *UserService) downloadProfileImage(ctx context.Context, url string) (filename string, err error) {
+	resp, err := http.Get(url) //nolint:gosec // url is user-provided steam avatar, expected external fetch
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			s.logger.ErrorContext(ctx, "closing body", "err", err)
+		}
+	}()
 
 	uu := strings.Split(url, "/")
 	name := uu[len(uu)-1]

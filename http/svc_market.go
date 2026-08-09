@@ -1,12 +1,13 @@
 package http
 
 import (
+	"context"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -14,12 +15,36 @@ const (
 	marketCacheExpr      = time.Hour * 24 // Full day cache since its using on-demand invalidation and caching.
 )
 
+// marketService provides access to market service methods used by http handlers.
+type marketService interface {
+	// Markets returns a list of markets.
+	Markets(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Market, *dotagiftx.FindMetadata, error)
+
+	// Market returns market details by id.
+	Market(ctx context.Context, id string) (*dotagiftx.Market, error)
+
+	// Create saves new market details.
+	Create(context.Context, *dotagiftx.Market) error
+
+	// Update saves market details changes.
+	Update(context.Context, *dotagiftx.Market) error
+
+	// Catalog returns a list of catalogs.
+	Catalog(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error)
+
+	// CatalogDetails returns catalog details by item id.
+	CatalogDetails(ctx context.Context, id string, opts dotagiftx.FindOpts) (*dotagiftx.Catalog, error)
+
+	// TrendingCatalog returns a top 10 trending catalogs.
+	TrendingCatalog(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error)
+}
+
 func handleMarketList(
-	svc dotagiftx.MarketService,
-	trackSvc dotagiftx.TrackService,
+	svc marketService,
+	trackSvc trackService,
 	private bool,
 	cache cacheManager,
-	logger *logrus.Logger,
+	logger *slog.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Modify query params to inject and override private params.
@@ -58,8 +83,8 @@ func handleMarketList(
 		}
 
 		go func() {
-			if err := trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
-				logger.Errorf("search keyword tracking error: %s", err)
+			if err := trackSvc.CreateSearchKeyword(context.WithoutCancel(r.Context()), r, opts.Keyword); err != nil {
+				logger.ErrorContext(r.Context(), "search keyword tracking error", "error", err)
 			}
 		}()
 
@@ -74,7 +99,7 @@ func handleMarketList(
 
 		data := newDataWithMeta(list, md)
 		if err = cache.Set(cacheKey, data, marketCacheExpr); err != nil {
-			logger.Errorf("could not save cache on market list: %s", err)
+			logger.ErrorContext(r.Context(), "could not save cache on market list", "error", err)
 		}
 
 		if shouldRedactUser {
@@ -105,7 +130,7 @@ func sortQueryModifier(r *http.Request) {
 	r.URL.RawQuery = query.Encode()
 }
 
-func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleMarketDetail(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Redact buyer details flag from public requests.
 		shouldRedactUser := !isReqAuthorized(r)
@@ -136,7 +161,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger 
 		}
 
 		if err := cache.Set(cacheKey, m, marketCacheExpr); err != nil {
-			logger.Errorf("could not save cache on market list: %s", err)
+			logger.ErrorContext(r.Context(), "could not save cache on market list", "error", err)
 		}
 
 		if shouldRedactUser {
@@ -147,7 +172,7 @@ func handleMarketDetail(svc dotagiftx.MarketService, cache cacheManager, logger 
 	}
 }
 
-func handleMarketCreate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
+func handleMarketCreate(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -160,13 +185,17 @@ func handleMarketCreate(svc dotagiftx.MarketService, cache cacheManager) http.Ha
 			return
 		}
 
-		go cache.BulkDel(marketCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
+		}()
 
 		respondOK(w, m)
 	}
 }
 
-func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.HandlerFunc {
+func handleMarketUpdate(svc marketService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := new(dotagiftx.Market)
 		if err := parseForm(r, m); err != nil {
@@ -180,7 +209,11 @@ func handleMarketUpdate(svc dotagiftx.MarketService, cache cacheManager) http.Ha
 			return
 		}
 
-		go cache.BulkDel(marketCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
+		}()
 		respondOK(w, m)
 	}
 }

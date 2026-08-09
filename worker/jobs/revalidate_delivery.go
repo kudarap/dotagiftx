@@ -2,19 +2,19 @@ package jobs
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
 // RevalidateDelivery represents a delivery verification job.
 type RevalidateDelivery struct {
-	deliverySvc dotagiftx.DeliveryService
-	marketStg   dotagiftx.MarketStorage
+	deliverySvc deliveryService
+	marketRepo  marketRepository
 	source      *verify.Source
-	logger      logging.Logger
+	logger      *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -22,10 +22,10 @@ type RevalidateDelivery struct {
 }
 
 func NewRevalidateDelivery(
-	ds dotagiftx.DeliveryService,
-	ms dotagiftx.MarketStorage,
+	ds deliveryService,
+	ms marketRepository,
 	vs *verify.Source,
-	lg logging.Logger,
+	lg *slog.Logger,
 ) *RevalidateDelivery {
 	f := dotagiftx.Market{Type: dotagiftx.MarketTypeAsk, Status: dotagiftx.MarketStatusSold}
 	return &RevalidateDelivery{
@@ -40,7 +40,7 @@ func (rd *RevalidateDelivery) Interval() time.Duration { return rd.interval }
 func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		rd.logger.Println("REVALIDATE DELIVERY BENCHMARK TIME", time.Since(bs))
+		rd.logger.Info("REVALIDATE DELIVERY BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
 	opts := dotagiftx.FindOpts{Filter: rd.filter}
@@ -50,7 +50,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	for {
-		res, err := rd.marketStg.PendingDeliveryStatus(opts)
+		res, err := rd.marketRepo.PendingDeliveryStatus(ctx, opts)
 		if err != nil {
 			return err
 		}
@@ -59,7 +59,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 			start := time.Now()
 
 			if mkt.User == nil || mkt.Item == nil {
-				rd.logger.Debug("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				rd.logger.Debug("skipped process! missing data", "user", mkt.User, "item", mkt.Item)
 				continue
 			}
 
@@ -76,7 +76,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 			if err != nil {
 				continue
 			}
-			rd.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, result.Status)
+			rd.logger.Info("batch", "page", opts.Page, "user", mkt.User.Name, "partner_steam_id", mkt.PartnerSteamID, "item", mkt.Item.Name, "status", result.Status)
 
 			err = rd.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID:   mkt.ID,
@@ -86,7 +86,7 @@ func (rd *RevalidateDelivery) Run(ctx context.Context) error {
 				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
-				rd.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
+				rd.logger.Error("delivery update error", "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status, "error", err)
 			}
 
 			// time.Sleep(time.Second / 4)

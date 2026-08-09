@@ -1,14 +1,15 @@
 package rethink
 
 import (
+	"context"
 	"encoding/json"
+	"log/slog"
 
-	"github.com/sirupsen/logrus"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
-func (c *Client) ListenChangeFeed(table string, exec func(prev, next []byte) error) error {
-	feed, err := newChangeFeed(c.db, table, exec)
+func (c *Client) ListenChangeFeed(ctx context.Context, table string, exec func(prev, next []byte) error) error {
+	feed, err := newChangeFeed(ctx, c.db, table, exec)
 	if err != nil {
 		return err
 	}
@@ -28,9 +29,9 @@ func (f *changeFeed) close() error {
 	return f.cursor.Close()
 }
 
-func newChangeFeed(db *r.Session, table string, exec func(prev, next []byte) error) (*changeFeed, error) {
+func newChangeFeed(ctx context.Context, db *r.Session, table string, exec func(prev, next []byte) error) (*changeFeed, error) {
 	t := r.Table(table).Changes()
-	cursor, err := t.Run(db)
+	cursor, err := t.Run(db, r.RunOpts{Context: ctx})
 	if err != nil {
 		return nil, err
 	}
@@ -40,13 +41,13 @@ func newChangeFeed(db *r.Session, table string, exec func(prev, next []byte) err
 	feed.closer = make(chan bool)
 	feed.cursor = cursor
 
-	logrus.Info(table, "change feed started")
+	slog.InfoContext(ctx, "change feed started", "table", table)
 	go func() {
 		feed.cursor.Listen(feed.ch)
 		for {
 			select {
 			case <-feed.closer:
-				logrus.Info(table, "change feed closed")
+				slog.InfoContext(ctx, "change feed closed", "table", table)
 				return
 
 			case event := <-feed.ch:
@@ -54,19 +55,19 @@ func newChangeFeed(db *r.Session, table string, exec func(prev, next []byte) err
 				if raw := event["old_val"]; raw != nil {
 					oldVal, err = json.Marshal(raw)
 					if err != nil {
-						logrus.Errorf("could not marshal old_val: %s", err)
+						slog.ErrorContext(ctx, "could not marshal old_val", "error", err)
 						continue
 					}
 				}
 				if raw := event["new_val"]; raw != nil {
 					newVal, err = json.Marshal(raw)
 					if err != nil {
-						logrus.Errorf("could not marshal new_val: %s", err)
+						slog.ErrorContext(ctx, "could not marshal new_val", "error", err)
 						continue
 					}
 				}
 				if err = exec(oldVal, newVal); err != nil {
-					logrus.Errorf("could not process change: %s", err)
+					slog.ErrorContext(ctx, "could not process change", "error", err)
 				}
 			}
 		}

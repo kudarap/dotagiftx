@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"errors"
 	"log"
 
@@ -17,35 +18,36 @@ const (
 var deliverySearchFields = []string{"id", "market_id"}
 
 // NewDelivery creates new instance of delivery data store.
-func NewDelivery(c *Client) dotagiftx.DeliveryStorage {
-	if err := c.autoMigrate(tableDelivery); err != nil {
+func NewDelivery(c *Client) *DeliveryRepository {
+	ctx := context.Background()
+	if err := c.autoMigrate(ctx, tableDelivery); err != nil {
 		log.Fatalf("could not create %s table: %s", tableDelivery, err)
 	}
 
-	if err := c.autoIndex(tableDelivery, dotagiftx.Delivery{}); err != nil {
+	if err := c.autoIndex(ctx, tableDelivery, dotagiftx.Delivery{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableDelivery, err)
 	}
 
-	return &deliveryStorage{c, deliverySearchFields}
+	return &DeliveryRepository{c, deliverySearchFields}
 }
 
-type deliveryStorage struct {
+type DeliveryRepository struct {
 	db            *Client
 	keywordFields []string
 }
 
-func (s *deliveryStorage) Find(o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) Find(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
 	var res []dotagiftx.Delivery
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
 	return res, nil
 }
 
-func (s *deliveryStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
+func (s *DeliveryRepository) Count(ctx context.Context, o dotagiftx.FindOpts) (num int, err error) {
 	o = dotagiftx.FindOpts{
 		Keyword:       o.Keyword,
 		KeywordFields: s.keywordFields,
@@ -53,11 +55,11 @@ func (s *deliveryStorage) Count(o dotagiftx.FindOpts) (num int, err error) {
 		UserID:        o.UserID,
 	}
 	q := findOpts(o).parseOpts(s.table(), s.includeRelatedFields)
-	err = s.db.one(q.Count(), &num)
+	err = s.db.one(ctx, q.Count(), &num)
 	return
 }
 
-func (s *deliveryStorage) ToVerify(o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) ToVerify(ctx context.Context, o dotagiftx.FindOpts) ([]dotagiftx.Delivery, error) {
 	var res []dotagiftx.Delivery
 	o.KeywordFields = s.keywordFields
 	q := findOpts(o).parseOpts(s.table(), func(t r.Term) r.Term {
@@ -65,7 +67,7 @@ func (s *deliveryStorage) ToVerify(o dotagiftx.FindOpts) ([]dotagiftx.Delivery, 
 			return d.Field("retries").Default(0).Lt(dotagiftx.DeliveryRetryLimit)
 		})
 	})
-	if err := s.db.list(q, &res); err != nil {
+	if err := s.db.list(ctx, q, &res); err != nil {
 		return nil, dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 
@@ -73,7 +75,7 @@ func (s *deliveryStorage) ToVerify(o dotagiftx.FindOpts) ([]dotagiftx.Delivery, 
 }
 
 // includeRelatedFields injects user details base on market foreign keys.
-func (s *deliveryStorage) includeRelatedFields(q r.Term) r.Term {
+func (s *DeliveryRepository) includeRelatedFields(q r.Term) r.Term {
 	return q
 	// return q.
 	//	EqJoin(deliveryFieldMarketID, r.Table(tableMarket)).
@@ -84,9 +86,9 @@ func (s *deliveryStorage) includeRelatedFields(q r.Term) r.Term {
 	//	})
 }
 
-func (s *deliveryStorage) Get(id string) (*dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) Get(ctx context.Context, id string) (*dotagiftx.Delivery, error) {
 	row := &dotagiftx.Delivery{}
-	if err := s.db.one(s.table().Get(id), row); err != nil {
+	if err := s.db.one(ctx, s.table().Get(id), row); err != nil {
 		if errors.Is(err, r.ErrEmptyResult) {
 			return nil, dotagiftx.DeliveryErrNotFound
 		}
@@ -97,12 +99,12 @@ func (s *deliveryStorage) Get(id string) (*dotagiftx.Delivery, error) {
 	return row, nil
 }
 
-func (s *deliveryStorage) GetByMarketID(marketID string) (*dotagiftx.Delivery, error) {
+func (s *DeliveryRepository) GetByMarketID(ctx context.Context, marketID string) (*dotagiftx.Delivery, error) {
 	var res []dotagiftx.Delivery
 	var err error
 
 	q := s.table().GetAllByIndex(deliveryFieldMarketID, marketID)
-	if err = s.db.list(q, &res); err != nil {
+	if err = s.db.list(ctx, q, &res); err != nil {
 		return nil, err
 	}
 
@@ -113,12 +115,12 @@ func (s *deliveryStorage) GetByMarketID(marketID string) (*dotagiftx.Delivery, e
 	return &res[0], nil
 }
 
-func (s *deliveryStorage) Create(in *dotagiftx.Delivery) error {
+func (s *DeliveryRepository) Create(ctx context.Context, in *dotagiftx.Delivery) error {
 	t := now()
 	in.CreatedAt = t
 	in.UpdatedAt = t
 	in.ID = ""
-	id, err := s.db.insert(s.table().Insert(in))
+	id, err := s.db.insert(ctx, s.table().Insert(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
@@ -127,14 +129,14 @@ func (s *deliveryStorage) Create(in *dotagiftx.Delivery) error {
 	return nil
 }
 
-func (s *deliveryStorage) Update(in *dotagiftx.Delivery) error {
-	cur, err := s.Get(in.ID)
+func (s *DeliveryRepository) Update(ctx context.Context, in *dotagiftx.Delivery) error {
+	cur, err := s.Get(ctx, in.ID)
 	if err != nil {
 		return err
 	}
 
 	in.UpdatedAt = now()
-	err = s.db.update(s.table().Get(in.ID).Update(in))
+	err = s.db.update(ctx, s.table().Get(in.ID).Update(in))
 	if err != nil {
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
@@ -146,6 +148,6 @@ func (s *deliveryStorage) Update(in *dotagiftx.Delivery) error {
 	return nil
 }
 
-func (s *deliveryStorage) table() r.Term {
+func (s *DeliveryRepository) table() r.Term {
 	return r.Table(tableDelivery)
 }

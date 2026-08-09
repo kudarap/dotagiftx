@@ -1,13 +1,15 @@
 package http
 
 import (
+	"context"
 	"fmt"
+	"io"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -17,11 +19,32 @@ const (
 	itemCacheExpr      = time.Hour * 24 * 365 // Full year expiration since item update only happens during BP.
 )
 
+// itemService provides access to item service methods used by http handlers.
+type itemService interface {
+	// Items returns a list of items.
+	Items(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Item, *dotagiftx.FindMetadata, error)
+
+	// Item returns item details by id.
+	Item(ctx context.Context, id string) (*dotagiftx.Item, error)
+
+	// Create saves new item details.
+	Create(context.Context, *dotagiftx.Item) error
+
+	// Import creates new item from yaml format.
+	Import(ctx context.Context, f io.Reader) (dotagiftx.ItemImportResult, error)
+
+	// TopOrigins returns a list of top origin/treasure base on view count.
+	TopOrigins(ctx context.Context) ([]string, error)
+
+	// TopHeroes returns a list of top heroes base on view count.
+	TopHeroes(ctx context.Context) ([]string, error)
+}
+
 func handleItemList(
-	svc dotagiftx.ItemService,
-	trackSvc dotagiftx.TrackService,
+	svc itemService,
+	trackSvc trackService,
 	cache cacheManager,
-	logger *logrus.Logger,
+	logger *slog.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
@@ -40,12 +63,12 @@ func handleItemList(
 		}
 
 		go func() {
-			if err = trackSvc.CreateSearchKeyword(r, opts.Keyword); err != nil {
-				logger.Errorf("search keyword tracking error: %s", err)
+			if err = trackSvc.CreateSearchKeyword(context.WithoutCancel(r.Context()), r, opts.Keyword); err != nil {
+				logger.ErrorContext(r.Context(), "search keyword tracking error", "error", err)
 			}
 		}()
 
-		list, md, err := svc.Items(opts)
+		list, md, err := svc.Items(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -57,14 +80,14 @@ func handleItemList(
 		o := newDataWithMeta(list, md)
 		go func() {
 			if err = cache.Set(cacheKey, o, itemCacheExpr); err != nil {
-				logger.Errorf("could not save cache on catalog details: %s", err)
+				logger.ErrorContext(r.Context(), "could not save cache on catalog details", "error", err)
 			}
 		}()
 		respondOK(w, o)
 	}
 }
 
-func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleItemDetail(svc itemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequestWithPrefix(r, itemCacheKeyPrefix)
@@ -75,7 +98,7 @@ func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *log
 			}
 		}
 
-		i, err := svc.Item(chi.URLParam(r, "id"))
+		i, err := svc.Item(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			respondError(w, err)
 			return
@@ -83,14 +106,14 @@ func handleItemDetail(svc dotagiftx.ItemService, cache cacheManager, logger *log
 
 		go func() {
 			if err := cache.Set(cacheKey, i, itemCacheExpr); err != nil {
-				logger.Errorf("could not save cache on catalog details: %s", err)
+				logger.ErrorContext(r.Context(), "could not save cache on catalog details", "error", err)
 			}
 		}()
 		respondOK(w, i)
 	}
 }
 
-func handleItemCreate(svc dotagiftx.ItemService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleItemCreate(svc itemService, cache cacheManager, divineKey string, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
@@ -108,13 +131,17 @@ func handleItemCreate(svc dotagiftx.ItemService, cache cacheManager, divineKey s
 			return
 		}
 
-		go cache.BulkDel(itemCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(itemCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate item cache", "error", err)
+			}
+		}()
 
 		respondOK(w, i)
 	}
 }
 
-func handleItemImport(svc dotagiftx.ItemService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleItemImport(svc itemService, cache cacheManager, divineKey string, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
@@ -127,7 +154,11 @@ func handleItemImport(svc dotagiftx.ItemService, cache cacheManager, divineKey s
 			respondError(w, fmt.Errorf("could not find 'file' on form-data: %s", err))
 			return
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				logger.ErrorContext(r.Context(), "closing import file", "error", err)
+			}
+		}()
 
 		// Check and read yaml file.
 		ct := fh.Header.Get("content-type")
@@ -142,7 +173,11 @@ func handleItemImport(svc dotagiftx.ItemService, cache cacheManager, divineKey s
 			return
 		}
 
-		go cache.BulkDel(itemCacheKeyPrefix)
+		go func() {
+			if err := cache.BulkDel(itemCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate item cache", "error", err)
+			}
+		}()
 
 		respondOK(w, res)
 	}

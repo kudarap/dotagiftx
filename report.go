@@ -54,31 +54,19 @@ type (
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 	}
 
-	// ReportService provides access to report service.
-	ReportService interface {
-		// Reports returns a list of reports.
-		Reports(opts FindOpts) ([]Report, *FindMetadata, error)
-
-		// Report returns report details by id.
-		Report(id string) (*Report, error)
-
-		// Create saves new report details.
-		Create(context.Context, *Report) error
-	}
-
-	// ReportStorage defines operation for report records.
-	ReportStorage interface {
+	// reportRepository defines operation for report records.
+	reportRepository interface {
 		// Find returns a list of reports from the data store.
-		Find(opts FindOpts) ([]Report, error)
+		Find(ctx context.Context, opts FindOpts) ([]Report, error)
 
 		// Count returns number of reports from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns report details by id from data store.
-		Get(id string) (*Report, error)
+		Get(ctx context.Context, id string) (*Report, error)
 
 		// Create persists a new report to data store.
-		Create(*Report) error
+		Create(context.Context, *Report) error
 	}
 )
 
@@ -110,17 +98,17 @@ func (t ReportType) String() string {
 }
 
 // NewReportService returns new report service.
-func NewReportService(rs ReportStorage, wp webhookPoster) ReportService {
-	return &reportService{rs, wp}
+func NewReportService(rs reportRepository, wp webhookPoster) *ReportService {
+	return &ReportService{rs, wp}
 }
 
-type reportService struct {
-	reportStg     ReportStorage
+type ReportService struct {
+	reportRepo    reportRepository
 	webhookPoster webhookPoster
 }
 
-func (s *reportService) Reports(opts FindOpts) ([]Report, *FindMetadata, error) {
-	res, err := s.reportStg.Find(opts)
+func (s *ReportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *FindMetadata, error) {
+	res, err := s.reportRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -130,7 +118,7 @@ func (s *reportService) Reports(opts FindOpts) ([]Report, *FindMetadata, error) 
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.reportStg.Count(opts)
+	tc, err := s.reportRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -141,16 +129,16 @@ func (s *reportService) Reports(opts FindOpts) ([]Report, *FindMetadata, error) 
 	}, nil
 }
 
-func (s *reportService) Report(id string) (*Report, error) {
-	return s.reportStg.Get(id)
+func (s *ReportService) Report(ctx context.Context, id string) (*Report, error) {
+	return s.reportRepo.Get(ctx, id)
 }
 
-func (s *reportService) CreateSurvey(ctx context.Context, rep *Report) error {
+func (s *ReportService) CreateSurvey(ctx context.Context, rep *Report) error {
 	rep.Type = ReportTypeSurvey
 	return s.Create(ctx, rep)
 }
 
-func (s *reportService) Create(ctx context.Context, rep *Report) error {
+func (s *ReportService) Create(ctx context.Context, rep *Report) error {
 	au := AuthFromContext(ctx)
 	if au == nil {
 		return AuthErrNoAccess
@@ -163,12 +151,12 @@ func (s *reportService) Create(ctx context.Context, rep *Report) error {
 		return NewXError(ReportErrRequiredFields, err)
 	}
 
-	if err := s.reportStg.Create(rep); err != nil {
+	if err := s.reportRepo.Create(ctx, rep); err != nil {
 		return err
 	}
 
 	go func() {
-		if err := s.shootToDiscord(rep.ID); err != nil {
+		if err := s.shootToDiscord(ctx, rep.ID); err != nil {
 			log.Println("could not shoot to discord:", err)
 		}
 	}()
@@ -176,8 +164,8 @@ func (s *reportService) Create(ctx context.Context, rep *Report) error {
 	return nil
 }
 
-func (s *reportService) shootToDiscord(reportID string) error {
-	reps, _, err := s.Reports(FindOpts{Filter: Report{ID: reportID}})
+func (s *ReportService) shootToDiscord(ctx context.Context, reportID string) error {
+	reps, _, err := s.Reports(ctx, FindOpts{Filter: Report{ID: reportID}})
 	if err != nil {
 		return err
 	}

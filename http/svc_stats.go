@@ -1,14 +1,27 @@
 package http
 
 import (
+	"context"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/kudarap/dotagiftx"
-	"github.com/sirupsen/logrus"
 )
 
-func handleStatsMarketSummaryV2(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
+// statsService provides access to stats service methods used by http handlers.
+type statsService interface {
+	// CountMarketStatusV2 returns market status count base on given options.
+	CountMarketStatusV2(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error)
+
+	// GraphMarketSales returns market sales graph base on given options.
+	GraphMarketSales(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.MarketSalesGraph, error)
+
+	// TopKeywords returns a list of top search keywords.
+	TopKeywords(ctx context.Context) ([]dotagiftx.SearchKeywordScore, error)
+}
+
+func handleStatsMarketSummaryV2(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -19,13 +32,17 @@ func handleStatsMarketSummaryV2(svc dotagiftx.StatsService, cache cacheManager) 
 			}
 		}
 
-		res, err := collectMarketStats(svc, r)
+		res, err := collectMarketStats(r.Context(), svc, r)
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		go cache.Set(cacheKey, res, time.Minute*5)
+		go func() {
+			if err := cache.Set(cacheKey, res, time.Minute*5); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on market summary", "error", err)
+			}
+		}()
 		respondOK(w, res)
 	}
 }
@@ -35,22 +52,23 @@ const (
 	overallStatsRehydrationDur = overallStatsCacheExpr / 2
 )
 
-func hydrateStatsMarketSummaryOverall(cacheKey string, svc dotagiftx.StatsService, cache cacheManager, logger *logrus.Logger) {
-	logger.Infoln("REHYDRATING OVERALL STATS: started")
-	res, err := collectMarketStats(svc, nil)
+func hydrateStatsMarketSummaryOverall(cacheKey string, svc statsService, cache cacheManager, logger *slog.Logger) {
+	ctx := context.Background()
+	logger.InfoContext(ctx, "REHYDRATING OVERALL STATS: started")
+	res, err := collectMarketStats(ctx, svc, nil)
 	if err != nil {
-		logger.Errorf("REHYDRATING OVERALL STATS: could not get overall market stats: %s", err)
+		logger.ErrorContext(ctx, "REHYDRATING OVERALL STATS: could not get overall market stats", "error", err)
 		return
 	}
 
 	if err = cache.Set(cacheKey, res, overallStatsCacheExpr); err != nil {
-		logger.Errorf("REHYDRATING OVERALL STATS: could not save cache on overall market stats: %s", err)
+		logger.ErrorContext(ctx, "REHYDRATING OVERALL STATS: could not save cache on overall market stats", "error", err)
 		return
 	}
-	logger.Infoln("REHYDRATING OVERALL STATS: completed")
+	logger.InfoContext(ctx, "REHYDRATING OVERALL STATS: completed")
 }
 
-func handleStatsMarketSummaryOverall(svc dotagiftx.StatsService, cache cacheManager, logger *logrus.Logger) http.HandlerFunc {
+func handleStatsMarketSummaryOverall(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	const cacheKey = "stats_market_summary_overall"
 
 	// hydration setup since this is a long-running process
@@ -76,7 +94,7 @@ func handleStatsMarketSummaryOverall(svc dotagiftx.StatsService, cache cacheMana
 	}
 }
 
-func handleGraphMarketSales(svc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
+func handleGraphMarketSales(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -93,29 +111,33 @@ func handleGraphMarketSales(svc dotagiftx.StatsService, cache cacheManager) http
 			return
 		}
 
-		res, err := svc.GraphMarketSales(dotagiftx.FindOpts{Filter: f})
+		res, err := svc.GraphMarketSales(r.Context(), dotagiftx.FindOpts{Filter: f})
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
 		const expiration = time.Hour * 4
-		go cache.Set(cacheKey, res, expiration)
+		go func() {
+			if err := cache.Set(cacheKey, res, expiration); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on market sales graph", "error", err)
+			}
+		}()
 		respondOK(w, res)
 	}
 }
 
 const statsCacheExpr = time.Hour
 
-func handleStatsTopOrigins(itemSvc dotagiftx.ItemService, cache cacheManager) http.HandlerFunc {
-	return topStatsBaseHandler(itemSvc.TopOrigins, cache)
+func handleStatsTopOrigins(itemSvc itemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
+	return topStatsBaseHandler(itemSvc.TopOrigins, cache, logger)
 }
 
-func handleStatsTopHeroes(itemSvc dotagiftx.ItemService, cache cacheManager) http.HandlerFunc {
-	return topStatsBaseHandler(itemSvc.TopHeroes, cache)
+func handleStatsTopHeroes(itemSvc itemService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
+	return topStatsBaseHandler(itemSvc.TopHeroes, cache, logger)
 }
 
-func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache cacheManager) http.HandlerFunc {
+func handleStatsTopKeywords(statsSvc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	const expiration = time.Hour * 12
 	return func(w http.ResponseWriter, r *http.Request) {
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -126,18 +148,22 @@ func handleStatsTopKeywords(statsSvc dotagiftx.StatsService, cache cacheManager)
 			}
 		}
 
-		res, err := statsSvc.TopKeywords()
+		res, err := statsSvc.TopKeywords(r.Context())
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		go cache.Set(cacheKey, res, expiration)
+		go func() {
+			if err := cache.Set(cacheKey, res, expiration); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on top keywords", "error", err)
+			}
+		}()
 		respondOK(w, res)
 	}
 }
 
-func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.HandlerFunc {
+func topStatsBaseHandler(fn func(context.Context) ([]string, error), cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -148,7 +174,7 @@ func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.H
 			}
 		}
 
-		l, err := fn()
+		l, err := fn(r.Context())
 		if err != nil {
 			respondError(w, err)
 			return
@@ -160,7 +186,11 @@ func topStatsBaseHandler(fn func() ([]string, error), cache cacheManager) http.H
 		}
 
 		top10 := l[:10]
-		go cache.Set(cacheKey, top10, statsCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, top10, statsCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on top stats", "error", err)
+			}
+		}()
 		respondOK(w, top10)
 	}
 }
@@ -178,7 +208,7 @@ func newMarketStats(asks *dotagiftx.MarketStatusCount, bids *dotagiftx.MarketSta
 	return &marketStats{asks, bids}
 }
 
-func collectMarketStats(svc dotagiftx.StatsService, r *http.Request) (*marketStats, error) {
+func collectMarketStats(ctx context.Context, svc statsService, r *http.Request) (*marketStats, error) {
 	var err error
 	opts := [2]dotagiftx.FindOpts{
 		{Filter: &dotagiftx.Market{Type: dotagiftx.MarketTypeAsk}},
@@ -196,13 +226,13 @@ func collectMarketStats(svc dotagiftx.StatsService, r *http.Request) (*marketSta
 	}
 
 	// collect market sell stats
-	asks, err := svc.CountMarketStatusV2(opts[0])
+	asks, err := svc.CountMarketStatusV2(ctx, opts[0])
 	if err != nil {
 		return nil, err
 	}
 
 	// collect market buy stats
-	bids, err := svc.CountMarketStatusV2(opts[1])
+	bids, err := svc.CountMarketStatusV2(ctx, opts[1])
 	if err != nil {
 		return nil, err
 	}

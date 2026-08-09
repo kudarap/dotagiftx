@@ -5,5 +5,5 @@
 
 image=docker.io/kudarap/dotagiftx:$1
 
-podman build -t $image .
+podman build -t $image . --platform=linux/amd64
 podman push $image

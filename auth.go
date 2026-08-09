@@ -2,7 +2,10 @@ package dotagiftx
 
 import (
 	"context"
-	"crypto/sha1"
+	"crypto/rand"
+	"crypto/sha1" //nolint:gosec // legacy password/token hashing for backward compatibility
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -45,41 +48,25 @@ type (
 		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}
 
-	// AuthService provides access to service.
-	AuthService interface {
-		// SteamLogin redirects for authorization and process creation of auth.
-		SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth, error)
-
-		// RevokeRefreshToken invalidates refresh token that will prevent on renewing
-		// short-lived access token and will result user have to re-login.
-		RevokeRefreshToken(refreshToken string) error
-
-		// RenewToken checks refresh token validity that allows to get new short-lived access token.
-		RenewToken(refreshToken string) (*Auth, error)
-
-		// Auth returns an auth details by id.
-		Auth(id string) (*Auth, error)
-	}
-
-	// AuthStorage defines operation for auth records.
-	AuthStorage interface {
+	// authRepository defines operation for auth records.	// authRepository defines operation for auth records.
+	authRepository interface {
 		// Get returns an auth details by id from data store.
-		Get(id string) (*Auth, error)
+		Get(ctx context.Context, id string) (*Auth, error)
 
 		// GetByUsername returns an auth details by username from data store.
-		GetByUsername(username string) (*Auth, error)
+		GetByUsername(ctx context.Context, username string) (*Auth, error)
 
 		// GetByUsernameAndPassword returns an auth details by username and password from data store.
-		GetByUsernameAndPassword(username, password string) (*Auth, error)
+		GetByUsernameAndPassword(ctx context.Context, username, password string) (*Auth, error)
 
 		// GetByRefreshToken returns an auth details by refreshToken from data store.
-		GetByRefreshToken(refreshToken string) (*Auth, error)
+		GetByRefreshToken(ctx context.Context, refreshToken string) (*Auth, error)
 
 		// Create persists a new auth to data store.
-		Create(*Auth) error
+		Create(context.Context, *Auth) error
 
 		// Update persists auth changes to data store.
-		Update(*Auth) error
+		Update(context.Context, *Auth) error
 	}
 )
 
@@ -108,23 +95,23 @@ func AuthFromContext(ctx context.Context) *Auth {
 func NewAuthService(
 	salt string,
 	sc SteamClient,
-	as AuthStorage,
-	us UserService,
+	as authRepository,
+	us *UserService,
 	logger *slog.Logger,
-) AuthService {
-	return &authService{salt, sc, as, us, logger}
+) *AuthService {
+	return &AuthService{salt, sc, as, us, logger}
 }
 
-type authService struct {
+type AuthService struct {
 	salt string
 
 	steamClient SteamClient
-	authStg     AuthStorage
-	userSvc     UserService
+	authRepo    authRepository
+	userSvc     *UserService
 	logger      *slog.Logger
 }
 
-func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth, error) {
+func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error) {
 	// Handle authorization redirect.
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := s.steamClient.AuthorizeURL(r)
@@ -132,7 +119,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 			return nil, err
 		}
 
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, url, http.StatusTemporaryRedirect) //nolint:gosec // steam openid login redirect flow
 		return nil, nil
 	}
 
@@ -143,21 +130,34 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 	}
 
 	// Check account existence.
-	authData, err := s.authStg.GetByUsername(steamPlayer.ID)
+	authData, err := s.authRepo.GetByUsername(ctx, steamPlayer.ID)
 	if err != nil && !errors.Is(err, AuthErrNotFound) {
 		return nil, fmt.Errorf("auth not found: %s", err)
 	}
 
 	// Account existed and checked login credentials.
 	if authData != nil {
-		if authData.Password != s.composePassword(steamPlayer.ID, authData.UserID) {
+		// try logging with both password v1 and v2
+		passwordV1 := s.composePassword(steamPlayer.ID, authData.UserID)
+		passwordV2 := s.composePasswordV2(steamPlayer.ID, authData.UserID)
+		if authData.Password != passwordV1 && authData.Password != passwordV2 {
 			return nil, AuthErrLogin
 		}
 
-		u, err := s.userSvc.User(authData.UserID)
+		// upgrade password to v2
+		if authData.Password == passwordV1 {
+			if err := s.authRepo.Update(ctx, &Auth{
+				ID:       authData.ID,
+				Password: passwordV2,
+			}); err != nil {
+				s.logger.ErrorContext(ctx, "upgrade password v2 failed", "error", err)
+			}
+		}
+
+		u, err := s.userSvc.User(ctx, authData.UserID)
 		if err != nil {
 			if errors.Is(err, UserErrNotFound) {
-				s.logger.Warn("user not found, but auth exists. re-creating user.",
+				s.logger.WarnContext(ctx, "user not found, but auth exists. re-creating user.",
 					"auth_id", authData.ID,
 					"user_id", authData.UserID,
 					"username", authData.Username,
@@ -171,11 +171,11 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 					URL:       steamPlayer.URL,
 					Avatar:    steamPlayer.Avatar,
 				}
-				if err = s.userSvc.Create(u); err != nil {
+				if err = s.userSvc.Create(ctx, u); err != nil {
 					return nil, err
 				}
 
-				s.logger.Debug("user re-created", "user", u)
+				s.logger.DebugContext(ctx, "user re-created", "user", u)
 				return authData, nil
 			}
 
@@ -184,7 +184,7 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 		if err = u.CheckStatus(); err != nil {
 			return nil, err
 		}
-		if _, err = s.userSvc.SteamSync(steamPlayer); err != nil {
+		if _, err = s.userSvc.SteamSync(ctx, steamPlayer); err != nil {
 			return nil, UserErrSteamSync.X(err)
 		}
 
@@ -192,10 +192,10 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 	}
 
 	// HOTFIX for missing user data
-	existingUser, _ := s.userSvc.User(steamPlayer.ID)
+	existingUser, _ := s.userSvc.User(ctx, steamPlayer.ID)
 
 	// Process account registration and save details.
-	authData, err = s.createAccountFromSteam(steamPlayer, existingUser)
+	authData, err = s.createAccountFromSteam(ctx, steamPlayer, existingUser)
 	if err != nil {
 		return nil, err
 	}
@@ -203,12 +203,12 @@ func (s *authService) SteamLogin(w http.ResponseWriter, r *http.Request) (*Auth,
 	return authData, nil
 }
 
-func (s *authService) RenewToken(refreshToken string) (*Auth, error) {
+func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
 		return nil, AuthErrRefreshToken
 	}
 
-	au, err := s.authStg.GetByRefreshToken(refreshToken)
+	au, err := s.authRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
 	if err != nil {
 		return nil, AuthErrRefreshToken
 	}
@@ -216,22 +216,13 @@ func (s *authService) RenewToken(refreshToken string) (*Auth, error) {
 	return au, nil
 }
 
-func (s *authService) RevokeRefreshToken(refreshToken string) error {
-	if strings.TrimSpace(refreshToken) == "" {
-		return AuthErrRefreshToken
-	}
-
-	au, err := s.RenewToken(refreshToken)
-	if err != nil {
-		return err
-	}
-
-	au.RefreshToken = s.generateRefreshToken()
-	return s.authStg.Update(au)
+func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken string) error {
+	_, err := s.renewRefreshToken(ctx, refreshToken)
+	return err
 }
 
-func (s *authService) Auth(id string) (*Auth, error) {
-	u, err := s.authStg.Get(id)
+func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
+	u, err := s.authRepo.Get(ctx, id)
 	if err != nil {
 		return nil, AuthErrNotFound.X(err)
 	}
@@ -239,7 +230,31 @@ func (s *authService) Auth(id string) (*Auth, error) {
 	return u, nil
 }
 
-func (s *authService) createAccountFromSteam(sp *SteamPlayer, user *User) (*Auth, error) {
+func (s *AuthService) renewRefreshToken(ctx context.Context, refreshToken string) (string, error) {
+	if strings.TrimSpace(refreshToken) == "" {
+		return "", AuthErrRefreshToken
+	}
+
+	au, err := s.RefreshToken(ctx, refreshToken)
+	if err != nil {
+		return "", err
+	}
+
+	au.RefreshToken, err = s.generateRefreshToken()
+	if err != nil {
+		return "", err
+	}
+	if err := s.authRepo.Update(ctx, &Auth{
+		ID:           au.ID,
+		RefreshToken: s.hash(au.RefreshToken),
+	}); err != nil {
+		return "", err
+	}
+
+	return au.RefreshToken, nil
+}
+
+func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
 	if user == nil {
 		user = &User{
 			SteamID: sp.ID,
@@ -247,30 +262,50 @@ func (s *authService) createAccountFromSteam(sp *SteamPlayer, user *User) (*Auth
 			URL:     sp.URL,
 			Avatar:  sp.Avatar,
 		}
-		if err := s.userSvc.Create(user); err != nil {
+		if err := s.userSvc.Create(ctx, user); err != nil {
 			return nil, err
 		}
 	}
 
+	refreshToken, err := s.generateRefreshToken()
+	if err != nil {
+		return nil, err
+	}
 	au := &Auth{UserID: user.ID, Username: sp.ID}
-	au.RefreshToken = s.generateRefreshToken()
-	au.Password = s.composePassword(sp.ID, user.ID)
-	if err := s.authStg.Create(au); err != nil {
+	au.RefreshToken = s.hash(refreshToken)
+	au.Password = s.composePasswordV2(sp.ID, user.ID)
+	if err := s.authRepo.Create(ctx, au); err != nil {
 		return nil, err
 	}
 
+	au.RefreshToken = refreshToken
 	return au, nil
 }
 
-func (s *authService) generateRefreshToken() string {
-	t := fmt.Sprintf("%d%s", time.Now().UnixNano(), s.salt)
-	h := sha1.New()
-	h.Write([]byte(t))
+func (s *AuthService) generateRefreshToken() (string, error) {
+	buf := make([]byte, 48)
+	if _, err := rand.Read(buf); err != nil {
+		// try again
+		if _, err := rand.Read(buf); err != nil {
+			return "", err
+		}
+	}
+	return base64.RawURLEncoding.EncodeToString(buf), nil
+}
+
+func (s *AuthService) composePassword(steamID, userID string) string {
+	h := sha1.New() //nolint:gosec // legacy password hashing for backward compatibility
+	h.Write([]byte(steamID + userID + s.salt))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func (s *authService) composePassword(steamID, userID string) string {
-	h := sha1.New()
-	h.Write([]byte(steamID + userID + s.salt))
+func (s *AuthService) composePasswordV2(steamID, userID string) string {
+	return s.hash(steamID, userID)
+}
+
+func (s *AuthService) hash(a ...string) string {
+	h := sha256.New()
+	a = append(a, s.salt)
+	h.Write([]byte(strings.Join(a, "")))
 	return hex.EncodeToString(h.Sum(nil))
 }

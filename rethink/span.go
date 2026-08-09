@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"regexp"
@@ -11,7 +12,7 @@ import (
 
 const tableSpan = "span"
 
-type SpanStorage struct {
+type SpanRepository struct {
 	db *Client
 }
 
@@ -21,23 +22,23 @@ type span struct {
 	CreatedAt time.Time `db:"created_at,index"`
 }
 
-func NewSpan(c *Client) *SpanStorage {
-	if err := c.autoMigrate(tableSpan); err != nil {
+func NewSpan(c *Client) *SpanRepository {
+	if err := c.autoMigrate(context.Background(), tableSpan); err != nil {
 		log.Fatalf("could not create %s table: %s", tableSpan, err)
 	}
 
-	if err := c.autoIndex(tableSpan, span{}); err != nil {
+	if err := c.autoIndex(context.Background(), tableSpan, span{}); err != nil {
 		log.Fatalf("could not create index on %s table: %s", tableSpan, err)
 	}
 
-	return &SpanStorage{c}
+	return &SpanRepository{c}
 }
 
-func (s *SpanStorage) Add(name string, elapsedMs int64, t time.Time) {
+func (s *SpanRepository) Add(ctx context.Context, name string, elapsedMs int64, t time.Time) {
 	name = spanCleanUUIDs(name)
 	name = spanCleanSteamIDs(name)
 	i := span{name, elapsedMs, t}
-	_, err := s.db.insert(r.Table("span").Insert(i))
+	_, err := s.db.insert(ctx, r.Table("span").Insert(i))
 	if err != nil {
 		fmt.Println("ERR SPAN", err)
 	}
