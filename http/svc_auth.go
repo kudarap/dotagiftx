@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -8,6 +9,19 @@ import (
 )
 
 const defaultTokenExpiration = time.Minute * 5
+
+// authService provides access to auth service methods used by http handlers.
+type authService interface {
+	// SteamLogin redirects for authorization and process creation of auth.
+	SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*dotagiftx.Auth, error)
+
+	// RevokeRefreshToken invalidates refresh token that will prevent on renewing
+	// short-lived access token and will result user have to re-login.
+	RevokeRefreshToken(ctx context.Context, refreshToken string) error
+
+	// RefreshToken checks refresh token validity that allows to get new short-lived access token.
+	RefreshToken(ctx context.Context, refreshToken string) (*dotagiftx.Auth, error)
+}
 
 type authResp struct {
 	UserID       string    `json:"user_id,omitempty"`

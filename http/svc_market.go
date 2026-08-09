@@ -16,6 +16,30 @@ const (
 	marketCacheExpr      = time.Hour * 24 // Full day cache since its using on-demand invalidation and caching.
 )
 
+// marketService provides access to market service methods used by http handlers.
+type marketService interface {
+	// Markets returns a list of markets.
+	Markets(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Market, *dotagiftx.FindMetadata, error)
+
+	// Market returns market details by id.
+	Market(ctx context.Context, id string) (*dotagiftx.Market, error)
+
+	// Create saves new market details.
+	Create(context.Context, *dotagiftx.Market) error
+
+	// Update saves market details changes.
+	Update(context.Context, *dotagiftx.Market) error
+
+	// Catalog returns a list of catalogs.
+	Catalog(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error)
+
+	// CatalogDetails returns catalog details by item id.
+	CatalogDetails(ctx context.Context, id string, opts dotagiftx.FindOpts) (*dotagiftx.Catalog, error)
+
+	// TrendingCatalog returns a top 10 trending catalogs.
+	TrendingCatalog(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Catalog, *dotagiftx.FindMetadata, error)
+}
+
 func handleMarketList(
 	svc marketService,
 	trackSvc trackService,

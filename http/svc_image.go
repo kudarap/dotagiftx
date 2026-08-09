@@ -1,13 +1,27 @@
 package http
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
+
+// imageService provides access to image service methods used by http handlers.
+type imageService interface {
+	// Upload saves image details and actual file to local file system.
+	Upload(context.Context, io.Reader) (fileID string, err error)
+
+	// Image returns image details by id.
+	Image(ctx context.Context, fileID string) (path string, err error)
+
+	// Thumbnail downscales an image preserving its aspect ratio to the maximum dimensions.
+	Thumbnail(ctx context.Context, fileID string, width, height uint) (path string, err error)
+}
 
 func handleImageUpload(svc imageService, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

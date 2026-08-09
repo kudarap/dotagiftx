@@ -1,11 +1,24 @@
 package http
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kudarap/dotagiftx"
 )
+
+// reportService provides access to report service methods used by http handlers.
+type reportService interface {
+	// Reports returns a list of reports.
+	Reports(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Report, *dotagiftx.FindMetadata, error)
+
+	// Report returns report details by id.
+	Report(ctx context.Context, id string) (*dotagiftx.Report, error)
+
+	// Create saves new report details.
+	Create(context.Context, *dotagiftx.Report) error
+}
 
 func handleReportList(svc reportService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

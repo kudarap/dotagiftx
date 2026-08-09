@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -18,6 +19,27 @@ const (
 	itemCacheKeyPrefix = "svc_item"
 	itemCacheExpr      = time.Hour * 24 * 365 // Full year expiration since item update only happens during BP.
 )
+
+// itemService provides access to item service methods used by http handlers.
+type itemService interface {
+	// Items returns a list of items.
+	Items(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.Item, *dotagiftx.FindMetadata, error)
+
+	// Item returns item details by id.
+	Item(ctx context.Context, id string) (*dotagiftx.Item, error)
+
+	// Create saves new item details.
+	Create(context.Context, *dotagiftx.Item) error
+
+	// Import creates new item from yaml format.
+	Import(ctx context.Context, f io.Reader) (dotagiftx.ItemImportResult, error)
+
+	// TopOrigins returns a list of top origin/treasure base on view count.
+	TopOrigins(ctx context.Context) ([]string, error)
+
+	// TopHeroes returns a list of top heroes base on view count.
+	TopHeroes(ctx context.Context) ([]string, error)
+}
 
 func handleItemList(
 	svc itemService,

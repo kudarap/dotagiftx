@@ -10,6 +10,18 @@ import (
 	"github.com/kudarap/dotagiftx"
 )
 
+// statsService provides access to stats service methods used by http handlers.
+type statsService interface {
+	// CountMarketStatusV2 returns market status count base on given options.
+	CountMarketStatusV2(ctx context.Context, opts dotagiftx.FindOpts) (*dotagiftx.MarketStatusCount, error)
+
+	// GraphMarketSales returns market sales graph base on given options.
+	GraphMarketSales(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.MarketSalesGraph, error)
+
+	// TopKeywords returns a list of top search keywords.
+	TopKeywords(ctx context.Context) ([]dotagiftx.SearchKeywordScore, error)
+}
+
 func handleStatsMarketSummaryV2(svc statsService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.

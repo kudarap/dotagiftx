@@ -11,6 +11,15 @@ import (
 
 const pixelImage = "image/pixel.gif"
 
+// trackService provides access to track service methods used by http handlers.
+type trackService interface {
+	// CreateFromRequest saves new track from http request. Primarily used on client side.
+	CreateFromRequest(ctx context.Context, r *http.Request) error
+
+	// CreateSearchKeyword saves new keyword tracking data.
+	CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error
+}
+
 func handleTracker(svc trackService, logger *slog.Logger) http.HandlerFunc {
 	image, _ := assets.Content.ReadFile(pixelImage)
 	return func(w http.ResponseWriter, r *http.Request) {
