@@ -30,3 +30,13 @@ jobs:
 
       - name: Test
         run: make test
+
+  test-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Lint web
+        run: bun install && bun run lint
+        working-directory: web
