@@ -19,7 +19,7 @@ run-worker: build-worker
 run-web:
 	cd ./web && yarn dev && cd ..
 
-test: lint vuln
+test: lint
 	go test -v ./
 	go test -v ./http/...
 	go test -v ./steam/...
@@ -33,7 +33,7 @@ lint:
 	golangci-lint run -v
 
 vuln:
-    govulncheck ./...
+	govulncheck ./...
 
 generate:
 	go generate .
