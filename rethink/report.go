@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 
+	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx/dotagiftx"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
@@ -92,6 +93,39 @@ func (s *ReportRepository) Create(ctx context.Context, in *dotagiftx.Report) err
 		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
 	}
 	in.ID = id
+
+	return nil
+}
+
+func (s *ReportRepository) Update(ctx context.Context, in *dotagiftx.Report) error {
+	cur, err := s.Get(ctx, in.ID)
+	if err != nil {
+		return err
+	}
+
+	in.UpdatedAt = now()
+	err = s.db.update(ctx, s.table().Get(in.ID).Update(in))
+	if err != nil {
+		return dotagiftx.NewXError(dotagiftx.StorageUncaughtErr, err)
+	}
+
+	if err := mergo.Merge(in, cur); err != nil {
+		return dotagiftx.NewXError(dotagiftx.StorageMergeErr, err)
+	}
+
+	return nil
+}
+
+func (s *ReportRepository) UpdateIssueURL(ctx context.Context, id, url string) error {
+	cur, err := s.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	cur.IssueURL = url
+	if err := s.Update(ctx, cur); err != nil {
+		return err
+	}
 
 	return nil
 }
