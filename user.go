@@ -416,11 +416,11 @@ func (s *UserService) UpdateSubscriptionFromWebhook(ctx context.Context, r *http
 	}
 	if !cancelled {
 		// ignore if not canceled.
-		log.Println("ignoring subscription update because its not cancelled:", steamID) //nolint:gosec // internal webhook logs
+		s.logger.InfoContext(ctx, "ignoring subscription update because its not cancelled", "steam_id", steamID)
 		return nil, nil
 	}
 
-	log.Println("cancelling subscription", steamID, "by marking expiration") //nolint:gosec // internal webhook logs
+	s.logger.InfoContext(ctx, "cancelling subscription by marking expiration", "steam_id", steamID)
 	user, err := s.userRepo.Get(ctx, steamID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user %s: %w", steamID, err)
