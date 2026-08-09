@@ -1,9 +1,10 @@
 package logging
 
 import (
-	"context"
+	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -14,10 +15,29 @@ const (
 	fileMaxAge     = 90  // days
 )
 
+const defaultLevel = "info"
+
 // Config represents logger settings.
 type Config struct {
 	FileOut string `split_words:"true"`
 	FileErr string `split_words:"true"`
+	Level   string
+}
+
+func (c Config) setDefault() Config {
+	c.Level = strings.ToLower(strings.TrimSpace(c.Level))
+	if c.Level == "" {
+		c.Level = defaultLevel
+	}
+	return c
+}
+
+func (c Config) level() (slog.Level, error) {
+	v, ok := levels[c.Level]
+	if !ok {
+		return slog.LevelInfo, fmt.Errorf("un-supported level: %s", c.Level)
+	}
+	return v, nil
 }
 
 // Default returns pre-configured logger.
@@ -37,53 +57,31 @@ func WithPrefix(lg *slog.Logger, prefix string) *slog.Logger {
 
 // New returns logger with config.
 func New(cfg Config) (*slog.Logger, error) {
-	handlers := []slog.Handler{slog.NewTextHandler(os.Stderr, nil)}
+	cfg = cfg.setDefault()
+	level, err := cfg.level()
+	if err != nil {
+		return nil, err
+	}
 
+	opts := &slog.HandlerOptions{Level: level}
+	handlers := []slog.Handler{slog.NewTextHandler(os.Stderr, opts)}
 	if cfg.FileOut != "" {
 		outF, err := openLogfileWithRotator(cfg.FileOut)
 		if err != nil {
 			return nil, err
 		}
-		handlers = append(handlers, levelFilterHandler{
-			level:   slog.LevelDebug,
-			handler: slog.NewTextHandler(outF, nil),
-		})
+		handlers = append(handlers, slog.NewTextHandler(outF, opts))
 	}
-
 	if cfg.FileErr != "" {
 		errF, err := openLogfileWithRotator(cfg.FileErr)
 		if err != nil {
 			return nil, err
 		}
-		handlers = append(handlers, levelFilterHandler{
-			level:   slog.LevelError,
-			handler: slog.NewTextHandler(errF, nil),
-		})
+		opts.Level = slog.LevelError
+		handlers = append(handlers, slog.NewTextHandler(errF, opts))
 	}
 
 	return slog.New(slog.NewMultiHandler(handlers...)), nil
-}
-
-// levelFilterHandler only handles records at or above the configured level.
-type levelFilterHandler struct {
-	level   slog.Leveler
-	handler slog.Handler
-}
-
-func (h levelFilterHandler) Enabled(ctx context.Context, l slog.Level) bool {
-	return l >= h.level.Level() && h.handler.Enabled(ctx, l)
-}
-
-func (h levelFilterHandler) Handle(ctx context.Context, r slog.Record) error {
-	return h.handler.Handle(ctx, r)
-}
-
-func (h levelFilterHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return levelFilterHandler{h.level, h.handler.WithAttrs(attrs)}
-}
-
-func (h levelFilterHandler) WithGroup(name string) slog.Handler {
-	return levelFilterHandler{h.level, h.handler.WithGroup(name)}
 }
 
 func openLogfileWithRotator(path string) (*lumberjack.Logger, error) {
@@ -94,4 +92,11 @@ func openLogfileWithRotator(path string) (*lumberjack.Logger, error) {
 		MaxAge:     fileMaxAge, // days
 		Compress:   true,       // disabled by default
 	}, nil
+}
+
+var levels = map[string]slog.Level{
+	"info":  slog.LevelInfo,
+	"warn":  slog.LevelWarn,
+	"error": slog.LevelError,
+	"debug": slog.LevelDebug,
 }
