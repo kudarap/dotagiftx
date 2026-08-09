@@ -43,7 +43,7 @@ type (
 		UserID       string     `json:"user_id"       db:"user_id,indexed,omitempty"  valid:"required"`
 		Username     string     `json:"username"      db:"username,indexed,omitempty" valid:"required"`
 		Password     string     `json:"-"             db:"password,omitempty"         valid:"required"`
-		RefreshToken string     `json:"refresh_token" db:"refresh_token,indexed,omitempty"`
+		RefreshToken string     `json:"refresh_token" db:"refresh_token,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"    db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}
@@ -58,9 +58,6 @@ type (
 
 		// GetByUsernameAndPassword returns an auth details by username and password from data store.
 		GetByUsernameAndPassword(ctx context.Context, username, password string) (*Auth, error)
-
-		// GetByRefreshToken returns an auth details by refreshToken from data store.
-		GetByRefreshToken(ctx context.Context, refreshToken string) (*Auth, error)
 
 		// Create persists a new auth to data store.
 		Create(context.Context, *Auth) error
@@ -96,10 +93,11 @@ func NewAuthService(
 	salt string,
 	sc SteamClient,
 	as authRepository,
+	ts refreshTokenRepository,
 	us *UserService,
 	logger *slog.Logger,
 ) *AuthService {
-	return &AuthService{salt, sc, as, us, logger}
+	return &AuthService{salt, sc, as, ts, us, logger}
 }
 
 type AuthService struct {
@@ -107,6 +105,7 @@ type AuthService struct {
 
 	steamClient SteamClient
 	authRepo    authRepository
+	tokenRepo   refreshTokenRepository
 	userSvc     *UserService
 	logger      *slog.Logger
 }
@@ -153,6 +152,13 @@ func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *
 				s.logger.ErrorContext(ctx, "upgrade password v2 failed", "error", err)
 			}
 		}
+
+		// Issue a fresh refresh token on every login.
+		refreshToken, err := s.issueRefreshToken(ctx, authData.ID, authData.UserID)
+		if err != nil {
+			return nil, err
+		}
+		authData.RefreshToken = refreshToken
 
 		u, err := s.userSvc.User(ctx, authData.UserID)
 		if err != nil {
@@ -208,17 +214,52 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*A
 		return nil, AuthErrRefreshToken
 	}
 
-	au, err := s.authRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
+	rt, err := s.tokenRepo.GetByTokenHash(ctx, s.hash(refreshToken))
 	if err != nil {
 		return nil, AuthErrRefreshToken
 	}
+
+	// Reuse of a rotated or revoked token invalidates the whole token family.
+	if rt.Revoked {
+		s.logger.WarnContext(ctx, "refresh token reuse detected, revoking token family",
+			"auth_id", rt.AuthID, "family_id", rt.FamilyID)
+		if err := s.tokenRepo.RevokeFamily(ctx, rt.FamilyID); err != nil {
+			return nil, err
+		}
+		return nil, AuthErrRefreshToken
+	}
+
+	// Expired tokens are not allowed to renew.
+	if rt.ExpiresAt == nil || rt.ExpiresAt.Before(time.Now()) {
+		return nil, AuthErrRefreshToken
+	}
+
+	// Rotation: issue a fresh token in the same family and revoke the used one.
+	raw, err := s.rotateRefreshToken(ctx, rt)
+	if err != nil {
+		return nil, err
+	}
+
+	au, err := s.authRepo.Get(ctx, rt.AuthID)
+	if err != nil {
+		return nil, err
+	}
+	au.RefreshToken = raw
 
 	return au, nil
 }
 
 func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken string) error {
-	_, err := s.renewRefreshToken(ctx, refreshToken)
-	return err
+	if strings.TrimSpace(refreshToken) == "" {
+		return AuthErrRefreshToken
+	}
+
+	rt, err := s.tokenRepo.GetByTokenHash(ctx, s.hash(refreshToken))
+	if err != nil {
+		return AuthErrRefreshToken
+	}
+
+	return s.tokenRepo.RevokeFamily(ctx, rt.FamilyID)
 }
 
 func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
@@ -230,28 +271,53 @@ func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
 	return u, nil
 }
 
-func (s *AuthService) renewRefreshToken(ctx context.Context, refreshToken string) (string, error) {
-	if strings.TrimSpace(refreshToken) == "" {
-		return "", AuthErrRefreshToken
-	}
-
-	au, err := s.RefreshToken(ctx, refreshToken)
+func (s *AuthService) rotateRefreshToken(ctx context.Context, rt *RefreshToken) (string, error) {
+	raw, err := s.generateRefreshToken()
 	if err != nil {
 		return "", err
 	}
 
-	au.RefreshToken, err = s.generateRefreshToken()
+	newRT := &RefreshToken{
+		AuthID:    rt.AuthID,
+		UserID:    rt.UserID,
+		FamilyID:  rt.FamilyID,
+		TokenHash: s.hash(raw),
+		ExpiresAt: s.refreshTokenExpiry(),
+	}
+	if err := s.tokenRepo.Create(ctx, newRT); err != nil {
+		return "", err
+	}
+
+	// Revoke the presented token so it can no longer be used.
+	rt.Revoked = true
+	if err := s.tokenRepo.Update(ctx, rt); err != nil {
+		return "", err
+	}
+
+	return raw, nil
+}
+
+func (s *AuthService) issueRefreshToken(ctx context.Context, authID, userID string) (string, error) {
+	raw, err := s.generateRefreshToken()
 	if err != nil {
 		return "", err
 	}
-	if err := s.authRepo.Update(ctx, &Auth{
-		ID:           au.ID,
-		RefreshToken: s.hash(au.RefreshToken),
+	familyID, err := s.generateRefreshToken()
+	if err != nil {
+		return "", err
+	}
+
+	if err := s.tokenRepo.Create(ctx, &RefreshToken{
+		AuthID:    authID,
+		UserID:    userID,
+		FamilyID:  familyID,
+		TokenHash: s.hash(raw),
+		ExpiresAt: s.refreshTokenExpiry(),
 	}); err != nil {
 		return "", err
 	}
 
-	return au.RefreshToken, nil
+	return raw, nil
 }
 
 func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, error) {
@@ -267,19 +333,24 @@ func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlaye
 		}
 	}
 
-	refreshToken, err := s.generateRefreshToken()
-	if err != nil {
-		return nil, err
-	}
 	au := &Auth{UserID: user.ID, Username: sp.ID}
-	au.RefreshToken = s.hash(refreshToken)
 	au.Password = s.composePasswordV2(sp.ID, user.ID)
 	if err := s.authRepo.Create(ctx, au); err != nil {
 		return nil, err
 	}
 
+	refreshToken, err := s.issueRefreshToken(ctx, au.ID, user.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	au.RefreshToken = refreshToken
 	return au, nil
+}
+
+func (s *AuthService) refreshTokenExpiry() *time.Time {
+	t := time.Now().Add(DefaultRefreshTokenLifetime)
+	return &t
 }
 
 func (s *AuthService) generateRefreshToken() (string, error) {

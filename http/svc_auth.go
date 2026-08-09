@@ -79,6 +79,9 @@ func handleAuthRenew(svc authService) http.HandlerFunc {
 			return
 		}
 
+		// Refresh tokens are rotated on every renew.
+		a.RefreshToken = au.RefreshToken
+
 		respondOK(w, a)
 	}
 }
