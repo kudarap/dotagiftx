@@ -20,17 +20,17 @@ export default function MyDocument(props) {
         <link rel="icon" href="/favicon.ico" />
         <meta name="emotion-insertion-point" content="" />
 
-        {process.env.NEXT_PUBLIC_UMAMI && (
+        {process.env.NEXT_PUBLIC_UMAMI_URL && process.env.NEXT_PUBLIC_UMAMI && (
           <>
             <script
               defer
-              src="https://umami.chiligarlic.com/adobo.js"
+              src={`${process.env.NEXT_PUBLIC_UMAMI_URL}/script.js`}
               data-website-id={process.env.NEXT_PUBLIC_UMAMI}
               data-performance="true"
             />
             <script
               defer
-              src="https://umami.chiligarlic.com/recorder.js"
+              src={`${process.env.NEXT_PUBLIC_UMAMI_URL}/recorder.js`}
               data-website-id={process.env.NEXT_PUBLIC_UMAMI}
             />
           </>

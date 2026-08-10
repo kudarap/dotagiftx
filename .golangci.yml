@@ -22,3 +22,6 @@ linters:
       - linters:
           - gosec
         text: "G115:" # integer overflow conversion uint64 -> int64
+      - linters:
+          - gosec
+        text: "G704:" # SSRF via taint analysis; endpoints are operator-configured

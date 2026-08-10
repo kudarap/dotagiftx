@@ -58,4 +58,4 @@ web-build:
 	cd ./web && yarn dev && cd ..
 
 local:
-	docker-compose up
+	docker compose up
