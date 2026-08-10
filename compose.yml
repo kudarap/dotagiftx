@@ -5,7 +5,7 @@ services:
       - "28015:28015"
       - "28080:8080"
     volumes:
-      - ./.localdata/rethinkdb:/data'
+      - ./.localdata/rethinkdb:/data
 
   redis:
     image: valkey/valkey:9.1-alpine
@@ -14,4 +14,4 @@ services:
     environment:
       REDIS_PASSWORD: root
     volumes:
-      - ./.localdata/valkey:/data'
+      - ./.localdata/valkey:/data

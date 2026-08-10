@@ -156,11 +156,6 @@ export default function Footer() {
               by kudarap
             </Link>
           </li>
-          {/* <li> */}
-          {/*  <MuiLink href="http://chiligarlic.com" target="_blank"> */}
-          {/*    A chiliGarlic project */}
-          {/*  </MuiLink> */}
-          {/* </li> */}
           <li style={{ float: 'right' }}>
             <Link
               href="https://steamcommunity.com/sharedfiles/filedetails/?id=2313234224"
