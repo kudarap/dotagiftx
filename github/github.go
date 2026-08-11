@@ -18,6 +18,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+const (
+	defaultOwner      = "kudarap"
+	defaultRepository = "dotagiftx"
+)
+
 type (
 	Config struct {
 		AppID          string
@@ -34,10 +39,24 @@ type (
 	}
 )
 
+func (c Config) SetDefault() *Config {
+	if c.Owner == "" {
+		c.Owner = defaultOwner
+	}
+
+	if c.Repository == "" {
+		c.Repository = defaultRepository
+	}
+
+	return &c
+}
+
 func New(conf Config) *Client {
+	c := conf.SetDefault()
+
 	return &Client{
 		http:      &http.Client{},
-		config:    conf,
+		config:    *c,
 		githubUrl: "https://api.github.com",
 	}
 }
