@@ -18,17 +18,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const (
-	defaultOwner      = "kudarap"
-	defaultRepository = "dotagiftx"
-)
+const defaultRepository = "kudarap/dotagiftx"
 
 type (
 	Config struct {
 		AppID          string
 		PrivateKey     string
 		InstallationID string
-		Owner          string
 		Repository     string
 	}
 
@@ -40,10 +36,6 @@ type (
 )
 
 func (c Config) SetDefault() *Config {
-	if c.Owner == "" {
-		c.Owner = defaultOwner
-	}
-
 	if c.Repository == "" {
 		c.Repository = defaultRepository
 	}
@@ -84,7 +76,7 @@ func (c *Client) CreateIssue(ctx context.Context, title string, body string) (st
 		return "", err
 	}
 
-	url := fmt.Sprintf("%s/repos/%s/%s/issues", c.githubUrl, c.config.Owner, c.config.Repository)
+	url := fmt.Sprintf("%s/repos/%s/issues", c.githubUrl, c.config.Repository)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
 	if err != nil {
 		return "", err
