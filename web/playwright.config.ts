@@ -24,7 +24,7 @@ export default defineConfig({
   ],
   use: {
     actionTimeout: 0,
-    headless: false,
+    headless: true,
     baseURL: 'https://dotagiftx.com/',
     storageState: 'tests/ui/storageState.json',
     trace: process.env.CI ? 'retain-on-failure' : 'on',
