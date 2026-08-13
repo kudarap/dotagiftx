@@ -33,6 +33,9 @@ jobs:
 
   test-web:
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_URL: https://api.dotagiftx.com
+      NEXT_PUBLIC_CDN_URL: https://api.dotagiftx.com/images
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
