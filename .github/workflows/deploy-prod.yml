@@ -8,56 +8,18 @@ on:
     branches: [master]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: "go.mod"
-
-      - uses: golangci/golangci-lint-action@v9
-
-      - id: govulncheck
-        uses: golang/govulncheck-action@v1
-
-      - name: Compile
-        run: make build
-
-      - name: Test
-        run: make test
+  test-go:
+    uses: ./.github/workflows/test-go.yml
 
   test-web:
-    runs-on: ubuntu-latest
-    env:
-      NEXT_PUBLIC_API_URL: https://api.dotagiftx.com
-      NEXT_PUBLIC_CDN_URL: https://api.dotagiftx.com/images
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Bun lint
-        working-directory: web
-        run: |
-          bun install
-          bun run lint
-
-      - name: Install Playwright Browsers
-        working-directory: web
-        run: bunx playwright install --with-deps
-      - name: Run Playwright tests
-        working-directory: web
-        run: bun test:e2e
+    uses: ./.github/workflows/test-web.yml
+    with:
+      api_url: https://api.dotagiftx.com
+      cdn_url: https://api.dotagiftx.com/images
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test-go, test-web]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

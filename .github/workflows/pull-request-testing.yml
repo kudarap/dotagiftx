@@ -1,0 +1,19 @@
+name: Testing
+
+permissions:
+  contents: read
+
+on:
+  push:
+  pull_request:
+    branches: [feature/*, hotfix/*, release/*]
+
+jobs:
+  test-go:
+    uses: ./.github/workflows/test-go.yml
+
+  test-web:
+    uses: ./.github/workflows/test-web.yml
+    with:
+      api_url: https://api.dev.dotagiftx.com
+      cdn_url: https://api.dev.dotagiftx.com/images
