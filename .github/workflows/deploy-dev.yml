@@ -32,6 +32,9 @@ jobs:
 
   test-web:
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_URL: https://api.dev.dotagiftx.com
+      NEXT_PUBLIC_CDN_URL: https://api.dev.dotagiftx.com/images
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -44,6 +47,19 @@ jobs:
         run: |
           bun install
           bun run lint
+
+      - name: Install Playwright Browsers
+        working-directory: web
+        run: bunx playwright install --with-deps
+      - name: Run Playwright tests
+        working-directory: web
+        run: bun test:e2e
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: web/playwright-report
+          path: web/playwright-report/
+          retention-days: 30
 
   deploy:
     runs-on: ubuntu-latest

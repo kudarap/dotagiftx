@@ -34,8 +34,8 @@ jobs:
   test-web:
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_API_URL: https://api.dotagiftx.com
-      NEXT_PUBLIC_CDN_URL: https://api.dotagiftx.com/images
+      NEXT_PUBLIC_API_URL: https://api.dev.dotagiftx.com
+      NEXT_PUBLIC_CDN_URL: https://api.dev.dotagiftx.com/images
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -55,7 +55,7 @@ jobs:
       - name: Run Playwright tests
         working-directory: web
         run: bun test:e2e
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: web/playwright-report
