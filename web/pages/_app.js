@@ -8,7 +8,6 @@ import { APP_NAME } from '@/constants/strings'
 import theme from '@/lib/theme'
 import Root from '@/components/Root'
 
-// eslint-disable-next-line
 import '@/components/Avatar.css'
 
 export default function MyApp(props) {

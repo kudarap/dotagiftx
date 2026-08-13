@@ -40,6 +40,8 @@
     "unfetch": "^5.0.0"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/lodash": "^4.17.25",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.1.6",
     "husky": "^4.3.8",
