@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { DOTAGIFTX_URL } from '../../automation-files/constants/urls'
-import { PageObjectModel } from '../../automation-files/pages/page_object_model'
-import { CommonPageComponent } from '../../automation-files/pages/common_page_component'
+import { DOTAGIFTX_URL } from './constants/urls'
+import { PageObjectModel } from './pages/page_object_model'
+import { CommonPageComponent } from './pages/common_page_component'
 
 test.describe('Accessibility Tests', () => {
   let commonPageComponent: CommonPageComponent

@@ -1,4 +1,4 @@
-import { APP_NAME } from '../../constants/strings'
+const APP_NAME = 'DotagiftX'
 
 export const PageTitles = {
   MAIN_PAGE: `Dota 2 Giftables Community Market :: ${APP_NAME}`,

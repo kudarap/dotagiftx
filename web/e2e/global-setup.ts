@@ -1,12 +1,12 @@
 import { chromium, FullConfig } from '@playwright/test'
 
 async function globalSetup(config: FullConfig) {
-  const storage = 'tests/ui/storageState.json'
+  const storage = 'e2e/storageState.json'
   const browser = await chromium.launch()
   const context = await browser.newContext()
   const page = await context.newPage()
 
-  await page.goto('https://dotagiftx.com/')
+  await page.goto('http://localhost:3000')
   // TODO: add login steps here if the tests require authenticated state.
 
   await context.storageState({ path: storage })
