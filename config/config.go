@@ -9,6 +9,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/kudarap/dotagiftx/clickhouse"
 	"github.com/kudarap/dotagiftx/file"
+	"github.com/kudarap/dotagiftx/github"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/phantasm"
@@ -39,6 +40,7 @@ type Config struct {
 	Log                 logging.Config
 	Phantasm            phantasm.Config
 	DiscordWebhookURL   string `envconfig:"DISCORD_WEBHOOK_URL"`
+	Github              github.Config
 }
 
 // Load parses .env values into a struct.

@@ -17,7 +17,7 @@ type reportService interface {
 	Report(ctx context.Context, id string) (*dotagiftx.Report, error)
 
 	// Create saves new report details.
-	Create(context.Context, *dotagiftx.Report) error
+	Create(context.Context, *dotagiftx.Report) (*dotagiftx.Report, error)
 }
 
 func handleReportList(svc reportService) http.HandlerFunc {
@@ -62,11 +62,12 @@ func handleReportCreate(svc reportService) http.HandlerFunc {
 			return
 		}
 
-		if err := svc.Create(r.Context(), rep); err != nil {
+		report, err := svc.Create(r.Context(), rep)
+		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		respondOK(w, rep)
+		respondOK(w, report)
 	}
 }
