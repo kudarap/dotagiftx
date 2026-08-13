@@ -13,6 +13,7 @@ import (
 	"github.com/kudarap/dotagiftx/discord"
 	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/file"
+	"github.com/kudarap/dotagiftx/github"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
@@ -117,6 +118,7 @@ func (app *application) setup() error {
 		return err
 	}
 	discordClient := discord.New(app.config.DiscordWebhookURL)
+	githubClient := github.New(app.config.Github)
 
 	// Storage inits.
 	logSvc.Info("setting up data stores...")
@@ -155,7 +157,7 @@ func (app *application) setup() error {
 		app.contextLog("service_market"),
 	)
 	trackSvc := dotagiftx.NewTrackService(trackStg, itemStg)
-	reportSvc := dotagiftx.NewReportService(reportStg, discordClient)
+	reportSvc := dotagiftx.NewReportService(app.config.AppHost, reportStg, discordClient, githubClient)
 	statsSvc := dotagiftx.NewStatsService(statsStg, trackStg)
 	hammerSvc := dotagiftx.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
