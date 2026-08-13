@@ -45,3 +45,14 @@ jobs:
         run: |
           bun install
           bun run lint
+
+      - name: Install Playwright Browsers
+        run: bunx playwright install --with-deps
+      - name: Run Playwright tests
+        run: bunx playwright test
+      - uses: actions/upload-artifact@v5
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
