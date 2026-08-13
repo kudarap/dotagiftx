@@ -1,20 +1,14 @@
 import FormData from 'form-data'
-import * as querystring from 'querystring'
+import querystring from 'querystring'
 import * as Auth from './auth'
 import { API_URL, authRenew } from './api'
 
-export const GET = 'GET' as const
-export const POST = 'POST' as const
-export const PATCH = 'PATCH' as const
-export const DELETE = 'DELETE' as const
+export const GET = 'GET'
+export const POST = 'POST'
+export const PATCH = 'PATCH'
+export const DELETE = 'DELETE'
 
-export type HTTPMethod = typeof GET | typeof POST | typeof PATCH | typeof DELETE
-
-interface RequestOpts extends RequestInit {
-  headers: Record<string, string>
-}
-
-const defaultRequestOpts: RequestOpts = {
+const defaultRequestOpts = {
   mode: 'cors',
   // signal: controller.signal,
   headers: {
@@ -23,7 +17,7 @@ const defaultRequestOpts: RequestOpts = {
 }
 
 // fetch with retry
-const fetchRetry = async (url: string, options: RequestInit, n: number): Promise<Response> => {
+const fetchRetry = async (url, options, n) => {
   try {
     return await fetch(url, options)
   } catch (err) {
@@ -32,21 +26,16 @@ const fetchRetry = async (url: string, options: RequestInit, n: number): Promise
   }
 }
 // default fetch retry with maximum of 3
-const defaultFetchRetry = (url: string, options: RequestInit) => fetchRetry(url, options, 3)
+const defaultFetchRetry = (url, options) => fetchRetry(url, options, 3)
 
 // base http request handle json responses and internal error
-const baseRequest = (
-  method: HTTPMethod | '',
-  endpoint: string,
-  body: unknown,
-  token: string | null = null
-): Promise<unknown> => {
+const baseRequest = (method, endpoint, body, token = null) => {
   if (method === '') {
     throw Error('Request method required')
   }
 
   // setup request options
-  const opts: RequestOpts = { ...defaultRequestOpts, method }
+  const opts = { ...defaultRequestOpts, method }
   // set access token when available
   if (token) {
     opts.headers.Authorization = `Bearer ${token}`
@@ -55,7 +44,7 @@ const baseRequest = (
   if (method !== GET) {
     if (body instanceof FormData) {
       delete opts.headers['Content-Type']
-      opts.body = body as unknown as BodyInit
+      opts.body = body
     } else {
       opts.body = JSON.stringify(body)
     }
@@ -67,7 +56,7 @@ const baseRequest = (
       if (response.status === 401) {
         Auth.clear()
 
-        window.location.href = '/login'
+        window.location = '/login'
         throw Error('Authentication error')
       }
       // Catch internal error.
@@ -89,43 +78,25 @@ const baseRequest = (
 }
 
 // http request that handles JSON payload.
-export function request<T = unknown>(
-  method: HTTPMethod,
-  endpoint: string,
-  data?: unknown
-): Promise<T> {
-  return baseRequest(method, endpoint, data) as Promise<T>
+export function request(method, endpoint, data) {
+  return baseRequest(method, endpoint, data)
 }
 
 // http request and handles authentication token.
-export const authnRequest = async <T = unknown>(
-  method: HTTPMethod,
-  endpoint: string,
-  data?: unknown
-): Promise<T> => {
+export const authnRequest = async (method, endpoint, data) => {
   // check and set access token.
   let auth = Auth.get()
   if (auth.refresh_token && (Auth.isAccessTokenExpired() || auth.token === null)) {
-    // Deduplicate concurrent renewals so the rotated refresh token is used once.
-    if (!renewPromise) {
-      renewPromise = authRenew(auth.refresh_token)
-        .then(newAuth => {
-          const updated = { ...Auth.get(), ...newAuth }
-          Auth.set(updated)
-          return updated
-        })
-        .finally(() => {
-          renewPromise = null
-        })
-    }
-    auth = await renewPromise
+    const newAuth = await authRenew(auth.refresh_token)
+    auth = { ...auth, ...newAuth }
+    Auth.set(auth)
   }
 
-  return baseRequest(method, endpoint, data, auth.token) as Promise<T>
+  return baseRequest(method, endpoint, data, auth.token)
 }
 
 // Upload form file with authorization.
-export function uploadFile(endpoint: string, file: File): Promise<unknown> {
+export function uploadFile(endpoint, file) {
   // Blob file handling and form data composition.
   const data = new FormData()
   if (file.constructor === Blob) {
@@ -138,22 +109,18 @@ export function uploadFile(endpoint: string, file: File): Promise<unknown> {
 }
 
 // Basic domain object request that supports all request method.
-export function baseObjectRequest(endpoint: string) {
+export function baseObjectRequest(endpoint) {
   return {
-    [GET]: (id: string | number) => authnRequest(GET, `${endpoint}/${id}`),
-    [POST]: (obj: unknown) => authnRequest(POST, endpoint, obj),
-    [PATCH]: (id: string | number, obj: unknown) => authnRequest(PATCH, `${endpoint}/${id}`, obj),
-    [DELETE]: (id: string | number) => authnRequest(DELETE, `${endpoint}/${id}`),
+    [GET]: id => authnRequest(GET, `${endpoint}/${id}`),
+    [POST]: obj => authnRequest(POST, endpoint, obj),
+    [PATCH]: (id, obj) => authnRequest(PATCH, `${endpoint}/${id}`, obj),
+    [DELETE]: id => authnRequest(DELETE, `${endpoint}/${id}`),
   }
 }
 
 // Basic domain search request.
-export function baseSearchRequest(endpoint: string) {
-  return (filter: Record<string, unknown> = {}) =>
-    authnRequest(
-      GET,
-      `${endpoint}?${querystring.stringify(filter as querystring.ParsedUrlQueryInput)}`
-    )
+export function baseSearchRequest(endpoint) {
+  return (filter = {}) => authnRequest(GET, `${endpoint}?${querystring.stringify(filter)}`)
 }
 
 // HTTP Interceptor
