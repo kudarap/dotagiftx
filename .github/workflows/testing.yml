@@ -44,12 +44,12 @@ jobs:
         working-directory: web
         run: |
           bun install
-          bun run lint
+          bun lint
 
       - name: Install Playwright Browsers
         run: bunx playwright install --with-deps
       - name: Run Playwright tests
-        run: bunx playwright test
+        run: bun test:e2e
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
