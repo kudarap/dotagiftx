@@ -45,12 +45,14 @@
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.2.0",
+    "@types/js-cookie": "^3.0.6",
+    "@types/lodash": "^4.17.25",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.1.6",
     "husky": "^4.3.8",
     "prettier": "3.8.1",
     "pretty-quick": "^4.2.2",
-    "typescript": "^7.0.2"
+    "typescript": "^5.9.3"
   },
   "husky": {
     "hooks": {
