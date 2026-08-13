@@ -6,11 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "bun --bun next start",
-    "lint": "eslint",
     "format": "prettier --write .",
+    "lint": "eslint",
     "test:e2e": "npx playwright test --reporter=list,html",
     "test:e2e:headed": "npx playwright test --headed --reporter=list,html",
-    "test:e2e:report": "npx playwright show-report"
+    "test:e2e:report": "npx playwright show-report",
+    "test:all": "bun lint && bun test:e2e"
   },
   "engines": {
     "npm": "11.x"
