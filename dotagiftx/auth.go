@@ -50,7 +50,7 @@ type (
 		CreatedAt *time.Time `json:"created_at"    db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 
-		RefreshToken string `json:"-" db:"-"`
+		RefreshToken string `json:"refresh_token" db:"-"`
 	}
 
 	// AuthSession represents a login session and its refresh token.
@@ -210,7 +210,7 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*A
 
 	sess, err := s.sessionRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
 	if err != nil {
-		return nil, err
+		return nil, AuthErrRefreshToken.X(err)
 	}
 	if sess == nil || !sess.ExpiresAt.After(time.Now()) {
 		// purge expired session on access attempt.
@@ -225,12 +225,12 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*A
 	// extend refresh token expiration
 	sess.ExpiresAt = time.Now().Add(s.sessionTTL)
 	if err = s.sessionRepo.Update(ctx, sess); err != nil {
-		return nil, err
+		return nil, AuthErrRefreshToken.X(err)
 	}
 
 	au, err := s.authRepo.Get(ctx, sess.AuthID)
 	if err != nil {
-		return nil, fmt.Errorf("get auth by id failed: %w", err)
+		return nil, AuthErrRefreshToken.X(fmt.Errorf("get auth by id failed: %w", err))
 	}
 	return au, nil
 }
@@ -244,14 +244,14 @@ func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken strin
 
 	sess, err := s.sessionRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
 	if err != nil {
-		return err
+		return AuthErrRefreshToken.X(err)
 	}
 	if sess == nil {
 		return AuthErrRefreshToken
 	}
 
 	if err = s.sessionRepo.Delete(ctx, sess.ID); err != nil {
-		return fmt.Errorf("delete session failed: %w", err)
+		return AuthErrRefreshToken.X(fmt.Errorf("delete session failed: %w", err))
 	}
 	return nil
 }
