@@ -75,6 +75,7 @@ export default function Blacklist() {
   if (startsWith(query, STEAMURL, 0)) {
     resolvedQuery = resolveProfileURL(query)
     if (isVanityURL(query)) {
+      // adding comment here for CodeQL to check if there's still warning
       router.push(resolvedQuery)
     }
   }
@@ -171,7 +172,8 @@ function UserCard({ data }) {
                 marginTop: -2,
                 fontSize: '0.785em',
                 fontWeight: 500,
-              }}>
+              }}
+            >
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
@@ -184,7 +186,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Steam Profile
           </Link>
           &nbsp;&middot;&nbsp;
@@ -193,7 +196,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Dotabuff
           </Link>
         </Typography>

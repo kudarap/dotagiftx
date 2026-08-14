@@ -260,7 +260,7 @@ export default function ItemDetails({
         {/* Rich Results */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD).replace(/</g, '\\u003c') }}
         />
 
         {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
@@ -289,7 +289,8 @@ export default function ItemDetails({
                 color="secondary"
                 component={Link}
                 href={`/post-item?s=${item.slug}`}
-                disableUnderline>
+                disableUnderline
+              >
                 Post this item
               </Button>
             </Grid>
