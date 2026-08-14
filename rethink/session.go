@@ -99,7 +99,7 @@ func (s *SessionRepository) Get(ctx context.Context, id string) (*dotagiftx.Auth
 	return row, nil
 }
 
-func (s *SessionRepository) CleanExpiredSession(ctx context.Context, cutOff time.Time) error {
+func (s *SessionRepository) PurgeExpiredSessions(ctx context.Context, cutOff time.Time) error {
 	q := s.table().Filter(r.Row.Field(sessionFieldExpiresAt).Lt(cutOff)).Delete()
 	if err := s.db.exec(ctx, q); err != nil {
 		return fmt.Errorf("deleting expired session: %w", err)
