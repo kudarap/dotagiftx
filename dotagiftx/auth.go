@@ -49,6 +49,8 @@ type (
 		Password  string     `json:"-"             db:"password,omitempty"         valid:"required"`
 		CreatedAt *time.Time `json:"created_at"    db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
+
+		RefreshToken string `json:"-" db:"-"`
 	}
 
 	// AuthSession represents a login session and its refresh token.
@@ -144,144 +146,93 @@ type AuthService struct {
 	logger      *slog.Logger
 }
 
-func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, string, error) {
+func (s *AuthService) SteamLogin(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Auth, error) {
 	// Handle authorization redirect.
 	if r.URL.Query().Get("openid.mode") == "" {
 		url, err := s.steamClient.AuthorizeURL(r)
 		if err != nil {
-			return nil, "", err
+			return nil, err
 		}
 
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect) //nolint:gosec // steam openid login redirect flow
-		return nil, "", nil
+		return nil, nil
 	}
 
 	// Validates auth and get player details and use SteamID as auth username.
 	steamPlayer, err := s.steamClient.Authenticate(r)
 	if err != nil {
-		return nil, "", fmt.Errorf("steam player not found: %s", err)
+		return nil, fmt.Errorf("steam player not found: %s", err)
 	}
 
-	// Check account existence.
-	authData, err := s.authRepo.GetByUsername(ctx, steamPlayer.ID)
+	// Check auth existence, when auth does not exist proceed with registration.
+	auth, err := s.authRepo.GetByUsername(ctx, steamPlayer.ID)
 	if err != nil && !errors.Is(err, AuthErrNotFound) {
-		return nil, "", fmt.Errorf("auth not found: %s", err)
+		return nil, fmt.Errorf("auth not found: %s", err)
+	}
+	if auth == nil {
+		return s.createAccountFromSteam(ctx, steamPlayer)
 	}
 
-	// Account existed and checked login credentials.
-	if authData != nil {
-		// try logging with both password v1 and v2
-		passwordV1 := s.composePassword(steamPlayer.ID, authData.UserID)
-		passwordV2 := s.composePasswordV2(steamPlayer.ID, authData.UserID)
-		if authData.Password != passwordV1 && authData.Password != passwordV2 {
-			return nil, "", AuthErrLogin
-		}
-
-		// upgrade password to v2
-		if authData.Password == passwordV1 {
-			if err := s.authRepo.Update(ctx, &Auth{
-				ID:       authData.ID,
-				Password: passwordV2,
-			}); err != nil {
-				s.logger.ErrorContext(ctx, "upgrade password v2 failed", "error", err)
-			}
-		}
-
-		u, err := s.userSvc.User(ctx, authData.UserID)
-		if err != nil {
-			if errors.Is(err, UserErrNotFound) {
-				s.logger.WarnContext(ctx, "user not found, but auth exists. re-creating user.",
-					"auth_id", authData.ID,
-					"user_id", authData.UserID,
-					"username", authData.Username,
-				)
-				// create user data with auth user id and creation date to preserve previous user data.
-				u = &User{
-					ID:        authData.UserID,
-					CreatedAt: authData.CreatedAt,
-					SteamID:   steamPlayer.ID,
-					Name:      steamPlayer.Name,
-					URL:       steamPlayer.URL,
-					Avatar:    steamPlayer.Avatar,
-				}
-				if err = s.userSvc.Create(ctx, u); err != nil {
-					return nil, "", err
-				}
-
-				s.logger.DebugContext(ctx, "user re-created", "user", u)
-
-				refreshToken, err := s.newSession(ctx, authData)
-				if err != nil {
-					return nil, "", err
-				}
-				return authData, refreshToken, nil
-			}
-
-			return nil, "", err
-		}
-		if err = u.CheckStatus(); err != nil {
-			return nil, "", err
-		}
-		if _, err = s.userSvc.SteamSync(ctx, steamPlayer); err != nil {
-			return nil, "", UserErrSteamSync.X(err)
-		}
-
-		refreshToken, err := s.newSession(ctx, authData)
-		if err != nil {
-			return nil, "", err
-		}
-		return authData, refreshToken, nil
+	// Validates credentials on valid auth data.
+	if err = s.validateCredentials(ctx, *steamPlayer, *auth); err != nil {
+		return nil, err
 	}
-
-	// HOTFIX for missing user data
-	existingUser, _ := s.userSvc.User(ctx, steamPlayer.ID)
-
-	// Process account registration and save details.
-	authData, refreshToken, err := s.createAccountFromSteam(ctx, steamPlayer, existingUser)
+	// Check user exists and create user if it doesn't exist and attached to auth data.
+	user, err := s.userSvc.User(ctx, auth.UserID)
 	if err != nil {
-		return nil, "", err
+		if errors.Is(err, UserErrNotFound) {
+			return s.createUserWithAuth(ctx, auth, steamPlayer)
+		}
+		return nil, err
 	}
 
-	return authData, refreshToken, nil
+	if err = user.CheckStatus(); err != nil {
+		return nil, err
+	}
+	if _, err = s.userSvc.SteamSync(ctx, steamPlayer); err != nil {
+		return nil, UserErrSteamSync.X(err)
+	}
+
+	refreshToken, err := s.newSession(ctx, auth)
+	if err != nil {
+		return nil, err
+	}
+	auth.RefreshToken = refreshToken
+	return auth, nil
 }
 
 // RefreshToken validates a session by its refresh token, rotates it to a new
 // one and returns the auth details with the new raw refresh token.
-func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*Auth, string, error) {
+func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*Auth, error) {
 	if strings.TrimSpace(refreshToken) == "" {
-		return nil, "", AuthErrRefreshToken
+		return nil, AuthErrRefreshToken
 	}
 
 	sess, err := s.sessionRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
 	if err != nil {
-		return nil, "", AuthErrRefreshToken
+		return nil, err
 	}
 	if sess == nil || !sess.ExpiresAt.After(time.Now()) {
 		// purge expired session on access attempt.
 		if sess != nil {
-			if err := s.sessionRepo.Delete(ctx, sess.ID); err != nil {
+			if err = s.sessionRepo.Delete(ctx, sess.ID); err != nil {
 				s.logger.ErrorContext(ctx, "delete expired session failed", "error", err)
 			}
 		}
-		return nil, "", AuthErrRefreshToken
+		return nil, AuthErrRefreshToken
 	}
 
-	newToken, err := s.generateRefreshToken()
-	if err != nil {
-		return nil, "", err
-	}
-	sess.RefreshToken = s.hash(newToken)
+	// extend refresh token expiration
 	sess.ExpiresAt = time.Now().Add(s.sessionTTL)
-	if err := s.sessionRepo.Update(ctx, sess); err != nil {
-		return nil, "", err
+	if err = s.sessionRepo.Update(ctx, sess); err != nil {
+		return nil, err
 	}
 
 	au, err := s.authRepo.Get(ctx, sess.AuthID)
 	if err != nil {
-		return nil, "", AuthErrRefreshToken
+		return nil, fmt.Errorf("get auth by id failed: %w", err)
 	}
-
-	return au, newToken, nil
+	return au, nil
 }
 
 // RevokeRefreshToken invalidates the session of the given refresh token so it
@@ -293,13 +244,16 @@ func (s *AuthService) RevokeRefreshToken(ctx context.Context, refreshToken strin
 
 	sess, err := s.sessionRepo.GetByRefreshToken(ctx, s.hash(refreshToken))
 	if err != nil {
-		return AuthErrRefreshToken
+		return err
 	}
 	if sess == nil {
 		return AuthErrRefreshToken
 	}
 
-	return s.sessionRepo.Delete(ctx, sess.ID)
+	if err = s.sessionRepo.Delete(ctx, sess.ID); err != nil {
+		return fmt.Errorf("delete session failed: %w", err)
+	}
+	return nil
 }
 
 func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
@@ -313,48 +267,101 @@ func (s *AuthService) Auth(ctx context.Context, id string) (*Auth, error) {
 
 // newSession creates a new login session for the given auth and returns the
 // raw refresh token bound to it.
-func (s *AuthService) newSession(ctx context.Context, au *Auth) (string, error) {
-	refreshToken, err := s.generateRefreshToken()
+func (s *AuthService) newSession(ctx context.Context, au *Auth) (refreshToken string, err error) {
+	refreshToken, err = s.generateRefreshToken()
 	if err != nil {
 		return "", err
 	}
+
 	sess := &AuthSession{
 		AuthID:       au.ID,
 		UserID:       au.UserID,
 		RefreshToken: s.hash(refreshToken),
 		ExpiresAt:    time.Now().Add(s.sessionTTL),
 	}
-	if err := s.sessionRepo.Create(ctx, sess); err != nil {
+	if err = s.sessionRepo.Create(ctx, sess); err != nil {
 		return "", err
 	}
 
 	return refreshToken, nil
 }
 
-func (s *AuthService) createAccountFromSteam(ctx context.Context, sp *SteamPlayer, user *User) (*Auth, string, error) {
+func (s *AuthService) createAccountFromSteam(ctx context.Context, steamPlayer *SteamPlayer) (*Auth, error) {
+	// handle existing user data due to data loss incident
+	// https://dotagiftx.com/post/major-incident-data-loss
+	// error is ignored here because value is only need
+	user, _ := s.userSvc.User(ctx, steamPlayer.ID)
+
 	if user == nil {
 		user = &User{
-			SteamID: sp.ID,
-			Name:    sp.Name,
-			URL:     sp.URL,
-			Avatar:  sp.Avatar,
+			SteamID: steamPlayer.ID,
+			Name:    steamPlayer.Name,
+			URL:     steamPlayer.URL,
+			Avatar:  steamPlayer.Avatar,
 		}
 		if err := s.userSvc.Create(ctx, user); err != nil {
-			return nil, "", err
+			return nil, err
 		}
 	}
 
-	au := &Auth{UserID: user.ID, Username: sp.ID}
-	au.Password = s.composePasswordV2(sp.ID, user.ID)
+	au := &Auth{UserID: user.ID, Username: steamPlayer.ID}
+	au.Password = s.composePasswordV2(steamPlayer.ID, user.ID)
 	if err := s.authRepo.Create(ctx, au); err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
 	refreshToken, err := s.newSession(ctx, au)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-	return au, refreshToken, nil
+	au.RefreshToken = refreshToken
+	return au, nil
+}
+
+func (s *AuthService) createUserWithAuth(ctx context.Context, auth *Auth, steamPlayer *SteamPlayer) (*Auth, error) {
+	s.logger.WarnContext(ctx, "user not found, but auth exists. re-creating user.",
+		"auth_id", auth.ID,
+		"user_id", auth.UserID,
+		"username", auth.Username,
+	)
+
+	// create user data with auth user id and creation date to preserve previous user data.
+	user := &User{
+		ID:        auth.UserID,
+		CreatedAt: auth.CreatedAt,
+		SteamID:   steamPlayer.ID,
+		Name:      steamPlayer.Name,
+		URL:       steamPlayer.URL,
+		Avatar:    steamPlayer.Avatar,
+	}
+	if err := s.userSvc.Create(ctx, user); err != nil {
+		return nil, err
+	}
+	s.logger.DebugContext(ctx, "user re-created", "user", user)
+
+	refreshToken, err := s.newSession(ctx, auth)
+	if err != nil {
+		return nil, err
+	}
+	auth.RefreshToken = refreshToken
+	return auth, nil
+}
+
+func (s *AuthService) validateCredentials(ctx context.Context, steamPlayer SteamPlayer, auth Auth) error {
+	// Account existed and checked login credentials.
+	// try logging with both password v1 and v2
+	passwordV1 := s.composePassword(steamPlayer.ID, auth.UserID)
+	passwordV2 := s.composePasswordV2(steamPlayer.ID, auth.UserID)
+	if auth.Password != passwordV1 && auth.Password != passwordV2 {
+		return AuthErrLogin
+	}
+	// upgrade password to v2
+	if auth.Password == passwordV1 {
+		if err := s.authRepo.Update(ctx, &Auth{ID: auth.ID, Password: passwordV2}); err != nil {
+			s.logger.ErrorContext(ctx, "upgrade password v2 failed", "error", err)
+		}
+	}
+	return nil
 }
 
 func (s *AuthService) generateRefreshToken() (string, error) {
