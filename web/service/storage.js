@@ -2,24 +2,24 @@
 
 const CACHE_KEY = 'cache'
 
-const hash = (str: unknown): number => {
-  const s = JSON.stringify(str) ?? ''
-  let h = 0
-  for (let i = 0, len = s.length; i < len; i++) {
-    const chr = s.charCodeAt(i)
-    h = (h << 5) - h + chr
-    h |= 0 // Convert to 32bit integer
+const hash = str => {
+  str = JSON.stringify(str)
+  let hash = 0
+  for (let i = 0, len = str.length; i < len; i++) {
+    let chr = str.charCodeAt(i)
+    hash = (hash << 5) - hash + chr
+    hash |= 0 // Convert to 32bit integer
   }
-  return h
+  return hash
 }
 
-const keyPrefix = (key: string) => `${CACHE_KEY}:${String(key).split('/').shift()}`
+const keyPrefix = key => `${CACHE_KEY}:${String(key).split('/').shift()}`
 
-const cKey = (key: string) => `${keyPrefix(key)}:${hash(key)}`
+const cKey = key => `${keyPrefix(key)}:${hash(key)}`
 
 const now = () => new Date().getTime()
 
-const isExpired = (ttl: number | null): boolean => {
+const isExpired = ttl => {
   // Immortal entry do not delete.
   if (ttl === null) {
     return false
@@ -28,11 +28,11 @@ const isExpired = (ttl: number | null): boolean => {
   return ttl < now()
 }
 
-const matchKeys = (prefix: string): string[] => {
-  const keys: string[] = []
+const matchKeys = prefix => {
+  const keys = []
 
   for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i) ?? ''
+    const key = localStorage.key(i)
     if (!key.startsWith(prefix)) {
       continue
     }
@@ -43,15 +43,10 @@ const matchKeys = (prefix: string): string[] => {
   return keys
 }
 
-interface CacheItem<T> {
-  data: T
-  ttl: number | null
-}
-
 // Checks for expired items and remove them.
 const sweep = () => {
   matchKeys(keyPrefix(CACHE_KEY)).forEach(key => {
-    const { ttl } = JSON.parse(localStorage.getItem(key) ?? 'null') as CacheItem<unknown>
+    const { ttl } = JSON.parse(localStorage.getItem(key))
     if (!isExpired(ttl)) {
       return
     }
@@ -61,17 +56,17 @@ const sweep = () => {
 }
 
 // remove by exact key.
-export const remove = (key: string) => {
+export const remove = key => {
   localStorage.removeItem(cKey(key))
 }
 
 // remove entries with matched prefix key.
-export const removeAll = (key = '') => {
-  matchKeys(keyPrefix(key)).forEach(k => localStorage.removeItem(k))
+export const removeAll = key => {
+  matchKeys(keyPrefix(key || '')).forEach(k => localStorage.removeItem(k))
 }
 
-export const get = <T>(key: string): T | null => {
-  const item = JSON.parse(localStorage.getItem(cKey(key)) ?? 'null') as CacheItem<T> | null
+export const get = key => {
+  const item = JSON.parse(localStorage.getItem(cKey(key)))
   if (item === null) {
     return null
   }
@@ -91,7 +86,7 @@ export const get = <T>(key: string): T | null => {
   return data
 }
 
-export const save = <T>(key: string, data: T, sec: number | null = null) => {
+export const save = (key, data, sec = null) => {
   // Free up expired items.
   sweep()
 
@@ -100,7 +95,7 @@ export const save = <T>(key: string, data: T, sec: number | null = null) => {
     return
   }
 
-  let ttl: number | null = sec
+  let ttl = sec
   if (sec !== null) {
     // Converts TTL seconds to milli sec.
     ttl = Number(sec) * 1000
@@ -108,6 +103,6 @@ export const save = <T>(key: string, data: T, sec: number | null = null) => {
     ttl += now()
   }
 
-  const item: CacheItem<T> = { data, ttl }
+  const item = { data, ttl }
   localStorage.setItem(cKey(key), JSON.stringify(item))
 }

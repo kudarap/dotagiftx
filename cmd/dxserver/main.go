@@ -124,6 +124,7 @@ func (app *application) setup() error {
 	logSvc.Info("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
+	sessionStg := rethink.NewSession(rethinkClient)
 	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
@@ -138,7 +139,15 @@ func (app *application) setup() error {
 	logSvc.Info("setting up services...")
 	fileMgr := setupFileManager(app.config)
 	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient, slogger)
-	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc, slogger)
+	authSvc := dotagiftx.NewAuthService(
+		app.config.SigKey,
+		app.config.AuthSessionTTL,
+		steamClient,
+		authStg,
+		sessionStg,
+		userSvc,
+		slogger,
+	)
 	imageSvc := dotagiftx.NewImageService(fileMgr)
 	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr, slogger)
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
