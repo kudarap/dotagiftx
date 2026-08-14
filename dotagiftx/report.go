@@ -217,7 +217,7 @@ func (s *ReportService) issueToGithub(ctx context.Context, reportID string) (str
 	}
 
 	rep := reps[0]
-	created := rep.CreatedAt.Format("Jan 02, 2006 - 3:04 PM")
+	created := rep.CreatedAt.Format("Jan 02, 2006 - 3:04 PM PST")
 	profileUrl := fmt.Sprintf("%s/profiles/%s", s.appUrl, rep.User.SteamID)
 
 	title := fmt.Sprintf("%s by %s", rep.Type, rep.User.Name)
