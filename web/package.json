@@ -8,9 +8,9 @@
     "start": "bun --bun next start",
     "format": "prettier --write .",
     "lint": "eslint",
-    "test:e2e": "npx playwright test --reporter=list,html",
-    "test:e2e:headed": "npx playwright test --headed --reporter=list,html",
-    "test:e2e:report": "npx playwright show-report",
+    "test:e2e": "bunx playwright test --reporter=list,html",
+    "test:e2e:headed": "bunx playwright test --headed --reporter=list,html",
+    "test:e2e:report": "bunx playwright show-report",
     "test:all": "bun lint && bun test:e2e"
   },
   "engines": {
