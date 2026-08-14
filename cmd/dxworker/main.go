@@ -107,6 +107,7 @@ func (app *application) setup() error {
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
 	userStg := rethink.NewUser(rethinkClient)
+	sessionStg := rethink.NewSession(rethinkClient)
 	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
@@ -180,6 +181,7 @@ func (app *application) setup() error {
 	))
 	app.worker.AddJob(jobs.NewSweepMarket(marketStg, logging.WithPrefix(logger, "job_sweep_market")))
 	app.worker.AddJob(jobs.NewSweepPhantasmCache(phantasmSvc, logging.WithPrefix(logger, "job_sweep_phantasm")))
+	app.worker.AddJob(jobs.NewSweepAuthSess(sessionStg, logging.WithPrefix(logger, "job_sweep_auth_sess")))
 
 	// Server setup.
 	logSvc.Info("setting up http server...")

@@ -59,7 +59,7 @@ type (
 		AuthID       string     `json:"auth_id"       db:"auth_id,indexed,omitempty"`
 		UserID       string     `json:"user_id"       db:"user_id,indexed,omitempty"`
 		RefreshToken string     `json:"refresh_token" db:"refresh_token,indexed,omitempty"`
-		ExpiresAt    time.Time  `json:"expires_at"    db:"expires_at,omitempty"`
+		ExpiresAt    time.Time  `json:"expires_at"    db:"expires_at,indexed,omitempty"`
 		CreatedAt    *time.Time `json:"created_at"    db:"created_at,omitempty"`
 		UpdatedAt    *time.Time `json:"updated_at"    db:"updated_at,omitempty"`
 	}

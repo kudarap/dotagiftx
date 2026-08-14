@@ -3,7 +3,9 @@ package rethink
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
+	"time"
 
 	"dario.cat/mergo"
 	"github.com/kudarap/dotagiftx/dotagiftx"
@@ -13,6 +15,7 @@ import (
 const (
 	tableAuthSession         = "auth_session"
 	sessionFieldRefreshToken = "refresh_token"
+	sessionFieldExpiresAt    = "expires_at"
 )
 
 // NewSession creates a new instance of session data store.
@@ -94,6 +97,15 @@ func (s *SessionRepository) Get(ctx context.Context, id string) (*dotagiftx.Auth
 	}
 
 	return row, nil
+}
+
+func (s *SessionRepository) CleanExpiredSession(ctx context.Context, cutOff time.Time) error {
+	q := s.table().Filter(r.Row.Field(sessionFieldExpiresAt).Lt(cutOff)).Delete()
+	if err := s.db.exec(ctx, q); err != nil {
+		return fmt.Errorf("deleting expired session: %w", err)
+	}
+
+	return nil
 }
 
 func (s *SessionRepository) table() r.Term {
