@@ -75,7 +75,6 @@ export default function Blacklist() {
   if (startsWith(query, STEAMURL, 0)) {
     resolvedQuery = resolveProfileURL(query)
     if (isVanityURL(query)) {
-      // adding comment here for CodeQL to check if there's still warning
       router.push(resolvedQuery)
     }
   }
