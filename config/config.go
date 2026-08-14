@@ -27,10 +27,10 @@ type Config struct {
 	DivineKey           string
 	Prod                bool
 	Addr                string
-	AppHost             string
-	ApiHost             string
-	SpanEnabled         bool `envconfig:"SPAN_ENABLED"`
-	StatsCaptureEnabled bool `envconfig:"STATS_CAPTURE_ENABLED"`
+	AppHost             string `envconfig:"APP_HOST"`
+	ApiHost             string `envconfig:"API_HOST"`
+	SpanEnabled         bool   `envconfig:"SPAN_ENABLED"`
+	StatsCaptureEnabled bool   `envconfig:"STATS_CAPTURE_ENABLED"`
 	Upload              file.Config
 	AllowedImageSources []string `envconfig:"ALLOWED_IMAGE_SOURCES"`
 	Rethink             rethink.Config
