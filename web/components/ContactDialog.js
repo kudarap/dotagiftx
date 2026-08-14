@@ -37,7 +37,8 @@ export default function ContactDialog(props) {
         open={open}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
+        aria-describedby="alert-dialog-description"
+      >
         <DialogTitle id="alert-dialog-title">
           Contact Seller
           <DialogCloseButton onClick={onClose} />
@@ -62,14 +63,16 @@ export default function ContactDialog(props) {
               component="ul"
               variant="body2"
               color="textSecondary"
-              style={{ lineHeight: 1.7 }}>
+              style={{ lineHeight: 1.7 }}
+            >
               <li>
                 Always check the item or set availability on seller&apos;s Dota 2 {` `}
                 <Link
                   style={{ textDecoration: 'underline' }}
                   href={dota2Inventory}
                   target="_blank"
-                  rel="noreferrer noopener">
+                  rel="noreferrer noopener"
+                >
                   inventory
                 </Link>
                 .
@@ -102,7 +105,8 @@ export default function ContactDialog(props) {
                 reputation through&nbsp;
                 <Link
                   style={{ textDecoration: 'underline' }}
-                  href={`/profiles/${market.user.steam_id}/delivered`}>
+                  href={`/profiles/${market.user.steam_id}/delivered`}
+                >
                   transaction history
                 </Link>
                 .
@@ -129,7 +133,8 @@ export default function ContactDialog(props) {
             disableUnderline
             target="_blank"
             rel="noreferrer noopener"
-            href={steamProfileURL}>
+            href={steamProfileURL}
+          >
             Steam Profile
           </Button>
         </DialogActions>
