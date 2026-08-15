@@ -226,7 +226,7 @@ func (s *ReportService) issueToGithub(ctx context.Context, reportID string) (str
 
 %s`, rep.User.Name, profileUrl, profileUrl, created, rep.Text[2:])
 
-	return s.issuer.CreateIssue(ctx, title, strings.TrimSpace(body))
+	return s.issuer.CreateIssue(ctx, title, strings.TrimSpace(body), []string{"triage"})
 }
 
 type webhookPoster interface {
@@ -234,5 +234,5 @@ type webhookPoster interface {
 }
 
 type issuer interface {
-	CreateIssue(ctx context.Context, title string, body string) (issueUrl string, err error)
+	CreateIssue(ctx context.Context, title string, body string, labels []string) (issueUrl string, err error)
 }

@@ -53,17 +53,24 @@ func New(conf Config) *Client {
 	}
 }
 
-func (c *Client) CreateIssue(ctx context.Context, title string, body string) (string, error) {
+func (c *Client) CreateIssue(
+	ctx context.Context,
+	title string,
+	body string,
+	labels []string,
+) (string, error) {
 	if title == "" || body == "" {
 		return "", fmt.Errorf("title and body required")
 	}
 
 	payload := struct {
-		Title string `json:"title"`
-		Body  string `json:"body"`
+		Title  string   `json:"title"`
+		Body   string   `json:"body"`
+		Labels []string `json:"labels"`
 	}{
 		title,
 		body,
+		labels,
 	}
 
 	data, err := json.Marshal(payload)
