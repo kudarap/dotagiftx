@@ -221,10 +221,10 @@ func (s *ReportService) issueToGithub(ctx context.Context, reportID string) (str
 	profileUrl := fmt.Sprintf("%s/profiles/%s", s.appUrl, rep.User.SteamID)
 
 	title := fmt.Sprintf("%s by %s", rep.Type, rep.User.Name)
-	body := fmt.Sprintf(`[%s - %s]
+	body := fmt.Sprintf(`%s [%s](%s)
 %s
 
-%s`, rep.User.Name, profileUrl, created, rep.Text)
+%s`, rep.User.Name, profileUrl, profileUrl, created, rep.Text[2:])
 
 	return s.issuer.CreateIssue(ctx, title, strings.TrimSpace(body))
 }
