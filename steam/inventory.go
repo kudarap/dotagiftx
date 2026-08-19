@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const providerID = "steam"
@@ -29,7 +30,11 @@ func InventoryAsset(ctx context.Context, steamID string) ([]Asset, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could send request: %s", err)
 	}
-	defer r.Body.Close()
+	defer func() {
+		if err = r.Body.Close(); err != nil {
+			slog.Error("closing body", "error", err)
+		}
+	}()
 	return assetParser(r.Body)
 }
 
@@ -146,7 +151,11 @@ func Inventory(steamID string) (*RawInventory, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could send request: %s", err)
 	}
-	defer r.Body.Close()
+	defer func() {
+		if err = r.Body.Close(); err != nil {
+			slog.Error("closing body", "error", err)
+		}
+	}()
 	return inventoryParser(r.Body)
 }
 
@@ -279,7 +288,7 @@ const inventoryEndpoint = "https://steamcommunity.com/profiles/%s/inventory/json
 
 func reqDota2Inventory(steamID string) (*http.Response, error) {
 	url := fmt.Sprintf(inventoryEndpoint, steamID, Dota2AppID)
-	return http.Get(url)
+	return http.Get(url) //nolint:gosec // url is composed from a fixed steam endpoint
 }
 
 func extractValueFromPrefix(s, prefix string) (value string, ok bool) {

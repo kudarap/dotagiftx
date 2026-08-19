@@ -1,6 +1,7 @@
 package rethink
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -75,19 +76,19 @@ func (c *Client) Close() error {
 }
 
 // autoMigrate create tables and wait for to finish. Existing table will be ignored.
-func (c *Client) autoMigrate(table string) error {
+func (c *Client) autoMigrate(ctx context.Context, table string) error {
 	// Checks table existence and skip create.
 	if slices.Contains(c.tables, table) {
 		return nil
 	}
 
-	return c.exec(r.TableCreate(table))
+	return c.exec(ctx, r.TableCreate(table))
 }
 
 // autoIndex creates table index base model that has tag "index".
-func (c *Client) autoIndex(table string, model any) error {
+func (c *Client) autoIndex(ctx context.Context, table string, model any) error {
 	for _, ff := range getModelIndexedFields(model) {
-		if err := c.createIndex(table, ff); err != nil {
+		if err := c.createIndex(ctx, table, ff); err != nil {
 			return fmt.Errorf("could not create %s index on %s table: %s", ff, tableCatalog, err)
 		}
 	}
@@ -96,28 +97,28 @@ func (c *Client) autoIndex(table string, model any) error {
 }
 
 // run returns a cursor which can be used to view all rows returned.
-func (c *Client) run(t r.Term) (*r.Cursor, error) {
-	return t.Run(c.db)
+func (c *Client) run(ctx context.Context, t r.Term) (*r.Cursor, error) {
+	return t.Run(c.db, r.RunOpts{Context: ctx})
 }
 
 // runWrite returns a WriteResponse and should be used for queries such as Insert, Update, etc...
-func (c *Client) runWrite(t r.Term) (r.WriteResponse, error) {
-	return t.RunWrite(c.db)
+func (c *Client) runWrite(ctx context.Context, t r.Term) (r.WriteResponse, error) {
+	return t.RunWrite(c.db, r.RunOpts{Context: ctx})
 }
 
 // exec sends a query to the server and closes the connection immediately after reading the response from the database.
 // If you do not wish to wait for the response then you can set the NoReply flag.
-func (c *Client) exec(t r.Term) error {
-	return t.Exec(c.db)
+func (c *Client) exec(ctx context.Context, t r.Term) error {
+	return t.Exec(c.db, r.ExecOpts{Context: ctx})
 }
 
-func (c *Client) list(t r.Term, out any) error {
+func (c *Client) list(ctx context.Context, t r.Term, out any) error {
 	if c.tracing != nil {
-		s := c.tracing.StartSpan("rethink list " + t.String())
+		s := c.tracing.StartSpan(ctx, "rethink list "+t.String())
 		defer s.End()
 	}
 
-	res, err := c.run(t)
+	res, err := c.run(ctx, t)
 	if err != nil {
 		return err
 	}
@@ -128,13 +129,13 @@ func (c *Client) list(t r.Term, out any) error {
 	return res.Close()
 }
 
-func (c *Client) one(t r.Term, out any) error {
+func (c *Client) one(ctx context.Context, t r.Term, out any) error {
 	if c.tracing != nil {
-		s := c.tracing.StartSpan("rethink one " + t.String())
+		s := c.tracing.StartSpan(ctx, "rethink one "+t.String())
 		defer s.End()
 	}
 
-	res, err := c.run(t)
+	res, err := c.run(ctx, t)
 	if err != nil {
 		return err
 	}
@@ -145,8 +146,8 @@ func (c *Client) one(t r.Term, out any) error {
 	return res.Close()
 }
 
-func (c *Client) insert(t r.Term) (id string, err error) {
-	res, err := c.runWrite(t)
+func (c *Client) insert(ctx context.Context, t r.Term) (id string, err error) {
+	res, err := c.runWrite(ctx, t)
 	if err != nil {
 		return
 	}
@@ -158,20 +159,20 @@ func (c *Client) insert(t r.Term) (id string, err error) {
 	return res.GeneratedKeys[0], nil
 }
 
-func (c *Client) update(t r.Term) error {
-	_, err := c.runWrite(t)
+func (c *Client) update(ctx context.Context, t r.Term) error {
+	_, err := c.runWrite(ctx, t)
 	return err
 }
 
-func (c *Client) delete(t r.Term) error {
-	return c.update(t)
+func (c *Client) delete(ctx context.Context, t r.Term) error {
+	return c.update(ctx, t)
 }
 
-func (c *Client) createIndex(tableName, index string) error {
+func (c *Client) createIndex(ctx context.Context, tableName, index string) error {
 	tbl := r.Table(tableName)
 
 	var indexes []string
-	if err := c.list(tbl.IndexList(), &indexes); err != nil {
+	if err := c.list(ctx, tbl.IndexList(), &indexes); err != nil {
 		return err
 	}
 
@@ -179,7 +180,7 @@ func (c *Client) createIndex(tableName, index string) error {
 		return nil
 	}
 
-	return c.exec(tbl.IndexCreate(index))
+	return c.exec(ctx, tbl.IndexCreate(index))
 }
 
 func getTables(s *r.Session) (table []string, err error) {

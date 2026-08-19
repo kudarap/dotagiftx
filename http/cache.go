@@ -1,13 +1,13 @@
 package http
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 const cacheSkipKey = "nocache"
@@ -33,7 +33,7 @@ func cacheKeyFromRequest(r *http.Request) (key string, noCache bool) {
 	// Compose cache key and omit nocache param, this will enable force reloads.
 	q := r.URL.Query()
 	q.Del(cacheSkipKey)
-	h := md5.New()
+	h := sha256.New()
 	h.Write([]byte(q.Encode()))
 	hash := hex.EncodeToString(h.Sum(nil))
 	key = fmt.Sprintf("%s%s:%s", userID, r.URL.Path, hash)

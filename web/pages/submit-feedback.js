@@ -48,6 +48,7 @@ export default function About() {
   const [payload, setPayload] = React.useState(defaultPayload)
 
   const [message, setMessage] = React.useState(null)
+  const [issueUrl, setIssueUrl] = React.useState(null)
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
@@ -72,10 +73,14 @@ export default function About() {
 
     ;(async () => {
       try {
-        await reportCreate({
+        const res = await reportCreate({
           ...payload,
           text: `${payload.profile} -- ${payload.text}`,
         })
+        if (res.issue_url) {
+          setIssueUrl(res.issue_url)
+        }
+
         setMessage('Submitted successfully!')
         setPayload(defaultPayload)
       } catch (e) {
@@ -127,6 +132,15 @@ export default function About() {
             {message && (
               <Alert severity="success" variant="filled">
                 {message}
+                {issueUrl && (
+                  <>
+                    {' '}
+                    Track it here:{' '}
+                    <Link href={issueUrl} target="_blank">
+                      {issueUrl}
+                    </Link>
+                  </>
+                )}
               </Alert>
             )}
             <br />

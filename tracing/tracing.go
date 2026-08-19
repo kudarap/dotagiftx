@@ -1,6 +1,7 @@
 package tracing
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -19,11 +20,12 @@ func NewTracer(enabled bool, s spanStore) *Tracer {
 }
 
 type spanStore interface {
-	Add(name string, elapsedMs int64, t time.Time)
+	Add(ctx context.Context, name string, elapsedMs int64, t time.Time)
 }
 
 type Span struct {
 	store spanStore
+	ctx   context.Context
 	name  string
 	start time.Time
 }
@@ -32,14 +34,14 @@ func (s *Span) End() {
 	if s.store == nil {
 		return
 	}
-	s.store.Add(s.name, time.Since(s.start).Milliseconds(), s.start)
+	s.store.Add(s.ctx, s.name, time.Since(s.start).Milliseconds(), s.start)
 }
 
-func (t *Tracer) StartSpan(name string) *Span {
+func (t *Tracer) StartSpan(ctx context.Context, name string) *Span {
 	if !t.enabled {
 		return &Span{}
 	}
-	return &Span{store: t.store, name: name, start: time.Now()}
+	return &Span{store: t.store, ctx: ctx, name: name, start: time.Now()}
 }
 
 func (t *Tracer) Middleware(next http.Handler) http.Handler {
@@ -50,7 +52,7 @@ func (t *Tracer) Middleware(next http.Handler) http.Handler {
 			return
 		}
 
-		s := t.StartSpan("server tbd")
+		s := t.StartSpan(r.Context(), "server tbd")
 		defer func() {
 			s.name = fmt.Sprintf("server %s %s", r.Method, chi.RouteContext(r.Context()).RoutePattern())
 			s.End()

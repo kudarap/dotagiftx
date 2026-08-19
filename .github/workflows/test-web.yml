@@ -1,0 +1,41 @@
+name: Reusable Web Tests
+
+on:
+  workflow_call:
+    inputs:
+      api_url:
+        required: true
+        type: string
+      cdn_url:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_URL: ${{ inputs.api_url }}
+      NEXT_PUBLIC_CDN_URL: ${{ inputs.cdn_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Bun lint
+        working-directory: web
+        run: |
+          bun install
+          bun run lint
+
+      - name: Install Playwright Browsers
+        working-directory: web
+        run: bunx playwright install --with-deps
+
+      - name: Run Playwright tests
+        working-directory: web
+        run: bun test:e2e

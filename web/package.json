@@ -1,13 +1,17 @@
 {
   "name": "dotagiftx",
-  "version": "0.25.4",
+  "version": "0.26.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "bun --bun next start",
+    "format": "prettier --write .",
     "lint": "eslint",
-    "format": "prettier --write ."
+    "test:e2e": "bunx playwright test --reporter=list,html",
+    "test:e2e:headed": "bunx playwright test --headed --reporter=list,html",
+    "test:e2e:report": "bunx playwright show-report",
+    "test:all": "bun lint && bun test:e2e"
   },
   "engines": {
     "npm": "11.x"
@@ -29,7 +33,7 @@
     "lodash": "^4.18.1",
     "material-ui-popup-state": "^2.0.1",
     "moment": "^2.30.1",
-    "next": "^16.2.12",
+    "next": "^16.3.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.8",
     "react-cool-inview": "^2.0.9",
@@ -40,11 +44,16 @@
     "unfetch": "^5.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0",
+    "@types/js-cookie": "^3.0.6",
+    "@types/lodash": "^4.17.25",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.1.6",
     "husky": "^4.3.8",
     "prettier": "3.8.1",
-    "pretty-quick": "^4.2.2"
+    "pretty-quick": "^4.2.2",
+    "typescript": "^5.9.3"
   },
   "husky": {
     "hooks": {

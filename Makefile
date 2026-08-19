@@ -19,8 +19,8 @@ run-worker: build-worker
 run-web:
 	cd ./web && yarn dev && cd ..
 
-test: lint
-	go test -v ./
+test: lint vuln
+	go test -v ./dotagiftx/...
 	go test -v ./http/...
 	go test -v ./steam/...
 	go test -v ./phantasm/...
@@ -32,8 +32,11 @@ fmt: generate
 lint:
 	golangci-lint run -v
 
+vuln:
+	govulncheck ./...
+
 generate:
-	go generate .
+	go generate ./dotagiftx/...
 
 build:
 	go build -v -ldflags=$(build_flags) -o $(server_bin) ./cmd/$(server_bin)
@@ -46,13 +49,13 @@ build-worker-linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v \
 		-ldflags=$(build_flags) -o $(worker_bin)_amd64 ./cmd/$(worker_bin)
 
-docker-build:
-	docker build -t dotagiftx/$(server_bin) .
-docker-run:
-	docker run -it --rm -p 8000:8000 dotagiftx/$(server_bin)
+image-build:
+	podman build -t dotagiftx/$(server_bin) .
+container-run:
+	podman run -it --rm -p 8000:8000 dotagiftx/$(server_bin)
 
 web-build:
 	cd ./web && yarn dev && cd ..
 
 local:
-	docker-compose up
+	podman compose up

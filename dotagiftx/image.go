@@ -28,22 +28,6 @@ type (
 		Caption string `json:"caption"    db:"caption,omitempty"`
 	}
 
-	// ImageService provides access image services.
-	ImageService interface {
-		// Upload saves image details and actual file to local file system.
-		Upload(context.Context, io.Reader) (fileID string, err error)
-
-		// Image returns image details by id.
-		Image(fileID string) (path string, err error)
-
-		// Thumbnail downscales an image preserving its aspect ratio to the maximum dimensions.
-		// It will return the original image if original sizes are smaller than the provided dimensions.
-		Thumbnail(fileID string, width, height uint) (path string, err error)
-
-		// Delete purges image record and from local file system.
-		Delete(ctx context.Context, fileID string) error
-	}
-
 	// FileManager defines operation for file on local file system.
 	FileManager interface {
 		// Save saves file and returns a file name.
@@ -64,15 +48,15 @@ type (
 )
 
 // NewImageService returns a new Image service.
-func NewImageService(fm FileManager) ImageService {
-	return &imageService{fm}
+func NewImageService(fm FileManager) *ImageService {
+	return &ImageService{fm}
 }
 
-type imageService struct {
+type ImageService struct {
 	fileMgr FileManager
 }
 
-func (s *imageService) Upload(ctx context.Context, r io.Reader) (fileID string, err error) {
+func (s *ImageService) Upload(ctx context.Context, r io.Reader) (fileID string, err error) {
 	if au := AuthFromContext(ctx); au == nil {
 		err = AuthErrNoAccess
 		return
@@ -87,8 +71,8 @@ func (s *imageService) Upload(ctx context.Context, r io.Reader) (fileID string, 
 	return fileID, nil
 }
 
-func (s *imageService) Thumbnail(fileID string, width, height uint) (path string, err error) {
-	f, err := s.Image(fileID)
+func (s *ImageService) Thumbnail(ctx context.Context, fileID string, width, height uint) (path string, err error) {
+	f, err := s.Image(ctx, fileID)
 	if err != nil {
 		return
 	}
@@ -102,7 +86,7 @@ func (s *imageService) Thumbnail(fileID string, width, height uint) (path string
 	return t, nil
 }
 
-func (s *imageService) Image(fileID string) (path string, err error) {
+func (s *ImageService) Image(ctx context.Context, fileID string) (path string, err error) {
 	path, err = s.fileMgr.Get(fileID)
 	if err != nil {
 		err = NewXError(ImageErrNotFound, err)
@@ -112,7 +96,7 @@ func (s *imageService) Image(fileID string) (path string, err error) {
 	return path, nil
 }
 
-func (s *imageService) Delete(ctx context.Context, fileID string) error {
+func (s *ImageService) Delete(ctx context.Context, fileID string) error {
 	if au := AuthFromContext(ctx); au == nil {
 		return AuthErrNoAccess
 	}

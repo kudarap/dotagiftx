@@ -27,6 +27,56 @@ const releaseItem = (releaseDate, tag, label, contents) => ({
 })
 
 const releases = [
+  releaseItem(
+    'Aug 20, 2026',
+    'v0.26.0',
+    'Github Issue tracking, Web e2e testing, and Housekeeping',
+    [
+      'added github Issuer on feedback and reports (#279)',
+      'added github issue creation for feedback and bugs (#261)',
+      'added playwright e2e tests (#265)',
+      'added multi device session support and refresh token expiry (#263)',
+      'updated component styling and fix formatting in CatalogList and Header (#277)',
+      'updated privacy page with removal of google analytics',
+      'updated middleman 2026 (#255)',
+      'upgraded nextjs v16.3.0',
+      'fixed JSX components and update Image dimensions (#252)',
+      'fixed about page icons',
+      'fixed html hierarchy hydration error',
+      'refactored backend house keeping (#259)',
+      'refactored package root to dotagiftx package (#260)',
+      'refactored contact dialog enhancement (#274)',
+      'deprecated docker for podman and postman for hoppscotch (#273)',
+    ]
+  ),
+  releaseItem('Aug 5, 2026', 'v0.25.4', 'Fixed PayPal and improved Phantasm crawler success rate', [
+    'added highlights and label for steam id #245',
+    'fixed subscription checker tool #243',
+    'fixed clearing of subscription expiration #244',
+    'fixed inject steam headers #248',
+  ]),
+  releaseItem('Aug 4, 2026', 'v0.25.3', 'Clean ups, Tips, and fuck Google Analytics', [
+    'added welcome dialog with scam-safety tips for new visitors #232',
+    'fixed clipped set images on item card and list rows #228',
+    'fixed page title #227',
+    'fixed nextjs migration lint warnings and errors #223',
+    'fixed docker image version tag and image hash #221',
+    'fixed sitemap rendering invalid meta data',
+    'removed google analytics because fuck google',
+    'removed steam rep links and contents #207',
+  ]),
+  releaseItem('Jul 31, 2026', 'v0.25.2', 'Hotfix', [
+    'fix incomplete URL substring sanitization on checkout page',
+  ]),
+  releaseItem('Jul 31, 2026', 'v0.25.1', 'Hotfix', ['fix unsanitized file path']),
+  releaseItem('Jul 31, 2026', 'v0.25.0', 'Nextjs v16 upgrade', [
+    'added uptime on version endpoint',
+    'upgraded nextjs 12 to 16',
+    'upgraded react 17 to 19',
+    'upgraded eslint 8 to 9',
+    'upgraded other ui dependecies',
+    'format go code for go1.26 replacing interface to any',
+  ]),
   releaseItem('Jun 25, 2026', 'v0.24.0', 'Dark Carnival', [
     'added dark carnival event theme',
     'added umami web analytics in deprecation of google analytics',
@@ -47,7 +97,7 @@ const releases = [
     'fixed config requiring .env file to exists',
   ]),
   releaseItem(
-    'March 10, 2026',
+    'Mar 10, 2026',
     'v0.23.2',
     'Clickhouse integration, new pages and code improvements',
     [
@@ -136,8 +186,7 @@ export default function Updates() {
                 <Typography color="secondary" component="span">
                   {release.tag}
                 </Typography>{' '}
-                {release.label}
-                <LaunchIcon fontSize="relative" />
+                {release.label} <LaunchIcon fontSize="relative" />
               </Link>
               <ul>
                 {release.contents.map(line => (
@@ -152,7 +201,7 @@ export default function Updates() {
           ))}
 
           <Typography variant="h5" gutterBottom>
-            June 25, 2025
+            Jun 25, 2025
           </Typography>
           <Link
             target="_blank"
@@ -215,7 +264,7 @@ export default function Updates() {
           <br />
 
           <Typography variant="h5" gutterBottom>
-            October 8, 2022
+            Oct 8, 2022
           </Typography>
           <Typography color="textSecondary">
             <ul>
@@ -240,7 +289,7 @@ export default function Updates() {
           <br />
 
           <Typography variant="h5" gutterBottom>
-            September 3, 2022
+            Sep 3, 2022
           </Typography>
           <Typography color="textSecondary">
             <ul>

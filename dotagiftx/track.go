@@ -1,6 +1,7 @@
 package dotagiftx
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -56,37 +57,22 @@ type (
 		CreatedAt  time.Time `json:"created_at"   db:"created_at,omitempty,indexed"`
 	}
 
-	// TrackService provides access to track service.
-	TrackService interface {
-		// Tracks returns a list of tracks.
-		Tracks(FindOpts) ([]Track, *FindMetadata, error)
-
-		// Track returns track details by id.
-		Track(id string) (*Track, error)
-
-		// CreateFromRequest saves new track from http request. Primarily used on client side.
-		CreateFromRequest(r *http.Request) error
-
-		// CreateSearchKeyword saves new keyword tracking data.
-		CreateSearchKeyword(r *http.Request, keyword string) error
-	}
-
-	// TrackStorage defines operation for track records.
-	TrackStorage interface {
+	// trackRepository defines operation for track records.
+	trackRepository interface {
 		// Find returns a list of tracks from data store.
-		Find(FindOpts) ([]Track, error)
+		Find(ctx context.Context, opts FindOpts) ([]Track, error)
 
 		// Count returns number of tracks from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns track details by id from data store.
-		Get(id string) (*Track, error)
+		Get(ctx context.Context, id string) (*Track, error)
 
 		// Create persists a new track to data store.
-		Create(*Track) error
+		Create(context.Context, *Track) error
 
 		// TopKeywords returns top search keywords this week.
-		TopKeywords() ([]SearchKeywordScore, error)
+		TopKeywords(ctx context.Context) ([]SearchKeywordScore, error)
 	}
 )
 
@@ -134,17 +120,17 @@ func (t *Track) SetDefaults(r *http.Request) {
 }
 
 // NewTrackService returns new track service.
-func NewTrackService(ts TrackStorage, ps ItemStorage) TrackService {
-	return &trackService{ts, ps}
+func NewTrackService(ts trackRepository, ps itemRepository) *TrackService {
+	return &TrackService{ts, ps}
 }
 
-type trackService struct {
-	trackStg TrackStorage
-	itemStg  ItemStorage
+type TrackService struct {
+	trackRepo trackRepository
+	itemRepo  itemRepository
 }
 
-func (s *trackService) Tracks(opts FindOpts) ([]Track, *FindMetadata, error) {
-	res, err := s.trackStg.Find(opts)
+func (s *TrackService) Tracks(ctx context.Context, opts FindOpts) ([]Track, *FindMetadata, error) {
+	res, err := s.trackRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,7 +140,7 @@ func (s *trackService) Tracks(opts FindOpts) ([]Track, *FindMetadata, error) {
 	}
 
 	// Get total count for metadata.
-	total, err := s.trackStg.Count(opts)
+	total, err := s.trackRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -165,25 +151,25 @@ func (s *trackService) Tracks(opts FindOpts) ([]Track, *FindMetadata, error) {
 	}, nil
 }
 
-func (s *trackService) Track(id string) (*Track, error) {
-	return s.trackStg.Get(id)
+func (s *TrackService) Track(ctx context.Context, id string) (*Track, error) {
+	return s.trackRepo.Get(ctx, id)
 }
 
-func (s *trackService) CreateFromRequest(r *http.Request) error {
+func (s *TrackService) CreateFromRequest(ctx context.Context, r *http.Request) error {
 	t := new(Track)
 	t.SetDefaults(r)
 
 	// Track post view.
 	if t.Type == TrackTypeView && t.ItemID != "" {
-		if err := s.itemStg.AddViewCount(t.ItemID); err != nil {
+		if err := s.itemRepo.AddViewCount(ctx, t.ItemID); err != nil {
 			return err
 		}
 	}
 
-	return s.trackStg.Create(t)
+	return s.trackRepo.Create(ctx, t)
 }
 
-func (s *trackService) CreateSearchKeyword(r *http.Request, keyword string) error {
+func (s *TrackService) CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error {
 	if r.Method != http.MethodGet {
 		return nil
 	}
@@ -197,7 +183,7 @@ func (s *trackService) CreateSearchKeyword(r *http.Request, keyword string) erro
 	t.SetDefaults(r)
 	t.Type = TrackTypeSearch
 	t.Keyword = keyword
-	return s.trackStg.Create(t)
+	return s.trackRepo.Create(ctx, t)
 }
 
 func userIPFromRequest(req *http.Request) (net.IP, error) {

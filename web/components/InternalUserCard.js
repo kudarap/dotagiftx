@@ -32,8 +32,18 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
           {name}
         </Typography>
         <Typography variant="body2" component="p" color="textSecondary">
-          <Typography component="span" variant="caption">
-            {id}
+          <Typography
+            component="span"
+            variant="caption"
+            sx={{
+              color: 'secondary.main',
+              border: '1px solid',
+              borderColor: 'secondary.main',
+              borderRadius: 1,
+              px: 0.75,
+              py: 0.25,
+            }}>
+            SteamID: {id}
           </Typography>{' '}
           &middot; Joined {moment(createdAt).fromNow()}{' '}
         </Typography>
@@ -57,10 +67,10 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
             startIcon={
               <Image
                 src="/icon_2x.png"
+                alt="dgx"
                 width={16}
                 height={16}
-                style={{ height: 16, filter: 'brightness(10)' }}
-                alt="dgx"
+                style={{ height: 16, width: 16, filter: 'brightness(10)' }}
               />
             }
             component={Link}

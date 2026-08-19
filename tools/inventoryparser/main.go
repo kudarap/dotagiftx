@@ -74,7 +74,7 @@ func main() {
 		}
 	}
 
-	data, err := os.ReadFile(cacheSrc)
+	data, err := os.ReadFile(cacheSrc) //nolint:gosec // CLI tool reading explicit user-provided path
 	if err != nil {
 		fmt.Println("could not read file:", err)
 		return
@@ -128,18 +128,18 @@ func getSource(steamID string) string {
 
 func dlCache(steamID string) error {
 	url := fmt.Sprintf(steamInventoryAPI, steamID)
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec // CLI tool fetching from configured steam API
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	filepath := getSource(steamID)
-	out, err := os.Create(filepath)
+	out, err := os.Create(filepath) //nolint:gosec // CLI tool writing to temp dir cache
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)

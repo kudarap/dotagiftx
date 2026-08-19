@@ -2,7 +2,6 @@ import React from 'react'
 import Head from 'next/head'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
-import Link from '@mui/material/Link'
 import { APP_NAME } from '@/constants/strings'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -33,6 +32,9 @@ export default function Privacy() {
         <Container>
           <Typography variant="h5" component="h1" gutterBottom>
             Privacy Policy
+            <Typography variant="body2" color="textSecondary">
+              August 6, 2026
+            </Typography>
           </Typography>
           <br />
 
@@ -43,16 +45,7 @@ export default function Privacy() {
           <br />
 
           <Typography color="textSecondary">
-            We use cookies to keep your signed in session active and Google Analytics to monitor
-            site traffic. For more information, see{' '}
-            <Link
-              href="https://www.google.com/policies/privacy/partners/"
-              target="_blank"
-              color="secondary"
-              rel="noreferrer noopener">
-              Google’s privacy terms
-            </Link>
-            .
+            We use cookies to keep your signed in session active.
           </Typography>
           <br />
         </Container>

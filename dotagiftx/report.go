@@ -48,37 +48,32 @@ type (
 		Type      ReportType `json:"type"       db:"type,omitempty,indexed"   valid:"required"`
 		Label     string     `json:"label"      db:"label,omitempty,indexed"`
 		Text      string     `json:"text"       db:"text,omitempty"           valid:"required"`
+		IssueURL  string     `json:"issue_url"  db:"issue_url,omitempty"`
 		CreatedAt *time.Time `json:"created_at" db:"created_at,omitempty"`
 		UpdatedAt *time.Time `json:"updated_at" db:"updated_at,omitempty"`
 		// Include related fields.
 		User *User `json:"user,omitempty" db:"user,omitempty"`
 	}
 
-	// ReportService provides access to report service.
-	ReportService interface {
-		// Reports returns a list of reports.
-		Reports(opts FindOpts) ([]Report, *FindMetadata, error)
-
-		// Report returns report details by id.
-		Report(id string) (*Report, error)
-
-		// Create saves new report details.
-		Create(context.Context, *Report) error
-	}
-
-	// ReportStorage defines operation for report records.
-	ReportStorage interface {
+	// reportRepository defines operation for report records.
+	reportRepository interface {
 		// Find returns a list of reports from the data store.
-		Find(opts FindOpts) ([]Report, error)
+		Find(ctx context.Context, opts FindOpts) ([]Report, error)
 
 		// Count returns number of reports from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns report details by id from data store.
-		Get(id string) (*Report, error)
+		Get(ctx context.Context, id string) (*Report, error)
 
 		// Create persists a new report to data store.
-		Create(*Report) error
+		Create(context.Context, *Report) error
+
+		// Update persists report changes to data store.
+		Update(context.Context, *Report) error
+
+		// Update the report to add the issue url
+		UpdateIssueURL(ctx context.Context, id, url string) error
 	}
 )
 
@@ -110,17 +105,19 @@ func (t ReportType) String() string {
 }
 
 // NewReportService returns new report service.
-func NewReportService(rs ReportStorage, wp webhookPoster) ReportService {
-	return &reportService{rs, wp}
+func NewReportService(appUrl string, rs reportRepository, wp webhookPoster, is issuer) *ReportService {
+	return &ReportService{rs, wp, is, appUrl}
 }
 
-type reportService struct {
-	reportStg     ReportStorage
+type ReportService struct {
+	reportRepo    reportRepository
 	webhookPoster webhookPoster
+	issuer        issuer
+	appUrl        string
 }
 
-func (s *reportService) Reports(opts FindOpts) ([]Report, *FindMetadata, error) {
-	res, err := s.reportStg.Find(opts)
+func (s *ReportService) Reports(ctx context.Context, opts FindOpts) ([]Report, *FindMetadata, error) {
+	res, err := s.reportRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -130,7 +127,7 @@ func (s *reportService) Reports(opts FindOpts) ([]Report, *FindMetadata, error) 
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.reportStg.Count(opts)
+	tc, err := s.reportRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -141,43 +138,58 @@ func (s *reportService) Reports(opts FindOpts) ([]Report, *FindMetadata, error) 
 	}, nil
 }
 
-func (s *reportService) Report(id string) (*Report, error) {
-	return s.reportStg.Get(id)
+func (s *ReportService) Report(ctx context.Context, id string) (*Report, error) {
+	return s.reportRepo.Get(ctx, id)
 }
 
-func (s *reportService) CreateSurvey(ctx context.Context, rep *Report) error {
+func (s *ReportService) CreateSurvey(ctx context.Context, rep *Report) error {
 	rep.Type = ReportTypeSurvey
-	return s.Create(ctx, rep)
+	_, err := s.Create(ctx, rep)
+	return err
 }
 
-func (s *reportService) Create(ctx context.Context, rep *Report) error {
+func (s *ReportService) Create(ctx context.Context, rep *Report) (*Report, error) {
 	au := AuthFromContext(ctx)
 	if au == nil {
-		return AuthErrNoAccess
+		return nil, AuthErrNoAccess
 	}
 	rep.UserID = au.UserID
 
 	rep.Label = strings.TrimSpace(rep.Label)
 	rep.Text = strings.TrimSpace(rep.Text)
 	if err := rep.CheckCreate(); err != nil {
-		return NewXError(ReportErrRequiredFields, err)
+		return nil, NewXError(ReportErrRequiredFields, err)
 	}
 
-	if err := s.reportStg.Create(rep); err != nil {
-		return err
+	if err := s.reportRepo.Create(ctx, rep); err != nil {
+		return nil, err
 	}
 
-	go func() {
-		if err := s.shootToDiscord(rep.ID); err != nil {
+	switch rep.Type {
+	case ReportTypeBug, ReportTypeFeedback:
+		link, err := s.issueToGithub(ctx, rep.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		err = s.reportRepo.UpdateIssueURL(ctx, rep.ID, link)
+		if err != nil {
+			return nil, err
+		}
+
+		rep.IssueURL = link
+
+	case ReportTypeScamAlert, ReportTypeScamIncident, ReportTypeSurvey:
+		if err := s.shootToDiscord(ctx, rep.ID); err != nil {
 			log.Println("could not shoot to discord:", err)
 		}
-	}()
+	}
 
-	return nil
+	return rep, nil
 }
 
-func (s *reportService) shootToDiscord(reportID string) error {
-	reps, _, err := s.Reports(FindOpts{Filter: Report{ID: reportID}})
+func (s *ReportService) shootToDiscord(ctx context.Context, reportID string) error {
+	reps, _, err := s.Reports(ctx, FindOpts{Filter: Report{ID: reportID}})
 	if err != nil {
 		return err
 	}
@@ -195,6 +207,32 @@ func (s *reportService) shootToDiscord(reportID string) error {
 	return nil
 }
 
+func (s *ReportService) issueToGithub(ctx context.Context, reportID string) (string, error) {
+	reps, _, err := s.Reports(ctx, FindOpts{Filter: Report{ID: reportID}})
+	if err != nil {
+		return "", err
+	}
+	if len(reps) == 0 {
+		return "", nil
+	}
+
+	rep := reps[0]
+	created := rep.CreatedAt.Format("Jan 02, 2006 - 3:04 PM PST")
+	profileUrl := fmt.Sprintf("%s/profiles/%s", s.appUrl, rep.User.SteamID)
+
+	title := fmt.Sprintf("%s by %s", rep.Type, rep.User.Name)
+	body := fmt.Sprintf(`%s [%s](%s)
+%s
+
+%s`, rep.User.Name, profileUrl, profileUrl, created, rep.Text[2:])
+
+	return s.issuer.CreateIssue(ctx, title, strings.TrimSpace(body), []string{"triage"})
+}
+
 type webhookPoster interface {
 	PostWebhook(username, content string) error
+}
+
+type issuer interface {
+	CreateIssue(ctx context.Context, title string, body string, labels []string) (issueUrl string, err error)
 }

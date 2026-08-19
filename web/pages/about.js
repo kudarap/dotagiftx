@@ -13,6 +13,7 @@ import Footer from '@/components/Footer'
 import Button from '@/components/Button'
 import SteamIcon from '@/components/SteamIcon'
 import DiscordIcon from '@/components/DiscordIcon'
+import Code from '@/components/Code'
 import { version } from '@/service/api'
 
 const useStyles = makeStyles()(theme => ({
@@ -21,8 +22,6 @@ const useStyles = makeStyles()(theme => ({
       marginTop: theme.spacing(2),
     },
     marginTop: theme.spacing(4),
-    // background: 'url("/icon.png") no-repeat bottom right',
-    // backgroundSize: 100,build
   },
 }))
 
@@ -74,7 +73,7 @@ export default function About({ build }) {
             suggestions.
           </Typography>
           <Button
-            startIcon={<DiscordIcon />}
+            startIcon={<DiscordIcon size="large" />}
             size="large"
             component={Link}
             target="_blank"
@@ -96,10 +95,10 @@ export default function About({ build }) {
             startIcon={
               <Image
                 src="/icon_2x.png"
-                style={{ height: 22, filter: 'brightness(10)' }}
-                width={60}
-                height={60}
                 alt="dgx"
+                width={22}
+                height={22}
+                style={{ height: 22, width: 22, filter: 'brightness(10)' }}
               />
             }
             size="large"
@@ -110,15 +109,13 @@ export default function About({ build }) {
           <br />
           <br />
 
-          <Typography variant="h5" sx={{ mb: -1 }}>
-            Version
-          </Typography>
+          <Typography variant="h5">Version</Typography>
           <Typography color="textSecondary">
-            <pre>
+            <Code>
               tag: {build.version} <br />
               hash: {build.hash} <br />
               built: {build.built} <br />
-            </pre>
+            </Code>
           </Typography>
         </Container>
       </main>
@@ -140,9 +137,6 @@ About.defaultProps = {
 
 // This gets called on every request
 export async function getServerSideProps() {
-  // Fetch data from external API
-  // const res = await fetch(API_URL)
-  // const data = await res.json()
   const build = await version()
 
   // Pass data to the page via props

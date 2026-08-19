@@ -1,6 +1,6 @@
 import { Ubuntu } from 'next/font/google'
 import { createTheme } from '@mui/material/styles'
-import { teal, blueGrey, grey } from '@mui/material/colors'
+import { blueGrey, grey, teal } from '@mui/material/colors'
 import { responsiveFontSizes } from '@mui/material'
 
 const font = Ubuntu({

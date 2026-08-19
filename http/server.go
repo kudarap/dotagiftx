@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,10 +12,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/tracing"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -27,21 +27,21 @@ const (
 func NewServer(
 	sigKey string,
 	divineKey string,
-	us dotagiftx.UserService,
-	au dotagiftx.AuthService,
-	is dotagiftx.ImageService,
-	its dotagiftx.ItemService,
-	ms dotagiftx.MarketService,
-	ts dotagiftx.TrackService,
-	ss dotagiftx.StatsService,
-	rs dotagiftx.ReportService,
-	hs dotagiftx.HammerService,
-	sc dotagiftx.SteamClient,
+	us userService,
+	au authService,
+	is imageService,
+	its itemService,
+	ms marketService,
+	ts trackService,
+	ss statsService,
+	rs reportService,
+	hs hammerService,
+	sc steamClient,
 	ps *phantasm.Service,
 	t *tracing.Tracer,
 	c cacheManager,
 	v *dotagiftx.Version,
-	l *logrus.Logger,
+	l *slog.Logger,
 ) *Server {
 	SigKey = sigKey
 	return &Server{
@@ -70,22 +70,22 @@ type Server struct {
 	Addr    string
 	handler http.Handler
 	// Service resources.
-	userSvc   dotagiftx.UserService
-	authSvc   dotagiftx.AuthService
-	imageSvc  dotagiftx.ImageService
-	itemSvc   dotagiftx.ItemService
-	marketSvc dotagiftx.MarketService
-	trackSvc  dotagiftx.TrackService
-	statsSvc  dotagiftx.StatsService
-	reportSvc dotagiftx.ReportService
-	hammerSvc dotagiftx.HammerService
-	steam     dotagiftx.SteamClient
+	userSvc   userService
+	authSvc   authService
+	imageSvc  imageService
+	itemSvc   itemService
+	marketSvc marketService
+	trackSvc  trackService
+	statsSvc  statsService
+	reportSvc reportService
+	hammerSvc hammerService
+	steam     steamClient
 
 	phantasmSvc *phantasm.Service
 
 	tracing *tracing.Tracer
 	cache   cacheManager
-	logger  *logrus.Logger
+	logger  *slog.Logger
 	version *dotagiftx.Version
 
 	// divineKey is a special access key for importing and creating items and
@@ -101,7 +101,7 @@ func (s *Server) setup() {
 	r.Use(middleware.RequestID)
 	r.Use(vercelRequestID)
 	r.Use(middleware.ClientIPFromHeader("X-Real-IP"))
-	r.Use(NewStructuredLogger(s.logger))
+	r.Use(logger(s.logger))
 	r.Use(cors)
 	r.Use(requestIDWriter)
 	r.Use(middleware.Recoverer)
@@ -134,7 +134,7 @@ func (s *Server) Run() error {
 	// Handle error on server start.
 	errCh := make(chan error, 1)
 	go func() {
-		s.logger.Infoln("server running on", s.Addr)
+		s.logger.InfoContext(context.Background(), "server running on", "addr", s.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
@@ -152,17 +152,13 @@ func (s *Server) Run() error {
 	case err := <-errCh:
 		return err
 	case <-quit:
-		s.logger.Infoln("server shutting down...")
+		s.logger.InfoContext(ctx, "server shutting down...")
 		if err := srv.Shutdown(ctx); err != nil {
-			s.logger.Error("server shutdown error", err)
+			s.logger.ErrorContext(ctx, "server shutdown error", "error", err)
 		}
-		s.logger.Infoln("server stopped!")
+		s.logger.InfoContext(ctx, "server stopped!")
 		return nil
 	}
-}
-
-func NewStructuredLogger(logger *logrus.Logger) func(next http.Handler) http.Handler {
-	return middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger})
 }
 
 func isValidDivineKey(r *http.Request, divineKey string) error {

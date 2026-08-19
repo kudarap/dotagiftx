@@ -9,8 +9,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/rethink"
 	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
@@ -116,7 +116,7 @@ func paypalSubscribers(
 			err = json.Unmarshal(body, &paypalSubs)
 			errCheck(err)
 		}
-		defer file.Close()
+		defer func() { _ = file.Close() }()
 	}
 
 	if len(paypalSubs) == 0 {
@@ -139,7 +139,7 @@ func paypalSubscribers(
 		b, err := json.MarshalIndent(paypalSubs, "", "  ")
 		errCheck(err)
 
-		err = os.WriteFile(cachePaypalSubscriptionFile, b, 0644)
+		err = os.WriteFile(cachePaypalSubscriptionFile, b, 0600)
 		errCheck(err)
 	}
 

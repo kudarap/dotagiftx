@@ -5,13 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"os"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/clickhouse"
 	"github.com/kudarap/dotagiftx/config"
 	"github.com/kudarap/dotagiftx/discord"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/file"
+	"github.com/kudarap/dotagiftx/github"
 	"github.com/kudarap/dotagiftx/http"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
@@ -20,7 +22,6 @@ import (
 	"github.com/kudarap/dotagiftx/rethink"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/tracing"
-	"github.com/sirupsen/logrus"
 )
 
 const configPrefix = "DG"
@@ -31,31 +32,34 @@ func main() {
 	app := newApp()
 
 	v := dotagiftx.NewVersion(false, tag, commit, built)
-	logger.Println("version:", v.Tag)
-	logger.Println("hash:", v.Commit)
-	logger.Println("built:", v.Built)
+	logger.Info("version", "tag", v.Tag)
+	logger.Info("hash", "commit", v.Commit)
+	logger.Info("built", "built", v.Built)
 
-	logger.Println("loading config...")
+	logger.Info("loading config...")
 	if err := app.loadConfig(); err != nil {
-		logger.Fatalln("could not load config:", err)
+		logger.Error("could not load config", "error", err)
+		os.Exit(1)
 	}
 
-	logger.Println("setting up...")
+	logger.Info("setting up...")
 	if err := app.setup(); err != nil {
-		logger.Fatalln("could not setup:", err)
+		logger.Error("could not setup", "error", err)
+		os.Exit(1)
 	}
 
-	logger.Println("running app...")
+	logger.Info("running app...")
 	if err := app.run(); err != nil {
-		logger.Fatalln("could not run:", err)
+		logger.Error("could not run", "error", err)
+		os.Exit(1)
 	}
-	logger.Println("stopped!")
+	logger.Info("stopped!")
 }
 
 type application struct {
 	config config.Config
 	server *http.Server
-	logger *logrus.Logger
+	logger *slog.Logger
 
 	closerFn func()
 }
@@ -71,7 +75,7 @@ func (app *application) loadConfig() error {
 func (app *application) setup() error {
 	// Logs setup.
 	slogger := slog.Default()
-	logger.Println("setting up persistent logs...")
+	logger.Info("setting up persistent logs...")
 	logSvc, err := logging.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
@@ -79,7 +83,7 @@ func (app *application) setup() error {
 	app.logger = logSvc
 
 	// Database setup.
-	logSvc.Println("setting up database...")
+	logSvc.Info("setting up database...")
 	redisClient, err := setupRedis(app.config.Redis)
 	if err != nil {
 		return err
@@ -104,7 +108,7 @@ func (app *application) setup() error {
 	}
 
 	// External services setup.
-	logSvc.Println("setting up external services...")
+	logSvc.Info("setting up external services...")
 	steamClient, err := setupSteam(app.config.Steam, redisClient)
 	if err != nil {
 		return err
@@ -114,11 +118,13 @@ func (app *application) setup() error {
 		return err
 	}
 	discordClient := discord.New(app.config.DiscordWebhookURL)
+	githubClient := github.New(app.config.Github)
 
 	// Storage inits.
-	logSvc.Println("setting up data stores...")
+	logSvc.Info("setting up data stores...")
 	userStg := rethink.NewUser(rethinkClient)
 	authStg := rethink.NewAuth(rethinkClient)
+	sessionStg := rethink.NewSession(rethinkClient)
 	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	itemStg := rethink.NewItem(rethinkClient)
 	marketStg := rethink.NewMarket(rethinkClient)
@@ -130,12 +136,20 @@ func (app *application) setup() error {
 	inventoryStg := rethink.NewInventory(rethinkClient)
 
 	// Service inits.
-	logSvc.Println("setting up services...")
+	logSvc.Info("setting up services...")
 	fileMgr := setupFileManager(app.config)
-	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient)
-	authSvc := dotagiftx.NewAuthService(app.config.SigKey, steamClient, authStg, userSvc, slogger)
+	userSvc := dotagiftx.NewUserService(userStg, fileMgr, paypalClient, slogger)
+	authSvc := dotagiftx.NewAuthService(
+		app.config.SigKey,
+		app.config.AuthSessionTTL,
+		steamClient,
+		authStg,
+		sessionStg,
+		userSvc,
+		slogger,
+	)
 	imageSvc := dotagiftx.NewImageService(fileMgr)
-	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr)
+	itemSvc := dotagiftx.NewItemService(app.config.AllowedImageSources, itemStg, fileMgr, slogger)
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	marketSvc := dotagiftx.NewMarketService(
@@ -152,13 +166,13 @@ func (app *application) setup() error {
 		app.contextLog("service_market"),
 	)
 	trackSvc := dotagiftx.NewTrackService(trackStg, itemStg)
-	reportSvc := dotagiftx.NewReportService(reportStg, discordClient)
+	reportSvc := dotagiftx.NewReportService(app.config.AppHost, reportStg, discordClient, githubClient)
 	statsSvc := dotagiftx.NewStatsService(statsStg, trackStg)
 	hammerSvc := dotagiftx.NewHammerService(userStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 
 	// Server setup.
-	logSvc.Println("setting up http server...")
+	logSvc.Info("setting up http server...")
 	srv := http.NewServer(
 		app.config.SigKey,
 		app.config.DivineKey,
@@ -182,16 +196,19 @@ func (app *application) setup() error {
 	app.server = srv
 
 	app.closerFn = func() {
-		logSvc.Println("closing and stopping app...")
+		logSvc.Info("closing and stopping app...")
 		if err = redisClient.Close(); err != nil {
-			logSvc.Fatal("could not close redis client", err)
+			logSvc.Error("could not close redis client", "error", err)
+			os.Exit(1)
 		}
 		if err = rethinkClient.Close(); err != nil {
-			logSvc.Fatal("could not close rethink client", err)
+			logSvc.Error("could not close rethink client", "error", err)
+			os.Exit(1)
 		}
 		if app.config.StatsCaptureEnabled {
 			if err = clickHouseClient.Close(); err != nil {
-				logSvc.Fatal("could not close clickhouse client", err)
+				logSvc.Error("could not close clickhouse client", "error", err)
+				os.Exit(1)
 			}
 		}
 	}
@@ -204,7 +221,7 @@ func (app *application) run() error {
 	return app.server.Run()
 }
 
-func (app *application) contextLog(name string) logging.Logger {
+func (app *application) contextLog(name string) *slog.Logger {
 	return logging.WithPrefix(app.logger, name)
 }
 
@@ -284,7 +301,7 @@ func setupClickHouse(cfg clickhouse.Config) (c *clickhouse.Client, err error) {
 
 func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhouse.Client) error {
 	ctx := context.Background()
-	err := rethinkClient.ListenChangeFeed("track", func(prev, next []byte) error {
+	err := rethinkClient.ListenChangeFeed(ctx, "track", func(prev, next []byte) error {
 		var v dotagiftx.Track
 		if err := json.Unmarshal(next, &v); err != nil {
 			return err
@@ -295,7 +312,7 @@ func setupChangeFeeds(rethinkClient *rethink.Client, clickhouseClient *clickhous
 		return err
 	}
 
-	err = rethinkClient.ListenChangeFeed("market", func(prev, next []byte) error {
+	err = rethinkClient.ListenChangeFeed(ctx, "market", func(prev, next []byte) error {
 		var v dotagiftx.Market
 		if err := json.Unmarshal(next, &v); err != nil {
 			return err
@@ -311,7 +328,7 @@ func connRetry(name string, fn func() error) error {
 	// Catches a panic to retry.
 	defer func() {
 		if err := recover(); err != nil {
-			logger.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
+			logger.Info("conn error, retrying", "name", name, "error", err, "delay", delay)
 			time.Sleep(delay)
 			_ = connRetry(name, fn)
 		}

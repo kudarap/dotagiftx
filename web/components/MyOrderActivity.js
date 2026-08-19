@@ -6,10 +6,10 @@ import Typography from '@mui/material/Typography'
 import { lightGreen, teal } from '@mui/material/colors'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
-  MARKET_TYPE_BID,
+  MARKET_BID_STATUS_MAP_TEXT,
   MARKET_STATUS_MAP_COLOR,
   MARKET_STATUS_MAP_TEXT,
-  MARKET_BID_STATUS_MAP_TEXT,
+  MARKET_TYPE_BID,
 } from '@/constants/market'
 import { VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { amount, daysFromNow } from '@/lib/format'
@@ -172,7 +172,7 @@ export default function MyOrderActivity({ datatable, loading, error }) {
             </Typography>
 
             <Typography
-              component="pre"
+              component="div"
               color="textSecondary"
               variant="caption"
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>

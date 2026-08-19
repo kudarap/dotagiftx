@@ -2,20 +2,20 @@ package jobs
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
-	"github.com/kudarap/dotagiftx/logging"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/verify"
 )
 
 // GiftWrappedUpdate represents a job that will update delivered items that still unopened.
 type GiftWrappedUpdate struct {
-	deliverySvc dotagiftx.DeliveryService
-	deliveryStg dotagiftx.DeliveryStorage
-	marketStg   dotagiftx.MarketStorage
-	source      *verify.Source
-	logger      logging.Logger
+	deliverySvc  deliveryService
+	deliveryRepo deliveryRepository
+	marketRepo   marketRepository
+	source       *verify.Source
+	logger       *slog.Logger
 	// job settings
 	name     string
 	interval time.Duration
@@ -23,11 +23,11 @@ type GiftWrappedUpdate struct {
 }
 
 func NewGiftWrappedUpdate(
-	ds dotagiftx.DeliveryService,
-	dg dotagiftx.DeliveryStorage,
-	ms dotagiftx.MarketStorage,
+	ds deliveryService,
+	dg deliveryRepository,
+	ms marketRepository,
 	vs *verify.Source,
-	lg logging.Logger,
+	lg *slog.Logger,
 ) *GiftWrappedUpdate {
 	falsePtr := false
 	f := dotagiftx.Delivery{
@@ -46,7 +46,7 @@ func (gw *GiftWrappedUpdate) Interval() time.Duration { return gw.interval }
 func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	bs := time.Now()
 	defer func() {
-		gw.logger.Println("GIFT WRAPPED UPDATE BENCHMARK TIME", time.Since(bs))
+		gw.logger.Info("GIFT WRAPPED UPDATE BENCHMARK TIME", "elapsed", time.Since(bs))
 	}()
 
 	opts := dotagiftx.FindOpts{Filter: gw.filter}
@@ -56,7 +56,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	opts.IndexKey = "status"
 
 	for {
-		deliveries, err := gw.deliveryStg.ToVerify(opts)
+		deliveries, err := gw.deliveryRepo.ToVerify(ctx, opts)
 		if err != nil {
 			return err
 		}
@@ -64,28 +64,28 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 		for _, dd := range deliveries {
 			start := time.Now()
 
-			gw.logger.Infoln("processing gift wrapped update", dd.ID, *dd.GiftOpened, dd.Retries)
+			gw.logger.Info("processing gift wrapped update", "delivery_id", dd.ID, "gift_opened", *dd.GiftOpened, "retries", dd.Retries)
 			if dd.RetriesExceeded() {
 				continue
 			}
 
-			mkt, _ := gw.market(dd.MarketID)
+			mkt, _ := gw.market(ctx, dd.MarketID)
 			if mkt == nil {
-				gw.logger.Errorf("skipped process! market not found")
+				gw.logger.Error("skipped process! market not found")
 				continue
 			}
 
 			if mkt.User == nil || mkt.Item == nil {
-				gw.logger.Errorf("skipped process! missing data user:%#v item:%#v", mkt.User, mkt.Item)
+				gw.logger.Error("skipped process! missing data", "user", mkt.User, "item", mkt.Item)
 				continue
 			}
 
 			result, err := gw.source.Delivery(ctx, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name)
 			if err != nil {
-				gw.logger.Errorf("delivery verification error: %s", err)
+				gw.logger.Error("delivery verification error", "error", err)
 				continue
 			}
-			gw.logger.Println("batch", opts.Page, mkt.User.Name, mkt.PartnerSteamID, mkt.Item.Name, result.Status)
+			gw.logger.Info("batch", "page", opts.Page, "user", mkt.User.Name, "partner_steam_id", mkt.PartnerSteamID, "item", mkt.Item.Name, "status", result.Status)
 
 			err = gw.deliverySvc.Set(ctx, &dotagiftx.Delivery{
 				MarketID:   mkt.ID,
@@ -95,7 +95,7 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 				ElapsedMs:  time.Since(start).Milliseconds(),
 			})
 			if err != nil {
-				gw.logger.Errorln(mkt.User.SteamID, mkt.Item.Name, result.Status, err)
+				gw.logger.Error("delivery update error", "steam_id", mkt.User.SteamID, "item", mkt.Item.Name, "status", result.Status, "error", err)
 			}
 
 			// rest(5)
@@ -109,9 +109,9 @@ func (gw *GiftWrappedUpdate) Run(ctx context.Context) error {
 	}
 }
 
-func (gw *GiftWrappedUpdate) market(id string) (*dotagiftx.Market, error) {
+func (gw *GiftWrappedUpdate) market(ctx context.Context, id string) (*dotagiftx.Market, error) {
 	f := dotagiftx.FindOpts{Filter: dotagiftx.Market{ID: id}}
-	markets, err := gw.marketStg.Find(f)
+	markets, err := gw.marketRepo.Find(ctx, f)
 	if err != nil {
 		return nil, err
 	}

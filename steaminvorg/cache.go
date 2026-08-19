@@ -2,8 +2,9 @@ package steaminvorg
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
-	"math/rand/v2"
+	"math/big"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -52,8 +53,9 @@ func getCacheKey(steamID string) string {
 }
 
 func getCacheExpr() time.Duration {
-	n := 10
-	r := rand.IntN(n-(-n)) + (-n)
+	const jitter = 10
+	n, _ := rand.Int(rand.Reader, big.NewInt(2*jitter))
+	r := int(n.Int64()) - jitter
 	d := time.Minute * time.Duration(r)
 	return localCacheExpr + d
 }

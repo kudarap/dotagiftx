@@ -2,9 +2,8 @@ package jobs
 
 import (
 	"context"
+	"log/slog"
 	"time"
-
-	"github.com/kudarap/dotagiftx/logging"
 )
 
 type CleanPhantasmCache struct {
@@ -13,10 +12,10 @@ type CleanPhantasmCache struct {
 
 	name     string
 	interval time.Duration
-	logger   logging.Logger
+	logger   *slog.Logger
 }
 
-func NewSweepPhantasmCache(cleaner phantasmCacheCleaner, lg logging.Logger) *CleanPhantasmCache {
+func NewSweepPhantasmCache(cleaner phantasmCacheCleaner, lg *slog.Logger) *CleanPhantasmCache {
 	return &CleanPhantasmCache{
 		service:     cleaner,
 		cacheMaxAge: time.Hour * 24 * 30, // 30 days
@@ -31,11 +30,11 @@ func (c *CleanPhantasmCache) String() string { return c.name }
 func (c *CleanPhantasmCache) Interval() time.Duration { return c.interval }
 
 func (c *CleanPhantasmCache) Run(ctx context.Context) error {
-	c.logger.Println("cleaning phantasm cache older than", c.cacheMaxAge)
+	c.logger.Info("cleaning phantasm cache older than", "max_age", c.cacheMaxAge)
 	if err := c.service.CleanLocalCache(ctx, c.cacheMaxAge); err != nil {
 		return err
 	}
-	c.logger.Println("phantasm cache cleaned!")
+	c.logger.Info("phantasm cache cleaned!")
 	return nil
 }
 

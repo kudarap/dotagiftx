@@ -1,18 +1,53 @@
 package http
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 )
 
 const userCacheExpr = time.Minute * 5
 
-func handleProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+// userService provides access to user service methods used by http handlers.
+type userService interface {
+	// FlaggedUsers returns a list of flagged/reported users.
+	FlaggedUsers(ctx context.Context, opts dotagiftx.FindOpts) ([]dotagiftx.User, error)
+
+	// User returns user details by id.
+	User(ctx context.Context, id string) (*dotagiftx.User, error)
+
+	// UserFromContext returns user details from context.
+	UserFromContext(context.Context) (*dotagiftx.User, error)
+
+	// CreateSubscription creates a subscription for the current user.
+	CreateSubscription(ctx context.Context, planID string) (subscriptionID string, err error)
+
+	// ProcessSubscription validates and processes subscription features.
+	ProcessSubscription(ctx context.Context, subscriptionID string) (*dotagiftx.User, error)
+
+	// UpdateSubscriptionFromWebhook handles user subscription updates from http request.
+	UpdateSubscriptionFromWebhook(ctx context.Context, r *http.Request) (*dotagiftx.User, error)
+
+	// ProcessManualSubscription processes manual subscription.
+	ProcessManualSubscription(ctx context.Context, form dotagiftx.ManualSubscriptionParam) (*dotagiftx.User, error)
+}
+
+// steamClient provides access to steam API methods used by http handlers.
+type steamClient interface {
+	// Player returns player summary base on steamID.
+	Player(steamID string) (*dotagiftx.SteamPlayer, error)
+
+	// ResolveVanityURL returns steam id from profile url.
+	ResolveVanityURL(url string) (steamID string, err error)
+}
+
+func handleProfile(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -29,13 +64,17 @@ func handleProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFu
 			return
 		}
 
-		go cache.Set(cacheKey, u, userCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, u, userCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on profile", "error", err)
+			}
+		}()
 
 		respondOK(w, u)
 	}
 }
 
-func handlePublicProfile(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+func handlePublicProfile(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -47,19 +86,23 @@ func handlePublicProfile(svc dotagiftx.UserService, cache cacheManager) http.Han
 		}
 
 		id := chi.URLParam(r, "id")
-		u, err := svc.User(id)
+		u, err := svc.User(r.Context(), id)
 		if err != nil {
 			respondError(w, err)
 			return
 		}
 
-		go cache.Set(cacheKey, u, userCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, u, userCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on public profile", "error", err)
+			}
+		}()
 
 		respondOK(w, u)
 	}
 }
 
-func handleBlacklisted(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+func handleBlacklisted(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -75,7 +118,7 @@ func handleBlacklisted(svc dotagiftx.UserService, cache cacheManager) http.Handl
 			respondError(w, err)
 			return
 		}
-		list, err := svc.FlaggedUsers(opts)
+		list, err := svc.FlaggedUsers(r.Context(), opts)
 		if err != nil {
 			respondError(w, err)
 			return
@@ -84,7 +127,11 @@ func handleBlacklisted(svc dotagiftx.UserService, cache cacheManager) http.Handl
 			list = []dotagiftx.User{}
 		}
 
-		go cache.Set(cacheKey, list, time.Hour*24)
+		go func() {
+			if err := cache.Set(cacheKey, list, time.Hour*24); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on blacklists", "error", err)
+			}
+		}()
 
 		respondOK(w, list)
 	}
@@ -101,7 +148,7 @@ type vanityUserResp struct {
 }
 
 // TODO this should be place on service
-func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamClient, cache cacheManager) http.HandlerFunc {
+func handleVanityProfile(svc userService, steamClient steamClient, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check for cache hit and render them.
 		cacheKey, noCache := cacheKeyFromRequest(r)
@@ -124,7 +171,7 @@ func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamC
 		vUser.SteamID = steamID
 
 		// Get user data if its registered.
-		u, _ := svc.User(steamID)
+		u, _ := svc.User(r.Context(), steamID)
 		if u != nil {
 			vUser.User = *u
 			vUser.IsRegistered = true
@@ -142,12 +189,16 @@ func handleVanityProfile(svc dotagiftx.UserService, steamClient dotagiftx.SteamC
 
 		vUser.LastUpdatedAt = time.Now()
 
-		go cache.Set(cacheKey, vUser, userVanityCacheExpr)
+		go func() {
+			if err := cache.Set(cacheKey, vUser, userVanityCacheExpr); err != nil {
+				logger.ErrorContext(r.Context(), "could not save cache on vanity profile", "error", err)
+			}
+		}()
 		respondOK(w, vUser)
 	}
 }
 
-func handleCreateSubscription(svc dotagiftx.UserService) http.HandlerFunc {
+func handleCreateSubscription(svc userService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			PlanID string `json:"plan_id"`
@@ -169,7 +220,7 @@ func handleCreateSubscription(svc dotagiftx.UserService) http.HandlerFunc {
 	}
 }
 
-func handleProcSubscription(svc dotagiftx.UserService, cache cacheManager) http.HandlerFunc {
+func handleProcSubscription(svc userService, cache cacheManager, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := struct {
 			SubscriptionID string `json:"subscription_id"`
@@ -186,14 +237,18 @@ func handleProcSubscription(svc dotagiftx.UserService, cache cacheManager) http.
 		}
 
 		go func() {
-			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
-			cache.BulkDel(marketCacheKeyPrefix)
+			if err := cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID)); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate user cache", "error", err)
+			}
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
 		}()
 		respondOK(w, u)
 	}
 }
 
-func handleUserSubscriptionWebhook(svc dotagiftx.UserService) http.HandlerFunc {
+func handleUserSubscriptionWebhook(svc userService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, err := svc.UpdateSubscriptionFromWebhook(r.Context(), r); err != nil {
 			respondError(w, err)
@@ -203,7 +258,7 @@ func handleUserSubscriptionWebhook(svc dotagiftx.UserService) http.HandlerFunc {
 	}
 }
 
-func handleUserManualSubscription(svc dotagiftx.UserService, cache cacheManager, divineKey string) http.HandlerFunc {
+func handleUserManualSubscription(svc userService, cache cacheManager, divineKey string, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := isValidDivineKey(r, divineKey); err != nil {
 			respondError(w, err)
@@ -223,8 +278,12 @@ func handleUserManualSubscription(svc dotagiftx.UserService, cache cacheManager,
 		}
 
 		go func() {
-			cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID))
-			cache.BulkDel(marketCacheKeyPrefix)
+			if err := cache.BulkDel(fmt.Sprintf("users/%s*", u.SteamID)); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate user cache", "error", err)
+			}
+			if err := cache.BulkDel(marketCacheKeyPrefix); err != nil {
+				logger.ErrorContext(r.Context(), "could not invalidate market cache", "error", err)
+			}
 		}()
 		respondOK(w, u)
 	}

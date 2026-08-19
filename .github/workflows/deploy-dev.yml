@@ -8,28 +8,18 @@ on:
     branches: [dev]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+  test-go:
+    uses: ./.github/workflows/test-go.yml
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: "go.mod"
-
-      - uses: golangci/golangci-lint-action@v9
-
-      - name: Compile
-        run: make build
-
-      - name: Test
-        run: make test
+  test-web:
+    uses: ./.github/workflows/test-web.yml
+    with:
+      api_url: https://api.dev.dotagiftx.com
+      cdn_url: https://api.dev.dotagiftx.com/images
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test-go, test-web]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/steaminvorg"
 )

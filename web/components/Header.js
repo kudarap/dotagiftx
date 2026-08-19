@@ -11,7 +11,7 @@ import Box from '@mui/system/Box'
 import MoreIcon from '@mui/icons-material/KeyboardArrowDown'
 import MenuIcon from '@mui/icons-material/Menu'
 import HoverMenu from 'material-ui-popup-state/HoverMenu'
-import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks'
+import { bindHover, bindMenu, usePopupState } from 'material-ui-popup-state/hooks'
 import * as Storage from '@/service/storage'
 import { authRevoke, isDonationGlowExpired, myProfile } from '@/service/api'
 import { clear as destroyLoginSess } from '@/service/auth'
@@ -164,11 +164,12 @@ export default function Header() {
           {/* Desktop nav branding */}
           <Link href="/" disableUnderline className={classes.logo}>
             <Image
-              width={134}
-              height={30}
-              className={classes.brand}
-              src={brandImage}
               alt={APP_NAME}
+              className={classes.brand}
+              height={30}
+              loading="eager"
+              src={brandImage}
+              width={134}
             />
             {/* <img
               width={134}

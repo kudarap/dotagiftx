@@ -25,7 +25,7 @@ func (d *data) isExpired() bool {
 
 func Get(key string) (val any, err error) {
 	path := filename(key)
-	b, err := os.ReadFile(path)
+	b, err := os.ReadFile(path) //nolint:gosec // key is internal cache key, path is within temp dir
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/steam"
 	"github.com/kudarap/dotagiftx/verify"
 )
@@ -17,8 +17,8 @@ type TaskProcessor struct {
 	queue taskQueue
 	rate  time.Duration
 
-	inventorySvc         dotagiftx.InventoryService
-	deliverySvc          dotagiftx.DeliveryService
+	inventorySvc         inventoryService
+	deliverySvc          deliveryService
 	verify               *verify.Source
 	inventoryInvalidator inventoryInvalidator
 
@@ -28,8 +28,8 @@ type TaskProcessor struct {
 func NewTaskProcessor(
 	rate time.Duration,
 	queue taskQueue,
-	inventorySvc dotagiftx.InventoryService,
-	deliverySvc dotagiftx.DeliveryService,
+	inventorySvc inventoryService,
+	deliverySvc deliveryService,
 	source *verify.Source,
 	invInvalidator inventoryInvalidator,
 	logger *slog.Logger,
@@ -183,6 +183,18 @@ type taskQueue interface {
 
 type inventoryInvalidator interface {
 	Invalidate(ctx context.Context, steamID string) error
+}
+
+// deliveryService provides access to delivery service methods used by the task processor.
+type deliveryService interface {
+	// Set saves new Delivery details.
+	Set(context.Context, *dotagiftx.Delivery) error
+}
+
+// inventoryService provides access to inventory service methods used by the task processor.
+type inventoryService interface {
+	// Set saves new Inventory details.
+	Set(context.Context, *dotagiftx.Inventory) error
 }
 
 func marshallTaskPayload(in, out any) error {

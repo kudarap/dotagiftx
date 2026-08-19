@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 func TestVerifyInventory(t *testing.T) {

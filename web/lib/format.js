@@ -54,6 +54,10 @@ export function dateTime(date) {
   return moment(date).format('MMM DD, YYYY - h:mm A')
 }
 
+export function dateTimeFull(date) {
+  return moment(date).format('MMMM DD, YYYY - h:mm A')
+}
+
 export function errorSimple(error) {
   if (!error) {
     return ''

@@ -132,11 +132,15 @@ func Get(steamID string) (*steam.AllInventory, error) {
 // Crawl POST https://job.steaminventory.org/ScheduleInventoryCrawl?profile=76561198088587178
 func Crawl(steamID string) (status string, err error) {
 	url := fmt.Sprintf("https://job.steaminventory.org/ScheduleInventoryCrawl?profile=%s", steamID)
-	res, err := http.Post(url, "", nil)
+	res, err := http.Post(url, "", nil) //nolint:gosec // url is composed from a fixed external endpoint
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
+	defer func() {
+		if err = res.Body.Close(); err != nil {
+			slog.Error("crawl closing body", "error", err)
+		}
+	}()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
@@ -244,11 +248,15 @@ var (
 )
 
 func getRequest(url string, data any) error {
-	res, err := http.Get(url)
+	res, err := http.Get(url) //nolint:gosec // caller-supplied url to a fixed external endpoint
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() {
+		if err = res.Body.Close(); err != nil {
+			slog.Error("get request closing body", "error", err)
+		}
+	}()
 
 	if res.StatusCode == http.StatusNotFound {
 		return errNotFound

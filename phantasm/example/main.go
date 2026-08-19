@@ -26,5 +26,5 @@ func main() {
 	}
 	v := phantasm.Main(args)
 	b, _ := json.MarshalIndent(v, "", "\t")
-	os.Stdout.Write(b)
+	_, _ = os.Stdout.Write(b)
 }

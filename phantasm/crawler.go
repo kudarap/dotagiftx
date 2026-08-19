@@ -6,14 +6,14 @@ package phantasm
 import (
 	"bytes"
 	"context"
-	"crypto/sha1"
+	"crypto/rand"
+	"crypto/sha1" //nolint:gosec // crawler change-detection hash, not security critical
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
-	"math/rand/v2"
 	"net/http"
 	"os"
 	"reflect"
@@ -66,7 +66,7 @@ func Main(args map[string]any) map[string]any {
 	var lastAssetID string
 	var invent *inventory
 	for {
-		time.Sleep(time.Duration(100+rand.IntN(900)) * time.Millisecond)
+		time.Sleep(time.Duration(100+randIntN(900)) * time.Millisecond)
 		parts++
 		log.Println("requesting part...", parts)
 		next, status, err := get(ctx, steamID, limit, lastAssetID)
@@ -139,13 +139,22 @@ type inventory struct {
 	Success     int    `json:"success"`
 }
 
+// randIntN returns a cryptographically random int in [0, n).
+func randIntN(n int) int {
+	b := make([]byte, 1)
+	if _, err := rand.Read(b); err != nil {
+		return 0
+	}
+	return int(b[0]) % n
+}
+
 func (i *inventory) hash(steamID string) (string, error) {
 	var b bytes.Buffer
 	if err := json.NewEncoder(&b).Encode(i); err != nil {
 		return "", err
 	}
 
-	h := sha1.New()
+	h := sha1.New() //nolint:gosec // crawler change-detection hash, not security critical
 	h.Write([]byte(steamID + b.String()))
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
@@ -271,7 +280,7 @@ func sendRequest(req *http.Request, out any) (statusCode int, err error) {
 	if err != nil {
 		return 0, err
 	}
-	res.Body.Close()
+	_ = res.Body.Close()
 	if res.StatusCode > 299 {
 		return res.StatusCode, errors.New(http.StatusText(res.StatusCode))
 	}

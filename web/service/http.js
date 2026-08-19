@@ -1,7 +1,7 @@
 import FormData from 'form-data'
 import querystring from 'querystring'
 import * as Auth from './auth'
-import { authRenew, API_URL } from './api'
+import { API_URL, authRenew } from './api'
 
 export const GET = 'GET'
 export const POST = 'POST'

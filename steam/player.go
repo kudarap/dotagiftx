@@ -27,7 +27,7 @@ type PlayerSummaries struct {
 
 func GetPlayerSummaries(steamId, apiKey string) (*PlayerSummaries, error) {
 	url := fmt.Sprintf("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=%s&steamids=%s", apiKey, steamId)
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec // url is composed from a fixed steam api endpoint
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func GetPlayerSummaries(steamId, apiKey string) (*PlayerSummaries, error) {
 
 func ResolveVanityURL(vanityID, apiKey string) (steamID string, err error) {
 	url := fmt.Sprintf("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=%s&vanityurl=%s", apiKey, vanityID)
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec // url is composed from a fixed steam api endpoint
 	if err != nil {
 		return
 	}

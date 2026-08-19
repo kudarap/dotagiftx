@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/kudarap/dotagiftx/clickhouse"
 	"github.com/kudarap/dotagiftx/file"
+	"github.com/kudarap/dotagiftx/github"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/paypal"
 	"github.com/kudarap/dotagiftx/phantasm"
@@ -25,10 +27,10 @@ type Config struct {
 	DivineKey           string
 	Prod                bool
 	Addr                string
-	AppHost             string
-	ApiHost             string
-	SpanEnabled         bool `envconfig:"SPAN_ENABLED"`
-	StatsCaptureEnabled bool `envconfig:"STATS_CAPTURE_ENABLED"`
+	AppHost             string `envconfig:"APP_HOST"`
+	ApiHost             string `envconfig:"API_HOST"`
+	SpanEnabled         bool   `envconfig:"SPAN_ENABLED"`
+	StatsCaptureEnabled bool   `envconfig:"STATS_CAPTURE_ENABLED"`
 	Upload              file.Config
 	AllowedImageSources []string `envconfig:"ALLOWED_IMAGE_SOURCES"`
 	Rethink             rethink.Config
@@ -39,6 +41,8 @@ type Config struct {
 	Log                 logging.Config
 	Phantasm            phantasm.Config
 	DiscordWebhookURL   string `envconfig:"DISCORD_WEBHOOK_URL"`
+	Github              github.Config
+	AuthSessionTTL      time.Duration
 }
 
 // Load parses .env values into a struct.

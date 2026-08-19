@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
 	"github.com/kudarap/dotagiftx/steaminvorg"
@@ -98,7 +98,7 @@ func getDelivered(limit int) ([]dotagiftx.Market, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	data := struct {
 		Data []dotagiftx.Market

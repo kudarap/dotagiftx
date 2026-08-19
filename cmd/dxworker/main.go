@@ -12,8 +12,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/config"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 	"github.com/kudarap/dotagiftx/logging"
 	"github.com/kudarap/dotagiftx/phantasm"
 	"github.com/kudarap/dotagiftx/redis"
@@ -23,7 +23,6 @@ import (
 	"github.com/kudarap/dotagiftx/verify"
 	"github.com/kudarap/dotagiftx/worker"
 	"github.com/kudarap/dotagiftx/worker/jobs"
-	"github.com/sirupsen/logrus"
 )
 
 const configPrefix = "DG"
@@ -34,32 +33,35 @@ func main() {
 	app := newApp()
 
 	v := dotagiftx.NewVersion(false, tag, commit, built)
-	logger.Println("version:", v.Tag)
-	logger.Println("hash:", v.Commit)
-	logger.Println("built:", v.Built)
+	logger.Info("version", "tag", v.Tag)
+	logger.Info("hash", "commit", v.Commit)
+	logger.Info("built", "built", v.Built)
 
-	logger.Println("loading config...")
+	logger.Info("loading config...")
 	if err := app.loadConfig(); err != nil {
-		logger.Fatalln("could not load config:", err)
+		logger.Error("could not load config", "error", err)
+		os.Exit(1)
 	}
 
-	logger.Println("setting up...")
+	logger.Info("setting up...")
 	if err := app.setup(); err != nil {
-		logger.Fatalln("could not setup:", err)
+		logger.Error("could not setup", "error", err)
+		os.Exit(1)
 	}
 
-	logger.Println("running app...")
+	logger.Info("running app...")
 	if err := app.run(); err != nil {
-		logger.Fatalln("could not run:", err)
+		logger.Error("could not run", "error", err)
+		os.Exit(1)
 	}
-	logger.Println("stopped!")
+	logger.Info("stopped!")
 }
 
 type application struct {
 	config config.Config
 	server *nethttp.Server
 	worker *worker.Worker
-	logger *logrus.Logger
+	logger *slog.Logger
 
 	closerFn func()
 }
@@ -75,7 +77,7 @@ func (app *application) loadConfig() error {
 
 func (app *application) setup() error {
 	// Logs setup.
-	logger.Println("setting up persistent logs...")
+	logger.Info("setting up persistent logs...")
 	logSvc, err := logging.New(app.config.Log)
 	if err != nil {
 		return fmt.Errorf("could not set up logs: %s", err)
@@ -83,7 +85,7 @@ func (app *application) setup() error {
 	app.logger = logSvc
 
 	// Database setup.
-	logSvc.Println("setting up database...")
+	logSvc.Info("setting up database...")
 	redisClient, err := setupRedis(app.config.Redis)
 	if err != nil {
 		return err
@@ -96,28 +98,29 @@ func (app *application) setup() error {
 	rethinkClient.SetTracer(traceSpan)
 
 	// External services setup.
-	logSvc.Println("setting up external services...")
+	logSvc.Info("setting up external services...")
 
 	// Storage inits.
-	logSvc.Println("setting up data stores...")
+	logSvc.Info("setting up data stores...")
 	catalogStg := rethink.NewCatalog(rethinkClient, app.contextLog("storage_catalog"))
 	marketStg := rethink.NewMarket(rethinkClient)
 	deliveryStg := rethink.NewDelivery(rethinkClient)
 	inventoryStg := rethink.NewInventory(rethinkClient)
 	userStg := rethink.NewUser(rethinkClient)
+	sessionStg := rethink.NewSession(rethinkClient)
 	queue := rethink.NewQueue(rethinkClient)
 
 	// Service inits.
 	th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
 	slogger := slog.New(th)
-	logSvc.Println("setting up services...")
+	logSvc.Info("setting up services...")
 	inventorySvc := dotagiftx.NewInventoryService(inventoryStg, marketStg, catalogStg)
 	deliverySvc := dotagiftx.NewDeliveryService(deliveryStg, marketStg)
 	phantasmSvc := phantasm.NewService(app.config.Phantasm, redisClient, slogger)
 	verifySources := []verify.AssetSource{phantasmSvc.InventoryAssetWithProvider}
 	// TODO: Use proper level of fallbacks. For experimental purposes only.
 	if len(app.config.Phantasm.BackupAddrs) != 0 {
-		logSvc.Println("EXPERIMENTAL: phantasm backup source enabled", app.config.Phantasm.BackupAddrs)
+		logSvc.Info("EXPERIMENTAL: phantasm backup source enabled", "backup_addrs", app.config.Phantasm.BackupAddrs)
 		phantasmSvcExp := phantasm.NewService(phantasm.Config{
 			Addrs:                app.config.Phantasm.BackupAddrs,
 			WebhookURL:           app.config.Phantasm.WebhookURL,
@@ -178,27 +181,31 @@ func (app *application) setup() error {
 	))
 	app.worker.AddJob(jobs.NewSweepMarket(marketStg, logging.WithPrefix(logger, "job_sweep_market")))
 	app.worker.AddJob(jobs.NewSweepPhantasmCache(phantasmSvc, logging.WithPrefix(logger, "job_sweep_phantasm")))
+	app.worker.AddJob(jobs.NewSweepSession(sessionStg, logging.WithPrefix(logger, "job_sweep_sessions")))
 
 	// Server setup.
-	logSvc.Println("setting up http server...")
+	logSvc.Info("setting up http server...")
 	app.server = setupServer(app.config.Addr, phantasmSvc)
 
 	app.closerFn = func() {
-		logSvc.Println("closing and stopping app...")
+		logSvc.Info("closing and stopping app...")
 		// Force server shutdown after shutdownTimeout and this was added because of SSE's opened connection.
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 		if err = app.server.Shutdown(ctx); err != nil {
-			logSvc.Println("could not shutdown http server", err)
+			logSvc.Error("could not shutdown http server", "error", err)
 		}
 		if err = app.worker.Stop(); err != nil {
-			logSvc.Fatal("could not stop worker", err)
+			logSvc.Error("could not stop worker", "error", err)
+			os.Exit(1)
 		}
 		if err = redisClient.Close(); err != nil {
-			logSvc.Fatal("could not close redis client", err)
+			logSvc.Error("could not close redis client", "error", err)
+			os.Exit(1)
 		}
 		if err = rethinkClient.Close(); err != nil {
-			logSvc.Fatal("could not close rethink client", err)
+			logSvc.Error("could not close rethink client", "error", err)
+			os.Exit(1)
 		}
 	}
 
@@ -215,9 +222,10 @@ func (app *application) run() error {
 	// Handle error on server start.
 	svlog := app.contextLog("server")
 	go func() {
-		svlog.Infoln("starting server on", app.config.Addr)
+		svlog.Info("starting server on", "addr", app.config.Addr)
 		if err := app.server.ListenAndServe(); err != nil && !errors.Is(err, nethttp.ErrServerClosed) {
-			svlog.Fatalf("could not listen and serve on %s: %v\n", app.config.Addr, err)
+			svlog.Error("could not listen and serve", "addr", app.config.Addr, "error", err)
+			os.Exit(1)
 		}
 	}()
 
@@ -229,7 +237,7 @@ func (app *application) run() error {
 	return nil
 }
 
-func (app *application) contextLog(name string) logging.Logger {
+func (app *application) contextLog(name string) *slog.Logger {
 	return logging.WithPrefix(app.logger, name)
 }
 
@@ -300,7 +308,7 @@ func connRetry(name string, fn func() error) error {
 	// Catches a panic to retry.
 	defer func() {
 		if err := recover(); err != nil {
-			logger.Printf("[%s] conn error: %s. retrying in %s...", name, err, delay)
+			logger.Info("conn error, retrying", "name", name, "error", err, "delay", delay)
 			time.Sleep(delay)
 			_ = connRetry(name, fn)
 		}

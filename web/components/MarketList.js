@@ -25,7 +25,6 @@ import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
-import ContactBuyerDialog from '@/components/ContactBuyerDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
@@ -189,7 +188,8 @@ export default function MarketList({
         onClose={() => handleContactClick(null)}
       />
 
-      <ContactBuyerDialog
+      <ContactDialog
+        variant="buyer"
         market={currentMarket}
         open={tabIndex === 1 && !!currentMarket}
         onClose={() => handleContactClick(null)}

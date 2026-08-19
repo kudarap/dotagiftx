@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/kudarap/dotagiftx"
+	"github.com/kudarap/dotagiftx/dotagiftx"
 )
 
 func (c *Client) CaptureTrackStats(ctx context.Context, track dotagiftx.Track) error {

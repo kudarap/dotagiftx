@@ -7,14 +7,14 @@ import { lightGreen, teal } from '@mui/material/colors'
 import CopyButton from '@/components/CopyButton'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import {
-  MARKET_TYPE_ASK,
-  MARKET_TYPE_BID,
-  MARKET_STATUS_MAP_COLOR,
-  MARKET_STATUS_MAP_TEXT,
   MARKET_BID_STATUS_MAP_TEXT,
   MARKET_STATUS_LIVE,
+  MARKET_STATUS_MAP_COLOR,
+  MARKET_STATUS_MAP_TEXT,
   MARKET_STATUS_RESERVED,
   MARKET_STATUS_SOLD,
+  MARKET_TYPE_ASK,
+  MARKET_TYPE_BID,
 } from '@/constants/market'
 import { VERIFIED_DELIVERY_MAP_ICON, VERIFIED_INVENTORY_MAP_ICON } from '@/constants/verified'
 import { amount, daysFromNow } from '@/lib/format'
@@ -161,7 +161,7 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
                 sx={{ float: 'right' }}
                 variant="inherit"
                 color="textSecondary"
-                component="pre">
+                component="span">
                 {market.id.split('-')[0]}
                 <CopyButton
                   className={classes.copyButton}
@@ -173,7 +173,7 @@ export default function MyMarketActivity({ datatable, loading, error, onSearchIn
             </Typography>
 
             <Typography
-              component="pre"
+              component="div"
               color="textSecondary"
               variant="caption"
               style={{ whiteSpace: 'pre-wrap', display: 'flow-root' }}>

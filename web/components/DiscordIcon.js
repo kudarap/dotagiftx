@@ -1,7 +1,7 @@
 import React from 'react'
 import SvgIcon from '@mui/material/SvgIcon'
 
-export default function SteamIcon(props) {
+export default function DiscordIcon(props) {
   return (
     <SvgIcon {...props}>
       <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240">

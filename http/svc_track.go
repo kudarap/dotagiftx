@@ -1,21 +1,30 @@
 package http
 
 import (
+	"context"
+	"log/slog"
 	"net/http"
 
-	"github.com/kudarap/dotagiftx"
 	"github.com/kudarap/dotagiftx/assets"
-	"github.com/sirupsen/logrus"
 )
 
 const pixelImage = "image/pixel.gif"
 
-func handleTracker(svc dotagiftx.TrackService, logger *logrus.Logger) http.HandlerFunc {
+// trackService provides access to track service methods used by http handlers.
+type trackService interface {
+	// CreateFromRequest saves new track from http request. Primarily used on client side.
+	CreateFromRequest(ctx context.Context, r *http.Request) error
+
+	// CreateSearchKeyword saves new keyword tracking data.
+	CreateSearchKeyword(ctx context.Context, r *http.Request, keyword string) error
+}
+
+func handleTracker(svc trackService, logger *slog.Logger) http.HandlerFunc {
 	image, _ := assets.Content.ReadFile(pixelImage)
 	return func(w http.ResponseWriter, r *http.Request) {
 		go func(r *http.Request) {
-			if err := svc.CreateFromRequest(r); err != nil {
-				logger.Errorf("tracker error: %s", err)
+			if err := svc.CreateFromRequest(context.Background(), r); err != nil {
+				logger.ErrorContext(r.Context(), "tracker error", "error", err)
 			}
 		}(r)
 
@@ -31,6 +40,6 @@ func handleTracker(svc dotagiftx.TrackService, logger *logrus.Logger) http.Handl
 
 		// output image
 		w.Header().Set("Content-Type", "image/gif")
-		w.Write(image)
+		_, _ = w.Write(image)
 	}
 }

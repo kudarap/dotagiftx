@@ -96,40 +96,28 @@ type (
 		UpdatedAt        *time.Time     `json:"updated_at"         db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
-	// DeliveryService provides access to Delivery service.
-	DeliveryService interface {
-		// Deliveries return a list of deliveries.
-		Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, error)
-
-		// Delivery returns Delivery details by id.
-		Delivery(id string) (*Delivery, error)
-
-		// Set saves new Delivery details.
-		Set(context.Context, *Delivery) error
-	}
-
-	// DeliveryStorage defines operation for Delivery records.
-	DeliveryStorage interface {
+	// deliveryRepository defines operation for Delivery records.
+	deliveryRepository interface {
 		// Find returns a list of deliveries from data store.
-		Find(opts FindOpts) ([]Delivery, error)
+		Find(ctx context.Context, opts FindOpts) ([]Delivery, error)
 
 		// Count returns number of deliveries from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns Delivery details by id from data store.
-		Get(id string) (*Delivery, error)
+		Get(ctx context.Context, id string) (*Delivery, error)
 
 		// GetByMarketID returns Delivery details by market id from data store.
-		GetByMarketID(marketID string) (*Delivery, error)
+		GetByMarketID(ctx context.Context, marketID string) (*Delivery, error)
 
 		// Create persists a new Delivery to data store.
-		Create(*Delivery) error
+		Create(context.Context, *Delivery) error
 
 		// Update save changes of Delivery to data store.
-		Update(*Delivery) error
+		Update(context.Context, *Delivery) error
 
 		// ToVerify returns a list of deliveries to process from data store.
-		ToVerify(opts FindOpts) ([]Delivery, error)
+		ToVerify(ctx context.Context, opts FindOpts) ([]Delivery, error)
 	}
 
 	// InventoryStatus represents inventory status.
@@ -149,37 +137,25 @@ type (
 		UpdatedAt   *time.Time      `json:"updated_at"   db:"updated_at,omitempty,indexed,omitempty"`
 	}
 
-	// InventoryService provides access to Inventory service.
-	InventoryService interface {
-		// Inventories returns a list of deliveries.
-		Inventories(opts FindOpts) ([]Inventory, *FindMetadata, error)
-
-		// Inventory returns Inventory details by id.
-		Inventory(id string) (*Inventory, error)
-
-		// Set saves new Inventory details.
-		Set(context.Context, *Inventory) error
-	}
-
-	// InventoryStorage defines operation for Inventory records.
-	InventoryStorage interface {
+	// inventoryRepository defines operation for Inventory records.
+	inventoryRepository interface {
 		// Find returns a list of inventories from data store.
-		Find(opts FindOpts) ([]Inventory, error)
+		Find(ctx context.Context, opts FindOpts) ([]Inventory, error)
 
 		// Count returns number of inventories from data store.
-		Count(FindOpts) (int, error)
+		Count(ctx context.Context, opts FindOpts) (int, error)
 
 		// Get returns an Inventory details by id from data store.
-		Get(id string) (*Inventory, error)
+		Get(ctx context.Context, id string) (*Inventory, error)
 
 		// GetByMarketID returns Inventory details by market id from data store.
-		GetByMarketID(marketID string) (*Inventory, error)
+		GetByMarketID(ctx context.Context, marketID string) (*Inventory, error)
 
 		// Create persists a new Inventory to data store.
-		Create(*Inventory) error
+		Create(context.Context, *Inventory) error
 
 		// Update save changes of Inventory to data store.
-		Update(*Inventory) error
+		Update(context.Context, *Inventory) error
 	}
 )
 
@@ -298,17 +274,17 @@ func (s InventoryStatus) String() string {
 }
 
 // NewDeliveryService returns a new delivery service.
-func NewDeliveryService(rs DeliveryStorage, ms MarketStorage) DeliveryService {
-	return &deliveryService{rs, ms}
+func NewDeliveryService(rs deliveryRepository, ms marketRepository) *DeliveryService {
+	return &DeliveryService{rs, ms}
 }
 
-type deliveryService struct {
-	deliveryStg DeliveryStorage
-	marketStg   MarketStorage
+type DeliveryService struct {
+	deliveryRepo deliveryRepository
+	marketRepo   marketRepository
 }
 
-func (s *deliveryService) Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, error) {
-	res, err := s.deliveryStg.Find(opts)
+func (s *DeliveryService) Deliveries(ctx context.Context, opts FindOpts) ([]Delivery, *FindMetadata, error) {
+	res, err := s.deliveryRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -318,7 +294,7 @@ func (s *deliveryService) Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, 
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.deliveryStg.Count(opts)
+	tc, err := s.deliveryRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -329,8 +305,8 @@ func (s *deliveryService) Deliveries(opts FindOpts) ([]Delivery, *FindMetadata, 
 	}, nil
 }
 
-func (s *deliveryService) Delivery(id string) (*Delivery, error) {
-	inv, err := s.deliveryStg.Get(id)
+func (s *DeliveryService) Delivery(ctx context.Context, id string) (*Delivery, error) {
+	inv, err := s.deliveryRepo.Get(ctx, id)
 	if err != nil && !errors.Is(err, DeliveryErrNotFound) {
 		return nil, err
 	}
@@ -339,20 +315,20 @@ func (s *deliveryService) Delivery(id string) (*Delivery, error) {
 	}
 
 	// If we can't find using id, let's try market id
-	return s.deliveryStg.GetByMarketID(id)
+	return s.deliveryRepo.GetByMarketID(ctx, id)
 }
 
-func (s *deliveryService) DeliveryByMarketID(marketID string) (*Delivery, error) {
-	return s.deliveryStg.GetByMarketID(marketID)
+func (s *DeliveryService) DeliveryByMarketID(ctx context.Context, marketID string) (*Delivery, error) {
+	return s.deliveryRepo.GetByMarketID(ctx, marketID)
 }
 
-func (s *deliveryService) Set(_ context.Context, del *Delivery) error {
+func (s *DeliveryService) Set(ctx context.Context, del *Delivery) error {
 	if err := del.CheckCreate(); err != nil {
 		return NewXError(DeliveryErrRequiredFields, err)
 	}
 
 	defer func() {
-		if _, err := s.marketStg.Index(del.MarketID); err != nil {
+		if _, err := s.marketRepo.Index(ctx, del.MarketID); err != nil {
 			log.Printf("could not index market %s: %s", del.MarketID, err)
 		}
 	}()
@@ -361,37 +337,37 @@ func (s *deliveryService) Set(_ context.Context, del *Delivery) error {
 	del = del.IsGiftOpened()
 
 	// Update market delivery status.
-	if err := s.marketStg.BaseUpdate(&Market{
+	if err := s.marketRepo.BaseUpdate(ctx, &Market{
 		ID:             del.MarketID,
 		DeliveryStatus: del.Status,
 	}); err != nil {
 		return err
 	}
 
-	cur, _ := s.DeliveryByMarketID(del.MarketID)
+	cur, _ := s.DeliveryByMarketID(ctx, del.MarketID)
 	if cur != nil {
 		del.ID = cur.ID
 		del.Retries = cur.Retries + 1
 		del = del.AddAssets(cur.Assets)
-		return s.deliveryStg.Update(del)
+		return s.deliveryRepo.Update(ctx, del)
 	}
 
-	return s.deliveryStg.Create(del)
+	return s.deliveryRepo.Create(ctx, del)
 }
 
 // NewInventoryService returns new inventory service.
-func NewInventoryService(rs InventoryStorage, ms MarketStorage, cs CatalogStorage) InventoryService {
-	return &inventoryService{rs, ms, cs}
+func NewInventoryService(rs inventoryRepository, ms marketRepository, cs catalogRepository) *InventoryService {
+	return &InventoryService{rs, ms, cs}
 }
 
-type inventoryService struct {
-	inventoryStg InventoryStorage
-	marketStg    MarketStorage
-	catalogStg   CatalogStorage
+type InventoryService struct {
+	inventoryRepo inventoryRepository
+	marketRepo    marketRepository
+	catalogRepo   catalogRepository
 }
 
-func (s *inventoryService) Inventories(opts FindOpts) ([]Inventory, *FindMetadata, error) {
-	res, err := s.inventoryStg.Find(opts)
+func (s *InventoryService) Inventories(ctx context.Context, opts FindOpts) ([]Inventory, *FindMetadata, error) {
+	res, err := s.inventoryRepo.Find(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -401,7 +377,7 @@ func (s *inventoryService) Inventories(opts FindOpts) ([]Inventory, *FindMetadat
 	}
 
 	// Get a result and total count for metadata.
-	tc, err := s.inventoryStg.Count(opts)
+	tc, err := s.inventoryRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -412,8 +388,8 @@ func (s *inventoryService) Inventories(opts FindOpts) ([]Inventory, *FindMetadat
 	}, nil
 }
 
-func (s *inventoryService) Inventory(id string) (*Inventory, error) {
-	inv, err := s.inventoryStg.Get(id)
+func (s *InventoryService) Inventory(ctx context.Context, id string) (*Inventory, error) {
+	inv, err := s.inventoryRepo.Get(ctx, id)
 	if err != nil && !errors.Is(err, InventoryErrNotFound) {
 		return nil, err
 	}
@@ -422,30 +398,30 @@ func (s *inventoryService) Inventory(id string) (*Inventory, error) {
 	}
 
 	// If we can't find using id, let's try market id
-	return s.inventoryStg.GetByMarketID(id)
+	return s.inventoryRepo.GetByMarketID(ctx, id)
 }
 
-func (s *inventoryService) InventoryByMarketID(marketID string) (*Inventory, error) {
-	return s.inventoryStg.GetByMarketID(marketID)
+func (s *InventoryService) InventoryByMarketID(ctx context.Context, marketID string) (*Inventory, error) {
+	return s.inventoryRepo.GetByMarketID(ctx, marketID)
 }
 
-func (s *inventoryService) Set(_ context.Context, inv *Inventory) error {
+func (s *InventoryService) Set(ctx context.Context, inv *Inventory) error {
 	if err := inv.CheckCreate(); err != nil {
 		return NewXError(InventoryErrRequiredFields, err)
 	}
 
 	defer func() {
-		mkt, err := s.marketStg.Index(inv.MarketID)
+		mkt, err := s.marketRepo.Index(ctx, inv.MarketID)
 		if err != nil {
 			log.Printf("could not index market %s: %s", inv.MarketID, err)
 		}
-		if _, err = s.catalogStg.Index(mkt.ItemID); err != nil {
+		if _, err = s.catalogRepo.Index(ctx, mkt.ItemID); err != nil {
 			log.Printf("could not index catalog %s: %s", inv.MarketID, err)
 		}
 	}()
 
 	// Update market Inventory status.
-	if err := s.marketStg.BaseUpdate(&Market{
+	if err := s.marketRepo.BaseUpdate(ctx, &Market{
 		ID:              inv.MarketID,
 		InventoryStatus: inv.Status,
 	}); err != nil {
@@ -454,12 +430,12 @@ func (s *inventoryService) Set(_ context.Context, inv *Inventory) error {
 
 	// Process bundle count.
 	inv.BundleCount = inv.CountBundles()
-	cur, _ := s.InventoryByMarketID(inv.MarketID)
+	cur, _ := s.InventoryByMarketID(ctx, inv.MarketID)
 	if cur != nil {
 		inv.ID = cur.ID
 		inv.Retries = cur.Retries + 1
-		return s.inventoryStg.Update(inv)
+		return s.inventoryRepo.Update(ctx, inv)
 	}
 
-	return s.inventoryStg.Create(inv)
+	return s.inventoryRepo.Create(ctx, inv)
 }
