@@ -9,7 +9,7 @@ Marketplace for giftable Dota 2 items
 ### Requirements
 
 - Go 1.26 https://go.dev/dl
-- Docker 29.x https://docs.docker.com/get-docker
+- Podman 6.x https://podman.io/
 
 ### Credentials
 

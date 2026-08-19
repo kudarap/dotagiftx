@@ -27,6 +27,28 @@ const releaseItem = (releaseDate, tag, label, contents) => ({
 })
 
 const releases = [
+  releaseItem(
+    'Aug 20, 2026',
+    'v0.26.0',
+    'Github Issue tracking, Web e2e testing, and Housekeeping',
+    [
+      'added github Issuer on feedback and reports (#279)',
+      'added github issue creation for feedback and bugs (#261)',
+      'added playwright e2e tests (#265)',
+      'added multi device session support and refresh token expiry (#263)',
+      'updated component styling and fix formatting in CatalogList and Header (#277)',
+      'updated privacy page with removal of google analytics',
+      'updated middleman 2026 (#255)',
+      'upgraded nextjs v16.3.0',
+      'fixed JSX components and update Image dimensions (#252)',
+      'fixed about page icons',
+      'fixed html hierarchy hydration error',
+      'refactored backend house keeping (#259)',
+      'refactored package root to dotagiftx package (#260)',
+      'refactored contact dialog enhancement (#274)',
+      'deprecated docker for podman and postman for hoppscotch (#273)',
+    ]
+  ),
   releaseItem('Aug 5, 2026', 'v0.25.4', 'Fixed PayPal and improved Phantasm crawler success rate', [
     'added highlights and label for steam id #245',
     'fixed subscription checker tool #243',
