@@ -111,8 +111,18 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
         )}
 
         <Typography variant="body2" component="p" color="textSecondary">
-          <Typography component="span" variant="caption">
-            {user.steam_id}
+          <Typography
+            component="span"
+            variant="caption"
+            sx={{
+              color: 'secondary.main',
+              border: '1px solid',
+              borderColor: 'secondary.main',
+              borderRadius: 1,
+              px: 0.75,
+              py: 0.25,
+            }}>
+            SteamID: {user.steam_id}
           </Typography>{' '}
           &middot; Joined {moment(user.created_at).fromNow()}{' '}
           {moment().diff(moment(user.created_at), 'days') <= USER_AGE_CAUTION && (
