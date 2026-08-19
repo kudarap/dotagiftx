@@ -136,8 +136,9 @@ export default function About() {
                 {issueUrl && (
                   <>
                     {' '}
+                    Track it here:{' '}
                     <Link href={issueUrl} target="_blank">
-                      You can track your feedback/issue here.
+                      {issueUrl}
                     </Link>
                   </>
                 )}
