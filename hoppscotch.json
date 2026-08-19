@@ -1,0 +1,1460 @@
+{
+  "v": 12,
+  "name": "dotagiftx v0.26.0",
+  "folders": [
+    {
+      "v": 12,
+      "name": "private",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "my profile details",
+          "method": "GET",
+          "endpoint": "<<host>>/my/profile",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "multipart/form-data",
+            "body": []
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "image upload",
+          "method": "POST",
+          "endpoint": "<<host>>/images",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "multipart/form-data",
+            "body": [
+              {
+                "key": "file",
+                "active": true,
+                "isFile": false,
+                "value": ""
+              }
+            ]
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "item create",
+          "method": "POST",
+          "endpoint": "<<host>>/items",
+          "params": [
+            {
+              "key": "key",
+              "value": "<<item_key>>",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n\t\"name\": \"Gothic Whisper\",\n\t\"hero\": \"Phantom Assassin\",\n\t\"origin\": \"Collector's Cache 2019\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "my market list",
+          "method": "GET",
+          "endpoint": "<<host>>/my/markets",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "multipart/form-data",
+            "body": []
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "my market details",
+          "method": "GET",
+          "endpoint": "<<host>>/my/markets/2fbe75ee-6518-4d8f-a319-1f33796594ad",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "multipart/form-data",
+            "body": []
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "my market ask",
+          "method": "POST",
+          "endpoint": "<<host>>/my/markets",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n\t\"item_id\": \"visions-of-the-lifted-veil-phantom-assassin\",\n\t\"price\": 1\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "my market bid",
+          "method": "POST",
+          "endpoint": "<<host>>/my/markets",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n\t\"type\": 20,\n    \"item_id\": \"12062704-c99b-4583-864d-b037395b4f64\",\n\t\"price\": 9.99\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "my market update",
+          "method": "PATCH",
+          "endpoint": "<<host>>/my/markets/2fbe75ee-6518-4d8f-a319-1f33796594ad",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n\t\"status\": 300,\n\t\"notes\": \"test\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "process subscription",
+          "method": "POST",
+          "endpoint": "<<host>>/my/process_subscription",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n    \"subscription_id\": \"I-BSC0F6ALD5WW\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "manual subscription",
+          "method": "POST",
+          "endpoint": "<<host>>/subscription",
+          "params": [
+            {
+              "key": "key",
+              "value": "<<item_key>>",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n    \"user_id\": \"x\",\n    \"plan\": \"trader\",\n    \"cycles\": 1\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "item import",
+          "method": "POST",
+          "endpoint": "<<host>>/items_import",
+          "params": [
+            {
+              "key": "key",
+              "value": "<<item_key>>",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "multipart/form-data",
+            "body": [
+              {
+                "key": "file",
+                "active": true,
+                "isFile": false,
+                "value": ""
+              }
+            ]
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "submit survey",
+          "method": "POST",
+          "endpoint": "<<host>>/reports",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n\t\"type\": 20,\n    \"label\": \"community-whats-next\",\n    \"text\": \"what ever you want\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null,
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": 12,
+      "name": "admin",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "name": "ban hammer",
+          "method": "POST",
+          "endpoint": "<<host>>/hammer/ban",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"steam_id\": \"76561198107267317\",\n  \"reason\": \"Scam multiple users here; Victim: irbau( discord scammer watch channel); Hammer by Justin; Reported in #scammer-watch under victim dc: irbau; https://imgur.com/hCC2oam\"\n}\n"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "suspend account",
+          "method": "POST",
+          "endpoint": "<<host>>/hammer/suspend",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n\t\"steam_id\": \"76561198133520610\",\n    \"reason\": \"Took 7$ payment and ghosted without answering; Victim: fdesutv; Hammer by Fiducia; Reported in #scammer-watch under victim dc: fdesutv\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "name": "lift ban hammer",
+          "method": "POST",
+          "endpoint": "<<host>>/hammer/lift",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<jwt>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n\t\"steam_id\": \"76561198453345664\",\n    \"restore_listings\": true\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null,
+      "preRequestScript": "",
+      "testScript": ""
+    }
+  ],
+  "requests": [
+    {
+      "v": "17",
+      "name": "auth steam redirect",
+      "method": "GET",
+      "endpoint": "<<host>>/auth/steam",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "auth steam callback",
+      "method": "GET",
+      "endpoint": "<<host>>/auth/steam",
+      "params": [
+        {
+          "key": "oauth_token",
+          "value": "geURoAAAAAAA6roiAAABcWXULJo",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "oauth_verifier",
+          "value": "SDjr1rS5PVO1bmiTbyldYIacEY4Y2gLd",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": [
+          {
+            "key": "file",
+            "active": true,
+            "isFile": false,
+            "value": ""
+          }
+        ]
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "auth renew",
+      "method": "POST",
+      "endpoint": "<<host>>/auth/renew",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "pw.env.set(\"jwt\", pw.response.body.token);",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"refresh_token\": \"<<refresh_token>>\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "auth revoke refresh token",
+      "method": "POST",
+      "endpoint": "<<host>>/auth/revoke",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"refresh_token\": \"<<refresh_token>>\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "user details",
+      "method": "GET",
+      "endpoint": "<<host>>/users/76561198088587178",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "user vanity details",
+      "method": "GET",
+      "endpoint": "<<host>>/vanity/76561198088587178",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "items list",
+      "method": "GET",
+      "endpoint": "<<host>>/items",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "image view",
+      "method": "GET",
+      "endpoint": "<<host>>/images/6ee6f981904a63cda296b68f6245fbd7f746e377.png",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "item details",
+      "method": "GET",
+      "endpoint": "<<host>>/items/gothic-whisper-phantom-assassin",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "market list",
+      "method": "GET",
+      "endpoint": "<<host>>/markets",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "user_id",
+          "value": "f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "created_at:desc",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "market buy orders",
+      "method": "GET",
+      "endpoint": "<<host>>/markets",
+      "params": [
+        {
+          "key": "type",
+          "value": "20",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "status",
+          "value": "200",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "market details",
+      "method": "GET",
+      "endpoint": "<<host>>/markets/e8d05ae1-a049-4e4b-adef-433e12db364b",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "catalogs list",
+      "method": "GET",
+      "endpoint": "<<host>>/catalogs",
+      "params": [
+        {
+          "key": "q",
+          "value": "Prominence",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "created_at:desc",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "limit",
+          "value": "500",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "popular",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "catalogs list popular",
+      "method": "GET",
+      "endpoint": "<<host>>/catalogs",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "created_at:desc",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "limit",
+          "value": "0",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "nocache",
+          "value": "",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "popular",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "catalogs list recent",
+      "method": "GET",
+      "endpoint": "<<host>>/catalogs",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "created_at:desc",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "limit",
+          "value": "0",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "recent",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "catalogs details",
+      "method": "GET",
+      "endpoint": "<<host>>/catalogs/vespidun-hunter-killer-gyrocopter",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "sort",
+          "value": "created_at:desc",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "catalogs trending top 10",
+      "method": "GET",
+      "endpoint": "<<host>>/catalogs_trend",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "api info",
+      "method": "GET",
+      "endpoint": "<<host>>",
+      "params": [
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "track item views",
+      "method": "GET",
+      "endpoint": "<<host>>/t",
+      "params": [
+        {
+          "key": "t",
+          "value": "v",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "i",
+          "value": "20bab823-2796-4948-879e-518783bb8cff",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "q",
+          "value": "phantom",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "stats top origins",
+      "method": "GET",
+      "endpoint": "<<host>>/stats/top_origins",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "stats top heroes",
+      "method": "GET",
+      "endpoint": "<<host>>/stats/top_heroes",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "stats top keywords",
+      "method": "GET",
+      "endpoint": "<<host>>/stats/top_keywords",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "stats market summary",
+      "method": "GET",
+      "endpoint": "<<host>>/stats/market_summary",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "user_id",
+          "value": "f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "partner_steam_id",
+          "value": "f0ee7f4e-aae2-45a2-a599-3dd5f58bbc17",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "graph market sales",
+      "method": "GET",
+      "endpoint": "<<host>>/graph/market_sales",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        },
+        {
+          "key": "item_id",
+          "value": "68e8ab94-4f71-4be8-bcb5-d8016afd38e1",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "reports list",
+      "method": "GET",
+      "endpoint": "<<host>>/reports",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "reports details",
+      "method": "GET",
+      "endpoint": "<<host>>/reports/someid",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "flagged users",
+      "method": "GET",
+      "endpoint": "<<host>>/blacklists",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "webhook paypal",
+      "method": "POST",
+      "endpoint": "<<host>>/webhook/paypal",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": ""
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "webhook phantasm",
+      "method": "POST",
+      "endpoint": "<<host>>/webhook/phantasm/76561198088587178",
+      "params": [
+        {
+          "key": "nocache",
+          "value": "1",
+          "active": false,
+          "description": ""
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Require-Whisk-Auth",
+          "value": "<<phantasm_secret>>",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"assets\": [],\n    \"descriptions\": [],\n    \"total_inventory_count\": 1338,\n    \"last_assetid\": \"\",\n    \"more_items\": 0,\n    \"rwgrsn\": 0,\n    \"success\": 0\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "crawler phantasm",
+      "method": "POST",
+      "endpoint": "<<host>>/crawler/phantasm",
+      "params": [
+        {
+          "key": "steam_id",
+          "value": "76561199228687377",
+          "active": true,
+          "description": ""
+        },
+        {
+          "key": "precheck",
+          "value": "",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Require-Whisk-Auth",
+          "value": "<<phantasm_secret>>",
+          "active": true,
+          "description": ""
+        }
+      ],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": ""
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "treasures list",
+      "method": "GET",
+      "endpoint": "<<host>>/treasures",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "treasures detail",
+      "method": "GET",
+      "endpoint": "<<host>>/treasures/cosmic-2025-heroes-hoard",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "heroes list",
+      "method": "GET",
+      "endpoint": "<<host>>/heroes",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    },
+    {
+      "v": "17",
+      "name": "heroes detail",
+      "method": "GET",
+      "endpoint": "<<host>>/heroes/abaddon",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "",
+      "testScript": "",
+      "auth": {
+        "authType": "none",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "multipart/form-data",
+        "body": []
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": null
+    }
+  ],
+  "auth": {
+    "authType": "inherit",
+    "authActive": true
+  },
+  "headers": [],
+  "variables": [],
+  "description": null,
+  "preRequestScript": "",
+  "testScript": ""
+}

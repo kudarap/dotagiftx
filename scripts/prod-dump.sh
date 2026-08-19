@@ -28,10 +28,10 @@ mkdir dump
 mv $file_name/$target_db dump/
 
 # import to db
-docker run -it --rm \
+podman run -it --rm \
   -v "$PWD/dump":/dump \
   --link dotagiftx-rethinkdb \
-  kudarap/rethinkdb:2.4 \
+  docker.io/kudarap/rethinkdb:2.4 \
   rethinkdb import -d /dump -c dotagiftx-rethinkdb --force
 
 # clean up
