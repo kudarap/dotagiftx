@@ -25,7 +25,6 @@ import Button from '@/components/Button'
 import BuyButton from '@/components/BuyButton'
 import TableHeadCell from '@/components/TableHeadCell'
 import ContactDialog from '@/components/ContactDialog'
-import ContactBuyerDialog from '@/components/ContactBuyerDialog'
 import { MARKET_STATUS_REMOVED } from '@/constants/market'
 import { retinaSrcSet } from '@/components/ItemImage'
 import AppContext from '@/components/AppContext'
@@ -189,7 +188,8 @@ export default function MarketList({
         onClose={() => handleContactClick(null)}
       />
 
-      <ContactBuyerDialog
+      <ContactDialog
+        variant="buyer"
         market={currentMarket}
         open={tabIndex === 1 && !!currentMarket}
         onClose={() => handleContactClick(null)}
@@ -358,7 +358,8 @@ function baseTable(Component) {
                   <Link
                     disableUnderline
                     disabled={!market.user.id}
-                    href={`/profiles/${market.user.steam_id}`}>
+                    href={`/profiles/${market.user.steam_id}`}
+                  >
                     <Avatar
                       badge={getUserBadgeFromBoons(market.user.boons)}
                       className={classes.avatar}
@@ -389,7 +390,8 @@ function baseTable(Component) {
                           <Typography
                             variant="caption"
                             color="textSecondary"
-                            style={{ zIndex: 100 }}>
+                            style={{ zIndex: 100 }}
+                          >
                             {market.id.split('-')[0]}
                           </Typography>
                         </Tooltip>
@@ -410,7 +412,8 @@ function baseTable(Component) {
                         aria-owns={popoverElementID}
                         aria-haspopup="true"
                         onMouseLeave={debouncePopoverClose}
-                        onMouseEnter={handlePopoverOpen}>
+                        onMouseEnter={handlePopoverOpen}
+                      >
                         {market.resell
                           ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                           : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
@@ -495,12 +498,14 @@ const OfferListMini = baseTable(({ market, currentUserID, onRemove, onContact })
   <TableCell
     align="right"
     style={{ cursor: 'pointer' }}
-    onClick={currentUserID === market.user.id ? onRemove : onContact}>
+    onClick={currentUserID === market.user.id ? onRemove : onContact}
+  >
     <Typography variant="body2">{amount(market.price, market.currency)}</Typography>
     <Typography
       variant="caption"
       color="textSecondary"
-      style={{ color: currentUserID === market.user.id ? 'tomato' : '' }}>
+      style={{ color: currentUserID === market.user.id ? 'tomato' : '' }}
+    >
       <u>{currentUserID === market.user.id ? 'Remove' : 'View'}</u>
     </Typography>
   </TableCell>
@@ -525,7 +530,8 @@ const OrderListDesktop = baseTable(({ market, currentUserID, onRemove, onContact
           // Check for redacted user and disable them for opening the dialog.
           disabled={!market.user.id}
           variant="contained"
-          onClick={onContact}>
+          onClick={onContact}
+        >
           {market.user.id ? `Contact Buyer` : `Sign in to view`}
         </SellButton>
       )}
@@ -550,7 +556,8 @@ const OrderListMini = baseTable(({ market, currentUserID, onRemove, onContact })
 
       onContact()
     }}
-    style={{ cursor: 'pointer' }}>
+    style={{ cursor: 'pointer' }}
+  >
     <Typography variant="body2" style={{ color: bidColor.A200 }}>
       {amount(market.price, market.currency)}
     </Typography>
