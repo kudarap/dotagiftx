@@ -89,8 +89,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                   <Link
                     className={classes.link}
                     href={`/${item.slug}${itemURLSuffix}`}
-                    disableUnderline
-                  >
+                    disableUnderline>
                     <ItemImage
                       className={classes.image}
                       image={item.image}

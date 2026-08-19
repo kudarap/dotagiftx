@@ -39,8 +39,7 @@ export default function ContactDialog(props) {
         open={open}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+        aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">
           {isSeller ? 'Contact Seller' : 'Contact Buyer'}
           <DialogCloseButton onClick={onClose} />
@@ -66,8 +65,7 @@ export default function ContactDialog(props) {
               component="ul"
               variant="body2"
               color="textSecondary"
-              style={{ lineHeight: 1.7 }}
-            >
+              style={{ lineHeight: 1.7 }}>
               {isSeller ? (
                 <>
                   <li>
@@ -76,8 +74,7 @@ export default function ContactDialog(props) {
                       style={{ textDecoration: 'underline' }}
                       href={dota2Inventory}
                       target="_blank"
-                      rel="noreferrer noopener"
-                    >
+                      rel="noreferrer noopener">
                       inventory
                     </Link>
                     .
@@ -110,8 +107,7 @@ export default function ContactDialog(props) {
                     seller&apos;s reputation through&nbsp;
                     <Link
                       style={{ textDecoration: 'underline' }}
-                      href={`/profiles/${market.user.steam_id}/delivered`}
-                    >
+                      href={`/profiles/${market.user.steam_id}/delivered`}>
                       transaction history
                     </Link>
                     .
@@ -155,8 +151,7 @@ export default function ContactDialog(props) {
                 disableUnderline
                 target="_blank"
                 rel="noreferrer noopener"
-                href={steamProfileURL}
-              >
+                href={steamProfileURL}>
                 Steam Profile
               </Button>
             </>
@@ -171,8 +166,7 @@ export default function ContactDialog(props) {
                 target="_blank"
                 rel="noreferrer noopener"
                 disableUnderline
-                href={steamProfileURL}
-              >
+                href={steamProfileURL}>
                 Steam Profile
               </BidButton>
             </>
