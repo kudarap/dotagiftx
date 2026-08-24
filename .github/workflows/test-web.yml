@@ -19,6 +19,7 @@ jobs:
     env:
       NEXT_PUBLIC_API_URL: ${{ inputs.api_url }}
       NEXT_PUBLIC_CDN_URL: ${{ inputs.cdn_url }}
+    timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -33,15 +34,27 @@ jobs:
           bun run lint
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        id: playwright-cache
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('web/bun.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
-      - name: Install Playwright Browsers
-        working-directory: web
-        run: bunx playwright install --with-deps
+      - name: Install Playwright browsers and system dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Install OS dependencies for browsers
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
 
       - name: Run Playwright tests
         working-directory: web
         run: bun test:e2e
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
