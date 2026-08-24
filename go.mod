@@ -1,12 +1,12 @@
 module github.com/kudarap/dotagiftx
 
-go 1.26
+go 1.27
 
 require (
 	dario.cat/mergo v1.0.2
 	github.com/ClickHouse/clickhouse-go/v2 v2.48.0
 	github.com/fatih/structs v1.1.0
-	github.com/go-chi/chi/v5 v5.3.1
+	github.com/go-chi/chi/v5 v5.3.2
 	github.com/go-chi/httplog/v3 v3.4.0
 	github.com/go-playground/validator/v10 v10.30.3
 	github.com/golang-jwt/jwt/v5 v5.3.1
@@ -55,7 +55,6 @@ require (
 	go.opentelemetry.io/otel v1.45.0 // indirect
 	go.opentelemetry.io/otel/trace v1.45.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/mod v0.37.0 // indirect
 	golang.org/x/net v0.57.0 // indirect

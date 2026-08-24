@@ -8,7 +8,7 @@ Marketplace for giftable Dota 2 items
 
 ### Requirements
 
-- Go 1.26 https://go.dev/dl
+- Go 1.27 https://go.dev/dl
 - Podman 6.x https://podman.io/
 
 ### Credentials
