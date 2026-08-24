@@ -14,9 +14,9 @@ test.describe('Accessibility Tests', () => {
     await commonPageComponent.closeWelcomeModalIfPresent()
   })
 
-  test('Verify Dota GiftX pages are loaded and accessible', async () => {
-    await test.step('Verify Dota GiftX Home Page is loaded and accessible', async () => {
-      await pom.dotaGiftXMainPage.clickAndVerifyDotaGiftXMainPageLoad()
+  test('Verify DotagiftX pages are loaded and accessible', async () => {
+    await test.step('Verify DotagiftX Home Page is loaded and accessible', async () => {
+      await pom.indexPage.clickAndVerifyDotaGiftXMainPageLoad()
     })
 
     await test.step('Verify Treasures Page is loaded and accessible', async () => {
@@ -27,8 +27,8 @@ test.describe('Accessibility Tests', () => {
       await pom.heroesPage.clickAndVerifyHeroesPage()
     })
 
-    await test.step('Verify Dota GiftX Plus Page is loaded and accessible', async () => {
-      await pom.dotaGiftXPlus.clickAndVerifyDotaGiftxPlusPage()
+    await test.step('Verify Dota DotagiftX Plus Page is loaded and accessible', async () => {
+      await pom.plusPage.clickAndVerifyDotaGiftxPlusPage()
     })
 
     await test.step('Verify Mobile Page is loaded and accessible', async () => {

@@ -1,8 +1,8 @@
 import { Page } from '@playwright/test'
 import { BansPage } from './bans_page'
 import { DiscordPage } from './discord_page'
-import { DotaGiftxMainPage } from './dota_giftx_main_page'
-import { DotaGiftxPlusPage } from './dotagiftx_plus_page'
+import { IndexPage } from './index_page'
+import { PlusPage } from './plus_page'
 import { FaqsPage } from './faqs_page'
 import { GuidesPage } from './guides_page'
 import { HeroesPage } from './heroes_pages'
@@ -17,8 +17,8 @@ export class PageObjectModel {
   private readonly page: Page
   public bansPage: BansPage
   public discordPage: DiscordPage
-  public dotaGiftXMainPage: DotaGiftxMainPage
-  public dotaGiftXPlus: DotaGiftxPlusPage
+  public indexPage: IndexPage
+  public plusPage: PlusPage
   public faqsPage: FaqsPage
   public guidesPage: GuidesPage
   public heroesPage: HeroesPage
@@ -33,8 +33,8 @@ export class PageObjectModel {
     this.page = page
     this.bansPage = new BansPage(page)
     this.discordPage = new DiscordPage(page)
-    this.dotaGiftXMainPage = new DotaGiftxMainPage(page)
-    this.dotaGiftXPlus = new DotaGiftxPlusPage(page)
+    this.indexPage = new IndexPage(page)
+    this.plusPage = new PlusPage(page)
     this.faqsPage = new FaqsPage(page)
     this.guidesPage = new GuidesPage(page)
     this.heroesPage = new HeroesPage(page)

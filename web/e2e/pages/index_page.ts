@@ -2,7 +2,7 @@ import { expect, Locator, Page } from '@playwright/test'
 import { CommonPageComponent } from './common_page_component'
 import { PageTitles } from '../constants/page_titles'
 
-export class DotaGiftxMainPage extends CommonPageComponent {
+export class IndexPage extends CommonPageComponent {
   private readonly lnkDotaGiftX: Locator
   constructor(page: Page) {
     super(page)
