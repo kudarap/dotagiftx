@@ -4,7 +4,7 @@ Marketplace for giftable Dota 2 items
 
 ### API reference
 
-- [Postman Collection](/postman.json)
+- [API Collection](/hoppscotch.json)
 
 ### Requirements
 
