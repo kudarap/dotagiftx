@@ -160,7 +160,7 @@ function UserCard({ data }) {
       <div style={{ marginLeft: 8 }}>
         <Typography>
           {/* <strong>{data.name}</strong> */}
-          <Typography color="textSecondary" variant="body2">
+          <Typography color="textSecondary" variant="body2" component="span">
             SteamID: {`${data.steam_id}`}
             {` `}
             <span
@@ -171,10 +171,12 @@ function UserCard({ data }) {
                 marginTop: -2,
                 fontSize: '0.785em',
                 fontWeight: 500,
-              }}>
+              }}
+            >
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
+          <br />
           <Link variant="body2" href={`/profiles/${data.steam_id}`}>
             Profile
           </Link>
@@ -184,7 +186,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Steam Profile
           </Link>
           &nbsp;&middot;&nbsp;
@@ -193,7 +196,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Dotabuff
           </Link>
         </Typography>

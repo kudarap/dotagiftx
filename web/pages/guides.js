@@ -37,14 +37,15 @@ export default function Blacklist() {
           <br />
 
           <Typography style={{ fontWeight: 'bold' }} gutterBottom>
-            Profile checking
-            <Typography color="textSecondary">
+            Profile checking <br />
+            <Typography color="textSecondary" component="span">
               You can go to their Steam profiles and change the url{' '}
               <Typography
                 component="em"
                 color="textPrimary"
                 variant="body2"
-                style={{ fontWeight: 500 }}>
+                style={{ fontWeight: 500 }}
+              >
                 steamcommunity.com
               </Typography>{' '}
               to{' '}
@@ -52,7 +53,8 @@ export default function Blacklist() {
                 component="em"
                 color="textPrimary"
                 variant="body2"
-                style={{ fontWeight: 500 }}>
+                style={{ fontWeight: 500 }}
+              >
                 dotagiftx.com
               </Typography>{' '}
               that will lead you to their Dotagiftx profile with transaction history and links to
@@ -65,7 +67,7 @@ export default function Blacklist() {
           </Typography>
           <br />
 
-          <Typography style={{ fontWeight: 'bold' }} gutterBottom>
+          <Typography style={{ fontWeight: 'bold' }} gutterBottom component="span">
             Before going first
             <Typography color="textSecondary">
               After waiting for 30days and before going first, its highly recommend that you check
@@ -75,7 +77,7 @@ export default function Blacklist() {
           </Typography>
           <br />
 
-          <Typography style={{ fontWeight: 'bold' }} gutterBottom>
+          <Typography style={{ fontWeight: 'bold' }} gutterBottom component="span">
             Prepare evidences
             <Typography color="textSecondary">
               Prepare in-case the seller scam you. Take screenshots of things during transaction
@@ -85,7 +87,7 @@ export default function Blacklist() {
           </Typography>
           <br />
 
-          <Typography style={{ fontWeight: 'bold' }}>
+          <Typography style={{ fontWeight: 'bold' }} component="span">
             Gift restrictions
             <Typography color="textSecondary">
               To combat credit card fraud, Valve has placed several restrictions on gifting.{' '}
@@ -93,12 +95,13 @@ export default function Blacklist() {
                 href="https://dota2.fandom.com/wiki/Wrapped_Gift"
                 target="_blank"
                 color="secondary"
-                rel="noreferrer noopener">
+                rel="noreferrer noopener"
+              >
                 dota2.fandom.com
               </Link>
             </Typography>
           </Typography>
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <li>Gifts can be sent to a friend, but not sold on the Steam Market</li>
               <li>
@@ -108,17 +111,17 @@ export default function Blacklist() {
               <li>
                 Only a limited number of items can be gifted within a certain time. ( 8 items for
                 every 24 hours )
-                <li>
-                  The number of gifts one can send is determined by the player&apos;s Experience
-                  Trophy.
-                </li>
+              </li>
+              <li>
+                The number of gifts one can send is determined by the player&apos;s Experience
+                Trophy.
               </li>
             </ul>
           </Typography>
           <br />
 
           <Typography style={{ fontWeight: 'bold' }}>Buying giftables</Typography>
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <li>Always check the item or set availability on seller&apos;s Dota 2 inventory.</li>
               <li>
@@ -142,7 +145,7 @@ export default function Blacklist() {
           <br />
 
           <Typography style={{ fontWeight: 'bold' }}>Selling giftables</Typography>
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <li>Please be respectful on the price stated by the buyer.</li>
               <li>Make sure your item exist in your inventory.</li>
