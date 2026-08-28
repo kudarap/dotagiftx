@@ -19,7 +19,7 @@ jobs:
     env:
       NEXT_PUBLIC_API_URL: ${{ inputs.api_url }}
       NEXT_PUBLIC_CDN_URL: ${{ inputs.cdn_url }}
-    timeout-minutes: 60
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
