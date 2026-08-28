@@ -182,7 +182,8 @@ export default function Updates() {
               <Link
                 target="_blank"
                 rel="noreferrer noopener"
-                href={`https://github.com/kudarap/dotagiftx/releases/tag/${release.tag}`}>
+                href={`https://github.com/kudarap/dotagiftx/releases/tag/${release.tag}`}
+              >
                 <Typography color="secondary" component="span">
                   {release.tag}
                 </Typography>{' '}
@@ -206,7 +207,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.22.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.22.0"
+          >
             {' '}
             v0.22.0: 5th year anniversary - Spring forward and Phantasm Crawl{' '}
             <LaunchIcon fontSize="relative" />
@@ -222,7 +224,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.21.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.21.0"
+          >
             {' '}
             v0.21.0: Auto Subscription Crackdown and Crownfall Treasure{' '}
             <LaunchIcon fontSize="relative" />
@@ -238,7 +241,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.20.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.20.0"
+          >
             {' '}
             v0.20.0: Span tracing, Task Queue, and Optimizations <LaunchIcon fontSize="relative" />
           </Link>
@@ -253,7 +257,8 @@ export default function Updates() {
           <Link
             target="_blank"
             rel="noreferrer noopener"
-            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.19.0">
+            href="https://github.com/kudarap/dotagiftx/releases/tag/v0.19.0"
+          >
             {' '}
             v0.19.0: Task verification + bunch of fixes and optimizations{' '}
             <LaunchIcon fontSize="relative" />
@@ -266,7 +271,7 @@ export default function Updates() {
           <Typography variant="h5" gutterBottom>
             Oct 8, 2022
           </Typography>
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <Typography color="textSecondary" component="li">
                 added immortal treasure 1 2022
@@ -291,7 +296,7 @@ export default function Updates() {
           <Typography variant="h5" gutterBottom>
             Sep 3, 2022
           </Typography>
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <Typography color="textSecondary" component="li">
                 added expired market sweeper
@@ -328,7 +333,7 @@ export default function Updates() {
           {/* <Typography variant="body" gutterBottom>
             v0.18.0: Dotagift+
           </Typography> */}
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <Typography color="textSecondary" component="li">
                 added subscription page
@@ -366,7 +371,7 @@ export default function Updates() {
           {/* <Typography variant="body" gutterBottom>
             v0.17.1: Enable SSR
           </Typography> */}
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <Typography color="textSecondary" component="li">
                 added inventory checker cli tool
@@ -398,7 +403,7 @@ export default function Updates() {
           {/* <Typography variant="body" gutterBottom>
             v0.17.0: Improved logo and material-ui v5 migration
           </Typography> */}
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" component="div">
             <ul>
               <Typography color="textSecondary" component="li">
                 added hammer service endpoint

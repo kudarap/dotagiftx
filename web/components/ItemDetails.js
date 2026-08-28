@@ -262,15 +262,6 @@ export default function ItemDetails({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
-
-        {/* Preload the LCP image with a high fetchpriority so it starts loading with the stylesheet. */}
-        <link
-          rel="preload"
-          fetchPriority="high"
-          as="image"
-          href={`${CDN_URL}/${item.image}`}
-          type="image/png"
-        />
       </Head>
 
       <Header />
@@ -289,7 +280,8 @@ export default function ItemDetails({
                 color="secondary"
                 component={Link}
                 href={`/post-item?s=${item.slug}`}
-                disableUnderline>
+                disableUnderline
+              >
                 Post this item
               </Button>
             </Grid>

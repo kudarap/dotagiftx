@@ -16,7 +16,16 @@ export function retinaSrcSet(filename, width, height) {
   return { src, srcSet: `${src} 1x, ${src2x} 2x` }
 }
 
-export default function ItemImage({ image, title, rarity, className, width, height, ...other }) {
+export default function ItemImage({
+  image,
+  title,
+  rarity,
+  className,
+  width,
+  height,
+  preload,
+  ...other
+}) {
   const containerStyle = {
     lineHeight: 1,
     flexShrink: 0,
@@ -53,8 +62,7 @@ export default function ItemImage({ image, title, rarity, className, width, heig
         width={width}
         height={height}
         quality={100}
-        responsive="true"
-        priority
+        preload={preload}
       />
     </Box>
   )
@@ -66,9 +74,11 @@ ItemImage.propTypes = {
   title: PropTypes.string,
   rarity: PropTypes.string,
   className: PropTypes.string,
+  preload: PropTypes.bool,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
   className: '',
+  preload: false,
 }

@@ -182,7 +182,7 @@ function UserCard({ data }) {
       <div style={{ marginLeft: 8 }}>
         <Typography>
           {/* <strong>{data.name}</strong> */}
-          <Typography color="textSecondary" variant="body2">
+          <Typography color="textSecondary" variant="body2" component="span">
             SteamID: {`${data.steam_id}`}
             {` `}
             <span
@@ -198,6 +198,7 @@ function UserCard({ data }) {
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
+          <br />
           <Link variant="body2" href={`/profiles/${data.steam_id}`}>
             Profile
           </Link>

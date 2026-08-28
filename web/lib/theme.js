@@ -7,6 +7,7 @@ const font = Ubuntu({
   weight: ['300', '400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
+  preload: false,
 })
 
 const defaultPalette = {

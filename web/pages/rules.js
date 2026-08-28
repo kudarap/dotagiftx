@@ -57,7 +57,7 @@ export default function Version() {
               Selling Rules
             </Typography>
 
-            <Typography>
+            <Typography component="div">
               <ol>
                 <li>No misleading post or abusive behavior.</li>
                 <li>No multiple reservations on a single item or stock.</li>
@@ -76,7 +76,7 @@ export default function Version() {
               Buying Rules
             </Typography>
 
-            <Typography>
+            <Typography component="div">
               <ol>
                 <li>No reservation cancellation without prior notice.</li>
               </ol>
@@ -101,7 +101,8 @@ export default function Version() {
               href="https://discord.gg/UFt9Ny42kM"
               target="_blank"
               color="secondary"
-              rel="noreferrer noopener">
+              rel="noreferrer noopener"
+            >
               Discord
             </Link>{' '}
             or submit a comment on feedback.
