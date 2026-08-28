@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Image from 'next/image'
 import Box from '@mui/material/Box'
 import { CDN_URL } from '@/service/api'
-import { itemRarityColorMap } from '@/constants/palette'
+import { itemRarityColorMap, itemRarityGlowSet } from '@/constants/palette'
 
 const baseSizeQuality = 20
 export function retinaSrcSet(filename, width, height) {
@@ -35,7 +35,11 @@ export default function ItemImage({
     flexDirection: 'column',
   }
   if (rarity) {
-    containerStyle.border = `1px solid ${itemRarityColorMap[rarity]}`
+    const color = itemRarityColorMap[rarity]
+    containerStyle.border = `1px solid ${color}`
+    if (itemRarityGlowSet.includes(rarity)) {
+      containerStyle.boxShadow = `0 0 8px ${color}`
+    }
   }
 
   const imageStyle = {
