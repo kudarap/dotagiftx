@@ -97,6 +97,7 @@ export default function CatalogList({ items = [], loading, error, variant, bidTy
                       height={55}
                       title={item.name}
                       rarity={item.rarity}
+                      loading={item?.imageLoading}
                     />
 
                     <div>

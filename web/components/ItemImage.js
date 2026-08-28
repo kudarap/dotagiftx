@@ -24,6 +24,7 @@ export default function ItemImage({
   width,
   height,
   preload,
+  loading,
   ...other
 }) {
   const containerStyle = {
@@ -63,6 +64,7 @@ export default function ItemImage({
         height={height}
         quality={100}
         preload={preload}
+        loading={loading}
       />
     </Box>
   )
@@ -75,10 +77,12 @@ ItemImage.propTypes = {
   rarity: PropTypes.string,
   className: PropTypes.string,
   preload: PropTypes.bool,
+  loading: PropTypes.string,
 }
 ItemImage.defaultProps = {
   title: null,
   rarity: null,
   className: '',
   preload: false,
+  loading: 'lazy',
 }

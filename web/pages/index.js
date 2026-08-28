@@ -370,6 +370,11 @@ export async function getServerSideProps() {
   let trendingItems = { error: null }
   try {
     trendingItems = await catalogTrendSearch()
+    // load image eargerly because it's above the fold
+    trendingItems.data = trendingItems.data.map(item => ({
+      ...item,
+      imageLoading: 'eager',
+    }))
   } catch (e) {
     trendingItems.error = e
   }

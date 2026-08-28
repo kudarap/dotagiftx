@@ -47,6 +47,7 @@ export default function ItemViewCard({ item }) {
                 title={item.name}
                 rarity={item.rarity}
                 preload
+                loading="eager"
               />
             </a>
           )}
