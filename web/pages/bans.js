@@ -43,6 +43,28 @@ function isVanityURL(url = '') {
   return url.startsWith(`${STEAMURL}/id/`)
 }
 
+function getSafeVanityRedirect(url = '') {
+  if (!url) {
+    return false
+  }
+
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol !== 'https:' || parsed.host !== 'steamcommunity.com') {
+      return false
+    }
+
+    const match = parsed.pathname.match(/^\/id\/([A-Za-z0-9_-]+)\/?$/)
+    if (!match) {
+      return false
+    }
+
+    return `/id/${match[1]}`
+  } catch {
+    return false
+  }
+}
+
 // returns Steam ID when available and
 // resolves URL when its a vanity/custom for auto-resolve profile.
 function resolveProfileURL(url = '') {
@@ -55,7 +77,7 @@ function resolveProfileURL(url = '') {
     return u
   }
 
-  return u.replaceAll(STEAMURL, '')
+  return getSafeVanityRedirect(u)
 }
 
 export default function Blacklist() {
@@ -74,7 +96,7 @@ export default function Blacklist() {
   let resolvedQuery = false
   if (startsWith(query, STEAMURL, 0)) {
     resolvedQuery = resolveProfileURL(query)
-    if (isVanityURL(query)) {
+    if (resolvedQuery && isVanityURL(query)) {
       router.push(resolvedQuery)
     }
   }
@@ -171,7 +193,8 @@ function UserCard({ data }) {
                 marginTop: -2,
                 fontSize: '0.785em',
                 fontWeight: 500,
-              }}>
+              }}
+            >
               {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
             </span>
           </Typography>
@@ -184,7 +207,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${STEAM_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Steam Profile
           </Link>
           &nbsp;&middot;&nbsp;
@@ -193,7 +217,8 @@ function UserCard({ data }) {
             gutterBottom
             target="_blank"
             rel="noreferrer noopener"
-            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}>
+            href={`${DOTABUFF_PROFILE_BASE_URL}/${data.steam_id}`}
+          >
             Dotabuff
           </Link>
         </Typography>
