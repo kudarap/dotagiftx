@@ -1,6 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
-import moment from 'moment'
+import { relativeFromNow } from 'date-fns'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
@@ -42,10 +42,11 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
               borderRadius: 1,
               px: 0.75,
               py: 0.25,
-            }}>
+            }}
+          >
             SteamID: {id}
           </Typography>{' '}
-          &middot; Joined {moment(createdAt).fromNow()}{' '}
+          &middot; Joined {relativeFromNow(createdAt)}{' '}
         </Typography>
         <Box sx={{ mb: 1, mt: 1 }}>
           <ExclusiveChip tag={userTag} />
@@ -59,7 +60,8 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
             target="_blank"
             rel="noreferrer noopener"
             size="small"
-            href={discordURL}>
+            href={discordURL}
+          >
             Discord
           </Button>
           &nbsp;
@@ -75,7 +77,8 @@ export default function InternalUserCard({ name, id, img, boons, discordURL, cre
             }
             component={Link}
             size="small"
-            href={`/profiles/${id}`}>
+            href={`/profiles/${id}`}
+          >
             DotagiftX
           </Button>
         </Box>

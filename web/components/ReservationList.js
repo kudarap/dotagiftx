@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
 import { makeStyles } from 'tss-react/mui'
 import { debounce } from '@mui/material'
 import Table from '@mui/material/Table'
@@ -18,7 +17,6 @@ import {
   VERIFIED_INVENTORY_VERIFIED_RESELL,
 } from '@/constants/verified'
 import * as format from '@/lib/format'
-import { amount } from '@/lib/format'
 import Button from '@/components/Button'
 import RarityTag from '@/components/RarityTag'
 import TableHeadCell from '@/components/TableHeadCell'
@@ -135,7 +133,8 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                     scope="row"
                     padding="none"
                     className={classes.item}
-                    onClick={() => handleUpdateClick(idx)}>
+                    onClick={() => handleUpdateClick(idx)}
+                  >
                     <ItemImage
                       className={classes.image}
                       image={market.item.image}
@@ -151,7 +150,8 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                         aria-haspopup="true"
                         data-index={idx}
                         onMouseLeave={debouncePopoverClose}
-                        onMouseEnter={handlePopoverOpen}>
+                        onMouseEnter={handlePopoverOpen}
+                      >
                         {market.resell
                           ? VERIFIED_INVENTORY_MAP_ICON[VERIFIED_INVENTORY_VERIFIED_RESELL]
                           : VERIFIED_INVENTORY_MAP_ICON[market.inventory_status]}
@@ -168,12 +168,12 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                     <>
                       <TableCell align="right">
                         <Typography variant="body2">
-                          {moment(market.updated_at).fromNow()}
+                          {format.relativeFromNow(market.updated_at)}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="body2">
-                          {amount(market.price, market.currency)}
+                          {format.amount(market.price, market.currency)}
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
@@ -186,7 +186,8 @@ export default function ReservationList({ datatable, loading, error, onSearchInp
                     <TableCell
                       align="right"
                       onClick={() => handleUpdateClick(idx)}
-                      style={{ cursor: 'pointer' }}>
+                      style={{ cursor: 'pointer' }}
+                    >
                       <Typography variant="body2" color="secondary">
                         {format.amount(market.price, market.currency)}
                       </Typography>

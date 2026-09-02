@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
+import { format, getUnixTime } from 'date-fns'
 import {
   CartesianGrid,
   Legend,
@@ -17,7 +17,7 @@ import { lightGreen as graphColor } from '@mui/material/colors'
 import { amount } from '@/lib/format'
 
 function formatDateUnix(unix) {
-  return moment(unix).format('MMM D')
+  return format(new Date(unix), 'MMM d')
 }
 
 function formatXAxis(tickItem) {
@@ -56,7 +56,7 @@ export default function MarketSalesChart({ data }) {
   }
 
   const format = data.map(v => ({
-    unix: moment(v.date).unix() * 1000,
+    unix: getUnixTime(new Date(v.date) * 1000),
     avg: Number(v.avg.toFixed(2)),
     count: v.count,
   }))

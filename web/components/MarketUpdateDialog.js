@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import moment from 'moment'
+import { addDays, format } from 'date-fns'
 import PropTypes from 'prop-types'
 import startsWith from 'lodash/startsWith'
 import { makeStyles } from 'tss-react/mui'
@@ -130,7 +130,8 @@ export default function MarketUpdateDialog(props) {
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <form onSubmit={onFormSubmit}>
         <DialogTitle id="alert-dialog-title">
           Update Listing
@@ -160,7 +161,8 @@ export default function MarketUpdateDialog(props) {
                     <Link
                       href={steamProfileBaseURL + market.seller_steam_id}
                       target="_blank"
-                      rel="noreferrer noopener">
+                      rel="noreferrer noopener"
+                    >
                       {market.seller_steam_id}
                     </Link>
                     <br />
@@ -213,7 +215,7 @@ export default function MarketUpdateDialog(props) {
               variant="outlined"
               label="Reservation Notes"
               helperText="Delivery date and deposit details"
-              placeholder={`${moment().add(30, 'days').format('MMM D')} - $1 deposit`}
+              placeholder={`${format(addDays(new Date(), 30), 'MMM d')} - $1 deposit`}
               value={notes}
               onInput={e => setNotes(e.target.value)}
             />
@@ -229,7 +231,8 @@ export default function MarketUpdateDialog(props) {
             disabled={loadingRemove}
             startIcon={loadingRemove ? <CircularProgress size={22} /> : <RemoveIcon />}
             onClick={handleRemoveClick}
-            variant="outlined">
+            variant="outlined"
+          >
             Remove Listing
           </Button>
           <Button
@@ -237,7 +240,8 @@ export default function MarketUpdateDialog(props) {
             startIcon={loading ? <CircularProgress size={22} color="secondary" /> : <ReserveIcon />}
             variant="outlined"
             color="secondary"
-            type="submit">
+            type="submit"
+          >
             Reserve to Buyer
           </Button>
         </DialogActions>

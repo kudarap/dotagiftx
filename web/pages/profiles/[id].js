@@ -6,7 +6,7 @@ import has from 'lodash/has'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
-import moment from 'moment'
+import { differenceInDays, parseISO } from 'date-fns'
 import NewbieIcon from '@mui/icons-material/NewReleases'
 import { Box } from '@mui/material'
 import {
@@ -30,6 +30,7 @@ import {
   vanity,
 } from '@/service/api'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
+import { relativeFromNow } from '@/lib/format'
 import Avatar from '@/components/Avatar'
 import ExclusiveChip from '@/components/ExclusiveChip'
 import Header from '@/components/Header'
@@ -193,7 +194,8 @@ export default function UserDetails({
                   fontSize: '1rem',
                   borderColor: '#c13830',
                   borderWidth: 2,
-                }}>
+                }}
+              >
                 This is user has been flagged as <strong>BANNED</strong> or{' '}
                 <strong>SUSPENDED</strong>. <br />
                 Website is not liable for any lost in-game items and money and should avoid any
@@ -207,7 +209,8 @@ export default function UserDetails({
             className={classes.details}
             style={
               isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null
-            }>
+            }
+          >
             <Avatar
               large
               badge={userBadge}
@@ -220,7 +223,8 @@ export default function UserDetails({
                 className={classes.profileName}
                 component="h1"
                 variant="h4"
-                color={isProfileReported ? 'error' : 'textPrimary'}>
+                color={isProfileReported ? 'error' : 'textPrimary'}
+              >
                 {profile.name}
                 {!USER_SUBSCRIPTION_BADGE_MODE && Boolean(userBadge) && (
                   <SubscriberBadge
@@ -250,11 +254,12 @@ export default function UserDetails({
                     borderRadius: 1,
                     px: 0.75,
                     py: 0.25,
-                  }}>
+                  }}
+                >
                   SteamID: {profile.steam_id}
                 </Typography>{' '}
-                &middot; Joined {moment(profile.created_at).fromNow()}{' '}
-                {moment().diff(moment(profile.created_at), 'days') <= USER_AGE_CAUTION && (
+                &middot; Joined {relativeFromNow(profile.created_at)}{' '}
+                {differenceInDays(new Date(), parseISO(profile.created_at)) <= USER_AGE_CAUTION && (
                   <NewbieIcon color="info" fontSize="inherit" sx={{ mb: -0.3 }} />
                 )}
               </Typography>

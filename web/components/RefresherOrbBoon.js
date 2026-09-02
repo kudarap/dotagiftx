@@ -1,4 +1,4 @@
-import moment from 'moment'
+import { addDays, format } from 'date-fns'
 import PropTypes from 'prop-types'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -13,9 +13,10 @@ export default function RefresherOrbBoon({ boons }) {
           sx={{ color: 'salmon' }}
           component={Link}
           variant="body2"
-          href="/expiring-posts">
+          href="/expiring-posts"
+        >
           This listing will expires in {MARKET_ASK_EXPR_DAYS} days -{' '}
-          {moment().add(MARKET_ASK_EXPR_DAYS, 'days').calendar()}
+          {format(addDays(new Date(), MARKET_ASK_EXPR_DAYS, 'days'), 'MMM d')}
         </Typography>
       </Box>
     )

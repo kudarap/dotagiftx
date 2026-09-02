@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { Alert } from '@mui/material'
-import moment from 'moment'
+import { differenceInDays, parseISO } from 'date-fns'
 import { STEAM_PROFILE_BASE_URL } from '@/constants/strings'
 import Link from '@/components/Link'
 import Button from '@/components/Button'
@@ -17,6 +17,7 @@ import BidButton from '@/components/BidButton'
 import MarketNotes from '@/components/MarketNotes'
 import ProfileCard from '@/components/ProfileCard'
 import { USER_AGE_CAUTION } from '@/constants/user'
+import { relativeFromNow } from '@/lib/format'
 
 export default function ContactDialog(props) {
   const { isMobile } = useContext(AppContext)
@@ -39,17 +40,18 @@ export default function ContactDialog(props) {
         open={open}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
+        aria-describedby="alert-dialog-description"
+      >
         <DialogTitle id="alert-dialog-title">
           {isSeller ? 'Contact Seller' : 'Contact Buyer'}
           <DialogCloseButton onClick={onClose} />
         </DialogTitle>
         <DialogContent>
           {isSeller &&
-            moment().diff(moment(market.user.created_at), 'days') <= USER_AGE_CAUTION && (
+            differenceInDays(new Date(), parseISO(market.user.created_at)) <= USER_AGE_CAUTION && (
               <>
                 <Alert severity="warning">
-                  {`This user just joined ${moment(market.user.created_at).fromNow()}. Please transact with caution.`}
+                  {`This user just joined ${relativeFromNow(market.user.created_at)}. Please transact with caution.`}
                 </Alert>
                 <br />
               </>
@@ -65,7 +67,8 @@ export default function ContactDialog(props) {
               component="ul"
               variant="body2"
               color="textSecondary"
-              style={{ lineHeight: 1.7 }}>
+              style={{ lineHeight: 1.7 }}
+            >
               {isSeller ? (
                 <>
                   <li>
@@ -74,7 +77,8 @@ export default function ContactDialog(props) {
                       style={{ textDecoration: 'underline' }}
                       href={dota2Inventory}
                       target="_blank"
-                      rel="noreferrer noopener">
+                      rel="noreferrer noopener"
+                    >
                       inventory
                     </Link>
                     .
@@ -107,7 +111,8 @@ export default function ContactDialog(props) {
                     seller&apos;s reputation through&nbsp;
                     <Link
                       style={{ textDecoration: 'underline' }}
-                      href={`/profiles/${market.user.steam_id}/delivered`}>
+                      href={`/profiles/${market.user.steam_id}/delivered`}
+                    >
                       transaction history
                     </Link>
                     .
@@ -151,7 +156,8 @@ export default function ContactDialog(props) {
                 disableUnderline
                 target="_blank"
                 rel="noreferrer noopener"
-                href={steamProfileURL}>
+                href={steamProfileURL}
+              >
                 Steam Profile
               </Button>
             </>
@@ -166,7 +172,8 @@ export default function ContactDialog(props) {
                 target="_blank"
                 rel="noreferrer noopener"
                 disableUnderline
-                href={steamProfileURL}>
+                href={steamProfileURL}
+              >
                 Steam Profile
               </BidButton>
             </>
