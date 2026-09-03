@@ -1,5 +1,26 @@
-import moment from 'moment'
+import {
+  parseISO,
+  addDays,
+  addMonths,
+  addYears,
+  isBefore,
+  formatDistanceToNow,
+  format,
+  isValid,
+} from 'date-fns'
 
+function parseDateInput(value) {
+  const date =
+    value instanceof Date
+      ? new Date(value.getTime())
+      : typeof value === 'number'
+        ? new Date(value)
+        : typeof value === 'string' && value.trim()
+          ? parseISO(value)
+          : new Date(Number.NaN)
+
+  return isValid(date) ? date : null
+}
 export function amount(n, currency = '') {
   let sign = ''
   if (currency) {
@@ -18,44 +39,59 @@ export function numberWithCommas(n) {
 }
 
 export function dateFromNow(date) {
-  const d = moment(date)
-  const dc = d.clone()
-  const now = moment()
+  const d = parseDateInput(date)
+  if (!d) return INVALID_DATE
 
-  if (now < dc.add(1, 'day')) {
-    return d.fromNow()
+  const now = new Date()
+  const oneDayLater = addDays(d, 1)
+  const oneMonthLater = addMonths(oneDayLater, 1)
+  const oneYearLater = addYears(oneMonthLater, 1)
+
+  if (isBefore(now, oneDayLater)) {
+    return formatDistanceToNow(d, { addSuffix: true })
   }
-  if (now < dc.add(1, 'month')) {
-    // return `${((now.unix() - d.unix()) / 86400).toFixed()} days ago`
+
+  if (isBefore(now, oneYearLater)) {
+    return format(d, 'MMM dd')
   }
-  if (now < dc.add(1, 'year')) {
-    return d.format('MMM DD')
-  }
-  return d.format('MMM DD, YYYY')
+
+  return format(d, 'MMM dd, yyyy')
 }
 
 export function daysFromNow(d) {
-  const date = moment(d)
+  const date = parseDateInput(d)
+  if (!date) return INVALID_DATE
 
-  const diffDays = ((moment().unix() - date.unix()) / 86400).toFixed()
-  // if (diffDays >= 20 && diffDays <= 60) {
-  if (diffDays >= 20 && diffDays <= 60) {
+  const nowUnix = Math.floor(Date.now() / 1000)
+  const dateUnix = Math.floor(date.getTime() / 1000)
+  const diffDays = ((nowUnix - dateUnix) / 86_400).toFixed()
+
+  if (Number(diffDays) > 20 && Number(diffDays) < 60) {
     return `${diffDays} days ago`
   }
 
-  return date.fromNow()
+  return formatDistanceToNow(date, { addSuffix: true })
 }
 
 export function dateCalendar(date) {
-  return moment(date).format('MMMM DD, YYYY')
+  const d = parseDateInput(date)
+  return d ? format(d, 'MMMM dd, yyyy') : INVALID_DATE
 }
 
 export function dateTime(date) {
-  return moment(date).format('MMM DD, YYYY - h:mm A')
+  const d = parseDateInput(date)
+  return d ? format(d, 'MMM dd, yyyy - h:mm a') : INVALID_DATE
 }
 
 export function dateTimeFull(date) {
-  return moment(date).format('MMMM DD, YYYY - h:mm A')
+  const d = parseDateInput(date)
+  return d ? format(d, 'MMMM dd, yyyy - h:mm a') : INVALID_DATE
+}
+
+export function relativeFromNow(value) {
+  const date = parseDateInput(value)
+
+  return date ? formatDistanceToNow(date, { addSuffix: true }) : 'Invalid date'
 }
 
 export function errorSimple(error) {

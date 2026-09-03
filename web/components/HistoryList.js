@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
 import { makeStyles } from 'tss-react/mui'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -79,7 +78,8 @@ export default function HistoryList({ datatable, loading, error }) {
                     scope="row"
                     padding="none"
                     className={classes.item}
-                    onClick={() => handleUpdateClick(idx)}>
+                    onClick={() => handleUpdateClick(idx)}
+                  >
                     <ItemImage
                       className={classes.image}
                       image={market.item.image}
@@ -101,7 +101,7 @@ export default function HistoryList({ datatable, loading, error }) {
                     <>
                       <TableCell align="right">
                         <Typography variant="body2">
-                          {moment(market.updated_at).fromNow()}
+                          {format.relativeFromNow(market.updated_at)}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
@@ -119,12 +119,13 @@ export default function HistoryList({ datatable, loading, error }) {
                     <TableCell
                       align="right"
                       onClick={() => handleUpdateClick(idx)}
-                      style={{ cursor: 'pointer' }}>
+                      style={{ cursor: 'pointer' }}
+                    >
                       <Typography variant="body2" color="secondary">
                         {format.amount(market.price, market.currency)}
                       </Typography>
                       <Typography variant="caption" color="textSecondary" noWrap>
-                        {moment(market.updated_at).fromNow()}
+                        {format.relativeFromNow(market.updated_at)}
                       </Typography>
                     </TableCell>
                   )}

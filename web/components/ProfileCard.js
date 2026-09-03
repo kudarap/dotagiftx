@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from 'tss-react/mui'
 import Typography from '@mui/material/Typography'
 import NewbieIcon from '@mui/icons-material/NewReleases'
-import moment from 'moment'
+import { differenceInDays, parseISO } from 'date-fns'
 import { Box } from '@mui/material'
 import Avatar from '@/components/Avatar'
 import {
@@ -21,6 +21,7 @@ import { isDonationGlowExpired } from '@/service/api'
 import AppContext from '@/components/AppContext'
 import SubscriberBadge from '@/components/SubscriberBadge'
 import { getUserBadgeFromBoons, getUserTagFromBoons } from '@/lib/badge'
+import { relativeFromNow } from '@/lib/format'
 import ExclusiveChip from '@/components/ExclusiveChip'
 
 const useStyles = makeStyles()(theme => ({
@@ -66,7 +67,8 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
   return (
     <div
       className={classes.details}
-      style={isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}>
+      style={isProfileReported ? { backgroundColor: '#2d0000', padding: 10, width: '100%' } : null}
+    >
       <a href={storeProfile} target="_blank" rel="noreferrer noopener">
         <Avatar
           large
@@ -81,7 +83,8 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
           className={classes.profileName}
           component="h3"
           variant="h4"
-          color={isProfileReported ? 'error' : ''}>
+          color={isProfileReported ? 'error' : ''}
+        >
           {user.name}
           {!USER_SUBSCRIPTION_BADGE_MODE && !isMobile && (
             <SubscriberBadge
@@ -121,11 +124,12 @@ export default function ProfileCard({ user, loading, hideSteamProfile, hideInven
               borderRadius: 1,
               px: 0.75,
               py: 0.25,
-            }}>
+            }}
+          >
             SteamID: {user.steam_id}
           </Typography>{' '}
-          &middot; Joined {moment(user.created_at).fromNow()}{' '}
-          {moment().diff(moment(user.created_at), 'days') <= USER_AGE_CAUTION && (
+          &middot; Joined {relativeFromNow(user.created_at)}{' '}
+          {differenceInDays(new Date(), parseISO(user.created_at)) <= USER_AGE_CAUTION && (
             <NewbieIcon color="info" fontSize="inherit" sx={{ mb: -0.3 }} />
           )}
         </Typography>

@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import useSWR from 'swr'
-import moment from 'moment'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import debounce from 'lodash/debounce'
@@ -17,6 +16,7 @@ import Link from '@/components/Link'
 import Avatar from '@/components/Avatar'
 import { BLACKLIST, fetcherBase, parseParams } from '@/service/api'
 import { retinaSrcSet } from '@/components/ItemImage'
+import { relativeFromNow } from '@/lib/format'
 import { USER_STATUS_MAP_COLOR, USER_STATUS_MAP_LABEL } from '@/constants/user'
 
 const useStyles = makeStyles()(theme => ({
@@ -195,7 +195,7 @@ function UserCard({ data }) {
                 fontWeight: 500,
               }}
             >
-              {USER_STATUS_MAP_LABEL[data.status]} {moment(data.updated_at).fromNow()}
+              {USER_STATUS_MAP_LABEL[data.status]} {relativeFromNow(data.updated_at)}
             </span>
           </Typography>
           <br />
