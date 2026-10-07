@@ -15,6 +15,14 @@ type Treasure struct {
 
 var AllTreasures = []Treasure{
 	{
+		"trove-of-terror",
+		"Trove of Terror",
+		"trove_of_terror.png",
+		"mythical",
+		17,
+		releaseDate("2026-10-7"),
+	},
+	{
 		"winter-2025-collectors-cache",
 		"Winter 2025 Collector's Cache",
 		"winter_2025_collectors_cache.png",
