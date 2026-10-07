@@ -13,9 +13,9 @@ import Link from '@/components/Link'
 import { APP_NAME } from '@/constants/strings'
 import { treasureList } from '@/service/api'
 
-const LATEST_TREASURE_DROP = new Date(2025, 12, 15)
+const LATEST_TREASURE_DROP = new Date(2026, 10, 7)
 
-const STILL_NEW_DAYS = 30
+const STILL_NEW_DAYS = 60
 
 const rarityColorMap = {
   mythical: '#8847ff',

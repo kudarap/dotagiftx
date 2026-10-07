@@ -197,15 +197,15 @@ export default function Header() {
             {isRecentTreasureNew() && (
               <span
                 style={{
-                  color: '#bcecff',
+                  color: '#B5A1FF',
                   padding: '0 8px',
                   position: 'absolute',
                   fontSize: '0.6rem',
                   display: 'block',
                   marginTop: '-0.24rem',
-                  marginLeft: -14,
+                  marginLeft: -5,
                 }}>
-                New Winter Treasure
+                Trove of Terror
               </span>
             )}
           </Link>
