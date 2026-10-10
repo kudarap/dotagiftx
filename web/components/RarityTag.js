@@ -5,6 +5,9 @@ import {
   ITEM_RARITY_RARE,
   ITEM_RARITY_ULTRA_RARE,
   ITEM_RARITY_VERY_RARE,
+  ITEM_RARITY_ARCANA,
+  ITEM_RARITY_IMMORTAL,
+  ITEM_RARITY_PERSONA,
 } from '@/constants/palette'
 
 // background: linear-gradient(#f9ffbf 10%, #fff 90%);
@@ -26,6 +29,9 @@ const rarityStylerMap = {
   rare: { color: ITEM_RARITY_RARE },
   'very rare': { color: ITEM_RARITY_VERY_RARE },
   'ultra rare': { color: ITEM_RARITY_ULTRA_RARE },
+  arcana: { color: ITEM_RARITY_ARCANA },
+  immortal: { color: ITEM_RARITY_IMMORTAL },
+  persona: { color: ITEM_RARITY_PERSONA },
 }
 
 const getRarityStyle = value => {
