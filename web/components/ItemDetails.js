@@ -8,6 +8,7 @@ import useInView from 'react-cool-inview'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
+import Alert from '@mui/material/Alert'
 import schemaOrgProduct from '@/lib/richdata'
 import { MARKET_STATUS_LIVE, MARKET_TYPE_BID } from '@/constants/market'
 import { APP_NAME } from '@/constants/strings'
@@ -299,6 +300,13 @@ export default function ItemDetails({
               </Button>
             </Grid>
           </Grid>
+
+          {item.origin == 'Trove of Terror' && (
+            <Alert severity="warning" sx={{ mb: 1 }}>
+              Trove of Terror can only be gifted within 30 days of item acquisition. Check
+              seller&apos;s inventory to confirm date validity.
+            </Alert>
+          )}
 
           {/* Listings */}
           <MarketList
