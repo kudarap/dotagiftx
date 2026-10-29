@@ -6,7 +6,7 @@ require (
 	dario.cat/mergo v1.0.2
 	github.com/ClickHouse/clickhouse-go/v2 v2.48.0
 	github.com/fatih/structs v1.1.0
-	github.com/go-chi/chi/v5 v5.3.2
+	github.com/go-chi/chi/v5 v5.4.0
 	github.com/go-chi/httplog/v3 v3.4.0
 	github.com/go-playground/validator/v10 v10.30.3
 	github.com/golang-jwt/jwt/v5 v5.3.1
